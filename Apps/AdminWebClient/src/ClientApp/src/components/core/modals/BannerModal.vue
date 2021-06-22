@@ -1,9 +1,11 @@
 <template>
     <v-dialog v-model="dialog" persistent max-width="1000px">
         <template #activator="{ on, attrs }">
-            <v-btn color="primary" dark v-bind="attrs" v-on="on"
-                >New Banner Communication</v-btn
-            >
+            <v-btn color="primary" dark v-bind="attrs" v-on="on">{{
+                isInApp
+                    ? "New In-App Communication"
+                    : "New Banner Communication"
+            }}</v-btn>
         </template>
         <v-card dark>
             <v-card-title>
@@ -85,7 +87,7 @@
                             <TiptapVuetify
                                 v-model="editedItem.text"
                                 :toolbar-attributes="{ color: 'gray' }"
-                                placeholder="Write the banner content here..."
+                                placeholder="Write the post content here..."
                                 :extensions="extensions"
                             />
                         </v-col>
@@ -174,6 +176,7 @@ export default class BannerModal extends Vue {
 
     @Prop() editedItem!: Communication;
     @Prop() isNew!: number;
+    @Prop() isInApp!: boolean;
 
     private get isDraft(): boolean {
         return (
@@ -194,6 +197,9 @@ export default class BannerModal extends Vue {
     }
 
     private get formTitle(): string {
+        if (this.isInApp) {
+            return this.isNew ? "New In-App Post" : "Edit In-App Post";
+        }
         return this.isNew ? "New Banner Post" : "Edit Banner Post";
     }
 
