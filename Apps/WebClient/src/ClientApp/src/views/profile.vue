@@ -439,9 +439,9 @@ export default class ProfileView extends Vue {
 </script>
 
 <template>
-    <div class="m-3">
+    <div class="flex-grow-1 d-flex flex-column">
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <b-row class="py-1 my-3 py-md-5 fluid">
+        <b-row class="my-2 fluid">
             <div class="col-12 col-lg-9 column-wrapper">
                 <b-alert
                     :show="showCheckEmailAlert"
@@ -457,9 +457,9 @@ export default class ProfileView extends Vue {
                         If you didn't receive one, please check your junk mail.
                     </span>
                 </b-alert>
-                <page-title title="Profile" />
+                <page-title title="Profile" class="px-2" />
                 <div v-if="!isLoading">
-                    <div v-if="isActiveProfile">
+                    <div v-if="isActiveProfile" class="px-2">
                         <b-row class="mb-3">
                             <b-col>
                                 <label for="profileNames" class="hg-label"
@@ -835,7 +835,7 @@ export default class ProfileView extends Vue {
                             </b-col>
                         </b-row>
                     </div>
-                    <b-row v-if="isActiveProfile" class="mb-3">
+                    <b-row v-if="isActiveProfile" class="mb-3 px-2">
                         <b-col>
                             <label class="hg-label">Manage Account</label>
                             <div>
