@@ -109,7 +109,7 @@ namespace HealthGateway.Admin.Services
                     }
                     else
                     {
-                        retVal.ResultError = new RequestResultError { ResultMessage = "Client Registry did not return a person", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) };
+                        retVal.ResultError = patientResult.ResultError;
                     }
 
                     break;
