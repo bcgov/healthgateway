@@ -9,6 +9,7 @@ import LoginView from "@/views/Login.vue";
 import LogoutView from "@/views/Logout.vue";
 import ResendEmailView from "@/views/ResendEmail.vue";
 import StatsView from "@/views/Stats.vue";
+import SupportView from "@/views/Support.vue";
 import UnauthorizedView from "@/views/Unauthorized.vue";
 
 import { UserRoles } from "./constants/userRoles";
@@ -76,6 +77,12 @@ const routes = [
         path: "/stats",
         name: "System Analytics",
         component: StatsView,
+        meta: { requiresAuth: true, validRoles: [UserRoles.Admin] },
+    },
+    {
+        path: "/support",
+        name: "Support",
+        component: SupportView,
         meta: { requiresAuth: true, validRoles: [UserRoles.Admin] },
     },
     {

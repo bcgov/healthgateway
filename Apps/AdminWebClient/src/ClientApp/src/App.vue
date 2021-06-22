@@ -1,14 +1,3 @@
-<template>
-    <v-app id="healthGatewayAdmin">
-        <ToolbarComponent />
-        <MainNavbar title="HealthGateway Admin" />
-        <v-main>
-            <router-view />
-        </v-main>
-        <Footer />
-    </v-app>
-</template>
-
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -25,3 +14,14 @@ library.add(faTrash);
 })
 export default class App extends Vue {}
 </script>
+
+<template>
+    <v-app id="healthGatewayAdmin">
+        <ToolbarComponent />
+        <MainNavbar title="HealthGateway Admin" />
+        <v-main>
+            <router-view />
+        </v-main>
+        <Footer />
+    </v-app>
+</template>

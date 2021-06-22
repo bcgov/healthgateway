@@ -20,6 +20,7 @@ import {
     IDashboardService,
     IEmailAdminService,
     IHttpDelegate,
+    ISupportService,
     IUserFeedbackService,
 } from "@/services/interfaces";
 import store from "@/store/store";
@@ -47,6 +48,10 @@ const emailAdminService: IEmailAdminService = container.get(
     SERVICE_IDENTIFIER.EmailAdminService
 );
 
+const supportService: ISupportService = container.get(
+    SERVICE_IDENTIFIER.SupportService
+);
+
 configService.initialize(httpDelegate);
 // Initialize the store only then start the app
 store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
@@ -67,6 +72,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     dashboardService.initialize(httpDelegate);
     emailAdminService.initialize(httpDelegate);
     communicationService.initialize(httpDelegate);
+    supportService.initialize(httpDelegate);
     initializeVue();
 });
 
