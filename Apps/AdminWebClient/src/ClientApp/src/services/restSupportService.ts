@@ -25,7 +25,6 @@ export class RestSupportService implements ISupportService {
                     `${this.BASE_URI}/Users?queryType=${type}&queryString=${query}`
                 )
                 .then((requestResult) => {
-                    console.debug(`getMessageVerifications ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
                         resolve,

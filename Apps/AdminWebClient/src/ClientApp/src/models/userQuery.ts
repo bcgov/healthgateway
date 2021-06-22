@@ -1,5 +1,5 @@
 export enum QueryType {
-    PHN,
-    Email,
-    SMS,
+    PHN = "PHN",
+    Email = "Email",
+    SMS = "SMS",
 }

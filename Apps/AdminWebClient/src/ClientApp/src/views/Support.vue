@@ -14,6 +14,7 @@ import { QueryType } from "@/models/userQuery";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ISupportService } from "@/services/interfaces";
+import PHNValidator from "@/utility/phnValidator";
 
 interface UserSearchRow {
     hdid: string;
@@ -125,25 +126,38 @@ export default class SupportView extends Vue {
     }
 
     private handleSearch() {
-        if (this.selectedQueryType !== null) {
-            this.supportService
-                .getMessageVerifications(
-                    this.selectedQueryType,
-                    this.searchText
-                )
-                .then((result) => {
-                    this.emailList = result;
-                })
-                .catch((err) => {
-                    this.showFeedback = true;
-                    this.bannerFeedback = {
-                        type: ResultType.Error,
-                        title: "Error:" + err.errorCode,
-                        message: "Message: " + err.resultMessage,
-                    };
-                    console.log(err);
-                });
+        if (this.selectedQueryType === null) {
+            return;
         }
+
+        if (this.selectedQueryType === QueryType.PHN) {
+            var isValid = PHNValidator.IsValid(this.searchText);
+
+            if (!isValid) {
+                this.showFeedback = true;
+                this.bannerFeedback = {
+                    type: ResultType.Error,
+                    title: "Validation error",
+                    message: "Invalid PHN",
+                };
+                return;
+            }
+        }
+
+        this.supportService
+            .getMessageVerifications(this.selectedQueryType, this.searchText)
+            .then((result) => {
+                this.emailList = result;
+            })
+            .catch((err) => {
+                this.showFeedback = true;
+                this.bannerFeedback = {
+                    type: ResultType.Error,
+                    title: "Error:" + err.errorCode,
+                    message: "Message: " + err.resultMessage,
+                };
+                console.log(err);
+            });
     }
 }
 </script>
