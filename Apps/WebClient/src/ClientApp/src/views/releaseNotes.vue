@@ -10,12 +10,12 @@
                         </div>
                     </b-col>
                 </b-row>
-                  <b-row>
+                <b-row>
                     <b-col>
                         <b-row class="mb-2">
                             <b-col>
-                                <strong
-                                    >June 23, 2021 - v1.4.4 - In-App Banner 
+                                <strong>
+                                    June 23, 2021 - v1.4.4 - In-App Banner
                                 </strong>
                             </b-col>
                         </b-row>
@@ -24,8 +24,8 @@
                                 <ul>
                                     <li>
                                         We added a feature so we can post
-                                        notices within the application in 
-                                        the top banner. 
+                                        notices within the application in the
+                                        top banner.
                                     </li>
                                 </ul>
                             </b-col>
