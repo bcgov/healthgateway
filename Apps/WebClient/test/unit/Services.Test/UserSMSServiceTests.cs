@@ -41,7 +41,7 @@ namespace HealthGateway.WebClient.Test.Services
             var smsValidationCode = "SMSValidationCodeMock";
             MessagingVerification expectedResult = new MessagingVerification
             {
-                HdId = HdIdMock,
+                UserProfileId = HdIdMock,
                 VerificationAttempts = 0,
                 SMSValidationCode = smsValidationCode,
                 ExpireDate = DateTime.Now.AddDays(1),
@@ -79,7 +79,7 @@ namespace HealthGateway.WebClient.Test.Services
             var smsValidationCode = "SMSValidationCodeMock";
             MessagingVerification expectedResult = new MessagingVerification
             {
-                HdId = "invalid" + HdIdMock,
+                UserProfileId = "invalid" + HdIdMock,
                 VerificationAttempts = 0,
                 SMSValidationCode = smsValidationCode,
                 ExpireDate = DateTime.Now.AddDays(1),
@@ -130,25 +130,25 @@ namespace HealthGateway.WebClient.Test.Services
             service.CreateUserSMS(HdIdMock, smsNumber);
             messagingVerificationDelegateMock
                 .Verify(
-                    s => s.Insert(It.Is<MessagingVerification>(x => x.HdId == HdIdMock && x.SMSNumber.All(char.IsDigit))));
+                    s => s.Insert(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SMSNumber.All(char.IsDigit))));
 
             smsNumber = "(123)4561234";
             service.CreateUserSMS(HdIdMock, smsNumber);
             messagingVerificationDelegateMock
                 .Verify(
-                    s => s.Insert(It.Is<MessagingVerification>(x => x.HdId == HdIdMock && x.SMSNumber.All(char.IsDigit))));
+                    s => s.Insert(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SMSNumber.All(char.IsDigit))));
 
             smsNumber = "123 456 1234";
             service.CreateUserSMS(HdIdMock, smsNumber);
             messagingVerificationDelegateMock
                 .Verify(
-                    s => s.Insert(It.Is<MessagingVerification>(x => x.HdId == HdIdMock && x.SMSNumber.All(char.IsDigit))));
+                    s => s.Insert(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SMSNumber.All(char.IsDigit))));
 
             smsNumber = "+1 123-456-1234";
             service.CreateUserSMS(HdIdMock, smsNumber);
             messagingVerificationDelegateMock
                 .Verify(
-                    s => s.Insert(It.Is<MessagingVerification>(x => x.HdId == HdIdMock && x.SMSNumber.All(char.IsDigit))));
+                    s => s.Insert(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SMSNumber.All(char.IsDigit))));
         }
     }
 }

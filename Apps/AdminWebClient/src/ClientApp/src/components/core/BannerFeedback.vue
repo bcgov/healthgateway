@@ -38,6 +38,7 @@ export default class BannerFeedbackComponent extends Vue {
 
 <template>
     <v-snackbar v-model="showSnackbar" :color="vuetifyType" top multi-line>
-        <span>{{ feedback.message }}</span>
+        <div>{{ feedback.title }}</div>
+        <div>{{ feedback.message }}</div>
     </v-snackbar>
 </template>

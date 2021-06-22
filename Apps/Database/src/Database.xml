@@ -374,6 +374,26 @@
             The default HDID to use when unknown.
             </summary>
         </member>
+        <member name="T:HealthGateway.Database.Constants.UserQueryType">
+            <summary>
+            Represents the type of query being performed.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Database.Constants.UserQueryType.HDID">
+            <summary>
+            Query by the directed identifer.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Database.Constants.UserQueryType.Email">
+            <summary>
+            Query by the Email.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Database.Constants.UserQueryType.SMS">
+            <summary>
+            Query by the SMS Phone number.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Database.Constants.WalletConnectionStatus">
             <summary>
             Represents the status of a Wallet Connection.
@@ -823,6 +843,9 @@
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Database.Delegates.DBMessagingVerificationDelegate.Expire(HealthGateway.Database.Models.MessagingVerification,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.DBMessagingVerificationDelegate.GetUserMessageVerifications(HealthGateway.Database.Constants.UserQueryType,System.String)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.Database.Delegates.DBNoteDelegate">
@@ -1536,6 +1559,14 @@
             </summary>
             <param name="messageVerification">The message verification to expire.</param>
             <param name="markDeleted">Mark the verification as deleted.</param>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.IMessagingVerificationDelegate.GetUserMessageVerifications(HealthGateway.Database.Constants.UserQueryType,System.String)">
+            <summary>
+            Retrieves a list of message verifications matching the query.
+            </summary>
+            <param name="queryType">The type of query to perform.</param>
+            <param name="queryString">The value to query on.</param>
+            <returns>A list of users matching the query.</returns>
         </member>
         <member name="T:HealthGateway.Database.Delegates.INoteDelegate">
             <summary>
@@ -2671,7 +2702,7 @@
             Gets or sets the messaging verification id.
             </summary>
         </member>
-        <member name="P:HealthGateway.Database.Models.MessagingVerification.HdId">
+        <member name="P:HealthGateway.Database.Models.MessagingVerification.UserProfileId">
             <summary>
             Gets or sets the users directed identifier.
             </summary>
@@ -3222,6 +3253,11 @@
             <summary>
             Gets or sets the users encryption key.
             Key is 16 byte string and is encoded to Base64.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.UserProfile.Verifications">
+            <summary>
+            Gets or sets the messaging verifications for this user.
             </summary>
         </member>
         <member name="T:HealthGateway.Database.Models.UserProfileHistory">

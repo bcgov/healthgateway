@@ -4,7 +4,9 @@ import Communication from "@/models/adminCommunication";
 import AuthenticationData from "@/models/authenticationData";
 import Email from "@/models/email";
 import ExternalConfiguration from "@/models/externalConfiguration";
+import MessageVerification from "@/models/messageVerification";
 import UserFeedback, { AdminTag, UserFeedbackTag } from "@/models/userFeedback";
+import { QueryType } from "@/models/userQuery";
 
 export interface IConfigService {
     initialize(http: IHttpDelegate): void;
@@ -53,6 +55,14 @@ export interface ICommunicationService {
     update(communication: Communication): Promise<void>;
     getAll(): Promise<Communication[]>;
     delete(communication: Communication): Promise<void>;
+}
+
+export interface ISupportService {
+    initialize(http: IHttpDelegate): void;
+    getMessageVerifications(
+        type: QueryType,
+        query: string
+    ): Promise<MessageVerification[]>;
 }
 
 export interface IHttpDelegate {

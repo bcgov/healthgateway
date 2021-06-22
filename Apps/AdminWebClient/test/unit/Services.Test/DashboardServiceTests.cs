@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Test.Services
     using System;
     using System.Collections.Generic;
     using HealthGateway.Admin.Services;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Configuration;
     using Moq;
@@ -37,11 +38,15 @@ namespace HealthGateway.Admin.Test.Services
             Dictionary<DateTime, int> expected = new Dictionary<DateTime, int>() { { default(DateTime), 10 } };
             Mock<IResourceDelegateDelegate> dependentDelegateMock = new Mock<IResourceDelegateDelegate>();
             dependentDelegateMock.Setup(s => s.GetDailyDependentCount(It.IsAny<TimeSpan>())).Returns(expected);
+            Mock<IMessagingVerificationDelegate> mockMessagingVerificationDelegate = new ();
+            Mock<IPatientService> mockPatientService = new ();
 
             // Set up service
             IDashboardService service = new DashboardService(
                 dependentDelegateMock.Object,
-                new Mock<IUserProfileDelegate>().Object);
+                new Mock<IUserProfileDelegate>().Object,
+                mockMessagingVerificationDelegate.Object,
+                mockPatientService.Object);
 
             IDictionary<DateTime, int> actualResult = service.GetDailyDependentCount(5);
 
