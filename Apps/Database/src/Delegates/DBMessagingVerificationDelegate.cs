@@ -135,7 +135,6 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        [SuppressMessage("Globalization", "CA1307:Specify StringComparison for clarity", Justification = "StringComparison invalid here")]
         public DBResult<IEnumerable<MessagingVerification>> GetUserMessageVerifications(UserQueryType queryType, string queryString)
         {
             IQueryable<MessagingVerification> query;
@@ -155,7 +154,7 @@ namespace HealthGateway.Database.Delegates
                     throw new ArgumentOutOfRangeException(nameof(queryType), "Query Type is invalid");
             }
 
-            IList<MessagingVerification> verifications = query.OrderByDescending(mv => mv.CreatedDateTime).ToList();
+            IList<MessagingVerification> verifications = query.OrderByDescending(mv => mv.CreatedDateTime).AsNoTracking().ToList();
             DBResult<IEnumerable<MessagingVerification>> result = new ()
             {
                 Payload = verifications,
