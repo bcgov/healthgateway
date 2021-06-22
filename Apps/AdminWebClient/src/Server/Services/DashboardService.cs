@@ -18,25 +18,40 @@ namespace HealthGateway.Admin.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Threading.Tasks;
+    using HealthGateway.Admin.Constants;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Wrapper;
 
     /// <inheritdoc />
     public class DashboardService : IDashboardService
     {
         private readonly IResourceDelegateDelegate dependentDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IMessagingVerificationDelegate messagingVerificationDelegate;
+        private readonly IPatientService patientService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
         /// </summary>
         /// <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
+        /// <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
+        /// <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
         public DashboardService(
             IResourceDelegateDelegate dependentDelegate,
-            IUserProfileDelegate userProfileDelegate)
+            IUserProfileDelegate userProfileDelegate,
+            IMessagingVerificationDelegate messagingVerificationDelegate,
+            IPatientService patientService)
         {
             this.dependentDelegate = dependentDelegate;
             this.userProfileDelegate = userProfileDelegate;
+            this.messagingVerificationDelegate = messagingVerificationDelegate;
+            this.patientService = patientService;
         }
 
         /// <inheritdoc />
@@ -71,6 +86,48 @@ namespace HealthGateway.Admin.Services
             DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).AddMinutes(ts.TotalMinutes).Date;
             DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).AddMinutes(ts.TotalMinutes).Date;
             return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
+        }
+
+        /// <inheritdoc />
+        public RequestResult<IEnumerable<Database.Models.MessagingVerification>> GetMessageVerifications(UserQueryType queryType, string queryString)
+        {
+            RequestResult<IEnumerable<Database.Models.MessagingVerification>> retVal = new ()
+            {
+                ResultStatus = ResultType.Error,
+                ResourcePayload = new List<Database.Models.MessagingVerification>(),
+            };
+
+            DBResult<IEnumerable<Database.Models.MessagingVerification>>? dbResult = null;
+            switch (queryType)
+            {
+                case UserQueryType.PHN:
+                    RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(queryString, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
+                    if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
+                    {
+                        string hdid = patientResult.ResourcePayload.HdId;
+                        dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, hdid);
+                    }
+                    else
+                    {
+                        retVal.ResultError = patientResult.ResultError;
+                    }
+
+                    break;
+                case UserQueryType.Email:
+                    dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.Email, queryString);
+                    break;
+                case UserQueryType.SMS:
+                    dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.SMS, queryString);
+                    break;
+            }
+
+            if (dbResult != null && dbResult.Status == Database.Constants.DBStatusCode.Read)
+            {
+                retVal.ResultStatus = ResultType.Success;
+                retVal.ResourcePayload = dbResult.Payload ?? retVal.ResourcePayload;
+            }
+
+            return retVal;
         }
     }
 }

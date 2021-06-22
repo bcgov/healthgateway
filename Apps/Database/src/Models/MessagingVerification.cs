@@ -35,7 +35,8 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the users directed identifier.
         /// </summary>
         [MaxLength(52)]
-        public string? HdId { get; set; }
+        [Column("HdId")]
+        public string? UserProfileId { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the messageing verification was validated.

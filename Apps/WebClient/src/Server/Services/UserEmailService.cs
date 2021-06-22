@@ -79,7 +79,7 @@ namespace HealthGateway.WebClient.Services
             this.logger.LogTrace($"Validating email... {inviteKey}");
             MessagingVerification? matchingVerification = this.messageVerificationDelegate.GetLastByInviteKey(inviteKey);
             if (matchingVerification == null ||
-                matchingVerification.HdId != hdid ||
+                matchingVerification.UserProfileId != hdid ||
                 matchingVerification.Deleted)
             {
                 // Invalid Verification Attempt
@@ -228,7 +228,7 @@ namespace HealthGateway.WebClient.Services
             MessagingVerification messageVerification = new ()
             {
                 InviteKey = inviteKey,
-                HdId = hdid,
+                UserProfileId = hdid,
                 ExpireDate = DateTime.UtcNow.AddSeconds(this.emailVerificationExpirySeconds),
                 Email = this.emailQueueService.ProcessTemplate(toEmail, EmailTemplateName.RegistrationTemplate, keyValues),
             };

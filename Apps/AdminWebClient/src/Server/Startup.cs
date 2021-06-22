@@ -77,6 +77,7 @@ namespace HealthGateway.AdminWebClient
             this.ConfigureAdminAuthenticationService(services);
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureHangfireQueue(services);
+            this.startupConfig.ConfigurePatientAccess(services);
 
             // Add services
             services.AddTransient<IConfigurationService, ConfigurationService>();
