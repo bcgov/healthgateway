@@ -70,9 +70,7 @@ export default class CommunicationComponent extends Vue {
 <template>
     <b-row v-if="hasCommunication">
         <b-col class="p-0 m-0">
-            <div class="text-center communication p-2">
-                <span v-html="text"></span>
-            </div>
+            <div class="text-center communication p-2" v-html="text" />
         </b-col>
     </b-row>
 </template>
@@ -83,5 +81,9 @@ export default class CommunicationComponent extends Vue {
 .communication {
     background-color: $bcgold;
     color: black;
+
+    :last-child {
+        margin-bottom: 0;
+    }
 }
 </style>
