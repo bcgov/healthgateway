@@ -57,14 +57,6 @@ export interface ICommunicationService {
     delete(communication: Communication): Promise<void>;
 }
 
-export interface ICommunicationService {
-    initialize(http: IHttpDelegate): void;
-    add(communication: Communication): Promise<Communication>;
-    update(communication: Communication): Promise<void>;
-    getAll(): Promise<Communication[]>;
-    delete(communication: Communication): Promise<void>;
-}
-
 export interface ISupportService {
     initialize(http: IHttpDelegate): void;
     getMessageVerifications(
