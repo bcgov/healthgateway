@@ -10,39 +10,42 @@ describe("Communication", () => {
         cy.get("[data-testid=communicationBanner]")
             .should("exist")
             .contains("Test Banner");
-        
     });
 
     it("InApp Banner Unauthenticated", () => {
         cy.visit("/faq");
         cy.get("[data-testid=communicationBanner]")
-            .should("not.exist")
+            .should("exist")
+            .contains("Test Banner");
 
         cy.visit("/contact-us");
         cy.get("[data-testid=communicationBanner]")
-            .should("not.exist")
+            .should("exist")
+            .contains("Test Banner");
 
         cy.visit("/release-notes");
         cy.get("[data-testid=communicationBanner]")
-            .should("not.exist")
+            .should("exist")
+            .contains("Test Banner");
 
         cy.visit("/termsOfService");
         cy.get("[data-testid=communicationBanner]")
-            .should("not.exist")
+            .should("exist")
+            .contains("Test Banner");
 
         cy.visit("/404");
         cy.get("[data-testid=communicationBanner]")
-            .should("not.exist")
+            .should("exist")
+            .contains("Test Banner");
     });
 
-    it("InApp Banner Authenticated", () => {    
+    it("InApp Banner Authenticated", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
         cy.checkTimelineHasLoaded();
-
 
         cy.get("[data-testid=communicationBanner]")
             .should("exist")
@@ -57,12 +60,12 @@ describe("Communication", () => {
         cy.get("[data-testid=communicationBanner]")
             .should("exist")
             .contains("In-App Banner");
-            
+
         cy.visit("/healthInsights");
         cy.get("[data-testid=communicationBanner]")
             .should("exist")
             .contains("In-App Banner");
-    
+
         cy.visit("/reports");
         cy.get("[data-testid=communicationBanner]")
             .should("exist")
@@ -73,5 +76,4 @@ describe("Communication", () => {
             .should("exist")
             .contains("In-App Banner");
     });
-
 });
