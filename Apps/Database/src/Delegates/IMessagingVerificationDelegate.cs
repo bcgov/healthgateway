@@ -17,7 +17,9 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
 
     /// <summary>
     /// Delegate that performs operations for the MessageVerification model.
@@ -65,5 +67,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="messageVerification">The message verification to expire.</param>
         /// <param name="markDeleted">Mark the verification as deleted.</param>
         void Expire(MessagingVerification messageVerification, bool markDeleted);
+
+        /// <summary>
+        /// Retrieves a list of message verifications matching the query.
+        /// </summary>
+        /// <param name="queryType">The type of query to perform.</param>
+        /// <param name="queryString">The value to query on.</param>
+        /// <returns>A list of users matching the query.</returns>
+        DBResult<IEnumerable<MessagingVerification>> GetUserMessageVerifications(UserQueryType queryType, string queryString);
     }
 }

@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Controllers
 {
+    using HealthGateway.Admin.Constants;
     using HealthGateway.Admin.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -102,6 +103,22 @@ namespace HealthGateway.Admin.Controllers
         public IActionResult GetRecurringUsersCount(int days, string startPeriod, string endPeriod, int timeOffset)
         {
             return new JsonResult(this.dashboardService.GetRecurrentUserCount(days, startPeriod, endPeriod, timeOffset));
+        }
+
+        /// <summary>
+        /// Retrieves a list Message Verifications matching the query.
+        /// </summary>
+        /// <param name="queryType">The type of query to perform.</param>
+        /// <param name="queryString">The value to query on.</param>
+        /// <returns>A list of users matching the query.</returns>
+        /// <response code="200">Returns the list of users matching the query.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("Users")]
+        public IActionResult GetMessageVerifications(UserQueryType queryType, string queryString)
+        {
+            return new JsonResult(this.dashboardService.GetMessageVerifications(queryType, queryString));
         }
     }
 }

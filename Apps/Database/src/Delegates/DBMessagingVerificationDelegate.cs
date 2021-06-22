@@ -22,8 +22,8 @@ namespace HealthGateway.Database.Delegates
     using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
-    using HealthGateway.Database.Migrations;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
@@ -111,7 +111,7 @@ namespace HealthGateway.Database.Delegates
             MessagingVerification? retVal = this.dbContext
                 .MessagingVerification
                 .Include(email => email.Email)
-                .Where(p => p.HdId == hdid && p.VerificationType == messagingVerificationType)
+                .Where(p => p.UserProfileId == hdid && p.VerificationType == messagingVerificationType)
                 .OrderByDescending(p => p.UpdatedDateTime)
                 .FirstOrDefault();
 
@@ -132,6 +132,36 @@ namespace HealthGateway.Database.Delegates
             this.Update(messageVerification);
 
             this.logger.LogDebug("Finished Expiring messaging verification from DB.");
+        }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<MessagingVerification>> GetUserMessageVerifications(UserQueryType queryType, string queryString)
+        {
+            IQueryable<MessagingVerification> query;
+            switch (queryType)
+            {
+                case UserQueryType.Email:
+                    query = this.dbContext.MessagingVerification.Where(mv => mv.Email != null && EF.Functions.ILike(mv.Email.To, $"%{queryString}%"))
+                                                                .Include(mv => mv.Email);
+                    break;
+                case UserQueryType.HDID:
+                    query = this.dbContext.MessagingVerification.Where(mv => mv.UserProfileId == queryString);
+                    break;
+                case UserQueryType.SMS:
+                    query = this.dbContext.MessagingVerification.Where(mv => mv.SMSNumber != null && EF.Functions.ILike(mv.SMSNumber, $"%{queryString}%"));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(queryType), "Query Type is invalid");
+            }
+
+            IList<MessagingVerification> verifications = query.OrderByDescending(mv => mv.CreatedDateTime).AsNoTracking().ToList();
+            DBResult<IEnumerable<MessagingVerification>> result = new ()
+            {
+                Payload = verifications,
+                Status = DBStatusCode.Read,
+            };
+
+            return result;
         }
     }
 }

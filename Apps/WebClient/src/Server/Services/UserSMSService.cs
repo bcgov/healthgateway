@@ -70,7 +70,7 @@ namespace HealthGateway.WebClient.Services
             MessagingVerification? smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
 
             if (smsVerification != null &&
-                smsVerification.HdId == hdid &&
+                smsVerification.UserProfileId == hdid &&
                 !smsVerification.Validated &&
                 !smsVerification.Deleted &&
                 smsVerification.VerificationAttempts < MaxVerificationAttempts &&
@@ -170,7 +170,7 @@ namespace HealthGateway.WebClient.Services
             this.logger.LogInformation($"Sending new sms verification for user ${hdid}");
             MessagingVerification messagingVerification = new ()
             {
-                HdId = hdid,
+                UserProfileId = hdid,
                 SMSNumber = sms,
                 SMSValidationCode = CreateVerificationCode(),
                 VerificationType = MessagingVerificationType.SMS,
