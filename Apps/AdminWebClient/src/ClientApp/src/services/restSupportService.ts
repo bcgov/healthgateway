@@ -8,7 +8,7 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestSupportService implements ISupportService {
-    private readonly BASE_URI: string = "v1/api/Users";
+    private readonly BASE_URI: string = "v1/api/Support";
     private http!: IHttpDelegate;
 
     public initialize(http: IHttpDelegate): void {
@@ -22,7 +22,7 @@ export class RestSupportService implements ISupportService {
         return new Promise((resolve, reject) => {
             this.http
                 .get<RequestResult<MessageVerification[]>>(
-                    `${this.BASE_URI}?queryType=${type}&queryString=${query}`
+                    `${this.BASE_URI}/Users?queryType=${type}&queryString=${query}`
                 )
                 .then((requestResult) => {
                     console.debug(`getMessageVerifications ${requestResult}`);

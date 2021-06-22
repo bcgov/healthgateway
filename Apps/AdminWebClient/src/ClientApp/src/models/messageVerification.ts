@@ -1,20 +1,32 @@
-export const enum MessagingVerificationType {
+export const enum VerificationType {
     Email = "Email",
     SMS = "SMS",
 }
 
-// Model that provides a user representation of admin communications.
 export default interface MessageVerification {
     id: string;
-    hdId: string;
+    userProfileId: string;
     validated: boolean;
     emailId?: string;
-    //email : Email? ;
+    email: Email | null;
     inviteKey: string;
-    verificationType: string;
-    SMSNumber?: string;
-    SMSValidationCode?: string;
+    verificationType: VerificationType;
+    smsNumber: string | null;
+    smsValidationCode: string;
     expireDate: string;
     verificationAttempts: number;
     deleted: boolean;
+    updatedDateTime: string;
+}
+
+export interface Email {
+    id: string;
+    from: string;
+    to: string;
+    subject: string;
+    body: string;
+    sentDateTime: string;
+    lastRetryDateTime?: string;
+    attempts: number;
+    smtpStatusCode: number;
 }

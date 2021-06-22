@@ -5,7 +5,6 @@ import AuthenticationData from "@/models/authenticationData";
 import Email from "@/models/email";
 import ExternalConfiguration from "@/models/externalConfiguration";
 import MessageVerification from "@/models/messageVerification";
-import RequestResult from "@/models/requestResult";
 import UserFeedback, { AdminTag, UserFeedbackTag } from "@/models/userFeedback";
 import { QueryType } from "@/models/userQuery";
 

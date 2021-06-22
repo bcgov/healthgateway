@@ -24,6 +24,26 @@
             Invited and validated status.
             </summary>
         </member>
+        <member name="T:HealthGateway.Admin.Constants.UserQueryType">
+            <summary>
+            Represents the type of query being performed.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Admin.Constants.UserQueryType.PHN">
+            <summary>
+            Query by the Personal Health Number.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Admin.Constants.UserQueryType.Email">
+            <summary>
+            Query by the Email.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Admin.Constants.UserQueryType.SMS">
+            <summary>
+            Query by the SMS Phone number.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Admin.Controllers.AuthenticationController">
             <summary>
             The Authentication and Authorization controller.
@@ -265,6 +285,28 @@
             <param name="emailIds">The email Ids to resend.</param>
             <response code="200">Successfully queued all emails.</response>
             <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="T:HealthGateway.Admin.Controllers.SupportController">
+            <summary>
+            Web API to handle user feedback review.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.SupportController.#ctor(HealthGateway.Admin.Services.IDashboardService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.SupportController"/> class.
+            </summary>
+            <param name="dashboardService">The injected dashboard service.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.SupportController.GetMessageVerifications(HealthGateway.Admin.Constants.UserQueryType,System.String)">
+            <summary>
+            Retrieves a list Message Verifications matching the query.
+            </summary>
+            <param name="queryType">The type of query to perform.</param>
+            <param name="queryString">The value to query on.</param>
+            <returns>A list of users matching the query.</returns>
+            <response code="200">Returns the list of users matching the query.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
         <member name="T:HealthGateway.Admin.Controllers.TagController">
@@ -966,12 +1008,14 @@
         <member name="T:HealthGateway.Admin.Services.DashboardService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.DashboardService.#ctor(HealthGateway.Database.Delegates.IResourceDelegateDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate)">
+        <member name="M:HealthGateway.Admin.Services.DashboardService.#ctor(HealthGateway.Database.Delegates.IResourceDelegateDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,HealthGateway.Database.Delegates.IMessagingVerificationDelegate,HealthGateway.Common.Services.IPatientService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.DashboardService"/> class.
             </summary>
             <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
             <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
+            <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
+            <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
         </member>
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetDailyRegisteredUsersCount(System.Int32)">
             <inheritdoc />
@@ -983,6 +1027,9 @@
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetRecurrentUserCount(System.Int32,System.String,System.String,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.DashboardService.GetMessageVerifications(HealthGateway.Admin.Constants.UserQueryType,System.String)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.Admin.Services.EmailAdminService">
@@ -1140,6 +1187,14 @@
             <param name="endPeriod">The period end over which to evaluate the user.</param>
             <param name="timeOffset">The offset from the client browser to UTC.</param>
             <returns>The count of recurrent users.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IDashboardService.GetMessageVerifications(HealthGateway.Admin.Constants.UserQueryType,System.String)">
+            <summary>
+            Retrieves a list of message verifications matching the query.
+            </summary>
+            <param name="queryType">The type of query to perform.</param>
+            <param name="queryString">The value to query on.</param>
+            <returns>A list of users matching the query.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Services.IEmailAdminService">
             <summary>

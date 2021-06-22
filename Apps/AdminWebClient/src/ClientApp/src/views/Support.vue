@@ -1,4 +1,5 @@
 <script lang="ts">
+import moment from "moment";
 import { Component, Vue } from "vue-property-decorator";
 
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
@@ -6,11 +7,24 @@ import CommunicationTable from "@/components/core/CommunicationTable.vue";
 import LoadingComponent from "@/components/core/Loading.vue";
 import { ResultType } from "@/constants/resulttype";
 import BannerFeedback from "@/models/bannerFeedback";
-import Email from "@/models/email";
+import MessageVerification, {
+    VerificationType,
+} from "@/models/messageVerification";
 import { QueryType } from "@/models/userQuery";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ISupportService } from "@/services/interfaces";
+
+interface UserSearchRow {
+    hdid: string;
+    email: string;
+    emailVerified: string;
+    emailVerificationDate: string;
+    sms: string;
+    smsVerified: string;
+    smsVerificationCode: string;
+    smsVerificationDate: string;
+}
 
 @Component({
     components: {
@@ -28,46 +42,108 @@ export default class SupportView extends Vue {
         message: "",
     };
 
+    private searchText = "";
+    private selectedQueryType: QueryType | null = null;
+
     private tableHeaders = [
         {
-            text: "Subject",
-            value: "subject",
+            text: "HDID",
+            value: "hdid",
         },
         {
-            text: "Status",
-            value: "emailStatusCode",
+            text: "Email",
+            value: "email",
         },
         {
-            text: "Date",
-            value: "sentDateTime",
+            text: "Email Verified",
+            value: "emailVerified",
         },
-        { text: "Email", value: "to" },
-        { text: "Is Invited?", value: "userInviteStatus" },
+        {
+            text: "Email Verification Date",
+            value: "emailVerificationDate",
+        },
+        {
+            text: "SMS",
+            value: "sms",
+        },
+        {
+            text: "SMS Verified",
+            value: "smsVerified",
+        },
+        {
+            text: "SMS Verification Code",
+            value: "smsVerificationCode",
+        },
+        {
+            text: "SMS Verification Date",
+            value: "smsVerificationDate",
+        },
     ];
 
-    private selectedEmails: Email[] = [];
-    private emailList: Email[] = [];
-
-    private filterText = "";
+    private emailList: MessageVerification[] = [];
 
     private supportService!: ISupportService;
 
+    private get queryTypes(): string[] {
+        return Object.keys(QueryType).filter((x) => isNaN(Number(x)) !== false);
+    }
+
+    private get userInfo(): UserSearchRow[] {
+        return this.emailList.map<UserSearchRow>((x) => {
+            if (x.verificationType === VerificationType.Email) {
+                return {
+                    hdid: x.userProfileId,
+                    email: x.email !== null ? x.email.to : "N/A",
+                    emailVerified: x.validated ? "true" : "false",
+                    emailVerificationDate: this.formatDate(x.updatedDateTime),
+                    sms: "-",
+                    smsVerified: "-",
+                    smsVerificationCode: "-",
+                    smsVerificationDate: "-",
+                };
+            } else {
+                return {
+                    hdid: x.userProfileId,
+                    email: "-",
+                    emailVerified: "-",
+                    emailVerificationDate: "-",
+                    sms: x.smsNumber !== null ? x.smsNumber : "N/A",
+                    smsVerified: x.validated ? "true" : "false",
+                    smsVerificationCode: x.smsValidationCode,
+                    smsVerificationDate: this.formatDate(x.updatedDateTime),
+                };
+            }
+        });
+    }
+
     private mounted() {
         this.supportService = container.get(SERVICE_IDENTIFIER.SupportService);
-
-        this.supportService.getMessageVerifications(QueryType.Email, "marobej");
     }
 
-    private shouldShowFeedback(show: boolean) {
-        this.showFeedback = show;
+    private formatDate(date: string): string {
+        return moment(date).format("l LT");
     }
 
-    private isFinishedLoading(loading: boolean) {
-        this.isLoading = loading;
-    }
-
-    private bannerFeedbackInfo(banner: BannerFeedback) {
-        this.bannerFeedback = banner;
+    private handleSearch() {
+        if (this.selectedQueryType !== null) {
+            this.supportService
+                .getMessageVerifications(
+                    this.selectedQueryType,
+                    this.searchText
+                )
+                .then((result) => {
+                    this.emailList = result;
+                })
+                .catch((err) => {
+                    this.showFeedback = true;
+                    this.bannerFeedback = {
+                        type: ResultType.Error,
+                        title: "Error:" + err.errorCode,
+                        message: "Message: " + err.resultMessage,
+                    };
+                    console.log(err);
+                });
+        }
     }
 }
 </script>
@@ -81,40 +157,39 @@ export default class SupportView extends Vue {
             class="mt-5"
         ></BannerFeedbackComponent>
         <v-row justify="center">
-            <v-col md="9">
-                <v-text-field
-                    v-model="filterText"
-                    label="Filter"
-                    hide-details="auto"
-                >
-                    <v-icon slot="append">fas fa-search</v-icon>
+            <v-col cols="2">
+                <v-combobox
+                    v-model="selectedQueryType"
+                    :items="queryTypes"
+                    label="Query Type"
+                    outlined
+                ></v-combobox
+            ></v-col>
+            <v-col>
+                <v-text-field v-model="searchText" label="Search Query">
                 </v-text-field>
+            </v-col>
+            <v-col>
+                <v-btn class="mt-2" @click="handleSearch()">
+                    Search
+                    <v-icon class="ml-2" size="sm">fas fa-search</v-icon>
+                </v-btn>
             </v-col>
         </v-row>
         <v-row justify="center">
-            <v-col md="9">
+            <v-col>
                 <v-row>
                     <v-col no-gutters>
                         <v-data-table
-                            v-model="selectedEmails"
                             :headers="tableHeaders"
-                            :items="emailList"
+                            :items="userInfo"
                             :items-per-page="5"
-                            show-select
-                            :search="filterText"
                         >
                             <template #:item.sentDateTime="{ item }">
                                 <span>{{ formatDate(item.sentDateTime) }}</span>
                             </template>
                         </v-data-table>
                     </v-col>
-                </v-row>
-                <v-row justify="end" no-gutters>
-                    <v-btn
-                        :disabled="selectedEmails.length === 0"
-                        @click="resendEmails()"
-                        >Resend Emails</v-btn
-                    >
                 </v-row>
             </v-col>
         </v-row>
