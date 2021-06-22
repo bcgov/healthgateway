@@ -37,7 +37,7 @@ describe("Communication", () => {
             .contains("Test Banner");
     });
 
-    it("InApp Banner Authenticated", () => {
+    it("InApp Banner", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
