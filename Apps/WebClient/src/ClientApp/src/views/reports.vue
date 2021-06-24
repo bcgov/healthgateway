@@ -21,6 +21,7 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationSummary from "@/models/medicationSummary";
 import PatientData from "@/models/patientData";
 import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
+import SnowPlow from "@/utility/snowPlow";
 
 @Component({
     components: {
@@ -175,6 +176,11 @@ export default class ReportsView extends Vue {
     private downloadPdf() {
         this.isGeneratingReport = true;
         let generatePromise: Promise<void>;
+
+        SnowPlow.trackEvent({
+            action: "download_report",
+            text: `${this.reportType} Report`,
+        });
         switch (this.reportType) {
             case "MED":
                 generatePromise = this.medicationHistoryReport.generatePdf();

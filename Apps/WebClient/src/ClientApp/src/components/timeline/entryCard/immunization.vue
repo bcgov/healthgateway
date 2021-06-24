@@ -9,6 +9,8 @@ import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 
 library.add(faIdCard, faSyringe);
 
+import SnowPlow from "@/utility/snowPlow";
+
 import EntrycardTimelineComponent from "./entrycard.vue";
 
 @Component({
@@ -31,6 +33,10 @@ export default class ImmunizationTimelineComponent extends Vue {
     }
 
     private showCard(): void {
+        SnowPlow.trackEvent({
+            action: "view_card",
+            text: "COVID Card",
+        });
         this.eventBus.$emit(EventMessageName.TimelineCovidCard);
     }
 }
