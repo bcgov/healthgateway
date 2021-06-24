@@ -10,7 +10,7 @@ export default abstract class RequestResultUtil {
         if (requestResult.resultStatus === ResultType.Success) {
             resolve(requestResult.resourcePayload);
         } else {
-            reject(requestResult.resultMessage);
+            reject(requestResult.resultError);
         }
     }
 }

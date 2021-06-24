@@ -96,6 +96,37 @@ INSERT INTO gateway."Communication"(
 	null
 );
 
+/* In-App Communication Banner */
+INSERT INTO gateway."Communication"(
+	"CommunicationId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Text", 
+	"Subject", 
+	"EffectiveDateTime", 
+	"ExpiryDateTime", 
+	"CommunicationStatusCode", 
+	"CommunicationTypeCode", 
+	"Priority", 
+	"ScheduledDateTime"
+) VALUES (
+	'f3ce0b06-9372-495f-baff-784c38b09481',	
+	'System',
+	current_timestamp,	
+	'System',
+	current_timestamp,	
+	'<p>In-App Banner - <a href="healthgateway@gov.bc.ca" rel="noopener noreferrer nofollow">healthgateway@gov.bc.ca</a></p>',
+	'In-App Banner',
+	current_timestamp,
+	current_timestamp + INTERVAL '1 day',
+	'New',
+	'InApp',
+	10,
+	null
+);
+
 /* User Preferences */
 INSERT INTO gateway."UserPreference"(
 	"UserProfileId", 

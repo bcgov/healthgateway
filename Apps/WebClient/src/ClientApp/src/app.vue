@@ -63,6 +63,7 @@ import { Component, Ref, Watch } from "vue-property-decorator";
 import VueTheMask from "vue-the-mask";
 import { Action, Getter } from "vuex-class";
 
+import CommunicationComponent from "@/components/communication.vue";
 import ErrorCard from "@/components/errorCard.vue";
 import IdleComponent from "@/components/modal/idle.vue";
 import FooterComponent from "@/components/navmenu/navFooter.vue";
@@ -85,6 +86,7 @@ const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         NavSidebar: SidebarComponent,
         ErrorCard: ErrorCard,
         IdleComponent,
+        CommunicationComponent,
         "immunization-modal-card": ImmunizationCardComponent,
     },
 })
@@ -161,6 +163,7 @@ export default class App extends Vue {
         <b-row>
             <NavSidebar class="no-print sticky-top vh-100" />
             <main class="col fill-height d-flex flex-column">
+                <CommunicationComponent />
                 <ErrorCard
                     title="Whoops!"
                     description="An error occurred."

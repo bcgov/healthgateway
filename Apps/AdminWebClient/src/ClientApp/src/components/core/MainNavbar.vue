@@ -68,6 +68,12 @@ export default class MainNavbar extends Vue {
                 to: "/admin-email",
                 visible: this.isUserAdmin,
             },
+            {
+                title: "Support",
+                icon: "support",
+                to: "/support",
+                visible: this.isUserAdmin,
+            },
         ];
     }
 

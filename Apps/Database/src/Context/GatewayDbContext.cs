@@ -697,6 +697,21 @@ namespace HealthGateway.Database.Context
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new EmailTemplate
+                {
+                    Id = Guid.Parse("75c79b3e-1a61-403b-82ee-fddcda7144af"),
+                    Name = "AdminFeedback",
+                    From = "HG_Donotreply@gov.bc.ca",
+                    Subject = "Health Gateway Feedback Received",
+                    Body = ReadResource("HealthGateway.Database.Assets.docs.AdminFeedback.html"),
+                    Priority = EmailPriority.Low,
+                    EffectiveDate = this.DefaultSeedDate,
+                    FormatCode = EmailFormat.HTML,
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
                 });
         }
 
@@ -831,6 +846,15 @@ namespace HealthGateway.Database.Context
                 {
                     StatusCode = CommunicationType.Email,
                     Description = "Email communication type",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommunicationTypeCode
+                {
+                    StatusCode = CommunicationType.InApp,
+                    Description = "In-App communication type",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,

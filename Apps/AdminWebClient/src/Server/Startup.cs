@@ -43,6 +43,7 @@ namespace HealthGateway.AdminWebClient
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
+        private readonly IWebHostEnvironment environment;
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
 
@@ -55,6 +56,7 @@ namespace HealthGateway.AdminWebClient
         {
             this.startupConfig = new StartupConfiguration(configuration, env);
             this.logger = this.startupConfig.Logger;
+            this.environment = env;
             this.configuration = configuration;
         }
 
@@ -72,9 +74,10 @@ namespace HealthGateway.AdminWebClient
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuditServices(services);
-            this.ConfigureAuthenticationService(services);
+            this.ConfigureAdminAuthenticationService(services);
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureHangfireQueue(services);
+            this.startupConfig.ConfigurePatientAccess(services);
 
             // Add services
             services.AddTransient<IConfigurationService, ConfigurationService>();
@@ -167,10 +170,11 @@ namespace HealthGateway.AdminWebClient
         /// This sets up the OIDC authentication for Hangfire.
         /// </summary>
         /// <param name="services">The passed in IServiceCollection.</param>
-        private void ConfigureAuthenticationService(IServiceCollection services)
+        private void ConfigureAdminAuthenticationService(IServiceCollection services)
         {
             string basePath = this.GetBasePath();
-            services.AddAuthentication(options =>
+
+            Microsoft.AspNetCore.Authentication.AuthenticationBuilder builder = services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -181,9 +185,23 @@ namespace HealthGateway.AdminWebClient
                 options.Cookie.Name = AuthorizationConstants.CookieName;
                 options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
                 options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
-            })
-            .AddOpenIdConnect(options =>
+            });
+
+            this.ConfigureOpenId(builder);
+        }
+
+        private void ConfigureOpenId(Microsoft.AspNetCore.Authentication.AuthenticationBuilder services)
+        {
+            services.AddOpenIdConnect(options =>
             {
+                // Allows http://localhost to work on Chromium and Edge.
+                if (this.environment.IsDevelopment())
+                {
+                    options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                    options.CorrelationCookie.SameSite = SameSiteMode.Unspecified;
+                    options.NonceCookie.SameSite = SameSiteMode.Unspecified;
+                }
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,

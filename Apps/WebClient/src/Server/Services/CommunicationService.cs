@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using System;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -29,6 +30,7 @@ namespace HealthGateway.WebClient.Services
     public class CommunicationService : ICommunicationService
     {
         private const string BannerCacheKey = "BannerCacheKey";
+        private const string InAppCacheKey = "InAppCacheKey";
 
         private readonly ILogger logger;
         private readonly ICommunicationDelegate communicationDelegate;
@@ -48,26 +50,36 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<Communication> GetActiveBanner()
+        public RequestResult<Communication> GetActiveBanner(CommunicationType communicationType)
         {
-            RequestResult<Communication> cacheEntry;
-
-            if (!this.memoryCache.TryGetValue(BannerCacheKey, out cacheEntry))
+            if (communicationType != CommunicationType.Banner && communicationType != CommunicationType.InApp)
             {
-                this.logger.LogInformation("Active Banner not found in cache, getting from DB...");
-                DBResult<Communication> dbComm = this.communicationDelegate.GetActiveBanner();
-                cacheEntry = new RequestResult<Communication>()
-                {
-                    ResourcePayload = dbComm.Payload,
-                    ResultStatus = dbComm.Status == DBStatusCode.Read ? Common.Constants.ResultType.Success : ResultType.Error,
-                    ResultError = dbComm.Status == DBStatusCode.Read ? null : new RequestResultError()
-                    {
-                        ResultMessage = dbComm.Message,
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                    },
-                };
+                throw new ArgumentOutOfRangeException(nameof(communicationType), "Communiction Type must be Banner or InApp");
+            }
 
-                this.SetActiveBannerCache(cacheEntry);
+            RequestResult<Communication>? cacheEntry = this.GetBannerCache(communicationType);
+            if (cacheEntry == null)
+            {
+                this.logger.LogInformation("Active Communication not found in cache, getting from DB...");
+                cacheEntry = new ();
+                DBResult<Communication> dbResult = this.communicationDelegate.GetActiveBanner(communicationType);
+                if (dbResult.Status == DBStatusCode.Read || dbResult.Status == DBStatusCode.NotFound)
+                {
+                    cacheEntry.ResourcePayload = dbResult.Payload;
+                    cacheEntry.ResultStatus = ResultType.Success;
+                    cacheEntry.TotalResultCount = dbResult.Status == DBStatusCode.Read ? 1 : 0;
+                    this.AddBannerCache(cacheEntry, communicationType);
+                }
+                else
+                {
+                    this.logger.LogInformation($"Error getting Communication from DB {dbResult.Message}");
+                    cacheEntry.ResultStatus = ResultType.Error;
+                    cacheEntry.ResultError = new ()
+                    {
+                        ResultMessage = dbResult.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    };
+                }
             }
             else
             {
@@ -78,10 +90,25 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public void SetActiveBannerCache(RequestResult<Communication> cacheEntry)
+        public void RemoveBannerCache(CommunicationType cacheType)
         {
-            MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions();
-            if (cacheEntry.ResultStatus == Common.Constants.ResultType.Success &&
+            string cacheKey = cacheType == CommunicationType.Banner ? BannerCacheKey : InAppCacheKey;
+            this.memoryCache.Remove(cacheKey);
+        }
+
+        /// <inheritdoc />
+        public RequestResult<Communication>? GetBannerCache(CommunicationType cacheType)
+        {
+            string cacheKey = cacheType == CommunicationType.Banner ? BannerCacheKey : InAppCacheKey;
+            this.memoryCache.TryGetValue(cacheKey, out RequestResult<Communication> cacheEntry);
+            return cacheEntry;
+        }
+
+        /// <inheritdoc />
+        public void AddBannerCache(RequestResult<Communication> cacheEntry, CommunicationType cacheType)
+        {
+            MemoryCacheEntryOptions cacheEntryOptions = new ();
+            if (cacheEntry.ResultStatus == ResultType.Success &&
                 cacheEntry.ResourcePayload != null)
             {
                 this.logger.LogInformation($"Active Banner found, setting expiration to {cacheEntry.ResourcePayload.ExpiryDateTime}");
@@ -92,7 +119,8 @@ namespace HealthGateway.WebClient.Services
                 this.logger.LogInformation($"No Active Banner found, caching empty result indefinitely");
             }
 
-            this.memoryCache.Set(BannerCacheKey, cacheEntry, cacheEntryOptions);
+            string cacheKey = cacheType == CommunicationType.Banner ? BannerCacheKey : InAppCacheKey;
+            this.memoryCache.Set(cacheKey, cacheEntry, cacheEntryOptions);
         }
     }
 }

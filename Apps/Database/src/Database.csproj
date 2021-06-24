@@ -43,11 +43,13 @@
     <EmbeddedResource Include="Assets\docs\EmailAccountRecovered.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20200317.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20201224.html" />
+    <EmbeddedResource Include="Assets\docs\AdminFeedback.html" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\Legal\TermsOfService.20191206.html" />
     <None Remove="Assets\Legal\TermsOfService.20200317.html" />
     <None Remove="Assets\Legal\TermsOfService.20200511.html" />
     <None Remove="Assets\Legal\TermsOfService.20201224.html" />
+    <None Remove="Assets\docs\EmailAccountClosed %28copy%29.html" />
   </ItemGroup>
 </Project>

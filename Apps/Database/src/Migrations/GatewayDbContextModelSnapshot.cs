@@ -18,7 +18,7 @@ namespace HealthGateway.Database.Migrations
             modelBuilder
                 .HasDefaultSchema("gateway")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.6")
+                .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.HasSequence("gateway.trace_seq")
@@ -813,6 +813,16 @@ namespace HealthGateway.Database.Migrations
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
+                        },
+                        new
+                        {
+                            StatusCode = "InApp",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "In-App communication type",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
                         });
                 });
 
@@ -1383,6 +1393,22 @@ namespace HealthGateway.Database.Migrations
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
+                        },
+                        new
+                        {
+                            Id = new Guid("75c79b3e-1a61-403b-82ee-fddcda7144af"),
+                            Body = "<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n        <title>Health Gateway Feedback</title>\n    </head>\n    <body style=\"margin: 0\">\n        <strong>Hi Health Gateway Team,</strong>\n        <p>Feedback/Question received: </p>\n        <p>${feedback}</p>\n    </body>\n</html>\n",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FormatCode = "HTML",
+                            From = "HG_Donotreply@gov.bc.ca",
+                            Name = "AdminFeedback",
+                            Priority = 1,
+                            Subject = "Health Gateway Feedback Received",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
                         });
                 });
 
@@ -1773,10 +1799,6 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("ExpireDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("HdId")
-                        .HasMaxLength(52)
-                        .HasColumnType("character varying(52)");
-
                     b.Property<Guid>("InviteKey")
                         .HasColumnType("uuid");
 
@@ -1795,6 +1817,11 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UserProfileId")
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)")
+                        .HasColumnName("HdId");
 
                     b.Property<bool>("Validated")
                         .HasColumnType("boolean");
@@ -1816,6 +1843,8 @@ namespace HealthGateway.Database.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EmailId");
+
+                    b.HasIndex("UserProfileId");
 
                     b.HasIndex("VerificationType");
 
@@ -3534,6 +3563,10 @@ namespace HealthGateway.Database.Migrations
                         .WithMany()
                         .HasForeignKey("EmailId");
 
+                    b.HasOne("HealthGateway.Database.Models.UserProfile", null)
+                        .WithMany("Verifications")
+                        .HasForeignKey("UserProfileId");
+
                     b.HasOne("HealthGateway.Database.Models.MessagingVerificationTypeCode", null)
                         .WithMany()
                         .HasForeignKey("VerificationType")
@@ -3711,6 +3744,11 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.UserFeedback", b =>
                 {
                     b.Navigation("Tags");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.UserProfile", b =>
+                {
+                    b.Navigation("Verifications");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.WalletConnection", b =>

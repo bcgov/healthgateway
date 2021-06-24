@@ -17,6 +17,8 @@ namespace HealthGateway.Admin.Services
 {
     using System;
     using System.Collections.Generic;
+    using HealthGateway.Admin.Constants;
+    using HealthGateway.Common.Models;
 
     /// <summary>
     /// Service that provides functionality to the admin dashboard.
@@ -53,5 +55,13 @@ namespace HealthGateway.Admin.Services
         /// <param name="timeOffset">The offset from the client browser to UTC.</param>
         /// <returns>The count of recurrent users.</returns>
         int GetRecurrentUserCount(int dayCount, string startPeriod, string endPeriod, int timeOffset);
+
+        /// <summary>
+        /// Retrieves a list of message verifications matching the query.
+        /// </summary>
+        /// <param name="queryType">The type of query to perform.</param>
+        /// <param name="queryString">The value to query on.</param>
+        /// <returns>A list of users matching the query.</returns>
+        RequestResult<IEnumerable<Database.Models.MessagingVerification>> GetMessageVerifications(UserQueryType queryType, string queryString);
     }
 }

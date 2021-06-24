@@ -12,12 +12,14 @@ import {
     IDashboardService,
     IEmailAdminService,
     IHttpDelegate,
+    ISupportService,
     IUserFeedbackService,
 } from "@/services/interfaces";
 import { RestAuthenticationService } from "@/services/restAuthenticationService";
 import { RestCommunicationService } from "@/services/restCommunicationService";
 import { RestConfigService } from "@/services/restConfigService";
 import { RestEmailAdminService } from "@/services/restEmailAdminService";
+import { RestSupportService } from "@/services/restSupportService";
 import { RestUserFeedbackService } from "@/services/restUserFeedbackService";
 
 const container = new Container();
@@ -44,6 +46,10 @@ container
 container
     .bind<ICommunicationService>(SERVICE_IDENTIFIER.CommunicationService)
     .to(RestCommunicationService)
+    .inSingletonScope();
+container
+    .bind<ISupportService>(SERVICE_IDENTIFIER.SupportService)
+    .to(RestSupportService)
     .inSingletonScope();
 container
     .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)

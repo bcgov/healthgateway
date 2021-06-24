@@ -28,15 +28,17 @@ const credentialGetters: CredentialGetters = {
     connection(): WalletConnection | undefined {
         return undefined;
     },
-    credentials(): WalletCredential[] {
+    credentials(): WalletCredential[] | null {
         return [];
+    },
+    isLoading(): boolean {
+        return false;
     },
 };
 
 const credentialMutations: CredentialMutation = {
     setRequested: voidMethod,
     setConnection: voidMethod,
-    setCredentials: voidMethod,
     credentialError: voidMethod,
 };
 

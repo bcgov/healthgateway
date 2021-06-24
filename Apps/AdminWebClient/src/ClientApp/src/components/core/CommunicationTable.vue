@@ -24,6 +24,7 @@ import { ICommunicationService } from "@/services/interfaces";
 export default class CommunicationTable extends Vue {
     private communicationList: Communication[] = [];
     private bannerList: Communication[] = [];
+    private inAppList: Communication[] = [];
     private emailList: Communication[] = [];
     private communicationService!: ICommunicationService;
     private isLoading = false;
@@ -33,7 +34,7 @@ export default class CommunicationTable extends Vue {
         title: "",
         message: "",
     };
-    // 0: Banners, 1: Emails
+    // 0: Banners, 1: In-App, 2: Emails
     private tab = 0;
     private isNewCommunication = true;
     private headers: DataTableHeader[] = [];
@@ -42,6 +43,19 @@ export default class CommunicationTable extends Vue {
         text: "",
         subject: "",
         communicationTypeCode: CommunicationType.Banner,
+        communicationStatusCode: CommunicationStatus.Draft,
+        priority: 10,
+        version: 0,
+        scheduledDateTime: moment(new Date()).toDate(),
+        effectiveDateTime: moment(new Date()).toDate(),
+        expiryDateTime: moment(new Date()).add(1, "days").toDate(),
+    };
+
+    private editedInApp: Communication = {
+        id: "-1",
+        text: "",
+        subject: "",
+        communicationTypeCode: CommunicationType.InApp,
         communicationStatusCode: CommunicationStatus.Draft,
         priority: 10,
         version: 0,
@@ -76,6 +90,19 @@ export default class CommunicationTable extends Vue {
         expiryDateTime: moment(new Date()).add(1, "days").toDate(),
     };
 
+    private defaultInApp: Communication = {
+        id: "-1",
+        text: "",
+        subject: "",
+        communicationTypeCode: CommunicationType.InApp,
+        communicationStatusCode: CommunicationStatus.Draft,
+        version: 0,
+        priority: 10,
+        scheduledDateTime: moment(new Date()).toDate(),
+        effectiveDateTime: moment(new Date()).toDate(),
+        expiryDateTime: moment(new Date()).add(1, "days").toDate(),
+    };
+
     private defaultEmail: Communication = {
         id: "-1",
         subject: "",
@@ -102,6 +129,10 @@ export default class CommunicationTable extends Vue {
         if (tabIndex === 0) {
             // Banners
             this.communicationList = this.bannerList;
+            this.headers = this.bannerHeaders;
+        } else if (tabIndex === 1) {
+            // In-App
+            this.communicationList = this.inAppList;
             this.headers = this.bannerHeaders;
         } else {
             // Emails
@@ -194,6 +225,14 @@ export default class CommunicationTable extends Vue {
             this.editedEmail.scheduledDateTime = moment
                 .utc(item.scheduledDateTime)
                 .toDate();
+        } else if (item.communicationTypeCode === CommunicationType.InApp) {
+            this.editedInApp = item;
+            this.editedInApp.effectiveDateTime = moment
+                .utc(item.effectiveDateTime)
+                .toDate();
+            this.editedInApp.expiryDateTime = moment
+                .utc(item.expiryDateTime)
+                .toDate();
         } else {
             this.editedBanner = item;
             this.editedBanner.effectiveDateTime = moment
@@ -250,7 +289,10 @@ export default class CommunicationTable extends Vue {
 
     private checkDisabled(item: Communication) {
         const now = new Date();
-        if (item.communicationTypeCode === CommunicationType.Banner) {
+        if (
+            item.communicationTypeCode === CommunicationType.Banner ||
+            item.communicationTypeCode === CommunicationType.InApp
+        ) {
             const expiryDateTime = new Date(item.expiryDateTime);
             if (
                 item.communicationStatusCode != CommunicationStatus.Draft &&
@@ -295,12 +337,18 @@ export default class CommunicationTable extends Vue {
             (comm: Communication) =>
                 comm.communicationTypeCode === CommunicationType.Banner
         );
+        this.inAppList = communication.filter(
+            (comm: Communication) =>
+                comm.communicationTypeCode === CommunicationType.InApp
+        );
         this.emailList = communication.filter(
             (comm: Communication) =>
                 comm.communicationTypeCode === CommunicationType.Email
         );
         if (this.tab === 0) {
             this.communicationList = this.bannerList;
+        } else if (this.tab === 1) {
+            this.communicationList = this.inAppList;
         } else {
             this.communicationList = this.emailList;
         }
@@ -416,6 +464,7 @@ export default class CommunicationTable extends Vue {
 
     private close() {
         this.editedBanner = Object.assign({}, this.defaultBanner);
+        this.editedInApp = Object.assign({}, this.defaultInApp);
         this.editedEmail = Object.assign({}, this.defaultEmail);
         this.isNewCommunication = true;
     }
@@ -463,6 +512,7 @@ export default class CommunicationTable extends Vue {
             <v-toolbar dark>
                 <v-tabs v-model="tab" dark>
                     <v-tab> Banner Posts </v-tab>
+                    <v-tab> In-App </v-tab>
                     <v-tab> Emails </v-tab>
                 </v-tabs>
                 <v-spacer></v-spacer>
@@ -470,12 +520,22 @@ export default class CommunicationTable extends Vue {
                     v-if="tab == 0"
                     :edited-item="editedBanner"
                     :is-new="isNewCommunication"
+                    :is-in-app="false"
+                    @emit-add="add"
+                    @emit-update="update"
+                    @emit-close="close"
+                />
+                <BannerModal
+                    v-if="tab == 1"
+                    :edited-item="editedInApp"
+                    :is-new="isNewCommunication"
+                    :is-in-app="true"
                     @emit-add="add"
                     @emit-update="update"
                     @emit-close="close"
                 />
                 <EmailModal
-                    v-if="tab == 1"
+                    v-if="tab == 2"
                     :edited-item="editedEmail"
                     :is-new="isNewCommunication"
                     @emit-send="add"
