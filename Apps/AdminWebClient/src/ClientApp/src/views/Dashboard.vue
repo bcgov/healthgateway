@@ -22,6 +22,7 @@ export default class Dashboard extends Vue {
     private isLoadingLoggedIn = true;
     private isLoadingDependent = true;
     private isLoadingRecurrentCount = true;
+    private isLoadingRatings = true;
 
     private periodPickerModal = false;
 
@@ -105,6 +106,7 @@ export default class Dashboard extends Vue {
         this.getLoggedInUsersCount();
         this.getDependentCount();
         this.getRecurringUsers();
+        this.getRatings();
     }
 
     private getRegisteredUserCount() {
@@ -214,6 +216,27 @@ export default class Dashboard extends Vue {
         this.debounceTimer = setTimeout(() => {
             this.getRecurringUsers();
         }, 250);
+    }
+
+    private getRatings() {
+        this.isLoadingRatings = true;
+        this.isLoadingRecurrentCount = true;
+        var startDate = DateTime.local()
+            .minus({ years: 2 })
+            .toISO()
+            .substr(0, 10);
+        this.dashboardService
+            .getRatings(startDate, this.uniquePeriodDates[1])
+            .then((ratings) => {
+                for (let key in ratings) {
+                    var rating = key;
+                    var ratingCount = ratings[key];
+                    console.log("Rating:" + rating, ratingCount);
+                }
+            })
+            .finally(() => {
+                this.isLoadingRatings = false;
+            });
     }
 
     private formatDate(date: DateTime): string {

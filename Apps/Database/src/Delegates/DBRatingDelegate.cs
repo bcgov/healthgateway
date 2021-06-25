@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
@@ -76,6 +77,17 @@ namespace HealthGateway.Database.Delegates
                     .OrderBy(rating => rating.CreatedDateTime),
                 page,
                 pageSize);
+        }
+
+        /// <inheritdoc />
+        public IDictionary<int, int> GetSummary(DateTime startDate, DateTime endDate)
+        {
+            this.logger.LogTrace($"Retrieving the ratings summary between {startDate} and {endDate}...");
+            return this.dbContext.Rating
+                .Where(r => r.CreatedDateTime > startDate && r.CreatedDateTime < endDate && !r.Skip)
+                .GroupBy(x => x.RatingValue)
+                .Select(r => new { Value = r.Key, Count = r.Count() })
+                .ToDictionary(r => r.Value, r => r.Count);
         }
     }
 }

@@ -47,6 +47,10 @@ export interface IDashboardService {
         startPeriodDate: string,
         endPeriodDate: string
     ): Promise<number>;
+    getRatings(
+        startPeriodDate: string,
+        endPeriodDate: string
+    ): Promise<{ [key: string]: number }>;
 }
 
 export interface ICommunicationService {
