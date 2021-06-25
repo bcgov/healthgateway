@@ -17,12 +17,15 @@ import { RegistrationStatus } from "@/constants/registrationStatus";
 import { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import { SnowplowWindow } from "@/plugins/extensions";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ClientModule } from "@/router";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions } from "@/store/types";
 import ReportsView from "@/views/reports.vue";
+
+declare let window: SnowplowWindow;
 
 interface ReportComponent extends Vue {
     generatePdf(): Promise<void>;

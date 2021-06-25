@@ -20,8 +20,7 @@
     "https://www2.gov.bc.ca/StaticWebResources/static/sp/sp-2-14-0.js",
     "snowplow"
 );
-//var collector = "spt.apps.gov.bc.ca";
-var collector = "spm.apps.gov.bc.ca";
+var collector = "spt.apps.gov.bc.ca";
 window.snowplow("newTracker", "rt", collector, {
     appId: "Snowplow_standalone",
     cookieLifetime: 86400 * 548,
