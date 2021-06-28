@@ -24,6 +24,7 @@ namespace HealthGateway.WebClient
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.WebClient.Delegates;
     using HealthGateway.WebClient.Listeners;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
@@ -92,6 +93,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
             services.AddTransient<IWalletService, WalletService>();
             services.AddTransient<IWalletStatusService, WalletStatusService>();
+            services.AddTransient<IReportService, ReportService>();
 
             // Add delegates
             services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
@@ -111,6 +113,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<IWalletIssuerDelegate, RestWalletIssuerDelegate>();
             services.AddTransient<IWalletDelegate, DBWalletDelegate>();
             services.AddTransient<IImmunizationDelegate, RestImmunizationDelegate>();
+            services.AddTransient<ICDogsDelegate, CDogsDelegate>();
 
             // Add Background Services
             services.AddHostedService<BannerListener>();
