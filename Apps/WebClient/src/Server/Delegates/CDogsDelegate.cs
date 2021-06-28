@@ -73,7 +73,7 @@ namespace HealthGateway.WebClient.Delegates
                     { "servicePort", servicePort! },
                 };
 
-                this.serviceEndpoint = new Uri(StringManipulator.Replace(this.cdogsConfig.BaseEndpoint, replacementData)!);
+                this.serviceEndpoint = new Uri(StringManipulator.Replace(this.cdogsConfig.BaseEndpoint, replacementData) !);
             }
             else
             {
