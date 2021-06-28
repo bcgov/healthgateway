@@ -123,6 +123,15 @@ export default class Dashboard extends Vue {
         return totalCount;
     }
 
+    private get ratingAverage(): string {
+        var totalScore = 0;
+        for (let key in this.ratingSummary) {
+            totalScore += Number(key) * this.ratingSummary[key];
+        }
+
+        return (totalScore / this.ratingCount).toFixed(1);
+    }
+
     private get ratingBars(): { [key: string]: number } {
         var bars: { [key: string]: number } = {};
         for (var starRating = 5; starRating >= 1; starRating--) {
@@ -484,8 +493,13 @@ export default class Dashboard extends Vue {
                             class="text-center dashboard-rating-card"
                         >
                             <h3>Rating Summary</h3>
-
-                            <v-row>
+                            <v-row class="px-0 mx-0">
+                                <v-col cols="4" class="px-0 mx-0"
+                                    ><h1>{{ ratingAverage }}</h1>
+                                    <span class="text-caption"
+                                        >Out of 5</span
+                                    ></v-col
+                                >
                                 <v-col>
                                     <v-row
                                         v-for="i in 5"
