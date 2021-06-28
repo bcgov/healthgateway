@@ -72,6 +72,6 @@ namespace HealthGateway.Admin.Services
         /// <param name="endPeriod">The period end to calculate the summary.</param>
         /// <param name="timeOffset">The offset from the client browser to UTC.</param>
         /// <returns>A dictionary pairing the ratings with the counts.</returns>
-        IDictionary<int, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset);
+        IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset);
     }
 }

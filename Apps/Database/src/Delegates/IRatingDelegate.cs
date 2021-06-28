@@ -46,6 +46,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="startDate">The period start to calculate the summary.</param>
         /// <param name="endDate">The period end to calculate the summary.</param>
         /// <returns>A dictionary pairing the ratings with the counts.</returns>
-        IDictionary<int, int> GetSummary(DateTime startDate, DateTime endDate);
+        IDictionary<string, int> GetSummary(DateTime startDate, DateTime endDate);
     }
 }

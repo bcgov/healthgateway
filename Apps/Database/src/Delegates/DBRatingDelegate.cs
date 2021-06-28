@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
     using System.Linq;
     using System.Text.Json;
     using HealthGateway.Database.Constants;
@@ -80,14 +81,14 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public IDictionary<int, int> GetSummary(DateTime startDate, DateTime endDate)
+        public IDictionary<string, int> GetSummary(DateTime startDate, DateTime endDate)
         {
             this.logger.LogTrace($"Retrieving the ratings summary between {startDate} and {endDate}...");
             return this.dbContext.Rating
-                .Where(r => r.CreatedDateTime > startDate && r.CreatedDateTime < endDate && !r.Skip)
+                .Where(r => r.CreatedDateTime >= startDate && r.CreatedDateTime <= endDate && !r.Skip)
                 .GroupBy(x => x.RatingValue)
                 .Select(r => new { Value = r.Key, Count = r.Count() })
-                .ToDictionary(r => r.Value, r => r.Count);
+                .ToDictionary(r => r.Value.ToString(CultureInfo.CurrentCulture), r => r.Count);
         }
     }
 }
