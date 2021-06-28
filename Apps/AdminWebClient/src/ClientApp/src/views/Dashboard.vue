@@ -410,7 +410,6 @@ export default class Dashboard extends Vue {
         </v-row>
 
         <br />
-        {{ ratingPickerModal }}
         <h2>Rating</h2>
         <v-row class="px-2">
             <v-col>
