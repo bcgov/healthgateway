@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System;
     using System.Collections.Generic;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -38,5 +39,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="pageSize">The maximum amount of rows to return.</param>
         /// <returns>A list of Ratings wrapped in a DBResult.</returns>
         DBResult<IEnumerable<Rating>> GetAll(int page, int pageSize);
+
+        /// <summary>
+        /// Gets the ratings summary.
+        /// </summary>
+        /// <param name="startDate">The period start to calculate the summary.</param>
+        /// <param name="endDate">The period end to calculate the summary.</param>
+        /// <returns>A dictionary pairing the ratings with the counts.</returns>
+        IDictionary<string, int> GetSummary(DateTime startDate, DateTime endDate);
     }
 }

@@ -88,4 +88,27 @@ export class DashboardService implements IDashboardService {
                 });
         });
     }
+
+    public getRatings(
+        startPeriodDate: string,
+        endPeriodDate: string
+    ): Promise<{ [key: string]: number }> {
+        return new Promise((resolve, reject) => {
+            this.http
+                .get<Promise<{ [key: string]: number }>>(
+                    `${
+                        this.BASE_URI
+                    }/Ratings/Summary?startPeriod=${startPeriodDate}&endPeriod=${endPeriodDate}&timeOffset=${
+                        new Date().getTimezoneOffset() * -1
+                    }`
+                )
+                .then((requestResult) => {
+                    resolve(requestResult);
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return reject(err);
+                });
+        });
+    }
 }

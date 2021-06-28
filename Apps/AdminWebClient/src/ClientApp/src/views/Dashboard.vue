@@ -22,6 +22,7 @@ export default class Dashboard extends Vue {
     private isLoadingLoggedIn = true;
     private isLoadingDependent = true;
     private isLoadingRecurrentCount = true;
+    private isLoadingRatings = true;
 
     private periodPickerModal = false;
 
@@ -31,6 +32,12 @@ export default class Dashboard extends Vue {
         DateTime.local().toISO().substr(0, 10),
     ];
     private uniqueUsers = 0;
+
+    private ratingPickerModal = false;
+    private ratingPeriodDates: string[] = [
+        DateTime.local().minus({ days: 30 }).toISO().substr(0, 10),
+        DateTime.local().toISO().substr(0, 10),
+    ];
 
     private debounceTimer: NodeJS.Timeout | null = null;
 
@@ -63,8 +70,16 @@ export default class Dashboard extends Vue {
     @Watch("uniqueDays")
     @Watch("periodPickerModal")
     private onRecurringInputChange() {
-        if (this.uniqueDays >= 0 && !this.periodPickerModal)
+        if (this.uniqueDays >= 0 && !this.periodPickerModal) {
             this.getRecurringUsersDebounced();
+        }
+    }
+
+    @Watch("ratingPickerModal")
+    private onRatingsInputChange(newVal: boolean, oldVal: boolean) {
+        if (!newVal && oldVal) {
+            this.getRatings();
+        }
     }
 
     private get visibleTableData(): DailyData[] {
@@ -97,6 +112,31 @@ export default class Dashboard extends Vue {
         { text: "Dependents", value: "dependents" },
     ];
 
+    private ratingSummary: { [key: string]: number } = {};
+
+    private get ratingCount(): number {
+        let totalCount = 0;
+        for (let key in this.ratingSummary) {
+            totalCount += this.ratingSummary[key];
+        }
+
+        return totalCount;
+    }
+
+    private get ratingBars(): { [key: string]: number } {
+        var bars: { [key: string]: number } = {};
+        for (var starRating = 5; starRating >= 1; starRating--) {
+            if (this.ratingSummary[starRating] !== undefined) {
+                bars[starRating] =
+                    (this.ratingSummary[starRating] / this.ratingCount) * 100;
+            } else {
+                bars[starRating] = 0;
+            }
+        }
+
+        return bars;
+    }
+
     private mounted() {
         this.dashboardService = container.get(
             SERVICE_IDENTIFIER.DashboardService
@@ -105,6 +145,7 @@ export default class Dashboard extends Vue {
         this.getLoggedInUsersCount();
         this.getDependentCount();
         this.getRecurringUsers();
+        this.getRatings();
     }
 
     private getRegisteredUserCount() {
@@ -216,6 +257,23 @@ export default class Dashboard extends Vue {
         }, 250);
     }
 
+    private getRatings() {
+        this.isLoadingRatings = true;
+        this.isLoadingRecurrentCount = true;
+        var endDate = DateTime.fromISO(this.ratingPeriodDates[1])
+            .plus({ days: 1 })
+            .toISO()
+            .substr(0, 10);
+        this.dashboardService
+            .getRatings(this.ratingPeriodDates[0], endDate)
+            .then((ratings) => {
+                this.ratingSummary = ratings;
+            })
+            .finally(() => {
+                this.isLoadingRatings = false;
+            });
+    }
+
     private formatDate(date: DateTime): string {
         return date.toFormat("dd/MM/yyyy");
     }
@@ -250,6 +308,7 @@ export default class Dashboard extends Vue {
                     type="card"
                 ></v-skeleton-loader></v-col
         ></v-row>
+
         <br />
         <h2>Recurring Users</h2>
         <v-row class="px-2">
@@ -351,6 +410,126 @@ export default class Dashboard extends Vue {
         </v-row>
 
         <br />
+        <h2>Rating</h2>
+        <v-row class="px-2">
+            <v-col>
+                <v-row>
+                    <v-col cols="auto">
+                        <v-dialog
+                            ref="ratingDialog"
+                            v-model="ratingPickerModal"
+                            :return-value.sync="ratingPeriodDates"
+                            persistent
+                            :disabled="isLoading"
+                            width="290px"
+                        >
+                            <template #activator="{ on, attrs }">
+                                <v-row>
+                                    <v-col>
+                                        <v-text-field
+                                            v-model="ratingPeriodDates[0]"
+                                            label="Start Date"
+                                            prepend-icon="mdi-calendar"
+                                            readonly
+                                            v-bind="attrs"
+                                            v-on="on"
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col>
+                                        <v-text-field
+                                            v-model="ratingPeriodDates[1]"
+                                            label="End Date"
+                                            readonly
+                                            v-bind="attrs"
+                                            v-on="on"
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </template>
+                            <v-date-picker
+                                v-model="ratingPeriodDates"
+                                :max="today.toISO()"
+                                min="2019-06-01"
+                                range
+                                scrollable
+                                no-title
+                            >
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                    text
+                                    color="primary"
+                                    @click="ratingPickerModal = false"
+                                >
+                                    Cancel
+                                </v-btn>
+                                <v-btn
+                                    text
+                                    :disabled="ratingPeriodDates.length !== 2"
+                                    color="primary"
+                                    @click="
+                                        ratingPeriodDates;
+                                        $refs.ratingDialog.save(
+                                            ratingPeriodDates
+                                        );
+                                    "
+                                >
+                                    OK
+                                </v-btn>
+                            </v-date-picker>
+                        </v-dialog>
+                    </v-col>
+                    <v-col cols="5">
+                        <v-card
+                            v-if="!isLoadingRatings"
+                            class="text-center dashboard-rating-card"
+                        >
+                            <h3>Rating Summary</h3>
+
+                            <v-row>
+                                <v-col>
+                                    <v-row
+                                        v-for="i in 5"
+                                        :key="i"
+                                        class="ma-0 pa-0"
+                                        align="center"
+                                        justify="center"
+                                    >
+                                        <v-col
+                                            class="ma-0 pa-0 mr-1 text-right"
+                                            cols="3"
+                                        >
+                                            <v-rating
+                                                readonly
+                                                :length="Number(6 - i)"
+                                                size="10"
+                                                :value="5"
+                                                class="ma-0 pa-0"
+                                            ></v-rating>
+                                        </v-col>
+                                        <v-col class="ma-0 pa-0">
+                                            <v-progress-linear
+                                                class="ma-0 pa-0"
+                                                :value="ratingBars[6 - i]"
+                                            ></v-progress-linear>
+                                        </v-col>
+                                    </v-row>
+                                </v-col>
+                            </v-row>
+                            <div class="text-right text-caption">
+                                {{ ratingCount }} Ratings
+                            </div>
+                        </v-card>
+                        <v-skeleton-loader
+                            v-else
+                            max-height="50"
+                            type="card"
+                        ></v-skeleton-loader>
+                    </v-col>
+                </v-row>
+            </v-col>
+        </v-row>
+
+        <br />
         <h2>Daily Data</h2>
         <v-row>
             <v-col cols="12" sm="6" md="4">
@@ -433,3 +612,17 @@ export default class Dashboard extends Vue {
         </v-row>
     </v-container>
 </template>
+
+<style lang="scss">
+.dashboard-rating-card {
+    .v-rating {
+        font-size: 10px;
+        padding: 0px !important;
+        margin-top: 0px !important;
+        margin-bottom: 0px !important;
+    }
+    .v-rating .v-icon {
+        padding: 0px;
+    }
+}
+</style>

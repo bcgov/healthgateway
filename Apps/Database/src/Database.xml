@@ -934,6 +934,9 @@
         <member name="M:HealthGateway.Database.Delegates.DBRatingDelegate.GetAll(System.Int32,System.Int32)">
             <inheritdoc />
         </member>
+        <member name="M:HealthGateway.Database.Delegates.DBRatingDelegate.GetSummary(System.DateTime,System.DateTime)">
+            <inheritdoc />
+        </member>
         <member name="T:HealthGateway.Database.Delegates.DBResourceDelegateDelegate">
             <inheritdoc />
         </member>
@@ -1649,6 +1652,14 @@
             <param name="page">The starting offset for the query.</param>
             <param name="pageSize">The maximum amount of rows to return.</param>
             <returns>A list of Ratings wrapped in a DBResult.</returns>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.IRatingDelegate.GetSummary(System.DateTime,System.DateTime)">
+            <summary>
+            Gets the ratings summary.
+            </summary>
+            <param name="startDate">The period start to calculate the summary.</param>
+            <param name="endDate">The period end to calculate the summary.</param>
+            <returns>A dictionary pairing the ratings with the counts.</returns>
         </member>
         <member name="T:HealthGateway.Database.Delegates.IResourceDelegateDelegate">
             <summary>

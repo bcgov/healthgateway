@@ -255,6 +255,18 @@
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="M:HealthGateway.Admin.Controllers.DashboardController.GetRatingsSummary(System.String,System.String,System.Int32)">
+            <summary>
+            Retrieves the ratings summary.
+            </summary>
+            <param name="startPeriod">The period start to calculate the summary.</param>
+            <param name="endPeriod">The period end to calculate the summary.</param>
+            <param name="timeOffset">The offset from the client browser to UTC.</param>
+            <returns>A dictionary pairing the ratings with the counts.</returns>
+            <response code="200">Returns the ratings summary.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.Admin.Controllers.EmailAdminController">
             <summary>
             Web API to handle user email interactions.
@@ -289,7 +301,7 @@
         </member>
         <member name="T:HealthGateway.Admin.Controllers.SupportController">
             <summary>
-            Web API to handle user feedback review.
+            Web API to handle user support requests.
             </summary>
         </member>
         <member name="M:HealthGateway.Admin.Controllers.SupportController.#ctor(HealthGateway.Admin.Services.IDashboardService)">
@@ -1008,7 +1020,7 @@
         <member name="T:HealthGateway.Admin.Services.DashboardService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.DashboardService.#ctor(HealthGateway.Database.Delegates.IResourceDelegateDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,HealthGateway.Database.Delegates.IMessagingVerificationDelegate,HealthGateway.Common.Services.IPatientService)">
+        <member name="M:HealthGateway.Admin.Services.DashboardService.#ctor(HealthGateway.Database.Delegates.IResourceDelegateDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,HealthGateway.Database.Delegates.IMessagingVerificationDelegate,HealthGateway.Common.Services.IPatientService,HealthGateway.Database.Delegates.IRatingDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.DashboardService"/> class.
             </summary>
@@ -1016,6 +1028,7 @@
             <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
             <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
             <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
+            <param name="ratingDelegate">The rating delegate.</param>
         </member>
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetDailyRegisteredUsersCount(System.Int32)">
             <inheritdoc />
@@ -1030,6 +1043,9 @@
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetMessageVerifications(HealthGateway.Admin.Constants.UserQueryType,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.DashboardService.GetRatingSummary(System.String,System.String,System.Int32)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.Admin.Services.EmailAdminService">
@@ -1195,6 +1211,15 @@
             <param name="queryType">The type of query to perform.</param>
             <param name="queryString">The value to query on.</param>
             <returns>A list of users matching the query.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IDashboardService.GetRatingSummary(System.String,System.String,System.Int32)">
+            <summary>
+            Retrieves the ratings summary.
+            </summary>
+            <param name="startPeriod">The period start to calculate the summary.</param>
+            <param name="endPeriod">The period end to calculate the summary.</param>
+            <param name="timeOffset">The offset from the client browser to UTC.</param>
+            <returns>A dictionary pairing the ratings with the counts.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Services.IEmailAdminService">
             <summary>

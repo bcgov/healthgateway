@@ -46,7 +46,8 @@ namespace HealthGateway.Admin.Test.Services
                 dependentDelegateMock.Object,
                 new Mock<IUserProfileDelegate>().Object,
                 mockMessagingVerificationDelegate.Object,
-                mockPatientService.Object);
+                mockPatientService.Object,
+                new Mock<IRatingDelegate>().Object);
 
             IDictionary<DateTime, int> actualResult = service.GetDailyDependentCount(5);
 
