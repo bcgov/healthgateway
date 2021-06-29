@@ -139,12 +139,12 @@ export default class MedicationHistoryReportComponent extends Vue {
         }
 
         const start = this.filter.startDate
-            ? ` since ${this.formatDate(this.filter.startDate)}`
+            ? ` from ${this.formatDate(this.filter.startDate)}`
             : "";
         const end = this.filter.endDate
             ? this.formatDate(this.filter.endDate)
             : this.formatDate(new DateWrapper().toISO());
-        return `Displaying records${start} until ${end}`;
+        return `Displaying records${start} up to ${end}`;
     }
 
     private created() {
