@@ -70,6 +70,7 @@ export default class RatingComponent extends Vue {
             id="rating-modal"
             ref="rating-modal"
             v-model="isVisible"
+            data-modal="rating"
             data-testid="ratingModal"
             title="Rating"
             size="md"
@@ -115,3 +116,9 @@ export default class RatingComponent extends Vue {
         </b-modal>
     </div>
 </template>
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+[data-modal="rating"] {
+    z-index: $z_application_rating !important;
+}
+</style>
