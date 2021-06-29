@@ -17,6 +17,15 @@ import { ILogger, IReportService } from "@/services/interfaces";
 
 import { ReportType, TemplateType } from "../../models/reportRequest";
 
+interface ReportHeader {
+    phn: string;
+    name: string;
+    dateOfBirth: string;
+    datePrinted: string;
+    isRedacted: boolean;
+    filterText: string;
+}
+
 interface MedicationRow {
     date: string;
     din_pin: string;
@@ -88,6 +97,19 @@ export default class MedicationHistoryReportComponent extends Vue {
         return records;
     }
 
+    private get headerData(): ReportHeader {
+        return {
+            phn: this.patientData.personalhealthnumber,
+            dateOfBirth: this.formatDate(this.patientData.birthdate || ""),
+            name: this.patientData
+                ? this.patientData.firstname + " " + this.patientData.lastname
+                : "",
+            isRedacted: this.filter.hasMedicationsFilter(),
+            datePrinted: this.formatDate(new DateWrapper().toISO()),
+            filterText: this.filterText,
+        };
+    }
+
     private get items(): MedicationRow[] {
         return this.visibleRecords.map<MedicationRow>((x) => {
             return {
@@ -140,21 +162,8 @@ export default class MedicationHistoryReportComponent extends Vue {
         return reportService
             .generateReport({
                 data: {
-                    patient: {
-                        phn: this.patientData.personalhealthnumber,
-                        dateOfBirth: this.formatDate(
-                            this.patientData.birthdate || ""
-                        ),
-                        name: this.patientData
-                            ? this.patientData.firstname +
-                              " " +
-                              this.patientData.lastname
-                            : "",
-                    },
+                    header: this.headerData,
                     records: this.items,
-                    isRedacted: this.filter.hasMedicationsFilter(),
-                    datePrinted: this.formatDate(new DateWrapper().toISO()),
-                    filterText: this.filterText,
                 },
                 template: TemplateType.Medication,
                 type: ReportType.PDF,
