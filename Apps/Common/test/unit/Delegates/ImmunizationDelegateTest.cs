@@ -110,6 +110,157 @@ namespace HealthGateway.CommonTests.Delegates
             Assert.Equal(expectedRequestResult.ResourcePayload.Immunization.Name, actualResult.ResourcePayload?.Immunization.Name);
         }
 
+        /// <summary>
+        /// GetImmunization - Parse error with JSON payload.
+        /// </summary>
+        [Fact]
+        public void ErrorPayload()
+        {
+            // Intentionally left as the Payload can never return null as the parent object allows all nullable properties.
+            Assert.True(true);
+        }
+
+        /// <summary>
+        /// GetImmunization - Invalid HTTP status code.
+        /// </summary>
+        [Fact]
+        public void ErrorInvalidHTTPStatus()
+        {
+            string token = "some-bearer-token";
+            string userId = "UserId123";
+            string hdid = "TheTestHdid";
+            string immunizationId = "fbdec97f-a603-4305-59ed-08d906b6603e";
+
+            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.NotImplemented,
+                Content = null,
+            };
+
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+
+            IImmunizationDelegate immunizationDelegate = new RestImmunizationDelegate(
+                loggerFactory.CreateLogger<RestImmunizationDelegate>(),
+                GetHttpClientServiceMock(httpResponseMessage).Object,
+                this.configuration,
+                CreateValidHttpContext(token, userId, hdid).Object);
+
+            RequestResult<ImmunizationEvent> actualResult = Task.Run(async () => await immunizationDelegate.GetImmunization(hdid, immunizationId).ConfigureAwait(true)).Result;
+            Assert.True(actualResult.ResultStatus == ResultType.Error);
+        }
+
+        /// <summary>
+        /// GetImmunization - Forbidden HTTP status code.
+        /// </summary>
+        [Fact]
+        public void ErrorForbidden()
+        {
+            string token = "some-bearer-token";
+            string userId = "UserId123";
+            string hdid = "TheTestHdid";
+            string immunizationId = "fbdec97f-a603-4305-59ed-08d906b6603e";
+
+            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.Forbidden,
+                Content = null,
+            };
+
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+
+            IImmunizationDelegate immunizationDelegate = new RestImmunizationDelegate(
+                loggerFactory.CreateLogger<RestImmunizationDelegate>(),
+                GetHttpClientServiceMock(httpResponseMessage).Object,
+                this.configuration,
+                CreateValidHttpContext(token, userId, hdid).Object);
+
+            RequestResult<ImmunizationEvent> actualResult = Task.Run(async () => await immunizationDelegate.GetImmunization(hdid, immunizationId).ConfigureAwait(true)).Result;
+            Assert.True(actualResult.ResultStatus == ResultType.Error);
+        }
+
+        /// <summary>
+        /// GetImmunization - NoContent HTTP status code.
+        /// </summary>
+        [Fact]
+        public void ErrorNoContent()
+        {
+            string token = "some-bearer-token";
+            string userId = "UserId123";
+            string hdid = "TheTestHdid";
+            string immunizationId = "fbdec97f-a603-4305-59ed-08d906b6603e";
+
+            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.NoContent,
+                Content = null,
+            };
+
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+
+            IImmunizationDelegate immunizationDelegate = new RestImmunizationDelegate(
+                loggerFactory.CreateLogger<RestImmunizationDelegate>(),
+                GetHttpClientServiceMock(httpResponseMessage).Object,
+                this.configuration,
+                CreateValidHttpContext(token, userId, hdid).Object);
+
+            RequestResult<ImmunizationEvent> actualResult = Task.Run(async () => await immunizationDelegate.GetImmunization(hdid, immunizationId).ConfigureAwait(true)).Result;
+            Assert.True(actualResult.ResultStatus == ResultType.Success && actualResult.TotalResultCount == 0);
+        }
+
+        /// <summary>
+        /// GetImmunization - Exception thrown.
+        /// </summary>
+        [Fact]
+        public void ErrorException()
+        {
+            string token = "some-bearer-token";
+            string userId = "UserId123";
+            string hdid = "TheTestHdid";
+            string immunizationId = "fbdec97f-a603-4305-59ed-08d906b6603e";
+
+            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(string.Empty),
+            };
+
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+
+            IImmunizationDelegate immunizationDelegate = new RestImmunizationDelegate(
+                loggerFactory.CreateLogger<RestImmunizationDelegate>(),
+                GetHttpClientServiceMock(httpResponseMessage).Object,
+                this.configuration,
+                CreateValidHttpContext(token, userId, hdid).Object);
+
+            RequestResult<ImmunizationEvent> actualResult = Task.Run(async () => await immunizationDelegate.GetImmunization(hdid, immunizationId).ConfigureAwait(true)).Result;
+            Assert.True(actualResult.ResultStatus == ResultType.Error);
+        }
+
+        /// <summary>
+        /// GetImmunization - The HTTP Context is null.
+        /// </summary>
+        [Fact]
+        public void ErrorContextNull()
+        {
+            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(string.Empty)),
+            };
+
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+
+            IImmunizationDelegate immunizationDelegate = new RestImmunizationDelegate(
+                loggerFactory.CreateLogger<RestImmunizationDelegate>(),
+                GetHttpClientServiceMock(httpResponseMessage).Object,
+                this.configuration,
+                httpContextAccessorMock.Object);
+
+            RequestResult<ImmunizationEvent> actualResult = Task.Run(async () => await immunizationDelegate.GetImmunization(string.Empty, string.Empty).ConfigureAwait(true)).Result;
+            Assert.True(actualResult.ResultStatus == ResultType.Error);
+        }
+
         private static IConfigurationRoot GetIConfigurationRoot()
         {
             var myConfiguration = new Dictionary<string, string>
