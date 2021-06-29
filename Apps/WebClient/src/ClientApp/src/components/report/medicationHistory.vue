@@ -5,7 +5,6 @@ import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
-import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import PatientData from "@/models/patientData";
@@ -33,7 +32,6 @@ interface MedicationRow {
 @Component({
     components: {
         ProtectiveWordComponent,
-        ReportHeaderComponent,
     },
 })
 export default class MedicationHistoryReportComponent extends Vue {
@@ -113,6 +111,20 @@ export default class MedicationHistoryReportComponent extends Vue {
         });
     }
 
+    private get filterText(): string {
+        if (!this.filter.hasDateFilter()) {
+            return "";
+        }
+
+        const start = this.filter.startDate
+            ? ` since ${this.formatDate(this.filter.startDate)}`
+            : "";
+        const end = this.filter.endDate
+            ? this.formatDate(this.filter.endDate)
+            : this.formatDate(new DateWrapper().toISO());
+        return `Displaying records${start} until ${end}`;
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.retrieveMedications({ hdid: this.user.hdid }).catch((err) => {
@@ -128,8 +140,21 @@ export default class MedicationHistoryReportComponent extends Vue {
         return reportService
             .generateReport({
                 data: {
-                    patientData: this.patientData,
-                    medicationStatements: this.visibleRecords,
+                    patient: {
+                        phn: this.patientData.personalhealthnumber,
+                        dateOfBirth: this.formatDate(
+                            this.patientData.birthdate || ""
+                        ),
+                        name: this.patientData
+                            ? this.patientData.firstname +
+                              " " +
+                              this.patientData.lastname
+                            : "",
+                    },
+                    records: this.items,
+                    isRedacted: this.filter.hasMedicationsFilter(),
+                    datePrinted: this.formatDate(new DateWrapper().toISO()),
+                    filterText: this.filterText,
                 },
                 template: TemplateType.Medication,
                 type: ReportType.PDF,
@@ -142,6 +167,10 @@ export default class MedicationHistoryReportComponent extends Vue {
                     });
                 });
             });
+    }
+
+    private formatDate(date: string): string {
+        return new DateWrapper(date).format();
     }
 
     private fields: ReportField[] = [
@@ -191,14 +220,6 @@ export default class MedicationHistoryReportComponent extends Vue {
     <div>
         <div>
             <section class="pdf-item">
-                <ReportHeaderComponent
-                    v-show="!isLoading"
-                    :filter="filter"
-                    :title="
-                        'Health Gateway Medication History' +
-                        (filter.hasMedicationsFilter() ? ' (Redacted)' : '')
-                    "
-                />
                 <b-row v-if="isEmpty && !isLoading">
                     <b-col>No records found.</b-col>
                 </b-row>
