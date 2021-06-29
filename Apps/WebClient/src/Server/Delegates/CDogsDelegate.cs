@@ -80,7 +80,7 @@ namespace HealthGateway.WebClient.Delegates
                 this.serviceEndpoint = new Uri(this.cdogsConfig.BaseEndpoint);
             }
 
-            logger.LogInformation($"ODR Proxy URL resolved as {this.cdogsConfig.ToString()}");
+            logger.LogInformation($"CDogs URL resolved as {this.serviceEndpoint}");
         }
 
         private static ActivitySource Source { get; } = new ActivitySource(nameof(CDogsDelegate));
