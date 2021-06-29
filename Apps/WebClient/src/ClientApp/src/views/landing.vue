@@ -14,10 +14,9 @@ import { Getter } from "vuex-class";
 
 import Image00 from "@/assets/images/landing/000_Logo-Overlay.png";
 import Image02 from "@/assets/images/landing/002_Devices.png";
-import Image03 from "@/assets/images/landing/003_AdobeStock_143856492-edited_shoes.jpg";
-import Image04 from "@/assets/images/landing/004_AdobeStock_216356596.jpeg";
-import Image05 from "@/assets/images/landing/005_AdobeStock_243861557.jpeg";
-import Image07 from "@/assets/images/landing/007_Hero-02_Duotone.png";
+import Image03 from "@/assets/images/landing/003_reduced-3.jpeg";
+import Image04 from "@/assets/images/landing/004_reduced-living-room.jpeg";
+import Image05 from "@/assets/images/landing/005_reduced-family.jpeg";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
 
@@ -59,7 +58,6 @@ export default class LandingView extends Vue {
 
     private logo: string = Image00;
     private devices: string = Image02;
-    private bottomImage: string = Image07;
     private isOpenRegistration = false;
 
     private icons: Icon[] = [
@@ -261,7 +259,7 @@ export default class LandingView extends Vue {
                 </b-row> </b-col
         ></b-row>
         <b-row class="tile-section my-0 my-md-1">
-            <div>
+            <b-col>
                 <b-row
                     v-for="(tile, index) in tiles"
                     :key="tile.title"
@@ -301,7 +299,7 @@ export default class LandingView extends Vue {
                         </div>
                     </b-col>
                 </b-row>
-            </div>
+            </b-col>
         </b-row>
     </div>
 </template>
