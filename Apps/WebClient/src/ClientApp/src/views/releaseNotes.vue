@@ -15,7 +15,8 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong>
-                                    June 30, 2021 - v1.4.5 - Export Medication Records
+                                    June 30, 2021 - v1.4.5 - Export Medication
+                                    Records
                                 </strong>
                             </b-col>
                         </b-row>
@@ -23,10 +24,11 @@
                             <b-col>
                                 <ul>
                                     <li>
-                                        We enhanced the documentat generation service 
-                                        for the medication record export. This will 
-                                        allow for better quality PDFs and other document 
-                                        format types in the future.                                        
+                                        We enhanced the documentat generation
+                                        service for the medication record
+                                        export. This will allow for better
+                                        quality PDFs and other document format
+                                        types in the future.
                                     </li>
                                 </ul>
                             </b-col>
