@@ -60,7 +60,7 @@
             "path": "Encounter"
         },
         {
-            "path": "../Testing/functional/e2e"
+            "path": "../Testing/functional/tests"
         },
         {
             "path": "../Tools/Dev/Design/sampler"
@@ -100,7 +100,7 @@
             "Patient",
             "WebClient",
             "Encounter",
-            "e2e",
+            "tests",
             "sampler",
             "Design"
         ]
