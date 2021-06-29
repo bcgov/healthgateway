@@ -54,6 +54,7 @@ import {
     ILogger,
     IMedicationService,
     IPatientService,
+    IReportService,
     IStoreProvider,
     IUserCommentService,
     IUserFeedbackService,
@@ -138,6 +139,9 @@ configService.getConfiguration().then((config: ExternalConfiguration) => {
     const dependentService: IDependentService = container.get(
         SERVICE_IDENTIFIER.DependentService
     );
+    const reportService: IReportService = container.get(
+        SERVICE_IDENTIFIER.ReportService
+    );
     const storeProvider: IStoreProvider = container.get(
         STORE_IDENTIFIER.StoreProvider
     );
@@ -162,6 +166,7 @@ configService.getConfiguration().then((config: ExternalConfiguration) => {
     userRatingService.initialize(httpDelegate);
     credentialService.initialize(config, httpDelegate);
     dependentService.initialize(config, httpDelegate);
+    reportService.initialize(httpDelegate);
 
     Vue.use(IdleVue, {
         eventEmitter: new Vue(),

@@ -19,6 +19,8 @@ import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import MedicationRequest from "@/models/MedicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import PatientData from "@/models/patientData";
+import Report from "@/models/report";
+import ReportRequest from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
 import { OidcUserProfile } from "@/models/user";
@@ -204,6 +206,13 @@ export interface ICredentialService {
         hdid: string,
         credentialId: string
     ): Promise<WalletCredential>;
+}
+
+export interface IReportService {
+    initialize(http: IHttpDelegate): void;
+    generateReport(
+        reportRequest: ReportRequest
+    ): Promise<RequestResult<Report>>;
 }
 
 export interface ILogger {
