@@ -1,19 +1,30 @@
 <script lang="ts">
+import { saveAs } from "file-saver";
 import Vue from "vue";
-import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
+import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
-import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import PatientData from "@/models/patientData";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
-import { ILogger } from "@/services/interfaces";
-import PDFUtil from "@/utility/pdfUtil";
+import { ILogger, IReportService } from "@/services/interfaces";
+
+import { ReportType, TemplateType } from "../../models/reportRequest";
+
+interface ReportHeader {
+    phn: string;
+    name: string;
+    dateOfBirth: string;
+    datePrinted: string;
+    isRedacted: boolean;
+    filterText: string;
+}
 
 interface MedicationRow {
     date: string;
@@ -30,11 +41,13 @@ interface MedicationRow {
 @Component({
     components: {
         ProtectiveWordComponent,
-        ReportHeaderComponent,
     },
 })
 export default class MedicationHistoryReportComponent extends Vue {
     @Prop() private filter!: ReportFilter;
+
+    @Getter("patientData", { namespace: "user" })
+    patientData!: PatientData;
 
     @Getter("user", { namespace: "user" })
     private user!: User;
@@ -48,15 +61,8 @@ export default class MedicationHistoryReportComponent extends Vue {
     @Getter("medicationStatements", { namespace: "medication" })
     medicationStatements!: MedicationStatementHistory[];
 
-    @Ref("report")
-    readonly report!: HTMLElement;
-
     private logger!: ILogger;
     private notFoundText = "Not Found";
-    private fileMaxRecords = 500;
-    private fileIndex = 0;
-    private totalFiles = 1;
-    private isPreview = true;
 
     private readonly headerClass = "medication-report-table-header";
 
@@ -88,15 +94,20 @@ export default class MedicationHistoryReportComponent extends Vue {
                 : 0;
         });
 
-        if (this.isPreview) {
-            return records;
-        } else {
-            // Breaks records into chunks for multiple files.
-            return records.slice(
-                this.fileIndex * this.fileMaxRecords,
-                (this.fileIndex + 1) * this.fileMaxRecords
-            );
-        }
+        return records;
+    }
+
+    private get headerData(): ReportHeader {
+        return {
+            phn: this.patientData.personalhealthnumber,
+            dateOfBirth: this.formatDate(this.patientData.birthdate || ""),
+            name: this.patientData
+                ? this.patientData.firstname + " " + this.patientData.lastname
+                : "",
+            isRedacted: this.filter.hasMedicationsFilter(),
+            datePrinted: this.formatDate(new DateWrapper().toISO()),
+            filterText: this.filterText,
+        };
     }
 
     private get items(): MedicationRow[] {
@@ -122,6 +133,20 @@ export default class MedicationHistoryReportComponent extends Vue {
         });
     }
 
+    private get filterText(): string {
+        if (!this.filter.hasDateFilter()) {
+            return "";
+        }
+
+        const start = this.filter.startDate
+            ? ` since ${this.formatDate(this.filter.startDate)}`
+            : "";
+        const end = this.filter.endDate
+            ? this.formatDate(this.filter.endDate)
+            : this.formatDate(new DateWrapper().toISO());
+        return `Displaying records${start} until ${end}`;
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.retrieveMedications({ hdid: this.user.hdid }).catch((err) => {
@@ -130,29 +155,31 @@ export default class MedicationHistoryReportComponent extends Vue {
     }
 
     public async generatePdf(): Promise<void> {
-        this.logger.debug("generating Medication History PDF...");
-        this.totalFiles = Math.ceil(
-            this.visibleRecords.length / this.fileMaxRecords
+        const reportService: IReportService = container.get<IReportService>(
+            SERVICE_IDENTIFIER.ReportService
         );
-        this.isPreview = false;
 
-        return this.generatePdfFile().then(() => {
-            if (this.fileIndex + 1 < this.totalFiles) {
-                this.fileIndex++;
-                return this.generatePdfFile();
-            } else {
-                this.isPreview = true;
-                this.fileIndex = 0;
-            }
-        });
+        return reportService
+            .generateReport({
+                data: {
+                    header: this.headerData,
+                    records: this.items,
+                },
+                template: TemplateType.Medication,
+                type: ReportType.PDF,
+            })
+            .then((result) => {
+                const downloadLink = `data:application/pdf;base64,${result.resourcePayload.data}`;
+                fetch(downloadLink).then((res) => {
+                    res.blob().then((blob) => {
+                        saveAs(blob, result.resourcePayload.fileName);
+                    });
+                });
+            });
     }
 
-    private generatePdfFile(): Promise<void> {
-        return PDFUtil.generatePdf(
-            `HealthGateway_MedicationHistory_File${this.fileIndex + 1}.pdf`,
-            this.report,
-            `File ${this.fileIndex + 1} of ${this.totalFiles}`
-        );
+    private formatDate(date: string): string {
+        return new DateWrapper(date).format();
     }
 
     private fields: ReportField[] = [
@@ -200,17 +227,9 @@ export default class MedicationHistoryReportComponent extends Vue {
 
 <template>
     <div>
-        <div ref="report">
+        <div>
             <section class="pdf-item">
-                <ReportHeaderComponent
-                    v-show="!isPreview"
-                    :filter="filter"
-                    :title="
-                        'Health Gateway Medication History' +
-                        (filter.hasMedicationsFilter() ? ' (Redacted)' : '')
-                    "
-                />
-                <b-row v-if="isEmpty && (!isLoading || !isPreview)">
+                <b-row v-if="isEmpty && !isLoading">
                     <b-col>No records found.</b-col>
                 </b-row>
                 <b-table

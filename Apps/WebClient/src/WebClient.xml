@@ -1075,6 +1075,11 @@
             Object that defines a report.
             </summary>
         </member>
+        <member name="P:HealthGateway.WebClient.Models.ReportModel.FileName">
+            <summary>
+            Gets or sets the report type.
+            </summary>
+        </member>
         <member name="P:HealthGateway.WebClient.Models.ReportModel.Type">
             <summary>
             Gets or sets the report type.

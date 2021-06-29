@@ -16,4 +16,5 @@ export const enum ServiceName {
     Encounter = "ENC",
     Patient = "PAT",
     PHSA = "PHSA",
+    Report = "REP",
 }

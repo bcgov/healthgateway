@@ -48,13 +48,14 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger.LogTrace($"New report request: {JsonSerializer.Serialize(reportRequest)}");
 
+            string reportName = $"HealthGateway{reportRequest.Template}Report";
             CDogsRequestModel cdogsRequest = new ()
             {
                 Data = reportRequest.Data,
                 Options = new CDogsOptionsModel()
                 {
                     ConvertTo = reportRequest.Type.ToString().ToLower(),
-                    ReportName = $"HealthGateway{reportRequest.Template}Report",
+                    ReportName = reportName,
                 },
                 Template = new CDogsTemplateModel()
                 {
