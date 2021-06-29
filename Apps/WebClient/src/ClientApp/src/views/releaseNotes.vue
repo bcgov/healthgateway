@@ -24,7 +24,7 @@
                             <b-col>
                                 <ul>
                                     <li>
-                                        We enhanced the documentat generation
+                                        We enhanced the document generation
                                         service for the medication record
                                         export. This will allow for better
                                         quality PDFs and other document format
