@@ -38,7 +38,7 @@ describe("Report Filtering", () => {
 
         cy.get("[data-testid=applyFilterBtn]").click();
         cy.get("[data-testid=selectedDatesFilter]").contains(
-            "From 2021-Feb-03 To 2021-Feb-05"
+            "From 2021-Feb-03 Up To 2021-Feb-05"
         );
 
         // Validate filters - Cancel  button
