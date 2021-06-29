@@ -49,7 +49,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <returns>The report data.</returns>
         /// <response code="200">Returns the report data.</response>
         [HttpPost]
-        public IActionResult GenerateReport(ReportRequestModel reportRequest)
+        public IActionResult GenerateReport([FromBody] ReportRequestModel reportRequest)
         {
             RequestResult<ReportModel> result = this.reportService.GetReport(reportRequest);
             return new JsonResult(result);

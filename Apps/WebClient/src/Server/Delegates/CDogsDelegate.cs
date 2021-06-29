@@ -110,6 +110,7 @@ namespace HealthGateway.WebClient.Delegates
                         retVal.ResultStatus = ResultType.Success;
                         retVal.ResourcePayload = new ReportModel();
                         retVal.ResourcePayload.Data = Convert.ToBase64String(payload);
+                        retVal.ResourcePayload.FileName = $"{request.Options.ReportName}.{request.Options.ConvertTo}";
                         retVal.TotalResultCount = 1;
                     }
                     else

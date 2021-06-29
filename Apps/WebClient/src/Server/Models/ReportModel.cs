@@ -23,6 +23,11 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the report type.
         /// </summary>
+        public string FileName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the report type.
+        /// </summary>
         public ReportType Type { get; set; }
 
         /// <summary>
