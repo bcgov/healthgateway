@@ -272,7 +272,7 @@ export default class ReportsView extends Vue {
                                     }}
                                     {{
                                         reportFilter.endDate
-                                            ? ` To ${formatDate(
+                                            ? ` Up To ${formatDate(
                                                   reportFilter.endDate
                                               )}`
                                             : ""
