@@ -289,7 +289,7 @@
         </member>
         <member name="T:HealthGateway.Admin.Controllers.SupportController">
             <summary>
-            Web API to handle user feedback review.
+            Web API to handle user support requests.
             </summary>
         </member>
         <member name="M:HealthGateway.Admin.Controllers.SupportController.#ctor(HealthGateway.Admin.Services.IDashboardService)">

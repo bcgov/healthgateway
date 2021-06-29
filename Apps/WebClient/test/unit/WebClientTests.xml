@@ -119,6 +119,16 @@
             GetAll Notes - Happy path scenario.
             </summary>
         </member>
+        <member name="T:HealthGateway.WebClient.Test.Controllers.ReportControllerTests">
+            <summary>
+            ReportController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.ReportControllerTests.ShouldGetReport">
+            <summary>
+            Successfully Generate a Report - Happy Path scenario.
+            </summary>
+        </member>
         <member name="T:HealthGateway.WebClient.Test.Controllers.RobotsControllerTests">
             <summary>
             RobotsController's Unit Tests.
@@ -286,6 +296,21 @@
             Successfully Revoke Credential - Happy path scenario.
             </summary>
             <returns>>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Delegates.CDogsDelegateTest">
+            <summary>
+            CDogsDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Delegates.CDogsDelegateTest.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Test.Delegates.CDogsDelegateTest"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Delegates.CDogsDelegateTest.ShouldGenerateReport">
+            <summary>
+            GenerateReport - Happy Path.
+            </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Test.Services.CommentServiceTests">
             <summary>
@@ -500,6 +525,16 @@
         <member name="M:HealthGateway.WebClient.Test.Services.NoteServiceTests.ShouldDeleteNoteWithNoKeyError">
             <summary>
             DeleteNote - No Encryption Key Error.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Services.ReportServiceTests">
+            <summary>
+            ReportService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.ReportServiceTests.ShouldGetReport">
+            <summary>
+            GetReport - Happy path scenario.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Test.Services.UserFeedbackServiceTests">

@@ -97,12 +97,20 @@ namespace HealthGateway.Common.ErrorHandling
             get { return new ServiceType("SF"); }
         }
 
-         /// <summary>
-        /// Gets the Salesforce service code.
+        /// <summary>
+        /// Gets the WalletIssuer service code.
         /// </summary>
         public static ServiceType WalletIssuer
         {
             get { return new ServiceType("WAL"); }
+        }
+
+        /// <summary>
+        /// Gets the CDogs service code.
+        /// </summary>
+        public static ServiceType CDogs
+        {
+            get { return new ServiceType("CDOGS"); }
         }
 
         /// <summary>

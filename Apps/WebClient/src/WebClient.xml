@@ -230,6 +230,25 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="T:HealthGateway.WebClient.Controllers.ReportController">
+            <summary>
+            Web API to handle reports.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.ReportController.#ctor(HealthGateway.WebClient.Services.IReportService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.ReportController"/> class.
+            </summary>
+            <param name="reportService">The injected report service.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.ReportController.GenerateReport(HealthGateway.WebClient.Models.ReportRequestModel)">
+            <summary>
+            Gets a report based on the request provided.
+            </summary>
+            <param name="reportRequest">The report request model.</param>
+            <returns>The report data.</returns>
+            <response code="200">Returns the report data.</response>
+        </member>
         <member name="T:HealthGateway.WebClient.Controllers.RobotsController">
             <summary>
             Dynamic Robots.txt for search engines.
@@ -494,6 +513,34 @@
             <returns>An empty response.</returns>
             <response code="204">Webhook request received.</response>
         </member>
+        <member name="T:HealthGateway.WebClient.Delegates.CDogsDelegate">
+            <summary>
+            The CDogs report generator delegate.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Delegates.CDogsDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Delegates.CDogsDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Delegates.CDogsDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpClientService">The injected http client service.</param>
+            <param name="configuration">The injected configuration provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Delegates.CDogsDelegate.GenerateReportAsync(HealthGateway.WebClient.Models.CDogsRequestModel)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.WebClient.Delegates.ICDogsDelegate">
+            <summary>
+            The CDogs report service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Delegates.ICDogsDelegate.GenerateReportAsync(HealthGateway.WebClient.Models.CDogsRequestModel)">
+            <summary>
+            Generates a report based on the request model provided.
+            </summary>
+            <param name="request">The cdogs request model.</param>
+            <returns>The report data.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Listeners.BannerListener">
             <summary>
             Implements the abstract DB Listener and listens on the BannerChange channel.
@@ -667,6 +714,98 @@
         <member name="P:HealthGateway.WebClient.Models.BannerChangeEvent.Data">
             <summary>
             Gets or sets the Communication object.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.CDogsConfig">
+            <summary>
+            The configuration for the ODR portion of the ResetMedStatement delegate.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CDogsConfig.ServiceName">
+            <summary>
+            Gets or sets the OpenShift service name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CDogsConfig.ServiceHostSuffix">
+            <summary>
+            Gets or sets the host suffix used to lookup the service host.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CDogsConfig.ServicePortSuffix">
+            <summary>
+            Gets or sets the port suffix used to lookup the service port.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CDogsConfig.BaseEndpoint">
+            <summary>
+            Gets or sets the base Url used to connect to the ODR Proxy.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CDogsConfig.DynamicServiceLookup">
+            <summary>
+            Gets or sets a value indicating whether dynamic service lookup should occur.
+            if enabled, the Url will be created using environment variables.
+            If not enabled, the configured Url will be used.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.CDogsOptionsModel">
+            <summary>
+            Model that defines the cdogs options.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CDogsOptionsModel.ConvertTo">
+            <summary>
+            Gets or sets the file type to convert to.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CDogsOptionsModel.Overwrite">
+            <summary>
+            Gets or sets a value indicating whether to overwrite the file type.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CDogsOptionsModel.ReportName">
+            <summary>
+            Gets or sets the report name.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.CDogsRequestModel">
+            <summary>
+            Object that defines the cdogs request for creating a report.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CDogsRequestModel.Data">
+            <summary>
+            Gets or sets the Json data.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CDogsRequestModel.Options">
+            <summary>
+            Gets or sets the options.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CDogsRequestModel.Template">
+            <summary>
+            Gets or sets the template.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.CDogsTemplateModel">
+            <summary>
+            Model that defines the cdogs template.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CDogsTemplateModel.Content">
+            <summary>
+            Gets or sets the template content.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CDogsTemplateModel.EncodingType">
+            <summary>
+            Gets or sets the content encoding type.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.CDogsTemplateModel.FileType">
+            <summary>
+            Gets or sets the file type.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.CreateNoteRequest">
@@ -929,6 +1068,66 @@
         <member name="P:HealthGateway.WebClient.Models.OpenIdConnectConfiguration.Callbacks">
             <summary>
             Gets or sets the Callback URIs.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.ReportModel">
+            <summary>
+            Object that defines a report.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.ReportModel.Type">
+            <summary>
+            Gets or sets the report type.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.ReportModel.Data">
+            <summary>
+            Gets or sets the report data.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.ReportType">
+            <summary>
+            The report type enum.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.ReportType.PDF">
+            <summary>
+            Indicates a PDF report.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.ReportType.EXCEL">
+            <summary>
+            Indicates a EXCEL report.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.TemplateType">
+            <summary>
+            The report template type enum.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.TemplateType.Medication">
+            <summary>
+            Indicates a Medication template type.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.ReportRequestModel">
+            <summary>
+            Object that defines the request for creating a report.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.ReportRequestModel.Data">
+            <summary>
+            Gets or sets the Json data.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.ReportRequestModel.Template">
+            <summary>
+            Gets or sets the report type.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.ReportRequestModel.Type">
+            <summary>
+            Gets or sets the report type.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.TermsOfServiceModel">
@@ -1742,6 +1941,18 @@
             <param name="userNote">The note to delete.</param>
             <returns>The deleted note wrapped in a RequestResult.</returns>
         </member>
+        <member name="T:HealthGateway.WebClient.Services.IReportService">
+            <summary>
+            Service to interact with the Report Delegate.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IReportService.GetReport(HealthGateway.WebClient.Models.ReportRequestModel)">
+            <summary>
+            Gets a report based on the request provided.
+            </summary>
+            <param name="reportRequest">The report request model.</param>
+            <returns>The report data.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Services.IUserEmailService">
             <summary>
             The User Email service.
@@ -1996,6 +2207,19 @@
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.WebClient.Services.NoteService.DeleteNote(HealthGateway.WebClient.Models.UserNote)">
+            <inheritdoc />
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.ReportService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ReportService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.ReportService},HealthGateway.WebClient.Delegates.ICDogsDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.ReportService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="cdogsDelegate">Injected CDOGS delegate.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ReportService.GetReport(HealthGateway.WebClient.Models.ReportRequestModel)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Services.UserEmailService">
