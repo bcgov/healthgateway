@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using System.Globalization;
     using System.IO;
     using System.Reflection;
     using System.Text;
@@ -54,12 +55,12 @@ namespace HealthGateway.WebClient.Services
                 Data = reportRequest.Data,
                 Options = new CDogsOptionsModel()
                 {
-                    ConvertTo = reportRequest.Type.ToString().ToLower(),
+                    ConvertTo = reportRequest.Type.ToString().ToLower(CultureInfo.CurrentCulture),
                     ReportName = reportName,
                 },
                 Template = new CDogsTemplateModel()
                 {
-                    Content = this.ReadTemplate(reportRequest.Template),
+                    Content = ReadTemplate(reportRequest.Template),
                 },
             };
 
@@ -68,14 +69,15 @@ namespace HealthGateway.WebClient.Services
             return retVal;
         }
 
-        private string ReadTemplate(TemplateType template)
+        private static string ReadTemplate(TemplateType template)
         {
+            string resourceName = $"HealthGateway.WebClient.Server.Assets.Templates.{template}Report.docx";
             Assembly? assembly = Assembly.GetAssembly(typeof(ReportService));
-            Stream? resourceStream = assembly!.GetManifestResourceStream($"HealthGateway.WebClient.Server.Assets.Templates.{template}Report.docx");
+            Stream? resourceStream = assembly!.GetManifestResourceStream(resourceName);
 
             if (resourceStream == null)
             {
-                throw new FileNotFoundException("Template not found");
+                throw new FileNotFoundException($"Template {resourceName} not found.");
             }
 
             using MemoryStream memoryStream = new MemoryStream();

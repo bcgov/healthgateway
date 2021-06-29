@@ -97,13 +97,13 @@ namespace HealthGateway.WebClient.Delegates
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                StringContent httpContent = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json);
+                using StringContent httpContent = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json);
                 try
                 {
                     Uri endpoint = new Uri($"{this.serviceEndpoint}template/render");
                     HttpResponseMessage? response = await client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
                     byte[] payload = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(true);
-                    this.logger.LogTrace($"Response: {response}");
+                    this.logger.LogTrace($"CDogs Response: {JsonSerializer.Serialize(response)}");
 
                     if (response.IsSuccessStatusCode)
                     {
