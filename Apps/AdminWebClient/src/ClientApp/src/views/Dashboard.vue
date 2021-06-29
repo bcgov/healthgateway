@@ -526,10 +526,25 @@ export default class Dashboard extends Vue {
                                                 :value="ratingBars[6 - i]"
                                             ></v-progress-linear>
                                         </v-col>
+                                        <v-col
+                                            class="
+                                                ma-0
+                                                pa-0
+                                                text-right text-caption
+                                            "
+                                            cols="3"
+                                        >
+                                            {{
+                                                ratingSummary[6 - i] ===
+                                                undefined
+                                                    ? 0
+                                                    : ratingSummary[6 - i]
+                                            }}
+                                        </v-col>
                                     </v-row>
                                 </v-col>
                             </v-row>
-                            <div class="text-right text-caption">
+                            <div class="text-right text-caption ma-3">
                                 {{ ratingCount }} Ratings
                             </div>
                         </v-card>
