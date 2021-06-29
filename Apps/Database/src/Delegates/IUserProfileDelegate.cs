@@ -96,7 +96,8 @@ namespace HealthGateway.Database.Delegates
         /// <param name="dayCount">The number of unique days for evaluating a user.</param>
         /// <param name="startDate">The start date to evaluate the user.</param>
         /// <param name="endDate">The end date to evaluate the user.</param>
+        /// <param name="offset">The clients offset to get to UTC.</param>
         /// <returns>The count of recurrent users.</returns>
-        int GetRecurrentUserCount(int dayCount, DateTime startDate, DateTime endDate);
+        int GetRecurrentUserCount(int dayCount, DateTime startDate, DateTime endDate, TimeSpan offset);
     }
 }

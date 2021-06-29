@@ -268,7 +268,6 @@ export default class Dashboard extends Vue {
 
     private getRatings() {
         this.isLoadingRatings = true;
-        this.isLoadingRecurrentCount = true;
         var endDate = DateTime.fromISO(this.ratingPeriodDates[1])
             .plus({ days: 1 })
             .toISO()
@@ -323,7 +322,7 @@ export default class Dashboard extends Vue {
         <v-row class="px-2">
             <v-col>
                 <v-row>
-                    <v-col cols="auto">
+                    <v-col cols="2">
                         <v-text-field
                             v-model="uniqueDays"
                             type="number"
@@ -398,7 +397,7 @@ export default class Dashboard extends Vue {
                             </v-date-picker>
                         </v-dialog>
                     </v-col>
-                    <v-col class="col-lg-3 col-md-6 col-sm-12">
+                    <v-col cols="3">
                         <v-card
                             v-if="!isLoadingRecurrentCount"
                             class="text-center"

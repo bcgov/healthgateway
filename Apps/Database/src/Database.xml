@@ -915,7 +915,7 @@
         <member name="M:HealthGateway.Database.Delegates.DBProfileDelegate.GetAll(System.Int32,System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Database.Delegates.DBProfileDelegate.GetRecurrentUserCount(System.Int32,System.DateTime,System.DateTime)">
+        <member name="M:HealthGateway.Database.Delegates.DBProfileDelegate.GetRecurrentUserCount(System.Int32,System.DateTime,System.DateTime,System.TimeSpan)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.Database.Delegates.DBRatingDelegate">
@@ -934,7 +934,7 @@
         <member name="M:HealthGateway.Database.Delegates.DBRatingDelegate.GetAll(System.Int32,System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Database.Delegates.DBRatingDelegate.GetSummary(System.DateTime,System.DateTime)">
+        <member name="M:HealthGateway.Database.Delegates.DBRatingDelegate.GetSummary(System.DateTime,System.DateTime,System.TimeSpan)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.Database.Delegates.DBResourceDelegateDelegate">
@@ -1653,12 +1653,13 @@
             <param name="pageSize">The maximum amount of rows to return.</param>
             <returns>A list of Ratings wrapped in a DBResult.</returns>
         </member>
-        <member name="M:HealthGateway.Database.Delegates.IRatingDelegate.GetSummary(System.DateTime,System.DateTime)">
+        <member name="M:HealthGateway.Database.Delegates.IRatingDelegate.GetSummary(System.DateTime,System.DateTime,System.TimeSpan)">
             <summary>
             Gets the ratings summary.
             </summary>
             <param name="startDate">The period start to calculate the summary.</param>
             <param name="endDate">The period end to calculate the summary.</param>
+            <param name="offset">The clients offset to get to UTC.</param>
             <returns>A dictionary pairing the ratings with the counts.</returns>
         </member>
         <member name="T:HealthGateway.Database.Delegates.IResourceDelegateDelegate">
@@ -1816,13 +1817,14 @@
             <param name="pageSize">The amount of records to retrieve in 1 request.</param>
             <returns>A list of UserProfiles wrapped in a DBResult.</returns>
         </member>
-        <member name="M:HealthGateway.Database.Delegates.IUserProfileDelegate.GetRecurrentUserCount(System.Int32,System.DateTime,System.DateTime)">
+        <member name="M:HealthGateway.Database.Delegates.IUserProfileDelegate.GetRecurrentUserCount(System.Int32,System.DateTime,System.DateTime,System.TimeSpan)">
             <summary>
             Retrieves the count recurring users.
             </summary>
             <param name="dayCount">The number of unique days for evaluating a user.</param>
             <param name="startDate">The start date to evaluate the user.</param>
             <param name="endDate">The end date to evaluate the user.</param>
+            <param name="offset">The clients offset to get to UTC.</param>
             <returns>The count of recurrent users.</returns>
         </member>
         <member name="T:HealthGateway.Database.Delegates.IWalletDelegate">
