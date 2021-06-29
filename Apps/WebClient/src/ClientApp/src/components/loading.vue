@@ -107,7 +107,7 @@ export default class LoadingComponent extends Vue {
 @import "@/assets/scss/_variables.scss";
 .fullScreen {
     position: fixed;
-    z-index: 9998;
+    z-index: $z_loading_overlay;
     top: 0;
     left: 0;
     width: 100%;
@@ -118,7 +118,7 @@ export default class LoadingComponent extends Vue {
 }
 .block {
     position: absolute;
-    z-index: 9998;
+    z-index: $z_loading_overlay;
     top: 0;
     left: 0;
     width: 100%;
