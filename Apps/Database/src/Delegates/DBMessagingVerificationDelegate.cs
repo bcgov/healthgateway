@@ -141,8 +141,7 @@ namespace HealthGateway.Database.Delegates
             switch (queryType)
             {
                 case UserQueryType.Email:
-                    query = this.dbContext.MessagingVerification.Where(mv => mv.Email != null && EF.Functions.ILike(mv.Email.To, $"%{queryString}%"))
-                                                                .Include(mv => mv.Email);
+                    query = this.dbContext.MessagingVerification.Where(mv => mv.Email != null && EF.Functions.ILike(mv.Email.To, $"%{queryString}%"));
                     break;
                 case UserQueryType.HDID:
                     query = this.dbContext.MessagingVerification.Where(mv => mv.UserProfileId == queryString);
@@ -154,7 +153,9 @@ namespace HealthGateway.Database.Delegates
                     throw new ArgumentOutOfRangeException(nameof(queryType), "Query Type is invalid");
             }
 
-            IList<MessagingVerification> verifications = query.OrderByDescending(mv => mv.CreatedDateTime).AsNoTracking().ToList();
+            IList<MessagingVerification> verifications = query.Include(mv => mv.Email)
+                                                              .OrderByDescending(mv => mv.CreatedDateTime)
+                                                              .AsNoTracking().ToList();
             DBResult<IEnumerable<MessagingVerification>> result = new ()
             {
                 Payload = verifications,

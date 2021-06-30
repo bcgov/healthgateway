@@ -104,5 +104,22 @@ namespace HealthGateway.Admin.Controllers
         {
             return new JsonResult(this.dashboardService.GetRecurrentUserCount(days, startPeriod, endPeriod, timeOffset));
         }
+
+        /// <summary>
+        /// Retrieves the ratings summary.
+        /// </summary>
+        /// <param name="startPeriod">The period start to calculate the summary.</param>
+        /// <param name="endPeriod">The period end to calculate the summary.</param>
+        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        /// <returns>A dictionary pairing the ratings with the counts.</returns>
+        /// <response code="200">Returns the ratings summary.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("Ratings/Summary")]
+        public IActionResult GetRatingsSummary([FromQuery] string startPeriod, [FromQuery] string endPeriod, [FromQuery] int timeOffset)
+        {
+            return new JsonResult(this.dashboardService.GetRatingSummary(startPeriod, endPeriod, timeOffset));
+        }
     }
 }

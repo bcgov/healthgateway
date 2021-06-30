@@ -14,6 +14,7 @@ import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
+import SnowPlow from "@/utility/snowPlow";
 
 import EntrycardTimelineComponent from "./entrycard.vue";
 
@@ -60,6 +61,11 @@ export default class LaboratoryTimelineComponent extends Vue {
     }
 
     private getReport() {
+        SnowPlow.trackEvent({
+            action: "download_report",
+            text: "COVID Test PDF",
+        });
+
         this.isLoadingDocument = true;
         this.laboratoryService
             .getReportDocument(this.entry.id, this.user.hdid)

@@ -19,6 +19,7 @@ namespace HealthGateway.Admin.Services
     using System.Collections.Generic;
     using HealthGateway.Admin.Constants;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Service that provides functionality to the admin dashboard.
@@ -62,6 +63,15 @@ namespace HealthGateway.Admin.Services
         /// <param name="queryType">The type of query to perform.</param>
         /// <param name="queryString">The value to query on.</param>
         /// <returns>A list of users matching the query.</returns>
-        RequestResult<IEnumerable<Database.Models.MessagingVerification>> GetMessageVerifications(UserQueryType queryType, string queryString);
+        RequestResult<IEnumerable<MessagingVerification>> GetMessageVerifications(UserQueryType queryType, string queryString);
+
+        /// <summary>
+        /// Retrieves the ratings summary.
+        /// </summary>
+        /// <param name="startPeriod">The period start to calculate the summary.</param>
+        /// <param name="endPeriod">The period end to calculate the summary.</param>
+        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        /// <returns>A dictionary pairing the ratings with the counts.</returns>
+        IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset);
     }
 }

@@ -13,6 +13,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import PDFUtil from "@/utility/pdfUtil";
+import SnowPlow from "@/utility/snowPlow";
 
 interface Dose {
     product: string;
@@ -134,6 +135,10 @@ export default class ImmunizationCardComponent extends Vue {
     }
 
     private downloadPdf() {
+        SnowPlow.trackEvent({
+            action: "download_card",
+            text: "COVID Card PDF",
+        });
         PDFUtil.generatePdf(
             "HealthGateway_ImmunizationHistory.pdf",
             this.cardModal.$refs.content as HTMLElement

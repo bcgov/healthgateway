@@ -84,6 +84,34 @@ To create the services for a given namespace do the following
 ./deploy_services.sh NAMESPACE ENVIRONMENT ASPNETCORE_ENVIRONMENT
 ```
 
+Deloying CDOGs within Health Gateway
+Import the image from the bcgov docker hub repo.  We have setup an Azure pipline to automate this but manually
+
+```console
+oc project [licenseplay]-tools
+oc import-image hgcdogs:[version] --from=bcgovimages/doc-gen-api:v[version] --confirm
+```
+
+You then need to tag to the appropriate Health Gateway environment
+
+```console
+oc tag hgcdogs:[version] hgcdogs:[dev/test/production]
+```
+
+Ensure that each namesapce can pull Docker images
+
+```console
+oc project 0bd5ad-[project]
+oc create secret docker-registry docker-secret --docker-server=docker.io --docker-username=healthopenshift --docker-password=[ASK TEAM] --docker-email=stephen.s.laws@gov.bc.ca
+oc secrets link default docker-secret --for=pull
+```
+
+Deploy the service
+
+```console
+oc process -f ./hgcdogs.yaml -p ENV=[dev/test/production] | oc apply -f -
+```
+
 TODO: ODR in tools
 
 ### Application Specific Configuration

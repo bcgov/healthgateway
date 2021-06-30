@@ -21,6 +21,7 @@ import {
     ILogger,
     IMedicationService,
     IPatientService,
+    IReportService,
     IStoreProvider,
     IUserCommentService,
     IUserFeedbackService,
@@ -43,6 +44,7 @@ import { RestUserNoteService } from "@/services/restUserNoteService";
 import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserRatingService } from "@/services/restUserRatingService";
 import { RestCredentialService } from "@/services/restCredentialService";
+import { RestReportService } from '@/services/restReportService';
 import { WinstonLogger } from "@/services/winstonLogger";
 import StoreProvider from "@/store/provider";
 import container from "./inversify.container";
@@ -112,6 +114,10 @@ container
 container
     .bind<ICredentialService>(SERVICE_IDENTIFIER.CredentialService)
     .to(RestCredentialService)
+    .inSingletonScope();
+container
+    .bind<IReportService>(SERVICE_IDENTIFIER.ReportService)
+    .to(RestReportService)
     .inSingletonScope();
 container
     .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)

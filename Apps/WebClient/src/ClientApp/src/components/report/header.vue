@@ -85,10 +85,10 @@ export default class ReportHeaderComponent extends Vue {
                     Displaying records
                     {{
                         filter.startDate
-                            ? `since ${formatDate(filter.startDate)}`
+                            ? `from ${formatDate(filter.startDate)}`
                             : ""
                     }}
-                    until
+                    up to
                     {{
                         filter.endDate
                             ? formatDate(filter.endDate)

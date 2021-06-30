@@ -11,7 +11,7 @@ trigger:
     include:
       - Testing/functional
 variables:
-  Tests.Path: $(Build.SourcesDirectory)/Testing/functional/e2e
+  Tests.Path: $(Build.SourcesDirectory)/Testing/functional/tests
 
 jobs:
   - job: "PackageTests"

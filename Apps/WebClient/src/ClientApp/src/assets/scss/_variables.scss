@@ -14,12 +14,14 @@ $danger: #d93e45;
 
 $heading_color: #313132;
 
-$z_top_layer: 9999;
-$z_datepicker: 1036;
-$z_header: 1035;
-$z_popover: 1030; // Less than modal backdrop (1040)
-$z_sidebar: 1020; // Less than modal backdrop (1040)
 $z_overlay: 998;
+$z_sidebar: 1020; // Less than modal backdrop (1040)
+$z_popover: 1030; // Less than modal backdrop (1040)
+$z_header: 1035;
+$z_datepicker: 1036; // more than header
+$z_loading_overlay: 1090;
+$z_application_rating: 1100;
+$z_top_layer: 9999;
 
 $header-height: 65px;
 $timeline-filter-height: 54px;

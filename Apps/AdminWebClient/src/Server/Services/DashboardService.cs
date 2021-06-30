@@ -34,6 +34,7 @@ namespace HealthGateway.Admin.Services
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly IMessagingVerificationDelegate messagingVerificationDelegate;
         private readonly IPatientService patientService;
+        private readonly IRatingDelegate ratingDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
@@ -42,16 +43,19 @@ namespace HealthGateway.Admin.Services
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
         /// <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
         /// <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
+        /// <param name="ratingDelegate">The rating delegate.</param>
         public DashboardService(
             IResourceDelegateDelegate dependentDelegate,
             IUserProfileDelegate userProfileDelegate,
             IMessagingVerificationDelegate messagingVerificationDelegate,
-            IPatientService patientService)
+            IPatientService patientService,
+            IRatingDelegate ratingDelegate)
         {
             this.dependentDelegate = dependentDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.messagingVerificationDelegate = messagingVerificationDelegate;
             this.patientService = patientService;
+            this.ratingDelegate = ratingDelegate;
         }
 
         /// <inheritdoc />
@@ -83,9 +87,9 @@ namespace HealthGateway.Admin.Services
         {
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
             TimeSpan ts = new (0, timeOffset, 0);
-            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).AddMinutes(ts.TotalMinutes).Date;
-            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).AddMinutes(ts.TotalMinutes).Date;
-            return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
+            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date;
+            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date;
+            return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate, ts);
         }
 
         /// <inheritdoc />
@@ -128,6 +132,16 @@ namespace HealthGateway.Admin.Services
             }
 
             return retVal;
+        }
+
+        /// <inheritdoc />
+        public IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset)
+        {
+            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
+            TimeSpan ts = new (0, timeOffset, 0);
+            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date;
+            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date;
+            return this.ratingDelegate.GetSummary(startDate, endDate, ts);
         }
     }
 }
