@@ -287,7 +287,7 @@ export default class RegistrationView extends Vue {
 </script>
 
 <template>
-    <b-container class="py-2 py-md-5">
+    <b-container class="pt-2">
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <div v-if="!isLoading && termsOfService !== ''">
             <b-row v-if="isRegistrationClosed">
@@ -307,21 +307,18 @@ export default class RegistrationView extends Vue {
                     ref="registrationForm"
                     @submit.prevent="onSubmit"
                 >
-                    <b-row class="my-3">
+                    <b-row>
                         <b-col>
                             <div id="pageTitle">
-                                <h1 id="Subject">Welcome to Health Gateway!</h1>
+                                <h2 id="Subject">Registration</h2>
                             </div>
                         </b-col>
                     </b-row>
-                    <b-row class="my-4">
+                    <b-row class="mb-2">
                         <b-col>
-                            <h2>Communication Preferences</h2>
-                            <div id="Description">
-                                Health Gateway will send you notifications via
-                                email and based on your preference, may send
-                                email and/or text for other notifications.
-                            </div>
+                            <h4 class="subheading">
+                                Communication Preferences (Optional)
+                            </h4>
                         </b-col>
                     </b-row>
                     <b-row class="mb-3">
@@ -334,10 +331,16 @@ export default class RegistrationView extends Vue {
                                         data-testid="emailCheckbox"
                                         @change="onEmailOptout($event)"
                                     >
+                                        Email Notifications
                                     </b-form-checkbox>
-                                    <label class="d-flex" for="email">
-                                        Email Notifications <Address></Address>
-                                    </label>
+                                </b-col>
+                            </b-row>
+                            <b-row class="d-flex">
+                                <b-col class="d-flex pr-0">
+                                    <i class="small">
+                                        Used for application and health record
+                                        updates
+                                    </i>
                                 </b-col>
                             </b-row>
                             <b-form-input
@@ -381,10 +384,16 @@ export default class RegistrationView extends Vue {
                                         id="smsCheckbox"
                                         v-model="isSMSNumberChecked"
                                         @change="onSMSOptout($event)"
-                                    ></b-form-checkbox>
-                                    <label class="d-flex" for="smsNumber"
-                                        >SMS Notifications <Address></Address>
-                                    </label>
+                                    >
+                                        Text Notifications
+                                    </b-form-checkbox>
+                                </b-col>
+                            </b-row>
+                            <b-row class="d-flex">
+                                <b-col class="d-flex pr-0">
+                                    <i class="small">
+                                        Used for health record updates only
+                                    </i>
                                 </b-col>
                             </b-row>
                             <b-form-input
@@ -423,12 +432,15 @@ export default class RegistrationView extends Vue {
                     </b-row>
                     <b-row class="mt-4">
                         <b-col>
-                            <h2>Terms of Service</h2>
+                            <h4 class="subheading">Terms of Service</h4>
                         </b-col>
                     </b-row>
                     <b-row class="mb-3">
                         <b-col>
-                            <HtmlTextAreaComponent :input="termsOfService" />
+                            <HtmlTextAreaComponent
+                                class="termsOfService"
+                                :input="termsOfService"
+                            />
                         </b-col>
                     </b-row>
                     <b-row class="mb-3">
@@ -484,18 +496,6 @@ export default class RegistrationView extends Vue {
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-#pageTitle {
-    color: $primary;
-}
-
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
-
-#Description {
-    font-size: 1.2em;
-}
-
 input {
     width: 320px !important;
     max-width: 320px !important;
@@ -507,17 +507,12 @@ input {
 
 .subheading {
     color: $soft_text;
-    font-size: inherit;
-    margin-bottom: 5px;
 }
 
-label {
-    font-size: 1.2em;
-    margin: 0px;
-}
-
-#termsOfService {
-    background-color: $light_background;
-    color: $soft_text;
+.termsOfService {
+    max-height: 370px;
+    overflow-y: scroll;
+    box-shadow: 0 0 2px #00000070;
+    border: none;
 }
 </style>
