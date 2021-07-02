@@ -510,7 +510,7 @@ input {
 }
 
 .termsOfService {
-    max-height: 370px;
+    max-height: 330px;
     overflow-y: scroll;
     box-shadow: 0 0 2px #00000070;
     border: none;
