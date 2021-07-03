@@ -1,22 +1,31 @@
 <script lang="ts">
+import { saveAs } from "file-saver";
 import Vue from "vue";
-import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
+import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import {
     ImmunizationAgent,
     ImmunizationEvent,
     Recommendation,
 } from "@/models/immunizationModel";
+import PatientData from "@/models/patientData";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
+import { ReportType, TemplateType } from "@/models/reportRequest";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
-import { ILogger } from "@/services/interfaces";
-import PDFUtil from "@/utility/pdfUtil";
+import { ILogger, IReportService } from "@/services/interfaces";
+
+interface ReportHeader {
+    phn: string;
+    name: string;
+    dateOfBirth: string;
+    datePrinted: string;
+    filterText: string;
+}
 
 interface ImmunizationRow {
     date: string;
@@ -31,13 +40,12 @@ interface RecomendationRow {
     status: string;
 }
 
-@Component({
-    components: {
-        ReportHeaderComponent,
-    },
-})
+@Component
 export default class ImmunizationHistoryReportComponent extends Vue {
     @Prop() private filter!: ReportFilter;
+
+    @Getter("patientData", { namespace: "user" })
+    patientData!: PatientData;
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -57,11 +65,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     @Getter("recomendations", { namespace: "immunization" })
     patientRecommendations!: Recommendation[];
 
-    @Ref("report")
-    readonly report!: HTMLElement;
-
     private logger!: ILogger;
-    private isPreview = true;
 
     private readonly headerClass = "immunization-report-table-header";
 
@@ -69,6 +73,36 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     @Emit()
     private onIsLoadingChanged() {
         return this.isLoading;
+    }
+
+    private get headerData(): ReportHeader {
+        return {
+            phn: this.patientData.personalhealthnumber,
+            dateOfBirth: this.formatDate(this.patientData.birthdate || ""),
+            name: this.patientData
+                ? this.patientData.firstname + " " + this.patientData.lastname
+                : "",
+            datePrinted: this.formatDate(new DateWrapper().toISO()),
+            filterText: this.filterText,
+        };
+    }
+
+    private get filterText(): string {
+        if (!this.filter.hasDateFilter()) {
+            return "";
+        }
+
+        const start = this.filter.startDate
+            ? ` from ${this.formatDate(this.filter.startDate)}`
+            : "";
+        const end = this.filter.endDate
+            ? this.formatDate(this.filter.endDate)
+            : this.formatDate(new DateWrapper().toISO());
+        return `Displaying records${start} up to ${end}`;
+    }
+
+    private formatDate(date: string): string {
+        return new DateWrapper(date).format();
     }
 
     private get isLoading(): boolean {
@@ -140,15 +174,28 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     public async generatePdf(): Promise<void> {
-        this.logger.debug("generating Immunization History PDF...");
-        this.isPreview = false;
+        const reportService: IReportService = container.get<IReportService>(
+            SERVICE_IDENTIFIER.ReportService
+        );
 
-        return PDFUtil.generatePdf(
-            "HealthGateway_ImmunizationHistory.pdf",
-            this.report
-        ).then(() => {
-            this.isPreview = true;
-        });
+        return reportService
+            .generateReport({
+                data: {
+                    header: this.headerData,
+                    records: this.immunizationItems,
+                    recommendations: this.recomendationItems,
+                },
+                template: TemplateType.Immunization,
+                type: ReportType.PDF,
+            })
+            .then((result) => {
+                const downloadLink = `data:application/pdf;base64,${result.resourcePayload.data}`;
+                fetch(downloadLink).then((res) => {
+                    res.blob().then((blob) => {
+                        saveAs(blob, result.resourcePayload.fileName);
+                    });
+                });
+            });
     }
 
     private immunizationFields: ReportField[] = [
@@ -213,20 +260,12 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     <div>
         <div ref="report">
             <section class="pdf-item">
-                <div>
-                    <ReportHeaderComponent
-                        v-show="!isPreview"
-                        :filter="filter"
-                        title="Health Gateway Immunization Record"
-                    />
-                    <hr />
-                </div>
                 <b-row>
                     <b-col>
                         <h4>Immunization History</h4>
                     </b-col>
                 </b-row>
-                <b-row v-if="isEmpty && (!isLoading || !isPreview)">
+                <b-row v-if="isEmpty && !isLoading">
                     <b-col>No records found.</b-col>
                 </b-row>
                 <b-table
@@ -283,10 +322,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                             </b-col>
                         </b-row>
                         <b-row
-                            v-if="
-                                isRecommendationEmpty &&
-                                (!isLoading || !isPreview)
-                            "
+                            v-if="isRecommendationEmpty && !isLoading"
                             class="mt-2"
                         >
                             <b-col>No recommendations found.</b-col>

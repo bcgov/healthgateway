@@ -10,12 +10,11 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import PatientData from "@/models/patientData";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
+import { ReportType, TemplateType } from "@/models/reportRequest";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger, IReportService } from "@/services/interfaces";
-
-import { ReportType, TemplateType } from "../../models/reportRequest";
 
 interface ReportHeader {
     phn: string;
