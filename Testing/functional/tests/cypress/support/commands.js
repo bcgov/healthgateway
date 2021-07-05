@@ -233,7 +233,7 @@ Cypress.Commands.add("readConfig", () => {
 });
 
 Cypress.Commands.add("checkTimelineHasLoaded", () => {
-    cy.get("#subject").should("have.text", "Health Care Timeline");
+    cy.get("#subject").should("have.text", "Timeline");
     cy.get("[data-testid=timelineLoading]").should("not.be.visible");
 });
 
