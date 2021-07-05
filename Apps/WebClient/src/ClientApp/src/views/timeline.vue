@@ -356,18 +356,19 @@ export default class TimelineView extends Vue {
                         variant="info"
                         class="no-print"
                     >
-                        <h4>Please complete your profile</h4>
+                        <h4>Verify Contact Information</h4>
                         <span>
                             Your email or cell phone number have not been
-                            verified. To complete your profile and receive
-                            notifications from the Health Gateway, visit the
+                            verified. You can use the Health Gateway without
+                            verified contact information, however, you will not
+                            receive notifications. Visit the
                             <router-link
                                 id="profilePageLink"
                                 variant="primary"
                                 to="/profile"
                                 >Profile Page</router-link
                             >
-                            <span>.</span>
+                            to complete your verification.
                         </span>
                     </b-alert>
                     <b-alert
