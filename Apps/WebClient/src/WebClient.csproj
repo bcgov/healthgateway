@@ -57,6 +57,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Server\Assets\Robots.txt" />
     <EmbeddedResource Include="Server\Assets\Templates\ImmunizationReport.docx" />
+    <EmbeddedResource Include="Server\Assets\Templates\EncounterReport.docx" />
     <EmbeddedResource Include="Server\Assets\Templates\MedicationReport.docx" />
   </ItemGroup>
 

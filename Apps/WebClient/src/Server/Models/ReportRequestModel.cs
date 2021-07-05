@@ -47,6 +47,11 @@ namespace HealthGateway.WebClient.Models
         /// Indicates a Immunization template type.
         /// </summary>
         Immunization,
+
+        /// <summary>
+        /// Indicates a Encounter template type.
+        /// </summary>
+        Encounter,
     }
 
     /// <summary>
