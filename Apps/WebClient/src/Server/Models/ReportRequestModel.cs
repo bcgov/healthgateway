@@ -39,19 +39,24 @@ namespace HealthGateway.WebClient.Models
     public enum TemplateType
     {
         /// <summary>
+        /// Indicates an Encounter template type.
+        /// </summary>
+        Encounter,
+
+        /// <summary>
+        /// Indicates an Immunization template type.
+        /// </summary>
+        Immunization,
+
+        /// <summary>
         /// Indicates a Medication template type.
         /// </summary>
         Medication,
 
         /// <summary>
-        /// Indicates a Immunization template type.
+        /// Indicates a Medication Request template type.
         /// </summary>
-        Immunization,
-
-        /// <summary>
-        /// Indicates a Encounter template type.
-        /// </summary>
-        Encounter,
+        MedicationRequest,
     }
 
     /// <summary>

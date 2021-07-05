@@ -10,9 +10,10 @@ export default interface ReportRequest {
 }
 
 export enum TemplateType {
-    Medication,
-    Immunization,
     Encounter,
+    Immunization,
+    Medication,
+    MedicationRequest,
 }
 
 export enum ReportType {

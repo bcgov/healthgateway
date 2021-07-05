@@ -1,18 +1,19 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
+import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationRequest from "@/models/MedicationRequest";
+import PatientData from "@/models/patientData";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
+import ReportHeader from "@/models/reportHeader";
+import { ReportType, TemplateType } from "@/models/reportRequest";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
-import { ILogger } from "@/services/interfaces";
-import PDFUtil from "@/utility/pdfUtil";
+import { ILogger, IReportService } from "@/services/interfaces";
 
 interface MedicationRequestRow {
     date: string;
@@ -24,13 +25,12 @@ interface MedicationRequestRow {
     reference_number: string;
 }
 
-@Component({
-    components: {
-        ReportHeaderComponent,
-    },
-})
+@Component
 export default class MedicationRequestReportComponent extends Vue {
     @Prop() private filter!: ReportFilter;
+
+    @Getter("patientData", { namespace: "user" })
+    private patientData!: PatientData;
 
     @Getter("user", { namespace: "user" })
     private user!: User;
@@ -44,11 +44,7 @@ export default class MedicationRequestReportComponent extends Vue {
     @Getter("medicationRequests", { namespace: "medication" })
     medicationRequests!: MedicationRequest[];
 
-    @Ref("report")
-    readonly report!: HTMLElement;
-
     private logger!: ILogger;
-    private isPreview = true;
 
     private readonly headerClass = "medication-request-report-table-header";
 
@@ -80,6 +76,32 @@ export default class MedicationRequestReportComponent extends Vue {
         return records;
     }
 
+    private get headerData(): ReportHeader {
+        return {
+            phn: this.patientData.personalhealthnumber,
+            dateOfBirth: this.formatDate(this.patientData.birthdate || ""),
+            name: this.patientData
+                ? this.patientData.firstname + " " + this.patientData.lastname
+                : "",
+            datePrinted: this.formatDate(new DateWrapper().toISO()),
+            filterText: this.filterText,
+        };
+    }
+
+    private get filterText(): string {
+        if (!this.filter.hasDateFilter()) {
+            return "";
+        }
+
+        const start = this.filter.startDate
+            ? ` from ${this.formatDate(this.filter.startDate)}`
+            : "";
+        const end = this.filter.endDate
+            ? this.formatDate(this.filter.endDate)
+            : this.formatDate(new DateWrapper().toISO());
+        return `Displaying records${start} up to ${end}`;
+    }
+
     private get items(): MedicationRequestRow[] {
         return this.visibleRecords.map<MedicationRequestRow>((x) => {
             return {
@@ -100,6 +122,10 @@ export default class MedicationRequestReportComponent extends Vue {
         });
     }
 
+    private formatDate(date: string): string {
+        return new DateWrapper(date).format();
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.retrieve({ hdid: this.user.hdid }).catch((err) => {
@@ -116,15 +142,26 @@ export default class MedicationRequestReportComponent extends Vue {
     }
 
     public async generatePdf(): Promise<void> {
-        this.logger.debug("generating Medication Request History PDF...");
-        this.isPreview = false;
-
-        return PDFUtil.generatePdf(
-            "HealthGateway_SpecialAuthorityRequestHistory.pdf",
-            this.report
-        ).then(() => {
-            this.isPreview = true;
-        });
+        const reportService: IReportService = container.get<IReportService>(
+            SERVICE_IDENTIFIER.ReportService
+        );
+        return reportService
+            .generateReport({
+                data: {
+                    header: this.headerData,
+                    records: this.items,
+                },
+                template: TemplateType.MedicationRequest,
+                type: ReportType.PDF,
+            })
+            .then((result) => {
+                const downloadLink = `data:application/pdf;base64,${result.resourcePayload.data}`;
+                fetch(downloadLink).then((res) => {
+                    res.blob().then((blob) => {
+                        saveAs(blob, result.resourcePayload.fileName);
+                    });
+                });
+            });
     }
 
     private fields: ReportField[] = [
@@ -171,12 +208,7 @@ export default class MedicationRequestReportComponent extends Vue {
     <div>
         <div ref="report">
             <section class="pdf-item">
-                <ReportHeaderComponent
-                    v-show="!isPreview"
-                    :filter="filter"
-                    title="Health Gateway Special Authority Request History "
-                />
-                <b-row v-if="isEmpty && (!isLoading || !isPreview)">
+                <b-row v-if="isEmpty && !isLoading">
                     <b-col>No records found.</b-col>
                 </b-row>
                 <b-table
