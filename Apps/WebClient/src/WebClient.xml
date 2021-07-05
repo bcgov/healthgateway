@@ -1115,6 +1115,11 @@
             Indicates a Medication template type.
             </summary>
         </member>
+        <member name="F:HealthGateway.WebClient.Models.TemplateType.Immunization">
+            <summary>
+            Indicates a Immunization template type.
+            </summary>
+        </member>
         <member name="T:HealthGateway.WebClient.Models.ReportRequestModel">
             <summary>
             Object that defines the request for creating a report.
