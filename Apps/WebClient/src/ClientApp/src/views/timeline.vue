@@ -411,7 +411,7 @@ export default class TimelineView extends Vue {
                 </div>
 
                 <div id="pageTitle" class="px-2">
-                    <h1 id="subject">Health Care Timeline</h1>
+                    <h1 id="subject">Timeline</h1>
                     <hr class="mb-0" />
                 </div>
                 <div

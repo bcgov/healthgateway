@@ -10,20 +10,12 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import PatientData from "@/models/patientData";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
+import ReportHeader from "@/models/reportHeader";
 import { ReportType, TemplateType } from "@/models/reportRequest";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger, IReportService } from "@/services/interfaces";
-
-interface ReportHeader {
-    phn: string;
-    name: string;
-    dateOfBirth: string;
-    datePrinted: string;
-    isRedacted: boolean;
-    filterText: string;
-}
 
 interface MedicationRow {
     date: string;
