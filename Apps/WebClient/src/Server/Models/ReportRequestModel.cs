@@ -47,6 +47,11 @@ namespace HealthGateway.WebClient.Models
         /// Indicates a Immunization template type.
         /// </summary>
         Immunization,
+
+        /// <summary>
+        /// Indicates a Covid Test Results template type.
+        /// </summary>
+        Covid,
     }
 
     /// <summary>
