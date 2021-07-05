@@ -452,7 +452,7 @@ export default class RegistrationView extends Vue {
                                 class="accept"
                                 :state="isValid($v.accepted)"
                             >
-                                I agree to the terms of service above.
+                                I agree to the terms of service above
                             </b-form-checkbox>
                             <b-form-invalid-feedback
                                 :state="isValid($v.accepted)"
