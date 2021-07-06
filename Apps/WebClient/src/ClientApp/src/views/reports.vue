@@ -57,7 +57,8 @@ export default class ReportsView extends Vue {
     @Ref("report")
     readonly report!: {
         generateReport: (
-            reportFormatType: ReportFormatType
+            reportFormatType: ReportFormatType,
+            headerData: ReportHeader
         ) => Promise<RequestResult<Report>>;
     };
 
@@ -206,7 +207,7 @@ export default class ReportsView extends Vue {
         });
 
         this.report
-            .generateReport(this.reportFormatType)
+            .generateReport(this.reportFormatType, this.headerData)
             .then((result: RequestResult<Report>) => {
                 const mimeType = this.getMimeType(this.reportFormatType);
                 const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
