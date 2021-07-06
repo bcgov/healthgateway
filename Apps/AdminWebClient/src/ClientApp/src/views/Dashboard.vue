@@ -98,7 +98,9 @@ export default class Dashboard extends Vue {
         return (
             this.isLoadingRegistered ||
             this.isLoadingLoggedIn ||
-            this.isLoadingDependent
+            this.isLoadingDependent ||
+            this.isLoadingRecurrentCount ||
+            this.isLoadingRatings
         );
     }
 
@@ -150,6 +152,13 @@ export default class Dashboard extends Vue {
         this.dashboardService = container.get(
             SERVICE_IDENTIFIER.DashboardService
         );
+        this.getAllData();
+    }
+
+    private getAllData() {
+        this.tableData = [];
+        this.totalRegisteredUserCount = 0;
+        this.totalDependentCount = 0;
         this.getRegisteredUserCount();
         this.getLoggedInUsersCount();
         this.getDependentCount();
@@ -290,6 +299,16 @@ export default class Dashboard extends Vue {
 
 <template>
     <v-container>
+        <v-btn
+            fab
+            color="secondary"
+            dark
+            class="refresh-button"
+            :loading="isLoading"
+            @click="getAllData"
+        >
+            <v-icon>refresh</v-icon>
+        </v-btn>
         <h2>Totals</h2>
         <v-row v-if="!isLoading" class="px-2">
             <v-col class="col-lg-3 col-md-6 col-sm-12">
@@ -652,5 +671,12 @@ export default class Dashboard extends Vue {
     .v-rating .v-icon {
         padding: 0px;
     }
+}
+
+.refresh-button {
+    position: fixed;
+    right: 16px;
+    top: 80px;
+    z-index: 1000;
 }
 </style>
