@@ -13,10 +13,10 @@ export default interface MessageVerification {
     verificationType: VerificationType;
     smsNumber: string | null;
     smsValidationCode: string;
-    expireDate: string;
+    expireDate: Date;
     verificationAttempts: number;
     deleted: boolean;
-    updatedDateTime: string;
+    updatedDateTime: Date;
 }
 
 export interface Email {
@@ -25,7 +25,7 @@ export interface Email {
     to: string;
     subject: string;
     body: string;
-    sentDateTime: string;
+    sentDateTime: Date;
     lastRetryDateTime?: string;
     attempts: number;
     smtpStatusCode: number;

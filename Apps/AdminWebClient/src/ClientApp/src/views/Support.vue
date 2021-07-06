@@ -1,5 +1,4 @@
 <script lang="ts">
-import moment from "moment";
 import { Component, Vue } from "vue-property-decorator";
 
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
@@ -121,8 +120,11 @@ export default class SupportView extends Vue {
         this.supportService = container.get(SERVICE_IDENTIFIER.SupportService);
     }
 
-    private formatDate(date: string): string {
-        return moment(date).format("l LT");
+    private formatDate(date: Date): string {
+        if (!date) {
+            return "";
+        }
+        return new Date(Date.parse(date + "Z")).toLocaleString();
     }
 
     private handleSearch() {
