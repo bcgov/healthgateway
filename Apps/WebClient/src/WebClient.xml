@@ -1110,19 +1110,24 @@
             The report template type enum.
             </summary>
         </member>
+        <member name="F:HealthGateway.WebClient.Models.TemplateType.Encounter">
+            <summary>
+            Indicates an Encounter template type.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.TemplateType.Immunization">
+            <summary>
+            Indicates an Immunization template type.
+            </summary>
+        </member>
         <member name="F:HealthGateway.WebClient.Models.TemplateType.Medication">
             <summary>
             Indicates a Medication template type.
             </summary>
         </member>
-        <member name="F:HealthGateway.WebClient.Models.TemplateType.Immunization">
+        <member name="F:HealthGateway.WebClient.Models.TemplateType.MedicationRequest">
             <summary>
-            Indicates a Immunization template type.
-            </summary>
-        </member>
-        <member name="F:HealthGateway.WebClient.Models.TemplateType.Encounter">
-            <summary>
-            Indicates a Encounter template type.
+            Indicates a Medication Request template type.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.ReportRequestModel">
