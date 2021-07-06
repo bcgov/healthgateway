@@ -313,7 +313,7 @@ export default class Dashboard extends Vue {
         >
             <v-icon>refresh</v-icon>
         </v-btn>
-        <h2>Totals</h2>
+        <h2 class="mt-6 mb-4">Totals</h2>
         <v-row class="px-2">
             <v-col cols="12" sm="6" md="5" offset-md="1">
                 <v-card v-if="!isLoading" class="text-center">
@@ -335,7 +335,7 @@ export default class Dashboard extends Vue {
             </v-col>
         </v-row>
 
-        <h2>Recurring Users</h2>
+        <h2 class="mt-6 mb-4">Recurring Users</h2>
         <v-row class="px-2">
             <v-col cols="12" sm="6" md="5" offset-md="1">
                 <v-dialog
@@ -418,7 +418,7 @@ export default class Dashboard extends Vue {
             </v-col>
         </v-row>
 
-        <h2>Rating</h2>
+        <h2 class="mt-6 mb-4">Rating</h2>
         <v-row class="px-2">
             <v-col cols="12" sm="6" md="5" offset-md="1">
                 <v-dialog
@@ -540,7 +540,7 @@ export default class Dashboard extends Vue {
             </v-col>
         </v-row>
 
-        <h2>Daily Data</h2>
+        <h2 class="mt-6 mb-4">Daily Data</h2>
         <v-row>
             <v-col cols="12" sm="6" md="5" offset-md="1">
                 <v-dialog
@@ -641,10 +641,5 @@ export default class Dashboard extends Vue {
     right: 16px;
     top: 80px;
     z-index: 1000;
-}
-
-h2 {
-    margin-top: 1em;
-    margin-bottom: 0.5em;
 }
 </style>
