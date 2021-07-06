@@ -1,5 +1,4 @@
 <script lang="ts">
-import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -7,11 +6,12 @@ import { Action, Getter } from "vuex-class";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import PatientData from "@/models/patientData";
+import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
-import { ReportType, TemplateType } from "@/models/reportRequest";
+import { ReportFormatType, TemplateType } from "@/models/reportRequest";
+import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
@@ -36,9 +36,6 @@ interface MedicationRow {
 })
 export default class MedicationHistoryReportComponent extends Vue {
     @Prop() private filter!: ReportFilter;
-
-    @Getter("patientData", { namespace: "user" })
-    patientData!: PatientData;
 
     @Getter("user", { namespace: "user" })
     private user!: User;
@@ -88,19 +85,6 @@ export default class MedicationHistoryReportComponent extends Vue {
         return records;
     }
 
-    private get headerData(): ReportHeader {
-        return {
-            phn: this.patientData.personalhealthnumber,
-            dateOfBirth: this.formatDate(this.patientData.birthdate || ""),
-            name: this.patientData
-                ? this.patientData.firstname + " " + this.patientData.lastname
-                : "",
-            isRedacted: this.filter.hasMedicationsFilter(),
-            datePrinted: this.formatDate(new DateWrapper().toISO()),
-            filterText: this.filterText,
-        };
-    }
-
     private get items(): MedicationRow[] {
         return this.visibleRecords.map<MedicationRow>((x) => {
             return {
@@ -124,20 +108,6 @@ export default class MedicationHistoryReportComponent extends Vue {
         });
     }
 
-    private get filterText(): string {
-        if (!this.filter.hasDateFilter()) {
-            return "";
-        }
-
-        const start = this.filter.startDate
-            ? ` from ${this.formatDate(this.filter.startDate)}`
-            : "";
-        const end = this.filter.endDate
-            ? this.formatDate(this.filter.endDate)
-            : this.formatDate(new DateWrapper().toISO());
-        return `Displaying records${start} up to ${end}`;
-    }
-
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.retrieveMedications({ hdid: this.user.hdid }).catch((err) => {
@@ -145,32 +115,22 @@ export default class MedicationHistoryReportComponent extends Vue {
         });
     }
 
-    public async generatePdf(): Promise<void> {
+    public generateReport(
+        reportFormatType: ReportFormatType,
+        headerData: ReportHeader
+    ): Promise<RequestResult<Report>> {
         const reportService: IReportService = container.get<IReportService>(
             SERVICE_IDENTIFIER.ReportService
         );
 
-        return reportService
-            .generateReport({
-                data: {
-                    header: this.headerData,
-                    records: this.items,
-                },
-                template: TemplateType.Medication,
-                type: ReportType.PDF,
-            })
-            .then((result) => {
-                const downloadLink = `data:application/pdf;base64,${result.resourcePayload.data}`;
-                fetch(downloadLink).then((res) => {
-                    res.blob().then((blob) => {
-                        saveAs(blob, result.resourcePayload.fileName);
-                    });
-                });
-            });
-    }
-
-    private formatDate(date: string): string {
-        return new DateWrapper(date).format();
+        return reportService.generateReport({
+            data: {
+                header: headerData,
+                records: this.items,
+            },
+            template: TemplateType.Medication,
+            type: reportFormatType,
+        });
     }
 
     private fields: ReportField[] = [
@@ -218,27 +178,25 @@ export default class MedicationHistoryReportComponent extends Vue {
 
 <template>
     <div>
-        <div>
-            <section class="pdf-item">
-                <b-row v-if="isEmpty && !isLoading">
-                    <b-col>No records found.</b-col>
-                </b-row>
-                <b-table
-                    v-if="!isEmpty || isLoading"
-                    striped
-                    :busy="isLoading"
-                    :items="items"
-                    :fields="fields"
-                    class="table-style"
-                >
-                    <template #table-busy>
-                        <content-placeholders>
-                            <content-placeholders-text :lines="7" />
-                        </content-placeholders>
-                    </template>
-                </b-table>
-            </section>
-        </div>
+        <section>
+            <b-row v-if="isEmpty && !isLoading">
+                <b-col>No records found.</b-col>
+            </b-row>
+            <b-table
+                v-if="!isEmpty || isLoading"
+                striped
+                :busy="isLoading"
+                :items="items"
+                :fields="fields"
+                class="table-style"
+            >
+                <template #table-busy>
+                    <content-placeholders>
+                        <content-placeholders-text :lines="7" />
+                    </content-placeholders>
+                </template>
+            </b-table>
+        </section>
         <ProtectiveWordComponent
             ref="protectiveWordModal"
             :is-loading="isLoading"

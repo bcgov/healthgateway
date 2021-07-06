@@ -1,5 +1,4 @@
 <script lang="ts">
-import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -10,11 +9,12 @@ import {
     ImmunizationEvent,
     Recommendation,
 } from "@/models/immunizationModel";
-import PatientData from "@/models/patientData";
+import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
-import { ReportType, TemplateType } from "@/models/reportRequest";
+import { ReportFormatType, TemplateType } from "@/models/reportRequest";
+import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
@@ -36,9 +36,6 @@ interface RecomendationRow {
 @Component
 export default class ImmunizationHistoryReportComponent extends Vue {
     @Prop() private filter!: ReportFilter;
-
-    @Getter("patientData", { namespace: "user" })
-    patientData!: PatientData;
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -66,36 +63,6 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     @Emit()
     private onIsLoadingChanged() {
         return this.isLoading;
-    }
-
-    private get headerData(): ReportHeader {
-        return {
-            phn: this.patientData.personalhealthnumber,
-            dateOfBirth: this.formatDate(this.patientData.birthdate || ""),
-            name: this.patientData
-                ? this.patientData.firstname + " " + this.patientData.lastname
-                : "",
-            datePrinted: this.formatDate(new DateWrapper().toISO()),
-            filterText: this.filterText,
-        };
-    }
-
-    private get filterText(): string {
-        if (!this.filter.hasDateFilter()) {
-            return "";
-        }
-
-        const start = this.filter.startDate
-            ? ` from ${this.formatDate(this.filter.startDate)}`
-            : "";
-        const end = this.filter.endDate
-            ? this.formatDate(this.filter.endDate)
-            : this.formatDate(new DateWrapper().toISO());
-        return `Displaying records${start} up to ${end}`;
-    }
-
-    private formatDate(date: string): string {
-        return new DateWrapper(date).format();
     }
 
     private get isLoading(): boolean {
@@ -166,29 +133,23 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         });
     }
 
-    public async generatePdf(): Promise<void> {
+    public generateReport(
+        reportFormatType: ReportFormatType,
+        headerData: ReportHeader
+    ): Promise<RequestResult<Report>> {
         const reportService: IReportService = container.get<IReportService>(
             SERVICE_IDENTIFIER.ReportService
         );
 
-        return reportService
-            .generateReport({
-                data: {
-                    header: this.headerData,
-                    records: this.immunizationItems,
-                    recommendations: this.recomendationItems,
-                },
-                template: TemplateType.Immunization,
-                type: ReportType.PDF,
-            })
-            .then((result) => {
-                const downloadLink = `data:application/pdf;base64,${result.resourcePayload.data}`;
-                fetch(downloadLink).then((res) => {
-                    res.blob().then((blob) => {
-                        saveAs(blob, result.resourcePayload.fileName);
-                    });
-                });
-            });
+        return reportService.generateReport({
+            data: {
+                header: headerData,
+                records: this.immunizationItems,
+                recommendations: this.recomendationItems,
+            },
+            template: TemplateType.Immunization,
+            type: reportFormatType,
+        });
     }
 
     private immunizationFields: ReportField[] = [
@@ -251,93 +212,91 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
 <template>
     <div>
-        <div ref="report">
-            <section class="pdf-item">
-                <b-row>
-                    <b-col>
-                        <h4>Immunization History</h4>
-                    </b-col>
-                </b-row>
-                <b-row v-if="isEmpty && !isLoading">
-                    <b-col>No records found.</b-col>
-                </b-row>
-                <b-table
-                    v-if="!isEmpty || isLoading"
-                    striped
-                    :busy="isLoading"
-                    :items="immunizationItems"
-                    :fields="immunizationFields"
-                    class="table-style"
-                >
-                    <!-- A custom formatted header cell for field 'name' -->
-                    <template #head(agents)>
-                        <b-row>
-                            <b-col>Agent</b-col>
-                            <b-col>Product</b-col>
-                            <b-col>Lot Number</b-col>
-                        </b-row>
-                    </template>
-                    <template #cell(agents)="data">
-                        <b-row
-                            v-for="(agent, index) in data.item.agents"
-                            :key="index"
-                        >
-                            <b-col> {{ agent.name }} </b-col>
-                            <b-col> {{ agent.productName }} </b-col>
-                            <b-col> {{ agent.lotNumber }} </b-col>
-                        </b-row>
-                    </template>
-                    <template #table-busy>
-                        <content-placeholders>
-                            <content-placeholders-text :lines="7" />
-                        </content-placeholders>
-                    </template>
-                </b-table>
-                <b-row class="mt-3">
-                    <b-col class="col-7">
-                        <b-row>
-                            <b-col>
-                                <h4>Recommended Immunizations</h4>
-                            </b-col>
-                        </b-row>
-                        <b-row>
-                            <b-col>
-                                <div id="disclaimer">
-                                    DISCLAIMER: Provincial Immunization Registry
-                                    record only. Immunization history displayed
-                                    may not portray the client’s complete
-                                    immunization history and may impact
-                                    forecasted vaccines. For information on
-                                    recommended immunizations, please visit
-                                    <a>https://www.immunizebc.ca</a> or contact
-                                    your local Public Health Unit.
-                                </div>
-                            </b-col>
-                        </b-row>
-                        <b-row
-                            v-if="isRecommendationEmpty && !isLoading"
-                            class="mt-2"
-                        >
-                            <b-col>No recommendations found.</b-col>
-                        </b-row>
-                        <b-table
-                            v-if="!isRecommendationEmpty || isLoading"
-                            :busy="isLoading"
-                            striped
-                            :items="recomendationItems"
-                            :fields="recomendationFields"
-                            class="mt-2 table-style"
-                        >
-                            <template #table-busy>
-                                <content-placeholders>
-                                    <content-placeholders-text :lines="5" />
-                                </content-placeholders>
-                            </template>
-                        </b-table>
-                    </b-col>
-                </b-row>
-            </section>
-        </div>
+        <section>
+            <b-row>
+                <b-col>
+                    <h4>Immunization History</h4>
+                </b-col>
+            </b-row>
+            <b-row v-if="isEmpty && !isLoading">
+                <b-col>No records found.</b-col>
+            </b-row>
+            <b-table
+                v-if="!isEmpty || isLoading"
+                striped
+                :busy="isLoading"
+                :items="immunizationItems"
+                :fields="immunizationFields"
+                class="table-style"
+            >
+                <!-- A custom formatted header cell for field 'name' -->
+                <template #head(agents)>
+                    <b-row>
+                        <b-col>Agent</b-col>
+                        <b-col>Product</b-col>
+                        <b-col>Lot Number</b-col>
+                    </b-row>
+                </template>
+                <template #cell(agents)="data">
+                    <b-row
+                        v-for="(agent, index) in data.item.agents"
+                        :key="index"
+                    >
+                        <b-col> {{ agent.name }} </b-col>
+                        <b-col> {{ agent.productName }} </b-col>
+                        <b-col> {{ agent.lotNumber }} </b-col>
+                    </b-row>
+                </template>
+                <template #table-busy>
+                    <content-placeholders>
+                        <content-placeholders-text :lines="7" />
+                    </content-placeholders>
+                </template>
+            </b-table>
+            <b-row class="mt-3">
+                <b-col class="col-7">
+                    <b-row>
+                        <b-col>
+                            <h4>Recommended Immunizations</h4>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col>
+                            <div id="disclaimer">
+                                DISCLAIMER: Provincial Immunization Registry
+                                record only. Immunization history displayed may
+                                not portray the client’s complete immunization
+                                history and may impact forecasted vaccines. For
+                                information on recommended immunizations, please
+                                visit
+                                <a>https://www.immunizebc.ca</a> or contact your
+                                local Public Health Unit.
+                            </div>
+                        </b-col>
+                    </b-row>
+                    <b-row
+                        v-if="isRecommendationEmpty && !isLoading"
+                        class="mt-2"
+                    >
+                        <b-col>No recommendations found.</b-col>
+                    </b-row>
+                    <b-table
+                        v-if="!isRecommendationEmpty || isLoading"
+                        :busy="isLoading"
+                        striped
+                        :items="recomendationItems"
+                        :fields="recomendationFields"
+                        class="mt-2 table-style"
+                    >
+                        <template #table-busy>
+                            <content-placeholders>
+                                <content-placeholders-text :lines="5" />
+                            </content-placeholders>
+                        </template>
+                    </b-table>
+                </b-col>
+            </b-row>
+        </section>
     </div>
 </template>
 

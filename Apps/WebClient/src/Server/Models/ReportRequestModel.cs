@@ -18,9 +18,9 @@ namespace HealthGateway.WebClient.Models
     using System.Text.Json;
 
     /// <summary>
-    /// The report type enum.
+    /// The report format type enum.
     /// </summary>
-    public enum ReportType
+    public enum ReportFormatType
     {
         /// <summary>
         /// Indicates a PDF report.
@@ -28,9 +28,14 @@ namespace HealthGateway.WebClient.Models
         PDF,
 
         /// <summary>
-        /// Indicates a EXCEL report.
+        /// Indicates a CSV report.
         /// </summary>
-        EXCEL,
+        CSV,
+
+        /// <summary>
+        /// Indicates a XLSX report.
+        /// </summary>
+        XLSX,
     }
 
     /// <summary>
@@ -54,14 +59,14 @@ namespace HealthGateway.WebClient.Models
         Medication,
 
         /// <summary>
-        /// Indicates a Medication Request template type.
-        /// </summary>
-        MedicationRequest,
-
-        /// <summary>
         /// Indicates a Covid Test Results template type.
         /// </summary>
         Covid,
+
+        /// <summary>
+        /// Indicates a Medication Request template type.
+        /// </summary>
+        MedicationRequest,
     }
 
     /// <summary>
@@ -80,8 +85,8 @@ namespace HealthGateway.WebClient.Models
         public TemplateType Template { get; set; }
 
         /// <summary>
-        /// Gets or sets the report type.
+        /// Gets or sets the report format type.
         /// </summary>
-        public ReportType Type { get; set; }
+        public ReportFormatType Type { get; set; }
     }
 }

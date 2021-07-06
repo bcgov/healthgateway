@@ -39,7 +39,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             {
                 Data = default(System.Text.Json.JsonElement),
                 Template = TemplateType.Medication,
-                Type = ReportType.PDF,
+                Type = ReportFormatType.PDF,
             };
 
             RequestResult<ReportModel> expectedResult = new RequestResult<ReportModel>()

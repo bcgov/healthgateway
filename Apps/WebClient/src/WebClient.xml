@@ -1080,29 +1080,29 @@
             Gets or sets the report type.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.ReportModel.Type">
-            <summary>
-            Gets or sets the report type.
-            </summary>
-        </member>
         <member name="P:HealthGateway.WebClient.Models.ReportModel.Data">
             <summary>
             Gets or sets the report data.
             </summary>
         </member>
-        <member name="T:HealthGateway.WebClient.Models.ReportType">
+        <member name="T:HealthGateway.WebClient.Models.ReportFormatType">
             <summary>
-            The report type enum.
+            The report format type enum.
             </summary>
         </member>
-        <member name="F:HealthGateway.WebClient.Models.ReportType.PDF">
+        <member name="F:HealthGateway.WebClient.Models.ReportFormatType.PDF">
             <summary>
             Indicates a PDF report.
             </summary>
         </member>
-        <member name="F:HealthGateway.WebClient.Models.ReportType.EXCEL">
+        <member name="F:HealthGateway.WebClient.Models.ReportFormatType.CSV">
             <summary>
-            Indicates a EXCEL report.
+            Indicates a CSV report.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.ReportFormatType.XLSX">
+            <summary>
+            Indicates a XLSX report.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.TemplateType">
@@ -1123,6 +1123,11 @@
         <member name="F:HealthGateway.WebClient.Models.TemplateType.Medication">
             <summary>
             Indicates a Medication template type.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.TemplateType.Covid">
+            <summary>
+            Indicates a Covid Test Results template type.
             </summary>
         </member>
         <member name="F:HealthGateway.WebClient.Models.TemplateType.MedicationRequest">
@@ -1147,7 +1152,7 @@
         </member>
         <member name="P:HealthGateway.WebClient.Models.ReportRequestModel.Type">
             <summary>
-            Gets or sets the report type.
+            Gets or sets the report format type.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.TermsOfServiceModel">
