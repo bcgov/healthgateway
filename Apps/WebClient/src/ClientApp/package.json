@@ -16,7 +16,7 @@
         "@types/luxon": "^1.27.0",
         "@types/qrcode": "^1.4.0",
         "@types/vuelidate": "^0.7.15",
-        "@types/webpack-env": "^1.16.0",
+        "@types/webpack-env": "^1.16.2",
         "@typescript-eslint/eslint-plugin": "^4.22.0",
         "@typescript-eslint/parser": "^4.22.0",
         "@vue/cli-plugin-eslint": "~4.5.0",
