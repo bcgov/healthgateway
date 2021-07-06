@@ -203,7 +203,7 @@ export default class ReportsView extends Vue {
         this.isGeneratingReport = true;
         SnowPlow.trackEvent({
             action: "download_report",
-            text: `${this.reportComponent} Report`,
+            text: `${this.reportComponent} ${this.reportFormatType}`,
         });
 
         this.report
