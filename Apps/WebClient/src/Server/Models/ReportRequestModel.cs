@@ -57,6 +57,11 @@ namespace HealthGateway.WebClient.Models
         /// Indicates a Medication Request template type.
         /// </summary>
         MedicationRequest,
+
+        /// <summary>
+        /// Indicates a Covid Test Results template type.
+        /// </summary>
+        Covid,
     }
 
     /// <summary>
