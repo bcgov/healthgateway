@@ -52,6 +52,11 @@ namespace HealthGateway.WebClient.Models
         /// Indicates a Encounter template type.
         /// </summary>
         Encounter,
+
+        /// <summary>
+        /// Indicates a Covid Test Results template type.
+        /// </summary>
+        Covid,
     }
 
     /// <summary>
