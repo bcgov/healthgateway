@@ -5,6 +5,7 @@ import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import LoadingComponent from "@/components/core/Loading.vue";
 import { ResultType } from "@/constants/resulttype";
 import BannerFeedback from "@/models/bannerFeedback";
+import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import Email from "@/models/email";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -77,11 +78,13 @@ export default class ResendEmailView extends Vue {
             });
     }
 
-    private formatDate(date: Date): string {
+    private formatDateTime(date: StringISODateTime): string {
         if (!date) {
             return "";
         }
-        return new Date(Date.parse(date + "Z")).toLocaleString();
+        return new DateWrapper(date, { isUtc: true }).format(
+            DateWrapper.defaultDateTimeFormat
+        );
     }
 
     private resendEmails(): void {
@@ -145,8 +148,10 @@ export default class ResendEmailView extends Vue {
                             show-select
                             :search="filterText"
                         >
-                            <template #:item.sentDateTime="{ item }">
-                                <span>{{ formatDate(item.sentDateTime) }}</span>
+                            <template #item.sentDateTime="{ item }">
+                                <span>{{
+                                    formatDateTime(item.sentDateTime)
+                                }}</span>
                             </template>
                         </v-data-table>
                     </v-col>

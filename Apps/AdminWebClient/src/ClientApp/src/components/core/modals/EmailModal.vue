@@ -24,8 +24,7 @@
                         </v-col>
                         <v-col>
                             <v-datetime-picker
-                                v-model="editedItem.scheduledDateTime"
-                                requried
+                                v-model="scheduledDateTime"
                                 label="Scheduled For"
                             ></v-datetime-picker>
                         </v-col>
@@ -115,6 +114,7 @@ import { Component, Emit, Prop, Vue, Watch } from "vue-property-decorator";
 
 import type Communication from "@/models/adminCommunication";
 import { CommunicationStatus } from "@/models/adminCommunication";
+import { DateWrapper } from "@/models/dateWrapper";
 
 @Component({
     components: {
@@ -167,6 +167,21 @@ export default class EmailModal extends Vue {
 
     private get formTitle(): string {
         return this.isNew ? "New Email" : "Edit Email";
+    }
+
+    private get scheduledDateTime(): Date {
+        return new DateWrapper(this.editedItem.scheduledDateTime, {
+            isUtc: true,
+        }).toJSDate();
+    }
+
+    private set scheduledDateTime(date: Date) {
+        if (date) {
+            this.editedItem.scheduledDateTime = new DateWrapper(
+                date.toISOString(),
+                { isUtc: true }
+            ).toISO();
+        }
     }
 
     @Watch("dialogState")

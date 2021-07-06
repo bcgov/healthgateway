@@ -1,3 +1,5 @@
+import { StringISODateTime } from "@/models/dateWrapper";
+
 export const enum VerificationType {
     Email = "Email",
     SMS = "SMS",
@@ -13,10 +15,10 @@ export default interface MessageVerification {
     verificationType: VerificationType;
     smsNumber: string | null;
     smsValidationCode: string;
-    expireDate: string;
+    expireDate: StringISODateTime;
     verificationAttempts: number;
     deleted: boolean;
-    updatedDateTime: string;
+    updatedDateTime: StringISODateTime;
 }
 
 export interface Email {
@@ -25,8 +27,8 @@ export interface Email {
     to: string;
     subject: string;
     body: string;
-    sentDateTime: string;
-    lastRetryDateTime?: string;
+    sentDateTime: StringISODateTime;
+    lastRetryDateTime?: StringISODateTime;
     attempts: number;
     smtpStatusCode: number;
 }

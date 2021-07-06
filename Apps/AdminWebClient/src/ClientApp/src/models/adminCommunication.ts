@@ -1,3 +1,5 @@
+import { StringISODateTime } from "@/models/dateWrapper";
+
 export const enum CommunicationType {
     Email = "Email",
     Banner = "Banner",
@@ -25,13 +27,13 @@ export default interface Communication {
     text: string;
 
     // Gets or sets the effective date.
-    effectiveDateTime: Date;
+    effectiveDateTime: StringISODateTime;
 
     // Gets or sets the expiry date.
-    expiryDateTime: Date;
+    expiryDateTime: StringISODateTime;
 
     // Gets or sets the scheduled date of the email
-    scheduledDateTime: Date;
+    scheduledDateTime: StringISODateTime;
 
     // Gets or sets the email communication priority
     priority: number;

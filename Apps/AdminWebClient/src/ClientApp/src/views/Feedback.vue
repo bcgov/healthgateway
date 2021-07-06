@@ -6,6 +6,7 @@ import LoadingComponent from "@/components/core/Loading.vue";
 import { ResultType } from "@/constants/resulttype";
 import { UserRoles } from "@/constants/userRoles";
 import BannerFeedback from "@/models/bannerFeedback";
+import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import UserFeedback, { AdminTag, UserFeedbackTag } from "@/models/userFeedback";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -147,8 +148,13 @@ export default class FeedbackView extends Vue {
         this.selectedAdminTagIds = [];
     }
 
-    private formatDate(date: Date): string {
-        return new Date(Date.parse(date + "Z")).toLocaleString();
+    private formatDateTime(date: StringISODateTime): string {
+        if (!date) {
+            return "";
+        }
+        return new DateWrapper(date, { isUtc: true }).format(
+            DateWrapper.defaultDateTimeFormat
+        );
     }
 
     private toggleReviewed(feedback: UserFeedback): void {
@@ -360,7 +366,7 @@ export default class FeedbackView extends Vue {
                     }"
                 >
                     <template #item.createdDateTime="{ item }">
-                        <span>{{ formatDate(item.createdDateTime) }}</span>
+                        <span>{{ formatDateTime(item.createdDateTime) }}</span>
                     </template>
                     <template #item.email="{ item }">
                         <td>
