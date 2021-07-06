@@ -200,7 +200,6 @@ export default class ReportsView extends Vue {
 
     private downloadReport() {
         this.isGeneratingReport = true;
-        console.log(this.report);
         SnowPlow.trackEvent({
             action: "download_report",
             text: `${this.reportComponent} Report`,
@@ -209,18 +208,30 @@ export default class ReportsView extends Vue {
         this.report
             .generateReport(this.reportFormatType)
             .then((result: RequestResult<Report>) => {
-                const mimeType =
-                    this.reportFormatType == ReportFormatType.PDF
-                        ? "application/pdf"
-                        : "text/csv";
+                const mimeType = this.getMimeType(this.reportFormatType);
                 const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
                 fetch(downloadLink).then((res) => {
                     res.blob().then((blob) => {
                         saveAs(blob, result.resourcePayload.fileName);
                     });
                 });
+            })
+            .finally(() => {
                 this.isGeneratingReport = false;
             });
+    }
+
+    private getMimeType(reportFormatType: ReportFormatType) {
+        switch (reportFormatType) {
+            case ReportFormatType.PDF:
+                return "application/pdf";
+            case ReportFormatType.CSV:
+                return "text/csv";
+            case ReportFormatType.XLSX:
+                return "application/vnd.openxmlformats";
+            default:
+                return "";
+        }
     }
 }
 </script>
