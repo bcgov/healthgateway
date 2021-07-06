@@ -124,6 +124,10 @@ export default class Dashboard extends Vue {
     }
 
     private get ratingAverage(): string {
+        if (this.ratingCount === 0) {
+            return "N/A";
+        }
+
         var totalScore = 0;
         for (let key in this.ratingSummary) {
             totalScore += Number(key) * this.ratingSummary[key];
