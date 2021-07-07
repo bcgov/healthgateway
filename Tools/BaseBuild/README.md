@@ -85,12 +85,15 @@ To create the services for a given namespace do the following
 ```
 
 Deloying CDOGs within Health Gateway
-Import the image from the bcgov docker hub repo.  We have setup an Azure pipline to automate this but manually
+Import the image from the bcgov docker hub repo. We have setup an Azure pipline to automate this but manually
 
 ```console
 oc project [licenseplay]-tools
 oc import-image hgcdogs:[version] --from=bcgovimages/doc-gen-api:v[version] --confirm
 ```
+
+Manually set an environment variable for the deployment config of
+CONVERTER_FACTORY_TIMEOUT to 105000
 
 You then need to tag to the appropriate Health Gateway environment
 
@@ -131,6 +134,18 @@ oc process -f ./adminWebClientSecrets.yaml --parameters
 oc process -f ./adminWebClientSecrets.yaml -p OIDC_SECRET=[Client OIDC Secret]
 oc set env --from=secret/adminwebclient-secrets dc/adminwebclient
 ````
+
+WebClient route timeout
+
+```console
+oc annotate route webclient-https --overwrite haproxy.router.openshift.io/timeout=150s
+```
+
+Medication route timeout
+
+```console
+oc annotate route medication-https --overwrite haproxy.router.openshift.io/timeout=60s
+```
 
 ### WebClient Production Only Robots.txt Configuration
 
