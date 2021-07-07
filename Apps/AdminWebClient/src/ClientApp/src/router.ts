@@ -1,5 +1,5 @@
 import Vue from "vue";
-import VueRouter from "vue-router";
+import VueRouter, { Route } from "vue-router";
 
 import store from "@/store/store";
 import CommunicationView from "@/views/Communication.vue";
@@ -84,6 +84,9 @@ const routes = [
         name: "Support",
         component: SupportView,
         meta: { requiresAuth: true, validRoles: [UserRoles.Admin] },
+        props: (route: Route) => ({
+            hdid: route.query.hdid,
+        }),
     },
     {
         path: "/unauthorized",
