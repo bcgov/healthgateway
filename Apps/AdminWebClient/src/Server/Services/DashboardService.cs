@@ -123,6 +123,9 @@ namespace HealthGateway.Admin.Services
                 case UserQueryType.SMS:
                     dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.SMS, queryString);
                     break;
+                case UserQueryType.HDID:
+                    dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, queryString);
+                    break;
             }
 
             if (dbResult != null && dbResult.Status == Database.Constants.DBStatusCode.Read)
