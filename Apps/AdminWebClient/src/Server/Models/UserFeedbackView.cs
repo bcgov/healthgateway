@@ -49,6 +49,11 @@ namespace HealthGateway.Admin.Models
         public Guid Id { get; set; }
 
         /// <summary>
+        /// Gets or sets the related user profile id.
+        /// </summary>
+        public string? UserProfileId { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the feedback comments.
         /// </summary>
         public string? Comment { get; set; }
@@ -93,6 +98,7 @@ namespace HealthGateway.Admin.Models
             UserFeedbackView userFeedbackView = new ()
             {
                 Id = model.Id,
+                UserProfileId = model.UserProfileId,
                 Comment = model.Comment,
                 CreatedDateTime = model.CreatedDateTime,
                 IsReviewed = model.IsReviewed,

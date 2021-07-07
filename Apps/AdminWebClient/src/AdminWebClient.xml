@@ -44,6 +44,11 @@
             Query by the SMS Phone number.
             </summary>
         </member>
+        <member name="F:HealthGateway.Admin.Constants.UserQueryType.HDID">
+            <summary>
+            Query by the users directed identifier.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Admin.Controllers.AuthenticationController">
             <summary>
             The Authentication and Authorization controller.
@@ -813,6 +818,11 @@
         <member name="P:HealthGateway.Admin.Models.UserFeedbackView.Id">
             <summary>
             Gets or sets the user feedback id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackView.UserProfileId">
+            <summary>
+            Gets or sets the related user profile id.
             </summary>
         </member>
         <member name="P:HealthGateway.Admin.Models.UserFeedbackView.Comment">
