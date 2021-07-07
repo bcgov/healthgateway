@@ -3,6 +3,9 @@ export default interface UserFeedback {
     // Feedback unique identifier.
     id: string;
 
+    // Associated user unique identifier.
+    userProfileId: string;
+
     // Satisfied flag.
     isSatisfied: boolean;
 

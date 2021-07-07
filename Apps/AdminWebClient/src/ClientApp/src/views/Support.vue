@@ -1,6 +1,6 @@
 <script lang="ts">
 import moment from "moment";
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator";
 
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import CommunicationTable from "@/components/core/CommunicationTable.vue";
@@ -35,6 +35,8 @@ interface UserSearchRow {
     },
 })
 export default class SupportView extends Vue {
+    @Prop({ default: null, required: false }) hdid!: string;
+
     private isLoading = false;
     private showFeedback = false;
     private bannerFeedback: BannerFeedback = {
@@ -119,6 +121,12 @@ export default class SupportView extends Vue {
 
     private mounted() {
         this.supportService = container.get(SERVICE_IDENTIFIER.SupportService);
+        if (this.hdid) {
+            this.selectedQueryType = QueryType.HDID;
+            this.searchText = this.hdid;
+            this.handleSearch();
+            this.$router.replace({ path: "/support" });
+        }
     }
 
     private formatDate(date: string): string {

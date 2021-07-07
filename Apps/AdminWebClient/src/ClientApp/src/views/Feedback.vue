@@ -4,11 +4,13 @@ import { Component, Vue } from "vue-property-decorator";
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import LoadingComponent from "@/components/core/Loading.vue";
 import { ResultType } from "@/constants/resulttype";
+import { UserRoles } from "@/constants/userRoles";
 import BannerFeedback from "@/models/bannerFeedback";
 import UserFeedback, { AdminTag, UserFeedbackTag } from "@/models/userFeedback";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { IUserFeedbackService } from "@/services/interfaces";
+import store from "@/store/store";
 
 @Component({
     components: {
@@ -84,6 +86,11 @@ export default class FeedbackView extends Vue {
                     this.selectedAdminTagIds.includes(feedbackTag.tag.id)
                 ).length > 0
         );
+    }
+
+    private get canAccessSupport() {
+        const userRoles: string[] = store.getters["auth/roles"];
+        return userRoles.some((userRole) => userRole === UserRoles.Admin);
     }
 
     private mounted() {
@@ -306,12 +313,12 @@ export default class FeedbackView extends Vue {
 
 <template>
     <v-container>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <LoadingComponent :is-loading="isLoading" />
         <BannerFeedbackComponent
             :show-feedback.sync="showFeedback"
             :feedback="bannerFeedback"
             class="mt-5"
-        ></BannerFeedbackComponent>
+        />
         <v-row justify="center">
             <v-col>
                 <v-card>
@@ -354,6 +361,23 @@ export default class FeedbackView extends Vue {
                 >
                     <template #item.createdDateTime="{ item }">
                         <span>{{ formatDate(item.createdDateTime) }}</span>
+                    </template>
+                    <template #item.email="{ item }">
+                        <td>
+                            <button
+                                v-if="canAccessSupport"
+                                class="mr-1"
+                                @click="
+                                    $router.push({
+                                        path: '/support',
+                                        query: { hdid: item.userProfileId },
+                                    })
+                                "
+                            >
+                                <v-icon>mdi-account-search</v-icon>
+                            </button>
+                            <span>{{ item.email }}</span>
+                        </td>
                     </template>
                     <template #item.isReviewed="{ item }">
                         <td>
