@@ -13,7 +13,7 @@
     "devDependencies": {
         "@types/chart.js": "^2.9.32",
         "@types/jest": "^26.0.23",
-        "@types/luxon": "^1.27.0",
+        "@types/luxon": "^1.27.1",
         "@types/qrcode": "^1.4.0",
         "@types/vuelidate": "^0.7.15",
         "@types/webpack-env": "^1.16.2",
