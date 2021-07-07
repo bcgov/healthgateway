@@ -1,117 +1,3 @@
-<template>
-    <v-container>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <BannerFeedbackComponent
-            :show-feedback.sync="showFeedback"
-            :feedback="bannerFeedback"
-            class="mt-5"
-        ></BannerFeedbackComponent>
-        <v-row justify="center">
-            <v-col>
-                <v-card>
-                    <v-card-title>Filter</v-card-title>
-                    <v-card-text>
-                        <v-row align="center">
-                            <v-col class="flex-grow-1 flex-shrink-0">
-                                <v-select
-                                    v-model="selectedAdminTagIds"
-                                    :items="adminTags"
-                                    item-text="name"
-                                    item-value="id"
-                                    label="Tags"
-                                    multiple
-                                />
-                            </v-col>
-                            <v-col class="flex-grow-0 flex-shrink-1">
-                                <v-btn
-                                    color="accent"
-                                    :disabled="!filterIsActive"
-                                    @click="clearFilter"
-                                >
-                                    Clear
-                                </v-btn>
-                            </v-col>
-                        </v-row>
-                    </v-card-text>
-                </v-card>
-            </v-col>
-        </v-row>
-        <v-row justify="center">
-            <v-col no-gutters>
-                <v-data-table
-                    :headers="tableHeaders"
-                    :items="filteredFeedbackList"
-                    :items-per-page="50"
-                    :footer-props="{
-                        'items-per-page-options': [25, 50, 100, -1],
-                    }"
-                >
-                    <template #item.createdDateTime="{ item }">
-                        <span>{{ formatDate(item.createdDateTime) }}</span>
-                    </template>
-                    <template #item.isReviewed="{ item }">
-                        <td>
-                            <v-btn
-                                class="mx-2"
-                                dark
-                                small
-                                icon
-                                @click="toggleReviewed(item)"
-                            >
-                                <v-icon
-                                    v-if="item.isReviewed"
-                                    color="green"
-                                    dark
-                                    >fa-check</v-icon
-                                >
-                                <v-icon v-if="!item.isReviewed" color="red" dark
-                                    >fa-times</v-icon
-                                >
-                            </v-btn>
-                        </td>
-                    </template>
-                    <template #item.tags="{ item: feedback }">
-                        <td>
-                            <v-combobox
-                                v-model="feedback.tags"
-                                multiple
-                                hide-selected
-                                :items="availableTags"
-                                :filter="filter"
-                                :loading="isLoadingTag"
-                                :item-text="getItemText"
-                                @input="onTagChange($event, feedback)"
-                                @focus="onTagFocus(feedback)"
-                            >
-                                <template #selection="{ item }">
-                                    <template v-if="isString(item)">
-                                        Loading...
-                                    </template>
-                                    <template v-else>
-                                        <v-chip
-                                            close
-                                            @click:close="
-                                                removeTag(feedback, item)
-                                            "
-                                        >
-                                            {{ item.tag.name }}
-                                        </v-chip>
-                                    </template>
-                                </template>
-                                <template #item="{ item }">
-                                    <v-chip>
-                                        {{ item }}
-                                    </v-chip>
-                                </template>
-                            </v-combobox>
-                        </td>
-                    </template>
-                </v-data-table>
-            </v-col>
-        </v-row>
-    </v-container>
-</template>
-
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 
@@ -417,3 +303,117 @@ export default class FeedbackView extends Vue {
     }
 }
 </script>
+
+<template>
+    <v-container>
+        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <BannerFeedbackComponent
+            :show-feedback.sync="showFeedback"
+            :feedback="bannerFeedback"
+            class="mt-5"
+        ></BannerFeedbackComponent>
+        <v-row justify="center">
+            <v-col>
+                <v-card>
+                    <v-card-title>Filter</v-card-title>
+                    <v-card-text>
+                        <v-row align="center">
+                            <v-col class="flex-grow-1 flex-shrink-0">
+                                <v-select
+                                    v-model="selectedAdminTagIds"
+                                    :items="adminTags"
+                                    item-text="name"
+                                    item-value="id"
+                                    label="Tags"
+                                    multiple
+                                />
+                            </v-col>
+                            <v-col class="flex-grow-0 flex-shrink-1">
+                                <v-btn
+                                    color="accent"
+                                    :disabled="!filterIsActive"
+                                    @click="clearFilter"
+                                >
+                                    Clear
+                                </v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-card-text>
+                </v-card>
+            </v-col>
+        </v-row>
+        <v-row justify="center">
+            <v-col no-gutters>
+                <v-data-table
+                    :headers="tableHeaders"
+                    :items="filteredFeedbackList"
+                    :items-per-page="50"
+                    :footer-props="{
+                        'items-per-page-options': [25, 50, 100, -1],
+                    }"
+                >
+                    <template #item.createdDateTime="{ item }">
+                        <span>{{ formatDate(item.createdDateTime) }}</span>
+                    </template>
+                    <template #item.isReviewed="{ item }">
+                        <td>
+                            <v-btn
+                                class="mx-2"
+                                dark
+                                small
+                                icon
+                                @click="toggleReviewed(item)"
+                            >
+                                <v-icon
+                                    v-if="item.isReviewed"
+                                    color="green"
+                                    dark
+                                    >fa-check</v-icon
+                                >
+                                <v-icon v-if="!item.isReviewed" color="red" dark
+                                    >fa-times</v-icon
+                                >
+                            </v-btn>
+                        </td>
+                    </template>
+                    <template #item.tags="{ item: feedback }">
+                        <td>
+                            <v-combobox
+                                v-model="feedback.tags"
+                                multiple
+                                hide-selected
+                                :items="availableTags"
+                                :filter="filter"
+                                :loading="isLoadingTag"
+                                :item-text="getItemText"
+                                @input="onTagChange($event, feedback)"
+                                @focus="onTagFocus(feedback)"
+                            >
+                                <template #selection="{ item }">
+                                    <template v-if="isString(item)">
+                                        Loading...
+                                    </template>
+                                    <template v-else>
+                                        <v-chip
+                                            close
+                                            @click:close="
+                                                removeTag(feedback, item)
+                                            "
+                                        >
+                                            {{ item.tag.name }}
+                                        </v-chip>
+                                    </template>
+                                </template>
+                                <template #item="{ item }">
+                                    <v-chip>
+                                        {{ item }}
+                                    </v-chip>
+                                </template>
+                            </v-combobox>
+                        </td>
+                    </template>
+                </v-data-table>
+            </v-col>
+        </v-row>
+    </v-container>
+</template>
