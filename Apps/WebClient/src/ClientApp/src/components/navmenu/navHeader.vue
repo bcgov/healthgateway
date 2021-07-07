@@ -347,9 +347,6 @@ nav {
     a h4 {
         text-decoration: none;
         color: white;
-        @media (max-width: 360px) {
-            font-size: 1em !important;
-        }
     }
     a:hover h4 {
         text-decoration: underline;
