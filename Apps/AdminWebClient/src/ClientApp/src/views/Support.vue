@@ -126,7 +126,8 @@ export default class SupportView extends Vue {
     }
 
     private handleSearch() {
-        if (this.selectedQueryType === null) {
+        if (this.selectedQueryType === null || this.searchText.length === 0) {
+            this.emailList = [];
             return;
         }
 
@@ -164,32 +165,33 @@ export default class SupportView extends Vue {
 
 <template>
     <v-container>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <LoadingComponent :is-loading="isLoading" />
         <BannerFeedbackComponent
             :show-feedback.sync="showFeedback"
             :feedback="bannerFeedback"
             class="mt-5"
-        ></BannerFeedbackComponent>
-        <v-row justify="center">
-            <v-col cols="2">
-                <v-combobox
-                    v-model="selectedQueryType"
-                    :items="queryTypes"
-                    label="Query Type"
-                    outlined
-                ></v-combobox
-            ></v-col>
-            <v-col>
-                <v-text-field v-model="searchText" label="Search Query">
-                </v-text-field>
-            </v-col>
-            <v-col>
-                <v-btn class="mt-2" @click="handleSearch()">
-                    Search
-                    <v-icon class="ml-2" size="sm">fas fa-search</v-icon>
-                </v-btn>
-            </v-col>
-        </v-row>
+        />
+        <form @submit.prevent="handleSearch()">
+            <v-row align="center">
+                <v-col cols="4" sm="3" lg="2">
+                    <v-combobox
+                        v-model="selectedQueryType"
+                        :items="queryTypes"
+                        label="Query Type"
+                        outlined
+                    />
+                </v-col>
+                <v-col>
+                    <v-text-field v-model="searchText" label="Search Query" />
+                </v-col>
+                <v-col cols="auto">
+                    <v-btn type="submit" class="mt-2">
+                        Search
+                        <v-icon class="ml-2" size="sm">fas fa-search</v-icon>
+                    </v-btn>
+                </v-col>
+            </v-row>
+        </form>
         <v-row justify="center">
             <v-col>
                 <v-row>
