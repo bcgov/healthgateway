@@ -26,11 +26,6 @@ namespace HealthGateway.WebClient.Models
         public string FileName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the report type.
-        /// </summary>
-        public ReportType Type { get; set; }
-
-        /// <summary>
         /// Gets or sets the report data.
         /// </summary>
         public string Data { get; set; } = string.Empty;

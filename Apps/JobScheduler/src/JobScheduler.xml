@@ -15,6 +15,21 @@
             </summary>
             <param name="options">The passed in DB Options.</param>
         </member>
+        <member name="T:Healthgateway.JobScheduler.Jobs.AdminFeedbackJob">
+            <inheritdoc />
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.AdminFeedbackJob.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Jobs.AdminFeedbackJob},HealthGateway.Database.Delegates.IFeedbackDelegate,HealthGateway.Common.Services.IEmailQueueService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Jobs.AdminFeedbackJob"/> class.
+            </summary>
+            <param name="configuration">The configuration to use.</param>
+            <param name="logger">The logger to use.</param>
+            <param name="feedBackDelegate">The db feedback delegate to use.</param>
+            <param name="emailService">The email service for template retrieval and parsing.</param>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.AdminFeedbackJob.SendEmail(HealthGateway.Common.Models.ClientFeedback)">
+            <inheritdoc />
+        </member>
         <member name="T:Healthgateway.JobScheduler.Jobs.CleanCacheJob">
             <summary>
             Removes expired cache entries from the GenericCache table.

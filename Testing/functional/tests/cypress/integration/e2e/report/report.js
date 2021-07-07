@@ -60,10 +60,10 @@ describe("Reports", () => {
         cy.get("[data-testid=reportType]")
             .should("be.enabled", "be.visible")
             .select("MED");
-        cy.get("[data-testid=medicationReportSample]").should("be.visible");
+        cy.get("[data-testid=reportSample]").should("be.visible");
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=medicationReportSample]").should("not.be.visible");
+        cy.get("[data-testid=reportSample]").should("not.be.visible");
         cy.viewport(1440, 600);
 
         cy.get("[data-testid=exportRecordBtn]").click();
@@ -85,10 +85,10 @@ describe("Reports", () => {
             .should("be.enabled", "be.visible")
             .select("MSP");
 
-        cy.get("[data-testid=mspVisitsReportSample]").should("be.visible");
+        cy.get("[data-testid=reportSample]").should("be.visible");
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=mspVisitsReportSample]").should("not.be.visible");
+        cy.get("[data-testid=reportSample]").should("not.be.visible");
         cy.viewport(1440, 600);
 
         cy.get("[data-testid=exportRecordBtn]")
@@ -112,13 +112,13 @@ describe("Reports", () => {
             .should("be.enabled", "be.visible")
             .select("COVID-19");
 
-        cy.get("[data-testid=covid19ReportSample]").should("be.visible");
+        cy.get("[data-testid=reportSample]").should("be.visible");
         cy.get("[data-testid=covid19DateItem]")
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=covid19ReportSample]").should("not.be.visible");
+        cy.get("[data-testid=reportSample]").should("not.be.visible");
         cy.viewport(1440, 600);
 
         cy.get("[data-testid=exportRecordBtn]")
@@ -142,7 +142,7 @@ describe("Reports", () => {
             .should("be.enabled", "be.visible")
             .select("Immunization");
 
-        cy.get("[data-testid=immunizationHistoryReportSample]").should(
+        cy.get("[data-testid=reportSample]").should(
             "be.visible"
         );
         cy.get("[data-testid=immunizationDateItem]")
@@ -150,7 +150,7 @@ describe("Reports", () => {
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=immunizationHistoryReportSample]").should(
+        cy.get("[data-testid=reportSample]").should(
             "not.be.visible"
         );
         cy.viewport(1440, 600);
@@ -176,12 +176,12 @@ describe("Reports", () => {
             .should("be.enabled", "be.visible")
             .select("Special Authority Requests");
 
-        cy.get("[data-testid=medicationRequestReportSample]").should(
+        cy.get("[data-testid=reportSample]").should(
             "be.visible"
         );
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=medicationRequestReportSample]").should(
+        cy.get("[data-testid=reportSample]").should(
             "not.be.visible"
         );
         cy.viewport(1440, 600);

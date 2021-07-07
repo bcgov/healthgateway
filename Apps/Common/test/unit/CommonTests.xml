@@ -348,6 +348,36 @@
             GetImmunization - Happy Path.
             </summary>
         </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.ErrorPayload">
+            <summary>
+            GetImmunization - Parse error with JSON payload.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.ErrorInvalidHTTPStatus">
+            <summary>
+            GetImmunization - Invalid HTTP status code.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.ErrorForbidden">
+            <summary>
+            GetImmunization - Forbidden HTTP status code.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.ErrorNoContent">
+            <summary>
+            GetImmunization - NoContent HTTP status code.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.ErrorException">
+            <summary>
+            GetImmunization - Exception thrown.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.ErrorContextNull">
+            <summary>
+            GetImmunization - The HTTP Context is null.
+            </summary>
+        </member>
         <member name="T:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests">
             <summary>
             NotificationSettingsDelegate's Unit Tests.

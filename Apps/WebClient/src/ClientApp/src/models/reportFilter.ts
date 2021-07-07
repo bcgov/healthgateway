@@ -48,6 +48,24 @@ export default class ReportFilter {
     public hasDateFilter(): boolean {
         return !!this.endDate || !!this.startDate;
     }
+
+    public get filterText(): string {
+        if (!this.hasDateFilter()) {
+            return "";
+        }
+
+        const start = this.startDate
+            ? ` from ${this.formatDate(this.startDate)}`
+            : "";
+        const end = this.endDate
+            ? this.formatDate(this.endDate)
+            : this.formatDate(new DateWrapper().toISO());
+        return `Displaying records${start} up to ${end}`;
+    }
+
+    private formatDate(date: string): string {
+        return new DateWrapper(date).format();
+    }
 }
 
 export class ReportFilterBuilder {

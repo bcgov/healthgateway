@@ -42,11 +42,11 @@ describe("Immunization History Report", () => {
             .should("be.enabled", "be.visible")
             .select("Immunization");
 
-        cy.get("[data-testid=immunizationHistoryReportSample]").scrollTo(
+        cy.get("[data-testid=reportSample]").scrollTo(
             "bottom"
         );
 
-        cy.get("[data-testid=immunizationHistoryReportSample]").should(
+        cy.get("[data-testid=reportSample]").should(
             "be.visible"
         );
 
