@@ -1,21 +1,31 @@
-$bcgov-font-path: "../../fonts/" !default;
+$bcgov-font-path: "../fonts/" !default;
 
-// Declare primary font, we provide all types for various browsers/devices
-// the web browser will choose which one it wants ondemand instead of CSS onload
 @font-face {
-    // sass-lint:disable no-duplicate-properties
-    font-family: "Myriad-Pro";
-    // IE9 Compat Modes
-    src: url("#{$bcgov-font-path}MyriadWebPro.eot");
-    // IE6-IE8
-    src: url("#{$bcgov-font-path}MyriadWebPro.eot?#iefix")
-            format("embedded-opentype"),
-        // Super Modern Browsers
-        url("#{$bcgov-font-path}MyriadWebPro.woff2") format("woff2"),
-        // Pretty Modern Browsers
-        url("#{$bcgov-font-path}MyriadWebPro.woff") format("woff"),
-        // Safari, Android, iOS
-        url("#{$bcgov-font-path}MyriadWebPro.ttf") format("truetype"),
-        // Legacy iOS
-        url("#{$bcgov-font-path}MyriadWebPro.svg#svgFontName") format("svg");
+    font-family: "BCSans";
+    font-style: normal;
+    src: url("#{$bcgov-font-path}BCSans-Regular.woff2") format("woff2"),
+        /* Optimized for very modern browsers */
+            url("#{$bcgov-font-path}BCSans-Regular.woff") format("woff"); /* Modern Browsers */
+}
+@font-face {
+    font-family: "BCSans";
+    font-style: italic;
+    src: url("#{$bcgov-font-path}BCSans-Italic.woff2") format("woff2"),
+        /* Optimized for very modern browsers */
+            url("#{$bcgov-font-path}BCSans-Italic.woff") format("woff"); /* Modern Browsers */
+}
+@font-face {
+    font-family: "BCSans";
+    font-weight: 700;
+    src: url("#{$bcgov-font-path}BCSans-Bold.woff2") format("woff2"),
+        /* Optimized for very modern browsers */
+            url("#{$bcgov-font-path}BCSans-Bold.woff") format("woff"); /* Modern Browsers */
+}
+@font-face {
+    font-family: "BCSans";
+    font-style: italic;
+    font-weight: 700;
+    src: url("#{$bcgov-font-path}BCSans-BoldItalic.woff2") format("woff2"),
+        /* Optimized for very modern browsers */
+            url("#{$bcgov-font-path}BCSans-BoldItalic.woff") format("woff"); /* Modern Browsers */
 }

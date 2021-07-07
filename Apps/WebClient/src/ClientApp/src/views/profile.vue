@@ -465,7 +465,10 @@ export default class ProfileView extends Vue {
                                 <label for="profileNames" class="hg-label"
                                     >Full Name</label
                                 >
-                                <h4 id="profileNames" class="hg-h4">
+                                <h4
+                                    id="profileNames"
+                                    class="font-weight-normal"
+                                >
                                     {{ fullName }}
                                 </h4>
                             </b-col>
@@ -475,7 +478,10 @@ export default class ProfileView extends Vue {
                                 <label for="lastLoginDate" class="hg-label"
                                     >Last Login Date</label
                                 >
-                                <h4 id="lastLoginDate" class="hg-h4">
+                                <h4
+                                    id="lastLoginDate"
+                                    class="font-weight-normal"
+                                >
                                     {{ lastLoginDateString }}
                                 </h4>
                             </b-col>

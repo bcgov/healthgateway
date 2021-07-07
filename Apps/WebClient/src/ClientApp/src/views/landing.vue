@@ -171,10 +171,10 @@ export default class LandingView extends Vue {
                         <h1 class="text-center w-100 py-3">Health Gateway</h1>
                     </b-row>
                     <b-row>
-                        <h2 class="text-center w-100 p-3">
+                        <h3 class="text-center font-weight-normal w-100 p-3">
                             A single place for BC residents to access their
                             health records
-                        </h2>
+                        </h3>
                     </b-row>
                 </div>
             </b-col>
@@ -285,7 +285,7 @@ export default class LandingView extends Vue {
                     /></b-col>
                     <b-col class="col-12 col-md-5" :class="getTileClass(index)">
                         <div class="text-wrapper mx-4 position-absolute">
-                            <div class="title">{{ tile.title }}</div>
+                            <h2 class="font-weight-normal">{{ tile.title }}</h2>
                             <div class="small-text">{{ tile.description }}</div>
                             <ul>
                                 <li
@@ -339,10 +339,6 @@ export default class LandingView extends Vue {
 
     .title-section {
         color: $primary;
-        h2 {
-            font-weight: 200;
-            font-size: x-large;
-        }
     }
 
     .devices-section {

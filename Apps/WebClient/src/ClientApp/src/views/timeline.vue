@@ -506,12 +506,6 @@ export default class TimelineView extends Vue {
     hr {
         border-top: 2px solid $primary;
     }
-
-    h1 {
-        @media (max-width: 575px) {
-            font-size: 2em !important;
-        }
-    }
 }
 
 .form-group {

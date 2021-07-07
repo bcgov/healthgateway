@@ -5,7 +5,7 @@ import "@/plugins/inversify.config";
 
 import "core-js/stable";
 import "bootstrap-vue/dist/bootstrap-vue.css";
-import "@/assets/scss/bcgov/bootstrap-theme.scss";
+import "@/assets/scss/hg-styles.scss";
 import "@/plugins/registerComponentHooks";
 
 import {
