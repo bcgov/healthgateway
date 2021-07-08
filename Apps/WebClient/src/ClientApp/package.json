@@ -14,7 +14,7 @@
         "@types/chart.js": "^2.9.32",
         "@types/jest": "^26.0.23",
         "@types/luxon": "^1.27.0",
-        "@types/qrcode": "^1.4.0",
+        "@types/qrcode": "^1.4.1",
         "@types/vuelidate": "^0.7.15",
         "@types/webpack-env": "^1.16.2",
         "@typescript-eslint/eslint-plugin": "^4.22.0",
