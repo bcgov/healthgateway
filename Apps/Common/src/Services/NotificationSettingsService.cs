@@ -76,7 +76,7 @@ namespace HealthGateway.Common.Services
                 this.logger.LogDebug($"Queueing Dependent Notification Settings.");
                 NotificationSettingsRequest dependentNotificationSettings = new ()
                 {
-                    SubjectHdid = resourceDelegate.ProfileHdid,
+                    SubjectHdid = resourceDelegate.ResourceOwnerHdid,
                     EmailAddress = notificationSettings.EmailAddress,
                     EmailEnabled = notificationSettings.EmailEnabled,
                     EmailScope = notificationSettings.EmailScope,
