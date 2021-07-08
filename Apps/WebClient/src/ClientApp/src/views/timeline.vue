@@ -438,6 +438,7 @@ export default class TimelineView extends Vue {
                                     <b-input-group-append>
                                         <hg-button
                                             v-show="filterText"
+                                            data-testid="clearfilterTextBtn"
                                             variant="icon-input-light"
                                             @click="filterText = ''"
                                         >
