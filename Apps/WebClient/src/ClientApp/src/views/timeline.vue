@@ -358,7 +358,7 @@ export default class TimelineView extends Vue {
                     >
                         <h4>Verify Contact Information</h4>
                         <span>
-                            Your email or cell phone number have not been
+                            Your email or cell phone number has not been
                             verified. You can use the Health Gateway without
                             verified contact information, however, you will not
                             receive notifications. Visit the
