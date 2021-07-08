@@ -29,6 +29,15 @@ export default class HgButtonComponent extends Vue {
             case "icon-light":
                 result.push("hg-button", "hg-icon hg-icon-light");
                 break;
+            case "icon-input":
+                result.push("hg-button", "hg-icon hg-icon-input");
+                break;
+            case "icon-input-light":
+                result.push(
+                    "hg-button",
+                    "hg-icon hg-icon-input hg-icon-input-light"
+                );
+                break;
             case "nav":
                 result.push("hg-button", "hg-nav", "btn-block");
                 break;
@@ -200,6 +209,34 @@ export default class HgButtonComponent extends Vue {
 
     &.hg-icon-light {
         color: $hg-button-icon-light-text;
+    }
+
+    &.hg-icon-input {
+        text-align: center;
+        align-content: center;
+        color: $hg-button-icon-input-text;
+        background-color: $hg-button-icon-input-background;
+
+        border: 1px solid $hg-button-icon-input-border;
+        border-left: 0px;
+
+        &:disabled {
+            color: $hg-button-icon-input-disabled-text;
+            background-color: $hg-button-icon-input-disabled-background;
+            opacity: 1;
+        }
+
+        &:hover:enabled {
+            color: $hg-button-icon-input-hover-text;
+        }
+    }
+
+    &.hg-icon-input-light {
+        color: $hg-button-icon-input-light-text;
+
+        &:hover:enabled {
+            color: $hg-button-icon-input-light-hover-text;
+        }
     }
 
     &.hg-small {
