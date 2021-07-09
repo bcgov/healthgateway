@@ -53,11 +53,15 @@ export default class ImmunizationCardComponent extends Vue {
     private logger!: ILogger;
     private readonly modalId: string = "covid-card-modal";
     private isVisible = false;
+    private isPreview = true;
 
     private doses: Dose[] = [];
 
     private get isLoading(): boolean {
         return this.isPatientLoading || this.isImmunizationLoading;
+    }
+    private get logoImageName(): string {
+        return "bcid-logo-rev-en.svg";
     }
 
     @Ref("messageModal")
@@ -135,14 +139,19 @@ export default class ImmunizationCardComponent extends Vue {
     }
 
     private downloadPdf() {
+        this.isPreview = false;
         SnowPlow.trackEvent({
             action: "download_card",
             text: "COVID Card PDF",
         });
-        PDFUtil.generatePdf(
-            "HealthGateway_ImmunizationHistory.pdf",
-            this.cardModal.$refs.content as HTMLElement
-        );
+        this.$nextTick(() => {
+            PDFUtil.generatePdf(
+                "HealthGateway_ImmunizationHistory.pdf",
+                this.cardModal.$refs.content as HTMLElement
+            ).finally(() => {
+                this.isPreview = true;
+            });
+        });
     }
 }
 </script>
@@ -165,10 +174,18 @@ export default class ImmunizationCardComponent extends Vue {
             <b-row class="w-100 h-100">
                 <b-col class="image-container">
                     <img
-                        class="img-fluid border da-class"
+                        v-show="isPreview"
+                        class="img-fluid"
                         src="@/assets/images/gov/bcid-logo-rev-en.svg"
+                        width="190px"
+                        alt="BC Health Gateway" />
+                    <img
+                        v-show="!isPreview"
+                        class="img-fluid"
+                        src="@/assets/images/gov/bcid-logo-rev-en.png"
+                        width="181"
+                        height="44"
                         alt="BC Health Gateway"
-                        loading="eager"
                 /></b-col>
                 <b-col cols="auto" class="align-self-center">
                     <!-- Emulate built in modal header close button action -->
@@ -366,11 +383,6 @@ div[class*=" row"] {
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
 .immunization-covid-card-modal-header {
-    .da-class {
-        width: 100%;
-        height: auto;
-    }
-    //width: 466px;
     background-color: $primary;
     .close {
         color: white;
@@ -379,28 +391,7 @@ div[class*=" row"] {
         font-size: 1.5em;
     }
     .image-container {
-        //height: 500px;
-        //width: 190px;
-        //border: solid red 1px;
-    }
-    .logo-image {
-        /*min-height: 44px;
-        max-height: 50px;*/
-        box-sizing: border-box;
-        /*height: 48px;
-        max-height: 48px;
-        min-height: 48px;*/
-        width: 50%;
-        max-width: 50%;
-        min-width: 50%;
-
-        border: solid red 1px;
-        background-size: cover;
-        //background-size: 181px 48px;
-        background-repeat: no-repeat;
-        //background-image: url("~@/assets/images/gov/bcid-logo-rev-en.png");
-        background-image: linear-gradient(transparent, transparent),
-            url("~@/assets/images/gov/bcid-logo-rev-en.svg");
+        min-height: 50px;
     }
 }
 </style>
