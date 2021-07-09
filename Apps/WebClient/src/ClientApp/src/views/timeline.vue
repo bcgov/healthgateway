@@ -426,14 +426,30 @@ export default class TimelineView extends Vue {
                                     size="medium"
                                     class="form-control-feedback"
                                 />
-                                <b-form-input
-                                    v-model="filterText"
-                                    data-testid="filterTextInput"
-                                    type="text"
-                                    placeholder=""
-                                    maxlength="50"
-                                    debounce="250"
-                                ></b-form-input>
+                                <b-input-group>
+                                    <b-form-input
+                                        v-model="filterText"
+                                        data-testid="filterTextInput"
+                                        type="text"
+                                        placeholder=""
+                                        maxlength="50"
+                                        debounce="250"
+                                    ></b-form-input>
+                                    <b-input-group-append>
+                                        <hg-button
+                                            v-show="filterText"
+                                            data-testid="clearfilterTextBtn"
+                                            variant="icon-input-light"
+                                            @click="filterText = ''"
+                                        >
+                                            <hg-icon
+                                                icon="times"
+                                                size="medium"
+                                                fixed-width
+                                            />
+                                        </hg-button>
+                                    </b-input-group-append>
+                                </b-input-group>
                             </div>
                         </b-col>
                         <b-col v-if="!isLoading" class="col-auto pl-2">
@@ -532,7 +548,7 @@ export default class TimelineView extends Vue {
 
     .form-control-feedback {
         position: absolute;
-        z-index: 2;
+        z-index: 5;
         display: block;
         text-align: center;
         pointer-events: none;
