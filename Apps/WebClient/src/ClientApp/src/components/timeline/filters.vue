@@ -252,7 +252,7 @@ export default class FilterComponent extends Vue {
                 fallback-placement="clockwise"
                 menu-class="z-index-large w-100"
             >
-                <b-row class="px-4">
+                <b-row class="px-1">
                     <b-col><strong>Filter</strong> </b-col>
                     <b-col class="col-auto">
                         <hg-button
@@ -265,7 +265,7 @@ export default class FilterComponent extends Vue {
                     </b-col>
                 </b-row>
 
-                <div class="px-4">
+                <div class="px-1">
                     <b-row class="mt-2">
                         <b-col><strong>Type</strong> </b-col>
                         <b-col class="col-auto"></b-col>
