@@ -444,7 +444,7 @@ export default class ProfileView extends Vue {
             });
     }
 
-    private get PHN(): string {
+    private get phn(): string {
         return this.patientData.personalhealthnumber;
     }
 }
@@ -495,7 +495,7 @@ export default class ProfileView extends Vue {
                                     data-testid="PHN"
                                     class="font-weight-normal"
                                 >
-                                    {{ PHN }}
+                                    {{ phn }}
                                 </h4>
                             </b-col>
                         </b-row>
