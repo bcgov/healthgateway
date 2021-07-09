@@ -60,9 +60,6 @@ export default class ImmunizationCardComponent extends Vue {
     private get isLoading(): boolean {
         return this.isPatientLoading || this.isImmunizationLoading;
     }
-    private get logoImageName(): string {
-        return "bcid-logo-rev-en.svg";
-    }
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
