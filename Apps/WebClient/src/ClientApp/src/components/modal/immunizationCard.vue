@@ -163,13 +163,12 @@ export default class ImmunizationCardComponent extends Vue {
         <hg-loading :is-loading="isLoading" />
         <template #modal-header="{ close }">
             <b-row class="w-100 h-100">
-                <b-col>
+                <b-col class="image-container">
                     <img
-                        class="img-fluid"
-                        src="@/assets/images/gov/bcid-logo-rev-en.png"
-                        width="181"
-                        height="44"
-                        alt="Go to healthgateway home page"
+                        class="img-fluid border da-class"
+                        src="@/assets/images/gov/bcid-logo-rev-en.svg"
+                        alt="BC Health Gateway"
+                        loading="eager"
                 /></b-col>
                 <b-col cols="auto" class="align-self-center">
                     <!-- Emulate built in modal header close button action -->
@@ -367,12 +366,41 @@ div[class*=" row"] {
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
 .immunization-covid-card-modal-header {
+    .da-class {
+        width: 100%;
+        height: auto;
+    }
+    //width: 466px;
     background-color: $primary;
     .close {
         color: white;
         text-shadow: none;
         opacity: 1;
         font-size: 1.5em;
+    }
+    .image-container {
+        //height: 500px;
+        //width: 190px;
+        //border: solid red 1px;
+    }
+    .logo-image {
+        /*min-height: 44px;
+        max-height: 50px;*/
+        box-sizing: border-box;
+        /*height: 48px;
+        max-height: 48px;
+        min-height: 48px;*/
+        width: 50%;
+        max-width: 50%;
+        min-width: 50%;
+
+        border: solid red 1px;
+        background-size: cover;
+        //background-size: 181px 48px;
+        background-repeat: no-repeat;
+        //background-image: url("~@/assets/images/gov/bcid-logo-rev-en.png");
+        background-image: linear-gradient(transparent, transparent),
+            url("~@/assets/images/gov/bcid-logo-rev-en.svg");
     }
 }
 </style>
