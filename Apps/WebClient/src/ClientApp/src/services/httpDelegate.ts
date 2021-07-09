@@ -123,7 +123,7 @@ export default class HttpDelegate implements IHttpDelegate {
             };
             this.logger.debug(`Config: ${JSON.stringify(config)}`);
 
-            Axios.request({ data: payload, url, headers, method: "delete" })
+            Axios.delete(url, { data: payload, headers })
                 .then((response) => {
                     return resolve(response.data);
                 })
