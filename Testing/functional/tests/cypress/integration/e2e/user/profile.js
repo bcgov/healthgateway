@@ -1,4 +1,5 @@
 const { AuthMethod } = require("../../../support/constants");
+const fakeSMSNumber = "7781234567";
 
 describe("User Profile", () => {
     const emailAddress =
@@ -97,7 +98,7 @@ describe("User Profile", () => {
         );
         cy.get("[data-testid=editSMSBtn]").click();
         cy.get("[data-testid=smsInvalidNewEqualsOld]").should("be.visible");
-        cy.get("[data-testid=smsNumberInput]").clear().type("7781234567");
+        cy.get("[data-testid=smsNumberInput]").clear().type(fakeSMSNumber);
         cy.get("[data-testid=saveSMSEditBtn]").click();
         cy.get('[data-testid="countdownText"]').contains(/\d{1,2}s$/); // has 1 or 2 digits before the last 's' character
 
@@ -117,9 +118,7 @@ describe("User Profile", () => {
             .should("be.disabled")
             .invoke("val")
             .then((value) =>
-                expect(value.replace(/\D+/g, "")).to.eq(
-                    Cypress.env("phoneNumber").toString()
-                )
+                expect(value.replace(/\D+/g, "")).to.eq(fakeSMSNumber)
             );
     });
 
