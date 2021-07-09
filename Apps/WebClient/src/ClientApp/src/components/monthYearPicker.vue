@@ -253,8 +253,8 @@ div[class*=" row"] {
 }
 
 .picker-wrapper {
-    min-width: 140px;
-    max-width: 140px;
+    min-width: 160px;
+    max-width: 160px;
     z-index: 10000;
 }
 

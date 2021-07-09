@@ -71,6 +71,7 @@ export default class ResourceCentreComponent extends Vue {
 
     .hg-resource-centre-title {
         cursor: default;
+        white-space: nowrap;
     }
 
     button.dropdown-toggle {
