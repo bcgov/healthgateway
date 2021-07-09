@@ -82,9 +82,6 @@ export default class ProfileView extends Vue {
     @Action("getPatientData", { namespace: "user" })
     getPatientData!: () => Promise<void>;
 
-    @Getter("isLoading", { namespace: "user" })
-    isPatientLoading!: boolean;
-
     @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
 
@@ -138,12 +135,13 @@ export default class ProfileView extends Vue {
         );
 
         this.isLoading = true;
+        var patientPromise = this.getPatientData();
         var oidcUserPromise = authenticationService.getOidcUserProfile();
         var userProfilePromise = this.userProfileService.getProfile(
             this.user.hdid
         );
 
-        Promise.all([oidcUserPromise, userProfilePromise])
+        Promise.all([oidcUserPromise, userProfilePromise, patientPromise])
             .then((results) => {
                 // Load oidc user details
                 if (results[0]) {
