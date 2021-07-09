@@ -318,7 +318,7 @@ div[class*=" row"] {
 
     .label {
         min-width: 75px;
-        max-width: 80px;
+        max-width: 90px;
         font-size: 0.9em;
     }
     .value {
