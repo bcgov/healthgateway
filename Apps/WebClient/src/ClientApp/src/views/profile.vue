@@ -20,6 +20,7 @@ import VerifySMSComponent from "@/components/modal/verifySMS.vue";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
+import PatientData from "@/models/patientData";
 import User, { OidcUserProfile } from "@/models/user";
 import UserProfile from "@/models/userProfile";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -77,6 +78,15 @@ export default class ProfileView extends Vue {
 
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
+
+    @Action("getPatientData", { namespace: "user" })
+    getPatientData!: () => Promise<void>;
+
+    @Getter("isLoading", { namespace: "user" })
+    isPatientLoading!: boolean;
+
+    @Getter("patientData", { namespace: "user" })
+    patientData!: PatientData;
 
     @Ref("verifySMSModal")
     readonly verifySMSModal!: VerifySMSComponent;
@@ -435,6 +445,10 @@ export default class ProfileView extends Vue {
                 this.isLoading = false;
             });
     }
+
+    private get PHN(): string {
+        return this.patientData.personalhealthnumber;
+    }
 }
 </script>
 
@@ -475,6 +489,20 @@ export default class ProfileView extends Vue {
                         </b-row>
                         <b-row class="mb-3">
                             <b-col>
+                                <label for="PHN" class="hg-label"
+                                    >Personal Health Number</label
+                                >
+                                <h4
+                                    id="PHN"
+                                    data-testid="PHN"
+                                    class="font-weight-normal"
+                                >
+                                    {{ PHN }}
+                                </h4>
+                            </b-col>
+                        </b-row>
+                        <b-row class="mb-3">
+                            <b-col>
                                 <label for="lastLoginDate" class="hg-label"
                                     >Last Login Date</label
                                 >
@@ -508,8 +536,8 @@ export default class ProfileView extends Vue {
                                                 class="ml-3"
                                                 variant="link"
                                                 @click="makeEmailEditable()"
-                                                >Edit
-                                            </b-link>
+                                                >Edit</b-link
+                                            >
                                             <div class="form-inline mb-1">
                                                 <b-form-input
                                                     id="email"
@@ -587,8 +615,9 @@ export default class ProfileView extends Vue {
                                                     data-testid="emailStatusNotVerified"
                                                 />
                                             </div>
-                                        </b-form-group> </b-col
-                                ></b-row>
+                                        </b-form-group>
+                                    </b-col>
+                                </b-row>
                                 <b-row
                                     v-if="!email && tempEmail"
                                     class="mb-3"
@@ -606,11 +635,11 @@ export default class ProfileView extends Vue {
                                             aria-hidden="true"
                                             class="mr-2"
                                         />
-                                        <span
-                                            >Removing your email address will
+                                        <span>
+                                            Removing your email address will
                                             disable future email communications
-                                            from the Health Gateway.</span
-                                        >
+                                            from the Health Gateway.
+                                        </span>
                                     </b-col>
                                 </b-row>
                                 <b-row v-if="isEmailEditable" class="mb-3">
@@ -668,8 +697,8 @@ export default class ProfileView extends Vue {
                                                 class="ml-3"
                                                 variant="link"
                                                 @click="makeSMSEditable()"
-                                                >Edit
-                                            </b-link>
+                                                >Edit</b-link
+                                            >
                                             <div class="form-inline mb-1">
                                                 <b-form-input
                                                     id="smsNumber"
@@ -767,11 +796,11 @@ export default class ProfileView extends Vue {
                                             aria-hidden="true"
                                             class="mr-2"
                                         />
-                                        <span
-                                            >Removing your phone number will
+                                        <span>
+                                            Removing your phone number will
                                             disable future SMS communications
-                                            from the Health Gateway.</span
-                                        >
+                                            from the Health Gateway.
+                                        </span>
                                     </b-col>
                                 </b-row>
                                 <b-row v-if="isSMSEditable" class="mb-3">
@@ -783,7 +812,8 @@ export default class ProfileView extends Vue {
                                             size="small"
                                             class="mr-2"
                                             @click="cancelSMSEdit()"
-                                            >Cancel
+                                        >
+                                            Cancel
                                         </hg-button>
                                         <hg-button
                                             id="saveBtn"
@@ -793,7 +823,8 @@ export default class ProfileView extends Vue {
                                             class="mx-2"
                                             :disabled="tempSMS === smsNumber"
                                             @click="saveSMSEdit()"
-                                            >Save
+                                        >
+                                            Save
                                         </hg-button>
                                     </b-col>
                                 </b-row>
