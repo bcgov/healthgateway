@@ -225,3 +225,37 @@ VALUES (
 	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
 	'"2021-01-20T00:00:00"'
 );
+
+INSERT INTO gateway."MessagingVerification"(
+	"MessagingVerificationId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"HdId", 
+	"Validated", 
+	"EmailId", 
+	"InviteKey", 
+	"ExpireDate", 
+	"SMSNumber", 
+	"SMSValidationCode", 
+	"VerificationType", 
+	"Deleted", 
+	"VerificationAttempts")
+VALUES (
+	uuid_generate_v4(),
+	'System',
+	now(),
+	'System',
+	now(),
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	false,
+	null,
+	'00000000-0000-0000-0000-000000000000',
+	now()+INTERVAL '1 day',
+	'2501234567',
+	'123456',
+	'SMS',
+	false,
+	0
+);
