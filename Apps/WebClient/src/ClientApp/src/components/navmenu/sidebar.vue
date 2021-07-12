@@ -648,6 +648,7 @@ hr {
     width: 100%;
     flex-shrink: 0;
     position: sticky;
+    position: -webkit-sticky;
     bottom: 0rem;
     align-self: flex-end;
     background-color: $primary;
