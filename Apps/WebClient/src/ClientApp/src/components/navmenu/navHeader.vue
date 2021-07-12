@@ -306,7 +306,7 @@ export default class HeaderComponent extends Vue {
                     to="/login"
                 >
                     <hg-icon icon="sign-in-alt" size="large" class="mr-2" />
-                    <span>Login</span>
+                    <span>Log In</span>
                 </router-link>
             </b-navbar-nav>
             <RatingComponent
