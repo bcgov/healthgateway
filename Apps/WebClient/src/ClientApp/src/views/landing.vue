@@ -224,9 +224,9 @@ export default class LandingView extends Vue {
                             variant="primary"
                             class="btn-auth-landing"
                             ><img
-                                class="mr-1"
+                                class="mr-2"
                                 :src="bcsclogo"
-                                height="40"
+                                height="16"
                                 alt="BC Services Card App Icon"
                             />Log In with BC Services Card App</hg-button
                         >
@@ -328,7 +328,8 @@ export default class LandingView extends Vue {
     }
 
     .btn-auth-landing {
-        background-color: #1a5d96;
+        background-color: #1a5a95;
+        border-color: #1a5a95;
     }
 
     .title-section {
