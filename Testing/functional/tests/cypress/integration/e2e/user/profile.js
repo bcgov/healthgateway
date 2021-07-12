@@ -16,6 +16,10 @@ describe("User Profile", () => {
         );
     });
 
+    it("PHN Visible and Correct", () => {
+        cy.get("[data-testid=PHN]").should("be.visible").contains("9735353315");
+    });
+
     it("Edit email address", () => {
         cy.intercept(
             "PUT",
