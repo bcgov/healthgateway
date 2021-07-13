@@ -175,7 +175,8 @@ export default class MedicationRequestReportComponent extends Vue {
             </b-row>
             <b-table
                 v-if="!isEmpty || isLoading"
-                striped
+                :striped="true"
+                :fixed="true"
                 :busy="isLoading"
                 :items="items"
                 :fields="fields"

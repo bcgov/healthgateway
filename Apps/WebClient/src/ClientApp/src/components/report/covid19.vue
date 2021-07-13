@@ -154,7 +154,8 @@ export default class COVID19ReportComponent extends Vue {
             </b-row>
             <b-table
                 v-if="!isEmpty || isLaboratoryLoading"
-                striped
+                :striped="true"
+                :fixed="true"
                 :busy="isLaboratoryLoading"
                 :items="items"
                 :fields="fields"

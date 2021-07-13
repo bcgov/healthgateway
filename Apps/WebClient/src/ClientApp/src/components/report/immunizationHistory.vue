@@ -282,8 +282,9 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     </b-row>
                     <b-table
                         v-if="!isRecommendationEmpty || isLoading"
+                        :striped="true"
+                        :fixed="true"
                         :busy="isLoading"
-                        striped
                         :items="recomendationItems"
                         :fields="recomendationFields"
                         class="mt-2 table-style"
