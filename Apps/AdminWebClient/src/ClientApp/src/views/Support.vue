@@ -1,5 +1,4 @@
 <script lang="ts">
-import moment from "moment";
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
@@ -7,6 +6,7 @@ import CommunicationTable from "@/components/core/CommunicationTable.vue";
 import LoadingComponent from "@/components/core/Loading.vue";
 import { ResultType } from "@/constants/resulttype";
 import BannerFeedback from "@/models/bannerFeedback";
+import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import MessageVerification, {
     VerificationType,
 } from "@/models/messageVerification";
@@ -98,7 +98,9 @@ export default class SupportView extends Vue {
                     hdid: x.userProfileId,
                     email: x.email !== null ? x.email.to : "N/A",
                     emailVerified: x.validated ? "true" : "false",
-                    emailVerificationDate: this.formatDate(x.updatedDateTime),
+                    emailVerificationDate: this.formatDateTime(
+                        x.updatedDateTime
+                    ),
                     sms: "-",
                     smsVerified: "-",
                     smsVerificationCode: "-",
@@ -113,7 +115,7 @@ export default class SupportView extends Vue {
                     sms: x.smsNumber !== null ? x.smsNumber : "N/A",
                     smsVerified: x.validated ? "true" : "false",
                     smsVerificationCode: x.smsValidationCode,
-                    smsVerificationDate: this.formatDate(x.updatedDateTime),
+                    smsVerificationDate: this.formatDateTime(x.updatedDateTime),
                 };
             }
         });
@@ -129,8 +131,13 @@ export default class SupportView extends Vue {
         }
     }
 
-    private formatDate(date: string): string {
-        return moment(date).format("l LT");
+    private formatDateTime(date: StringISODateTime): string {
+        if (!date) {
+            return "";
+        }
+        return new DateWrapper(date, { isUtc: true }).format(
+            DateWrapper.defaultDateTimeFormat
+        );
     }
 
     private handleSearch() {
@@ -210,7 +217,9 @@ export default class SupportView extends Vue {
                             :items-per-page="5"
                         >
                             <template #:item.sentDateTime="{ item }">
-                                <span>{{ formatDate(item.sentDateTime) }}</span>
+                                <span>{{
+                                    formatDateTime(item.sentDateTime)
+                                }}</span>
                             </template>
                         </v-data-table>
                     </v-col>
