@@ -222,9 +222,9 @@ export default class LandingView extends Vue {
                             id="btnLogin"
                             data-testid="btnLogin"
                             variant="primary"
-                            class="btn-auth-landing"
+                            class="btn-auth-landing px-2 py-1"
                             ><img
-                                class="mr-2"
+                                class="mr-2 mb-1"
                                 :src="bcsclogo"
                                 height="16"
                                 alt="BC Services Card App Icon"
