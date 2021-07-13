@@ -192,16 +192,12 @@ export default class LaboratoryTimelineComponent extends Vue {
                         <strong>positive</strong> COVID-19 result:
                     </p>
                     <ul>
+                        <li>You need to self-isolate now.</li>
                         <li>
-                            You need to self-isolate now.
+                            The people you live with will also need to
+                            self-isolate if they are not fully vaccinated.
                         </li>
-                        <li>
-                            The people you live with will also need to 
-                            self-isolate if they are not fully vaccinated. 
-                        </li>
-                        <li>
-                            Public health will contact you.
-                        </li>
+                        <li>Public health will contact you.</li>
                         <li>
                             Monitor your health and contact a health care
                             provider or call 8-1-1 if you are concerned about
