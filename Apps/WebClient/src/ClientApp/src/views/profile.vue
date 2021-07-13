@@ -477,12 +477,9 @@ export default class ProfileView extends Vue {
                                 <label for="profileNames" class="hg-label"
                                     >Full Name</label
                                 >
-                                <h4
-                                    id="profileNames"
-                                    class="font-weight-normal"
-                                >
+                                <div id="profileNames">
                                     {{ fullName }}
-                                </h4>
+                                </div>
                             </b-col>
                         </b-row>
                         <b-row class="mb-3">
@@ -490,13 +487,9 @@ export default class ProfileView extends Vue {
                                 <label for="PHN" class="hg-label"
                                     >Personal Health Number</label
                                 >
-                                <h4
-                                    id="PHN"
-                                    data-testid="PHN"
-                                    class="font-weight-normal"
-                                >
+                                <div id="PHN" data-testid="PHN">
                                     {{ phn }}
-                                </h4>
+                                </div>
                             </b-col>
                         </b-row>
                         <b-row class="mb-3">
@@ -504,12 +497,9 @@ export default class ProfileView extends Vue {
                                 <label for="lastLoginDate" class="hg-label"
                                     >Last Login Date</label
                                 >
-                                <h4
-                                    id="lastLoginDate"
-                                    class="font-weight-normal"
-                                >
+                                <div id="lastLoginDate">
                                     {{ lastLoginDateString }}
-                                </h4>
+                                </div>
                             </b-col>
                         </b-row>
                         <b-row>
