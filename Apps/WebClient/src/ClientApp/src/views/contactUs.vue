@@ -41,8 +41,10 @@ export default class ContactUsView extends Vue {}
                         <b-row class="pb-4"
                             ><b-col
                                 ><strong>Email: </strong
-                                >healthgateway@gov.bc.ca</b-col
-                            ></b-row
+                                ><a href="mailto:healthgateway@gov.bc.ca"
+                                    >healthgateway@gov.bc.ca</a
+                                >
+                            </b-col></b-row
                         >
                         <b-row class="pb-2">
                             <b-col>
