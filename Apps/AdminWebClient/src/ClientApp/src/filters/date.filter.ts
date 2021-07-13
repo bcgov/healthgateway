@@ -1,5 +1,5 @@
-import { format } from "date-fns";
+import { DateWrapper } from "@/models/dateWrapper";
 
 export default (date: Date): string => {
-    return format(new Date(date), "eeee, dd MMMM");
+    return DateWrapper.format(date.toISOString(), "EEEE, dd MMMM");
 };

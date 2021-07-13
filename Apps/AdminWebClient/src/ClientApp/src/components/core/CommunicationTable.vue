@@ -1,5 +1,4 @@
 <script lang="ts">
-import moment from "moment";
 import { Component, Emit, Vue, Watch } from "vue-property-decorator";
 import { DataTableHeader } from "vuetify";
 
@@ -11,6 +10,7 @@ import Communication, {
     CommunicationType,
 } from "@/models/adminCommunication";
 import BannerFeedback from "@/models/bannerFeedback";
+import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ICommunicationService } from "@/services/interfaces";
@@ -46,9 +46,9 @@ export default class CommunicationTable extends Vue {
         communicationStatusCode: CommunicationStatus.Draft,
         priority: 10,
         version: 0,
-        scheduledDateTime: moment(new Date()).toDate(),
-        effectiveDateTime: moment(new Date()).toDate(),
-        expiryDateTime: moment(new Date()).add(1, "days").toDate(),
+        scheduledDateTime: new DateWrapper().toISO(true),
+        effectiveDateTime: new DateWrapper().toISO(true),
+        expiryDateTime: new DateWrapper().add({ days: 1 }).toISO(true),
     };
 
     private editedInApp: Communication = {
@@ -59,9 +59,9 @@ export default class CommunicationTable extends Vue {
         communicationStatusCode: CommunicationStatus.Draft,
         priority: 10,
         version: 0,
-        scheduledDateTime: moment(new Date()).toDate(),
-        effectiveDateTime: moment(new Date()).toDate(),
-        expiryDateTime: moment(new Date()).add(1, "days").toDate(),
+        scheduledDateTime: new DateWrapper().toISO(true),
+        effectiveDateTime: new DateWrapper().toISO(true),
+        expiryDateTime: new DateWrapper().add({ days: 1 }).toISO(true),
     };
 
     private editedEmail: Communication = {
@@ -71,9 +71,9 @@ export default class CommunicationTable extends Vue {
         communicationStatusCode: CommunicationStatus.Draft,
         text: "<p></p>",
         priority: 10,
-        scheduledDateTime: moment(new Date()).toDate(),
-        effectiveDateTime: moment(new Date()).toDate(),
-        expiryDateTime: moment(new Date()).toDate(),
+        scheduledDateTime: new DateWrapper().toISO(true),
+        effectiveDateTime: new DateWrapper().toISO(true),
+        expiryDateTime: new DateWrapper().toISO(true),
         version: 0,
     };
 
@@ -85,9 +85,9 @@ export default class CommunicationTable extends Vue {
         communicationStatusCode: CommunicationStatus.Draft,
         version: 0,
         priority: 10,
-        scheduledDateTime: moment(new Date()).toDate(),
-        effectiveDateTime: moment(new Date()).toDate(),
-        expiryDateTime: moment(new Date()).add(1, "days").toDate(),
+        scheduledDateTime: new DateWrapper().toISO(true),
+        effectiveDateTime: new DateWrapper().toISO(true),
+        expiryDateTime: new DateWrapper().add({ days: 1 }).toISO(true),
     };
 
     private defaultInApp: Communication = {
@@ -98,9 +98,9 @@ export default class CommunicationTable extends Vue {
         communicationStatusCode: CommunicationStatus.Draft,
         version: 0,
         priority: 10,
-        scheduledDateTime: moment(new Date()).toDate(),
-        effectiveDateTime: moment(new Date()).toDate(),
-        expiryDateTime: moment(new Date()).add(1, "days").toDate(),
+        scheduledDateTime: new DateWrapper().toISO(true),
+        effectiveDateTime: new DateWrapper().toISO(true),
+        expiryDateTime: new DateWrapper().add({ days: 1 }).toISO(true),
     };
 
     private defaultEmail: Communication = {
@@ -110,9 +110,9 @@ export default class CommunicationTable extends Vue {
         communicationStatusCode: CommunicationStatus.Draft,
         text: "<p></p>",
         priority: 10,
-        scheduledDateTime: moment(new Date()).toDate(),
-        effectiveDateTime: moment(new Date()).toDate(),
-        expiryDateTime: moment(new Date()).toDate(),
+        scheduledDateTime: new DateWrapper().toISO(true),
+        effectiveDateTime: new DateWrapper().toISO(true),
+        expiryDateTime: new DateWrapper().toISO(true),
         version: 0,
     };
 
@@ -202,8 +202,13 @@ export default class CommunicationTable extends Vue {
         },
     ];
 
-    private formatDate(date: Date): string {
-        return new Date(Date.parse(date + "Z")).toLocaleString();
+    private formatDateTime(date: StringISODateTime): string {
+        if (!date) {
+            return "";
+        }
+        return new DateWrapper(date, { isUtc: true }).format(
+            DateWrapper.defaultDateTimeFormat
+        );
     }
 
     private formatPriority(priority: number) {
@@ -222,25 +227,10 @@ export default class CommunicationTable extends Vue {
         this.isNewCommunication = false;
         if (item.communicationTypeCode === CommunicationType.Email) {
             this.editedEmail = item;
-            this.editedEmail.scheduledDateTime = moment
-                .utc(item.scheduledDateTime)
-                .toDate();
         } else if (item.communicationTypeCode === CommunicationType.InApp) {
             this.editedInApp = item;
-            this.editedInApp.effectiveDateTime = moment
-                .utc(item.effectiveDateTime)
-                .toDate();
-            this.editedInApp.expiryDateTime = moment
-                .utc(item.expiryDateTime)
-                .toDate();
         } else {
             this.editedBanner = item;
-            this.editedBanner.effectiveDateTime = moment
-                .utc(item.effectiveDateTime)
-                .toDate();
-            this.editedBanner.expiryDateTime = moment
-                .utc(item.expiryDateTime)
-                .toDate();
         }
     }
 
@@ -249,21 +239,21 @@ export default class CommunicationTable extends Vue {
         columnName: string
     ) {
         this.communicationList.sort((a, b) => {
-            let first!: Date;
-            let second!: Date;
+            let first!: DateWrapper;
+            let second!: DateWrapper;
             if (columnName === "effectiveDateTime") {
-                first = a.effectiveDateTime;
-                second = b.effectiveDateTime;
+                first = new DateWrapper(a.effectiveDateTime, { isUtc: true });
+                second = new DateWrapper(b.effectiveDateTime, { isUtc: true });
             } else if (columnName === "expiryDateTime") {
-                first = a.expiryDateTime;
-                second = b.expiryDateTime;
+                first = new DateWrapper(a.expiryDateTime, { isUtc: true });
+                second = new DateWrapper(b.expiryDateTime, { isUtc: true });
             } else {
                 return 0;
             }
 
-            if (first > second) {
+            if (first.isAfter(second)) {
                 return isDescending ? -1 : 1;
-            } else if (first < second) {
+            } else if (first.isBefore(second)) {
                 return isDescending ? 1 : -1;
             }
             return 0;
@@ -500,13 +490,13 @@ export default class CommunicationTable extends Vue {
         class="elevation-1"
     >
         <template #item.effectiveDateTime="{ item }">
-            <span>{{ formatDate(item.effectiveDateTime) }}</span>
+            <span>{{ formatDateTime(item.effectiveDateTime) }}</span>
         </template>
         <template #item.expiryDateTime="{ item }">
-            <span>{{ formatDate(item.expiryDateTime) }}</span>
+            <span>{{ formatDateTime(item.expiryDateTime) }}</span>
         </template>
         <template #item.scheduledDateTime="{ item }">
-            <span>{{ formatDate(item.scheduledDateTime) }}</span>
+            <span>{{ formatDateTime(item.scheduledDateTime) }}</span>
         </template>
         <template #top>
             <v-toolbar dark>

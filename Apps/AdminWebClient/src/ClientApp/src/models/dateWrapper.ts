@@ -33,6 +33,9 @@ export interface ParseOptions {
  */
 export class DateWrapper {
     static defaultFormat = "yyyy-MMM-dd";
+
+    static defaultDateTimeFormat = "dd/MM/yyyy h:mm a";
+
     /**
      * Value for reference purposes only. Stores the raw value if initialized as a string, ISO datetime otherwise.
      */

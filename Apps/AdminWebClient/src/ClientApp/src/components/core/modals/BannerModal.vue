@@ -25,8 +25,7 @@
                                 "
                             >
                                 <v-datetime-picker
-                                    v-model="editedItem.effectiveDateTime"
-                                    requried
+                                    v-model="effectiveDateTime"
                                     label="Effective On"
                                 ></v-datetime-picker>
                                 <span class="error-message">{{
@@ -45,8 +44,7 @@
                                 "
                             >
                                 <v-datetime-picker
-                                    v-model="editedItem.expiryDateTime"
-                                    required
+                                    v-model="expiryDateTime"
                                     label="Expires On"
                                 ></v-datetime-picker>
                                 <span class="error-message">{{
@@ -105,7 +103,6 @@
     </v-dialog>
 </template>
 <script lang="ts">
-import moment from "moment";
 import {
     Blockquote,
     Bold,
@@ -128,12 +125,18 @@ import { Component, Emit, Prop, Vue, Watch } from "vue-property-decorator";
 
 import type Communication from "@/models/adminCommunication";
 import { CommunicationStatus } from "@/models/adminCommunication";
+import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 
 extend("dateValid", {
-    validate(value: unknown, args: unknown[] | Record<string, Date>) {
+    validate(
+        value: unknown,
+        args: unknown[] | Record<string, StringISODateTime>
+    ) {
         // We know is a record
-        args = args as Record<string, Date>;
-        if (moment(args.effective).isBefore(moment(args.expiry))) {
+        args = args as Record<string, StringISODateTime>;
+        let effectiveTime = new DateWrapper(args.effective, { isUtc: true });
+        let expiryTime = new DateWrapper(args.expiry, { isUtc: true });
+        if (effectiveTime.isBefore(expiryTime)) {
             return true;
         }
         return "Effective date must occur before expiry date.";
@@ -203,14 +206,51 @@ export default class BannerModal extends Vue {
         return this.isNew ? "New Banner Post" : "Edit Banner Post";
     }
 
-    private dateTimeRules(effective: Date, expiry: Date) {
-        return "dateValid:" + effective.toString() + "," + expiry.toString();
+    private get effectiveDateTime(): Date {
+        return new DateWrapper(this.editedItem.effectiveDateTime, {
+            isUtc: true,
+        }).toJSDate();
+    }
+
+    private set effectiveDateTime(date: Date) {
+        if (date) {
+            this.editedItem.effectiveDateTime = new DateWrapper(
+                date.toISOString(),
+                { isUtc: true }
+            ).toISO(true);
+        }
+    }
+
+    private get expiryDateTime(): Date {
+        return new DateWrapper(this.editedItem.expiryDateTime, {
+            isUtc: true,
+        }).toJSDate();
+    }
+
+    private set expiryDateTime(date: Date) {
+        if (date) {
+            this.editedItem.expiryDateTime = new DateWrapper(
+                date.toISOString(),
+                { isUtc: true }
+            ).toISO(true);
+        }
+    }
+
+    private dateTimeRules(
+        effective: StringISODateTime,
+        expiry: StringISODateTime
+    ) {
+        return "dateValid:" + effective + "," + expiry;
     }
 
     private dateTimeValid(): boolean {
-        return moment(this.editedItem.effectiveDateTime).isBefore(
-            moment(this.editedItem.expiryDateTime)
-        );
+        let effectiveTime = new DateWrapper(this.editedItem.effectiveDateTime, {
+            isUtc: true,
+        });
+        let expiryTime = new DateWrapper(this.editedItem.expiryDateTime, {
+            isUtc: true,
+        });
+        return effectiveTime.isBefore(expiryTime);
     }
 
     @Watch("dialog")
@@ -219,7 +259,7 @@ export default class BannerModal extends Vue {
     }
 
     private save() {
-        this.editedItem.scheduledDateTime = new Date();
+        this.editedItem.scheduledDateTime = new DateWrapper().toISO(true);
         if (
             (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
             this.dateTimeValid()
