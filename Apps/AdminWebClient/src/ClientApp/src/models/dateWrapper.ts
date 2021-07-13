@@ -169,16 +169,21 @@ export class DateWrapper {
     }
 
     /**
-     * Formats the date to the ISO format (YYYY-MM-DDTHH:MM:SS:M-Z)
-     * @returns the formated string representation
+     * Formats the datetime to the ISO format (YYYY-MM-DDTHH:MM:SS:M-Z)
+     * @param toUtc (optional) Whether to set the time zone to UTC
+     * @returns the formatted string representation
      */
-    public toISO(): StringISODate {
-        return this.internalDate.toISO();
+    public toISO(toUtc = false): StringISODate {
+        let dateTime = this.internalDate;
+        if (toUtc) {
+            dateTime = dateTime.toUTC();
+        }
+        return dateTime.toISO();
     }
 
     /**
      * Formats the date to the ISO format without time (YYYY-MM-DD)
-     * @returns the formated string representation
+     * @returns the formatted string representation
      */
     public toISODate(): StringISODate {
         return this.internalDate.toISODate();

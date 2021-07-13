@@ -217,7 +217,7 @@ export default class BannerModal extends Vue {
             this.editedItem.effectiveDateTime = new DateWrapper(
                 date.toISOString(),
                 { isUtc: true }
-            ).toISO();
+            ).toISO(true);
         }
     }
 
@@ -232,7 +232,7 @@ export default class BannerModal extends Vue {
             this.editedItem.expiryDateTime = new DateWrapper(
                 date.toISOString(),
                 { isUtc: true }
-            ).toISO();
+            ).toISO(true);
         }
     }
 
@@ -259,7 +259,7 @@ export default class BannerModal extends Vue {
     }
 
     private save() {
-        this.editedItem.scheduledDateTime = new DateWrapper().toISO();
+        this.editedItem.scheduledDateTime = new DateWrapper().toISO(true);
         if (
             (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
             this.dateTimeValid()

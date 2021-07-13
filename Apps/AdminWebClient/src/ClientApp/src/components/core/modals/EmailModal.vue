@@ -180,7 +180,7 @@ export default class EmailModal extends Vue {
             this.editedItem.scheduledDateTime = new DateWrapper(
                 date.toISOString(),
                 { isUtc: true }
-            ).toISO();
+            ).toISO(true);
         }
     }
 

@@ -46,9 +46,9 @@ export default class CommunicationTable extends Vue {
         communicationStatusCode: CommunicationStatus.Draft,
         priority: 10,
         version: 0,
-        scheduledDateTime: new DateWrapper().toISO(),
-        effectiveDateTime: new DateWrapper().toISO(),
-        expiryDateTime: new DateWrapper().add({ days: 1 }).toISO(),
+        scheduledDateTime: new DateWrapper().toISO(true),
+        effectiveDateTime: new DateWrapper().toISO(true),
+        expiryDateTime: new DateWrapper().add({ days: 1 }).toISO(true),
     };
 
     private editedInApp: Communication = {
@@ -59,9 +59,9 @@ export default class CommunicationTable extends Vue {
         communicationStatusCode: CommunicationStatus.Draft,
         priority: 10,
         version: 0,
-        scheduledDateTime: new DateWrapper().toISO(),
-        effectiveDateTime: new DateWrapper().toISO(),
-        expiryDateTime: new DateWrapper().add({ days: 1 }).toISO(),
+        scheduledDateTime: new DateWrapper().toISO(true),
+        effectiveDateTime: new DateWrapper().toISO(true),
+        expiryDateTime: new DateWrapper().add({ days: 1 }).toISO(true),
     };
 
     private editedEmail: Communication = {
@@ -71,9 +71,9 @@ export default class CommunicationTable extends Vue {
         communicationStatusCode: CommunicationStatus.Draft,
         text: "<p></p>",
         priority: 10,
-        scheduledDateTime: new DateWrapper().toISO(),
-        effectiveDateTime: new DateWrapper().toISO(),
-        expiryDateTime: new DateWrapper().toISO(),
+        scheduledDateTime: new DateWrapper().toISO(true),
+        effectiveDateTime: new DateWrapper().toISO(true),
+        expiryDateTime: new DateWrapper().toISO(true),
         version: 0,
     };
 
@@ -85,9 +85,9 @@ export default class CommunicationTable extends Vue {
         communicationStatusCode: CommunicationStatus.Draft,
         version: 0,
         priority: 10,
-        scheduledDateTime: new DateWrapper().toISO(),
-        effectiveDateTime: new DateWrapper().toISO(),
-        expiryDateTime: new DateWrapper().add({ days: 1 }).toISO(),
+        scheduledDateTime: new DateWrapper().toISO(true),
+        effectiveDateTime: new DateWrapper().toISO(true),
+        expiryDateTime: new DateWrapper().add({ days: 1 }).toISO(true),
     };
 
     private defaultInApp: Communication = {
@@ -98,9 +98,9 @@ export default class CommunicationTable extends Vue {
         communicationStatusCode: CommunicationStatus.Draft,
         version: 0,
         priority: 10,
-        scheduledDateTime: new DateWrapper().toISO(),
-        effectiveDateTime: new DateWrapper().toISO(),
-        expiryDateTime: new DateWrapper().add({ days: 1 }).toISO(),
+        scheduledDateTime: new DateWrapper().toISO(true),
+        effectiveDateTime: new DateWrapper().toISO(true),
+        expiryDateTime: new DateWrapper().add({ days: 1 }).toISO(true),
     };
 
     private defaultEmail: Communication = {
@@ -110,9 +110,9 @@ export default class CommunicationTable extends Vue {
         communicationStatusCode: CommunicationStatus.Draft,
         text: "<p></p>",
         priority: 10,
-        scheduledDateTime: new DateWrapper().toISO(),
-        effectiveDateTime: new DateWrapper().toISO(),
-        expiryDateTime: new DateWrapper().toISO(),
+        scheduledDateTime: new DateWrapper().toISO(true),
+        effectiveDateTime: new DateWrapper().toISO(true),
+        expiryDateTime: new DateWrapper().toISO(true),
         version: 0,
     };
 
