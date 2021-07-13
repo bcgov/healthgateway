@@ -240,7 +240,7 @@ export default class ReportsView extends Vue {
 <template>
     <div class="m-3 flex-grow-1 d-flex flex-column">
         <b-row>
-            <b-col class="col-12 col-lg-9 column-wrapper">
+            <b-col class="col-12 column-wrapper">
                 <page-title title="Export Records" />
                 <div class="my-3 px-3 py-4 form">
                     <b-row>
@@ -249,7 +249,7 @@ export default class ReportsView extends Vue {
                         </b-col>
                     </b-row>
                     <b-row align-h="between" class="py-2">
-                        <b-col class="mb-2" md="12" lg="">
+                        <b-col class="mb-2" sm="">
                             <b-form-select
                                 id="reportType"
                                 v-model="reportComponent"
@@ -491,7 +491,7 @@ export default class ReportsView extends Vue {
     width: 100%;
     height: 600px;
     overflow-y: scroll;
-    overflow-x: hidden;
+    overflow-x: scroll;
 }
 .form {
     background-color: $soft_background;

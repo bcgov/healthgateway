@@ -139,7 +139,8 @@ export default class MSPVisitsReportComponent extends Vue {
 
                 <b-table
                     v-if="!isEmpty || isLoading"
-                    striped
+                    :striped="true"
+                    :fixed="true"
                     :busy="isLoading"
                     :items="items"
                     :fields="fields"
