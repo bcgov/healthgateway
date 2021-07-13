@@ -15,7 +15,8 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong>
-                                    July 14, 2021 - v1.4.6 - Export Records, BC Services Card Log In, App Icon
+                                    July 14, 2021 - v1.4.6 - Export Records, BC
+                                    Services Card Log In, App Icon
                                 </strong>
                             </b-col>
                         </b-row>
@@ -23,18 +24,24 @@
                             <b-col>
                                 <ul>
                                     <li>
-                                        We updated the export document for all record types
-                                        and added csv and excel options. These new formats will allow
-                                        you to quickly sort and filter your health information. 
+                                        We updated the export document for all
+                                        record types and added CSV and Excel
+                                        options. These new formats will allow
+                                        you to quickly sort and filter your
+                                        health information.
                                     </li>
                                     <li>
-                                        We updated the landing page log in button to provide more clarity
-                                        around the use of the BC Services Card mobile app for secure login
-                                        to the Health Gateway.                                       
+                                        We updated the landing page log in
+                                        button to provide more clarity around
+                                        the use of the BC Services Card mobile
+                                        app for secure login to the Health
+                                        Gateway.
                                     </li>
                                     <li>
-                                        We updated the Health Gateway app icon so the icon is visually distinct
-                                        from your other apps and websites if you bookmark the page. 
+                                        We updated the Health Gateway app icon
+                                        so the icon is visually distinct from
+                                        your other apps and websites if you
+                                        bookmark the page.
                                     </li>
                                 </ul>
                             </b-col>
