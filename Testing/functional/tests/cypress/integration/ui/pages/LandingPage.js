@@ -15,14 +15,15 @@ describe("Landing Page", () => {
         cy.get("#btnStart")
             .should("be.visible")
             .should("have.attr", "href", "/registration")
-            .should("have.text", "Register");
+            .contains("Register");
     });
 
     it("Login Button", () => {
         cy.get("#btnLogin")
             .should("be.visible")
-            .should("have.attr", "href", "/login")
-            .should("have.text", "Log in");
+            .contains("Log In")
+            .parent()
+            .should("have.attr", "href", "/login");
     });
 
     it("Offline", () => {
