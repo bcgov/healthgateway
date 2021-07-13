@@ -17,6 +17,7 @@ import Image02 from "@/assets/images/landing/002_Devices.png";
 import Image03 from "@/assets/images/landing/003_reduced-3.jpeg";
 import Image04 from "@/assets/images/landing/004_reduced-living-room.jpeg";
 import Image05 from "@/assets/images/landing/005_reduced-family.jpeg";
+import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
 
@@ -58,6 +59,7 @@ export default class LandingView extends Vue {
 
     private logo: string = Image00;
     private devices: string = Image02;
+    private bcsclogo: string = Image06;
     private isOpenRegistration = false;
 
     private icons: Icon[] = [
@@ -214,11 +216,28 @@ export default class LandingView extends Vue {
                         <span v-if="!icon.active"> (Coming soon)</span>
                     </span>
                 </b-row>
+                <b-row v-if="!oidcIsAuthenticated">
+                    <router-link to="/login" class="col-lg-12">
+                        <hg-button
+                            id="btnLogin"
+                            data-testid="btnLogin"
+                            variant="primary"
+                            class="btn-auth-landing"
+                            ><img
+                                class="mr-2"
+                                :src="bcsclogo"
+                                height="16"
+                                alt="BC Services Card App Icon"
+                            />Log In with BC Services Card App</hg-button
+                        >
+                    </router-link>
+                </b-row>
                 <b-row
                     v-if="!oidcIsAuthenticated"
-                    class="py-1 justify-content-center justify-content-lg-start"
+                    class="col-12 col-sm-7 col-lg-5 devices-text my-3"
                 >
-                    <hg-button
+                    <span class="mr-2">Need an account?</span>
+                    <router-link
                         id="btnStart"
                         data-testid="btnStart"
                         :to="
@@ -226,18 +245,8 @@ export default class LandingView extends Vue {
                                 ? 'registration'
                                 : 'registrationInfo'
                         "
-                        variant="primary"
-                        class="col-12 col-sm-5 col-lg-4 my-2 m-sm-2 mx-lg-3"
-                        >Register</hg-button
-                    >
-                    <hg-button
-                        id="btnLogin"
-                        data-testid="btnLogin"
-                        to="login"
-                        variant="secondary"
-                        class="col-12 col-sm-5 col-lg-4 my-2 m-sm-2 mx-lg-3"
-                        >Log in</hg-button
-                    >
+                        >Register
+                    </router-link>
                 </b-row>
             </b-col>
         </b-row>
@@ -313,28 +322,14 @@ export default class LandingView extends Vue {
     .title {
         font-size: 2.2rem;
     }
+
     .sub-title {
         font-size: 1.5rem;
     }
 
-    .btn-secondary-landing {
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-            0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        border-width: 0px;
-        width: 150px;
-        font-weight: 600;
-        color: $primary;
-        background-color: $soft_background;
-    }
-
-    .btn-primary-landing {
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-            0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        border-width: 0px;
-        min-width: 150px;
-        font-weight: 600;
-        color: $primary;
-        background-color: $bcgold;
+    .btn-auth-landing {
+        background-color: #1a5a95;
+        border-color: #1a5a95;
     }
 
     .title-section {
@@ -381,16 +376,17 @@ export default class LandingView extends Vue {
                 font-size: 2.2rem;
             }
         }
-
         /* Small Devices*/
         @media (max-width: 767px) {
             .text-wrapper {
                 color: white;
                 bottom: 0;
+
                 .title {
                     font-size: 1.8rem;
                     color: white;
                 }
+
                 .small-text {
                     font-size: 1rem;
                 }
