@@ -192,18 +192,12 @@ export default class LaboratoryTimelineComponent extends Vue {
                         <strong>positive</strong> COVID-19 result:
                     </p>
                     <ul>
+                        <li>You need to self-isolate now.</li>
                         <li>
-                            You and the people you live with need to
-                            self-isolate now.
+                            The people you live with will also need to
+                            self-isolate if they are not fully vaccinated.
                         </li>
-                        <li>
-                            Public health will contact you in 2 to 3 days with
-                            further instructions.
-                        </li>
-                        <li>
-                            If you are a health care worker, please notify your
-                            employer of your positive result.
-                        </li>
+                        <li>Public health will contact you.</li>
                         <li>
                             Monitor your health and contact a health care
                             provider or call 8-1-1 if you are concerned about
@@ -216,7 +210,7 @@ export default class LaboratoryTimelineComponent extends Vue {
                                 target="blank_"
                                 >www.bccdc.ca/results</a
                             >
-                            for more information about your test result.
+                            for more information.
                         </li>
                     </ul>
                 </div>
