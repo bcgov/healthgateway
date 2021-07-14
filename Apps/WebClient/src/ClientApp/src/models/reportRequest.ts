@@ -6,14 +6,19 @@ export default interface ReportRequest {
     template: TemplateType;
 
     // Gets or sets the report type.
-    type: ReportType;
+    type: ReportFormatType;
 }
 
 export enum TemplateType {
+    Encounter,
+    Immunization,
     Medication,
+    COVID,
+    MedicationRequest,
 }
 
-export enum ReportType {
+export enum ReportFormatType {
     PDF,
-    EXCEL,
+    CSV,
+    XLSX,
 }

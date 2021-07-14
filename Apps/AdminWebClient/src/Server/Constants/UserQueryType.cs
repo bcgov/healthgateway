@@ -34,5 +34,10 @@ namespace HealthGateway.Admin.Constants
         /// Query by the SMS Phone number.
         /// </summary>
         SMS,
+
+        /// <summary>
+        /// Query by the users directed identifier.
+        /// </summary>
+        HDID,
     }
 }

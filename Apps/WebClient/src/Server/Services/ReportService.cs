@@ -55,12 +55,14 @@ namespace HealthGateway.WebClient.Services
                 Data = reportRequest.Data,
                 Options = new CDogsOptionsModel()
                 {
+                    Overwrite = true,
                     ConvertTo = reportRequest.Type.ToString().ToLower(CultureInfo.CurrentCulture),
                     ReportName = reportName,
                 },
                 Template = new CDogsTemplateModel()
                 {
-                    Content = ReadTemplate(reportRequest.Template),
+                    Content = ReadTemplate(reportRequest.Template, reportRequest.Type),
+                    FileType = GetTemplateExtension(reportRequest.Type),
                 },
             };
 
@@ -69,9 +71,24 @@ namespace HealthGateway.WebClient.Services
             return retVal;
         }
 
-        private static string ReadTemplate(TemplateType template)
+        private static string GetTemplateExtension(ReportFormatType formatType)
         {
-            string resourceName = $"HealthGateway.WebClient.Server.Assets.Templates.{template}Report.docx";
+            switch (formatType)
+            {
+                case ReportFormatType.PDF:
+                    return "docx";
+                case ReportFormatType.XLSX:
+                case ReportFormatType.CSV:
+                    return "xlsx";
+            }
+
+            return string.Empty;
+        }
+
+        private static string ReadTemplate(TemplateType template, ReportFormatType formatType)
+        {
+            string extension = GetTemplateExtension(formatType);
+            string resourceName = $"HealthGateway.WebClient.Server.Assets.Templates.{template}Report.{extension}";
             Assembly? assembly = Assembly.GetAssembly(typeof(ReportService));
             Stream? resourceStream = assembly!.GetManifestResourceStream(resourceName);
 

@@ -1,18 +1,20 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
+import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
+import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
+import ReportHeader from "@/models/reportHeader";
+import { ReportFormatType, TemplateType } from "@/models/reportRequest";
+import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
-import { ILogger } from "@/services/interfaces";
-import PDFUtil from "@/utility/pdfUtil";
+import { ILogger, IReportService } from "@/services/interfaces";
 
 interface EncounterRow {
     date: string;
@@ -21,11 +23,7 @@ interface EncounterRow {
     clinic_practitioner: string;
 }
 
-@Component({
-    components: {
-        ReportHeaderComponent,
-    },
-})
+@Component
 export default class MSPVisitsReportComponent extends Vue {
     @Prop() private filter!: ReportFilter;
 
@@ -41,12 +39,7 @@ export default class MSPVisitsReportComponent extends Vue {
     @Getter("user", { namespace: "user" })
     private user!: User;
 
-    @Ref("report")
-    readonly report!: HTMLElement;
-
     private logger!: ILogger;
-
-    private isPreview = true;
 
     private readonly headerClass = "encounter-report-table-header";
 
@@ -96,15 +89,21 @@ export default class MSPVisitsReportComponent extends Vue {
         });
     }
 
-    public async generatePdf(): Promise<void> {
-        this.logger.debug("generating Health Visits PDF...");
-        this.isPreview = false;
+    public async generateReport(
+        reportFormatType: ReportFormatType,
+        headerData: ReportHeader
+    ): Promise<RequestResult<Report>> {
+        const reportService: IReportService = container.get<IReportService>(
+            SERVICE_IDENTIFIER.ReportService
+        );
 
-        return PDFUtil.generatePdf(
-            "HealthGateway_HealthVisits.pdf",
-            this.report
-        ).then(() => {
-            this.isPreview = true;
+        return reportService.generateReport({
+            data: {
+                header: headerData,
+                records: this.items,
+            },
+            template: TemplateType.Encounter,
+            type: reportFormatType,
         });
     }
 
@@ -132,20 +131,16 @@ export default class MSPVisitsReportComponent extends Vue {
 
 <template>
     <div>
-        <div ref="report">
-            <section class="pdf-item">
-                <ReportHeaderComponent
-                    v-show="!isPreview"
-                    :filter="filter"
-                    title="Health Gateway Health Visit History"
-                />
-                <b-row v-if="isEmpty && (!isLoading || !isPreview)">
+        <div>
+            <section>
+                <b-row v-if="isEmpty && !isLoading">
                     <b-col>No records found.</b-col>
                 </b-row>
 
                 <b-table
                     v-if="!isEmpty || isLoading"
-                    striped
+                    :striped="true"
+                    :fixed="true"
                     :busy="isLoading"
                     :items="items"
                     :fields="fields"

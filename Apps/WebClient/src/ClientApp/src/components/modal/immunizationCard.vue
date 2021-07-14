@@ -53,6 +53,7 @@ export default class ImmunizationCardComponent extends Vue {
     private logger!: ILogger;
     private readonly modalId: string = "covid-card-modal";
     private isVisible = false;
+    private isPreview = true;
 
     private doses: Dose[] = [];
 
@@ -135,14 +136,19 @@ export default class ImmunizationCardComponent extends Vue {
     }
 
     private downloadPdf() {
+        this.isPreview = false;
         SnowPlow.trackEvent({
             action: "download_card",
             text: "COVID Card PDF",
         });
-        PDFUtil.generatePdf(
-            "HealthGateway_ImmunizationHistory.pdf",
-            this.cardModal.$refs.content as HTMLElement
-        );
+        this.$nextTick(() => {
+            PDFUtil.generatePdf(
+                "HealthGateway_ImmunizationHistory.pdf",
+                this.cardModal.$refs.content as HTMLElement
+            ).finally(() => {
+                this.isPreview = true;
+            });
+        });
     }
 }
 </script>
@@ -163,13 +169,20 @@ export default class ImmunizationCardComponent extends Vue {
         <hg-loading :is-loading="isLoading" />
         <template #modal-header="{ close }">
             <b-row class="w-100 h-100">
-                <b-col>
+                <b-col class="image-container">
                     <img
+                        v-show="isPreview"
+                        class="img-fluid"
+                        src="@/assets/images/gov/bcid-logo-rev-en.svg"
+                        width="190px"
+                        alt="BC Health Gateway" />
+                    <img
+                        v-show="!isPreview"
                         class="img-fluid"
                         src="@/assets/images/gov/bcid-logo-rev-en.png"
                         width="181"
                         height="44"
-                        alt="Go to healthgateway home page"
+                        alt="BC Health Gateway"
                 /></b-col>
                 <b-col cols="auto" class="align-self-center">
                     <!-- Emulate built in modal header close button action -->
@@ -318,7 +331,7 @@ div[class*=" row"] {
 
     .label {
         min-width: 75px;
-        max-width: 80px;
+        max-width: 90px;
         font-size: 0.9em;
     }
     .value {
@@ -373,6 +386,9 @@ div[class*=" row"] {
         text-shadow: none;
         opacity: 1;
         font-size: 1.5em;
+    }
+    .image-container {
+        min-height: 50px;
     }
 }
 </style>

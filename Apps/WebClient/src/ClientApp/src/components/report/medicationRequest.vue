@@ -1,18 +1,20 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
+import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationRequest from "@/models/MedicationRequest";
+import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
+import ReportHeader from "@/models/reportHeader";
+import { ReportFormatType, TemplateType } from "@/models/reportRequest";
+import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
-import { ILogger } from "@/services/interfaces";
-import PDFUtil from "@/utility/pdfUtil";
+import { ILogger, IReportService } from "@/services/interfaces";
 
 interface MedicationRequestRow {
     date: string;
@@ -24,11 +26,7 @@ interface MedicationRequestRow {
     reference_number: string;
 }
 
-@Component({
-    components: {
-        ReportHeaderComponent,
-    },
-})
+@Component
 export default class MedicationRequestReportComponent extends Vue {
     @Prop() private filter!: ReportFilter;
 
@@ -44,11 +42,7 @@ export default class MedicationRequestReportComponent extends Vue {
     @Getter("medicationRequests", { namespace: "medication" })
     medicationRequests!: MedicationRequest[];
 
-    @Ref("report")
-    readonly report!: HTMLElement;
-
     private logger!: ILogger;
-    private isPreview = true;
 
     private readonly headerClass = "medication-request-report-table-header";
 
@@ -115,15 +109,21 @@ export default class MedicationRequestReportComponent extends Vue {
         );
     }
 
-    public async generatePdf(): Promise<void> {
-        this.logger.debug("generating Medication Request History PDF...");
-        this.isPreview = false;
+    public async generateReport(
+        reportFormatType: ReportFormatType,
+        headerData: ReportHeader
+    ): Promise<RequestResult<Report>> {
+        const reportService: IReportService = container.get<IReportService>(
+            SERVICE_IDENTIFIER.ReportService
+        );
 
-        return PDFUtil.generatePdf(
-            "HealthGateway_SpecialAuthorityRequestHistory.pdf",
-            this.report
-        ).then(() => {
-            this.isPreview = true;
+        return reportService.generateReport({
+            data: {
+                header: headerData,
+                records: this.items,
+            },
+            template: TemplateType.MedicationRequest,
+            type: reportFormatType,
         });
     }
 
@@ -169,32 +169,26 @@ export default class MedicationRequestReportComponent extends Vue {
 
 <template>
     <div>
-        <div ref="report">
-            <section class="pdf-item">
-                <ReportHeaderComponent
-                    v-show="!isPreview"
-                    :filter="filter"
-                    title="Health Gateway Special Authority Request History "
-                />
-                <b-row v-if="isEmpty && (!isLoading || !isPreview)">
-                    <b-col>No records found.</b-col>
-                </b-row>
-                <b-table
-                    v-if="!isEmpty || isLoading"
-                    striped
-                    :busy="isLoading"
-                    :items="items"
-                    :fields="fields"
-                    class="table-style"
-                >
-                    <template #table-busy>
-                        <content-placeholders>
-                            <content-placeholders-text :lines="7" />
-                        </content-placeholders>
-                    </template>
-                </b-table>
-            </section>
-        </div>
+        <section>
+            <b-row v-if="isEmpty && !isLoading">
+                <b-col>No records found.</b-col>
+            </b-row>
+            <b-table
+                v-if="!isEmpty || isLoading"
+                :striped="true"
+                :fixed="true"
+                :busy="isLoading"
+                :items="items"
+                :fields="fields"
+                class="table-style"
+            >
+                <template #table-busy>
+                    <content-placeholders>
+                        <content-placeholders-text :lines="7" />
+                    </content-placeholders>
+                </template>
+            </b-table>
+        </section>
     </div>
 </template>
 

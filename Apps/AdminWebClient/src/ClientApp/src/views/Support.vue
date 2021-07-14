@@ -1,12 +1,12 @@
 <script lang="ts">
-import moment from "moment";
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator";
 
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import CommunicationTable from "@/components/core/CommunicationTable.vue";
 import LoadingComponent from "@/components/core/Loading.vue";
 import { ResultType } from "@/constants/resulttype";
 import BannerFeedback from "@/models/bannerFeedback";
+import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import MessageVerification, {
     VerificationType,
 } from "@/models/messageVerification";
@@ -35,6 +35,8 @@ interface UserSearchRow {
     },
 })
 export default class SupportView extends Vue {
+    @Prop({ default: null, required: false }) hdid!: string;
+
     private isLoading = false;
     private showFeedback = false;
     private bannerFeedback: BannerFeedback = {
@@ -96,7 +98,9 @@ export default class SupportView extends Vue {
                     hdid: x.userProfileId,
                     email: x.email !== null ? x.email.to : "N/A",
                     emailVerified: x.validated ? "true" : "false",
-                    emailVerificationDate: this.formatDate(x.updatedDateTime),
+                    emailVerificationDate: this.formatDateTime(
+                        x.updatedDateTime
+                    ),
                     sms: "-",
                     smsVerified: "-",
                     smsVerificationCode: "-",
@@ -111,7 +115,7 @@ export default class SupportView extends Vue {
                     sms: x.smsNumber !== null ? x.smsNumber : "N/A",
                     smsVerified: x.validated ? "true" : "false",
                     smsVerificationCode: x.smsValidationCode,
-                    smsVerificationDate: this.formatDate(x.updatedDateTime),
+                    smsVerificationDate: this.formatDateTime(x.updatedDateTime),
                 };
             }
         });
@@ -119,14 +123,26 @@ export default class SupportView extends Vue {
 
     private mounted() {
         this.supportService = container.get(SERVICE_IDENTIFIER.SupportService);
+        if (this.hdid) {
+            this.selectedQueryType = QueryType.HDID;
+            this.searchText = this.hdid;
+            this.handleSearch();
+            this.$router.replace({ path: "/support" });
+        }
     }
 
-    private formatDate(date: string): string {
-        return moment(date).format("l LT");
+    private formatDateTime(date: StringISODateTime): string {
+        if (!date) {
+            return "";
+        }
+        return new DateWrapper(date, { isUtc: true }).format(
+            DateWrapper.defaultDateTimeFormat
+        );
     }
 
     private handleSearch() {
-        if (this.selectedQueryType === null) {
+        if (this.selectedQueryType === null || this.searchText.length === 0) {
+            this.emailList = [];
             return;
         }
 
@@ -164,32 +180,33 @@ export default class SupportView extends Vue {
 
 <template>
     <v-container>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <LoadingComponent :is-loading="isLoading" />
         <BannerFeedbackComponent
             :show-feedback.sync="showFeedback"
             :feedback="bannerFeedback"
             class="mt-5"
-        ></BannerFeedbackComponent>
-        <v-row justify="center">
-            <v-col cols="2">
-                <v-combobox
-                    v-model="selectedQueryType"
-                    :items="queryTypes"
-                    label="Query Type"
-                    outlined
-                ></v-combobox
-            ></v-col>
-            <v-col>
-                <v-text-field v-model="searchText" label="Search Query">
-                </v-text-field>
-            </v-col>
-            <v-col>
-                <v-btn class="mt-2" @click="handleSearch()">
-                    Search
-                    <v-icon class="ml-2" size="sm">fas fa-search</v-icon>
-                </v-btn>
-            </v-col>
-        </v-row>
+        />
+        <form @submit.prevent="handleSearch()">
+            <v-row align="center">
+                <v-col cols="4" sm="3" lg="2">
+                    <v-combobox
+                        v-model="selectedQueryType"
+                        :items="queryTypes"
+                        label="Query Type"
+                        outlined
+                    />
+                </v-col>
+                <v-col>
+                    <v-text-field v-model="searchText" label="Search Query" />
+                </v-col>
+                <v-col cols="auto">
+                    <v-btn type="submit" class="mt-2">
+                        Search
+                        <v-icon class="ml-2" size="sm">fas fa-search</v-icon>
+                    </v-btn>
+                </v-col>
+            </v-row>
+        </form>
         <v-row justify="center">
             <v-col>
                 <v-row>
@@ -200,7 +217,9 @@ export default class SupportView extends Vue {
                             :items-per-page="5"
                         >
                             <template #:item.sentDateTime="{ item }">
-                                <span>{{ formatDate(item.sentDateTime) }}</span>
+                                <span>{{
+                                    formatDateTime(item.sentDateTime)
+                                }}</span>
                             </template>
                         </v-data-table>
                     </v-col>

@@ -32,7 +32,7 @@ describe("Immunization History Report", () => {
     it("Validate Immunization Loading", () => {
         cy.get("[data-testid=reportType]")
             .should("be.enabled", "be.visible")
-            .select("Immunization");
+            .select("Immunizations");
         cy.get("[data-testid=timelineLoading]").should("be.visible");
         cy.get("[data-testid=timelineLoading]").should("not.be.visible");
     });
@@ -40,13 +40,13 @@ describe("Immunization History Report", () => {
     it("Validate Immunization History Report", () => {
         cy.get("[data-testid=reportType]")
             .should("be.enabled", "be.visible")
-            .select("Immunization");
+            .select("Immunizations");
 
-        cy.get("[data-testid=immunizationHistoryReportSample]").scrollTo(
+        cy.get("[data-testid=reportSample]").scrollTo(
             "bottom"
         );
 
-        cy.get("[data-testid=immunizationHistoryReportSample]").should(
+        cy.get("[data-testid=reportSample]").should(
             "be.visible"
         );
 
@@ -76,8 +76,12 @@ describe("Immunization History Report", () => {
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
         cy.get("[data-testid=recommendationStatusItem]").should("be.visible");
 
-        cy.get("[data-testid=exportRecordBtn]")
+        cy.get("[data-testid=exportRecordBtn] button")
             .should("be.enabled", "be.visible")
+            .click();
+
+        cy.get("[data-testid=exportRecordBtn] a")
+            .first()
             .click();
 
         cy.get("[data-testid=genericMessageModal]").should("be.visible");

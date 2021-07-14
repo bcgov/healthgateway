@@ -43,8 +43,7 @@ namespace HealthGateway.WebClient.Test.Services
             {
                 ResourcePayload = new ReportModel()
                 {
-                    Data = "base64data",
-                    Type = ReportType.PDF,
+                    Data = "base64data"
                 },
                 ResultStatus = Common.Constants.ResultType.Success,
             };
@@ -53,7 +52,7 @@ namespace HealthGateway.WebClient.Test.Services
             {
                 Data = JsonDocument.Parse("{}").RootElement,
                 Template = TemplateType.Medication,
-                Type = ReportType.PDF,
+                Type = ReportFormatType.PDF,
             };
 
             Mock<ICDogsDelegate> cdogsDelegateMock = new Mock<ICDogsDelegate>();

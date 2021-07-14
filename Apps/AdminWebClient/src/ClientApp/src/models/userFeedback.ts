@@ -1,7 +1,12 @@
+import { StringISODateTime } from "@/models/dateWrapper";
+
 // Model that provides a user representation of user feedback.
 export default interface UserFeedback {
     // Feedback unique identifier.
     id: string;
+
+    // Associated user unique identifier.
+    userProfileId: string;
 
     // Satisfied flag.
     isSatisfied: boolean;
@@ -13,7 +18,7 @@ export default interface UserFeedback {
     comment: string;
 
     // Date when the feedback was created.
-    createdDateTime: Date;
+    createdDateTime: StringISODateTime;
 
     //The row concurrency version.
     version: string;

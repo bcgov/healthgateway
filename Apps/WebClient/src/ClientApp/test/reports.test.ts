@@ -17,7 +17,6 @@ import { RegistrationStatus } from "@/constants/registrationStatus";
 import { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import { SnowplowWindow } from "@/plugins/extensions";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ClientModule } from "@/router";
@@ -25,10 +24,8 @@ import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions } from "@/store/types";
 import ReportsView from "@/views/reports.vue";
 
-declare let window: SnowplowWindow;
-
 interface ReportComponent extends Vue {
-    generatePdf(): Promise<void>;
+    generateReport(): Promise<void>;
 }
 
 const webclientConfig: WebClientConfiguration = {
@@ -255,16 +252,15 @@ describe("Report view", () => {
         // Execute Medication report
         await comboOptions.at(1).setSelected();
         const mockedMedMethod = jest.fn().mockResolvedValue(undefined);
-        (
-            wrapper.vm.$refs.medicationHistoryReport as ReportComponent
-        ).generatePdf = mockedMedMethod;
+        (wrapper.vm.$refs.report as ReportComponent).generateReport =
+            mockedMedMethod;
 
         await wrapper.find(testIdModal).trigger("submit");
 
         // Execute Encounter report
         await comboOptions.at(2).setSelected();
         const mockedEncMethod = jest.fn().mockResolvedValue(undefined);
-        (wrapper.vm.$refs.mspVisitsReport as ReportComponent).generatePdf =
+        (wrapper.vm.$refs.report as ReportComponent).generateReport =
             mockedEncMethod;
 
         await wrapper.find(testIdModal).trigger("submit");
@@ -272,7 +268,7 @@ describe("Report view", () => {
         // Execute Lab report
         await comboOptions.at(3).setSelected();
         const mockedLabMethod = jest.fn().mockResolvedValue(undefined);
-        (wrapper.vm.$refs.covid19Report as ReportComponent).generatePdf =
+        (wrapper.vm.$refs.report as ReportComponent).generateReport =
             mockedLabMethod;
 
         await wrapper.find(testIdModal).trigger("submit");
@@ -280,18 +276,16 @@ describe("Report view", () => {
         // Execute Immz report
         await comboOptions.at(4).setSelected();
         const mockedImmzMethod = jest.fn().mockResolvedValue(undefined);
-        (
-            wrapper.vm.$refs.immunizationHistoryReport as ReportComponent
-        ).generatePdf = mockedImmzMethod;
+        (wrapper.vm.$refs.report as ReportComponent).generateReport =
+            mockedImmzMethod;
 
         await wrapper.find(testIdModal).trigger("submit");
 
         // Execute Med Request report
         await comboOptions.at(5).setSelected();
         const mockedMedRequestMethod = jest.fn().mockResolvedValue(undefined);
-        (
-            wrapper.vm.$refs.medicationRequestReport as ReportComponent
-        ).generatePdf = mockedMedRequestMethod;
+        (wrapper.vm.$refs.report as ReportComponent).generateReport =
+            mockedMedRequestMethod;
 
         await wrapper.find(testIdModal).trigger("submit");
 

@@ -88,9 +88,12 @@ describe("Filters", () => {
     it("No Records on Linear Timeline", () => {
         cy.get("[data-testid=filterTextInput]").type("xxxx");
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
+        cy.get("[data-testid=clearfilterTextBtn]").click();
+        cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
     });
 
     it("No Records on Calendar Timeline", () => {
+        cy.get("[data-testid=filterTextInput]").type("xxxx");
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=monthViewToggle]").first().click();

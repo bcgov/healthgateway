@@ -356,18 +356,19 @@ export default class TimelineView extends Vue {
                         variant="info"
                         class="no-print"
                     >
-                        <h4>Please complete your profile</h4>
+                        <h4>Verify Contact Information</h4>
                         <span>
-                            Your email or cell phone number have not been
-                            verified. To complete your profile and receive
-                            notifications from the Health Gateway, visit the
+                            Your email or cell phone number has not been
+                            verified. You can use the Health Gateway without
+                            verified contact information, however, you will not
+                            receive notifications. Visit the
                             <router-link
                                 id="profilePageLink"
                                 variant="primary"
                                 to="/profile"
                                 >Profile Page</router-link
                             >
-                            <span>.</span>
+                            to complete your verification.
                         </span>
                     </b-alert>
                     <b-alert
@@ -410,7 +411,7 @@ export default class TimelineView extends Vue {
                 </div>
 
                 <div id="pageTitle" class="px-2">
-                    <h1 id="subject">Health Care Timeline</h1>
+                    <h1 id="subject">Timeline</h1>
                     <hr class="mb-0" />
                 </div>
                 <div
@@ -425,14 +426,30 @@ export default class TimelineView extends Vue {
                                     size="medium"
                                     class="form-control-feedback"
                                 />
-                                <b-form-input
-                                    v-model="filterText"
-                                    data-testid="filterTextInput"
-                                    type="text"
-                                    placeholder=""
-                                    maxlength="50"
-                                    debounce="250"
-                                ></b-form-input>
+                                <b-input-group>
+                                    <b-form-input
+                                        v-model="filterText"
+                                        data-testid="filterTextInput"
+                                        type="text"
+                                        placeholder=""
+                                        maxlength="50"
+                                        debounce="250"
+                                    ></b-form-input>
+                                    <b-input-group-append>
+                                        <hg-button
+                                            v-show="filterText"
+                                            data-testid="clearfilterTextBtn"
+                                            variant="icon-input-light"
+                                            @click="filterText = ''"
+                                        >
+                                            <hg-icon
+                                                icon="times"
+                                                size="medium"
+                                                fixed-width
+                                            />
+                                        </hg-button>
+                                    </b-input-group-append>
+                                </b-input-group>
                             </div>
                         </b-col>
                         <b-col v-if="!isLoading" class="col-auto pl-2">
@@ -505,12 +522,6 @@ export default class TimelineView extends Vue {
     hr {
         border-top: 2px solid $primary;
     }
-
-    h1 {
-        @media (max-width: 575px) {
-            font-size: 2em !important;
-        }
-    }
 }
 
 .form-group {
@@ -537,7 +548,7 @@ export default class TimelineView extends Vue {
 
     .form-control-feedback {
         position: absolute;
-        z-index: 2;
+        z-index: 5;
         display: block;
         text-align: center;
         pointer-events: none;

@@ -16,6 +16,12 @@ import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { IDependentService } from "@/services/interfaces";
+import PHNValidator from "@/utility/phnValidator";
+
+const validPersonalHealthNumber = (value: string): boolean => {
+    var phn = value.replace(/\D/g, "");
+    return PHNValidator.IsValid(phn);
+};
 
 @Component({
     components: {
@@ -70,6 +76,7 @@ export default class NewDependentComponent extends Vue {
                 PHN: {
                     required: required,
                     minLength: minLength(12),
+                    validPersonalHealthNumber,
                 },
             },
             accepted: { isChecked: sameAs(() => true) },

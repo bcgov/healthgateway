@@ -34,11 +34,11 @@ export interface ParseOptions {
 export class DateWrapper {
     static defaultFormat = "yyyy-MMM-dd";
     /**
-     * Value for reference purpouses only. Stores the raw value if initialized as a string, ISO datetime otherwise.
+     * Value for reference purposes only. Stores the raw value if initialized as a string, ISO datetime otherwise.
      */
     private readonly _raw_string_value: StringISODate;
     /**
-     * Value for reference purpouses only. Stores the source of the date, i.e how it was constructed.
+     * Value for reference purposes only. Stores the source of the date, i.e how it was constructed.
      */
     private readonly _date_source: string;
     /**
@@ -142,7 +142,7 @@ export class DateWrapper {
     }
     /**
      * Formats the date using the given a set of tokens
-     * See https://moment.github.io/luxon/docs/manual/formatting.html for the rules
+     * See https://moment.github.io/luxon/#/formatting for the rules
      * @param formatString The tokens to format the string as.
      * @returns a string representation of the datetime with the given format.
      */
@@ -154,7 +154,7 @@ export class DateWrapper {
 
     /**
      * Formats the date using the given a set of tokens
-     * See https://moment.github.io/luxon/docs/manual/formatting.html for the rules
+     * See https://moment.github.io/luxon/#/formatting for the rules
      * @param dateString The date string to be formatted.
      * @param formatString The tokens to format the string as.
      * @returns a string representation of the datetime with the given format.
@@ -166,16 +166,21 @@ export class DateWrapper {
     }
 
     /**
-     * Formats the date to the ISO format (YYYY-MM-DDTHH:MM:SS:M-Z)
-     * @returns the formated string representation
+     * Formats the datetime to the ISO format (YYYY-MM-DDTHH:MM:SS:M-Z)
+     * @param toUtc (optional) Whether to set the time zone to UTC
+     * @returns the formatted string representation
      */
-    public toISO(): StringISODate {
-        return this.internalDate.toISO();
+    public toISO(toUtc = false): StringISODate {
+        let dateTime = this.internalDate;
+        if (toUtc) {
+            dateTime = dateTime.toUTC();
+        }
+        return dateTime.toISO();
     }
 
     /**
      * Formats the date to the ISO format without time (YYYY-MM-DD)
-     * @returns the formated string representation
+     * @returns the formatted string representation
      */
     public toISODate(): StringISODate {
         return this.internalDate.toISODate();

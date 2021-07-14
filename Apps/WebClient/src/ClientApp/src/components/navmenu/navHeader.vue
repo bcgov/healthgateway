@@ -306,7 +306,7 @@ export default class HeaderComponent extends Vue {
                     to="/login"
                 >
                     <hg-icon icon="sign-in-alt" size="large" class="mr-2" />
-                    <span>Login</span>
+                    <span>Log In</span>
                 </router-link>
             </b-navbar-nav>
             <RatingComponent
@@ -347,9 +347,6 @@ nav {
     a h4 {
         text-decoration: none;
         color: white;
-        @media (max-width: 360px) {
-            font-size: 1em !important;
-        }
     }
     a:hover h4 {
         text-decoration: underline;

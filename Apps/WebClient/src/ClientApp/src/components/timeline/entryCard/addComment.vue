@@ -112,10 +112,9 @@ export default class AddCommentComponent extends Vue {
                     :disabled="isSaving"
                 ></b-form-textarea>
                 <b-input-group-append>
-                    <b-button
-                        variant="link"
+                    <hg-button
+                        variant="icon-input"
                         data-testid="postCommentBtn"
-                        class="btn-circle"
                         :disabled="commentInput === '' || isSaving"
                         @click="onSubmit"
                     >
@@ -124,7 +123,7 @@ export default class AddCommentComponent extends Vue {
                             size="medium"
                             fixed-width
                         />
-                    </b-button>
+                    </hg-button>
                 </b-input-group-append>
             </b-input-group>
         </b-col>
@@ -149,25 +148,5 @@ export default class AddCommentComponent extends Vue {
     &.single-line {
         height: 38px !important;
     }
-}
-
-.btn-circle {
-    text-align: center;
-    align-content: center;
-    color: $aquaBlue;
-    background-color: white;
-
-    border: 1px solid rgb(206, 212, 218);
-    border-left: 0px;
-}
-
-.btn-circle:disabled {
-    color: grey;
-    background-color: $soft-background;
-    opacity: 1;
-}
-
-.btn-circle:hover:enabled {
-    color: $primary;
 }
 </style>

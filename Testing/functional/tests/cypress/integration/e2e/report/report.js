@@ -21,7 +21,7 @@ describe("Reports", () => {
     });
 
     it("Validate Service Selection", () => {
-        cy.get("[data-testid=exportRecordBtn]").should(
+        cy.get("[data-testid=exportRecordBtn] button").should(
             "be.disabled",
             "be.visible"
         );
@@ -39,9 +39,9 @@ describe("Reports", () => {
 
         cy.get("[data-testid=reportType]")
             .should("be.enabled", "be.visible")
-            .select("MED");
+            .select("Medications");
 
-        cy.get("[data-testid=exportRecordBtn]").should(
+        cy.get("[data-testid=exportRecordBtn] button").should(
             "be.enabled",
             "be.visible"
         );
@@ -50,7 +50,7 @@ describe("Reports", () => {
             .should("be.enabled", "be.visible")
             .select("");
 
-        cy.get("[data-testid=exportRecordBtn]").should(
+        cy.get("[data-testid=exportRecordBtn] button").should(
             "be.disabled",
             "be.visible"
         );
@@ -59,14 +59,18 @@ describe("Reports", () => {
     it("Validate Medication Report", () => {
         cy.get("[data-testid=reportType]")
             .should("be.enabled", "be.visible")
-            .select("MED");
-        cy.get("[data-testid=medicationReportSample]").should("be.visible");
+            .select("Medications");
+        cy.get("[data-testid=reportSample]").should("be.visible");
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=medicationReportSample]").should("not.be.visible");
+        cy.get("[data-testid=reportSample]").should("not.be.visible");
         cy.viewport(1440, 600);
 
-        cy.get("[data-testid=exportRecordBtn]").click();
+        cy.get("[data-testid=exportRecordBtn] button").click();
+
+        cy.get("[data-testid=exportRecordBtn] a")
+            .first()
+            .click();
 
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
 
@@ -83,16 +87,20 @@ describe("Reports", () => {
     it("Validate MSP Visits Report", () => {
         cy.get("[data-testid=reportType]")
             .should("be.enabled", "be.visible")
-            .select("MSP");
+            .select("Health Visits");
 
-        cy.get("[data-testid=mspVisitsReportSample]").should("be.visible");
+        cy.get("[data-testid=reportSample]").should("be.visible");
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=mspVisitsReportSample]").should("not.be.visible");
+        cy.get("[data-testid=reportSample]").should("not.be.visible");
         cy.viewport(1440, 600);
 
-        cy.get("[data-testid=exportRecordBtn]")
+        cy.get("[data-testid=exportRecordBtn] button")
             .should("be.enabled", "be.visible")
+            .click();
+
+        cy.get("[data-testid=exportRecordBtn] a")
+            .first()
             .click();
 
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
@@ -110,19 +118,23 @@ describe("Reports", () => {
     it("Validate COVID-19 Report", () => {
         cy.get("[data-testid=reportType]")
             .should("be.enabled", "be.visible")
-            .select("COVID-19");
+            .select("COVID-19 Test Results");
 
-        cy.get("[data-testid=covid19ReportSample]").should("be.visible");
+        cy.get("[data-testid=reportSample]").should("be.visible");
         cy.get("[data-testid=covid19DateItem]")
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=covid19ReportSample]").should("not.be.visible");
+        cy.get("[data-testid=reportSample]").should("not.be.visible");
         cy.viewport(1440, 600);
 
-        cy.get("[data-testid=exportRecordBtn]")
+        cy.get("[data-testid=exportRecordBtn] button")
             .should("be.enabled", "be.visible")
+            .click();
+
+        cy.get("[data-testid=exportRecordBtn] a")
+            .first()
             .click();
 
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
@@ -140,9 +152,9 @@ describe("Reports", () => {
     it("Validate Immunization Report", () => {
         cy.get("[data-testid=reportType]")
             .should("be.enabled", "be.visible")
-            .select("Immunization");
+            .select("Immunizations");
 
-        cy.get("[data-testid=immunizationHistoryReportSample]").should(
+        cy.get("[data-testid=reportSample]").should(
             "be.visible"
         );
         cy.get("[data-testid=immunizationDateItem]")
@@ -150,13 +162,17 @@ describe("Reports", () => {
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=immunizationHistoryReportSample]").should(
+        cy.get("[data-testid=reportSample]").should(
             "not.be.visible"
         );
         cy.viewport(1440, 600);
 
-        cy.get("[data-testid=exportRecordBtn]")
+        cy.get("[data-testid=exportRecordBtn] button")
             .should("be.enabled", "be.visible")
+            .click();
+
+        cy.get("[data-testid=exportRecordBtn] a")
+            .first()
             .click();
 
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
@@ -176,18 +192,22 @@ describe("Reports", () => {
             .should("be.enabled", "be.visible")
             .select("Special Authority Requests");
 
-        cy.get("[data-testid=medicationRequestReportSample]").should(
+        cy.get("[data-testid=reportSample]").should(
             "be.visible"
         );
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=medicationRequestReportSample]").should(
+        cy.get("[data-testid=reportSample]").should(
             "not.be.visible"
         );
         cy.viewport(1440, 600);
 
-        cy.get("[data-testid=exportRecordBtn]")
+        cy.get("[data-testid=exportRecordBtn] button")
             .should("be.enabled", "be.visible")
+            .click();
+
+        cy.get("[data-testid=exportRecordBtn] a")
+            .first()
             .click();
 
         cy.get("[data-testid=genericMessageModal]").should("be.visible");

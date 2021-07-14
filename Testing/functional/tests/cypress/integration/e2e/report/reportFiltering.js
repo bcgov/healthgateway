@@ -79,7 +79,7 @@ describe("Report Filtering", () => {
     it("Validate Medication Exclusions", () => {
         cy.get("[data-testid=reportType]")
             .should("be.enabled", "be.visible")
-            .select("MED");
+            .select("Medications");
 
         cy.get("[data-testid=advancedPanel]").should("not.be.visible");
 

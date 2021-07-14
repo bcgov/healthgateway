@@ -98,7 +98,9 @@ export default class Dashboard extends Vue {
         return (
             this.isLoadingRegistered ||
             this.isLoadingLoggedIn ||
-            this.isLoadingDependent
+            this.isLoadingDependent ||
+            this.isLoadingRecurrentCount ||
+            this.isLoadingRatings
         );
     }
 
@@ -124,6 +126,10 @@ export default class Dashboard extends Vue {
     }
 
     private get ratingAverage(): string {
+        if (this.ratingCount === 0) {
+            return "N/A";
+        }
+
         var totalScore = 0;
         for (let key in this.ratingSummary) {
             totalScore += Number(key) * this.ratingSummary[key];
@@ -150,6 +156,13 @@ export default class Dashboard extends Vue {
         this.dashboardService = container.get(
             SERVICE_IDENTIFIER.DashboardService
         );
+        this.getAllData();
+    }
+
+    private getAllData() {
+        this.tableData = [];
+        this.totalRegisteredUserCount = 0;
+        this.totalDependentCount = 0;
         this.getRegisteredUserCount();
         this.getLoggedInUsersCount();
         this.getDependentCount();
@@ -290,277 +303,246 @@ export default class Dashboard extends Vue {
 
 <template>
     <v-container>
-        <h2>Totals</h2>
-        <v-row v-if="!isLoading" class="px-2">
-            <v-col class="col-lg-3 col-md-6 col-sm-12">
-                <v-card class="text-center">
+        <v-btn
+            fab
+            color="secondary"
+            dark
+            class="refresh-button"
+            :loading="isLoading"
+            @click="getAllData"
+        >
+            <v-icon>refresh</v-icon>
+        </v-btn>
+        <h2 class="mt-6 mb-4">Totals</h2>
+        <v-row class="px-2">
+            <v-col cols="12" sm="6" md="5" offset-md="1">
+                <v-card v-if="!isLoading" class="text-center">
                     <h3>Registered Users</h3>
                     <h1>
                         {{ totalRegisteredUserCount }}
                     </h1>
                 </v-card>
+                <v-skeleton-loader v-else type="image" max-height="76px" />
             </v-col>
-            <v-col class="col-lg-3 col-md-6 col-sm-12">
-                <v-card class="text-center">
+            <v-col cols="12" sm="6" md="5">
+                <v-card v-if="!isLoading" class="text-center">
                     <h3>Dependents</h3>
                     <h1>
                         {{ totalDependentCount }}
                     </h1>
                 </v-card>
-            </v-col>
-        </v-row>
-        <v-row v-else>
-            <v-col>
-                <v-skeleton-loader
-                    max-width="200"
-                    type="card"
-                ></v-skeleton-loader></v-col
-        ></v-row>
-
-        <br />
-        <h2>Recurring Users</h2>
-        <v-row class="px-2">
-            <v-col>
-                <v-row>
-                    <v-col cols="2">
-                        <v-text-field
-                            v-model="uniqueDays"
-                            type="number"
-                            label="Unique days"
-                            :rules="[
-                                recurringRules.required,
-                                recurringRules.valid,
-                            ]"
-                        />
-                    </v-col>
-                    <v-col cols="auto">
-                        <v-dialog
-                            ref="periodDialog"
-                            v-model="periodPickerModal"
-                            :return-value.sync="uniquePeriodDates"
-                            persistent
-                            :disabled="isLoading"
-                            width="290px"
-                        >
-                            <template #activator="{ on, attrs }">
-                                <v-row>
-                                    <v-col>
-                                        <v-text-field
-                                            v-model="uniquePeriodDates[0]"
-                                            label="Start Date"
-                                            prepend-icon="mdi-calendar"
-                                            readonly
-                                            v-bind="attrs"
-                                            v-on="on"
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col>
-                                        <v-text-field
-                                            v-model="uniquePeriodDates[1]"
-                                            label="End Date"
-                                            readonly
-                                            v-bind="attrs"
-                                            v-on="on"
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                            </template>
-                            <v-date-picker
-                                v-model="uniquePeriodDates"
-                                :max="today.toISO()"
-                                min="2019-06-01"
-                                range
-                                scrollable
-                                no-title
-                            >
-                                <v-spacer></v-spacer>
-                                <v-btn
-                                    text
-                                    color="primary"
-                                    @click="periodPickerModal = false"
-                                >
-                                    Cancel
-                                </v-btn>
-                                <v-btn
-                                    text
-                                    :disabled="uniquePeriodDates.length !== 2"
-                                    color="primary"
-                                    @click="
-                                        uniquePeriodDates;
-                                        $refs.periodDialog.save(
-                                            uniquePeriodDates
-                                        );
-                                    "
-                                >
-                                    OK
-                                </v-btn>
-                            </v-date-picker>
-                        </v-dialog>
-                    </v-col>
-                    <v-col cols="3">
-                        <v-card
-                            v-if="!isLoadingRecurrentCount"
-                            class="text-center"
-                        >
-                            <h3>User Count</h3>
-                            <h1>
-                                {{ uniqueUsers }}
-                            </h1>
-                        </v-card>
-                        <v-skeleton-loader
-                            v-else
-                            max-height="50"
-                            type="card"
-                        ></v-skeleton-loader>
-                    </v-col>
-                </v-row>
+                <v-skeleton-loader v-else type="image" max-height="76px" />
             </v-col>
         </v-row>
 
-        <br />
-        <h2>Rating</h2>
+        <h2 class="mt-6 mb-4">Recurring Users</h2>
         <v-row class="px-2">
-            <v-col>
-                <v-row>
-                    <v-col cols="auto">
-                        <v-dialog
-                            ref="ratingDialog"
-                            v-model="ratingPickerModal"
-                            :return-value.sync="ratingPeriodDates"
-                            persistent
-                            :disabled="isLoading"
-                            width="290px"
+            <v-col cols="12" sm="6" md="5" offset-md="1">
+                <v-dialog
+                    ref="periodDialog"
+                    v-model="periodPickerModal"
+                    :return-value.sync="uniquePeriodDates"
+                    persistent
+                    :disabled="isLoading"
+                    width="290px"
+                >
+                    <template #activator="{ on, attrs }">
+                        <v-row>
+                            <v-col>
+                                <v-text-field
+                                    v-model="uniquePeriodDates[0]"
+                                    label="Start Date"
+                                    prepend-icon="mdi-calendar"
+                                    readonly
+                                    v-bind="attrs"
+                                    v-on="on"
+                                ></v-text-field>
+                            </v-col>
+                            <v-col>
+                                <v-text-field
+                                    v-model="uniquePeriodDates[1]"
+                                    label="End Date"
+                                    readonly
+                                    v-bind="attrs"
+                                    v-on="on"
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+                    </template>
+                    <v-date-picker
+                        v-model="uniquePeriodDates"
+                        :max="today.toISO()"
+                        min="2019-06-01"
+                        range
+                        scrollable
+                        no-title
+                    >
+                        <v-spacer></v-spacer>
+                        <v-btn
+                            text
+                            color="primary"
+                            @click="periodPickerModal = false"
                         >
-                            <template #activator="{ on, attrs }">
-                                <v-row>
-                                    <v-col>
-                                        <v-text-field
-                                            v-model="ratingPeriodDates[0]"
-                                            label="Start Date"
-                                            prepend-icon="mdi-calendar"
-                                            readonly
-                                            v-bind="attrs"
-                                            v-on="on"
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col>
-                                        <v-text-field
-                                            v-model="ratingPeriodDates[1]"
-                                            label="End Date"
-                                            readonly
-                                            v-bind="attrs"
-                                            v-on="on"
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                            </template>
-                            <v-date-picker
-                                v-model="ratingPeriodDates"
-                                :max="today.toISO()"
-                                min="2019-06-01"
-                                range
-                                scrollable
-                                no-title
+                            Cancel
+                        </v-btn>
+                        <v-btn
+                            text
+                            :disabled="uniquePeriodDates.length !== 2"
+                            color="primary"
+                            @click="
+                                uniquePeriodDates;
+                                $refs.periodDialog.save(uniquePeriodDates);
+                            "
+                        >
+                            OK
+                        </v-btn>
+                    </v-date-picker>
+                </v-dialog>
+            </v-col>
+            <v-col cols="6" sm="3" md="2">
+                <v-text-field
+                    v-model="uniqueDays"
+                    type="number"
+                    label="Unique days"
+                    :rules="[recurringRules.required, recurringRules.valid]"
+                />
+            </v-col>
+            <v-col cols="6" sm="3">
+                <v-card v-if="!isLoadingRecurrentCount" class="text-center">
+                    <h3>User Count</h3>
+                    <h1>
+                        {{ uniqueUsers }}
+                    </h1>
+                </v-card>
+                <v-skeleton-loader v-else max-height="76px" type="card" />
+            </v-col>
+        </v-row>
+
+        <h2 class="mt-6 mb-4">Rating</h2>
+        <v-row class="px-2">
+            <v-col cols="12" sm="6" md="5" offset-md="1">
+                <v-dialog
+                    ref="ratingDialog"
+                    v-model="ratingPickerModal"
+                    :return-value.sync="ratingPeriodDates"
+                    persistent
+                    :disabled="isLoading"
+                    width="290px"
+                >
+                    <template #activator="{ on, attrs }">
+                        <v-row>
+                            <v-col>
+                                <v-text-field
+                                    v-model="ratingPeriodDates[0]"
+                                    label="Start Date"
+                                    prepend-icon="mdi-calendar"
+                                    readonly
+                                    v-bind="attrs"
+                                    v-on="on"
+                                ></v-text-field>
+                            </v-col>
+                            <v-col>
+                                <v-text-field
+                                    v-model="ratingPeriodDates[1]"
+                                    label="End Date"
+                                    readonly
+                                    v-bind="attrs"
+                                    v-on="on"
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+                    </template>
+                    <v-date-picker
+                        v-model="ratingPeriodDates"
+                        :max="today.toISO()"
+                        min="2019-06-01"
+                        range
+                        scrollable
+                        no-title
+                    >
+                        <v-spacer></v-spacer>
+                        <v-btn
+                            text
+                            color="primary"
+                            @click="ratingPickerModal = false"
+                        >
+                            Cancel
+                        </v-btn>
+                        <v-btn
+                            text
+                            :disabled="ratingPeriodDates.length !== 2"
+                            color="primary"
+                            @click="
+                                ratingPeriodDates;
+                                $refs.ratingDialog.save(ratingPeriodDates);
+                            "
+                        >
+                            OK
+                        </v-btn>
+                    </v-date-picker>
+                </v-dialog>
+            </v-col>
+            <v-col cols="12" sm="6" md="5">
+                <v-card
+                    v-if="!isLoadingRatings"
+                    class="text-center dashboard-rating-card"
+                >
+                    <h3>Rating Summary</h3>
+                    <v-row class="px-0 mx-0">
+                        <v-col cols="3" sm="4" class="px-0 mx-0"
+                            ><h1>{{ ratingAverage }}</h1>
+                            <span class="text-caption">Out of 5</span></v-col
+                        >
+                        <v-col>
+                            <v-row
+                                v-for="i in 5"
+                                :key="i"
+                                class="ma-0 pa-0"
+                                align="center"
+                                justify="center"
                             >
-                                <v-spacer></v-spacer>
-                                <v-btn
-                                    text
-                                    color="primary"
-                                    @click="ratingPickerModal = false"
+                                <v-col
+                                    class="ma-0 pa-0 mr-1 text-right"
+                                    cols="3"
                                 >
-                                    Cancel
-                                </v-btn>
-                                <v-btn
-                                    text
-                                    :disabled="ratingPeriodDates.length !== 2"
-                                    color="primary"
-                                    @click="
-                                        ratingPeriodDates;
-                                        $refs.ratingDialog.save(
-                                            ratingPeriodDates
-                                        );
-                                    "
-                                >
-                                    OK
-                                </v-btn>
-                            </v-date-picker>
-                        </v-dialog>
-                    </v-col>
-                    <v-col cols="5">
-                        <v-card
-                            v-if="!isLoadingRatings"
-                            class="text-center dashboard-rating-card"
-                        >
-                            <h3>Rating Summary</h3>
-                            <v-row class="px-0 mx-0">
-                                <v-col cols="4" class="px-0 mx-0"
-                                    ><h1>{{ ratingAverage }}</h1>
-                                    <span class="text-caption"
-                                        >Out of 5</span
-                                    ></v-col
-                                >
-                                <v-col>
-                                    <v-row
-                                        v-for="i in 5"
-                                        :key="i"
+                                    <v-rating
+                                        readonly
+                                        :length="Number(6 - i)"
+                                        size="10"
+                                        :value="5"
                                         class="ma-0 pa-0"
-                                        align="center"
-                                        justify="center"
-                                    >
-                                        <v-col
-                                            class="ma-0 pa-0 mr-1 text-right"
-                                            cols="3"
-                                        >
-                                            <v-rating
-                                                readonly
-                                                :length="Number(6 - i)"
-                                                size="10"
-                                                :value="5"
-                                                class="ma-0 pa-0"
-                                            ></v-rating>
-                                        </v-col>
-                                        <v-col class="ma-0 pa-0">
-                                            <v-progress-linear
-                                                class="ma-0 pa-0"
-                                                :value="ratingBars[6 - i]"
-                                            ></v-progress-linear>
-                                        </v-col>
-                                        <v-col
-                                            class="
-                                                ma-0
-                                                pa-0
-                                                text-right text-caption
-                                            "
-                                            cols="3"
-                                        >
-                                            {{
-                                                ratingSummary[6 - i] ===
-                                                undefined
-                                                    ? 0
-                                                    : ratingSummary[6 - i]
-                                            }}
-                                        </v-col>
-                                    </v-row>
+                                    ></v-rating>
+                                </v-col>
+                                <v-col class="ma-0 pa-0">
+                                    <v-progress-linear
+                                        class="ma-0 pa-0"
+                                        :value="ratingBars[6 - i]"
+                                    ></v-progress-linear>
+                                </v-col>
+                                <v-col
+                                    class="ma-0 pa-0 text-right text-caption"
+                                    cols="3"
+                                >
+                                    {{
+                                        ratingSummary[6 - i] === undefined
+                                            ? 0
+                                            : ratingSummary[6 - i]
+                                    }}
                                 </v-col>
                             </v-row>
-                            <div class="text-right text-caption ma-3">
-                                {{ ratingCount }} Ratings
-                            </div>
-                        </v-card>
-                        <v-skeleton-loader
-                            v-else
-                            max-height="50"
-                            type="card"
-                        ></v-skeleton-loader>
-                    </v-col>
-                </v-row>
+                        </v-col>
+                    </v-row>
+                    <div class="text-right text-caption pa-2">
+                        {{ ratingCount }} Ratings
+                    </div>
+                </v-card>
+                <v-skeleton-loader v-else max-height="164px" type="card" />
             </v-col>
         </v-row>
 
-        <br />
-        <h2>Daily Data</h2>
+        <h2 class="mt-6 mb-4">Daily Data</h2>
         <v-row>
-            <v-col cols="12" sm="6" md="4">
+            <v-col cols="12" sm="6" md="5" offset-md="1">
                 <v-dialog
                     ref="dailyDialog"
                     v-model="dailyDataDatesModal"
@@ -621,7 +603,7 @@ export default class Dashboard extends Vue {
             </v-col>
         </v-row>
         <v-row>
-            <v-col>
+            <v-col cols="12" md="10" offset-md="1">
                 <v-data-table
                     :headers="tableHeaders"
                     :items="visibleTableData"
@@ -652,5 +634,12 @@ export default class Dashboard extends Vue {
     .v-rating .v-icon {
         padding: 0px;
     }
+}
+
+.refresh-button {
+    position: fixed;
+    right: 16px;
+    top: 80px;
+    z-index: 1000;
 }
 </style>
