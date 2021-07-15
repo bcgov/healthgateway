@@ -9,21 +9,25 @@ objects:
   - apiVersion: authorization.openshift.io/v1
     kind: RoleBinding
     metadata:
-      name: ${AGENTNAME}
-      namespace: ${NAMESPACE}-dev
+      name: ${AGENTNAME}-VIEW-${SRC_PROJECT}
+      namespace: ${DST_PROJECT}
     roleRef:
       name: view
     subjects:
       - kind: ServiceAccount
         name: ${AGENTNAME}
-        namespace: ${NAMESPACE}-tools
+        namespace: ${SRC_PROJECT}
     userNames:
-      - system:serviceaccount:${NAMESPACE}-tools:azure-agent
+      - system:serviceaccount:${SRC_PROJECT}:azure-agent
 parameters:
-  - name: NAMESPACE
-    displayName: The Project Namespace
-    description: The namespace of the project
+  - name: SRC_PROJECT
+    displayName: The source project
+    description: The project of the source project typiclaly xxx-tools
     required: true
+  - name: DST_PROJECT
+    displayName: The destination project
+    description: The destination project typically xxx-dev
+    required: true  
   - name: AGENTNAME
     displayName: The name of the Azure Agent service account
     description: The namespace of the project
