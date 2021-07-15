@@ -1,9 +1,11 @@
 import { ResultType } from "@/constants/resulttype";
 import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
+import { EntryType } from "@/models/timelineEntry";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { IImmunizationService, ILogger } from "@/services/interfaces";
+import EventTracker from "@/utility/eventTracker";
 
 import { ImmunizationActions } from "./types";
 
@@ -36,7 +38,13 @@ export const actions: ImmunizationActions = {
                                         hdid: params.hdid,
                                     });
                                 }, 10000);
+                            } else {
+                                EventTracker.loadData(
+                                    EntryType.Immunization,
+                                    result.resourcePayload.immunizations.length
+                                );
                             }
+
                             context.commit("setImmunizationResult", payload);
                             resolve();
                         } else {

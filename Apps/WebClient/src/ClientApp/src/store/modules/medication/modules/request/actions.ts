@@ -2,9 +2,11 @@ import { ResultType } from "@/constants/resulttype";
 import MedicationRequest from "@/models/MedicationRequest";
 import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
+import { EntryType } from "@/models/timelineEntry";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger, IMedicationService } from "@/services/interfaces";
+import EventTracker from "@/utility/eventTracker";
 
 import { MedicationRequestActions } from "./types";
 
@@ -47,6 +49,10 @@ export const actions: MedicationRequestActions = {
                             );
                             reject(result.resultError);
                         } else {
+                            EventTracker.loadData(
+                                EntryType.MedicationRequest,
+                                result.resourcePayload.length
+                            );
                             context.commit(
                                 "setMedicationRequestResult",
                                 result
