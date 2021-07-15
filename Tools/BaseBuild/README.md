@@ -52,7 +52,9 @@ oc process -f ./commonSecrets.yaml -p CR_CERT_PASSWORD=[THE PASSWORD] | oc apply
 
 ### Salesforce secrets
 
-Needs to be updated - review salesforceSecrets.yaml
+```console
+oc process -f ./salesforceSecrets.yaml -p ENDPOINT=[] -p TOKENURI=[] -p CLIENTID=[] -p USERNAME=[] -p CLIENTSECRET=[] -p PASSWORD=[]
+```
 
 ### Aca-Py secrets
 
