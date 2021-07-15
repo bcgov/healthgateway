@@ -16,6 +16,7 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -26,6 +27,7 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Entity framework based implementation of the Application Settings delegate.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class DBApplicationSettingsDelegate : IApplicationSettingsDelegate
     {
         private readonly ILogger<DBApplicationSettingsDelegate> logger;
@@ -51,10 +53,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public ApplicationSetting GetApplicationSetting(string application, string component, string key)
+        public ApplicationSetting? GetApplicationSetting(string application, string component, string key)
         {
             this.logger.LogTrace($"Getting application setting for {application}/{component}/{key} from DB...");
-            ApplicationSetting retVal = this.dbContext.ApplicationSetting
+            ApplicationSetting? retVal = this.dbContext.ApplicationSetting
                 .Where(p => p.Application == application &&
                             p.Component == component &&
                             p.Key == key)
@@ -65,10 +67,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public List<ApplicationSetting> GetApplicationSettings(string application, string component)
+        public IList<ApplicationSetting> GetApplicationSettings(string application, string component)
         {
             this.logger.LogTrace($"Getting application setting for {application}/{component} from DB...");
-            List<ApplicationSetting> retVal = this.dbContext.ApplicationSetting
+            IList<ApplicationSetting> retVal = this.dbContext.ApplicationSetting
                 .Where(p => p.Application == application &&
                             p.Component == component)
                 .ToList<ApplicationSetting>();

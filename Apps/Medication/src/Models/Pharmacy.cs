@@ -23,56 +23,58 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the pharmacy id.
         /// </summary>
-        public string PharmacyId { get; set; }
+        public string PharmacyId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the address line 1.
         /// </summary>
-        public string AddressLine1 { get; set; }
+        public string AddressLine1 { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the address line 2.
         /// </summary>
-        public string AddressLine2 { get; set; }
+        public string AddressLine2 { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the city.
         /// </summary>
-        public string City { get; set; }
+        public string City { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the province.
         /// </summary>
-        public string Province { get; set; }
+        public string Province { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the postal code.
         /// </summary>
-        public string PostalCode { get; set; }
+        public string PostalCode { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the country code.
         /// </summary>
-        public string CountryCode { get; set; }
+        public string CountryCode { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the phone number.
         /// </summary>
-        public string PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the telephone type.
+        /// Gets or sets the fax number.
         /// </summary>
-        public string PhoneType { get; set; }
+        public string FaxNumber { get; set; } = string.Empty;
 
         /// <summary>
         /// Creates a Pharamacy object from an ODR model.
         /// </summary>
+        /// <param name="model">The ODR model to convert.</param>
+        /// <returns>A Pharmacy model object.</returns>
         public static Pharmacy FromODRModel(ODR.Pharmacy? model)
         {
             if (model == null)
@@ -85,13 +87,13 @@ namespace HealthGateway.Medication.Models
                 PharmacyId = model.PharmacyId,
                 Name = model.Name,
                 PhoneNumber = model.PhoneNumber,
+                FaxNumber = model.FaxNumber,
                 AddressLine1 = model.Address.Line1,
                 AddressLine2 = model.Address.Line2,
                 City = model.Address.City,
                 CountryCode = model.Address.Country,
                 PostalCode = model.Address.PostalCode,
                 Province = model.Address.Province,
-
             };
         }
     }

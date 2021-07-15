@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,22 +27,18 @@ namespace Healthgateway.JobScheduler.Jobs
     public class DBMigrationsJob
     {
         private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
-        private readonly IConfiguration configuration;
         private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DBMigrationsJob"/> class.
         /// </summary>
-        /// <param name="configuration">The configuration to use.</param>
         /// <param name="logger">The logger to use.</param>
         /// <param name="dbContext">The db context to use.</param>
         public DBMigrationsJob(
-            IConfiguration configuration,
             ILogger<DBMigrationsJob> logger,
             GatewayDbContext dbContext)
         {
-            this.configuration = configuration;
             this.logger = logger;
             this.dbContext = dbContext;
         }

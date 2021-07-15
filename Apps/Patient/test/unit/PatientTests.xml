@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PatientTests</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.Patient.Test.Controllers.PatientControllerTests">
+            <summary>
+            Unit Tests for PatientController.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Patient.Test.Controllers.PatientControllerTests.GetPatients">
+            <summary>
+            GetPatients Test.
+            </summary>
+        </member>
+    </members>
+</doc>

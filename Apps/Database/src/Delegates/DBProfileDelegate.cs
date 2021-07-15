@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +17,10 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text.Json;
-    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -27,7 +28,8 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
-    public class DBProfileDelegate : IProfileDelegate
+    [ExcludeFromCodeCoverage]
+    public class DBProfileDelegate : IUserProfileDelegate
     {
         private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
@@ -54,6 +56,7 @@ namespace HealthGateway.Database.Delegates
             try
             {
                 this.dbContext.SaveChanges();
+                result.Payload = profile;
                 result.Status = DBStatusCode.Created;
             }
             catch (DbUpdateException e)
@@ -67,7 +70,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<UserProfile> UpdateUserProfile(UserProfile profile)
+        public DBResult<UserProfile> Update(UserProfile profile, bool commit = true)
         {
             this.logger.LogTrace($"Updating user profile in DB... {JsonSerializer.Serialize(profile)}");
             DBResult<UserProfile> result = this.GetUserProfile(profile.HdId);
@@ -78,15 +81,26 @@ namespace HealthGateway.Database.Delegates
                 result.Payload.AcceptedTermsOfService = profile.AcceptedTermsOfService;
                 result.Payload.UpdatedBy = profile.UpdatedBy;
                 result.Payload.Version = profile.Version;
-                try
+                result.Status = DBStatusCode.Deferred;
+
+                if (commit)
                 {
-                    this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Updated;
-                }
-                catch (DbUpdateConcurrencyException e)
-                {
-                    result.Status = DBStatusCode.Concurrency;
-                    result.Message = e.Message;
+                    try
+                    {
+                        this.dbContext.SaveChanges();
+                        result.Status = DBStatusCode.Updated;
+                    }
+                    catch (DbUpdateConcurrencyException e)
+                    {
+                        result.Status = DBStatusCode.Concurrency;
+                        result.Message = e.Message;
+                    }
+                    catch (DbUpdateException e)
+                    {
+                        this.logger.LogError($"Unable to update UserProfile to DB {e}");
+                        result.Status = DBStatusCode.Error;
+                        result.Message = e.Message;
+                    }
                 }
             }
 
@@ -112,8 +126,7 @@ namespace HealthGateway.Database.Delegates
             DBResult<List<UserProfile>> result = new DBResult<List<UserProfile>>();
             int offset = page * pagesize;
             result.Payload = this.dbContext.UserProfile
-                                .Where(p => (p.LastLoginDateTime == null ||
-                                                (p.LastLoginDateTime != null && p.LastLoginDateTime < filterDateTime)) &&
+                                .Where(p => (p.LastLoginDateTime < filterDateTime) &&
                                              p.ClosedDateTime == null &&
                                              !string.IsNullOrWhiteSpace(p.Email))
                                 .OrderBy(o => o.CreatedDateTime)
@@ -140,31 +153,61 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public int GetRegisteredUsersCount()
+        public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(TimeSpan offset)
         {
-            int result = this.dbContext.UserProfile
-                .Count(w => w.AcceptedTermsOfService);
-            return result;
+            Dictionary<DateTime, int> dateCount = this.dbContext.UserProfile
+                            .Where(x => x.AcceptedTermsOfService)
+                            .Select(x => new { x.HdId, createdDate = x.CreatedDateTime.AddMinutes(offset.TotalMinutes).Date })
+                            .GroupBy(x => x.createdDate).Select(x => new { createdDate = x.Key, count = x.Count() })
+                            .OrderBy(x => x.createdDate)
+                            .ToDictionary(x => x.createdDate, x => x.count);
+
+            return dateCount;
         }
 
         /// <inheritdoc />
-        public int GeUnregisteredInvitedUsersCount()
+        public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(TimeSpan offset)
         {
-            int result = this.dbContext.BetaRequest
-                .Count(b =>
-                    this.dbContext.EmailInvite.Any(e => e.HdId == b.HdId) &&
-                    !this.dbContext.UserProfile.Any(u => u.HdId == b.HdId && u.AcceptedTermsOfService));
-            return result;
+            Dictionary<DateTime, int> dateCount = this.dbContext.UserProfile
+                .Select(x => new { x.HdId, x.LastLoginDateTime })
+                .Union(
+                    this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
+                .Select(x => new { x.HdId, lastLoginDate = x.LastLoginDateTime.AddMinutes(offset.TotalMinutes).Date })
+                .Distinct()
+                .GroupBy(x => x.lastLoginDate).Select(x => new { lastLoginDate = x.Key, count = x.Count() })
+                .OrderBy(x => x.lastLoginDate)
+                .ToDictionary(x => x.lastLoginDate, x => x.count);
+
+            return dateCount;
         }
 
         /// <inheritdoc />
-        public int GetLoggedInUsersCount(DateTime startDate)
+        public DBResult<IEnumerable<UserProfile>> GetAll(int page, int pageSize)
         {
-            int result = this.dbContext.UserProfile
-                .Count(u => u.LastLoginDateTime.HasValue &&
-               u.LastLoginDateTime.Value >= startDate.ToUniversalTime() &&
-               u.LastLoginDateTime.Value < startDate.AddDays(1).ToUniversalTime());
-            return result;
+            this.logger.LogTrace($"Retrieving all the user profiles for the page #{page} with pageSize: {pageSize}...");
+            return DBDelegateHelper.GetPagedDBResult(
+                this.dbContext.UserProfile
+                    .OrderBy(userProfile => userProfile.CreatedDateTime),
+                page,
+                pageSize);
+        }
+
+        /// <inheritdoc />
+        public int GetRecurrentUserCount(int dayCount, DateTime startDate, DateTime endDate, TimeSpan offset)
+        {
+            this.logger.LogTrace($"Retrieving recurring user count for {dayCount} days between {startDate} and {endDate}...");
+
+            int recurrentCount = this.dbContext.UserProfile
+                .Select(x => new { x.HdId, x.LastLoginDateTime })
+                .Union(
+                    this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
+                .Select(x => new { x.HdId, lastLoginDate = x.LastLoginDateTime.AddMinutes(offset.TotalMinutes).Date })
+                .Where(x => x.lastLoginDate >= startDate && x.lastLoginDate <= endDate)
+                .Distinct()
+                .GroupBy(x => x.HdId).Select(x => new { HdId = x.Key, count = x.Count() })
+                .Where(x => x.count >= dayCount).Count();
+
+            return recurrentCount;
         }
     }
 }

@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2020 Province of British Columbia
+// Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
+    using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Security.Claims;
@@ -36,9 +37,7 @@ namespace HealthGateway.Admin.Services
     {
         private readonly ILogger logger;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IConfiguration configuration;
-
-        private readonly string validUserRole;
+        private readonly string[] enabledRoles;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticationService"/> class.
@@ -50,8 +49,7 @@ namespace HealthGateway.Admin.Services
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
-            this.configuration = configuration;
-            this.validUserRole = configuration.GetSection("OpenIdConnect").GetValue<string>("UserRole");
+            this.enabledRoles = configuration.GetSection("EnabledRoles").Get<string[]>();
         }
 
         /// <summary>
@@ -61,9 +59,9 @@ namespace HealthGateway.Admin.Services
         public AuthenticationData GetAuthenticationData()
         {
             AuthenticationData authData = new AuthenticationData();
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            authData.IsAuthenticated = user.Identity.IsAuthenticated;
-            if (authData.IsAuthenticated)
+            ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
+            authData.IsAuthenticated = user?.Identity?.IsAuthenticated ?? false;
+            if (authData.IsAuthenticated && user != null)
             {
                 this.logger.LogDebug("Getting Authentication data");
                 authData.User = new UserProfile
@@ -72,7 +70,9 @@ namespace HealthGateway.Admin.Services
                     Name = user.FindFirstValue("name"),
                     Email = user.FindFirstValue(ClaimTypes.Email),
                 };
-                authData.IsAuthorized = user.Claims.Where(c => c.Type == "user_realm_roles" && c.Value == this.validUserRole).Select(c => c.Value == this.validUserRole).FirstOrDefault();
+                List<string> userRoles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(role => role.Value).ToList();
+                authData.Roles = this.enabledRoles.Intersect(userRoles).ToList();
+                authData.IsAuthorized = authData.Roles.Count > 0;
             }
 
             return authData;

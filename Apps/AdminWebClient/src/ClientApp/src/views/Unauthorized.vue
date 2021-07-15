@@ -1,7 +1,7 @@
 <template>
-  <v-layout class="fill-height">
-    <v-row justify="center">Unauthorized</v-row>
-  </v-layout>
+    <v-layout class="fill-height">
+        <v-row justify="center">Unauthorized</v-row>
+    </v-layout>
 </template>
 
 <script lang="ts">

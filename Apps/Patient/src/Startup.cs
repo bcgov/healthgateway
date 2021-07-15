@@ -13,23 +13,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-#pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.Patient
 {
-    using System.ServiceModel.Description;
-    using System.ServiceModel.Dispatcher;
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Patient.Delegates;
-    using HealthGateway.Patient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Configures the application during startup.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
@@ -56,11 +52,8 @@ namespace HealthGateway.Patient
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
-
-            services.AddTransient<IEndpointBehavior, LoggingEndpointBehaviour>();
-            services.AddTransient<IClientMessageInspector, LoggingMessageInspector>();
-            services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
-            services.AddTransient<IPatientService, SoapPatientService>();
+            this.startupConfig.ConfigurePatientAccess(services);
+            this.startupConfig.ConfigureTracing(services);
         }
 
         /// <summary>
@@ -77,4 +70,3 @@ namespace HealthGateway.Patient
         }
     }
 }
-#pragma warning restore CA1303

@@ -15,10 +15,14 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Swagger
 {
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using Microsoft.Extensions.Options;
+    using Microsoft.OpenApi.Models;
     using Swashbuckle.AspNetCore.Swagger;
 
     /// <inheritdoc />
+    [ExcludeFromCodeCoverage]
     public sealed class ConfigureSwaggerOptions : IConfigureOptions<SwaggerOptions>
     {
         private readonly SwaggerSettings settings;
@@ -37,7 +41,14 @@ namespace HealthGateway.Common.Swagger
         {
             if (options != null)
             {
-                options.RouteTemplate = this.settings.RoutePrefixWithSlash + "{documentName}/swagger.json";
+                options.RouteTemplate = this.settings.RouteTemplatePrefix + "/{documentName}/swagger.json";
+                if (!string.IsNullOrEmpty(this.settings.BasePath))
+                {
+                    options.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
+                    {
+                        swaggerDoc.Servers = new List<OpenApiServer> { new OpenApiServer { Url = $"{httpReq.Scheme}://{httpReq.Host.Value}{this.settings.BasePath}" } };
+                    });
+                }
             }
         }
     }

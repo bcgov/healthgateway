@@ -1,23 +1,43 @@
+import { StringISODateTime } from "@/models/dateWrapper";
+
 // Model that provides a user representation of user feedback.
 export default interface UserFeedback {
-  // Gets or sets the beta request id.
-  id: string;
+    // Feedback unique identifier.
+    id: string;
 
-  // Gets or sets the is satisfied flag.
-  isSatisfied: boolean;
+    // Associated user unique identifier.
+    userProfileId: string;
 
-  // Gets or sets the is reviewed flag.
-  isReviewed: boolean;
+    // Satisfied flag.
+    isSatisfied: boolean;
 
-  // Gets or sets the comments on the feedback.
-  comment: string;
+    // Reviewed flag.
+    isReviewed: boolean;
 
-  // Gets or sets the date when the feedback was created.
-  createdDateTime: Date;
+    // Comments on the feedback.
+    comment: string;
 
-  // Gets or sets the row concurrency version.
-  version: string;
+    // Date when the feedback was created.
+    createdDateTime: StringISODateTime;
 
-  // Gets or sets the email if known for this feedback.
-  email: string;
+    //The row concurrency version.
+    version: string;
+
+    // Email if known for this feedback.
+    email: string;
+
+    // The feedback tags
+    tags: UserFeedbackTag[];
+}
+
+export interface AdminTag {
+    id: string;
+    name: string;
+    version: number;
+}
+
+export interface UserFeedbackTag {
+    id: string;
+    tag: AdminTag;
+    version: number;
 }

@@ -26,12 +26,12 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the note text.
         /// </summary>
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the note title.
         /// </summary>
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the note date.
@@ -41,6 +41,6 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the user hdid.
         /// </summary>
-        public string HdId { get; set; }
+        public string HdId { get; set; } = string.Empty;
     }
 }

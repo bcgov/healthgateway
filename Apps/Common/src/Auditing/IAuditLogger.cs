@@ -33,7 +33,7 @@ namespace HealthGateway.Common.Auditing
         /// Parsers the httpcontext and populates the audit event with it values.
         /// </summary>
         /// <param name="context">The http context.</param>
-        /// <param name="audit">The audit event object to be populated.</param>
-        void PopulateWithHttpContext(HttpContext context, AuditEvent audit);
+        /// <param name="auditEvent">The audit event object to be populated.</param>
+        void PopulateWithHttpContext(HttpContext context, AuditEvent auditEvent);
     }
 }

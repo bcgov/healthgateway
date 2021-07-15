@@ -1,22 +1,24 @@
 import { Module } from "vuex";
-import { getters } from "./getters";
+
+import { AuthState, RootState, StateType } from "@/models/storeState";
+
 import { actions } from "./actions";
+import { getters } from "./getters";
 import { mutations } from "./mutations";
-import { RootState, AuthState, StateType } from "@/models/storeState";
 
 export const state: AuthState = {
-  statusMessage: "",
-  authentication: undefined,
-  error: false,
-  stateType: StateType.NONE
+    statusMessage: "",
+    authentication: undefined,
+    error: false,
+    stateType: StateType.NONE,
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 export const auth: Module<AuthState, RootState> = {
-  namespaced,
-  state,
-  getters,
-  actions,
-  mutations
+    namespaced,
+    state,
+    getters,
+    actions,
+    mutations,
 };

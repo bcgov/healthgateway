@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Swagger
 {
+    using System.Diagnostics.CodeAnalysis;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
@@ -25,6 +26,7 @@ namespace HealthGateway.Common.Swagger
     /// <summary>
     /// Service Collection(IServiceCollection) Extensions.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class ServicesExtensions
     {
         /// <summary>

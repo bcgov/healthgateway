@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,8 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.WebClient.Models;
 
@@ -28,39 +30,67 @@ namespace HealthGateway.WebClient.Services
         /// Gets the user profile model.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
-        /// <param name="lastLogin">The date of last login performed by the user.</param>
+        /// <param name="jwtAuthTime">The date of last jwt authorization time.</param>
         /// <returns>The wrappeed user profile.</returns>
-        RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime? lastLogin = null);
+        RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime jwtAuthTime);
 
         /// <summary>
         /// Saves the user profile to the database.
         /// </summary>
         /// <param name="createProfileRequest">The request to create a user profile model.</param>
-        /// <param name="hostUri">The host of the email validation endpoint.</param>
+        /// <param name="jwtAuthTime">The date of last jwt authorization time.</param>
         /// <returns>The wrapped user profile.</returns>
-        RequestResult<UserProfileModel> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri);
+        Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime);
 
         /// <summary>
         /// Closed the user profile.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="userId">The user id.</param>
-        /// <param name="hostUrl">The host of the email validation endpoint.</param>
         /// <returns>The wrapped user profile.</returns>
-        RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId, string hostUrl);
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team Decision")]
+        RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId);
 
         /// <summary>
         /// Recovers the user profile.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
-        /// <param name="hostUrl">The host of the email validation endpoint.</param>
         /// <returns>The wrapped user profile.</returns>
-        RequestResult<UserProfileModel> RecoverUserProfile(string hdid, string hostUrl);
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team Decision")]
+        RequestResult<UserProfileModel> RecoverUserProfile(string hdid);
 
         /// <summary>
         /// Gets the most recent active terms of service.
         /// </summary>
         /// <returns>The wrapped terms of service.</returns>
         RequestResult<TermsOfServiceModel> GetActiveTermsOfService();
+
+        /// <summary>
+        /// Updates a User Preference in the backend.
+        /// </summary>
+        /// <param name="userPreferenceModel">The user preference to update.</param>
+        /// <returns>A userPreference wrapped in a RequestResult.</returns>
+        RequestResult<UserPreferenceModel> UpdateUserPreference(UserPreferenceModel userPreferenceModel);
+
+        /// <summary>
+        /// Create a User Preference in the backend.
+        /// </summary>
+        /// <param name="userPreferenceModel">The user preference to create.</param>
+        /// <returns>A userPreference wrapped in a RequestResult.</returns>
+        RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel userPreferenceModel);
+
+        /// <summary>
+        /// Gets the user preference model.
+        /// </summary>
+        /// <param name="hdid">The requested user hdid.</param>
+        /// <returns>The wrappeed user reference.</returns>
+        RequestResult<Dictionary<string, UserPreferenceModel>> GetUserPreferences(string hdid);
+
+        /// <summary>
+        /// Gets a value indicating if the patient age is valid for registration.
+        /// </summary>
+        /// <param name="hdid">The requested user hdid.</param>
+        /// <returns>A boolean result.</returns>
+        Task<PrimitiveRequestResult<bool>> ValidateMinimumAge(string hdid);
     }
 }

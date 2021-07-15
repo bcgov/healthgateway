@@ -17,34 +17,36 @@
 namespace HealthGateway.WebClient
 {
     using System;
-    using System.Diagnostics.Contracts;
-    using Hangfire;
-    using Hangfire.PostgreSql;
+    using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.WebClient.Delegates;
+    using HealthGateway.WebClient.Listeners;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Rewrite;
-    using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+    using Microsoft.AspNetCore.SpaServices;
     using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using VueCliMiddleware;
 
     /// <summary>
     /// Configures the application during startup.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
-        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -54,7 +56,6 @@ namespace HealthGateway.WebClient
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
             this.startupConfig = new StartupConfiguration(configuration, env);
-            this.logger = this.startupConfig.Logger;
             this.configuration = configuration;
         }
 
@@ -70,35 +71,65 @@ namespace HealthGateway.WebClient
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
+            this.startupConfig.ConfigureHangfireQueue(services);
+            this.startupConfig.ConfigurePatientAccess(services);
+            this.startupConfig.ConfigureTracing(services);
+            this.startupConfig.ConfigureAccessControl(services);
 
             // Add services
+            services.AddMemoryCache();
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserProfileService, UserProfileService>();
             services.AddTransient<IUserEmailService, UserEmailService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
-            services.AddTransient<IBetaRequestService, BetaRequestService>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<INoteService, NoteService>();
-            services.AddSingleton<INonceService, NonceService>();
+            services.AddTransient<ICommentService, CommentService>();
+            services.AddTransient<ICommunicationService, CommunicationService>();
+            services.AddTransient<IUserSMSService, UserSMSService>();
+            services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
+            services.AddTransient<IDependentService, DependentService>();
+            services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
+            services.AddTransient<IWalletService, WalletService>();
+            services.AddTransient<IWalletStatusService, WalletStatusService>();
+            services.AddTransient<IReportService, ReportService>();
 
             // Add delegates
-            services.AddTransient<IProfileDelegate, DBProfileDelegate>();
+            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
+            services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
-            services.AddTransient<IEmailInviteDelegate, DBEmailInviteDelegate>();
+            services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
-            services.AddTransient<IBetaRequestDelegate, DBBetaRequestDelegate>();
+            services.AddTransient<IRatingDelegate, DBRatingDelegate>();
             services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
             services.AddTransient<INoteDelegate, DBNoteDelegate>();
+            services.AddTransient<ICommentDelegate, DBCommentDelegate>();
             services.AddTransient<ICryptoDelegate, AESCryptoDelegate>();
+            services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
+            services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
+            services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
+            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
+            services.AddTransient<IWalletIssuerDelegate, RestWalletIssuerDelegate>();
+            services.AddTransient<IWalletDelegate, DBWalletDelegate>();
+            services.AddTransient<IImmunizationDelegate, RestImmunizationDelegate>();
+            services.AddTransient<ICDogsDelegate, CDogsDelegate>();
 
+            // Add Background Services
+            services.AddHostedService<BannerListener>();
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
 
-            services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
-            JobStorage.Current = new PostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection"));
+            // Configure SPA
+            services.AddControllersWithViews();
+
+            // In production, the Vue files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/dist";
+            });
         }
 
         /// <summary>
@@ -106,16 +137,15 @@ namespace HealthGateway.WebClient
         /// </summary>
         /// <param name="app">The application builder.</param>
         /// <param name="env">The hosting environment.</param>
-        /// <param name="nonceService">Service that provides nonce utilities.</param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, INonceService nonceService)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            Contract.Requires(env != null);
-
+            this.startupConfig.UseContentSecurityPolicy(app);
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
-            this.startupConfig.UseContentSecurityPolicy(app, nonceService);
             this.startupConfig.UseAuth(app);
+
+            app.UseSpaStaticFiles();
 
             if (env.IsDevelopment())
             {
@@ -126,6 +156,31 @@ namespace HealthGateway.WebClient
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            if (!env.IsDevelopment())
+            {
+                app.UseResponseCompression();
+            }
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+                endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller}/{action=Index}/{id?}");
+
+                if (env.IsDevelopment() && Debugger.IsAttached)
+                {
+                    endpoints.MapToVueCliProxy(
+                        "{*path}",
+                        new SpaOptions { SourcePath = "ClientApp" },
+                        npmScript: "serve",
+                        port: 8585,
+                        regex: "Compiled ",
+                        forceKill: true);
+                }
+            });
+
             bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
             if (redirectToWWW)
             {
@@ -133,6 +188,18 @@ namespace HealthGateway.WebClient
                     .AddRedirectToWwwPermanent();
                 app.UseRewriter(rewriteOption);
             }
+
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ClientApp";
+                if (env.IsDevelopment() && !Debugger.IsAttached)
+                {
+                    // change this to whatever webpack dev server says it's running on
+#pragma warning disable S1075
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:8080");
+#pragma warning restore S1075
+                }
+            });
 
             app.UseStaticFiles(new StaticFileOptions
             {
@@ -153,24 +220,6 @@ namespace HealthGateway.WebClient
                         headers["Content-Type"] = mimeType;
                     }
                 },
-            });
-
-            app.UseEndpoints(endpoints =>
-            {
-                // Mapping of endpoints goes here:
-                endpoints.MapControllers();
-                endpoints.MapRazorPages();
-                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapFallbackToController("Index", "Home");
-            });
-
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "dist";
-                if (env.IsDevelopment())
-                {
-                    spa.UseReactDevelopmentServer("dev");
-                }
             });
         }
     }

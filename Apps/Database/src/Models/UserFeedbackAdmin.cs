@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Models
 {
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
     /// <summary>
@@ -22,6 +23,22 @@ namespace HealthGateway.Database.Models
     /// </summary>
     public class UserFeedbackAdmin : UserFeedback
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserFeedbackAdmin"/> class.
+        /// </summary>
+        public UserFeedbackAdmin()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserFeedbackAdmin"/> class.
+        /// </summary>
+        /// <param name="tags">The tag collection.</param>
+        public UserFeedbackAdmin(ICollection<UserFeedbackTag> tags)
+            : base(tags)
+        {
+        }
+
         /// <summary>
         /// Gets or sets the user email.
         /// </summary>

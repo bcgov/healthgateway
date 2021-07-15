@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 namespace HealthGateway.Database.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
@@ -45,6 +46,12 @@ namespace HealthGateway.Database.Models
         public string? Email { get; set; }
 
         /// <summary>
+        /// Gets or sets the user SMS number.
+        /// </summary>
+        [MaxLength(10)]
+        public string? SMSNumber { get; set; }
+
+        /// <summary>
         /// Gets or sets the Closed datetime of the account.
         /// After an account has been closed for n amount of days the row is physically deleted.
         /// </summary>
@@ -58,6 +65,19 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the users last login datetime.
         /// </summary>
-        public DateTime? LastLoginDateTime { get; set; }
+        public DateTime LastLoginDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the users encryption key.
+        /// Key is 16 byte string and is encoded to Base64.
+        /// </summary>
+        [MaxLength(44)]
+        public string? EncryptionKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets the messaging verifications for this user.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        public virtual ICollection<MessagingVerification>? Verifications { get; set; }
     }
 }

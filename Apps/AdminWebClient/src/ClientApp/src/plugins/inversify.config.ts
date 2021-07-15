@@ -1,52 +1,59 @@
 import "reflect-metadata";
+
 import { Container } from "inversify";
 
-import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
-import {
-  IHttpDelegate,
-  IBetaRequestService,
-  IConfigService,
-  IAuthenticationService,
-  IUserFeedbackService,
-  IDashboardService,
-  IEmailAdminService
-} from "@/services/interfaces";
-import HttpDelegate from "@/services/httpDelegate";
-import { RestConfigService } from "@/services/restConfigService";
-import { RestBetaRequestService } from "@/services/restBetaRequestService";
-import { RestAuthenticationService } from "@/services/restAuthenticationService";
-import { RestUserFeedbackService } from "@/services/restUserFeedbackService";
+import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { DashboardService } from "@/services/dashboardService";
+import HttpDelegate from "@/services/httpDelegate";
+import {
+    IAuthenticationService,
+    ICommunicationService,
+    IConfigService,
+    IDashboardService,
+    IEmailAdminService,
+    IHttpDelegate,
+    ISupportService,
+    IUserFeedbackService,
+} from "@/services/interfaces";
+import { RestAuthenticationService } from "@/services/restAuthenticationService";
+import { RestCommunicationService } from "@/services/restCommunicationService";
+import { RestConfigService } from "@/services/restConfigService";
 import { RestEmailAdminService } from "@/services/restEmailAdminService";
+import { RestSupportService } from "@/services/restSupportService";
+import { RestUserFeedbackService } from "@/services/restUserFeedbackService";
 
-let container = new Container();
+const container = new Container();
 container
-  .bind<IConfigService>(SERVICE_IDENTIFIER.ConfigService)
-  .to(RestConfigService)
-  .inSingletonScope();
+    .bind<IConfigService>(SERVICE_IDENTIFIER.ConfigService)
+    .to(RestConfigService)
+    .inSingletonScope();
 container
-  .bind<IAuthenticationService>(SERVICE_IDENTIFIER.AuthenticationService)
-  .to(RestAuthenticationService)
-  .inSingletonScope();
+    .bind<IAuthenticationService>(SERVICE_IDENTIFIER.AuthenticationService)
+    .to(RestAuthenticationService)
+    .inSingletonScope();
 container
-  .bind<IBetaRequestService>(SERVICE_IDENTIFIER.BetaRequestService)
-  .to(RestBetaRequestService)
-  .inSingletonScope();
+    .bind<IUserFeedbackService>(SERVICE_IDENTIFIER.UserFeedbackService)
+    .to(RestUserFeedbackService)
+    .inSingletonScope();
 container
-  .bind<IUserFeedbackService>(SERVICE_IDENTIFIER.UserFeedbackService)
-  .to(RestUserFeedbackService)
-  .inSingletonScope();
+    .bind<IDashboardService>(SERVICE_IDENTIFIER.DashboardService)
+    .to(DashboardService)
+    .inSingletonScope();
 container
-  .bind<IDashboardService>(SERVICE_IDENTIFIER.DashboardService)
-  .to(DashboardService)
-  .inSingletonScope();
+    .bind<IEmailAdminService>(SERVICE_IDENTIFIER.EmailAdminService)
+    .to(RestEmailAdminService)
+    .inSingletonScope();
 container
-  .bind<IEmailAdminService>(SERVICE_IDENTIFIER.EmailAdminService)
-  .to(RestEmailAdminService)
-  .inSingletonScope();
+    .bind<ICommunicationService>(SERVICE_IDENTIFIER.CommunicationService)
+    .to(RestCommunicationService)
+    .inSingletonScope();
 container
-  .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)
-  .to(HttpDelegate)
-  .inSingletonScope();
+    .bind<ISupportService>(SERVICE_IDENTIFIER.SupportService)
+    .to(RestSupportService)
+    .inSingletonScope();
+container
+    .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)
+    .to(HttpDelegate)
+    .inSingletonScope();
 
 export default container;

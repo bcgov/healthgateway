@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization
 {
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Delegates;
-    using HealthGateway.Immunization.Factories;
+    using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -27,10 +27,10 @@ namespace HealthGateway.Immunization
     /// <summary>
     /// Configures the application during startup.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
-        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -40,7 +40,6 @@ namespace HealthGateway.Immunization
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
             this.startupConfig = new StartupConfiguration(configuration, env);
-            this.configuration = configuration;
         }
 
         /// <summary>
@@ -55,24 +54,14 @@ namespace HealthGateway.Immunization
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
-
-            services.AddCors(options =>
-            {
-                options.AddPolicy("allowAny", policy =>
-                {
-                    policy
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                });
-            });
+            this.startupConfig.ConfigureTracing(services);
+            this.startupConfig.ConfigureAccessControl(services);
 
             // Add Services
             services.AddTransient<IImmunizationService, ImmunizationService>();
-            services.AddSingleton<IImmunizationDelegateFactory, ImmunizationDelegateFactory>();
 
             // Add delegates
-            services.AddTransient<IPatientDelegate, RestPatientDelegate>();
+            services.AddTransient<IImmunizationDelegate, RestImmunizationDelegate>();
         }
 
         /// <summary>

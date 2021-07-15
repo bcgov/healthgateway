@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,10 @@ namespace HealthGateway.Common.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Text.RegularExpressions;
     using Hangfire;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Jobs;
+    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Hosting;
@@ -33,33 +33,28 @@ namespace HealthGateway.Common.Services
     /// </summary>
     public class EmailQueueService : IEmailQueueService
     {
-#pragma warning disable SA1310 // Disable _ in variable name
-        private const string INVITE_KEY_VARIABLE = "InviteKey";
-        private const string ACTIVATION_HOST_VARIABLE = "ActivationHost";
-        private const string ENVIRONMENT_VARIABLE = "Environment";
-#pragma warning restore SA1310 // Restore warnings
         private readonly IEmailDelegate emailDelegate;
-        private readonly IEmailInviteDelegate emailInviteDelegate;
-        private readonly IWebHostEnvironment enviroment;
+        private readonly IWebHostEnvironment environment;
         private readonly ILogger logger;
+        private readonly IBackgroundJobClient jobClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailQueueService"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
+        /// <param name="jobClient">The JobScheduler queue client.</param>
         /// <param name="emailDelegate">Email delegate to be used.</param>
-        /// <param name="emailInviteDelegate">Invite email delegate to be used.</param>
-        /// <param name="enviroment">The injected environment configuration.</param>
+        /// <param name="environment">The injected environment configuration.</param>
         public EmailQueueService(
             ILogger<EmailQueueService> logger,
+            IBackgroundJobClient jobClient,
             IEmailDelegate emailDelegate,
-            IEmailInviteDelegate emailInviteDelegate,
-            IWebHostEnvironment enviroment)
+            IWebHostEnvironment environment)
         {
             this.logger = logger;
+            this.jobClient = jobClient;
             this.emailDelegate = emailDelegate;
-            this.emailInviteDelegate = emailInviteDelegate;
-            this.enviroment = enviroment;
+            this.environment = environment;
         }
 
         /// <inheritdoc />
@@ -86,14 +81,18 @@ namespace HealthGateway.Common.Services
         {
             if (string.IsNullOrWhiteSpace(email.To))
             {
-                throw new ArgumentNullException(nameof(email.To), "Email To cannot be null or whitespace");
+                throw new ArgumentNullException(nameof(email), "Email To cannot be null or whitespace");
             }
 
             this.logger.LogTrace($"Queueing email... {JsonConvert.SerializeObject(email)}");
-            this.emailDelegate.InsertEmail(email, shouldCommit);
+            if (email.Id == Guid.Empty)
+            {
+                this.emailDelegate.InsertEmail(email, shouldCommit);
+            }
+
             if (shouldCommit)
             {
-                BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
+                this.jobClient.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
             }
 
             this.logger.LogDebug($"Finished queueing email. {email.Id}");
@@ -123,54 +122,18 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc />
-        public void QueueNewInviteEmail(string hdid, string toEmail, Uri activationHost)
-        {
-            Dictionary<string, string> keyValues = new Dictionary<string, string>();
-            EmailInvite invite = new EmailInvite();
-            invite.InviteKey = Guid.NewGuid();
-            invite.HdId = hdid;
-            invite.ExpireDate = DateTime.MaxValue;
-
-            string hostUrl = activationHost.ToString();
-            hostUrl = hostUrl.Remove(hostUrl.Length - 1, 1); // Strips last slash
-
-            keyValues.Add(INVITE_KEY_VARIABLE, invite.InviteKey.ToString());
-            keyValues.Add(ACTIVATION_HOST_VARIABLE, hostUrl);
-
-            invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(EmailTemplateName.REGISTRATION_TEMPLATE), keyValues);
-
-            this.QueueNewInviteEmail(invite);
-        }
-
-        /// <inheritdoc />
-        public void QueueNewInviteEmail(EmailInvite invite)
-        {
-            if (invite.Email == null || string.IsNullOrWhiteSpace(invite.Email.To))
-            {
-                throw new ArgumentNullException(nameof(invite.Email), "Invite Email To cannot be null or whitespace");
-            }
-
-            this.logger.LogTrace($"Queueing new invite email... {JsonConvert.SerializeObject(invite)}");
-            this.emailInviteDelegate.Insert(invite);
-            BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(invite.Email.Id));
-            this.logger.LogDebug($"Finished queueing new invite email. {invite.Id}");
-        }
-
-        /// <inheritdoc />
-        public void QueueInviteEmail(Guid inviteEmailId)
-        {
-            this.logger.LogTrace($"Queueing invite email... {JsonConvert.SerializeObject(inviteEmailId)}");
-            BackgroundJob.Enqueue<IEmailJob>(j => j.SendEmail(inviteEmailId));
-            this.logger.LogDebug($"Finished queueing invite email. {inviteEmailId}");
-        }
-
-        /// <inheritdoc />
         public EmailTemplate GetEmailTemplate(string templateName)
         {
             this.logger.LogTrace($"Getting email template... {templateName}");
             EmailTemplate retVal = this.emailDelegate.GetEmailTemplate(templateName);
             this.logger.LogDebug($"Finished getting email template. {JsonConvert.SerializeObject(retVal)}");
             return retVal;
+        }
+
+        /// <inheritdoc />
+        public Email ProcessTemplate(string toEmail, string templateName, Dictionary<string, string> keyValues)
+        {
+            return this.ProcessTemplate(toEmail, this.GetEmailTemplate(templateName), keyValues);
         }
 
         /// <inheritdoc />
@@ -183,37 +146,21 @@ namespace HealthGateway.Common.Services
             return email;
         }
 
-        /// <summary>
-        /// A string to scan for keys marked up as ${KEYNAME} to replace.
-        /// The dictionary should only have the name of the key as in KEY and NOT ${KEY}.
-        /// </summary>
-        /// <param name="template">The string to scan and replace.</param>
-        /// <param name="data">The dictionary of key/value pairs.</param>
-        /// <returns>The string with the key replaced by the supplied values.</returns>
-        private static string ProcessTemplateString(string template, Dictionary<string, string> data)
-        {
-            // The regex will find all instances of ${ANYTHING} and will evaluate if the keys between
-            // the mustaches match one of those in the dictionary.  If so it then replaces the match
-            // with the value in the dictionary.
-            return Regex.Replace(template, "\\$\\{(.*?)\\}", m =>
-               (m.Groups.Count > 1 && data.ContainsKey(m.Groups[1].Value)) ?
-               data[m.Groups[1].Value] : m.Value);
-        }
-
         private Email ParseTemplate(EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
-            if (!keyValues.ContainsKey(ENVIRONMENT_VARIABLE))
+            if (!keyValues.ContainsKey(EmailTemplateVariable.Environment))
             {
-                keyValues.Add(ENVIRONMENT_VARIABLE, this.enviroment.IsProduction() ? string.Empty : this.enviroment.EnvironmentName);
+                keyValues.Add(EmailTemplateVariable.Environment, this.environment.IsProduction() ? string.Empty : this.environment.EnvironmentName);
             }
 
-            Email email = new Email();
-            email.From = emailTemplate.From;
-            email.Priority = emailTemplate.Priority;
-            email.Subject = ProcessTemplateString(emailTemplate.Subject, keyValues);
-            email.Body = ProcessTemplateString(emailTemplate.Body, keyValues);
-            email.FormatCode = emailTemplate.FormatCode;
-            return email;
+            return new Email()
+            {
+                From = emailTemplate.From,
+                Priority = emailTemplate.Priority,
+                Subject = StringManipulator.Replace(emailTemplate.Subject, keyValues),
+                Body = StringManipulator.Replace(emailTemplate.Body, keyValues),
+                FormatCode = emailTemplate.FormatCode,
+            };
         }
     }
 }

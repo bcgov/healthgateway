@@ -32,5 +32,20 @@ namespace HealthGateway.Common.Jobs
         /// Attempts to send low priority emails.
         /// </summary>
         void SendLowPriorityEmails();
+
+        /// <summary>
+        /// Attempts to send standard priority emails.
+        /// </summary>
+        void SendStandardPriorityEmails();
+
+        /// <summary>
+        /// Attempts to send high priority emails.
+        /// </summary>
+        void SendHighPriorityEmails();
+
+        /// <summary>
+        /// Attempts to send urgent priority emails.
+        /// </summary>
+        void SendUrgentPriorityEmails();
     }
 }

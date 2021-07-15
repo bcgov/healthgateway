@@ -44,13 +44,13 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public Dictionary<string, MedicationResult> GetMedications(List<string> medicationDinList)
+        public IDictionary<string, MedicationInformation> GetMedications(IList<string> medicationDinList)
         {
             this.logger.LogTrace($"Getting list of medications... {JsonConvert.SerializeObject(medicationDinList)}");
-            Dictionary<string, MedicationResult> result = new Dictionary<string, MedicationResult>();
+            IDictionary<string, MedicationInformation> result = new Dictionary<string, MedicationInformation>();
 
             // Retrieve drug information from the Federal soruce
-            List<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(medicationDinList);
+            IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(medicationDinList);
             foreach (DrugProduct drugProduct in drugProducts)
             {
                 FederalDrugSource federalData = new FederalDrugSource()
@@ -58,11 +58,11 @@ namespace HealthGateway.Medication.Services
                     UpdateDateTime = drugProduct.UpdatedDateTime,
                     DrugProduct = drugProduct,
                 };
-                result[drugProduct.DrugIdentificationNumber] = new MedicationResult() { DIN = drugProduct.DrugIdentificationNumber, FederalData = federalData };
+                result[drugProduct.DrugIdentificationNumber] = new MedicationInformation() { DIN = drugProduct.DrugIdentificationNumber, FederalData = federalData };
             }
 
             // Retrieve drug information from the Provincial source and append it to the result if previously added.
-            List<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(medicationDinList);
+            IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(medicationDinList);
             foreach (PharmaCareDrug pharmaCareDrug in pharmaCareDrugs)
             {
                 ProvincialDrugSource provincialData = new ProvincialDrugSource()
@@ -77,7 +77,7 @@ namespace HealthGateway.Medication.Services
                 }
                 else
                 {
-                    result[pharmaCareDrug.DINPIN] = new MedicationResult() { DIN = pharmaCareDrug.DINPIN, ProvincialData = provincialData };
+                    result[pharmaCareDrug.DINPIN] = new MedicationInformation() { DIN = pharmaCareDrug.DINPIN, ProvincialData = provincialData };
                 }
             }
 

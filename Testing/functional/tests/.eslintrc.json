@@ -1,0 +1,14 @@
+{
+    "env": {
+        "cypress/globals": true
+    },
+    "plugins": ["cypress", "chai-friendly"],
+    "extends": [
+        "plugin:chai-friendly/recommended",
+        "plugin:prettier/recommended"
+    ],
+    "rules": {
+        "prefer-spread": "off",
+        "prefer-rest-params": "off"
+    }
+}

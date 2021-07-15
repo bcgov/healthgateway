@@ -19,7 +19,7 @@ namespace HealthGateway.Medication.Models.ODR
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// A dispensed
+    /// Represents a dispensed prescription.
     /// </summary>
     public class MedicationResult
     {

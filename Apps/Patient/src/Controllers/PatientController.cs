@@ -13,16 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.PatientService.Controllers
+namespace HealthGateway.Patient.Controllers
 {
-    using System.Security.Claims;
+    using System;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Models;
-    using HealthGateway.Patient.Services;
+    using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The Patient controller.
@@ -39,26 +40,12 @@ namespace HealthGateway.PatientService.Controllers
         private readonly IPatientService service;
 
         /// <summary>
-        /// The authorization service.
-        /// </summary>
-        private readonly IAuthorizationService authorizationService;
-
-        /// <summary>
-        /// Gets or sets the http context accessor.
-        /// </summary>
-        private readonly IHttpContextAccessor httpContextAccessor;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="PatientController"/> class.
         /// </summary>
-        /// <param name="svc">The patient data service.</param>
-        /// <param name="authorizationService">The injected authorization service.</param>
-        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        public PatientController(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor, IPatientService svc)
+        /// <param name="patientService">The patient data service.</param>
+        public PatientController(IPatientService patientService)
         {
-            this.service = svc;
-            this.httpContextAccessor = httpContextAccessor;
-            this.authorizationService = authorizationService;
+            this.service = patientService;
         }
 
         /// <summary>
@@ -72,17 +59,10 @@ namespace HealthGateway.PatientService.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        [Authorize(Policy = "PatientOnly")]
+        [Authorize(Policy = PatientPolicy.Read)]
         public async Task<IActionResult> GetPatient(string hdid)
         {
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
-
-            Patient result = await this.service.GetPatient(hdid).ConfigureAwait(true);
+            RequestResult<PatientModel> result = await this.service.GetPatient(hdid).ConfigureAwait(true);
             return new JsonResult(result);
         }
     }

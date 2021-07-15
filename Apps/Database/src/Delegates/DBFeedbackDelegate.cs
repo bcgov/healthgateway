@@ -17,9 +17,10 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text.Json;
-    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -27,6 +28,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
+    [ExcludeFromCodeCoverage]
     public class DBFeedbackDelegate : IFeedbackDelegate
     {
         private readonly ILogger logger;
@@ -91,11 +93,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<List<UserFeedbackAdmin>> GetAllUserFeedbackEntries()
+        public DBResult<IList<UserFeedbackAdmin>> GetAllUserFeedbackEntries()
         {
             this.logger.LogTrace($"Getting all user feedback entries");
-            List<UserFeedbackAdmin> feedback = this.dbContext.UserFeedback
-                .Select(x => new UserFeedbackAdmin
+            IList<UserFeedbackAdmin> feedback = this.dbContext.UserFeedback
+                .Include("Tags.AdminTag")
+                .Select(x => new UserFeedbackAdmin(x.Tags)
                 {
                     Id = x.Id,
                     IsSatisfied = x.IsSatisfied,
@@ -107,10 +110,24 @@ namespace HealthGateway.Database.Delegates
                     UserProfileId = x.UserProfileId,
                     UpdatedDateTime = x.UpdatedDateTime,
                     Version = x.Version,
-                    Email = x.UserProfile != null && x.UserProfile.Email != null ? x.UserProfile.Email : string.Empty,
                 })
-                .OrderBy(f => f.CreatedDateTime).ToList();
-            DBResult<List<UserFeedbackAdmin>> result = new DBResult<List<UserFeedbackAdmin>>();
+                .OrderByDescending(f => f.CreatedDateTime).ToList();
+
+            Dictionary<string, string?> profileEmails = this.dbContext.UserProfile.Where(u => feedback.Select(f => f.UserProfileId).Contains(u.HdId)).ToDictionary(x => x.HdId, x => x.Email);
+
+            foreach (UserFeedbackAdmin feedbackAdmin in feedback)
+            {
+                if (!string.IsNullOrWhiteSpace(feedbackAdmin.UserProfileId))
+                {
+                    string? email;
+                    if (profileEmails.TryGetValue(feedbackAdmin.UserProfileId, out email))
+                    {
+                        feedbackAdmin.Email = email != null ? email : string.Empty;
+                    }
+                }
+            }
+
+            DBResult<IList<UserFeedbackAdmin>> result = new ();
             result.Payload = feedback;
             result.Status = feedback != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             this.logger.LogDebug($"Finished getting user feedback from DB... {JsonSerializer.Serialize(result)}");

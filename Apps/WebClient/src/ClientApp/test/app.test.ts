@@ -1,13 +1,31 @@
-import { shallowMount, createLocalVue } from "@vue/test-utils";
-import AppComponent from "@/app.vue";
+import "@/plugins/inversify.config";
+
+import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
+import { createLocalVue, shallowMount } from "@vue/test-utils";
 import VueRouter from "vue-router";
+import Vuex from "vuex";
+
+import AppComponent from "@/app.vue";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.container";
+import { ILogger } from "@/services/interfaces";
 
 describe("Home view", () => {
-  const localVue = createLocalVue();
-  localVue.use(VueRouter);
-  const wrapper = shallowMount(AppComponent, { localVue });
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    logger.initialize("info");
 
-  test("is a Vue instance", () => {
-    expect(wrapper.isVueInstance()).toBeTruthy();
-  });
+    const localVue = createLocalVue();
+    localVue.use(Vuex);
+    localVue.use(VueRouter);
+
+    const store = new Vuex.Store(new StoreOptionsStub());
+
+    const wrapper = shallowMount(AppComponent, {
+        localVue,
+        store: store,
+    });
+
+    test("is a Vue instance", () => {
+        expect(wrapper).toBeTruthy();
+    });
 });

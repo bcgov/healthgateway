@@ -16,7 +16,8 @@
 namespace HealthGateway.Admin.Models
 {
     using System;
-    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -42,7 +43,8 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Gets or sets the email status code.
         /// </summary>
-        public string EmailStatusCode { get; set; } = null!;
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public EmailStatus EmailStatusCode { get; set; }
 
         /// <summary>
         /// Gets or sets the user invite status indicator.
@@ -59,7 +61,7 @@ namespace HealthGateway.Admin.Models
         /// </summary>
         /// <param name="model">A database email model.</param>
         /// <param name="inviteStatus">The user invite status.</param>
-        /// <returns>A new UserBetaRequest.</returns>
+        /// <returns>A new AdminEmail.</returns>
         public static AdminEmail CreateFromDbModel(Email model, string inviteStatus)
         {
             return new AdminEmail()

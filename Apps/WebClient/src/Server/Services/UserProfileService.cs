@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,194 +17,253 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
+    using System.Linq;
     using System.Text.Json;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.WebClient.Constant;
+    using HealthGateway.WebClient.Constants;
     using HealthGateway.WebClient.Models;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
     public class UserProfileService : IUserProfileService
     {
         private readonly ILogger logger;
-        private readonly IProfileDelegate profileDelegate;
-        private readonly IEmailDelegate emailDelegate;
-        private readonly IEmailInviteDelegate emailInviteDelegate;
+        private readonly IPatientService patientService;
+        private readonly IUserEmailService userEmailService;
+        private readonly IUserSMSService userSMSService;
         private readonly IConfigurationService configurationService;
         private readonly IEmailQueueService emailQueueService;
+        private readonly INotificationSettingsService notificationSettingsService;
+        private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IUserPreferenceDelegate userPreferenceDelegate;
         private readonly ILegalAgreementDelegate legalAgreementDelegate;
-
-#pragma warning disable SA1310 // Disable _ in variable name
-        private const string HOST_TEMPLATE_VARIABLE = "host";
-#pragma warning restore SA1310 // Restore warnings
+        private readonly IMessagingVerificationDelegate messageVerificationDelegate;
+        private readonly ICryptoDelegate cryptoDelegate;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
-        /// <param name="emailDelegate">The email delegate to interact with the DB.</param>
-        /// <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
-        /// <param name="configuration">The configuration service.</param>
+        /// <param name="patientService">The patient service.</param>
+        /// <param name="userEmailService">The User Email service.</param>
+        /// <param name="userSMSService">The User SMS service.</param>
+        /// <param name="configurationService">The configuration service.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
+        /// <param name="notificationSettingsService">The Notifications Settings service.</param>
+        /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
+        /// <param name="userPreferenceDelegate">The preference delegate to interact with the DB.</param>
         /// <param name="legalAgreementDelegate">The terms of service delegate.</param>
+        /// <param name="messageVerificationDelegate">The message verification delegate.</param>
+        /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
+        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
-            IProfileDelegate profileDelegate,
-            IEmailDelegate emailDelegate,
-            IEmailInviteDelegate emailInviteDelegate,
-            IConfigurationService configuration,
+            IPatientService patientService,
+            IUserEmailService userEmailService,
+            IUserSMSService userSMSService,
+            IConfigurationService configurationService,
             IEmailQueueService emailQueueService,
-            ILegalAgreementDelegate legalAgreementDelegate)
+            INotificationSettingsService notificationSettingsService,
+            IUserProfileDelegate userProfileDelegate,
+            IUserPreferenceDelegate userPreferenceDelegate,
+            ILegalAgreementDelegate legalAgreementDelegate,
+            IMessagingVerificationDelegate messageVerificationDelegate,
+            ICryptoDelegate cryptoDelegate,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
-            this.profileDelegate = profileDelegate;
-            this.emailDelegate = emailDelegate;
-            this.emailInviteDelegate = emailInviteDelegate;
-            this.configurationService = configuration;
+            this.patientService = patientService;
+            this.userEmailService = userEmailService;
+            this.userSMSService = userSMSService;
+            this.configurationService = configurationService;
             this.emailQueueService = emailQueueService;
+            this.notificationSettingsService = notificationSettingsService;
+            this.userProfileDelegate = userProfileDelegate;
+            this.userPreferenceDelegate = userPreferenceDelegate;
             this.legalAgreementDelegate = legalAgreementDelegate;
+            this.messageVerificationDelegate = messageVerificationDelegate;
+            this.cryptoDelegate = cryptoDelegate;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <inheritdoc />
-        public RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime? lastLogin = null)
+        public RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime jwtAuthTime)
         {
             this.logger.LogTrace($"Getting user profile... {hdid}");
-            DBResult<UserProfile> retVal = this.profileDelegate.GetUserProfile(hdid);
+            DBResult<UserProfile> retVal = this.userProfileDelegate.GetUserProfile(hdid);
             this.logger.LogDebug($"Finished getting user profile. {JsonSerializer.Serialize(retVal)}");
 
             if (retVal.Status == DBStatusCode.NotFound)
             {
                 return new RequestResult<UserProfileModel>()
                 {
-                    ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
-                    ResultMessage = retVal.Message,
-                    ResourcePayload = null,
+                    ResultStatus = ResultType.Success,
+                    ResourcePayload = new UserProfileModel(),
                 };
             }
 
-            DateTime? previousLastLogin = retVal.Payload.LastLoginDateTime;
-            if (lastLogin.HasValue)
+            DateTime previousLastLogin = retVal.Payload.LastLoginDateTime;
+            if (DateTime.Compare(previousLastLogin, jwtAuthTime) != 0)
             {
                 this.logger.LogTrace($"Updating user last login... {hdid}");
-                retVal.Payload.LastLoginDateTime = lastLogin;
-                DBResult<UserProfile> updateResult = this.profileDelegate.UpdateUserProfile(retVal.Payload);
+                retVal.Payload.LastLoginDateTime = jwtAuthTime;
+                DBResult<UserProfile> updateResult = this.userProfileDelegate.Update(retVal.Payload);
                 this.logger.LogDebug($"Finished updating user last login. {JsonSerializer.Serialize(updateResult)}");
             }
 
             RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
 
             UserProfileModel userProfile = UserProfileModel.CreateFromDbModel(retVal.Payload);
-            userProfile.HasTermsOfServiceUpdated =
-                previousLastLogin.HasValue &&
-                termsOfServiceResult.ResourcePayload?.EffectiveDate > previousLastLogin.Value;
+            userProfile.HasTermsOfServiceUpdated = termsOfServiceResult.ResourcePayload?.EffectiveDate > previousLastLogin;
+
+            if (!userProfile.IsEmailVerified)
+            {
+                this.logger.LogTrace($"Retrieving last email invite... {hdid}");
+                MessagingVerification? emailInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
+                this.logger.LogDebug($"Finished retrieving email: {JsonSerializer.Serialize(emailInvite)}");
+                userProfile.Email = emailInvite?.Email?.To;
+            }
+
+            if (!userProfile.IsSMSNumberVerified)
+            {
+                this.logger.LogTrace($"Retrieving last email invite... {hdid}");
+                MessagingVerification? smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+                this.logger.LogDebug($"Finished retrieving email: {JsonSerializer.Serialize(smsInvite)}");
+                userProfile.SMSNumber = smsInvite?.SMSNumber;
+            }
 
             return new RequestResult<UserProfileModel>()
             {
                 ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
-                ResultMessage = retVal.Message,
+                ResultError = retVal.Status != DBStatusCode.Error ? null : new RequestResultError() { ResultMessage = retVal.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
                 ResourcePayload = userProfile,
             };
         }
 
         /// <inheritdoc />
-        public RequestResult<UserProfileModel> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri)
+        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime)
         {
-            Contract.Requires(createProfileRequest != null && hostUri != null);
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
 
             string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
 
-            RequestResult<UserProfileModel> requestResult = new RequestResult<UserProfileModel>();
-
             if (registrationStatus == RegistrationStatus.Closed)
             {
-                requestResult.ResultStatus = ResultType.Error;
-                requestResult.ResultMessage = "Registration is closed";
                 this.logger.LogWarning($"Registration is closed. {JsonSerializer.Serialize(createProfileRequest)}");
-                return requestResult;
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Registration is closed",
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    },
+                };
             }
 
+            // Validate registration age
             string hdid = createProfileRequest.Profile.HdId;
-            EmailInvite emailInvite = null;
-            if (registrationStatus == RegistrationStatus.InviteOnly)
+            PrimitiveRequestResult<bool> isMimimunAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
+            if (isMimimunAgeResult.ResultStatus != ResultType.Success)
             {
-                if (!Guid.TryParse(createProfileRequest.InviteCode, out Guid inviteKey))
+                return new RequestResult<UserProfileModel>()
                 {
-                    requestResult.ResultStatus = ResultType.Error;
-                    requestResult.ResultMessage = "Invalid email invite";
-                    this.logger.LogWarning($"Invalid email invite code. {JsonSerializer.Serialize(createProfileRequest)}");
-                    return requestResult;
-                }
-
-                emailInvite = this.emailInviteDelegate.GetByInviteKey(inviteKey);
-                bool hdidIsValid = string.IsNullOrEmpty(emailInvite.HdId) || (emailInvite.HdId == createProfileRequest.Profile.HdId);
-
-                // Fails if...
-                // Email invite not found or
-                // Email invite was already validated or
-                // Email invite must have a blank/null HDID or be the same as the one in the request
-                // Email address doesn't match the invite
-                if (emailInvite == null ||
-                    emailInvite.Validated ||
-                    !hdidIsValid ||
-                    !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.CurrentCultureIgnoreCase))
+                    ResultStatus = isMimimunAgeResult.ResultStatus,
+                    ResultError = isMimimunAgeResult.ResultError,
+                };
+            }
+            else if (!isMimimunAgeResult.ResourcePayload)
+            {
+                this.logger.LogWarning($"Patient under minimum age. {JsonSerializer.Serialize(createProfileRequest)}");
+                return new RequestResult<UserProfileModel>()
                 {
-                    requestResult.ResultStatus = ResultType.Error;
-                    requestResult.ResultMessage = "Invalid email invite";
-                    this.logger.LogWarning($"Invalid email invite. {JsonSerializer.Serialize(createProfileRequest)}");
-                    return requestResult;
-                }
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Patient under minimum age",
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    },
+                };
             }
 
-            string? email = createProfileRequest.Profile.Email;
-            createProfileRequest.Profile.Email = string.Empty;
-
-            createProfileRequest.Profile.CreatedBy = hdid;
-            createProfileRequest.Profile.UpdatedBy = hdid;
-
-            DBResult<UserProfile> insertResult = this.profileDelegate.InsertUserProfile(createProfileRequest.Profile);
+            // Create profile
+            UserProfile newProfile = new ()
+            {
+                HdId = hdid,
+                IdentityManagementId = createProfileRequest.Profile.IdentityManagementId,
+                AcceptedTermsOfService = createProfileRequest.Profile.AcceptedTermsOfService,
+                Email = string.Empty,
+                SMSNumber = null,
+                CreatedBy = hdid,
+                UpdatedBy = hdid,
+                LastLoginDateTime = jwtAuthTime,
+                EncryptionKey = this.cryptoDelegate.GenerateKey(),
+            };
+            DBResult<UserProfile> insertResult = this.userProfileDelegate.InsertUserProfile(newProfile);
 
             if (insertResult.Status == DBStatusCode.Created)
             {
-                if (emailInvite != null)
+                UserProfile createdProfile = insertResult.Payload;
+                string? requestedSMSNumber = createProfileRequest.Profile.SMSNumber;
+                string? requestedEmail = createProfileRequest.Profile.Email;
+
+                NotificationSettingsRequest notificationRequest = new (createdProfile, requestedEmail, requestedSMSNumber);
+
+                // Add email verification
+                if (!string.IsNullOrWhiteSpace(requestedEmail))
                 {
-                    // Validates the invite email
-                    emailInvite.Validated = true;
-                    emailInvite.HdId = hdid;
-                    this.emailInviteDelegate.Update(emailInvite);
+                    this.userEmailService.CreateUserEmail(hdid, requestedEmail);
                 }
 
-                if (!string.IsNullOrWhiteSpace(email))
+                // Add SMS verification
+                if (!string.IsNullOrWhiteSpace(requestedSMSNumber))
                 {
-                    this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri);
+                    MessagingVerification smsVerification = this.userSMSService.CreateUserSMS(hdid, requestedSMSNumber);
+                    notificationRequest.SMSVerificationCode = smsVerification.SMSValidationCode;
                 }
 
-                requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(insertResult.Payload);
-                requestResult.ResultStatus = ResultType.Success;
+                this.notificationSettingsService.QueueNotificationSettings(notificationRequest);
+
+                this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResourcePayload = UserProfileModel.CreateFromDbModel(insertResult.Payload),
+                    ResultStatus = ResultType.Success,
+                };
             }
-
-            this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
-            return requestResult;
+            else
+            {
+                this.logger.LogError($"Error creating user profile. {JsonSerializer.Serialize(insertResult)}");
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = insertResult.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    },
+                };
+            }
         }
 
         /// <inheritdoc />
-        public RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId, string hostUrl)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team decision")]
+        public RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId)
         {
             this.logger.LogTrace($"Closing user profile... {hdid}");
 
-            string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
-
-            RequestResult<UserProfileModel> requestResult = new RequestResult<UserProfileModel>();
-
-            DBResult<UserProfile> retrieveResult = this.profileDelegate.GetUserProfile(hdid);
+            DBResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
 
             if (retrieveResult.Status == DBStatusCode.Read)
             {
@@ -212,39 +271,45 @@ namespace HealthGateway.WebClient.Services
                 if (profile.ClosedDateTime != null)
                 {
                     this.logger.LogTrace("Finished. Profile already Closed");
-                    requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(profile);
-                    requestResult.ResultStatus = ResultType.Success;
-                    return requestResult;
+                    return new RequestResult<UserProfileModel>()
+                    {
+                        ResourcePayload = UserProfileModel.CreateFromDbModel(profile),
+                        ResultStatus = ResultType.Success,
+                    };
                 }
 
-                profile.ClosedDateTime = DateTime.Now;
+                profile.ClosedDateTime = DateTime.UtcNow;
                 profile.IdentityManagementId = userId;
-                DBResult<UserProfile> updateResult = this.profileDelegate.UpdateUserProfile(profile);
+                DBResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
                 if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
-                    Dictionary<string, string> keyValues = new Dictionary<string, string>();
-                    keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
-                    this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.ACCOUNT_CLOSED, keyValues);
+                    this.QueueEmail(profile.Email, EmailTemplateName.AccountClosedTemplate);
                 }
 
-                requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload);
-                requestResult.ResultStatus = ResultType.Success;
                 this.logger.LogDebug($"Finished closing user profile. {JsonSerializer.Serialize(updateResult)}");
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload),
+                    ResultStatus = ResultType.Success,
+                };
             }
-
-            return requestResult;
+            else
+            {
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = retrieveResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                };
+            }
         }
 
         /// <inheritdoc />
-        public RequestResult<UserProfileModel> RecoverUserProfile(string hdid, string hostUrl)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team decision")]
+        public RequestResult<UserProfileModel> RecoverUserProfile(string hdid)
         {
             this.logger.LogTrace($"Recovering user profile... {hdid}");
 
-            string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
-
-            RequestResult<UserProfileModel> requestResult = new RequestResult<UserProfileModel>();
-
-            DBResult<UserProfile> retrieveResult = this.profileDelegate.GetUserProfile(hdid);
+            DBResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
 
             if (retrieveResult.Status == DBStatusCode.Read)
             {
@@ -252,43 +317,162 @@ namespace HealthGateway.WebClient.Services
                 if (profile.ClosedDateTime == null)
                 {
                     this.logger.LogTrace("Finished. Profile already is active, recover not needed.");
-                    requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(profile);
-                    requestResult.ResultStatus = ResultType.Success;
-                    return requestResult;
+                    return new RequestResult<UserProfileModel>()
+                    {
+                        ResourcePayload = UserProfileModel.CreateFromDbModel(profile),
+                        ResultStatus = ResultType.Success,
+                    };
                 }
 
                 // Remove values set for deletion
                 profile.ClosedDateTime = null;
                 profile.IdentityManagementId = null;
-                DBResult<UserProfile> updateResult = this.profileDelegate.UpdateUserProfile(profile);
+                DBResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
                 if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
-                    Dictionary<string, string> keyValues = new Dictionary<string, string>();
-                    keyValues.Add(HOST_TEMPLATE_VARIABLE, hostUrl);
-                    this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.ACCOUNT_RECOVERED, keyValues);
+                    this.QueueEmail(profile.Email, EmailTemplateName.AccountRecoveredTemplate);
                 }
 
-                requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload);
-                requestResult.ResultStatus = ResultType.Success;
                 this.logger.LogDebug($"Finished recovering user profile. {JsonSerializer.Serialize(updateResult)}");
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload),
+                    ResultStatus = ResultType.Success,
+                };
             }
-
-            return requestResult;
+            else
+            {
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = retrieveResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                };
+            }
         }
 
         /// <inheritdoc />
         public RequestResult<TermsOfServiceModel> GetActiveTermsOfService()
         {
-            this.logger.LogTrace($"Getting active terms of service...");
-            DBResult<LegalAgreement> retVal = this.legalAgreementDelegate.GetActiveByAgreementType(AgreementType.TermsofService);
-            this.logger.LogDebug($"Finished getting terms of service. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug($"Getting active terms of service...");
+            DBResult<LegalAgreement> retVal = this.legalAgreementDelegate.GetActiveByAgreementType(LegalAgreementType.TermsofService);
 
             return new RequestResult<TermsOfServiceModel>()
             {
                 ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
-                ResultMessage = retVal.Message,
                 ResourcePayload = TermsOfServiceModel.CreateFromDbModel(retVal.Payload),
+                ResultError = retVal.Status != DBStatusCode.Error ? null : new RequestResultError() { ResultMessage = retVal.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
+        }
+
+        /// <inheritdoc />
+        public RequestResult<UserPreferenceModel> UpdateUserPreference(UserPreferenceModel userPreferenceModel)
+        {
+            this.logger.LogTrace($"Updating user preference... {userPreferenceModel.Preference}");
+
+            UserPreference userPreference = userPreferenceModel.ToDbModel();
+
+            DBResult<UserPreference> dbResult = this.userPreferenceDelegate.UpdateUserPreference(userPreference);
+            this.logger.LogDebug($"Finished updating user preference. {JsonSerializer.Serialize(dbResult)}");
+
+            RequestResult<UserPreferenceModel> requestResult = new RequestResult<UserPreferenceModel>()
+            {
+                ResourcePayload = UserPreferenceModel.CreateFromDbModel(dbResult.Payload),
+                ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status == DBStatusCode.Updated ? null : new RequestResultError()
+                {
+                    ResultMessage = dbResult.Message,
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                },
+            };
+            return requestResult;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel userPreferenceModel)
+        {
+            this.logger.LogTrace($"Creating user preference... {userPreferenceModel.Preference}");
+
+            UserPreference userPreference = userPreferenceModel.ToDbModel();
+
+            DBResult<UserPreference> dbResult = this.userPreferenceDelegate.CreateUserPreference(userPreference);
+            this.logger.LogDebug($"Finished creating user preference. {JsonSerializer.Serialize(dbResult)}");
+
+            RequestResult<UserPreferenceModel> requestResult = new RequestResult<UserPreferenceModel>()
+            {
+                ResourcePayload = UserPreferenceModel.CreateFromDbModel(dbResult.Payload),
+                ResultStatus = dbResult.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status == DBStatusCode.Created ? null : new RequestResultError()
+                {
+                    ResultMessage = dbResult.Message,
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                },
+            };
+            return requestResult;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<Dictionary<string, UserPreferenceModel>> GetUserPreferences(string hdid)
+        {
+            this.logger.LogTrace($"Getting user preference... {hdid}");
+            DBResult<IEnumerable<UserPreference>> dbResult = this.userPreferenceDelegate.GetUserPreferences(hdid);
+            RequestResult<Dictionary<string, UserPreferenceModel>> requestResult = new RequestResult<Dictionary<string, UserPreferenceModel>>()
+            {
+                ResourcePayload = UserPreferenceModel.CreateListFromDbModel(dbResult.Payload).ToDictionary(x => x.Preference, x => x),
+                ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status == DBStatusCode.Read ? null : new RequestResultError()
+                {
+                    ResultMessage = dbResult.Message,
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                },
+            };
+
+            this.logger.LogTrace($"Finished getting user preference. {JsonSerializer.Serialize(dbResult)}");
+            return requestResult;
+        }
+
+        /// <inheritdoc />
+        public async Task<PrimitiveRequestResult<bool>> ValidateMinimumAge(string hdid)
+        {
+            int? minAge = this.configurationService.GetConfiguration().WebClient.MinPatientAge;
+
+            if (!minAge.HasValue || minAge.Value == 0)
+            {
+                return new PrimitiveRequestResult<bool>() { ResourcePayload = true, ResultStatus = ResultType.Success };
+            }
+
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
+
+            if (patientResult.ResultStatus != ResultType.Success)
+            {
+                this.logger.LogWarning($"Error retrieving patient age. {JsonSerializer.Serialize(patientResult)}");
+                return new PrimitiveRequestResult<bool>()
+                {
+                    ResultStatus = patientResult.ResultStatus,
+                    ResultError = patientResult.ResultError,
+                    ResourcePayload = false,
+                };
+            }
+            else
+            {
+                DateTime birthDate = patientResult.ResourcePayload?.Birthdate ?? default(DateTime);
+                return new PrimitiveRequestResult<bool>()
+                {
+                    ResultStatus = patientResult.ResultStatus,
+                    ResourcePayload = birthDate.AddYears(minAge.Value) < DateTime.Now,
+                };
+            }
+        }
+
+        private void QueueEmail(string toEmail, string templateName)
+        {
+            string activationHost = this.httpContextAccessor.HttpContext!.Request
+                                             .GetTypedHeaders()
+                                             .Referer
+                                             .GetLeftPart(UriPartial.Authority);
+            string hostUrl = activationHost.ToString();
+
+            Dictionary<string, string> keyValues = new () { [EmailTemplateVariable.Host] = hostUrl };
+            this.emailQueueService.QueueNewEmail(toEmail, templateName, keyValues);
         }
     }
 }

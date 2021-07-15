@@ -1,41 +1,24 @@
 name: PR$(Rev:.r) #Build number
 
-#Build variables
-variables:
-  App.Home: $(Build.SourcesDirectory)/Apps/Medication
-  App.Name: medication
-  App.UnitTests: $(App.Home)/test/unit
-  App.FunctionalTests: $(App.Home)/test/functional
-
-pool:
-  name: 'HealthGateway'
+pr:
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - Apps/Medication
+    # - Apps/Common
+    # - Apps/Database
 
 trigger: none
 
-pr:
-  branches:
-   include:
-   - dev  
-  paths:
-   include:
-   - Apps/Medication
-   - Apps/Common
-   - Apps/Database
-   
-steps:
-- task: DotNetCoreCLI@2
-  displayName: Run dotnet Tests
-  inputs:
-    command: 'test'
-    projects: '$(App.UnitTests)/MedicationTests.csproj'
-    testRunTitle: 'Medication Service Tests'
+pool:
+  name: "HealthGateway"
 
-- task: DotNetCoreCLI@2
-  displayName: 'Publish dotnet Code'
-  inputs:
-    modifyOutputPath: false
-    command: 'publish'
-    publishWebProjects: false
-    projects: '$(App.Home)/src'
-    arguments: '-o $(Build.BinariesDirectory)'
-    zipAfterPublish: false
+extends:
+  template: /Build/hg.yaml
+  parameters:
+    Application: Medication
+    DotNetTests: true
+    NPMInstall: false
+    NPMTests: false

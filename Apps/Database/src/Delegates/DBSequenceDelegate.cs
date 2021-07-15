@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Database.Context;
     using Microsoft.Extensions.Logging;
     using Npgsql;
@@ -23,6 +24,7 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Entity framework based implementation of the sequence delegate.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class DBSequenceDelegate : ISequenceDelegate
     {
         private readonly ILogger logger;
@@ -48,13 +50,19 @@ namespace HealthGateway.Database.Delegates
         /// <returns>The next sequence value.</returns>
         public long GetNextValueForSequence(string sequenceName)
         {
-            this.logger.LogTrace($"Getting next value for sequence from DB... {sequenceName}");
+            this.logger.LogTrace($"Getting next value for sequence from database... {sequenceName}");
             NpgsqlParameter result = new NpgsqlParameter("@result", NpgsqlDbType.Integer)
             {
                 Direction = System.Data.ParameterDirection.Output,
             };
             this.dbContext.ExecuteSqlCommand($"SELECT nextval('{sequenceName}')", result);
-            this.logger.LogDebug($"Finished getting next value for sequence from DB. {result.Value}");
+            this.logger.LogDebug($"Finished getting next value for sequence from database. {result.Value}");
+
+            if (result.Value == null)
+            {
+                throw new NpgsqlException("Sequence could not be retrieved from database (result is null).");
+            }
+
             return (long)result.Value;
         }
     }

@@ -1,53 +1,108 @@
 {
-  "folders": [
-    {
-      "name": "ClientApp",
-      "path": "WebClient/src/ClientApp"
-    },
-    {
-      "name": "AdminWebClient",
-      "path": "AdminWebClient"
-    },
-    {
-      "name": "Common",
-      "path": "Common"
-    },
-    {
-      "name": "Database",
-      "path": "Database"
-    },
-    {
-      "name": "DBMaintainer",
-      "path": "DBMaintainer"
-    },
-    {
-      "name": "HNClient",
-      "path": "HNClient"
-    },
-    {
-      "name": "Immunization",
-      "path": "Immunization"
-    },
-    {
-      "name": "JobScheduler",
-      "path": "JobScheduler"
-    },
-    {
-      "name": "Medication",
-      "path": "Medication"
-    },
-    {
-      "name": "Patient",
-      "path": "Patient"
-    },
-    {
-      "name": "WebClient",
-      "path": "WebClient"
-    },
-    {
-      "name": "Dolphin",
-      "path": "/home/dev/Development/HealthGateway/Tools/Dolphin"
+    "folders": [
+        {
+            "name": "ClientApp",
+            "path": "WebClient/src/ClientApp"
+        },
+        {
+            "name": "Admin_ClientApp",
+            "path": "AdminWebClient/src/ClientApp"
+        },
+        {
+            "name": "AdminWebClient",
+            "path": "AdminWebClient"
+        },
+        {
+            "name": "Common",
+            "path": "Common"
+        },
+        {
+            "name": "Database",
+            "path": "Database"
+        },
+        {
+            "name": "DBMaintainer",
+            "path": "DBMaintainer"
+        },
+        {
+            "name": "Documentation",
+            "path": "Documentation"
+        },
+        {
+            "name": "Immunization",
+            "path": "Immunization"
+        },
+        {
+            "name": "JobScheduler",
+            "path": "JobScheduler"
+        },
+        {
+            "name": "Laboratory",
+            "path": "Laboratory"
+        },
+        {
+            "name": "Medication",
+            "path": "Medication"
+        },
+        {
+            "name": "ODRProxy",
+            "path": "ODRProxy"
+        },
+        {
+            "name": "Patient",
+            "path": "Patient"
+        },
+        {
+            "name": "WebClient",
+            "path": "WebClient"
+        },
+        {
+            "path": "Encounter"
+        },
+        {
+            "path": "../Testing/functional/tests"
+        },
+        {
+            "path": "../Tools/Dev/Design/sampler"
+        },
+        {
+            "path": "../Tools/Dev/Design"
+        }
+    ],
+    "settings": {
+        "eslint.workingDirectories": [{ "mode": "auto" }],
+        "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj",
+        "search.exclude": {
+            "**/bin": true,
+            "**/obj": true,
+            "**/dist": true,
+            "**/node_modules": true
+        },
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "[csharp]": {
+            "editor.defaultFormatter": "ms-dotnettools.csharp",
+            "editor.formatOnSave": false
+        },
+        "omnisharp.defaultLaunchSolution": "HealthGateway.sln",
+        "jest.disabledWorkspaceFolders": [
+            "Admin_ClientApp",
+            "AdminWebClient",
+            "Common",
+            "Database",
+            "DBMaintainer",
+            "Documentation",
+            "Immunization",
+            "JobScheduler",
+            "Laboratory",
+            "Medication",
+            "ODRProxy",
+            "Patient",
+            "WebClient",
+            "Encounter",
+            "tests",
+            "sampler",
+            "Design"
+        ]
     }
-  ],
-  "settings": {}
 }

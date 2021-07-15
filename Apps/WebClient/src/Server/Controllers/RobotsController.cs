@@ -15,6 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
+    using System;
+    using System.Net.Mime;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
 
@@ -23,9 +26,7 @@ namespace HealthGateway.WebClient.Controllers
     /// </summary>
     public class RobotsController : Controller
     {
-        private const string Production = "Production";
-        private readonly IConfiguration configuration;
-        private readonly string environment;
+        private readonly string? robotsContent;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RobotsController"/> class.
@@ -33,8 +34,10 @@ namespace HealthGateway.WebClient.Controllers
         /// <param name="configuration">The injected configuration.</param>
         public RobotsController(IConfiguration configuration)
         {
-            this.configuration = configuration;
-            this.environment = this.configuration.GetValue("ASPNETCORE_ENVIRONMENT", Production);
+            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+            string? defaultRobotsAssetContent = Common.Utils.AssetReader.Read("HealthGateway.WebClient.Server.Assets.Robots.txt");
+            string? envRobotsAssetContent = Common.Utils.AssetReader.Read($"HealthGateway.WebClient.Server.Assets.Robots.{environment}.txt");
+            this.robotsContent = configuration.GetValue("robots.txt", envRobotsAssetContent ?? defaultRobotsAssetContent);
         }
 
         /// <summary>
@@ -42,16 +45,16 @@ namespace HealthGateway.WebClient.Controllers
         /// </summary>
         /// <returns>The robots text file.</returns>
         [Route("robots.txt")]
+        [Produces(MediaTypeNames.Text.Plain)]
         public ActionResult Robots()
         {
-            this.ViewBag.Environment = this.environment;
-            this.Response.ContentType = "text/plain";
-            if (this.ViewBag.Environment == Production)
+            ContentResult result = new ContentResult()
             {
-                return this.View();
-            }
-
-            return this.View("Robots-NonProd");
+                StatusCode = StatusCodes.Status200OK,
+                ContentType = MediaTypeNames.Text.Plain,
+                Content = this.robotsContent,
+            };
+            return result;
         }
     }
 }

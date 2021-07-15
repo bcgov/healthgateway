@@ -1,117 +1,151 @@
-<style lang="scss" scoped>
-.v-list-item {
-  border-radius: 4px;
-}
-</style>
-
-<template>
-  <v-navigation-drawer
-    v-if="isAuthorized"
-    id="app-drawer"
-    v-model="isOpen"
-    app
-    dark
-    mobile-break-point="959"
-    width="260"
-  >
-    <v-img
-      :src="image"
-      height="100%"
-      width="100%"
-      gradient="to top right, rgba(25,32,72,.3), rgba(25,32,72,.9)"
-    >
-      <v-layout class="fill-height">
-        <v-list width="260">
-          <v-list-item>
-            <v-list-item-avatar color="white">
-              <v-img :src="logo" height="34" contain />
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title class="title">
-                HealthGateway
-              </v-list-item-title>
-
-              <v-list-item-subtitle>
-                Admin
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-divider />
-          <v-list-item
-            v-for="(item, i) in items"
-            :key="i"
-            :to="item.to"
-            :active-class="color"
-            class="ma-3"
-          >
-            <v-list-item-action>
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-item-action>
-            <v-list-item-title v-text="item.title" />
-          </v-list-item>
-        </v-list>
-      </v-layout>
-    </v-img>
-  </v-navigation-drawer>
-</template>
-
 <script lang="ts">
+import { Component, Vue, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import { Component, Vue, Prop, Watch } from "vue-property-decorator";
+
+import MenuItem from "@/models/menuItem";
 
 @Component
 export default class MainNavbar extends Vue {
-  @Action("setState", { namespace: "drawer" }) private setDrawerState!: ({
-    isDrawerOpen
-  }: any) => void;
-  @Getter("isOpen", { namespace: "drawer" }) private isDrawerOpen!: boolean;
-  @Getter("isAuthorized", { namespace: "auth" })
-  private isAuthorized!: boolean;
+    @Action("setState", { namespace: "drawer" })
+    private setDrawerState!: (params: { isDrawerOpen: boolean }) => void;
+    @Getter("isOpen", { namespace: "drawer" }) private isDrawerOpen!: boolean;
+    @Getter("isAuthorized", { namespace: "auth" })
+    private isAuthorized!: boolean;
+    @Getter("isReviewer", { namespace: "auth" })
+    private isUserReviewer!: boolean;
+    @Getter("isSuperAdmin", { namespace: "auth" })
+    private isUserAdmin!: boolean;
 
-  private isOpen: boolean = true;
-  private drawer: boolean = false;
+    private isOpen = true;
+    private drawer = false;
 
-  private color: string = "success";
+    private color = "success";
 
-  private logo: string = "favicon.ico";
-  private image: string = "./assets/images/background.jpg";
+    private logo = "favicon.ico";
+    private image = "./assets/images/background.jpg";
 
-  private items = [
-    {
-      title: "Dashboard",
-      icon: "view_quilt",
-      to: "/"
-    },
-    {
-      title: "JobScheduler",
-      icon: "schedule",
-      to: "/job-scheduler"
-    },
-    {
-      title: "Beta Invites",
-      icon: "account_box",
-      to: "/beta-invites"
-    },
-    {
-      title: "Resend Emails",
-      icon: "email",
-      to: "/admin-email"
-    },
-    { title: "Feedback Review", icon: "comment", to: "/user-feedback" }
-  ];
+    private items: MenuItem[] = [];
 
-  mounted() {
-    this.isOpen = this.isDrawerOpen;
-  }
+    private mounted() {
+        this.isOpen = this.isDrawerOpen;
+    }
 
-  @Watch("isOpen")
-  public onDrawerChange(state: boolean) {
-    this.setDrawerState({ isDrawerOpen: state });
-  }
+    private loadMenuItems() {
+        this.items = [
+            {
+                title: "Dashboard",
+                icon: "view_quilt",
+                to: "/",
+                visible: this.isUserReviewer || this.isUserAdmin,
+            },
+            {
+                title: "JobScheduler",
+                icon: "schedule",
+                to: "/job-scheduler",
+                visible: this.isUserAdmin,
+            },
+            {
+                title: "Communications",
+                icon: "email",
+                to: "/communication",
+                visible: this.isUserAdmin,
+            },
+            {
+                title: "Feedback Review",
+                icon: "comment",
+                to: "/user-feedback",
+                visible: this.isUserReviewer || this.isUserAdmin,
+            },
+            {
+                title: "System Analytics",
+                icon: "fa-download",
+                to: "/stats",
+                visible: this.isUserAdmin,
+            },
+            {
+                title: "Resend Emails",
+                icon: "email",
+                to: "/admin-email",
+                visible: this.isUserAdmin,
+            },
+            {
+                title: "Support",
+                icon: "support",
+                to: "/support",
+                visible: this.isUserAdmin,
+            },
+        ];
+    }
 
-  @Watch("isDrawerOpen")
-  public onStateDrawerChange(state: boolean) {
-    this.isOpen = state;
-  }
+    @Watch("isAuthorized")
+    private onIsAuthorizedChange() {
+        this.loadMenuItems();
+    }
+
+    @Watch("isOpen")
+    private onDrawerChange(state: boolean) {
+        this.setDrawerState({ isDrawerOpen: state });
+    }
+
+    @Watch("isDrawerOpen")
+    private onStateDrawerChange(state: boolean) {
+        this.isOpen = state;
+    }
 }
 </script>
+
+<template>
+    <v-navigation-drawer
+        v-if="isAuthorized"
+        id="app-drawer"
+        v-model="isOpen"
+        app
+        dark
+        mobile-breakpoint="959"
+        width="260"
+    >
+        <v-img
+            :src="image"
+            height="100%"
+            width="100%"
+            gradient="to top right, rgba(25,32,72,.3), rgba(25,32,72,.9)"
+        >
+            <v-layout class="fill-height">
+                <v-list width="260">
+                    <v-list-item>
+                        <v-list-item-avatar color="white">
+                            <v-img :src="logo" height="34" contain />
+                        </v-list-item-avatar>
+                        <v-list-item-content>
+                            <v-list-item-title class="title">
+                                HealthGateway
+                            </v-list-item-title>
+
+                            <v-list-item-subtitle> Admin </v-list-item-subtitle>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-divider />
+                    <v-list-item
+                        v-for="(item, i) in items"
+                        v-show="item.visible"
+                        :key="i"
+                        :to="item.to"
+                        :active-class="color"
+                        class="ma-3"
+                    >
+                        <v-list-item-action>
+                            <v-icon>{{ item.icon }}</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-title v-text="item.title" />
+                    </v-list-item>
+                </v-list>
+            </v-layout>
+        </v-img>
+    </v-navigation-drawer>
+</template>
+
+<style lang="scss" scoped>
+.v-list-item {
+    border-radius: 4px;
+}
+</style>

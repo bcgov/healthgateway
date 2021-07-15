@@ -17,7 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text.Json;
     using HealthGateway.Database.Context;
@@ -28,6 +28,7 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Implementation of IDrugLookupDelegate that uses a DB connection for data management.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class DBDrugLookupDelegate : IDrugLookupDelegate
     {
         private readonly ILogger logger;
@@ -47,59 +48,72 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public List<DrugProduct> GetDrugProductsByDIN(List<string> drugIdentifiers)
+        public IList<DrugProduct> GetDrugProductsByDIN(IList<string> drugIdentifiers)
         {
-            this.logger.LogTrace($"Getting list of drug products from DB... {JsonSerializer.Serialize(drugIdentifiers)}");
-            List<DrugProduct> retVal = this.dbContext.DrugProduct.Where(dp => drugIdentifiers.Contains(dp.DrugIdentificationNumber))
-                                        .Include(c => c.Company)
-                                        .Include(a => a.ActiveIngredient)
-                                        .Include(f => f.Form)
-                        .ToList();
-
-            this.logger.LogDebug($"Finished getting list of drug products from DB. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug($"Getting list of drug products from DB");
+            this.logger.LogTrace($"Identifiers {JsonSerializer.Serialize(drugIdentifiers)}");
+            IList<string> uniqueDrugIdentifers = drugIdentifiers.Distinct().ToList();
+            IList<DrugProduct> retVal = this.dbContext.DrugProduct
+                                            .Include(c => c.Company)
+                                            .Include(a => a.ActiveIngredient)
+                                            .Include(f => f.Form)
+                                            .Where(dp => uniqueDrugIdentifers.Contains(dp.DrugIdentificationNumber))
+                                            .AsEnumerable()
+                                            .GroupBy(dp => dp.DrugIdentificationNumber)
+                                            .Select(drug => drug.OrderByDescending(o => o.LastUpdate).First())
+                                            .ToList();
+            this.logger.LogDebug("Finished getting list of drug products from DB");
+            this.logger.LogTrace($"Products: {JsonSerializer.Serialize(retVal)}");
             return retVal;
         }
 
         /// <inheritdoc/>
-        public List<PharmaCareDrug> GetPharmaCareDrugsByDIN(List<string> drugIdentifiers)
+        public IList<PharmaCareDrug> GetPharmaCareDrugsByDIN(IList<string> drugIdentifiers)
         {
-            this.logger.LogTrace($"Getting list of pharmacare drug products from DB... {JsonSerializer.Serialize(drugIdentifiers)}");
-
+            this.logger.LogDebug($"Getting list of pharmacare drug products from DB");
+            this.logger.LogTrace($"Identifiers {JsonSerializer.Serialize(drugIdentifiers)}");
+            IList<string> uniqueDrugIdentifers = drugIdentifiers.Distinct().ToList();
             DateTime now = DateTime.UtcNow;
-            List<PharmaCareDrug> retVal = this.dbContext.PharmaCareDrug
-                .Where(dp => drugIdentifiers.Contains(dp.DINPIN) && (now > dp.EffectiveDate && now <= dp.EndDate)).ToList()
-                .GroupBy(pcd => pcd.DINPIN).Select(g => g.OrderByDescending(p => p.EndDate).FirstOrDefault())
+            IList<PharmaCareDrug> retVal = this.dbContext.PharmaCareDrug
+                .Where(dp => uniqueDrugIdentifers.Contains(dp.DINPIN) && (now > dp.EffectiveDate && now <= dp.EndDate))
+                .AsEnumerable()
+                .GroupBy(pcd => pcd.DINPIN).Select(g => g.OrderByDescending(p => p.EndDate).First())
                 .ToList();
 
-            this.logger.LogDebug($"Finished getting list of pharmacare drug products from DB. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug("Finished getting list of pharmacare drug products from DB");
+            this.logger.LogTrace($"Products: {JsonSerializer.Serialize(retVal)}");
             return retVal;
         }
 
         /// <inheritdoc/>
-        public Dictionary<string, string> GetDrugsBrandNameByDIN(List<string> drugIdentifiers)
+        public Dictionary<string, string> GetDrugsBrandNameByDIN(IList<string> drugIdentifiers)
         {
-            // Contract.Requires(drugIdentifiers != null);
-            this.logger.LogTrace($"Getting drug brand names from DB... {JsonSerializer.Serialize(drugIdentifiers)}");
+            this.logger.LogDebug("Getting drug brand names from DB");
+            this.logger.LogTrace($"Identifiers: {JsonSerializer.Serialize(drugIdentifiers)}");
+            List<string> uniqueDrugIdentifers = drugIdentifiers.Distinct().ToList();
+            this.logger.LogDebug($"Total DrugIdentifiers: {drugIdentifiers.Count} | Unique identifiers:{uniqueDrugIdentifers.Count} ");
 
-            // Retrieve the brand names using the provincial data
-            List<PharmaCareDrug> pharmaCareDrugs = this.GetPharmaCareDrugsByDIN(drugIdentifiers);
-            Dictionary<string, string> provicialBrandNames = pharmaCareDrugs.ToDictionary(pcd => pcd.DINPIN, pcd => pcd.BrandName);
+            // Retrieve the brand names using the Federal data
+            IList<DrugProduct> drugProducts = this.GetDrugProductsByDIN(uniqueDrugIdentifers);
+            Dictionary<string, string> brandNames = drugProducts.ToDictionary(pcd => pcd.DrugIdentificationNumber, pcd => pcd.BrandName);
 
-            if (drugIdentifiers.Count > provicialBrandNames.Count)
+            if (uniqueDrugIdentifers.Count > brandNames.Count)
             {
                 // Get the DINs not found on the previous query
-                List<string> notFoundDins = drugIdentifiers.Where(din => !provicialBrandNames.Keys.Contains(din)).ToList();
+                IList<string> notFoundDins = uniqueDrugIdentifers.Where(din => !brandNames.Keys.Contains(din)).ToList();
 
-                // Retrieve the brand names using the federal data
-                List<DrugProduct> drugProducts = this.GetDrugProductsByDIN(notFoundDins);
-                Dictionary<string, string> federalBrandNames = drugProducts.ToDictionary(dp => dp.DrugIdentificationNumber, dp => dp.BrandName);
+                // Retrieve the brand names using the provincial data
+                IList<PharmaCareDrug> pharmaCareDrugs = this.GetPharmaCareDrugsByDIN(notFoundDins);
+
+                Dictionary<string, string> provicialBrandNames = pharmaCareDrugs.ToDictionary(dp => dp.DINPIN, dp => dp.BrandName);
 
                 // Merge both data sets
-                federalBrandNames.ToList().ForEach(x => provicialBrandNames.Add(x.Key, x.Value));
+                provicialBrandNames.ToList().ForEach(x => brandNames.Add(x.Key, x.Value));
             }
 
-            this.logger.LogDebug($"Finished getting drug brand names from DB. {JsonSerializer.Serialize(provicialBrandNames)}");
-            return provicialBrandNames;
+            this.logger.LogDebug("Finished getting drug brand names from DB");
+            this.logger.LogTrace($"Names: {JsonSerializer.Serialize(brandNames)}");
+            return brandNames;
         }
     }
 }

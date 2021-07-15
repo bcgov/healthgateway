@@ -35,7 +35,6 @@ namespace HealthGateway.WebClient.Test.Functional.Api
 
             // assert
             Assert.False(response.IsSuccessful);
-           //@TODO: Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
         }
     }
 }

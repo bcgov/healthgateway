@@ -16,10 +16,16 @@
 namespace HealthGateway.WebClient.Services
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.WebClient.Models;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
@@ -27,68 +33,165 @@ namespace HealthGateway.WebClient.Services
     {
         private readonly ILogger logger;
         private readonly ICommentDelegate commentDelegate;
+        private readonly IUserProfileDelegate profileDelegate;
+        private readonly ICryptoDelegate cryptoDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommentService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="commentDelegate">Injected Comment delegate.</param>
-        public CommentService(ILogger<CommentService> logger, ICommentDelegate commentDelegate)
+        /// <param name="profileDelegate">Injected Profile delegate.</param>
+        /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
+        public CommentService(ILogger<CommentService> logger, ICommentDelegate commentDelegate, IUserProfileDelegate profileDelegate, ICryptoDelegate cryptoDelegate)
         {
             this.logger = logger;
             this.commentDelegate = commentDelegate;
+            this.profileDelegate = profileDelegate;
+            this.cryptoDelegate = cryptoDelegate;
         }
 
         /// <inheritdoc />
-        public RequestResult<Comment> Add(Comment comment)
+        public RequestResult<UserComment> Add(UserComment userComment)
         {
+            UserProfile profile = this.profileDelegate.GetUserProfile(userComment.UserProfileId).Payload;
+            string? key = profile.EncryptionKey;
+            if (key == null)
+            {
+                this.logger.LogError($"User does not have a key: ${userComment.UserProfileId}");
+                return new RequestResult<UserComment>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                };
+            }
+
+            Comment comment = userComment.ToDbModel(this.cryptoDelegate, key);
+
             DBResult<Comment> dbComment = this.commentDelegate.Add(comment);
-            RequestResult<Comment> result = new RequestResult<Comment>()
+            RequestResult<UserComment> result = new RequestResult<UserComment>()
             {
-                ResourcePayload = dbComment.Payload,
-                ResultStatus = dbComment.Status == Database.Constant.DBStatusCode.Created ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
-                ResultMessage = dbComment.Message,
+                ResourcePayload = UserComment.CreateFromDbModel(dbComment.Payload, this.cryptoDelegate, key),
+                ResultStatus = dbComment.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
+                ResultError = new RequestResultError() { ResultMessage = dbComment.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
             return result;
-
         }
 
         /// <inheritdoc />
-        public RequestResult<IEnumerable<Comment>> GetList(string hdId, string parentEntryId)
+        public RequestResult<IEnumerable<UserComment>> GetEntryComments(string hdId, string parentEntryId)
         {
-            DBResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetList(hdId, parentEntryId);
-            RequestResult<IEnumerable<Comment>> result = new RequestResult<IEnumerable<Comment>>()
+            UserProfile profile = this.profileDelegate.GetUserProfile(hdId).Payload;
+            string? key = profile.EncryptionKey;
+
+            // Check that the key has been set
+            if (key == null)
             {
-                ResourcePayload = dbComments.Payload,
-                ResultStatus = dbComments.Status == Database.Constant.DBStatusCode.Read ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
-                ResultMessage = dbComments.Message,
+                this.logger.LogError($"User does not have a key: ${hdId}");
+                return new RequestResult<IEnumerable<UserComment>>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                };
+            }
+
+            DBResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetByParentEntry(hdId, parentEntryId);
+            RequestResult<IEnumerable<UserComment>> result = new RequestResult<IEnumerable<UserComment>>()
+            {
+                ResourcePayload = UserComment.CreateListFromDbModel(dbComments.Payload, this.cryptoDelegate, key),
+                TotalResultCount = dbComments.Payload.Count(),
+                PageIndex = 0,
+                PageSize = dbComments.Payload.Count(),
+                ResultStatus = dbComments.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
+                ResultError = dbComments.Status != DBStatusCode.Read ? new RequestResultError() { ResultMessage = dbComments.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) } : null,
             };
             return result;
-
         }
 
         /// <inheritdoc />
-        public RequestResult<Comment> Update(Comment comment)
+        public RequestResult<IDictionary<string, IEnumerable<UserComment>>> GetProfileComments(string hdId)
         {
+            UserProfile profile = this.profileDelegate.GetUserProfile(hdId).Payload;
+            string? key = profile.EncryptionKey;
+
+            // Check that the key has been set
+            if (key == null)
+            {
+                this.logger.LogError($"User does not have a key: ${hdId}");
+                return new RequestResult<IDictionary<string, IEnumerable<UserComment>>>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                };
+            }
+
+            DBResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetAll(hdId);
+            IEnumerable<UserComment> comments = UserComment.CreateListFromDbModel(dbComments.Payload, this.cryptoDelegate, key);
+
+            IDictionary<string, IEnumerable<UserComment>> userCommentsByEntry = comments.GroupBy(x => x.ParentEntryId).ToDictionary(g => g.Key, g => g.AsEnumerable());
+
+            RequestResult<IDictionary<string, IEnumerable<UserComment>>> result = new RequestResult<IDictionary<string, IEnumerable<UserComment>>>()
+            {
+                ResourcePayload = userCommentsByEntry,
+                TotalResultCount = userCommentsByEntry.Count,
+                PageIndex = 0,
+                PageSize = userCommentsByEntry.Count,
+                ResultStatus = dbComments.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
+                ResultError = dbComments.Status != DBStatusCode.Read ? new RequestResultError() { ResultMessage = dbComments.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) } : null,
+            };
+            return result;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<UserComment> Update(UserComment userComment)
+        {
+            UserProfile profile = this.profileDelegate.GetUserProfile(userComment.UserProfileId).Payload;
+            string? key = profile.EncryptionKey;
+            if (key == null)
+            {
+                this.logger.LogError($"User does not have a key: ${userComment.UserProfileId}");
+                return new RequestResult<UserComment>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                };
+            }
+
+            Comment comment = userComment.ToDbModel(this.cryptoDelegate, key);
+
             DBResult<Comment> dbResult = this.commentDelegate.Update(comment);
-            RequestResult<Comment> result = new RequestResult<Comment>()
+            RequestResult<UserComment> result = new RequestResult<UserComment>()
             {
-                ResourcePayload = dbResult.Payload,
-                ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Updated ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
-                ResultMessage = dbResult.Message,
+                ResourcePayload = UserComment.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key),
+                ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status != DBStatusCode.Updated ? new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) } : null,
             };
             return result;
         }
 
         /// <inheritdoc />
-        public RequestResult<Comment> Delete(Comment comment)
+        public RequestResult<UserComment> Delete(UserComment userComment)
         {
-            DBResult<Comment> dbResult = this.commentDelegate.Delete(comment);
-            RequestResult<Comment> result = new RequestResult<Comment>()
+            UserProfile profile = this.profileDelegate.GetUserProfile(userComment.UserProfileId).Payload;
+            string? key = profile.EncryptionKey;
+            if (key == null)
             {
-                ResourcePayload = dbResult.Payload,
-                ResultStatus = dbResult.Status == Database.Constant.DBStatusCode.Deleted ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
-                ResultMessage = dbResult.Message,
+                this.logger.LogError($"User does not have a key: ${userComment.UserProfileId}");
+                return new RequestResult<UserComment>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                };
+            }
+
+            Comment comment = userComment.ToDbModel(this.cryptoDelegate, key);
+
+            DBResult<Comment> dbResult = this.commentDelegate.Delete(comment);
+            RequestResult<UserComment> result = new RequestResult<UserComment>()
+            {
+                ResourcePayload = UserComment.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key),
+                ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status != DBStatusCode.Deleted ? new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) } : null,
             };
             return result;
         }

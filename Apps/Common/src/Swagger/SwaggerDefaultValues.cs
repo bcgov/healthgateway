@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Swagger
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Microsoft.OpenApi.Models;
     using Swashbuckle.AspNetCore.SwaggerGen;
@@ -24,6 +25,7 @@ namespace HealthGateway.Common.Swagger
     /// </summary>
     /// <remarks>This <see cref="IOperationFilter"/> is only required due to bugs in the <see cref="SwaggerGenerator"/>.
     /// Once they are fixed and published, this class can be removed.</remarks>
+    [ExcludeFromCodeCoverage]
     public sealed class SwaggerDefaultValues : IOperationFilter
     {
         /// <summary>

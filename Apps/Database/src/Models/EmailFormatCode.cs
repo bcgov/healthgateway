@@ -18,7 +18,7 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Constants;
 
     #pragma warning disable CS1591 // self explanatory simple model
     #pragma warning disable SA1600 // self explanatory simple model
@@ -27,6 +27,6 @@ namespace HealthGateway.Database.Models
         [Key]
         [Required]
         [MaxLength(4)]
-        public string? FormatCode { get; set; }
+        public EmailFormat FormatCode { get; set; }
     }
 }

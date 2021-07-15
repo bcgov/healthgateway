@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,8 @@
 namespace HealthGateway.Database.Delegates
 {
     using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -27,6 +25,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
+    [ExcludeFromCodeCoverage]
     public class DBLegalAgreementDelegate : ILegalAgreementDelegate
     {
         private readonly ILogger logger;
@@ -46,18 +45,21 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<LegalAgreement> GetActiveByAgreementType(string agreementTypeCode)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1309:Use ordinal stringcomparison", Justification = "Ordinal doesn't work")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Ordinal doesn't work")]
+        public DBResult<LegalAgreement> GetActiveByAgreementType(LegalAgreementType agreementTypeCode)
         {
+            this.logger.LogDebug($"Getting active legal agreement by type {agreementTypeCode}");
             LegalAgreement legalAgreement = this.dbContext.LegalAgreement
                 .Where(la => la.EffectiveDate <= DateTime.UtcNow)
                 .Where(la => agreementTypeCode.Equals(la.LegalAgreementCode))
                 .OrderByDescending(la => la.EffectiveDate)
-                .FirstOrDefault();
+                .First();
 
             return new DBResult<LegalAgreement>()
             {
                 Payload = legalAgreement,
-                Status = Constant.DBStatusCode.Read,
+                Status = DBStatusCode.Read,
             };
         }
     }

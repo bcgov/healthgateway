@@ -50,13 +50,6 @@ namespace HealthGateway.Common.Services
             return this.SetTimeout(retVal);
         }
 
-        /// <inheritdoc />
-        public HttpClient CreateUntrustedHttpClient()
-        {
-            HttpClient retVal = this.httpClientFactory.CreateClient("HttpClientWithSSLUntrusted");
-            return this.SetTimeout(retVal);
-        }
-
         /// <summary>
         /// Initalizes the request timeout for the <see cref="HttpClientService"/> class.
         /// </summary>

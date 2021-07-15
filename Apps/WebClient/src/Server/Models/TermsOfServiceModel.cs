@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2020 Province of British Columbia
+// Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ namespace HealthGateway.WebClient.Models
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Model that provides a user representation of an EmailInvite.
+    /// Model that provides Terms of service model.
     /// </summary>
     public class TermsOfServiceModel
     {

@@ -1,188 +1,156 @@
-import { shallowMount, createLocalVue, Wrapper } from "@vue/test-utils";
+import "@/plugins/inversify.config";
+
+import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
+import { createLocalVue, shallowMount, Wrapper } from "@vue/test-utils";
 import Vuex from "vuex";
-import BootstrapVue from "bootstrap-vue";
-import LoginComponent from "@/views/login.vue";
-import { auth as authModule } from "@/store/modules/auth/auth";
-import { user as userModule } from "@/store/modules/user/user";
+
 import { IdentityProviderConfiguration } from "@/models/configData";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.container";
+import { ILogger } from "@/services/interfaces";
+import { GatewayStoreOptions } from "@/store/types";
+import LoginComponent from "@/views/login.vue";
 
 const pushMethod = jest.fn();
 
 let $router = {};
 let $route = {
-  path: "",
-  query: {
-    redirect: ""
-  }
-};
-
-let authGetters = {
-  oidcIsAuthenticated: (): boolean => false
-};
-
-let userGetters = {
-  userIsRegistered: (): boolean => false
-};
-
-let configGetters = {
-  identityProviders: (): IdentityProviderConfiguration[] => []
-};
-
-function createWrapper(): Wrapper<LoginComponent> {
-  const localVue = createLocalVue();
-  localVue.use(Vuex);
-  localVue.use(BootstrapVue);
-
-  let customStore = new Vuex.Store({
-    modules: {
-      auth: {
-        namespaced: true,
-        getters: authGetters,
-        actions: userModule.actions
-      },
-      user: {
-        namespaced: true,
-        getters: userGetters,
-        actions: authModule.actions
-      },
-      config: {
-        namespaced: true,
-        getters: configGetters
-      }
-    }
-  });
-
-  return shallowMount(LoginComponent, {
-    localVue,
-    store: customStore,
-    mocks: {
-      $route,
-      $router
+    path: "",
+    query: {
+        redirect: "",
     },
-    stubs: {
-      "font-awesome-icon": true
+};
+
+function createWrapper(options?: GatewayStoreOptions): Wrapper<LoginComponent> {
+    const localVue = createLocalVue();
+    localVue.use(Vuex);
+
+    if (options === undefined) {
+        options = new StoreOptionsStub();
     }
-  });
+
+    const store = new Vuex.Store(options);
+
+    return shallowMount(LoginComponent, {
+        localVue,
+        store: store,
+        mocks: {
+            $route,
+            $router,
+        },
+        stubs: {
+            "hg-icon": true,
+            "hg-button": true,
+        },
+    });
 }
 
 describe("Login view", () => {
-  beforeEach(() => {
-    $router = {
-      push: pushMethod
-    };
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    logger.initialize("info");
+    beforeEach(() => {
+        $router = {
+            push: pushMethod,
+        };
 
-    $route = {
-      path: "/somePath",
-      query: {
-        redirect: "/anotherPath"
-      }
-    };
-  });
-
-  test("is a Vue instance", () => {
-    let wrapper = createWrapper();
-    expect(wrapper.isVueInstance()).toBeTruthy();
-  });
-
-  test("gets redirect route", () => {
-    let wrapper = createWrapper();
-    expect(wrapper.vm.$data.redirectPath).toBe($route.query.redirect);
-  });
-
-  test("sets default route if no redirect", () => {
-    $route.query.redirect = "";
-    let wrapper = createWrapper();
-    expect(wrapper.vm.$data.redirectPath).toBe("/timeline");
-  });
-
-  test("if authenticated but not registered sets router path to registration", () => {
-    authGetters = {
-      oidcIsAuthenticated: (): boolean => true
-    };
-    userGetters = {
-      userIsRegistered: (): boolean => false
-    };
-    let wrapper = createWrapper();
-    expect(wrapper.vm.$data.redirectPath).toBe("/registrationInfo");
-    expect(pushMethod).toHaveBeenCalledWith({
-      path: wrapper.vm.$data.redirectPath
+        $route = {
+            path: "/somePath",
+            query: {
+                redirect: "/anotherPath",
+            },
+        };
     });
-  });
 
-  test("if authenticated and registered sets router path", () => {
-    authGetters = {
-      oidcIsAuthenticated: (): boolean => true
-    };
-    userGetters = {
-      userIsRegistered: (): boolean => true
-    };
-    let wrapper = createWrapper();
-    expect(wrapper.vm.$data.redirectPath).toBe($route.query.redirect);
-    expect(pushMethod).toHaveBeenCalledWith({
-      path: wrapper.vm.$data.redirectPath
+    test("is a Vue instance", () => {
+        const wrapper = createWrapper();
+        expect(wrapper).toBeTruthy();
     });
-  });
 
-  test("if not authenticated does not set router path", () => {
-    authGetters = {
-      oidcIsAuthenticated: (): boolean => false
-    };
-    userGetters = {
-      userIsRegistered: (): boolean => false
-    };
-    let wrapper = createWrapper();
-    expect(wrapper.vm.$data.redirectPath).toBe($route.query.redirect);
-    expect(pushMethod).not.toHaveBeenCalledTimes(0);
-  });
+    test("gets redirect route", () => {
+        const wrapper = createWrapper();
+        expect(wrapper.vm.$data.redirectPath).toBe($route.query.redirect);
+    });
 
-  test("has correct identity provider", () => {
-    const bceidProvider: IdentityProviderConfiguration = {
-      name: "BC Services Card",
-      id: "bceid",
-      icon: "bceidicon"
-    };
-    const keycloakProvider: IdentityProviderConfiguration = {
-      name: "keycloak",
-      id: "keyid",
-      icon: "user",
-      disabled: true
-    };
+    test("sets default route if no redirect", () => {
+        $route.query.redirect = "";
+        const wrapper = createWrapper();
+        expect(wrapper.vm.$data.redirectPath).toBe("/timeline");
+    });
 
-    configGetters = {
-      identityProviders: (): IdentityProviderConfiguration[] => [
-        bceidProvider,
-        keycloakProvider
-      ]
-    };
-    let wrapper = createWrapper();
-    expect(
-      wrapper
-        .find(`#${bceidProvider.id}Btn`)
-        .find(`[icon="${bceidProvider.icon}" ]`)
-        .isVisible()
-    ).toBe(true);
-    expect(wrapper.find(`#${bceidProvider.id}Btn`).text()).toBe(
-      bceidProvider.name
-    );
-    expect(wrapper.find(`#${bceidProvider.id}Btn`).attributes("disabled")).toBe(
-      bceidProvider.disabled
-    );
+    test("if authenticated but not registered sets router path to registration", () => {
+        const options = new StoreOptionsStub();
+        options.modules.auth.getters.oidcIsAuthenticated = (): boolean => true;
+        options.modules.user.getters.userIsRegistered = (): boolean => false;
+        const wrapper = createWrapper(options);
+        expect(wrapper.vm.$data.redirectPath).toBe("/registrationInfo");
+        expect(pushMethod).toHaveBeenCalledWith({
+            path: wrapper.vm.$data.redirectPath,
+        });
+    });
 
-    expect(
-      wrapper
-        .find(`#${keycloakProvider.id}Btn`)
-        .find(`[icon="${keycloakProvider.icon}" ]`)
-        .isVisible()
-    ).toBe(true);
-    expect(wrapper.find(`#${keycloakProvider.id}Btn`).text()).toBe(
-      keycloakProvider.name
-    );
-    expect(
-      wrapper.find(`#${keycloakProvider.id}Btn`).attributes("disabled")
-    ).toBe(`${keycloakProvider.disabled}`);
+    test("if authenticated and registered sets router path", () => {
+        const options = new StoreOptionsStub();
+        options.modules.auth.getters.oidcIsAuthenticated = (): boolean => true;
+        options.modules.user.getters.userIsRegistered = (): boolean => true;
+        const wrapper = createWrapper(options);
+        expect(wrapper.vm.$data.redirectPath).toBe($route.query.redirect);
+        expect(pushMethod).toHaveBeenCalledWith({
+            path: wrapper.vm.$data.redirectPath,
+        });
+    });
 
-    expect(wrapper.find(`#loginPicker`).findAll("[type=button]").length).toBe(
-      2
-    );
-  });
+    test("if not authenticated does not set router path", () => {
+        const options = new StoreOptionsStub();
+        options.modules.auth.getters.oidcIsAuthenticated = (): boolean => false;
+        options.modules.user.getters.userIsRegistered = (): boolean => false;
+        const wrapper = createWrapper(options);
+        expect(wrapper.vm.$data.redirectPath).toBe($route.query.redirect);
+        expect(pushMethod).not.toHaveBeenCalledTimes(0);
+    });
+
+    test("has correct identity provider", () => {
+        const bceidProvider: IdentityProviderConfiguration = {
+            name: "BC Services Card",
+            id: "bceid",
+            icon: "bceidicon",
+            hint: "bceid",
+            disabled: false,
+        };
+        const keycloakProvider: IdentityProviderConfiguration = {
+            name: "keycloak",
+            id: "keyid",
+            icon: "user",
+            hint: "bceid",
+            disabled: false,
+        };
+        const options = new StoreOptionsStub();
+        options.modules.config.getters.identityProviders =
+            (): IdentityProviderConfiguration[] => [
+                bceidProvider,
+                keycloakProvider,
+            ];
+        const wrapper = createWrapper(options);
+        expect(
+            wrapper
+                .find(`#${bceidProvider.id}Btn`)
+                .find(`[icon="${bceidProvider.icon}" ]`)
+                .isVisible()
+        ).toBe(true);
+        expect(wrapper.find(`#${bceidProvider.id}Btn`).text()).toBe(
+            bceidProvider.name
+        );
+        expect(
+            wrapper
+                .find(`#${keycloakProvider.id}Btn`)
+                .find(`[icon="${keycloakProvider.icon}" ]`)
+                .isVisible()
+        ).toBe(true);
+        expect(wrapper.find(`#${keycloakProvider.id}Btn`).text()).toBe(
+            keycloakProvider.name
+        );
+
+        expect(
+            wrapper.find("#loginPicker").findAll("hg-button-stub").length
+        ).toBe(3);
+    });
 });

@@ -38,12 +38,12 @@ namespace Healthgateway.JobScheduler.Jobs
         private const string ProfilesPageSizeKey = "ProfilesPageSize";
         private const string HoursDeletionKey = "HoursBeforeDeletion";
         private const string EmailTemplateKey = "EmailTemplate";
-        private const string HostKey = "Host";
         private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
 
-        private readonly IConfiguration configuration;
+        private const string AuthConfigSectionName = "ClientAuthentication";
+
         private readonly ILogger<CloseAccountJob> logger;
-        private readonly IProfileDelegate profileDelegate;
+        private readonly IUserProfileDelegate profileDelegate;
         private readonly IEmailQueueService emailService;
 
         private readonly IAuthenticationDelegate authDelegate;
@@ -54,7 +54,8 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly int profilesPageSize;
         private readonly int hoursBeforeDeletion;
         private readonly string emailTemplate;
-        private readonly string host;
+        private readonly ClientCredentialsTokenRequest tokenRequest;
+        private readonly Uri tokenUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloseAccountJob"/> class.
@@ -69,23 +70,27 @@ namespace Healthgateway.JobScheduler.Jobs
         public CloseAccountJob(
             IConfiguration configuration,
             ILogger<CloseAccountJob> logger,
-            IProfileDelegate profileDelegate,
+            IUserProfileDelegate profileDelegate,
             IEmailQueueService emailService,
             IAuthenticationDelegate authDelegate,
             IUserAdminDelegate userAdminDelegate,
             GatewayDbContext dbContext)
         {
-            this.configuration = configuration;
             this.logger = logger;
             this.profileDelegate = profileDelegate;
             this.emailService = emailService;
             this.authDelegate = authDelegate;
             this.userAdminDelegate = userAdminDelegate;
             this.dbContext = dbContext;
-            this.profilesPageSize = this.configuration.GetValue<int>($"{JobKey}:{ProfilesPageSizeKey}");
-            this.host = this.configuration.GetValue<string>($"{HostKey}");
-            this.hoursBeforeDeletion = this.configuration.GetValue<int>($"{JobKey}:{HoursDeletionKey}") * -1;
-            this.emailTemplate = this.configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}");
+            this.profilesPageSize = configuration.GetValue<int>($"{JobKey}:{ProfilesPageSizeKey}");
+            this.hoursBeforeDeletion = configuration.GetValue<int>($"{JobKey}:{HoursDeletionKey}") * -1;
+            this.emailTemplate = configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}");
+
+            IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
+            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
+
+            this.tokenRequest = new ClientCredentialsTokenRequest();
+            configSection.Bind(this.tokenRequest);
         }
 
         /// <summary>
@@ -109,9 +114,9 @@ namespace Healthgateway.JobScheduler.Jobs
                         this.emailService.QueueNewEmail(profile.Email!, this.emailTemplate, false);
                     }
 
-                    JWTModel jwtModel = this.authDelegate.AuthenticateAsSystem();
+                    JWTModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
 
-                    bool deleted = this.userAdminDelegate.DeleteUser(profile.IdentityManagementId!.Value, jwtModel);
+                    this.userAdminDelegate.DeleteUser(profile.IdentityManagementId!.Value, jwtModel);
                 }
 
                 this.logger.LogInformation($"Removed and sent emails for {profileResult.Payload.Count} closed profiles");

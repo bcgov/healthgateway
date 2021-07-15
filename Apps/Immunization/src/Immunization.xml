@@ -1,0 +1,742 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Immunization</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.Immunization.Controllers.ImmunizationController">
+            <summary>
+            The Immunization controller.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Immunization.Controllers.ImmunizationController.service">
+            <summary>
+            Gets or sets the immunization data service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Controllers.ImmunizationController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Immunization.Controllers.ImmunizationController},HealthGateway.Immunization.Services.IImmunizationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Controllers.ImmunizationController"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="svc">The immunization data service.</param>
+        </member>
+        <member name="M:HealthGateway.Immunization.Controllers.ImmunizationController.GetImmunization(System.String,System.String)">
+            <summary>
+            Gets an immunization record for the given id.
+            </summary>
+            <param name="hdid">The hdid patient id.</param>
+            <param name="immunizationId">The immunization id.</param>
+            <returns>The immunization record with the given id.</returns>
+            <response code="200">Returns the List of Immunization records.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+            <response code="503">The service is unavailable for use.</response>
+        </member>
+        <member name="M:HealthGateway.Immunization.Controllers.ImmunizationController.GetImmunizations(System.String)">
+            <summary>
+            Gets a json list of immunization records.
+            </summary>
+            <param name="hdid">The hdid patient id.</param>
+            <returns>A list of immunization records for the given patient identifier.</returns>
+            <response code="200">Returns the List of Immunization records.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+            <response code="503">The service is unavailable for use.</response>
+        </member>
+        <member name="T:HealthGateway.Immunization.Delegates.IImmunizationDelegate">
+            <summary>
+            Interface that defines a delegate to retrieve immunization information.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Delegates.IImmunizationDelegate.GetImmunization(System.String)">
+            <summary>
+            Returns the matching immunization for the given id.
+            </summary>
+            <param name="immunizationId">The id of the immunization to retrieve.</param>
+            <returns>The immunization that matches the given id.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Delegates.IImmunizationDelegate.GetImmunizations(System.Int32)">
+            <summary>
+            Returns a PHSA Result including the load state and a List of Immunizations for the authenticated user.
+            It has a collection of one or more Immunizations.
+            </summary>
+            <param name="pageIndex">The page index to return.</param>
+            <returns>The PHSAResult including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Delegates.RestImmunizationDelegate">
+            <summary>
+            Implementation that uses HTTP to retrieve immunization information.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Immunization.Delegates.RestImmunizationDelegate.httpContextAccessor">
+            <summary>
+            Gets or sets the http context accessor.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Delegates.RestImmunizationDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Immunization.Delegates.RestImmunizationDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Delegates.RestImmunizationDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpClientService">The injected http client service.</param>
+            <param name="configuration">The injected configuration provider.</param>
+            <param name="httpContextAccessor">The Http Context accessor.</param>
+        </member>
+        <member name="M:HealthGateway.Immunization.Delegates.RestImmunizationDelegate.GetImmunization(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Immunization.Delegates.RestImmunizationDelegate.GetImmunizations(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.ImmunizationConfig">
+            <summary>
+            Provides configuration data for the Immunization Delegate.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationConfig.Endpoint">
+            <summary>
+            Gets or sets the Lab external endpoint.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationConfig.FetchSize">
+            <summary>
+            Gets or sets the total number of records to retrieve in one call.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.ImmunizationRecommendation">
+            <summary>
+            Represents an Immunization Recommendation.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.ImmunizationRecommendation.#ctor(System.Collections.Generic.IList{HealthGateway.Immunization.Models.TargetDisease})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.ImmunizationRecommendation"/> class.
+            </summary>
+            <param name="targetDiseases">The list of target diseases.</param>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationRecommendation.RecommendationSetId">
+            <summary>
+            Gets or sets the Recommendation Set Id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationRecommendation.DisseaseEligibleDate">
+            <summary>
+            Gets or sets the Dissease Eligible Date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationRecommendation.DiseaseDueDate">
+            <summary>
+            Gets or sets the Disease Due Date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationRecommendation.AgentEligibleDate">
+            <summary>
+            Gets or sets the Agent Eligible Date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationRecommendation.AgentDueDate">
+            <summary>
+            Gets or sets the Agent Due Date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationRecommendation.Status">
+            <summary>
+            Gets or sets the Status.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationRecommendation.TargetDiseases">
+            <summary>
+            Gets the Target Diseases.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationRecommendation.Immunization">
+            <summary>
+            Gets or sets the Immunization definition.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.ImmunizationRecommendation.FromPHSAModelList(System.Collections.Generic.IEnumerable{HealthGateway.Immunization.Models.PHSA.Recommendation.ImmunizationRecommendationResponse})">
+            <summary>
+            Creates a list of ImmunizationRecommendation objects from a PHSA models.
+            </summary>
+            <param name="models">The list of PHSA models to convert.</param>
+            <returns>A list of ImmunizationRecommendation objects.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.ImmunizationRecommendation.FromPHSAModel(System.String,HealthGateway.Immunization.Models.PHSA.Recommendation.RecommendationResponse)">
+            <summary>
+            Creates a ImmunizationEvent object from a PHSA model.
+            </summary>
+            <param name="recomendationSetId">The recomendation set id of the source system.</param>
+            <param name="model">The recomendation object to convert.</param>
+            <returns>The newly created ImmunizationEvent object.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.ImmunizationResult">
+            <summary>
+            Represents Immunization Result.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.ImmunizationResult.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.ImmunizationResult"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.ImmunizationResult.#ctor(HealthGateway.Immunization.Models.LoadStateModel,System.Collections.Generic.IList{HealthGateway.Common.Models.Immunization.ImmunizationEvent},System.Collections.Generic.IList{HealthGateway.Immunization.Models.ImmunizationRecommendation})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.ImmunizationResult"/> class.
+            </summary>
+            <param name="loadState">The load state model.</param>
+            <param name="immunizations">The list of immunizations.</param>
+            <param name="recommendations">The list of recommendations.</param>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationResult.LoadState">
+            <summary>
+            Gets or sets the Load State.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationResult.Immunizations">
+            <summary>
+            Gets the list of Immunizations events.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationResult.Recommendations">
+            <summary>
+            Gets the list of Immunizations recommendations.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.LoadStateModel">
+            <summary>
+            The Load State record data model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.LoadStateModel.RefreshInProgress">
+            <summary>
+            Gets or sets a value indicating whether the Load State is in the RefreshInProgress status.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.LoadStateModel.FromPHSAModel(HealthGateway.Common.Models.PHSA.PHSALoadState)">
+            <summary>
+            Creates a Load State Model object from a PHSA model.
+            </summary>
+            <param name="model">The Load State to convert.</param>
+            <returns>A LoadStateModel object.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.PHSA.ImmunizationAgentResponse">
+            <summary>
+            Defines a PHSA Immunization Agent model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.ImmunizationAgentResponse.Code">
+            <summary>
+            Gets or sets the Immunization id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.ImmunizationAgentResponse.Name">
+            <summary>
+            Gets or sets the Immunization Name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.ImmunizationAgentResponse.LotNumber">
+            <summary>
+            Gets or sets the Immunization Lot Number.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.ImmunizationAgentResponse.ProductName">
+            <summary>
+            Gets or sets the Immunization Product Name.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.PHSA.ImmunizationResponse">
+            <summary>
+            Represents Immunization Response.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.PHSA.ImmunizationResponse.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.PHSA.ImmunizationResponse"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.PHSA.ImmunizationResponse.#ctor(System.Collections.Generic.IList{HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse},System.Collections.Generic.IList{HealthGateway.Immunization.Models.PHSA.Recommendation.ImmunizationRecommendationResponse})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.PHSA.ImmunizationResponse"/> class.
+            </summary>
+            <param name="immunizationViews">The list of immunization view response.</param>
+            <param name="recommendations">The list of immunization recommendation response.</param>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.ImmunizationResponse.ImmunizationViews">
+            <summary>
+            Gets the list of Immunization Views.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.ImmunizationResponse.Recommendations">
+            <summary>
+            Gets the list of Immunization Recommendations.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse">
+            <summary>
+            The PHSA Immunization view data model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse.Id">
+            <summary>
+            Gets or sets the Immunization id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse.SourceSystemId">
+            <summary>
+            Gets or sets the SourceSystemId.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse.Name">
+            <summary>
+            Gets or sets the Immunization Name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse.Status">
+            <summary>
+            Gets or sets the Immunization Status.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse.ProviderOrClinic">
+            <summary>
+            Gets or sets the Provider or Clinic providing the Immunization.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse.TargetedDisease">
+            <summary>
+            Gets or sets the Targeted Disease of the Immunization.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse.OccurrenceDateTime">
+            <summary>
+            Gets or sets the Immunization occurence date time.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse.ImmunizationForecast">
+            <summary>
+            Gets or sets the Immunization Forecasts.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse.ImmunizationAgents">
+            <summary>
+            Gets or sets the Immunization Agents.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.PHSA.Recommendation.DateCriterion">
+            <summary>
+            The PHSA Date Criterion data model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.DateCriterion.DateCriterionCode">
+            <summary>
+            Gets or sets the Date Criterion codes.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.DateCriterion.Value">
+            <summary>
+            Gets or sets the Date Criterion value.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.PHSA.Recommendation.DateCriterionCode">
+            <summary>
+            The PHSA Date Criterion Code data model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.DateCriterionCode.Text">
+            <summary>
+            Gets or sets the Date Criterion Code text.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.PHSA.Recommendation.ForecastStatusModel">
+            <summary>
+            The PHSA Forecast Status data model.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.PHSA.Recommendation.ForecastStatusModel.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.PHSA.Recommendation.ForecastStatusModel"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.PHSA.Recommendation.ForecastStatusModel.#ctor(System.Collections.Generic.IList{HealthGateway.Immunization.Models.PHSA.Recommendation.SystemCode})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.PHSA.Recommendation.ForecastStatusModel"/> class.
+            </summary>
+            <param name="forcastCodes">The initialized list of forcast codes.</param>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.ForecastStatusModel.ForcastCodes">
+            <summary>
+            Gets the Forecast Status codes.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.ForecastStatusModel.ForecastStatusText">
+            <summary>
+            Gets or sets the Date Criterion value.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.PHSA.Recommendation.ImmunizationRecommendationResponse">
+            <summary>
+            Represents an Immunization Recommendation response.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.PHSA.Recommendation.ImmunizationRecommendationResponse.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.PHSA.Recommendation.ImmunizationRecommendationResponse"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.PHSA.Recommendation.ImmunizationRecommendationResponse.#ctor(System.Collections.Generic.IList{HealthGateway.Immunization.Models.PHSA.Recommendation.RecommendationResponse})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.PHSA.Recommendation.ImmunizationRecommendationResponse"/> class.
+            </summary>
+            <param name="recommendations">The initialized list of recommendations.</param>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.ImmunizationRecommendationResponse.ForecastCreationDate">
+            <summary>
+            Gets or sets the Dissease Eligible Date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.ImmunizationRecommendationResponse.RecommendationId">
+            <summary>
+            Gets or sets the Recommendation Id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.ImmunizationRecommendationResponse.RecommendationSourceSystem">
+            <summary>
+            Gets or sets the Recommendation Source System.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.ImmunizationRecommendationResponse.RecommendationSourceSystemId">
+            <summary>
+            Gets or sets the Recommendation Source System Id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.ImmunizationRecommendationResponse.Recommendations">
+            <summary>
+            Gets the list of recommendations definition.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.PHSA.Recommendation.RecommendationResponse">
+            <summary>
+            The PHSA Immunization Recommendation data model.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.PHSA.Recommendation.RecommendationResponse.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.PHSA.Recommendation.RecommendationResponse"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.PHSA.Recommendation.RecommendationResponse.#ctor(System.Collections.Generic.IList{HealthGateway.Immunization.Models.PHSA.Recommendation.DateCriterion})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.PHSA.Recommendation.RecommendationResponse"/> class.
+            </summary>
+            <param name="dateCriterions">The initialized list of dateCriterions.</param>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.RecommendationResponse.DateCriterions">
+            <summary>
+            Gets the Date Criterion.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.RecommendationResponse.ForecastStatus">
+            <summary>
+            Gets or sets the Forecast Status.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.RecommendationResponse.TargetDisease">
+            <summary>
+            Gets or sets the Target Disease.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.RecommendationResponse.VaccineCode">
+            <summary>
+            Gets or sets the Vaccine Code.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.PHSA.Recommendation.SystemCode">
+            <summary>
+            The PHSA System Code data model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.SystemCode.Code">
+            <summary>
+            Gets or sets the Code text.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.SystemCode.CommonType">
+            <summary>
+            Gets or sets the Common Type.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.SystemCode.Display">
+            <summary>
+            Gets or sets the Display.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.SystemCode.System">
+            <summary>
+            Gets or sets the System.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.PHSA.Recommendation.TargetDiseaseResponse">
+            <summary>
+            The PHSA Target Disease data model.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.PHSA.Recommendation.TargetDiseaseResponse.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.PHSA.Recommendation.TargetDiseaseResponse"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.PHSA.Recommendation.TargetDiseaseResponse.#ctor(System.Collections.Generic.IList{HealthGateway.Immunization.Models.PHSA.Recommendation.SystemCode})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.PHSA.Recommendation.TargetDiseaseResponse"/> class.
+            </summary>
+            <param name="targetDiseaseCodes">The initialized list of target disease codes.</param>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.TargetDiseaseResponse.TargetDiseaseCodes">
+            <summary>
+            Gets the Target Disese Codes.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.PHSA.Recommendation.VaccineCode">
+            <summary>
+            The PHSA Vaccine Code data model.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.PHSA.Recommendation.VaccineCode.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.PHSA.Recommendation.VaccineCode"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.PHSA.Recommendation.VaccineCode.#ctor(System.Collections.Generic.IList{HealthGateway.Immunization.Models.PHSA.Recommendation.SystemCode})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.PHSA.Recommendation.VaccineCode"/> class.
+            </summary>
+            <param name="vaccineCodes">The initialized list of vaccine codes.</param>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.VaccineCode.VaccineCodeText">
+            <summary>
+            Gets or sets the Vaccine Code Text.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.VaccineCode.VaccineCodes">
+            <summary>
+            Gets the Vaccine codes.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.ImmunizationForecastResponse">
+            <summary>
+            Represents Immunization Forecast.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationForecastResponse.ImmsId">
+            <summary>
+            Gets or sets the Imms Id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationForecastResponse.ForecastCreateDate">
+            <summary>
+            Gets or sets the Forecast Create Date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationForecastResponse.ForecastStatus">
+            <summary>
+            Gets or sets the Forecast Status.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationForecastResponse.DisplayName">
+            <summary>
+            Gets or sets the Display Name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationForecastResponse.EligibleDate">
+            <summary>
+            Gets or sets the Eligible Date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationForecastResponse.DueDate">
+            <summary>
+            Gets or sets the Due Date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.ImmunizationForecastResponse.VaccineCode">
+            <summary>
+            Gets or sets the Vaccine Code.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.TargetDisease">
+            <summary>
+            Represents a target disease.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.TargetDisease.Code">
+            <summary>
+            Gets or sets the Disease Code.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.TargetDisease.Name">
+            <summary>
+            Gets or sets the Disease Name.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.TargetDisease.FromPHSAModelList(HealthGateway.Immunization.Models.PHSA.Recommendation.TargetDiseaseResponse)">
+            <summary>
+            Creates a list of ImmunizationRecommendation objects from a PHSA models.
+            </summary>
+            <param name="model">The list of PHSA models to convert.</param>
+            <returns>A list of ImmunizationRecommendation objects.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.TargetDisease.FromPHSAModel(HealthGateway.Immunization.Models.PHSA.Recommendation.SystemCode)">
+            <summary>
+            Creates a ImmunizationEvent object from a PHSA model.
+            </summary>
+            <param name="model">The immunization view object to convert.</param>
+            <returns>The newly created ImmunizationEvent object.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Parser.AgentParser">
+            <summary>
+            Provides parser methods for ImmunizationAgents.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Parser.AgentParser.FromPHSAModel(HealthGateway.Immunization.Models.PHSA.ImmunizationAgentResponse)">
+            <summary>
+            Creates a Immunization Model object from a PHSA model.
+            </summary>
+            <param name="model">The immunization object to convert.</param>
+            <returns>The newly created ImmunizationModel object.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Parser.AgentParser.FromPHSAModelList(System.Collections.Generic.IEnumerable{HealthGateway.Immunization.Models.PHSA.ImmunizationAgentResponse})">
+            <summary>
+            Creates a List of ImmunizationAgents object from a PHSA model.
+            </summary>
+            <param name="immunizationAgentResponse">The list of PHSA models to convert.</param>
+            <returns>A list of ImmunizationAgent objects.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Parser.AgentParser.FromPHSACodesModel(System.Collections.Generic.IEnumerable{HealthGateway.Immunization.Models.PHSA.Recommendation.SystemCode})">
+            <summary>
+            Creates a List of ImmunizationAgents object from a PHSA model.
+            </summary>
+            <param name="vaccineCodes">The list of PHSA models to convert.</param>
+            <returns>A list of ImmunizationAgent objects.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Parser.DefinitionParser">
+            <summary>
+            Provides parsing methods for Immunization definitions.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Parser.DefinitionParser.FromPHSAModel(HealthGateway.Immunization.Models.PHSA.Recommendation.VaccineCode)">
+            <summary>
+            Creates an ImmunizationDefinition object from a PHSA model.
+            </summary>
+            <param name="model">The vaccine code object to convert.</param>
+            <returns>The newly created ImmunizationDefinition object.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Parser.EventParser">
+            <summary>
+            Provides parsing methods for Immunization Events.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Parser.EventParser.FromPHSAModel(HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse)">
+            <summary>
+            Creates a ImmunizationEvent object from a PHSA model.
+            </summary>
+            <param name="model">The immunization view object to convert.</param>
+            <returns>The newly created ImmunizationEvent object.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Parser.EventParser.FromPHSAModelList(System.Collections.Generic.IEnumerable{HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse})">
+            <summary>
+            Creates a ImmunizationEvent object from a PHSA model.
+            </summary>
+            <param name="immunizationViewResponse">The list of PHSA models to convert.</param>
+            <returns>A list of ImmunizationEvent objects.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Parser.ForecastParser">
+            <summary>
+            Provides methods for parsing Immunization Forecast.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Parser.ForecastParser.FromPHSAModel(HealthGateway.Immunization.Models.ImmunizationForecastResponse)">
+            <summary>
+            Creates a ImmunizationForecast object from a PHSA model.
+            </summary>
+            <param name="model">The immunization forecast object to convert.</param>
+            <returns>The newly created ImmunizationForecast object.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Program">
+            <summary>
+            The entry point for the project.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Program.Main(System.String[])">
+            <summary>.
+            The entry point for the class.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+        </member>
+        <member name="M:HealthGateway.Immunization.Program.CreateHostBuilder(System.String[])">
+            <summary>.
+            Creates the IWebHostBuilder.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+            <returns>Returns the configured webhost.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Services.IImmunizationService">
+            <summary>
+            The Immunization data service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Services.IImmunizationService.GetImmunization(System.String)">
+            <summary>
+            Gets the ImmunizationEvent for the given id.
+            </summary>
+            <param name="immunizationId">The security token representing the authenticated user.</param>
+            <returns>Returns a list of immunizations.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Services.IImmunizationService.GetImmunizations(System.Int32)">
+            <summary>
+            Gets the ImmunizationResult inluding load state and a list of immunization records.
+            </summary>
+            <param name="pageIndex">The page index to return.</param>
+            <returns>Returns a list of immunizations.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Services.ImmunizationService">
+            <summary>
+            The Immunization data service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Services.ImmunizationService.#ctor(HealthGateway.Immunization.Delegates.IImmunizationDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Services.ImmunizationService"/> class.
+            </summary>
+            <param name="immunizationDelegate">The factory to create immunization delegates.</param>
+        </member>
+        <member name="M:HealthGateway.Immunization.Services.ImmunizationService.GetImmunization(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Immunization.Services.ImmunizationService.GetImmunizations(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Immunization.Startup">
+            <summary>
+            Configures the application during startup.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Startup.#ctor(Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Startup"/> class.
+            </summary>
+            <param name="env">The injected Environment provider.</param>
+            <param name="configuration">The injected configuration provider.</param>
+        </member>
+        <member name="M:HealthGateway.Immunization.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services">The injected services provider.</param>
+        </member>
+        <member name="M:HealthGateway.Immunization.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app">The application builder.</param>
+        </member>
+    </members>
+</doc>

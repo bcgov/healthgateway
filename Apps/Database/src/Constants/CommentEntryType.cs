@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,13 +13,18 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Constant
+namespace HealthGateway.Database.Constants
 {
     /// <summary>
     /// The set of Comment entry types.
     /// </summary>
     public static class CommentEntryType
     {
+        /// <summary>
+        /// The code represeting no entry type set.
+        /// </summary>
+        public const string None = "NA";
+
         /// <summary>
         /// The code representing Medication.
         /// </summary>
@@ -29,5 +34,15 @@ namespace HealthGateway.Database.Constant
         /// The code representing Immunization.
         /// </summary>
         public const string Immunization = "Imm";
+
+        /// <summary>
+        /// The code representing Laboratory.
+        /// </summary>
+        public const string Laboratory = "Lab";
+
+        /// <summary>
+        /// The code representing Encounter.
+        /// </summary>
+        public const string Encounter = "Enc";
     }
 }

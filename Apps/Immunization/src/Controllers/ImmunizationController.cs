@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,18 +15,14 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Controllers
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
-    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Filters;
-     using HealthGateway.Common.Models;
-   using HealthGateway.Immunization.Models;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.Immunization;
+    using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
 
@@ -48,71 +44,59 @@ namespace HealthGateway.Immunization.Controllers
         private readonly IImmunizationService service;
 
         /// <summary>
-        /// Gets or sets the http context accessor.
-        /// </summary>
-        private readonly IHttpContextAccessor httpContextAccessor;
-
-        /// <summary>
-        /// Gets or sets the authorization service.
-        /// </summary>
-        private readonly IAuthorizationService authorizationService;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ImmunizationController"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="svc">The immunization data service.</param>
-        /// <param name="httpContextAccessor">The Http Context accessor.</param>
-        /// <param name="authorizationService">The IAuthorizationService.</param>
         public ImmunizationController(
             ILogger<ImmunizationController> logger,
-            IImmunizationService svc,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IImmunizationService svc)
         {
             this.logger = logger;
             this.service = svc;
-            this.httpContextAccessor = httpContextAccessor;
-            this.authorizationService = authorizationService;
         }
 
         /// <summary>
-        /// Gets a json list of immunization records.
+        /// Gets an immunization record for the given id.
         /// </summary>
         /// <param name="hdid">The hdid patient id.</param>
-        /// <returns>a list of immunization records.</returns>
+        /// <param name="immunizationId">The immunization id.</param>
+        /// <returns>The immunization record with the given id.</returns>
         /// <response code="200">Returns the List of Immunization records.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
-        [Route("{hdid}")]
-        [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> GetImmunizations(string hdid)
+        [Route("{immunizationId}")]
+        [Authorize(Policy = ImmunizationPolicy.Read)]
+        public async Task<IActionResult> GetImmunization([FromQuery] string hdid, string immunizationId)
         {
-            this.logger.LogDebug($"Getting immunizations from controller... {hdid}");
+            this.logger.LogDebug($"Getting immunization {immunizationId} for user {hdid}");
+            RequestResult<ImmunizationEvent> result = await this.service.GetImmunization(immunizationId).ConfigureAwait(true);
 
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
+            this.logger.LogDebug($"Finished getting immunization {immunizationId} for user {hdid}");
+            return new JsonResult(result);
+        }
 
-            List<ImmunizationView> immunizations = (await this.service.GetImmunizations(hdid).ConfigureAwait(true)).ToList();
+        /// <summary>
+        /// Gets a json list of immunization records.
+        /// </summary>
+        /// <param name="hdid">The hdid patient id.</param>
+        /// <returns>A list of immunization records for the given patient identifier.</returns>
+        /// <response code="200">Returns the List of Immunization records.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="503">The service is unavailable for use.</response>
+        [HttpGet]
+        [Produces("application/json")]
+        [Authorize(Policy = ImmunizationPolicy.Read)]
+        public async Task<IActionResult> GetImmunizations([FromQuery] string hdid)
+        {
+            this.logger.LogDebug($"Getting immunizations for user {hdid}");
+            RequestResult<ImmunizationResult> result = await this.service.GetImmunizations().ConfigureAwait(true);
 
-            RequestResult<List<ImmunizationView>> result = new RequestResult<List<ImmunizationView>>()
-            {
-                ResourcePayload = immunizations,
-                PageIndex = 0,
-                PageSize = immunizations.Count,
-                TotalResultCount = immunizations.Count,
-                ResultStatus = ResultType.Success,
-            };
-
-            this.logger.LogDebug($"Finished getting immunizations from controller... {hdid}");
-
+            this.logger.LogDebug($"Finished getting immunizations for user {hdid}");
             return new JsonResult(result);
         }
     }

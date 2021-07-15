@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Controllers
 {
-    using System.Threading.Tasks;
-    using HealthGateway.Admin.Models;
+    using HealthGateway.Admin.Constants;
     using HealthGateway.Admin.Services;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -29,7 +27,7 @@ namespace HealthGateway.Admin.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
-    [Authorize(Roles = "AdminUser")]
+    [Authorize(Roles = "AdminUser,AdminReviewer")]
     public class DashboardController
     {
         private readonly IDashboardService dashboardService;
@@ -47,57 +45,81 @@ namespace HealthGateway.Admin.Controllers
         /// <summary>
         /// Retrieves the count of registered users.
         /// </summary>
+        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
         /// <returns>The count of registered users.</returns>
         /// <response code="200">Returns the count of registered users.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("RegisteredCount")]
-        public IActionResult GetRegisteredUserCount()
+        public IActionResult GetRegisteredUserCount(int timeOffset)
         {
-            return new JsonResult(this.dashboardService.GetRegisteredUserCount());
-        }
-
-        /// <summary>
-        /// Retrieves the count of unregistered users that received an invite.
-        /// </summary>
-        /// <returns>The count of unregistered users that received an invite.</returns>
-        /// <response code="200">Returns the count of unregistered users.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpGet]
-        [Route("UnregisteredInvitedCount")]
-        public IActionResult GetUnregisteredInvitedUserCount()
-        {
-            return new JsonResult(this.dashboardService.GetUnregisteredInvitedUserCount());
+            return new JsonResult(this.dashboardService.GetDailyRegisteredUsersCount(timeOffset));
         }
 
         /// <summary>
         /// Retrieves the count of logged in user in the last day.
         /// </summary>
+        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
         /// <returns>The count of logged in users in the current day.</returns>
         /// <response code="200">Returns the list of user feedbacks.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("LoggedInCount")]
-        public IActionResult GetTodayLoggedinUsersCount()
+        public IActionResult GetLoggedinUsersCount(int timeOffset)
         {
-            return new JsonResult(this.dashboardService.GetTodayLoggedInUsersCount());
+            return new JsonResult(this.dashboardService.GetDailyLoggedInUsersCount(timeOffset));
         }
 
         /// <summary>
-        /// Retrieves the count of waitlisted users.
+        /// Retrieves the count of dependents.
         /// </summary>
-        /// <returns>The count of waitlisted users.</returns>
-        /// <response code="200">Returns the count of waitlisted users.</response>
+        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        /// <returns>The count of logged in users in the current day.</returns>
+        /// <response code="200">Returns the list of user feedbacks.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
-        [Route("WaitlistCount")]
-        public IActionResult GetWaitlistUserCount()
+        [Route("DependentCount")]
+        public IActionResult GetDependentCount(int timeOffset)
         {
-            return new JsonResult(this.dashboardService.GetWaitlistUserCount());
+            return new JsonResult(this.dashboardService.GetDailyDependentCount(timeOffset));
+        }
+
+        /// <summary>
+        /// Retrieves the count recurring users.
+        /// </summary>
+        /// <param name="days">The number of unique days for evaluating a user.</param>
+        /// <param name="startPeriod">The period start over which to evaluate the user.</param>
+        /// <param name="endPeriod">The period end over which to evaluate the user.</param>
+        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        /// <returns>The count of recurrent users.</returns>
+        /// <response code="200">Returns the list of user feedbacks.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("RecurringUsers")]
+        public IActionResult GetRecurringUsersCount(int days, string startPeriod, string endPeriod, int timeOffset)
+        {
+            return new JsonResult(this.dashboardService.GetRecurrentUserCount(days, startPeriod, endPeriod, timeOffset));
+        }
+
+        /// <summary>
+        /// Retrieves the ratings summary.
+        /// </summary>
+        /// <param name="startPeriod">The period start to calculate the summary.</param>
+        /// <param name="endPeriod">The period end to calculate the summary.</param>
+        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        /// <returns>A dictionary pairing the ratings with the counts.</returns>
+        /// <response code="200">Returns the ratings summary.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("Ratings/Summary")]
+        public IActionResult GetRatingsSummary([FromQuery] string startPeriod, [FromQuery] string endPeriod, [FromQuery] int timeOffset)
+        {
+            return new JsonResult(this.dashboardService.GetRatingSummary(startPeriod, endPeriod, timeOffset));
         }
     }
 }

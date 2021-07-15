@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
-    using System.Diagnostics.Contracts;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.WebClient.Services;
@@ -37,30 +36,21 @@ namespace HealthGateway.WebClient.Controllers
     {
         private readonly IUserFeedbackService userFeedbackService;
 
-        private readonly IHttpContextAccessor httpContextAccessor;
-
-        private readonly IAuthorizationService authorizationService;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="UserFeedbackController"/> class.
         /// </summary>
         /// <param name="userFeedbackService">The injected user feedback service.</param>
-        /// <param name="authorizationService">The injected authorization service.</param>
-        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         public UserFeedbackController(
-            IUserFeedbackService userFeedbackService,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IUserFeedbackService userFeedbackService)
         {
             this.userFeedbackService = userFeedbackService;
-            this.httpContextAccessor = httpContextAccessor;
-            this.authorizationService = authorizationService;
         }
 
         /// <summary>
         /// Posts a user feedback json to be inserted into the database.
         /// </summary>
         /// <returns>The http status.</returns>
+        /// <param name="hdid">The user hdid.</param>
         /// <param name="userFeedback">The user feedback model.</param>
         /// <response code="200">The user feedback record was saved.</response>
         /// <response code="400">The user feedback object is invalid.</response>
@@ -68,38 +58,43 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
-        [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> CreateUserFeedback([FromBody] UserFeedback userFeedback)
+        [Route("{hdid}")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public IActionResult CreateUserFeedback(string hdid, [FromBody] UserFeedback userFeedback)
         {
-            Contract.Requires(userFeedback != null);
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
-            var isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
-
             if (userFeedback == null)
             {
                 return new BadRequestResult();
             }
             else
             {
-                userFeedback.UserProfileId = userHdid;
-                userFeedback.CreatedBy = userHdid;
-                userFeedback.UpdatedBy = userHdid;
+                userFeedback.UserProfileId = hdid;
+                userFeedback.CreatedBy = hdid;
+                userFeedback.UpdatedBy = hdid;
                 DBResult<UserFeedback> result = this.userFeedbackService.CreateUserFeedback(userFeedback);
-                if (result.Status != Database.Constant.DBStatusCode.Created)
+                if (result.Status != DBStatusCode.Created)
                 {
                     return new ConflictResult();
                 }
 
                 return new OkResult();
             }
+        }
+
+        /// <summary>
+        /// Saves the rating model.
+        /// </summary>
+        /// <param name="rating">The rating to be saved.</param>
+        /// <returns>The saved rating wrapped in a request result.</returns>
+        /// <response code="200">Returns the saved rating json.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpPost]
+        [Route("Rating")]
+        public IActionResult CreateRating(Rating rating)
+        {
+            RequestResult<Rating> result = this.userFeedbackService.CreateRating(rating);
+            return new JsonResult(result);
         }
     }
 }

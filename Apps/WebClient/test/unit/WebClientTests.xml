@@ -1,0 +1,723 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WebClientTests</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.WebClient.Test.Controllers.CommentControllerTests">
+            <summary>
+            CommentController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.CommentControllerTests.ShouldCreateComment">
+            <summary>
+            Successfully Create Comment - Happy Path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.CommentControllerTests.ShouldCreateCommentWithBadRequestError">
+            <summary>
+            Create Comment - Bad Request Error scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.CommentControllerTests.ShouldUpdateComment">
+            <summary>
+            Update Comment - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.CommentControllerTests.ShouldUpdateCommentWithForbidResultError">
+            <summary>
+            Update Comment - ForbidResult Error scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.CommentControllerTests.ShouldUpdateCommentWithBadRequestError">
+            <summary>
+            Update Comment - BadRequest Error scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.CommentControllerTests.ShouldDeleteComment">
+            <summary>
+            Delete Comment - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.CommentControllerTests.ShouldDeleteCommentWithForbidResultError">
+            <summary>
+            Delete Comment - ForbidResult Error scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.CommentControllerTests.ShouldGetAllForEntry">
+            <summary>
+            GetAllForEntry - Happy path scenario.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Controllers.CommunicationControllerTests">
+            <summary>
+            CommunicationController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.CommunicationControllerTests.ShouldGetCommunication">
+            <summary>
+            Successfully Create Comment - Happy Path scenario.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Controllers.DependentControllerTests">
+            <summary>
+            DependentController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.DependentControllerTests.ShouldGetDependents">
+            <summary>
+            GetDependents - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.DependentControllerTests.ShouldAddDependent">
+            <summary>
+            AddDependent - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.DependentControllerTests.ShouldDeleteDependent">
+            <summary>
+            DeleteDependent - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.DependentControllerTests.ShouldFailDeleteDependent">
+            <summary>
+            DeleteDependent - BadRequest path scenario.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Controllers.DumpHeadersControllerTests">
+            <summary>
+            DumpHeadersController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.DumpHeadersControllerTests.ShouldCreateDumpHeadersController">
+            <summary>
+            CreateDumpHeadersController - Happy path scenario.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Controllers.NoteControllerTests">
+            <summary>
+            NoteController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.NoteControllerTests.ShouldCreateNote">
+            <summary>
+            CreateNote - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.NoteControllerTests.ShouldUpdateNote">
+            <summary>
+            UpdateNote - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.NoteControllerTests.ShouldDeleteNote">
+            <summary>
+            DeleteNote - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.NoteControllerTests.ShouldGetAll">
+            <summary>
+            GetAll Notes - Happy path scenario.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Controllers.ReportControllerTests">
+            <summary>
+            ReportController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.ReportControllerTests.ShouldGetReport">
+            <summary>
+            Successfully Generate a Report - Happy Path scenario.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Controllers.RobotsControllerTests">
+            <summary>
+            RobotsController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.RobotsControllerTests.ShouldGetRobotsCustom">
+            <summary>
+            GetRobots - Custom Content.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.RobotsControllerTests.ShouldGetRobotsTxtDefaultConfig">
+            <summary>
+            GetRobots - Default Config.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Controllers.UserFeedbackControllerTests">
+            <summary>
+            UserFeedbackController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserFeedbackControllerTests.ShouldCreateUserFeedback">
+            <summary>
+            CreateUserFeedback - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserFeedbackControllerTests.ShouldCreateUserFeedbackWithConflictResultError">
+            <summary>
+            CreateUserFeedback - ConflictResult Error scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserFeedbackControllerTests.ShouldCreateUserFeedbackWithBadRequestResultError">
+            <summary>
+            CreateUserFeedback - BadRequestResult Error scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserFeedbackControllerTests.ShouldCreateRating">
+            <summary>
+            CreateRating - Happy path scenario.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests">
+            <summary>
+            UserProfileController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldGetUserProfile">
+            <summary>
+            GetUserProfile - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldGetUserProfileWithoutUserPreference">
+            <summary>
+            GetUserProfile - With Empty User Preferences.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldCreateUserProfile">
+            <summary>
+            CreateUserProfile - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldValidateAge">
+            <summary>
+            ValidateAge - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldCreateUserPreference">
+            <summary>
+            CreateUserPreference - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldCreateUserPreferenceWithBadRequestResultError">
+            <summary>
+            CreateUserPreference - Bad Request.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldUpdateUserPreference">
+            <summary>
+            UpdateUserPreference - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldUpdateUserPreferenceWithBadRequestResultError">
+            <summary>
+            UpdateUserPreference - Bad Request.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldUpdateUserPreferenceWithEmptyPreferenceError">
+            <summary>
+            UpdateUserPreference - Bad Request (Empty Preference).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldUpdateUserPreferenceWithForbidResultError">
+            <summary>
+            UpdateUserPreference - Forbidden Request.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldGetLastTermsOfService">
+            <summary>
+            GetLastTermsOfService - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldUpdateUserEmail">
+            <summary>
+            UpdateUserEmail - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldValidateEmail">
+            <summary>
+            ValidateEmail - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldValidateEmailWithEmailNotFound">
+            <summary>
+            ValidateEmail - Email not found error.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldUpdateUserSMSNumber">
+            <summary>
+            UpdateUserSMSNumber - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldValidateSms">
+            <summary>
+            ValidateSms - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldValidateSmsNotFoundResult">
+            <summary>
+            ValidateSms - Sms not found error.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Controllers.WalletControllerTests">
+            <summary>
+            VerifiableCredentialController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.WalletControllerTests.ShouldCreateConnection">
+            <summary>
+            Successfully Create Connection - Happy Path scenario.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.WalletControllerTests.ShouldCreateCredential">
+            <summary>
+            Successfully Create Credential - Happy Path scenario.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.WalletControllerTests.ShouldGetConnection">
+            <summary>
+            Successfully Get Connection - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.WalletControllerTests.ShouldDisconnectConnection">
+            <summary>
+            Successfully Disconnect Connection - Happy path scenario.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.WalletControllerTests.ShouldRevokeCredential">
+            <summary>
+            Successfully Revoke Credential - Happy path scenario.
+            </summary>
+            <returns>>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Delegates.CDogsDelegateTest">
+            <summary>
+            CDogsDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Delegates.CDogsDelegateTest.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Test.Delegates.CDogsDelegateTest"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Delegates.CDogsDelegateTest.ShouldGenerateReport">
+            <summary>
+            GenerateReport - Happy Path.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Services.CommentServiceTests">
+            <summary>
+            CommentService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.CommentServiceTests.ShouldGetComments">
+            <summary>
+            GetComments - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.CommentServiceTests.ShouldGetCommentsWithDbError">
+            <summary>
+            GetComments - Database error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.CommentServiceTests.ShouldInsertComment">
+            <summary>
+            InsertComment - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.CommentServiceTests.ShouldInsertCommentWithDBError">
+            <summary>
+            InsertComment - Database Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.CommentServiceTests.ShouldUpdateComment">
+            <summary>
+            UpdateComment - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.CommentServiceTests.ShouldUpdateCommentWithDBError">
+            <summary>
+            UpdateComment - Database Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.CommentServiceTests.ShouldDeleteComment">
+            <summary>
+            DeleteComment - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.CommentServiceTests.ShouldDeleteCommentWithDBError">
+            <summary>
+            DeleteComment - Database Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.CommentServiceTests.ShouldGetCommentsWithNoKeyError">
+            <summary>
+            GetComments - No Encryption key error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.CommentServiceTests.ShouldInsertCommentWithNoKeyError">
+            <summary>
+            InsertComment - No Encryption key error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.CommentServiceTests.ShouldUpdateCommentWithNoKeyError">
+            <summary>
+            UpdateComment - No Encryption key error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.CommentServiceTests.ShouldDeleteCommentWithNoKeyError">
+            <summary>
+            DeleteComment - No Encryption key error.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Services.CommunicationServiceTests">
+            <summary>
+            CommunicationService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.CommunicationServiceTests.ShouldGetActiveCommunication">
+            <summary>
+            GetActiveCommunication - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.CommunicationServiceTests.ShouldGetActiveCommunicationWithDBError">
+            <summary>
+            GetActiveCommunication - Database Error.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Services.ConfigurationServiceTests">
+            <summary>
+            ConfigurationService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.ConfigurationServiceTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Test.Services.ConfigurationServiceTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.ConfigurationServiceTests.TestGetConfig">
+            <summary>
+            GetConfiguration - Happy Path.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Services.DependentServiceTests">
+            <summary>
+            DependentService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.DependentServiceTests.GetDependents">
+            <summary>
+            GetDependents - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.DependentServiceTests.GetDependentsWithEmptyPatientResPayloadError">
+            <summary>
+            GetDependents - Empty Patient Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.DependentServiceTests.ValidateDependent">
+            <summary>
+            ValidateDependent - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.DependentServiceTests.ValidateDependentWithEmptyPatientResPayloadError">
+            <summary>
+            ValidateDependent - Empty Patient Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.DependentServiceTests.ValidateDependentWithDbError">
+            <summary>
+            ValidateDependent - Database Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.DependentServiceTests.ValidateDependentWithWrongFirstName">
+            <summary>
+            ValidateDependent - Wrong First Name Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.DependentServiceTests.ValidateDependentWithWrongLastName">
+            <summary>
+            ValidateDependent - Wrong Last Name Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.DependentServiceTests.ValidateDependentWithWrongDateOfBirth">
+            <summary>
+            ValidateDependent - Wrong Date of Birth Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.DependentServiceTests.ValidateDependentWithNoHdId">
+            <summary>
+            ValidateDependent - No HdId Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.DependentServiceTests.ValidateRemove">
+            <summary>
+            ValidateRemove - Happy Path.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Services.NoteServiceTests">
+            <summary>
+            NoteService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.NoteServiceTests.ShouldGetNotes">
+            <summary>
+            GetNotes - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.NoteServiceTests.ShouldGetNotesWithDbError">
+            <summary>
+            GetNotes - Database Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.NoteServiceTests.ShouldGetNotesWithProfileKeyNotSetError">
+            <summary>
+            GetNotes - No Encryption Key Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.NoteServiceTests.ShouldInsertNote">
+            <summary>
+            InsertNote - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.NoteServiceTests.ShouldInsertNoteWithDBError">
+            <summary>
+            InsertNote - Database Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.NoteServiceTests.ShouldUpdateNote">
+            <summary>
+            UpdateNote - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.NoteServiceTests.ShouldUpdateNoteWithDBError">
+            <summary>
+            UpdateNote - Database Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.NoteServiceTests.ShouldDeleteNote">
+            <summary>
+            DeleteNote - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.NoteServiceTests.ShouldDeleteNoteWithDBError">
+            <summary>
+            DeleteNote - Database Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.NoteServiceTests.ShouldInsertNoteWithNoKeyError">
+            <summary>
+            InsertNote - No Encryption Key Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.NoteServiceTests.ShouldUpdateNoteWithNoKeyError">
+            <summary>
+            UpdateNote - No Encryption Key Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.NoteServiceTests.ShouldDeleteNoteWithNoKeyError">
+            <summary>
+            DeleteNote - No Encryption Key Error.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Services.ReportServiceTests">
+            <summary>
+            ReportService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.ReportServiceTests.ShouldGetReport">
+            <summary>
+            GetReport - Happy path scenario.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Services.UserFeedbackServiceTests">
+            <summary>
+            UserFeedbackService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserFeedbackServiceTests.ShouldCreateRating">
+            <summary>
+            CreateRating - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserFeedbackServiceTests.ShouldCreateRatingWithError">
+            <summary>
+            CreateRating - Database Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserFeedbackServiceTests.ShouldCreateUserFeedback">
+            <summary>
+            CreateUserFeedBack - Happy Path.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Services.UserProfileServiceTests">
+            <summary>
+            UserProfileService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Test.Services.UserProfileServiceTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldGetUserProfile">
+            <summary>
+            GetUserProfile - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldGetUserProfileWithTermsOfServiceUpdated">
+            <summary>
+            GetUserProfile - Happy Path With Terms of Service Updated.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldGetUserProfileWithDBError">
+            <summary>
+            GetUserProfile - Database Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldGetUserProfileWithProfileNotFoundError">
+            <summary>
+            GetUserProfile - Not Found Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldInsertUserProfile">
+            <summary>
+            InsertUserProfile - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldInsertUserProfileWithClosedRegistration">
+            <summary>
+            InsertUserProfile - Closed Registration Error.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldQueueNotificationUpdate">
+            <summary>
+            CreateUserProfile - Happy Path with notification update.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldValidateAgeAsync">
+            <summary>
+            ValidateMinimumAge - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldGetUserPreference">
+            <summary>
+            GetUserPreference - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldGetUserPreferenceWithDBError">
+            <summary>
+            GetUserPreference - Database Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldCreateUserPreference">
+            <summary>
+            CreateUserPreference - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldCreateUserPreferenceWithDBError">
+            <summary>
+            CreateUserPreference - Database Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldUpdateUserPreference">
+            <summary>
+            UpdateUserPreference - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldUpdateUserPreferenceWithDBError">
+            <summary>
+            UpdateUserPreference - Database Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldCloseUserProfile">
+            <summary>
+            CloseUserProfile - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.PreviouslyClosedUserProfile">
+            <summary>
+            CloseUserProfile - Happy Path (Update Closed DateTime).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldCloseUserProfileAndQueueNewEmail">
+            <summary>
+            CloseUserProfile - Happy Path with email notificaition.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldRecoverUserProfile">
+            <summary>
+            RecoverUserProfile - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldRecoverUserProfileAlreadyActive">
+            <summary>
+            RecoverUserProfile - Alraedy active happy Path.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Services.UserSMSServiceTests">
+            <summary>
+            Unit Tests for UserSMSServiceTests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserSMSServiceTests.ShouldValidateSMS">
+            <summary>
+            ValidateSMS - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserSMSServiceTests.ShouldValidateSMSWithInvalidInvite">
+            <summary>
+            ValidateSMS - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserSMSServiceTests.ShouldSanitizeSMS">
+            <summary>
+            ValidateSMS - Happy path scenario.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Services.WalletServiceTests">
+            <summary>
+            CommentService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.WalletServiceTests.ShouldCreateConnection">
+            <summary>
+            CreateConnection - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.WalletServiceTests.GetConnection">
+            <summary>
+            GetConnection - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.WalletServiceTests.GetCredentialByExchangeId">
+            <summary>
+            GetCredentialByExchangeId - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.WalletServiceTests.RevokeCredential">
+            <summary>
+            RevokeCredential - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.WalletServiceTests.DisconnectConnection">
+            <summary>
+            Disconnect Connection - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+    </members>
+</doc>

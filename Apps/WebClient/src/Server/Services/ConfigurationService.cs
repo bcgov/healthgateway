@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@ namespace HealthGateway.WebClient.Services
 {
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Provides external configuration data.
@@ -47,7 +46,7 @@ namespace HealthGateway.WebClient.Services
         /// <returns>The external configuration data.</returns>
         public Models.ExternalConfiguration GetConfiguration()
         {
-            this.logger.LogTrace($"Getting configuration data... {JsonConvert.SerializeObject(this.config)}");
+            this.logger.LogTrace($"Getting configuration data...");
             return this.config;
         }
     }

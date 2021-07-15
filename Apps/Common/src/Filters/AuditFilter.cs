@@ -16,15 +16,19 @@
 namespace HealthGateway.Common.Filters
 {
     using System;
-    using System.Diagnostics.Contracts;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Database.Models;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc.Controllers;
     using Microsoft.AspNetCore.Mvc.Filters;
 
     /// <summary>
     /// The audit middleware class.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class AuditFilter : IAsyncActionFilter
     {
         private readonly IAuditLogger auditService;
@@ -51,6 +55,18 @@ namespace HealthGateway.Common.Filters
             if (context.Controller.GetType().GetCustomAttributes(typeof(IgnoreAuditAttribute), true).Length > 0)
             {
                 return;
+            }
+
+            // Check for controller or method authorization attribute
+            if (context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
+            {
+                bool isControllerAuthorization = context.Controller.GetType().GetCustomAttributes(inherit: true).OfType<AuthorizeAttribute>().Any();
+                bool isMethodAuthorization = controllerActionDescriptor.MethodInfo.GetCustomAttributes(inherit: true).OfType<AuthorizeAttribute>().Any();
+                bool isAllowAnonymous = controllerActionDescriptor.MethodInfo.GetCustomAttributes(inherit: true).OfType<AllowAnonymousAttribute>().Any();
+                if (!(isControllerAuthorization || isMethodAuthorization) || isAllowAnonymous)
+                {
+                    return;
+                }
             }
 
             auditEvent.TransactionDuration = Convert.ToInt64(DateTime.UtcNow.Subtract(auditEvent.AuditEventDateTime).TotalMilliseconds);

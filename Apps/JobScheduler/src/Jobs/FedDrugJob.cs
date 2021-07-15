@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,9 +50,9 @@ namespace Healthgateway.JobScheduler.Jobs
         [MaximumConcurrentExecutions(MaxConcurrency, ConcurrencyTimeout)]
         public override void Process(string configSectionName)
         {
-            this.logger.LogDebug($"Processing federal drug files {configSectionName}");
+            this.Logger.LogDebug($"Processing federal drug files {configSectionName}");
             base.Process(configSectionName);
-            this.logger.LogDebug($"Finished processing federal drug files {configSectionName}");
+            this.Logger.LogDebug($"Finished processing federal drug files {configSectionName}");
         }
     }
 }

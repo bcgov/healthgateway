@@ -1,5 +1,0 @@
-capabilities:
-  browserName: "chrome"
-  chromeOptions:
-    args: ["--headless", "--disable-gpu", "--disable-extensions", "--no-sandbox"]
-baseUrl: "http://localhost:5000"

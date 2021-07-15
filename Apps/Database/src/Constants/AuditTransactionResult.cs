@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,31 +13,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Database.Constant
+namespace HealthGateway.Database.Constants
 {
+    using System.Runtime.Serialization;
+
     /// <summary>
     /// Transaction Result Types for the audit entity.
     /// </summary>
-    public static class AuditTransactionResult
+    public enum AuditTransactionResult
     {
         /// <summary>
         /// Represents a successful transaction.
         /// </summary>
-        public const string Success = "Ok";
+        [EnumMember(Value = "Ok")]
+        Success,
 
         /// <summary>
         /// Represents a failed transaction.
         /// </summary>
-        public const string Failure = "Fail";
+        [EnumMember(Value = "Fail")]
+        Failure,
 
         /// <summary>
         /// Represents an unauthorized transaction.
         /// </summary>
-        public const string Unauthorized = "NotAuth";
+        [EnumMember(Value = "NotAuth")]
+        Unauthorized,
 
         /// <summary>
         /// Represents that a system error occurred.
         /// </summary>
-        public const string SystemError = "Err";
+        [EnumMember(Value = "Err")]
+        SystemError,
     }
 }

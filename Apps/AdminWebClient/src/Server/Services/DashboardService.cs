@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,62 +16,135 @@
 namespace HealthGateway.Admin.Services
 {
     using System;
-    using System.Runtime.InteropServices;
-    using HealthGateway.Admin.Models;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Threading.Tasks;
+    using HealthGateway.Admin.Constants;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
-    using Microsoft.Extensions.Configuration;
+    using HealthGateway.Database.Wrapper;
 
     /// <inheritdoc />
     public class DashboardService : IDashboardService
     {
-        private readonly IProfileDelegate userProfileDelegate;
-        private readonly IBetaRequestDelegate betaRequestDelegate;
-        private readonly IConfiguration configuration;
+        private readonly IResourceDelegateDelegate dependentDelegate;
+        private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IMessagingVerificationDelegate messagingVerificationDelegate;
+        private readonly IPatientService patientService;
+        private readonly IRatingDelegate ratingDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
         /// </summary>
+        /// <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-        /// <param name="betaRequestDelegate">The beta request delegate to interact with the DB.</param>
-        /// <param name="config">The configuration provider.</param>
+        /// <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
+        /// <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
+        /// <param name="ratingDelegate">The rating delegate.</param>
         public DashboardService(
-            IProfileDelegate userProfileDelegate,
-            IBetaRequestDelegate betaRequestDelegate,
-            IConfiguration config)
+            IResourceDelegateDelegate dependentDelegate,
+            IUserProfileDelegate userProfileDelegate,
+            IMessagingVerificationDelegate messagingVerificationDelegate,
+            IPatientService patientService,
+            IRatingDelegate ratingDelegate)
         {
+            this.dependentDelegate = dependentDelegate;
             this.userProfileDelegate = userProfileDelegate;
-            this.betaRequestDelegate = betaRequestDelegate;
-            this.configuration = config;
+            this.messagingVerificationDelegate = messagingVerificationDelegate;
+            this.patientService = patientService;
+            this.ratingDelegate = ratingDelegate;
         }
 
         /// <inheritdoc />
-        public int GetRegisteredUserCount()
+        public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(int timeOffset)
         {
-            return this.userProfileDelegate.GetRegisteredUsersCount();
+            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
+            TimeSpan ts = new (0, timeOffset, 0);
+            return this.userProfileDelegate.GetDailyRegisteredUsersCount(ts);
         }
 
         /// <inheritdoc />
-        public int GetUnregisteredInvitedUserCount()
+        public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(int timeOffset)
         {
-            return this.userProfileDelegate.GeUnregisteredInvitedUsersCount();
+            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
+            TimeSpan ts = new (0, timeOffset, 0);
+            return this.userProfileDelegate.GetDailyLoggedInUsersCount(ts);
         }
 
         /// <inheritdoc />
-        public int GetTodayLoggedInUsersCount()
+        public IDictionary<DateTime, int> GetDailyDependentCount(int timeOffset)
         {
-            AdminConfiguration config = new AdminConfiguration();
-            this.configuration.GetSection("Admin").Bind(config);
-            string tzId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                config.WindowsTimeZoneId : config.UnixTimeZoneId;
-            TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById(tzId);
-            DateTime startDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.Today.ToUniversalTime(), tz);
-            return this.userProfileDelegate.GetLoggedInUsersCount(startDate);
+            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
+            TimeSpan ts = new (0, timeOffset, 0);
+            return this.dependentDelegate.GetDailyDependentCount(ts);
         }
 
         /// <inheritdoc />
-        public int GetWaitlistUserCount()
+        public int GetRecurrentUserCount(int dayCount, string startPeriod, string endPeriod, int timeOffset)
         {
-            return this.betaRequestDelegate.GetWaitlistCount();
+            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
+            TimeSpan ts = new (0, timeOffset, 0);
+            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date;
+            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date;
+            return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate, ts);
+        }
+
+        /// <inheritdoc />
+        public RequestResult<IEnumerable<Database.Models.MessagingVerification>> GetMessageVerifications(UserQueryType queryType, string queryString)
+        {
+            RequestResult<IEnumerable<Database.Models.MessagingVerification>> retVal = new ()
+            {
+                ResultStatus = ResultType.Error,
+                ResourcePayload = new List<Database.Models.MessagingVerification>(),
+            };
+
+            DBResult<IEnumerable<Database.Models.MessagingVerification>>? dbResult = null;
+            switch (queryType)
+            {
+                case UserQueryType.PHN:
+                    RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(queryString, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
+                    if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
+                    {
+                        string hdid = patientResult.ResourcePayload.HdId;
+                        dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, hdid);
+                    }
+                    else
+                    {
+                        retVal.ResultError = patientResult.ResultError;
+                    }
+
+                    break;
+                case UserQueryType.Email:
+                    dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.Email, queryString);
+                    break;
+                case UserQueryType.SMS:
+                    dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.SMS, queryString);
+                    break;
+                case UserQueryType.HDID:
+                    dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, queryString);
+                    break;
+            }
+
+            if (dbResult != null && dbResult.Status == Database.Constants.DBStatusCode.Read)
+            {
+                retVal.ResultStatus = ResultType.Success;
+                retVal.ResourcePayload = dbResult.Payload ?? retVal.ResourcePayload;
+            }
+
+            return retVal;
+        }
+
+        /// <inheritdoc />
+        public IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset)
+        {
+            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
+            TimeSpan ts = new (0, timeOffset, 0);
+            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date;
+            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date;
+            return this.ratingDelegate.GetSummary(startDate, endDate, ts);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,22 @@
 namespace HealthGateway.WebClient.Controllers
 {
     using System;
-    using System.Diagnostics.Contracts;
+    using System.Collections.Generic;
     using System.Globalization;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Utils;
+    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Web API to handle user profile interactions.
@@ -37,28 +40,34 @@ namespace HealthGateway.WebClient.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
-    public class UserProfileController
+    public class UserProfileController : ControllerBase
     {
+        private readonly ILogger logger;
         private readonly IUserProfileService userProfileService;
-
         private readonly IHttpContextAccessor httpContextAccessor;
-
-        private readonly IAuthorizationService authorizationService;
+        private readonly IUserEmailService userEmailService;
+        private readonly IUserSMSService userSMSService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileController"/> class.
         /// </summary>
+        /// <param name="logger">The service Logger.</param>
         /// <param name="userProfileService">The injected user profile service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        /// <param name="authorizationService">The injected authorization service.</param>
+        /// <param name="userEmailService">The injected user email service.</param>
+        /// <param name="userSMSService">The injected user sms service.</param>
         public UserProfileController(
+            ILogger<UserProfileController> logger,
             IUserProfileService userProfileService,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IUserEmailService userEmailService,
+            IUserSMSService userSMSService)
         {
+            this.logger = logger;
             this.userProfileService = userProfileService;
             this.httpContextAccessor = httpContextAccessor;
-            this.authorizationService = authorizationService;
+            this.userEmailService = userEmailService;
+            this.userSMSService = userSMSService;
         }
 
         /// <summary>
@@ -73,35 +82,25 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Route("{hdid}")]
-        [Authorize(Policy = "PatientOnly")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<IActionResult> CreateUserProfile(string hdid, [FromBody] CreateUserRequest createUserRequest)
         {
-            Contract.Requires(hdid != null);
-            Contract.Requires(createUserRequest != null);
-
             // Validate that the query parameter matches the post body
-            if (!hdid.Equals(createUserRequest.Profile.HdId, StringComparison.CurrentCultureIgnoreCase))
+            if (!hdid.Equals(createUserRequest.Profile.HdId, StringComparison.OrdinalIgnoreCase))
             {
                 return new BadRequestResult();
             }
 
-            // Validate the hdid to be a patient.
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            AuthorizationResult isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
+            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
+            if (httpContext != null)
             {
-                return new ForbidResult();
+                ClaimsPrincipal user = httpContext.User;
+                DateTime jwtAuthTime = GetAuthDateTime(user);
+                RequestResult<UserProfileModel> result = await this.userProfileService.CreateUserProfile(createUserRequest, jwtAuthTime).ConfigureAwait(true);
+                return new JsonResult(result);
             }
 
-            string referer = this.httpContextAccessor.HttpContext.Request
-                .GetTypedHeaders()
-                .Referer?
-                .GetLeftPart(UriPartial.Authority);
-
-            RequestResult<UserProfileModel> result = this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer));
-            return new JsonResult(result);
+            return this.Unauthorized();
         }
 
         /// <summary>
@@ -114,25 +113,50 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("{hdid}")]
-        public async Task<IActionResult> GetUserProfile(string hdid)
+        [Authorize(Policy = UserProfilePolicy.Read)]
+        public IActionResult GetUserProfile(string hdid)
         {
-            Contract.Requires(hdid != null);
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            var isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
+            ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
+            var jsonSettings = new JsonSerializerSettings()
             {
-                return new ForbidResult();
-            }
+                Converters = new List<JsonConverter>() { new JsonClaimConverter(), new JsonClaimsPrincipalConverter(), new JsonClaimsIdentityConverter() },
+            };
 
-            string rowAuthTime = user.FindFirst(c => c.Type == "auth_time").Value;
+            this.logger.LogTrace($"HTTP context user: {JsonConvert.SerializeObject(user, jsonSettings)}");
 
-            // Auth time at comes in the JWT as seconds after 1970-01-01
-            DateTime jwtAuthTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-                .AddSeconds(int.Parse(rowAuthTime, CultureInfo.CurrentCulture));
+            DateTime jwtAuthTime = GetAuthDateTime(user);
 
             RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid, jwtAuthTime);
+
+            if (result.ResourcePayload != null)
+            {
+                RequestResult<Dictionary<string, UserPreferenceModel>> userPreferences = this.userProfileService.GetUserPreferences(hdid);
+                if (userPreferences.ResourcePayload != null)
+                {
+                    foreach (var preference in userPreferences.ResourcePayload)
+                    {
+                        result.ResourcePayload.Preferences.Add(preference);
+                    }
+                }
+            }
+
+            return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Gets a result indicating the profile is valid.
+        /// </summary>
+        /// <returns>A boolean wrapped in a request result.</returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <response code="200">The request result is returned.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("{hdid}/Validate")]
+        [Authorize(Policy = UserProfilePolicy.Read)]
+        public async Task<IActionResult> Validate(string hdid)
+        {
+            PrimitiveRequestResult<bool> result = await this.userProfileService.ValidateMinimumAge(hdid).ConfigureAwait(true);
             return new JsonResult(result);
         }
 
@@ -146,27 +170,14 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
         [Route("{hdid}")]
-        public async Task<IActionResult> CloseUserProfile(string hdid)
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public IActionResult CloseUserProfile(string hdid)
         {
-            Contract.Requires(hdid != null);
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            var isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
-
-            string referer = this.httpContextAccessor.HttpContext.Request
-                .GetTypedHeaders()
-                .Referer?
-                .GetLeftPart(UriPartial.Authority);
-
             // Retrieve the user identity id from the claims
-            Guid userId = new Guid(user.FindFirst(ClaimTypes.NameIdentifier).Value);
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext!.User;
+            Guid userId = new Guid(user.FindFirst(ClaimTypes.NameIdentifier) !.Value);
 
-            RequestResult<UserProfileModel> result = this.userProfileService.CloseUserProfile(hdid, userId, referer);
+            RequestResult<UserProfileModel> result = this.userProfileService.CloseUserProfile(hdid, userId);
             return new JsonResult(result);
         }
 
@@ -180,24 +191,10 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("{hdid}/recover")]
-        public async Task<IActionResult> RecoverUserProfile(string hdid)
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public IActionResult RecoverUserProfile(string hdid)
         {
-            Contract.Requires(hdid != null);
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            var isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
-
-            string referer = this.httpContextAccessor.HttpContext.Request
-                .GetTypedHeaders()
-                .Referer?
-                .GetLeftPart(UriPartial.Authority);
-
-            RequestResult<UserProfileModel> result = this.userProfileService.RecoverUserProfile(hdid, referer);
+            RequestResult<UserProfileModel> result = this.userProfileService.RecoverUserProfile(hdid);
             return new JsonResult(result);
         }
 
@@ -210,10 +207,181 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("termsofservice")]
+        [AllowAnonymous]
+        [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 3600)]
         public IActionResult GetLastTermsOfService()
         {
             RequestResult<TermsOfServiceModel> result = this.userProfileService.GetActiveTermsOfService();
             return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Validates a user email verification.
+        /// </summary>
+        /// <returns>The an empty response.</returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="verificationKey">The email verification key.</param>
+        /// <response code="200">The email was validated.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="404">The verification key was not found.</response>
+        [HttpGet]
+        [Route("{hdid}/email/validate/{verificationKey}")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public async Task<IActionResult> ValidateEmail(string hdid, Guid verificationKey)
+        {
+            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
+            if (httpContext != null)
+            {
+                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+
+                if (accessToken != null)
+                {
+                    PrimitiveRequestResult<bool> result = this.userEmailService.ValidateEmail(hdid, verificationKey);
+                    return new JsonResult(result);
+                }
+            }
+
+            return this.Unauthorized();
+        }
+
+        /// <summary>
+        /// Validates a sms verification.
+        /// </summary>
+        /// <returns>An empty response.</returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="validationCode">The sms validation code.</param>
+        /// <response code="200">The sms was validated.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="404">The validation code was not found.</response>
+        [HttpGet]
+        [Route("{hdid}/sms/validate/{validationCode}")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public IActionResult ValidateSMS(string hdid, string validationCode)
+        {
+            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
+            if (httpContext != null)
+            {
+                if (this.userSMSService.ValidateSMS(hdid, validationCode))
+                {
+                    return new OkResult();
+                }
+                else
+                {
+                    System.Threading.Thread.Sleep(5000);
+                    return new NotFoundResult();
+                }
+            }
+
+            return this.Unauthorized();
+        }
+
+        /// <summary>
+        /// Updates the user email.
+        /// </summary>
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="emailAddress">The new email.</param>
+        /// <returns>True if the action was successful.</returns>
+        /// <response code="200">Returns true if the call was successful.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpPut]
+        [Route("{hdid}/email")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public IActionResult UpdateUserEmail(string hdid, [FromBody] string emailAddress)
+        {
+            bool result = this.userEmailService.UpdateUserEmail(hdid, emailAddress);
+            return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Updates the user sms number.
+        /// </summary>
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="smsNumber">The new sms number.</param>
+        /// <returns>True if the action was successful.</returns>
+        /// <response code="200">Returns true if the call was successful.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpPut]
+        [Route("{hdid}/sms")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public IActionResult UpdateUserSMSNumber(string hdid, [FromBody] string smsNumber)
+        {
+            bool result = this.userSMSService.UpdateUserSMS(hdid, smsNumber);
+            return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Puts a UserPreferenceModel json to be updated in the database.
+        /// </summary>
+        /// <returns>The http status.</returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="userPreferenceModel">The user preference request model.</param>
+        /// <response code="200">The user preference record was saved.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpPut]
+        [Route("{hdid}/preference")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public IActionResult UpdateUserPreference(string hdid, [FromBody] UserPreferenceModel userPreferenceModel)
+        {
+            if (userPreferenceModel == null || string.IsNullOrEmpty(userPreferenceModel.Preference))
+            {
+                return new BadRequestResult();
+            }
+
+            if (userPreferenceModel.HdId != hdid)
+            {
+                return new ForbidResult();
+            }
+
+            userPreferenceModel.UpdatedBy = hdid;
+            RequestResult<UserPreferenceModel> result = this.userProfileService.UpdateUserPreference(userPreferenceModel);
+            return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Posts a UserPreference json to be inserted into the database.
+        /// </summary>
+        /// <returns>The http status.</returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="userPreferenceModel">The user preference request model.</param>
+        /// <response code="200">The comment record was saved.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpPost]
+        [Route("{hdid}/preference")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public IActionResult CreateUserPreference(string hdid, [FromBody] UserPreferenceModel userPreferenceModel)
+        {
+            if (userPreferenceModel == null)
+            {
+                return new BadRequestResult();
+            }
+
+            userPreferenceModel.HdId = hdid;
+            userPreferenceModel.CreatedBy = hdid;
+            userPreferenceModel.UpdatedBy = hdid;
+            RequestResult<UserPreferenceModel> result = this.userProfileService.CreateUserPreference(userPreferenceModel);
+            return new JsonResult(result);
+        }
+
+        private static DateTime GetAuthDateTime(ClaimsPrincipal claimsPrincipal)
+        {
+            // auth_time is not mandatory in a Bearer token.
+            string rowAuthTime = claimsPrincipal.FindFirstValue("auth_time");
+
+            if (rowAuthTime == null)
+            {
+                // get token  "issued at time", which *is* mandatory in JWT bearer token.
+                rowAuthTime = claimsPrincipal.FindFirstValue("iat");
+            }
+
+            // Auth time comes in the JWT as seconds after 1970-01-01
+            DateTime jwtAuthTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                .AddSeconds(int.Parse(rowAuthTime, CultureInfo.CurrentCulture));
+
+            return jwtAuthTime;
         }
     }
 }

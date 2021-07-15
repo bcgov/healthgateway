@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,10 +37,10 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="emailId">The Email ID to retrieve.</param>
         /// <returns>The found Email object.</returns>
-        Email GetNewEmail(Guid emailId);
+        Email? GetNewEmail(Guid emailId);
 
         /// <summary>
-        /// Gets a sorted list of New low priority emails to process.
+        /// Gets a sorted list of new low priority emails to process.
         /// Low priority for this job is anything less than EmailPriority.Standard
         /// This is to ensure that any manual manipulation in the database that
         /// changes the ordinal values above those defined as EmailPriority.Low
@@ -49,7 +49,43 @@ namespace HealthGateway.Database.Delegates
         /// The list will be ordered by the Priority in descending order.</summary>
         /// <param name="maxRows">The maximum amount of emails to return.</param>
         /// <returns>The list of emails.</returns>
-        List<Email> GetLowPriorityEmail(int maxRows);
+        IList<Email> GetLowPriorityEmail(int maxRows);
+
+        /// <summary>
+        /// Gets a sorted list of new standard priority emails to process.
+        /// Standard priority for this job is anything less than EmailPriority.High and more than or equal to EmailPriority.Standard
+        /// This is to ensure that any manual manipulation in the database that
+        /// changes the ordinal values above those defined as EmailPriority.Standard
+        /// but below the ordinal value of EmailPriority.Standard will still be processed
+        /// by this job.
+        /// The list will be ordered by the Priority in descending order.</summary>
+        /// <param name="maxRows">The maximum amount of emails to return.</param>
+        /// <returns>The list of emails.</returns>
+        IList<Email> GetStandardPriorityEmail(int maxRows);
+
+        /// <summary>
+        /// Gets a sorted list of new high priority emails to process.
+        /// High priority for this job is anything less than EmailPriority.Urgent and more than or equal to EmailPriority.High
+        /// This is to ensure that any manual manipulation in the database that
+        /// changes the ordinal values above those defined as EmailPriority.High
+        /// but below the ordinal value of EmailPriority.High will still be processed
+        /// by this job.
+        /// The list will be ordered by the Priority in descending order.</summary>
+        /// <param name="maxRows">The maximum amount of emails to return.</param>
+        /// <returns>The list of emails.</returns>
+        IList<Email> GetHighPriorityEmail(int maxRows);
+
+        /// <summary>
+        /// Gets a sorted list of new urgent priority emails to process.
+        /// Urgent priority for this job is anything more than or equal to EmailPriority.Urgent
+        /// This is to ensure that any manual manipulation in the database that
+        /// changes the ordinal values above those defined as EmailPriority.Urgent
+        /// but below the ordinal value of EmailPriority.Urgent will still be processed
+        /// by this job.
+        /// The list will be ordered by the Priority in descending order.</summary>
+        /// <param name="maxRows">The maximum amount of emails to return.</param>
+        /// <returns>The list of emails.</returns>
+        IList<Email> GetUrgentPriorityEmail(int maxRows);
 
         /// <summary>
         /// Inserts an email using a populated Email object.
@@ -78,6 +114,15 @@ namespace HealthGateway.Database.Delegates
         /// <param name="offset">The starting offset for the query.</param>
         /// <param name="pagesize">The maximum amount of rows to return.</param>
         /// <returns>A list of Notes wrapped in a DBResult.</returns>
-        public DBResult<List<Email>> GetEmails(int offset = 0, int pagesize = 1000);
+        DBResult<IList<Email>> GetEmails(int offset = 0, int pagesize = 1000);
+
+        /// <summary>
+        /// Deletes email records that were created after n days ago.
+        /// </summary>
+        /// <param name="daysAgo">Delete emails where created on or before days ago.</param>
+        /// <param name="maxRows">The maximum amount of emails to delete at one time.</param>
+        /// <param name="shouldCommit">If true, the records will be deleted from the DB immediately.</param>
+        /// <returns>The number of rows deleted.</returns>
+        int Delete(uint daysAgo, int maxRows, bool shouldCommit = true);
     }
 }

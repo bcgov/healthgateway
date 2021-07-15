@@ -1,46 +1,49 @@
 apiVersion: template.openshift.io/v1
-apiVersion: v1
 kind: Template
 metadata:
   name: ${NAME}-template
+  labels:
+    app: ${NAME}
 objects:
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: ${NAME}
+      labels:
+        app: ${NAME}
 
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    name: ${NAME}
-
-- apiVersion: build.openshift.io/v1
-  kind: BuildConfig
-  metadata:
-    labels:
-      build: ${NAME}
-    name: ${NAME}
-  spec:
-    failedBuildsHistoryLimit: 5
-    output:
-      to:
-        kind: ImageStreamTag
-        name: '${NAME}:latest'
-    runPolicy: Serial
-    source:
-      binary: {}
-      type: Binary
-    strategy:
-      dockerStrategy:
-        from:
-          kind: DockerImage
-          name: ${BASE_IMAGE}
-      type: Docker
-    successfulBuildsHistoryLimit: 5
+  - apiVersion: build.openshift.io/v1
+    kind: BuildConfig
+    metadata:
+      name: ${NAME}
+      labels:
+        build: ${NAME}
+        app: ${NAME}
+    spec:
+      failedBuildsHistoryLimit: 5
+      output:
+        to:
+          kind: ImageStreamTag
+          name: "${NAME}:latest"
+      runPolicy: Serial
+      source:
+        binary: {}
+        type: Binary
+      strategy:
+        dockerStrategy:
+          from:
+            kind: DockerImage
+            name: ${BASE_IMAGE}
+        type: Docker
+      successfulBuildsHistoryLimit: 5
 
 parameters:
-- description: The name of the Build and associated Image Stream
-  displayName: Name
-  name: NAME
-  required: true
-- description: The base Docker image to use 
-  displayName: BASE_IMAGE
-  name: BASE_IMAGE
-  required: true
-  value: mcr.microsoft.com/dotnet/core/aspnet:3.1
+  - description: The name of the Build and associated Image Stream
+    displayName: Name
+    name: NAME
+    required: true
+  - description: The base Docker image to use
+    displayName: BASE_IMAGE
+    name: BASE_IMAGE
+    required: true
+    value: mcr.microsoft.com/dotnet/aspnet:5.0

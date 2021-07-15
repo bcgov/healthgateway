@@ -1,0 +1,78 @@
+parameters:
+  - name: "toolsNamespace" # defaults for any parameters that aren't specified
+    type: string
+    default: 0bd5ad
+    values:
+      - q6qfzk #OCP3 Namespace
+      - 0bd5ad #Silver Cluster Namespace
+
+  - name: publish
+    type: boolean
+    default: true
+
+steps:
+  - task: DotNetCoreCLI@2
+    displayName: "Compiling code for $(App.Name)"
+    inputs:
+      projects: "$(App.Home)/src"
+      arguments: "--no-incremental /warnaserror"
+
+  - task: Npm@1
+    displayName: "Installing NPM Packages"
+    condition: and(succeeded(), eq(variables['NPMInstall'], true))
+    inputs:
+      command: "install"
+      workingDir: "$(App.Home)/src/ClientApp"
+
+  - task: Npm@1
+    displayName: "Running NPM Tests for $(App.Name)"
+    condition: and(succeeded(), eq(variables['NPMTests'], true))
+    inputs:
+      command: "custom"
+      customCommand: "test"
+      workingDir: "$(App.Home)/src/ClientApp"
+
+  - task: DotNetCoreCLI@2
+    displayName: "Runing Unit Tests for $(App.Name)"
+    condition: and(succeeded(), eq(variables['UnitTests'], true))
+    inputs:
+      command: "test"
+      projects: "$(App.Home)/test/unit/$(App.Name)Tests.csproj"
+      arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
+      testRunTitle: "$(App.Name): Performing Unit Tests"
+
+  - script: |
+      set -e
+      reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+    displayName: "Creating Code Coverage Report for $(App.Name)"
+    condition: and(succeeded(), eq(variables['UnitTests'], true))
+
+  - task: PublishCodeCoverageResults@1
+    displayName: "Publishing Code Coverage for $(App.Name)"
+    condition: and(succeeded(), and(eq(${{ parameters.publish }}, true), eq(variables['UnitTests'], true)))
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
+      pathToSources: "$(App.Home)/src"
+      reportDirectory: "$(App.Home)/CodeCoverage"
+
+  - task: DotNetCoreCLI@2
+    displayName: "Publishing code for $(App.Name)"
+    inputs:
+      modifyOutputPath: false
+      command: "publish"
+      publishWebProjects: false
+      projects: "$(App.Home)/src"
+      arguments: "-o $(Build.BinariesDirectory)"
+      zipAfterPublish: false
+
+  - script: |
+      set -e
+      oc projects
+      oc project ${{ parameters.toolsNamespace }}-tools
+      cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
+      oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(OpenShift.Name) | oc apply -f -
+      oc start-build $(OpenShift.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
+      oc tag $(OpenShift.Name):latest $(OpenShift.Name):$(Build.BuildNumber)
+    displayName: "Building OpenShift Image for $(App.Name) and pushing to Image Stream"
+    condition: and(succeeded(), eq(variables['RunOpenShift'], true))

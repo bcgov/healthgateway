@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,10 +20,11 @@ namespace Healthgateway.JobScheduler.Jobs
     using System.Globalization;
     using Hangfire;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Utils;
     using HealthGateway.Database.Wrapper;
     using Healthgateway.JobScheduler.Models;
     using Microsoft.Extensions.Configuration;
@@ -44,7 +45,7 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly ILogger<NotifyUpdatedLegalAgreementsJob> logger;
         private readonly IApplicationSettingsDelegate applicationSettingsDelegate;
         private readonly ILegalAgreementDelegate legalAgreementDelegate;
-        private readonly IProfileDelegate profileDelegate;
+        private readonly IUserProfileDelegate profileDelegate;
         private readonly IEmailQueueService emailService;
         private readonly GatewayDbContext dbContext;
         private readonly int profilesPageSize;
@@ -65,7 +66,7 @@ namespace Healthgateway.JobScheduler.Jobs
             ILogger<NotifyUpdatedLegalAgreementsJob> logger,
             IApplicationSettingsDelegate applicationSettingsDelegate,
             ILegalAgreementDelegate legalAgreementDelegate,
-            IProfileDelegate profileDelegate,
+            IUserProfileDelegate profileDelegate,
             IEmailQueueService emailService,
             GatewayDbContext dbContext)
         {
@@ -92,7 +93,8 @@ namespace Healthgateway.JobScheduler.Jobs
             foreach (LegalAgreementConfig lac in agreementConfigs)
             {
                 this.logger.LogInformation($"Processing {lac.Name}, looking up Legal Agreement code {lac.Code}");
-                DBResult<LegalAgreement> legalAgreementsResult = this.legalAgreementDelegate.GetActiveByAgreementType(lac.Code);
+                LegalAgreementType agreement = EnumUtility.ToEnum<LegalAgreementType>(lac.Code, true);
+                DBResult<LegalAgreement> legalAgreementsResult = this.legalAgreementDelegate.GetActiveByAgreementType(agreement);
                 if (legalAgreementsResult.Status == DBStatusCode.Read)
                 {
                     this.ProcessLegalAgreement(legalAgreementsResult.Payload, lac);
@@ -108,8 +110,23 @@ namespace Healthgateway.JobScheduler.Jobs
         {
             this.logger.LogInformation($"{config.Name} found, last updated {agreement.EffectiveDate}");
             this.logger.LogInformation($"Fetching {config.LastCheckedKey} from application settings");
-            ApplicationSetting lastCheckedSetting = this.applicationSettingsDelegate.GetApplicationSetting(ApplicationType.JobScheduler, this.GetType().Name, config.LastCheckedKey);
-            this.logger.LogInformation($"Found {config.LastCheckedKey} with value of {lastCheckedSetting.Value}");
+            ApplicationSetting? lastCheckedSetting = this.applicationSettingsDelegate.GetApplicationSetting(ApplicationType.JobScheduler, this.GetType().Name, config.LastCheckedKey);
+            if (lastCheckedSetting != null)
+            {
+                this.logger.LogInformation($"Found {config.LastCheckedKey} with value of {lastCheckedSetting.Value}");
+            }
+            else
+            {
+                lastCheckedSetting = new ApplicationSetting()
+                {
+                    Application = ApplicationType.JobScheduler,
+                    Component = this.GetType().Name,
+                    Key = config.LastCheckedKey,
+                    Value = DateTime.MinValue.ToString("MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture),
+                };
+                this.dbContext.ApplicationSetting.Add(lastCheckedSetting);
+            }
+
             DateTime lastChecked = System.DateTime.Parse(lastCheckedSetting.Value!, CultureInfo.InvariantCulture);
             if (agreement.EffectiveDate > lastChecked)
             {
@@ -130,7 +147,6 @@ namespace Healthgateway.JobScheduler.Jobs
 
                     this.logger.LogInformation($"Sent {profileResult.Payload.Count} emails");
 
-                    // TODO: Resume functionality??
                     this.dbContext.SaveChanges(); // commit after every page
                     page++;
                 }

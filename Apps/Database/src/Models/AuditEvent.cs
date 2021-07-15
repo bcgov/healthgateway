@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// Represents an AuditEvent entity
@@ -90,7 +91,7 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(10)]
-        public string? TransactionResultCode { get; set; }
+        public AuditTransactionResult TransactionResultCode { get; set; }
 
         /// <summary>
         /// Gets or sets the duration of the transaction in milliseconds.

@@ -18,6 +18,7 @@ namespace HealthGateway.Common.Delegates
     using System;
     using System.Security.Cryptography;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models.Cacheable;
     using Microsoft.AspNetCore.Cryptography.KeyDerivation;
     using Microsoft.Extensions.Configuration;
@@ -29,22 +30,15 @@ namespace HealthGateway.Common.Delegates
     public class HMACHashDelegate : IHashDelegate
     {
         private const string ConfigKey = "HMACHash";
-        private readonly ILogger<HMACHashDelegate> logger;
-        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HMACHashDelegate"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        public HMACHashDelegate(
-            ILogger<HMACHashDelegate> logger,
-            IConfiguration configuration)
+        public HMACHashDelegate(IConfiguration configuration)
         {
-            this.logger = logger;
-            this.configuration = configuration;
             this.HashConfig = new HMACHashDelegateConfig();
-            this.configuration.Bind(ConfigKey, this.HashConfig);
+            configuration.Bind(ConfigKey, this.HashConfig);
         }
 
         /// <summary>
@@ -68,7 +62,7 @@ namespace HealthGateway.Common.Delegates
         {
             HMACHash retHash = new HMACHash()
             {
-                PseudoRandomFunction = Database.Constant.HashFunction.HMACSHA512,
+                PseudoRandomFunction = HashFunction.HMACSHA512,
                 Iterations = iterations,
             };
 
@@ -76,7 +70,20 @@ namespace HealthGateway.Common.Delegates
             {
                 // The key is not null, so we can generate a hash
                 // Calculate the length in bytes of the hash given the function size
-                int hashLength = prf == KeyDerivationPrf.HMACSHA1 ? 20 : prf == KeyDerivationPrf.HMACSHA256 ? 32 : 64;
+                int hashLength;
+                switch (prf)
+                {
+                    case KeyDerivationPrf.HMACSHA1:
+                        hashLength = 20;
+                        break;
+                    case KeyDerivationPrf.HMACSHA256:
+                        hashLength = 32;
+                        break;
+                    default:
+                        hashLength = 64;
+                        break;
+                }
+
                 retHash.Salt = Convert.ToBase64String(salt);
                 retHash.Hash = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                                                         password: key,
@@ -95,7 +102,7 @@ namespace HealthGateway.Common.Delegates
         /// <param name="key">The key to hash and compare.</param>
         /// <param name="compareHash">The hash object to compare.</param>
         /// <returns>true if the key generates the same hash.</returns>
-        public static bool Compare(string? key, HMACHash compareHash)
+        public static bool Compare(string? key, HMACHash? compareHash)
         {
             bool result = false;
             if (key != null && compareHash != null && compareHash.Hash != null && compareHash.Salt != null)
@@ -136,7 +143,7 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc />
-        public bool Compare(string key, IHash compareHash)
+        public bool Compare(string? key, IHash compareHash)
         {
             return Compare(key, compareHash as HMACHash);
         }

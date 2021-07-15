@@ -40,14 +40,20 @@ namespace HealthGateway.Database.Models
         public string UserProfileId { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the text of the note.
+        /// Gets or sets the UserProfile associated to this comment.
         /// </summary>
-        [MaxLength(1000)]
+        public virtual UserProfile? UserProfile { get; set; }
+
+        /// <summary>
+        /// Gets or sets the text of the comment.
+        /// Text supports 1000 characters plus 344 for Encryption and Encoding overhead.
+        /// </summary>
+        [MaxLength(1344)]
         public string? Text { get; set; }
 
         /// <summary>
         /// Gets or sets the entry type code.
-        /// The value is one of <see cref="Constant.CommentEntryType"/>.
+        /// The value is one of <see cref="Constants.CommentEntryType"/>.
         /// </summary>
         [MaxLength(3)]
         [Required]
@@ -56,13 +62,8 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the related event id.
         /// </summary>
-        [MaxLength(32)]
+        [MaxLength(36)]
         [Required]
         public string ParentEntryId { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the linked user profile.
-        /// </summary>
-        public virtual UserProfile? UserProfile { get; set; }
     }
 }

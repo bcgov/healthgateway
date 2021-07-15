@@ -1,0 +1,819 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CommonTests</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.CommonTests.AccessManagement.Administration.KeycloakUserAdminDelegateTests">
+            <summary>
+            KeycloakUserAdminDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Administration.KeycloakUserAdminDelegateTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.CommonTests.AccessManagement.Administration.KeycloakUserAdminDelegateTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Administration.KeycloakUserAdminDelegateTests.GetUserThrowsException">
+            <summary>
+            GetUser - Not Implemented Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Administration.KeycloakUserAdminDelegateTests.ShouldDeleteUser">
+            <summary>
+            DeleteUser - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Administration.KeycloakUserAdminDelegateTests.ShouldNotDeleteUser">
+            <summary>
+            DeleteUser - Unauthorized.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.AccessManagement.Administration.AuthenticationDelegateTests">
+            <summary>
+            AuthenticationDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Administration.AuthenticationDelegateTests.ShouldAuthenticateAsUser">
+            <summary>
+            AuthenticateAsUser - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Administration.AuthenticationDelegateTests.ShouldAuthenticateAsSystem">
+            <summary>
+            AuthenticateAsSystem - Happy Path.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.AccessManagement.Authorization.ApiKeyAuthorizationHandlerTests">
+            <summary>
+            ApiKeyAuthorizationHandler's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.ApiKeyAuthorizationHandlerTests.AuthSuccess">
+            <summary>
+            Handle Auth - Auth Key is correct.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.ApiKeyAuthorizationHandlerTests.AuthFailHeaderKeyWrong">
+            <summary>
+            Handle Auth - Auth Key is invalid.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.ApiKeyAuthorizationHandlerTests.AuthFailRequirementKeyBad">
+            <summary>
+            Handle Auth - Requirement Key is invalid.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.ApiKeyAuthorizationHandlerTests.AuthFailHeaderNotFound">
+            <summary>
+            Handle Auth - Auth Key not found.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests">
+            <summary>
+            FhirResourceAuthorizationHandler's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests.UnknownRequirement">
+            <summary>
+            Handle Auth - Unknown Requirement Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests.ReadWriteNoResource">
+            <summary>
+            Handle Auth - Read Write No Resource Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests.ShouldNotAuthPatientReadAsSystemDelegationDisabled">
+            <summary>
+            Handle Auth - Delegation Disabled Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests.ShouldNotAuthPatientReadAsSystemEmptyScope">
+            <summary>
+            Handle Auth - Empty Scope Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests.ShouldNotAuthPatientReadAsSystemMissingScope">
+            <summary>
+            Handle Auth - Missing Scope Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests.ShouldAuthPatientReadAsOwner">
+            <summary>
+            Handle Auth - Owner Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests.ShouldAuthPatientReadAsOwnerUsingParameter">
+            <summary>
+            Handle Auth - Owner Happy Path (Using Query String).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests.ShouldNotAuthPatientReadAsOwner">
+            <summary>
+            Handle Auth - Non-owner Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests.ShouldAuthPatientReadAsSystem">
+            <summary>
+            Handle Auth - System Delegated Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests.ShouldNotAuthPatientReadAsOtherPatient">
+            <summary>
+            Handle Auth - User Delegated Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests.ShouldAuthPatientWriteAsOwner">
+            <summary>
+            Handle Auth - Owner Happy Path (Write).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests.ShouldAuthPatientWriteAsSystem">
+            <summary>
+            Handle Auth - System Delegated Happy Path (Write).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests.ShouldNotAuthPatientWriteAsOtherPatient">
+            <summary>
+            Handle Auth - User Delegated Error (Write).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests.ShouldNotAuthPatientWriteAsOwner">
+            <summary>
+            Handle Auth - Non-owner Error (Write).
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceDelegateAuthorizationHandlerTests">
+            <summary>
+            FhirResourceDelegateAuthorizationHandler's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceDelegateAuthorizationHandlerTests.UnknownRequirement">
+            <summary>
+            Handle Auth - Unknown Requirement Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceDelegateAuthorizationHandlerTests.ReadWriteNoResource">
+            <summary>
+            Handle Auth - Read Write No Resource Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceDelegateAuthorizationHandlerTests.ShouldNotAuthPatientReadAsUserDelegationDisabled">
+            <summary>
+            Handle Auth - Delegation Disabled Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceDelegateAuthorizationHandlerTests.ShouldNotAuthPatientReadAsOwner">
+            <summary>
+            Handle Auth - Non-owner Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceDelegateAuthorizationHandlerTests.ShouldAuthResourceDelegate">
+            <summary>
+            Handle Auth - User Delegated Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceDelegateAuthorizationHandlerTests.ShouldNotAuthExpiredDelegate">
+            <summary>
+            Handle Auth - User Delegated Expired Error.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.AccessManagement.Authorization.UserAuthorizationHandlerTests">
+            <summary>
+            UserAuthorizationHandler's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.UserAuthorizationHandlerTests.ShouldAuthUserIsOwner">
+            <summary>
+            Handle Auth - Owner Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.UserAuthorizationHandlerTests.ShouldNotAuthUserIsOwner">
+            <summary>
+            Handle Auth - Non-Owner Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.UserAuthorizationHandlerTests.ShouldAuthUserHasHDID">
+            <summary>
+            Handle Auth - Non-Owner Happy Path (Disabled Validate Ownership).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.UserAuthorizationHandlerTests.ShouldNotAuthUserNoHDID">
+            <summary>
+            Handle Auth - Non-Owner No HdId Error (Disabled Validate Ownership).
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Auditing.AuditLoggerTests">
+            <summary>
+            AuditLogger's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Auditing.AuditLoggerTests.ShouldPopulateWithHttpContext">
+            <summary>
+            PopulateWithHttpContext - Happy Path.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests">
+            <summary>
+            AESCryptoDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyConfigurationBinding">
+            <summary>
+            AESCryptoDelegateTests - Configuration Binding.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyDefaultConfigurationBinding">
+            <summary>
+            AESCryptoDelegateTests - Default Configuration Binding.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyKeyGeneration">
+            <summary>
+            GenerateKey - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyEncryption">
+            <summary>
+            Encrypt - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyEncrypedStringLength100">
+            <summary>
+            Encrypt - Happy Path (Validate Length 100).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyEncrypedStringLength1000">
+            <summary>
+            Encrypt - Happy Path (Validate Length 1000).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyDecryption">
+            <summary>
+            Decrypt - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyEncryptionWithIV">
+            <summary>
+            Encrypt - Happy Path (With IV).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyDecryptionWithIV">
+            <summary>
+            Decrypt - Happy Path (With IV).
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Delegates.ClientRegistriesDelegateTests">
+            <summary>
+            ClientRegistriesDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ClientRegistriesDelegateTests.ShouldGetDemographics">
+            <summary>
+            GetDemographicsByHDID - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ClientRegistriesDelegateTests.ShouldErrorIfInvalidIdentifier">
+            <summary>
+            GetDemographicsByHDID - Invalid ID Error.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ClientRegistriesDelegateTests.ShouldUseCorrectNameSection">
+            <summary>
+            GetDemographicsByHDID - Happy Path (Validate Multiple Names).
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ClientRegistriesDelegateTests.ShouldUseCorrectNameQualifier">
+            <summary>
+            GetDemographicsByHDID - Happy Path (Validate Multiple Names Qualifiers).
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Delegates.HMACHashDelegateTests">
+            <summary>
+            HMACHashDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.HMACHashDelegateTests.VerifyConfigurationBinding">
+            <summary>
+            HMACHashDelegate - Configuration Binding.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.HMACHashDelegateTests.VerifyDefaultConfigurationBinding">
+            <summary>
+            HMACHashDelegate - Default Configuration Binding.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.HMACHashDelegateTests.VerifyHash">
+            <summary>
+            Hash - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.HMACHashDelegateTests.VerifyHMACSHA1Hash">
+            <summary>
+            Hash - Happy Path (HMACSHA1).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.HMACHashDelegateTests.VerifyHMACSHA256Hash">
+            <summary>
+            Hash - Happy Path (HMACSHA256).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.HMACHashDelegateTests.VerifyHMACSHA512Hash">
+            <summary>
+            Hash - Happy Path (HMACSHA512).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.HMACHashDelegateTests.VerifyNullKey">
+            <summary>
+            Hash - Happy Path (Null Key).
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest">
+            <summary>
+            ImmunizationDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.ValidateGetImmunization200">
+            <summary>
+            GetImmunization - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.ErrorPayload">
+            <summary>
+            GetImmunization - Parse error with JSON payload.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.ErrorInvalidHTTPStatus">
+            <summary>
+            GetImmunization - Invalid HTTP status code.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.ErrorForbidden">
+            <summary>
+            GetImmunization - Forbidden HTTP status code.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.ErrorNoContent">
+            <summary>
+            GetImmunization - NoContent HTTP status code.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.ErrorException">
+            <summary>
+            GetImmunization - Exception thrown.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.ErrorContextNull">
+            <summary>
+            GetImmunization - The HTTP Context is null.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests">
+            <summary>
+            NotificationSettingsDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests.ValidateGetNotificationSettings200">
+            <summary>
+            GetNotificationSettings - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests.ValidateGetNotificationSettingsCatchException">
+            <summary>
+            GetNotificationSettings - Unknown Exception.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests.ValidateGetNotificationSettingsUnableToConnect">
+            <summary>
+            GetNotificationSettings - Bad Request.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests.ValidateGetNotificationSettings204">
+            <summary>
+            GetNotificationSettings - No Content.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests.ValidateGetNotificationSettings403">
+            <summary>
+            GetNotificationSettings - Forbidden.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests.ValidateSetNotificationSettings200">
+            <summary>
+            SetNotificationSettings - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests.ValidateSetNotificationSettingsCatchException">
+            <summary>
+            SetNotificationSettings - Unknown Exception.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests.ValidateSetNotificationSettingsUnableToConnect">
+            <summary>
+            SetNotificationSettings - Bad Request.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests.ValidateSetNotificationSettings201">
+            <summary>
+            SetNotificationSettings - Happy Path (201).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests.ValidateSetNotificationSettings400">
+            <summary>
+            SetNotificationSettings - Bad Request.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests.ValidateSetNotificationSettings403">
+            <summary>
+            SetNotificationSettings - Forbidden.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests.GetNotificationSettings(System.Net.HttpStatusCode,HealthGateway.Common.Models.RequestResult{HealthGateway.Common.Models.NotificationSettingsResponse},System.Boolean)">
+            <summary>
+            Get Notification Settings.
+            </summary>
+            <param name="expectedResponseStatusCode">expectedResponseStatusCode.</param>
+            <param name="expectedRequestResult">expectedRequestResult.</param>
+            <param name="throwException">Throw exception indicator.</param>
+            <returns>The notification settings.</returns>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests.SetNotificationSettings(System.Net.HttpStatusCode,HealthGateway.Common.Models.RequestResult{HealthGateway.Common.Models.NotificationSettingsResponse},System.Boolean)">
+            <summary>
+            Get Notification Settings.
+            </summary>
+            <param name="expectedResponseStatusCode">expectedResponseStatusCode.</param>
+            <param name="expectedRequestResult">expectedRequestResult.</param>
+            <param name="throwException">Throw exception indicator.</param>
+            <returns>Mocked notification settings.</returns>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests">
+            <summary>
+            Unit Tests for the Wallet Issuer Delegate.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateConnection200">
+            <summary>
+            Create Connection - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateConnection500">
+            <summary>
+            Create Connection - Agent down.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateConnectionBadPayload">
+            <summary>
+            Create Connection - Bad Payload from Agent.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateConnectionException">
+            <summary>
+            Create Connection - Exception during HTTP Call.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateCredential">
+            <summary>
+            Create Credential - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.RevokeCredential">
+            <summary>
+            Revoke Credential - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.DisconnectConnection">
+            <summary>
+            Disconnect Connection - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateSchema">
+            <summary>
+            Create Schema - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateCredentialDefinition">
+            <summary>
+            Create Credential Definition - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateConnection(System.Net.HttpStatusCode,HealthGateway.Common.Models.RequestResult{HealthGateway.Common.Models.AcaPy.ConnectionResponse},System.Boolean,System.Boolean)">
+            <summary>
+            Create Wallet Connection.
+            </summary>
+            <param name="expectedResponseStatusCode">expectedResponseStatusCode.</param>
+            <param name="expectedRequestResult">expectedRequestResult.</param>
+            <param name="badContent">Pass no json data as as response.</param>
+            <param name="throwException">Throw exception indicator.</param>
+            <returns>The notification settings.</returns>
+        </member>
+        <member name="T:HealthGateway.CommonTests.FileDownload.FileDownloadServiceTests">
+            <summary>
+            FileDownloadService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.FileDownload.FileDownloadServiceTests.ShouldGetFile">
+            <summary>
+            GetFile - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.FileDownload.FileDownloadServiceTests.ShouldCauseException">
+            <summary>
+            GetFile - Unknown Exception.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Services.EmailQueueServiceTests">
+            <summary>
+            EmailQueueService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.EmailQueueServiceTests.ShouldQueueEmail">
+            <summary>
+            QueueNewEmail - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.EmailQueueServiceTests.ShouldQueueEmail2Parm">
+            <summary>
+            QueueNewEmail - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.EmailQueueServiceTests.ShouldCloneandQueueThrowsNoTo">
+            <summary>
+            CloneAndQueue - Argument Null Exception.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.EmailQueueServiceTests.ShouldCloneandQueueThrowsNoEmail">
+            <summary>
+            CloneAndQueue - Argument Exception.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.EmailQueueServiceTests.ShouldCloneandQueue">
+            <summary>
+            CloneAndQueue - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.EmailQueueServiceTests.ShouldProcessTemplate">
+            <summary>
+            ProcessTemplate - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.EmailQueueServiceTests.ShouldProcessTemplateProduction">
+            <summary>
+            ProcessTemplate - Happy Path (Production).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.EmailQueueServiceTests.ShouldProcessTemplateNonProd">
+            <summary>
+            ProcessTemplate - Happy Path (Non-Production).
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Services.HttpClientServiceTests">
+            <summary>
+            HttpClientService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.HttpClientServiceTests.ShouldGetHttpClientsWithTimeout">
+            <summary>
+            CreateDefaultHttpClient - With Timeout.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Services.LoggingMessageInspectorTests">
+            <summary>
+            LoggingMessageInspector's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.LoggingMessageInspectorTests.ShouldProcessAfterReceiveReply">
+            <summary>
+            AfterReceiveReply - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.LoggingMessageInspectorTests.ShouldProcessBeforeSendRequest">
+            <summary>
+            BeforeSendRequest - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.LoggingMessageInspectorTests.ShouldThrowErrorIfNullParam">
+            <summary>
+            LoggingMessageInspector - ArgumentNullException.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Services.NotificationSettingsServiceTests">
+            <summary>
+            NotificationSettingsService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.NotificationSettingsServiceTests.ShouldQueue">
+            <summary>
+            QueueNotificationSettings - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.NotificationSettingsServiceTests.ShouldThrowIfNoVerification">
+            <summary>
+            QueueNotificationSettings - InvalidOperationException.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.NotificationSettingsServiceTests.ShouldQueueVerifications">
+            <summary>
+            QueueNotificationSettings - Happy Path (Queue Verification).
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Services.PatientServiceTests">
+            <summary>
+            PatientService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.PatientServiceTests.ShouldGetPatientPHN">
+            <summary>
+            GetPatientPHN - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.PatientServiceTests.ShouldGetPatient">
+            <summary>
+            GetPatient - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.PatientServiceTests.ShouldGetPatientFromCache">
+            <summary>
+            GetPatient - Happy Path (Cached).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.PatientServiceTests.ShouldGetPatientFromCacheWithPHN">
+            <summary>
+            GetPatient - Happy Path (Using PHN).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.PatientServiceTests.ShouldGetPatientFromCacheWithDBError">
+            <summary>
+            GetPatient - DB Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.PatientServiceTests.ShoulSearchByValidIdentifier">
+            <summary>
+            GetPatient - Valid ID.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.PatientServiceTests.ShoulBeEmptyIfInvalidIdentifier">
+            <summary>
+            GetPatient - Invalid Id.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Swagger.SwaggerTests">
+            <summary>
+            Unit Tests for Swagger.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Swagger.SwaggerTests.ShouldApply">
+            <summary>
+            Should Apply.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Swagger.SwaggerTests.ShouldNullControllerActionDescriptor">
+            <summary>
+            ControllerActionDescriptor is null.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Utils.DateTimeFormatterTests">
+            <summary>
+            DateTimeFormatter's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.DateTimeFormatterTests.ShouldFormat">
+            <summary>
+            FormatDate - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.DateTimeFormatterTests.ShouldNullReturnEmpty">
+            <summary>
+            FormatDate - Null.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Utils.JsonClaimConverterTest">
+            <summary>
+            JsonClaimConverterTest.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.JsonClaimConverterTest.ShouldCanConvertClaim">
+            <summary>
+            ShouldCanConvertClaim.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.JsonClaimConverterTest.ShouldCanConvertNotClaim">
+            <summary>
+            ShouldCanConvertClaim.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.JsonClaimConverterTest.ShouldWriteJson">
+            <summary>
+            ShouldWriteJson.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.JsonClaimConverterTest.ShouldReadJson">
+            <summary>
+            ShouldReadJson.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Utils.JsonClaimsIdentityConverterTest">
+            <summary>
+            JsonClaimsIdentityConverterTest.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.JsonClaimsIdentityConverterTest.ShouldCanConvertClaimsIdentity">
+            <summary>
+            ShouldCanConvertClaim.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.JsonClaimsIdentityConverterTest.ShouldCanConvertNotClaimsIdentity">
+            <summary>
+            ShouldCanConvertNotClaim.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.JsonClaimsIdentityConverterTest.ShouldWriteJson">
+            <summary>
+            ShouldWriteJson.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Utils.JsonClaimsPrincipalConverterTest">
+            <summary>
+            JsonClaimsPrincipalConverterTest.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.JsonClaimsPrincipalConverterTest.ShouldCanConvertClaimsPrincipal">
+            <summary>
+            ShouldCanConvertClaimsPrincipal.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.JsonClaimsPrincipalConverterTest.ShouldCanConvertNotClaimsPrincipal">
+            <summary>
+            ShouldCanConvertNotClaimsPrincipal.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.JsonClaimsPrincipalConverterTest.ShouldWriteJson">
+            <summary>
+            ShouldWriteJson.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.JsonClaimsPrincipalConverterTest.ShouldReadJson">
+            <summary>
+            ShouldReadJson.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Utils.MockMethodInfo">
+            <summary>
+            Mock Method Info.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.MockMethodInfo.MockMethod">
+            <summary>
+            Mock Method.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.MockMethodInfo.AuthorizedMethod">
+            <summary>
+            Authorized Method.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Utils.StringManipulatorTests">
+            <summary>
+            Test class for the string manipulator class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.StringManipulatorTests.ShouldReplace">
+            <summary>
+            Replace - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.StringManipulatorTests.ShouldReplaceDictionary">
+            <summary>
+            Replace - Happy Path (With Dict).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.StringManipulatorTests.ShouldNullReturnNull">
+            <summary>
+            Replace - Nullable.
+            </summary>
+        </member>
+    </members>
+</doc>

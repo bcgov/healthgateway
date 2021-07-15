@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Database.Constant
+namespace HealthGateway.Database.Constants
 {
     /// <summary>
     /// The application type being recorded in the DB.
@@ -46,6 +46,11 @@ namespace HealthGateway.Database.Constant
         public const string Medication = "MED";
 
         /// <summary>
+        /// Represents the Laboratory application.
+        /// </summary>
+        public const string Laboratory = "LAB";
+
+        /// <summary>
         /// Represents the Admin Client application.
         /// </summary>
         public const string AdminWebClient = "ADMIN";
@@ -54,5 +59,10 @@ namespace HealthGateway.Database.Constant
         /// Represents the Job Scheduler application.
         /// </summary>
         public const string JobScheduler = "JOBS";
+
+        /// <summary>
+        /// Represents the Encounter application.
+        /// </summary>
+        public const string Encounter = "ENC";
     }
 }

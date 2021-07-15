@@ -17,8 +17,9 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -28,6 +29,7 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Entity framework based implementation of the Comment delegate.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class DBCommentDelegate : ICommentDelegate
     {
         private readonly ILogger<DBNoteDelegate> logger;
@@ -47,7 +49,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<IEnumerable<Comment>> GetList(string hdId, string parentEntryId)
+        public DBResult<IEnumerable<Comment>> GetByParentEntry(string hdId, string parentEntryId)
         {
             this.logger.LogTrace($"Getting Comments for user {hdId} and entry id {parentEntryId}...");
             DBResult<IEnumerable<Comment>> result = new DBResult<IEnumerable<Comment>>();
@@ -143,6 +145,30 @@ namespace HealthGateway.Database.Delegates
 
             this.logger.LogDebug($"Finished deleting Comment in DB");
             return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<Comment>> GetAll(string hdId)
+        {
+            this.logger.LogTrace($"Getting Comments for user {hdId}...");
+            DBResult<IEnumerable<Comment>> result = new DBResult<IEnumerable<Comment>>();
+            result.Payload = this.dbContext.Comment
+                    .Where(p => p.UserProfileId == hdId)
+                    .OrderBy(o => o.CreatedDateTime)
+                    .ToList();
+            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<Comment>> GetAll(int page, int pageSize)
+        {
+            this.logger.LogTrace($"Retrieving all the comments for the page #{page} with pageSize: {pageSize}...");
+            return DBDelegateHelper.GetPagedDBResult(
+                this.dbContext.Comment
+                    .OrderBy(comment => comment.CreatedDateTime),
+                page,
+                pageSize);
         }
     }
 }

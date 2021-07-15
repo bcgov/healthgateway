@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -29,6 +30,6 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="agreementTypeCode">The agreement type to filter the result.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<LegalAgreement> GetActiveByAgreementType(string agreementTypeCode);
+        DBResult<LegalAgreement> GetActiveByAgreementType(LegalAgreementType agreementTypeCode);
     }
 }

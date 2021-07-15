@@ -30,6 +30,12 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the amount of time in seconds after which the user will be
         /// redirected from the logout page back to the home.
         /// </summary>
-        public string LogoutRedirect { get; set; }
+        public string LogoutRedirect { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the amount of time in minutes after which the user
+        /// can retry the verification code.
+        /// </summary>
+        public int ResendSMS { get; set; }
     }
 }

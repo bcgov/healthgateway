@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
-    using System;
     using System.Collections.Generic;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
-    using HealthGateway.Common.Filters;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -34,151 +29,132 @@ namespace HealthGateway.WebClient.Controllers
     /// </summary>
     [Authorize]
     [ApiVersion("1.0")]
-    [Route("v{version:apiVersion}/api/[controller]")]
+    [Route("v{version:apiVersion}/api/UserProfile/")]
     [ApiController]
     public class CommentController
     {
         private readonly ICommentService commentService;
-        private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IAuthorizationService authorizationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommentController"/> class.
         /// </summary>
         /// <param name="commentService">The injected comment service.</param>
-        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        /// <param name="authorizationService">The injected authorization service.</param>
         public CommentController(
-            ICommentService commentService,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            ICommentService commentService)
         {
             this.commentService = commentService;
-            this.httpContextAccessor = httpContextAccessor;
-            this.authorizationService = authorizationService;
         }
 
         /// <summary>
-        /// Posts a Comment json to be inserted into the database.
+        /// Posts a UserComment json to be inserted into the database.
         /// </summary>
         /// <returns>The http status.</returns>
+        /// <param name="hdid">The user hdid.</param>
         /// <param name="comment">The Comment request model.</param>
         /// <response code="200">The comment record was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
-        [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> Create([FromBody] Comment comment)
+        [Route("{hdid}/[controller]")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public IActionResult Create(string hdid, [FromBody] UserComment comment)
         {
-            // Validate the hdid to be a patient.
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
-            AuthorizationResult isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
-
             if (comment == null)
             {
                 return new BadRequestResult();
             }
 
-            comment.UserProfileId = userHdid;
-            comment.CreatedBy = userHdid;
-            RequestResult<Comment> result = this.commentService.Add(comment);
+            comment.UserProfileId = hdid;
+            comment.CreatedBy = hdid;
+            comment.UpdatedBy = hdid;
+            RequestResult<UserComment> result = this.commentService.Add(comment);
             return new JsonResult(result);
         }
 
         /// <summary>
-        /// Puts a Comment json to be updated in the database.
+        /// Puts a UserComment json to be updated in the database.
         /// </summary>
         /// <returns>The updated Comment wrapped in a RequestResult.</returns>
+        /// <param name="hdid">The user hdid.</param>
         /// <param name="comment">The Comment to be updated.</param>
         /// <response code="200">The comment was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
-        [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> Update([FromBody] Comment comment)
+        [Route("{hdid}/[controller]")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public IActionResult Update(string hdid, [FromBody] UserComment comment)
         {
-            // Validate the hdid to be a patient.
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
-            AuthorizationResult isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
-
             if (comment == null)
             {
                 return new BadRequestResult();
             }
 
-            if (comment.UserProfileId != userHdid)
+            if (comment.UserProfileId != hdid)
             {
                 return new ForbidResult();
             }
 
-            comment.UpdatedBy = userHdid;
-            RequestResult<Comment> result = this.commentService.Update(comment);
+            comment.UpdatedBy = hdid;
+            RequestResult<UserComment> result = this.commentService.Update(comment);
             return new JsonResult(result);
         }
 
         /// <summary>
-        /// Deletes a Comment from the database.
+        /// Deletes a UserComment from the database.
         /// </summary>
-        /// <returns>The deleted Comment wrapped in a RequestResult.</returns>
+        /// <returns>The deleted UserComment wrapped in a RequestResult.</returns>
+        /// <param name="hdid">The user hdid.</param>
         /// <param name="comment">The comment to be deleted.</param>
         /// <response code="200">The note was deleted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
-        [Authorize(Policy = "PatientOnly")]
-        public async Task<IActionResult> Delete([FromBody] Comment comment)
+        [Route("{hdid}/[controller]")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public IActionResult Delete(string hdid, [FromBody] UserComment comment)
         {
-            // Validate the hdid to be a patient.
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
-            AuthorizationResult isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
+            if (comment.UserProfileId != hdid)
             {
                 return new ForbidResult();
             }
 
-            RequestResult<Comment> result = this.commentService.Delete(comment);
+            RequestResult<UserComment> result = this.commentService.Delete(comment);
             return new JsonResult(result);
         }
 
         /// <summary>
         /// Gets all comments for the authorized user and event id.
         /// </summary>
+        /// <param name="hdid">The user hdid.</param>
         /// <param name="parentEntryId">The parent entry id.</param>
         /// <returns>The list of comments wrapped in a request result.</returns>
         /// <response code="200">Returns the list of comments.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
-        public async Task<IActionResult> GetAllForEntry([FromQuery] string parentEntryId)
+        [Route("{hdid}/[controller]/Entry")]
+        [Authorize(Policy = UserProfilePolicy.Read)]
+        public IActionResult GetAllForEntry(string hdid, [FromQuery] string parentEntryId)
         {
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
-            var isAuthorized = await this.authorizationService
-                .AuthorizeAsync(user, userHdid, PolicyNameConstants.UserIsPatient)
-                .ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
+            RequestResult<IEnumerable<UserComment>> result = this.commentService.GetEntryComments(hdid, parentEntryId);
+            return new JsonResult(result);
+        }
 
-            RequestResult<IEnumerable<Comment>> result = this.commentService.GetList(userHdid, parentEntryId);
+        /// <summary>
+        /// Gets all comments for the authorized user.
+        /// </summary>
+        /// <param name="hdid">The user hdid.</param>
+        /// <returns>The list of comments wrapped in a request result.</returns>
+        /// <response code="200">Returns the list of comments.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("{hdid}/[controller]")]
+        [Authorize(Policy = UserProfilePolicy.Read)]
+        public IActionResult GetAll(string hdid)
+        {
+            RequestResult<IDictionary<string, IEnumerable<UserComment>>> result = this.commentService.GetProfileComments(hdid);
             return new JsonResult(result);
         }
     }

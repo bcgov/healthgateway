@@ -15,7 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Filters
 {
-    using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -27,6 +27,7 @@ namespace HealthGateway.Common.Filters
     /// The availability middleware class.
     /// Determines if an action should be disabled via config.
     /// </summary>using Microsoft.AspNetCore.Mvc.Filters
+    [ExcludeFromCodeCoverage]
     public class AvailabilityFilter : IAsyncActionFilter
     {
         /// <summary>

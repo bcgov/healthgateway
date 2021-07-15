@@ -15,21 +15,14 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Controllers
 {
-    using System.Collections.Generic;
-    using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Medication.Delegates;
-    using HealthGateway.Medication.Models;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Configuration;
 
     /// <summary>
-    /// The Medication controller.
+    /// Controller that handles requests for medication statements.
     /// </summary>
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
@@ -43,33 +36,12 @@ namespace HealthGateway.Medication.Controllers
         private readonly IMedicationStatementService medicationStatementService;
 
         /// <summary>
-        /// The authorization service.
-        /// </summary>
-        private readonly IAuthorizationService authorizationService;
-
-        /// <summary>
-        /// The httpContextAccessor injected.
-        /// </summary>
-        private readonly IHttpContextAccessor httpContextAccessor;
-
-        /// <summary>
-        /// The Configuration injected.
-        /// </summary>
-        private readonly IConfiguration configuration;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="MedicationStatementController"/> class.
         /// </summary>
-        /// <param name="authorizationService">The injected authorization service.</param>
         /// <param name="medicationStatementService">The injected medication data service.</param>
-        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        /// <param name="configuration">The injected configuration provider.</param>
-        public MedicationStatementController(IAuthorizationService authorizationService, IMedicationStatementService medicationStatementService, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        public MedicationStatementController(IMedicationStatementService medicationStatementService)
         {
             this.medicationStatementService = medicationStatementService;
-            this.httpContextAccessor = httpContextAccessor;
-            this.authorizationService = authorizationService;
-            this.configuration = configuration;
         }
 
         /// <summary>
@@ -84,31 +56,10 @@ namespace HealthGateway.Medication.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        [Authorize(Policy = "PatientOnly")]
+        [Authorize(Policy = MedicationPolicy.MedicationStatementRead)]
         public async Task<IActionResult> GetMedicationStatements(string hdid, [FromHeader] string? protectiveWord = null)
         {
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            var isAuthorized = await this.authorizationService.AuthorizeAsync(user, hdid, PolicyNameConstants.UserIsPatient).ConfigureAwait(true);
-            if (!isAuthorized.Succeeded)
-            {
-                return new ForbidResult();
-            }
-
-            string medicationDataSource = this.configuration.GetSection("MedicationDataSource").Value;
-
-            // Switch between both types of systems
-            if (medicationDataSource == "PharmaNet")
-            {
-                return new JsonResult(await this.medicationStatementService.GetMedicationStatements(hdid, protectiveWord).ConfigureAwait(true));
-            }
-            else if (medicationDataSource == "ODR")
-            {
-                return new JsonResult(await this.medicationStatementService.GetMedicationStatementsHistory(hdid, protectiveWord).ConfigureAwait(true));
-            }
-            else
-            {
-                throw new KeyNotFoundException("No valid data source configured");
-            }
+            return new JsonResult(await this.medicationStatementService.GetMedicationStatementsHistory(hdid, protectiveWord).ConfigureAwait(true));
         }
     }
 }

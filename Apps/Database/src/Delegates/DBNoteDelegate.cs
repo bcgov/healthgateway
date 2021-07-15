@@ -17,8 +17,9 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -28,6 +29,7 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Entity framework based implementation of the Note delegate.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class DBNoteDelegate : INoteDelegate
     {
         private readonly ILogger<DBNoteDelegate> logger;
@@ -47,13 +49,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<Note> GetNote(Guid noteId)
+        public DBResult<Note> GetNote(Guid noteId, string hdid)
         {
             DBResult<Note> result = new DBResult<Note>()
             {
                 Status = DBStatusCode.NotFound,
             };
-            result.Payload = this.dbContext.Note.Find(noteId);
+            result.Payload = this.dbContext.Note.Find(noteId, hdid);
             if (result.Payload != null)
             {
                 result.Status = DBStatusCode.Read;
@@ -63,10 +65,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<List<Note>> GetNotes(string hdId, int offset = 0, int pagesize = 500)
+        public DBResult<IEnumerable<Note>> GetNotes(string hdId, int offset = 0, int pagesize = 500)
         {
             this.logger.LogTrace($"Getting Notes for {hdId}...");
-            DBResult<List<Note>> result = new DBResult<List<Note>>();
+            DBResult<IEnumerable<Note>> result = new DBResult<IEnumerable<Note>>();
             result.Payload = this.dbContext.Note
                     .Where(p => p.HdId == hdId)
                     .OrderBy(o => o.JournalDateTime)
@@ -136,6 +138,34 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
+        public DBResult<IEnumerable<Note>> BatchUpdate(IEnumerable<Note> notes, bool commit = true)
+        {
+            this.logger.LogTrace($"Updating Note request in DB...");
+            DBResult<IEnumerable<Note>> result = new DBResult<IEnumerable<Note>>()
+            {
+                Payload = notes,
+                Status = DBStatusCode.Deferred,
+            };
+            this.dbContext.Note.UpdateRange(notes);
+            if (commit)
+            {
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Updated;
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    result.Status = DBStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+            }
+
+            this.logger.LogDebug($"Finished updating Note in DB");
+            return result;
+        }
+
+        /// <inheritdoc />
         public DBResult<Note> DeleteNote(Note note, bool commit = true)
         {
             this.logger.LogTrace($"Deleting Note from DB...");
@@ -162,6 +192,17 @@ namespace HealthGateway.Database.Delegates
 
             this.logger.LogDebug($"Finished deleting Note in DB");
             return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<Note>> GetAll(int page, int pageSize)
+        {
+            this.logger.LogTrace($"Retrieving all the notes for the page #{page} with pageSize: {pageSize}...");
+            return DBDelegateHelper.GetPagedDBResult(
+                this.dbContext.Note
+                    .OrderBy(note => note.CreatedDateTime),
+                page,
+                pageSize);
         }
     }
 }

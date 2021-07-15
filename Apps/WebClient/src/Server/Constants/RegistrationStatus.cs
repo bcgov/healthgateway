@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Constant
+namespace HealthGateway.WebClient.Constants
 {
     /// <summary>
     /// Registration status modes.
@@ -29,10 +29,5 @@ namespace HealthGateway.WebClient.Constant
         /// Registration is closed.
         /// </summary>
         public const string Closed = "closed";
-
-        /// <summary>
-        /// Registration is on Invite only mode.
-        /// </summary>
-        public const string InviteOnly = "invite_only";
     }
 }

@@ -26,36 +26,36 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Models
         /// Gets or sets a unique identifier of the target API you want to access.
         /// </summary>
         [JsonPropertyName("audience")]
-        public string? Audience { get; set; }
+        public string Audience { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets scopes for the access.
         /// </summary>
         [JsonPropertyName("scope")]
-        public string? Scope { get; set; }
+        public string Scope { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the application's Client ID.
         /// </summary>
         [JsonPropertyName("client_id")]
-        public string? ClientId { get; set; }
+        public string ClientId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets your application's Client Secret.
         /// </summary>
         [JsonPropertyName("client_secret")]
-        public string? ClientSecret { get; set; }
+        public string ClientSecret { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the resource owner username for OAuth 2 Rsource Owner Password Grant.
         /// </summary>
         [JsonPropertyName("username")]
-        public string? Username { get; set; }
+        public string Username { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the resource owner password for OAuth 2 Rsource Owner Password Grant.
         /// </summary>
         [JsonPropertyName("password")]
-        public string? Password { get; set; }
+        public string Password { get; set; } = string.Empty;
     }
 }

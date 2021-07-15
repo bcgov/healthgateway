@@ -30,7 +30,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="component">The name of the component.</param>
         /// <param name="key">The name of the key.</param>
         /// <returns>The fetched application setting.</returns>
-        ApplicationSetting GetApplicationSetting(string application, string component, string key);
+        ApplicationSetting? GetApplicationSetting(string application, string component, string key);
 
         /// <summary>
         /// Gets all of the application settings for a given Component.
@@ -38,7 +38,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="application">The name of the application.</param>
         /// <param name="component">The name of the component.</param>
         /// <returns>The list of application settings fetched.</returns>
-        List<ApplicationSetting> GetApplicationSettings(string application, string component);
+        IList<ApplicationSetting> GetApplicationSettings(string application, string component);
 
         /// <summary>
         /// Inserts a new application setting.

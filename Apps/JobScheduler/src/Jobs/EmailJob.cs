@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,6 @@ namespace Healthgateway.JobScheduler.Jobs
     public class EmailJob : IEmailJob
     {
         private const int ConcurrencyTimeout = 5 * 60; // 5 minutes
-        private readonly IConfiguration configuration;
         private readonly ILogger<EmailJob> logger;
         private readonly IEmailDelegate emailDelegate;
         private readonly string host;
@@ -51,7 +50,6 @@ namespace Healthgateway.JobScheduler.Jobs
         public EmailJob(IConfiguration configuration, ILogger<EmailJob> logger, IEmailDelegate emailDelegate)
         {
             Contract.Requires((configuration != null) && (emailDelegate != null));
-            this.configuration = configuration!;
             this.logger = logger;
             this.emailDelegate = emailDelegate!;
             IConfigurationSection section = configuration!.GetSection("Smtp");
@@ -66,7 +64,7 @@ namespace Healthgateway.JobScheduler.Jobs
         public void SendEmail(Guid emailId)
         {
             this.logger.LogTrace($"Sending email... {emailId}");
-            Email email = this.emailDelegate.GetNewEmail(emailId);
+            Email? email = this.emailDelegate.GetNewEmail(emailId);
             if (email != null)
             {
                 this.SendEmail(email);
@@ -84,7 +82,56 @@ namespace Healthgateway.JobScheduler.Jobs
         public void SendLowPriorityEmails()
         {
             this.logger.LogDebug($"Sending low priority emails... Looking for up to {this.retryFetchSize} emails to send");
-            List<Email> resendEmails = this.emailDelegate.GetLowPriorityEmail(this.retryFetchSize);
+            IList<Email> resendEmails = this.emailDelegate.GetLowPriorityEmail(this.retryFetchSize);
+            this.ProcessEmails(resendEmails);
+            this.logger.LogDebug($"Finished sending low priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+        }
+
+        /// <inheritdoc />
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
+        public void SendStandardPriorityEmails()
+        {
+            this.logger.LogDebug($"Sending standard priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            IList<Email> resendEmails = this.emailDelegate.GetStandardPriorityEmail(this.retryFetchSize);
+            this.ProcessEmails(resendEmails);
+            this.logger.LogDebug($"Finished sending standard priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+        }
+
+        /// <inheritdoc />
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
+        public void SendHighPriorityEmails()
+        {
+            this.logger.LogDebug($"Sending high priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            IList<Email> resendEmails = this.emailDelegate.GetHighPriorityEmail(this.retryFetchSize);
+            this.ProcessEmails(resendEmails);
+            this.logger.LogDebug($"Finished sending high priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+        }
+
+        /// <inheritdoc />
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
+        public void SendUrgentPriorityEmails()
+        {
+            this.logger.LogDebug($"Sending urgent priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            IList<Email> resendEmails = this.emailDelegate.GetUrgentPriorityEmail(this.retryFetchSize);
+            this.ProcessEmails(resendEmails);
+            this.logger.LogDebug($"Finished sending urgent priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+        }
+
+        private static MimeMessage PrepareMessage(Email email)
+        {
+            MimeMessage msg = new MimeMessage();
+            msg.From.Add(new MailboxAddress("Health Gateway", email.From));
+            msg.To.Add(MailboxAddress.Parse(email.To));
+            msg.Subject = email.Subject;
+            msg.Body = new TextPart(email.FormatCode == EmailFormat.HTML ? MimeKit.Text.TextFormat.Html : MimeKit.Text.TextFormat.Plain)
+            {
+                Text = email.Body,
+            };
+            return msg;
+        }
+
+        private void ProcessEmails(IList<Email> resendEmails)
+        {
             if (resendEmails.Count > 0)
             {
                 this.logger.LogInformation($"Found {resendEmails.Count} emails to send");
@@ -103,21 +150,6 @@ namespace Healthgateway.JobScheduler.Jobs
 #pragma warning restore CA1031 // Restore warnings.
                 }
             }
-
-            this.logger.LogDebug($"Finished sending low priority emails. {JsonConvert.SerializeObject(resendEmails)}");
-        }
-
-        private static MimeMessage PrepareMessage(Email email)
-        {
-            MimeMessage msg = new MimeMessage();
-            msg.From.Add(new MailboxAddress("Health Gateway", email.From));
-            msg.To.Add(new MailboxAddress(email.To));
-            msg.Subject = email.Subject;
-            msg.Body = new TextPart(email.FormatCode == EmailFormat.HTML ? MimeKit.Text.TextFormat.Html : MimeKit.Text.TextFormat.Plain)
-            {
-                Text = email.Body,
-            };
-            return msg;
         }
 
         private void SendEmail(Email email)
@@ -166,9 +198,11 @@ namespace Healthgateway.JobScheduler.Jobs
             {
                 email.LastRetryDateTime = DateTime.UtcNow;
                 email.EmailStatusCode = email.Attempts < this.maxRetries ? EmailStatus.Pending : EmailStatus.Error;
-                if (caught is SmtpCommandException)
+
+                var smtpCommandException = caught as SmtpCommandException;
+                if (smtpCommandException != null)
                 {
-                    email.SmtpStatusCode = (int)((SmtpCommandException)caught).StatusCode;
+                    email.SmtpStatusCode = (int)smtpCommandException.StatusCode;
                 }
 
                 this.emailDelegate.UpdateEmail(email);

@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Controllers
 {
-    using System.Threading.Tasks;
     using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -29,27 +28,19 @@ namespace HealthGateway.Admin.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
-    [Authorize(Roles = "AdminUser")]
+    [Authorize(Roles = "AdminUser,AdminReviewer")]
     public class UserFeedbackController
     {
         private readonly IUserFeedbackService feedbackService;
-        private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IAuthorizationService authorizationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserFeedbackController"/> class.
         /// </summary>
         /// <param name="feedbackService">The injected user feedback service.</param>
-        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        /// <param name="authorizationService">The injected authorization service.</param>
         public UserFeedbackController(
-            IUserFeedbackService feedbackService,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IUserFeedbackService feedbackService)
         {
             this.feedbackService = feedbackService;
-            this.httpContextAccessor = httpContextAccessor;
-            this.authorizationService = authorizationService;
         }
 
         /// <summary>
@@ -74,7 +65,7 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPatch]
-        public async Task<IActionResult> UpdateUserFeedback(UserFeedbackView feedback)
+        public IActionResult UpdateUserFeedback(UserFeedbackView feedback)
         {
             return new JsonResult(this.feedbackService.UpdateFeedbackReview(feedback));
         }

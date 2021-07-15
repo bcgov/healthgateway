@@ -16,7 +16,7 @@
 namespace HealthGateway.Common.Models
 {
     /// <summary>
-    /// The configuration for the AESCrypto delegate
+    /// The configuration for the AESCrypto delegate.
     /// </summary>
     public class AESCryptoDelegateConfig
     {

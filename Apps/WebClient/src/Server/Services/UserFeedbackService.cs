@@ -15,7 +15,12 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
-    using System.Diagnostics.Contracts;
+    using Hangfire;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Jobs;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -27,27 +32,66 @@ namespace HealthGateway.WebClient.Services
     {
         private readonly ILogger logger;
         private readonly IFeedbackDelegate feedbackDelegate;
+        private readonly IRatingDelegate ratingDelegate;
+        private readonly IUserProfileDelegate profileDelegate;
+        private readonly IBackgroundJobClient jobClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserFeedbackService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="feedbackDelegate">The feedback delegate to perform the work.</param>
-        public UserFeedbackService(ILogger<UserFeedbackService> logger, IFeedbackDelegate feedbackDelegate)
+        /// <param name="ratingDelegate">The rating delegate to perform the work.</param>
+        /// <param name="profileDelegate">The user profile delegate to use.</param>
+        /// <param name="jobClient">The JobScheduler queue client.</param>
+        public UserFeedbackService(ILogger<UserFeedbackService> logger, IFeedbackDelegate feedbackDelegate, IRatingDelegate ratingDelegate, IUserProfileDelegate profileDelegate, IBackgroundJobClient jobClient)
         {
             this.logger = logger;
             this.feedbackDelegate = feedbackDelegate;
+            this.ratingDelegate = ratingDelegate;
+            this.profileDelegate = profileDelegate;
+            this.jobClient = jobClient;
         }
 
         /// <inheritdoc />
         public DBResult<UserFeedback> CreateUserFeedback(UserFeedback userFeedback)
         {
-            Contract.Requires(userFeedback != null);
             this.logger.LogTrace($"Creating user feedback... {JsonConvert.SerializeObject(userFeedback)}");
             DBResult<UserFeedback> retVal = this.feedbackDelegate.InsertUserFeedback(userFeedback);
-            this.logger.LogDebug($"Finished creating user feedback. {JsonConvert.SerializeObject(retVal)}");
+            DBResult<UserProfile> dbResult = this.profileDelegate.GetUserProfile(userFeedback.UserProfileId);
+            if (dbResult.Status == DBStatusCode.Read)
+            {
+                string? clientEmail = dbResult.Payload.Email;
+                if (!string.IsNullOrWhiteSpace(clientEmail))
+                {
+                    this.logger.LogTrace($"Queueing Admin Feedback job");
+                    ClientFeedback clientFeedback = new ()
+                    {
+                        UserFeedbackId = userFeedback.Id,
+                        Email = clientEmail,
+                    };
+                    this.jobClient.Enqueue<IAdminFeedbackJob>(j => j.SendEmail(clientFeedback));
+                }
+            }
 
+            this.logger.LogDebug($"Finished creating user feedback. {JsonConvert.SerializeObject(retVal)}");
             return retVal;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<Rating> CreateRating(Rating rating)
+        {
+            this.logger.LogTrace($"Creating rating... {JsonConvert.SerializeObject(rating)}");
+            DBResult<Rating> dbRating = this.ratingDelegate.InsertRating(rating);
+            this.logger.LogDebug($"Finished creating user feedback. {JsonConvert.SerializeObject(dbRating)}");
+
+            RequestResult<Rating> result = new RequestResult<Rating>()
+            {
+                ResourcePayload = dbRating.Payload,
+                ResultStatus = dbRating.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
+                ResultError = new RequestResultError() { ResultMessage = dbRating.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+            };
+            return result;
         }
     }
 }

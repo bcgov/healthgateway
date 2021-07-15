@@ -1,0 +1,47 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  annotations:
+    description: |
+      The role based settings to allow Patroni Dev, Test, and Prod to pull images from tools.
+  name: rbac-image-management
+objects:
+  - apiVersion: authorization.openshift.io/v1
+    groupNames:
+      - system:serviceaccounts:${NAMESPACE}-tools
+    kind: RoleBinding
+    metadata:
+      name: patroni:image-pullers
+      namespace: ${NAMESPACE}-tools
+      labels:
+        app: ${SA}
+    roleRef:
+      name: system:image-puller
+    subjects:
+      - kind: SystemGroup
+        name: system:serviceaccounts:${NAMESPACE}-tools
+      - kind: ServiceAccount
+        name: ${SA}
+        namespace: ${NAMESPACE}-dev
+      - kind: ServiceAccount
+        name: ${SA}
+        namespace: ${NAMESPACE}-test
+      - kind: ServiceAccount
+        name: ${SA}
+        namespace: ${NAMESPACE}-prod
+    userNames:
+      - system:serviceaccount:${NAMESPACE}-dev:${SA}
+      - system:serviceaccount:${NAMESPACE}-test:${SA}
+      - system:serviceaccount:${NAMESPACE}-prod:${SA}
+
+parameters:
+  - name: NAMESPACE
+    displayName: The Project Namespace
+    description: The namespace of the project
+    required: true
+    value: 0bd5ad
+  - name: SA
+    displayName: The name of the Service account to allow system puller.
+    description: The name of the Service account to allow system puller.
+    required: true
+    value: patroni-postgres

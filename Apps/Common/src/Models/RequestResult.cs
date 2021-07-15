@@ -15,6 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Models
 {
+    using System;
+    using System.Collections;
+    using System.Text.Json.Serialization;
     using HealthGateway.Common.Constants;
 
     /// <summary>
@@ -25,34 +28,59 @@ namespace HealthGateway.Common.Models
         where T : class
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="RequestResult{T}"/> class.
+        /// </summary>
+        public RequestResult()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RequestResult{T}"/> class.
+        /// </summary>
+        /// <param name="resourcePayload">The resource payload.</param>
+        /// <param name="resultStatus">The result status.</param>
+        public RequestResult(
+            T resourcePayload,
+            ResultType resultStatus)
+        {
+            this.ResourcePayload = resourcePayload;
+            this.ResultStatus = resultStatus;
+        }
+
+        /// <summary>
         /// Gets or sets the result payload.
         /// </summary>
-        public T ResourcePayload { get; set; } = null!;
+        [JsonPropertyName("resourcePayload")]
+        public T? ResourcePayload { get; set; } = default(T);
 
         /// <summary>
         /// Gets or sets the total result count for the request for pagination.
         /// </summary>
+        [JsonPropertyName("totalResultCount")]
         public int? TotalResultCount { get; set; }
 
         /// <summary>
         /// Gets or sets the page being returned on this result for pagination.
         /// </summary>
+        [JsonPropertyName("pageIndex")]
         public int? PageIndex { get; set; }
 
         /// <summary>
         /// Gets or sets the page size for pagination.
         /// </summary>
+        [JsonPropertyName("pageSize")]
         public int? PageSize { get; set; }
 
         /// <summary>
         /// Gets or sets the Result of the request.
         /// </summary>
+        [JsonPropertyName("resultStatus")]
         public ResultType ResultStatus { get; set; }
 
         /// <summary>
-        /// Gets or sets the message depending on the result type.
-        /// Will always be set when ResultType is Error.
+        /// Gets or sets the ResultError of the request. Can be null.
         /// </summary>
-        public string ResultMessage { get; set; } = string.Empty;
+        [JsonPropertyName("resultError")]
+        public RequestResultError? ResultError { get; set; } = null;
     }
 }

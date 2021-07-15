@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Context
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using HealthGateway.Database.Models;
@@ -26,13 +27,14 @@ namespace HealthGateway.Database.Context
     /// <summary>
     /// The common database context to be used by all other HealthGateway contexts.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public abstract class BaseDbContext : DbContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseDbContext"/> class.
         /// </summary>
         /// <param name="options">The DB Context options.</param>
-        public BaseDbContext(DbContextOptions options)
+        protected BaseDbContext(DbContextOptions options)
             : base(options)
         {
         }
@@ -97,15 +99,15 @@ namespace HealthGateway.Database.Context
                     entityEntry.Property(nameof(IAuditable.UpdatedDateTime)).CurrentValue = now;
                 }
 
-                if (entityEntry.Entity is IConcurrencyGuard && entityEntry.State == EntityState.Modified)
+                if (entityEntry.Entity is IConcurrencyGuard &&
+                    entityEntry.State == EntityState.Modified &&
+                    entityEntry.Property(nameof(IConcurrencyGuard.Version)).IsModified)
                 {
                     // xmin is the Postgres system column that we use for concurrency,
                     // we set the original value regardless of load state to the value we have in our object
                     // which ensures that we're only updating the row we think we have.
-                    if (entityEntry.Property(nameof(IConcurrencyGuard.Version)).IsModified)
-                    {
-                        entityEntry.Property(nameof(IConcurrencyGuard.Version)).OriginalValue = entityEntry.Property(nameof(IConcurrencyGuard.Version)).CurrentValue;
-                    }
+                    entityEntry.Property(nameof(IConcurrencyGuard.Version)).OriginalValue =
+                        entityEntry.Property(nameof(IConcurrencyGuard.Version)).CurrentValue;
                 }
             }
 

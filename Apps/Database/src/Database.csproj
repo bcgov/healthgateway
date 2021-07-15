@@ -1,28 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>HealthGateway.Database</RootNamespace>
-    <Nullable>enable</Nullable>
-    <LangVersion>8.0</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DocumentationFile>bin\Debug\netcoreapp3.1\Database.xml</DocumentationFile>
+    <DocumentationFile>.\Database.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.0" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.0" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Macross.Json.Extensions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.7" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.7" />
   </ItemGroup>
-
+    
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json" />
+  </ItemGroup>
+  
   <ItemGroup>
     <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
       <Value>$(MSBuildProjectFullPath)</Value>
@@ -30,39 +21,35 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="stylecop.json" />
     <Content Remove="wwwroot\dist\vendor-manifest.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Wrapper\" />
-    <Folder Include="Assets\Legal\" />
     <Folder Include="Models\Cacheable\" />
   </ItemGroup>
 
 
   <ItemGroup>
-    <Content Remove="Assets\docs\EmailInviteTemplate.html" />
     <Content Remove="Assets\docs\EmailValidationTemplate.html" />
-    <Content Remove="Assets\docs\EmailWaitlistTemplate.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Assets\docs\EmailInviteTemplate.html" />
     <EmbeddedResource Include="Assets\docs\EmailValidationTemplate.html" />
-    <EmbeddedResource Include="Assets\docs\EmailWaitlistTemplate.html" />
+    <EmbeddedResource Include="Assets\Legal\TermsOfService.20200511.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20191206.html" />
     <EmbeddedResource Include="Assets\docs\EmailUpdatedTermsofService.html" />
     <EmbeddedResource Include="Assets\docs\EmailAccountRemoved.html" />
     <EmbeddedResource Include="Assets\docs\EmailAccountClosed.html" />
     <EmbeddedResource Include="Assets\docs\EmailAccountRecovered.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20200317.html" />
+    <EmbeddedResource Include="Assets\Legal\TermsOfService.20201224.html" />
+    <EmbeddedResource Include="Assets\docs\AdminFeedback.html" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\Legal\TermsOfService.20191206.html" />
     <None Remove="Assets\Legal\TermsOfService.20200317.html" />
+    <None Remove="Assets\Legal\TermsOfService.20200511.html" />
+    <None Remove="Assets\Legal\TermsOfService.20201224.html" />
+    <None Remove="Assets\docs\EmailAccountClosed %28copy%29.html" />
   </ItemGroup>
 </Project>

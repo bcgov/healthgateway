@@ -1,66 +1,167 @@
 import { injectable } from "inversify";
-import { IHttpDelegate, IUserFeedbackService } from "@/services/interfaces";
 import { Dictionary } from "vue-router/types/router";
-import UserFeedback from "@/models/userFeedback";
+
 import { ResultType } from "@/constants/resulttype";
 import RequestResult from "@/models/requestResult";
+import UserFeedback, { AdminTag, UserFeedbackTag } from "@/models/userFeedback";
+import { IHttpDelegate, IUserFeedbackService } from "@/services/interfaces";
+import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestUserFeedbackService implements IUserFeedbackService {
-  private readonly USER_FEEDBACK_BASE_URI: string = "v1/api/UserFeedback";
-  private http!: IHttpDelegate;
+    private readonly BASE_URI: string = "v1/api";
+    private readonly USER_FEEDBACK_BASE_URI: string = `${this.BASE_URI}/UserFeedback`;
+    private http!: IHttpDelegate;
 
-  public initialize(http: IHttpDelegate): void {
-    this.http = http;
-  }
+    private readonly contentTypeHeader = "Content-Type";
+    private readonly contentType = "application/json; charset=utf-8";
 
-  public getFeedbackList(): Promise<UserFeedback[]> {
-    return new Promise((resolve, reject) => {
-      this.http
-        .get<RequestResult<UserFeedback[]>>(`${this.USER_FEEDBACK_BASE_URI}`)
-        .then(requestResult => {
-          this.handleResult(requestResult, resolve, reject);
-        })
-        .catch(err => {
-          console.log(err);
-          return reject(err);
-        });
-    });
-  }
-
-  public toggleReviewed(feedback: UserFeedback): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      let headers: Dictionary<string> = {};
-      headers["Content-Type"] = "application/json; charset=utf-8";
-      this.http
-        .patch<boolean>(
-          `${this.USER_FEEDBACK_BASE_URI}`,
-          JSON.stringify(feedback),
-          headers
-        )
-        .then(requestResult => {
-          if (requestResult) {
-            resolve(true);
-          } else {
-            reject("Error toggling user feedback");
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          return reject(err);
-        });
-    });
-  }
-
-  private handleResult(
-    requestResult: RequestResult<any>,
-    resolve: any,
-    reject: any
-  ) {
-    if (requestResult.resultStatus === ResultType.Success) {
-      resolve(requestResult.resourcePayload);
-    } else {
-      reject(requestResult.resultMessage);
+    public initialize(http: IHttpDelegate): void {
+        this.http = http;
     }
-  }
+
+    public getFeedbackList(): Promise<UserFeedback[]> {
+        return new Promise((resolve, reject) => {
+            this.http
+                .get<RequestResult<UserFeedback[]>>(
+                    `${this.USER_FEEDBACK_BASE_URI}`
+                )
+                .then((requestResult) => {
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return reject(err);
+                });
+        });
+    }
+
+    public toggleReviewed(feedback: UserFeedback): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            const headers: Dictionary<string> = {};
+            headers[this.contentTypeHeader] = this.contentType;
+            this.http
+                .patch<boolean>(
+                    `${this.USER_FEEDBACK_BASE_URI}`,
+                    JSON.stringify(feedback),
+                    headers
+                )
+                .then((requestResult) => {
+                    if (requestResult) {
+                        resolve(true);
+                    } else {
+                        reject("Error toggling user feedback");
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return reject(err);
+                });
+        });
+    }
+
+    public getAllTags(): Promise<AdminTag[]> {
+        return new Promise((resolve, reject) => {
+            const headers: Dictionary<string> = {};
+            headers[this.contentTypeHeader] = this.contentType;
+            this.http
+                .get<RequestResult<AdminTag[]>>(`${this.BASE_URI}/Tag`, headers)
+                .then((requestResult) => {
+                    if (requestResult.resultStatus === ResultType.Success) {
+                        resolve(requestResult.resourcePayload);
+                    } else {
+                        reject("Error retrieving tags");
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return reject(err);
+                });
+        });
+    }
+
+    public createTag(
+        feedbackId: string,
+        tagName: string
+    ): Promise<UserFeedbackTag> {
+        return new Promise((resolve, reject) => {
+            const headers: Dictionary<string> = {};
+            headers[this.contentTypeHeader] = this.contentType;
+            this.http
+                .post<RequestResult<UserFeedbackTag>>(
+                    `${this.USER_FEEDBACK_BASE_URI}/${feedbackId}/Tag`,
+                    JSON.stringify(tagName),
+                    headers
+                )
+                .then((requestResult) => {
+                    if (requestResult.resultStatus === ResultType.Success) {
+                        resolve(requestResult.resourcePayload);
+                    } else {
+                        reject("Error creating feedback tag");
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return reject(err);
+                });
+        });
+    }
+
+    public associateTag(
+        feedbackId: string,
+        tag: AdminTag
+    ): Promise<UserFeedbackTag> {
+        console.log(tag);
+        return new Promise((resolve, reject) => {
+            const headers: Dictionary<string> = {};
+            headers[this.contentTypeHeader] = this.contentType;
+            this.http
+                .put<RequestResult<UserFeedbackTag>>(
+                    `${this.USER_FEEDBACK_BASE_URI}/${feedbackId}/Tag`,
+                    tag
+                )
+                .then((requestResult) => {
+                    if (requestResult.resultStatus === ResultType.Success) {
+                        resolve(requestResult.resourcePayload);
+                    } else {
+                        reject("Error adding feedback tag");
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return reject(err);
+                });
+        });
+    }
+
+    public removeTag(
+        feedbackId: string,
+        tag: UserFeedbackTag
+    ): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            const headers: Dictionary<string> = {};
+            headers[this.contentTypeHeader] = this.contentType;
+            this.http
+                .delete<boolean>(
+                    `${this.USER_FEEDBACK_BASE_URI}/${feedbackId}/Tag`,
+                    JSON.stringify(tag),
+                    headers
+                )
+                .then((requestResult) => {
+                    if (requestResult) {
+                        resolve(true);
+                    } else {
+                        reject("Error removing feedback tag");
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return reject(err);
+                });
+        });
+    }
 }

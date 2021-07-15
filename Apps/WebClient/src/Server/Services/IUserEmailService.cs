@@ -16,7 +16,7 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
-    using HealthGateway.Database.Models;
+    using HealthGateway.Common.Models;
 
     /// <summary>
     /// The User Email service.
@@ -28,23 +28,23 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="inviteKey">The email invite key.</param>
-        /// <returns>returns true if the email invite was found.</returns>
-        bool ValidateEmail(string hdid, Guid inviteKey);
+        /// <returns>Returns a request result with appropriate result status..</returns>
+        PrimitiveRequestResult<bool> ValidateEmail(string hdid, Guid inviteKey);
 
         /// <summary>
-        /// Retrieves the last invite email.
+        /// Creates the a non-validated email.
         /// </summary>
-        /// <param name="hdid">The requested user hdid.</param>
-        /// <returns>returns the last email invite if found.</returns>
-        EmailInvite RetrieveLastInvite(string hdid);
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="emailAddress">Email address to be set for the user.</param>
+        /// <returns>returns true if the email was sucessfully created.</returns>
+        bool CreateUserEmail(string hdid, string emailAddress);
 
         /// <summary>
         /// Updates the user email.
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
-        /// <param name="email">Email to be set for the user.</param>
-        /// <param name="hostUri">The host uri for referal purposes.</param>
-        /// <returns>returns true if the email invite was sucessfully created.</returns>
-        bool UpdateUserEmail(string hdid, string email, Uri hostUri);
+        /// <param name="emailAddress">Email address to be set for the user.</param>
+        /// <returns>returns true if the email was sucessfully created.</returns>
+        bool UpdateUserEmail(string hdid, string emailAddress);
     }
 }

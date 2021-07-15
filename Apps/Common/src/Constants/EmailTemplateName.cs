@@ -23,26 +23,26 @@ namespace HealthGateway.Common.Constants
         /// <summary>
         /// Name of the registration email template.
         /// </summary>
-        public const string REGISTRATION_TEMPLATE = "Registration";
+        public const string RegistrationTemplate = "Registration";
 
         /// <summary>
         /// Name of the beta confirmation email template.
         /// </summary>
-        public const string BETA_CONFIRMATION_TEMPLATE = "BetaConfirmation";
+        public const string BetaConfirmationTemplate = "BetaConfirmation";
 
         /// <summary>
         /// Name of the invite email template.
         /// </summary>
-        public const string INVITE_TEMPLATE = "Invite";
+        public const string InviteTemplate = "Invite";
 
         /// <summary>
         /// Name of the close account email template.
         /// </summary>
-        public const string ACCOUNT_CLOSED = "AccountClosed";
+        public const string AccountClosedTemplate = "AccountClosed";
 
         /// <summary>
         /// Name of the recover account email template.
         /// </summary>
-        public const string ACCOUNT_RECOVERED = "AccountRecovered";
+        public const string AccountRecoveredTemplate = "AccountRecovered";
     }
 }

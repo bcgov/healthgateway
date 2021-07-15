@@ -1,42 +1,21 @@
 name: PR$(Rev:.r) #Build number
 
-#Build variables
-variables:
-  App.Home: $(Build.SourcesDirectory)/Apps/JobScheduler
-  App.Name: hangfire
-  App.UnitTests: $(App.Home)/test/unit
-  App.FunctionalTests: $(App.Home)/test/functional
-
-pool:
-  name: 'HealthGateway'
+pr:
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - Apps/JobScheduler
+      - Apps/DBMaintainer
 
 trigger: none
 
-pr:
-  branches:
-   include:
-   - dev  
-  paths:
-   include:
-   - Apps/JobScheduler
-   - Apps/Common
-   - Apps/Database
-   
-steps:
-- task: DotNetCoreCLI@2
-  displayName: Run dotnet Tests
-  inputs:
-    command: 'test'
-    projects: '$(App.UnitTests)/JobSchedulerTests.csproj'
-    testRunTitle: 'JobScheduler Tests'
-  enabled: 'false'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Publish dotnet Code'
-  inputs:
-    modifyOutputPath: false
-    command: 'publish'
-    publishWebProjects: false
-    projects: '$(App.Home)/src'
-    arguments: '-o $(Build.BinariesDirectory)'
-    zipAfterPublish: false
+extends:
+  template: /Build/hg.yaml
+  parameters:
+    Application: JobScheduler
+    OpenShiftName: hangfire
+    DotNetTests: false
+    NPMInstall: false
+    NPMTests: false

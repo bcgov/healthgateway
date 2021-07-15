@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,33 +15,63 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using HealthGateway.Admin.Constants;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Database.Models;
+
     /// <summary>
     /// Service that provides functionality to the admin dashboard.
     /// </summary>
     public interface IDashboardService
     {
         /// <summary>
-        /// Retrieves the count of registered users.
+        /// Retrieves the daily count of registered users.
         /// </summary>
+        /// <param name="timeOffset">The time offset from the client browser to UTC.</param>
         /// <returns>The count of user profiles that accepted the terms of service.</returns>
-        int GetRegisteredUserCount();
+        IDictionary<DateTime, int> GetDailyRegisteredUsersCount(int timeOffset);
 
         /// <summary>
-        /// Retrieves the count of unregistered users that received an invite.
+        /// Retrieves the daily count of logged in users in the current day.
         /// </summary>
-        /// <returns>The count of user profiles that received an invite but have not accepted the terms of service.</returns>
-        int GetUnregisteredInvitedUserCount();
-
-        /// <summary>
-        /// Retrieves the count of logged in users in the current day.
-        /// </summary>
+        /// <param name="timeOffset">The time offset from the client browser to UTC.</param>
         /// <returns>The count of logged in user.</returns>
-        int GetTodayLoggedInUsersCount();
+        IDictionary<DateTime, int> GetDailyLoggedInUsersCount(int timeOffset);
 
         /// <summary>
-        /// Retrieves the count of waitlisted users.
+        /// Retrieves the count of dependents.
         /// </summary>
-        /// <returns>The count of users waiting for an invite.</returns>
-        int GetWaitlistUserCount();
+        /// <param name="timeOffset">The time offset from the client browser to UTC.</param>
+        /// <returns>The count of dependents.</returns>
+        IDictionary<DateTime, int> GetDailyDependentCount(int timeOffset);
+
+        /// <summary>
+        /// Retrieves the count recurring users.
+        /// </summary>
+        /// <param name="dayCount">The number of unique days for evaluating a user.</param>
+        /// <param name="startPeriod">The period start over which to evaluate the user.</param>
+        /// <param name="endPeriod">The period end over which to evaluate the user.</param>
+        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        /// <returns>The count of recurrent users.</returns>
+        int GetRecurrentUserCount(int dayCount, string startPeriod, string endPeriod, int timeOffset);
+
+        /// <summary>
+        /// Retrieves a list of message verifications matching the query.
+        /// </summary>
+        /// <param name="queryType">The type of query to perform.</param>
+        /// <param name="queryString">The value to query on.</param>
+        /// <returns>A list of users matching the query.</returns>
+        RequestResult<IEnumerable<MessagingVerification>> GetMessageVerifications(UserQueryType queryType, string queryString);
+
+        /// <summary>
+        /// Retrieves the ratings summary.
+        /// </summary>
+        /// <param name="startPeriod">The period start to calculate the summary.</param>
+        /// <param name="endPeriod">The period end to calculate the summary.</param>
+        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        /// <returns>A dictionary pairing the ratings with the counts.</returns>
+        IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset);
     }
 }

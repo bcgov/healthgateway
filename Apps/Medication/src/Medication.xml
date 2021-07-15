@@ -1,0 +1,962 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Medication</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.Medication.Constants.ProtectiveWordOperator">
+            <summary>
+            Protective Word Maintenance Operation to be performed.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Medication.Constants.ProtectiveWordOperator.Get">
+            <summary>
+            Perform the Get operation.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Medication.Constants.ProtectiveWordOperator.Set">
+            <summary>
+            Perform the Set operation.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Medication.Constants.ProtectiveWordOperator.Delete">
+            <summary>
+            Perform the delete operation.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Controllers.MedicationController">
+            <summary>
+            The Medication controller.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Medication.Controllers.MedicationController.medicationService">
+            <summary>
+            Gets or sets the medication data service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Controllers.MedicationController.#ctor(HealthGateway.Medication.Services.IMedicationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Medication.Controllers.MedicationController"/> class.
+            </summary>
+            <param name="medicationService">The injected medication data service.</param>
+        </member>
+        <member name="M:HealthGateway.Medication.Controllers.MedicationController.GetMedication(System.String)">
+            <summary>
+            Gets a list of medications that match the requested drug identifier.
+            The drug identifier must be either a Health Canada DIN or a BC Pharmanet PIN.
+            </summary>
+            <returns>The medication statement records.</returns>
+            <param name="drugIdentifier">The medication identifier to retrieve.</param>
+            <response code="200">Returns the medication statement bundle.</response>
+        </member>
+        <member name="M:HealthGateway.Medication.Controllers.MedicationController.GetMedications(System.Collections.Generic.IList{System.String})">
+            <summary>
+            Gets a list of medications that match the requested drug identifiers.
+            </summary>
+            <returns>The medication statement records.</returns>
+            <param name="drugIdentifiers">The list of medication identifiers to retrieve.</param>
+            <response code="200">Returns the medication statement bundle.</response>
+        </member>
+        <member name="T:HealthGateway.Medication.Controllers.MedicationRequestController">
+            <summary>
+            Controller that handles requets for Medication Requests.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Medication.Controllers.MedicationRequestController.medicationRequestService">
+            <summary>
+            The medication request data service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Controllers.MedicationRequestController.#ctor(HealthGateway.Medication.Services.IMedicationRequestService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Medication.Controllers.MedicationRequestController"/> class.
+            </summary>
+            <param name="medicationRequestService">The injected medication request data service.</param>
+        </member>
+        <member name="M:HealthGateway.Medication.Controllers.MedicationRequestController.GetMedicationRequests(System.String)">
+            <summary>
+            Gets a json of medication request.
+            </summary>
+            <returns>The medication statement records.</returns>
+            <param name="hdid">The patient hdid.</param>
+            <response code="200">Returns the medication statement bundle.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="T:HealthGateway.Medication.Controllers.MedicationStatementController">
+            <summary>
+            Controller that handles requests for medication statements.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Medication.Controllers.MedicationStatementController.medicationStatementService">
+            <summary>
+            The medication statement data service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Controllers.MedicationStatementController.#ctor(HealthGateway.Medication.Services.IMedicationStatementService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Medication.Controllers.MedicationStatementController"/> class.
+            </summary>
+            <param name="medicationStatementService">The injected medication data service.</param>
+        </member>
+        <member name="M:HealthGateway.Medication.Controllers.MedicationStatementController.GetMedicationStatements(System.String,System.String)">
+            <summary>
+            Gets a json of medication record.
+            </summary>
+            <returns>The medication statement records.</returns>
+            <param name="hdid">The patient hdid.</param>
+            <param name="protectiveWord">The clients protective word for Pharmanet.</param>
+            <response code="200">Returns the medication statement bundle.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="T:HealthGateway.Medication.Delegates.IMedicationRequestDelegate">
+            <summary>
+            Interface to retrieve Medication Requests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.IMedicationRequestDelegate.GetMedicationRequestsAsync(System.String)">
+            <summary>
+            Returns a set of MedicationRequests for the given phn.
+            </summary>
+            <param name="phn">The PHN of the user querying.</param>
+            <returns>The MedicationRequest result.</returns>
+        </member>
+        <member name="T:HealthGateway.Medication.Delegates.IMedStatementDelegate">
+            <summary>
+            Interface to retrieve Medication Statements.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.IMedStatementDelegate.GetMedicationStatementsAsync(HealthGateway.Common.Models.ODR.ODRHistoryQuery,System.String,System.String,System.String)">
+            <summary>
+            Returns a set of Medication Statements.
+            </summary>
+            <param name="query">The medication statement query execute against the ODR.</param>
+            <param name="protectiveWord">The protective word to validate.</param>
+            <param name="hdid">The HDID of the user querying.</param>
+            <param name="ipAddress">The IP of the user querying.</param>
+            <returns>The Medication History response wrapped in an HNMessage.</returns>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.IMedStatementDelegate.SetProtectiveWord(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Updates the Protective word to the new value.
+            </summary>
+            <param name="phn">The PHN to query.</param>
+            <param name="newProtectiveWord">The new protective word to set.</param>
+            <param name="protectiveWord">The existing protective word to validate.</param>
+            <param name="hdid">The HDID of the user querying.</param>
+            <param name="ipAddress">The IP of the user querying.</param>
+            <returns>True if the protective word was updated.</returns>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.IMedStatementDelegate.DeleteProtectiveWord(System.String,System.String,System.String,System.String)">
+            <summary>
+            Deletes the protective word from the user.
+            </summary>
+            <param name="phn">The PHN to query.</param>
+            <param name="protectiveWord">The existing protective word to validate.</param>
+            <param name="hdid">The HDID of the user querying.</param>
+            <param name="ipAddress">The IP of the user querying.</param>
+            <returns>True if the protective word was removed.</returns>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.IMedStatementDelegate.ValidateProtectiveWord(System.String,System.String,System.String,System.String)">
+            <summary>
+            Validates the protective word.
+            </summary>
+            <param name="phn">The PHN to query.</param>
+            <param name="protectiveWord">The protective word to validate.</param>
+            <param name="hdid">The HDID of the user querying.</param>
+            <param name="ipAddress">The IP of the user querying.</param>
+            <returns>returns true if the supplied protectiveword.</returns>
+        </member>
+        <member name="T:HealthGateway.Medication.Delegates.RestMedStatementDelegate">
+            <summary>
+            ODR Implementation for Rest Medication Statements.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.RestMedStatementDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Medication.Delegates.RestMedStatementDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Database.Delegates.IGenericCacheDelegate,HealthGateway.Common.Delegates.IHashDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Medication.Delegates.RestMedStatementDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpClientService">The injected http client service.</param>
+            <param name="configuration">The injected configuration provider.</param>
+            <param name="genericCacheDelegate">The delegate responsible for caching.</param>
+            <param name="hashDelegate">The delegate responsible for hashing.</param>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.RestMedStatementDelegate.GetMedicationStatementsAsync(HealthGateway.Common.Models.ODR.ODRHistoryQuery,System.String,System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.RestMedStatementDelegate.SetProtectiveWord(System.String,System.String,System.String,System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.RestMedStatementDelegate.DeleteProtectiveWord(System.String,System.String,System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.RestMedStatementDelegate.ValidateProtectiveWord(System.String,System.String,System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.RestMedStatementDelegate.GetProtectiveWord(System.String,System.String,System.String)">
+            <summary>
+            Returns the hashed protective word.
+            </summary>
+            <param name="phn">The PHN to query.</param>
+            <param name="hdid">The HDID of the user querying.</param>
+            <param name="ipAddress">The IP of the user querying.</param>
+            <returns>The hash of the protective word response or null if not set.</returns>
+        </member>
+        <member name="T:HealthGateway.Medication.Delegates.SalesforeceDelegate">
+            <summary>
+            Salesforce Implementation that retrieves Medication Requests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.SalesforeceDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Medication.Delegates.SalesforeceDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Common.AccessManagement.Authentication.IAuthenticationDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Medication.Delegates.SalesforeceDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpClientService">The injected http client service.</param>
+            <param name="configuration">The injected configuration provider.</param>
+            <param name="authDelegate">The delegate responsible authentication.</param>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.SalesforeceDelegate.GetMedicationRequestsAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.FederalDrugSource">
+            <summary>
+            Federal Drug Source.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.FederalDrugSource.UpdateDateTime">
+            <summary>
+            Gets or sets the drug updated date/time.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.FederalDrugSource.DrugProduct">
+            <summary>
+            Gets or sets the drug product.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.MedicationInformation">
+            <summary>
+            The medications data model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationInformation.DIN">
+            <summary>
+            Gets or sets the Drug Identification Number for the prescribed medication.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationInformation.FederalData">
+            <summary>
+            Gets or sets the Federal Drug Data Source.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationInformation.ProvincialData">
+            <summary>
+            Gets or sets the Provincial Drug Data Source.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.MedicationRequest">
+            <summary>
+            The medications request data model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationRequest.ReferenceNumber">
+            <summary>
+            Gets or sets the reference number.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationRequest.DrugName">
+            <summary>
+            Gets or sets the drug name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationRequest.RequestStatus">
+            <summary>
+            Gets or sets the request status.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationRequest.PrescriberFirstName">
+            <summary>
+            Gets or sets the prescriber's firstname.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationRequest.PrescriberLastName">
+            <summary>
+            Gets or sets the prescriber's lastname.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationRequest.RequestedDate">
+            <summary>
+            Gets or sets the requested date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationRequest.EffectiveDate">
+            <summary>
+            Gets or sets the effective date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationRequest.ExpiryDate">
+            <summary>
+            Gets or sets the expiry date.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.MedicationStatementHistory">
+            <summary>
+            The medications statement data model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationStatementHistory.PrescriptionIdentifier">
+            <summary>
+            Gets or sets the brand name of the  medication.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationStatementHistory.PrescriptionStatus">
+            <summary>
+            Gets or sets the Prescription status.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationStatementHistory.DispensedDate">
+            <summary>
+            Gets or sets the date the medication was dispensed.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationStatementHistory.PractitionerSurname">
+            <summary>
+            Gets or sets the Surname of the Practitioner who prescribed the medication.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationStatementHistory.Directions">
+            <summary>
+            Gets or sets the directions as prescribed.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationStatementHistory.DateEntered">
+            <summary>
+            Gets or sets the date the medication was entered.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationStatementHistory.PharmacyId">
+            <summary>
+            Gets or sets the pharmacy id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationStatementHistory.MedicationSummary">
+            <summary>
+            Gets or sets the medication for the current MedicationStatementHistory.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationStatementHistory.DispensingPharmacy">
+            <summary>
+            Gets or sets the dispensing pharmacy for the current MedicationStatementHistory.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Models.MedicationStatementHistory.FromODRModel(HealthGateway.Medication.Models.ODR.MedicationResult)">
+            <summary>
+            Creates a Medication statement history object from an ODR model.
+            </summary>
+            <param name="model">The medication result to convert.</param>
+            <returns>The newly created medicationStatementHistory object.</returns>
+        </member>
+        <member name="M:HealthGateway.Medication.Models.MedicationStatementHistory.FromODRModelList(System.Collections.Generic.IList{HealthGateway.Medication.Models.ODR.MedicationResult})">
+            <summary>
+            Creates a Medication statement history object from an ODR model.
+            </summary>
+            <param name="models">The list of ODR models to convert.</param>
+            <returns>A list of MedicationStatementHistory objects.</returns>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.MedicationSummary">
+            <summary>
+            Contains sumary information of a medication.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationSummary.DIN">
+            <summary>
+            Gets or sets the Drug Identification Number for the prescribed medication.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationSummary.BrandName">
+            <summary>
+            Gets or sets the brand name of the  medication.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationSummary.GenericName">
+            <summary>
+            Gets or sets the common or generic name of the  medication.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationSummary.Quantity">
+            <summary>
+            Gets or sets the quantity for the  medication prescribed.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationSummary.MaxDailyDosage">
+            <summary>
+            Gets or sets the medication max daily dosage.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationSummary.DrugDiscontinuedDate">
+            <summary>
+            Gets or sets the date the Drug was discontinued if applicable.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationSummary.Form">
+            <summary>
+            Gets or sets the form.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationSummary.Manufacturer">
+            <summary>
+            Gets or sets the manufacturer.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationSummary.Strength">
+            <summary>
+            Gets or sets the strength.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationSummary.StrengthUnit">
+            <summary>
+            Gets or sets the strength unit.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.MedicationSummary.IsPin">
+            <summary>
+            Gets or sets a value indicating whether it is a provincial drug.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.ODR.Address">
+            <summary>
+            Address model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.Address.Line1">
+            <summary>
+            Gets or sets Line1 of the address.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.Address.Line2">
+            <summary>
+            Gets or sets Line2 of the address.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.Address.City">
+            <summary>
+            Gets or sets City for the address.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.Address.Province">
+            <summary>
+            Gets or sets Province for the address.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.Address.PostalCode">
+            <summary>
+            Gets or sets PostalCode for the address.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.Address.Country">
+            <summary>
+            Gets or sets Country for the address.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.ODR.MedicationHistory">
+            <summary>
+            The ODR Medication History Request/Response model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.MedicationHistory.Query">
+            <summary>
+            Gets or sets the QueryRequest for the MedicationHistory integration.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.MedicationHistory.Response">
+            <summary>
+            Gets or sets the MedicationHistoryResponse for the MedicationHistory integration.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.ODR.MedicationHistoryResponse">
+            <summary>
+            The ODR Medication Response.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.MedicationHistoryResponse.Results">
+            <summary>
+            Gets or sets the set of MedicationResults.
+            The set is boud by the other class properties.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.ODR.MedicationResult">
+            <summary>
+            Represents a dispensed prescription.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.MedicationResult.Id">
+            <summary>
+            Gets or sets the unique identifer for this record.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.MedicationResult.DispenseDate">
+            <summary>
+            Gets or sets the dispenseDate.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.MedicationResult.PrescriptionNumber">
+            <summary>
+            Gets or sets the prescription number.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.MedicationResult.PrescriptionStatus">
+            <summary>
+            Gets or sets the prescription status.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.MedicationResult.DIN">
+            <summary>
+            Gets or sets the DIN/PIN of the prescription.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.MedicationResult.GenericName">
+            <summary>
+            Gets or sets the Generic name for the prescription.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.MedicationResult.Quantity">
+            <summary>
+            Gets or sets the quantity of the prescription.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.MedicationResult.Refills">
+            <summary>
+            Gets or sets the Refills for the prescription.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.MedicationResult.Directions">
+            <summary>
+            Gets or sets the Directions given for the prescription.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.MedicationResult.Practioner">
+            <summary>
+            Gets or sets the Practioners name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.MedicationResult.DispensingPharmacy">
+            <summary>
+            Gets or sets the Dispensing Pharmacy of the prescription.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.ODR.Name">
+            <summary>
+            Represents a persons name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.Name.GivenName">
+            <summary>
+            Gets or sets the Given name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.Name.MiddleInitial">
+            <summary>
+            Gets or Sets the middle initial.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.Name.Surname">
+            <summary>
+            Gets or sets the Surname.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.ODR.Pharmacy">
+            <summary>
+            Pharmacy model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.Pharmacy.PharmacyId">
+            <summary>
+            Gets or sets the Pharmacy ID.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.Pharmacy.Name">
+            <summary>
+            Gets or sets the name of the Pharmacy.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.Pharmacy.Address">
+            <summary>
+            Gets or sets the address for the pharmacy.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.Pharmacy.PhoneNumber">
+            <summary>
+            Gets or sets the Pharmacy's Phone number.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.Pharmacy.FaxNumber">
+            <summary>
+            Gets or sets the Pharmacy's Fax Number.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.ODR.ProtectiveWord">
+            <summary>
+            The ProtectiveWord Request/Response model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.ProtectiveWord.Id">
+            <summary>
+            Gets or sets the Id of the request.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.ProtectiveWord.RequestorHDID">
+            <summary>
+            Gets or sets the HDID of the requestor.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.ProtectiveWord.RequestorIP">
+            <summary>
+            Gets or sets the IP of the requestor.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.ProtectiveWord.QueryResponse">
+            <summary>
+            Gets or sets the QueryRequest for the MedicationHistory integration.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.ODR.ProtectiveWordQueryResponse">
+            <summary>
+            The Protective Word query/response model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.ProtectiveWordQueryResponse.Operator">
+            <summary>
+            Gets or sets the Operation to perform and defaults to the query operation.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.ProtectiveWordQueryResponse.PHN">
+            <summary>
+            Gets or sets the PHN for the request.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ODR.ProtectiveWordQueryResponse.Value">
+            <summary>
+            Gets or sets the value to be applied to the Get operator.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.Pharmacy">
+            <summary>
+            The Prescription data model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Pharmacy.PharmacyId">
+            <summary>
+            Gets or sets the pharmacy id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Pharmacy.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Pharmacy.AddressLine1">
+            <summary>
+            Gets or sets the address line 1.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Pharmacy.AddressLine2">
+            <summary>
+            Gets or sets the address line 2.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Pharmacy.City">
+            <summary>
+            Gets or sets the city.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Pharmacy.Province">
+            <summary>
+            Gets or sets the province.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Pharmacy.PostalCode">
+            <summary>
+            Gets or sets the postal code.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Pharmacy.CountryCode">
+            <summary>
+            Gets or sets the country code.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Pharmacy.PhoneNumber">
+            <summary>
+            Gets or sets the phone number.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Pharmacy.FaxNumber">
+            <summary>
+            Gets or sets the fax number.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Models.Pharmacy.FromODRModel(HealthGateway.Medication.Models.ODR.Pharmacy)">
+            <summary>
+            Creates a Pharamacy object from an ODR model.
+            </summary>
+            <param name="model">The ODR model to convert.</param>
+            <returns>A Pharmacy model object.</returns>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.ProvincialDrugSource">
+            <summary>
+            Provincial Drug information Source class.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ProvincialDrugSource.UpdateDateTime">
+            <summary>
+            Gets or sets the update date/time.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.ProvincialDrugSource.PharmaCareDrug">
+            <summary>
+             Gets or sets a <see cref="P:HealthGateway.Medication.Models.ProvincialDrugSource.PharmaCareDrug"/> instance.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.Salesforce.Config">
+            <summary>
+            Provides configuration data for the Salesforce delegate.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Salesforce.Config.Endpoint">
+            <summary>
+            Gets or sets the Salesforce external endpoint.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Salesforce.Config.TokenUri">
+            <summary>
+            Gets or sets the Salesforce token Uri.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Salesforce.Config.ClientAuthentication">
+            <summary>
+            Gets or sets the total number of records to retrieve in one call.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.Salesforce.ResponseWrapper">
+            <summary>
+            Represents a Special Autrhority Request.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Models.Salesforce.ResponseWrapper.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Medication.Models.Salesforce.ResponseWrapper"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Models.Salesforce.ResponseWrapper.#ctor(System.Collections.Generic.IList{HealthGateway.Medication.Models.Salesforce.SpecialAuthorityRequest})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Medication.Models.Salesforce.ResponseWrapper"/> class.
+            </summary>
+            <param name="items">The list of items to initialize.</param>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Salesforce.ResponseWrapper.Items">
+            <summary>
+            Gets the patientIdentifier.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Models.Salesforce.ResponseWrapper.ToHGModels">
+            <summary>
+            Creates a List of Medication Request object from an SpecialAuthorityRequest model.
+            </summary>
+            <returns>A list of MedicationRequest objects.</returns>
+        </member>
+        <member name="T:HealthGateway.Medication.Models.Salesforce.SpecialAuthorityRequest">
+            <summary>
+            Represents a Special Autrhority Request.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Salesforce.SpecialAuthorityRequest.PatientIdentifier">
+            <summary>
+            Gets or sets the patientIdentifier.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Salesforce.SpecialAuthorityRequest.PatientFirstName">
+            <summary>
+            Gets or sets the patientFirstName.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Salesforce.SpecialAuthorityRequest.PatientLastName">
+            <summary>
+            Gets or sets the patientLastName.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Salesforce.SpecialAuthorityRequest.DrugName">
+            <summary>
+            Gets or sets the drugName.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Salesforce.SpecialAuthorityRequest.RequestStatus">
+            <summary>
+            Gets or sets the request status.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Salesforce.SpecialAuthorityRequest.PrescriberFirstName">
+            <summary>
+            Gets or sets the prescriber's firstname.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Salesforce.SpecialAuthorityRequest.PrescriberLastName">
+            <summary>
+            Gets or sets the prescriber's lastname.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Salesforce.SpecialAuthorityRequest.ReferenceNumber">
+            <summary>
+            Gets or sets the reference number.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Salesforce.SpecialAuthorityRequest.EffectiveDate">
+            <summary>
+            Gets or sets the effective date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Salesforce.SpecialAuthorityRequest.ExpiryDate">
+            <summary>
+            Gets or sets the expiry date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Medication.Models.Salesforce.SpecialAuthorityRequest.RequestedDate">
+            <summary>
+            Gets or sets the requested date.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Models.Salesforce.SpecialAuthorityRequest.ToHGModel">
+            <summary>
+            Creates a Medication request object from a Special Authority Request model.
+            </summary>
+            <returns>The newly created MedicationRequest object.</returns>
+        </member>
+        <member name="T:HealthGateway.Medication.Program">
+            <summary>
+            The entry point for the project.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Program.Main(System.String[])">
+            <summary>.
+            The entry point for the class.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+        </member>
+        <member name="M:HealthGateway.Medication.Program.CreateHostBuilder(System.String[])">
+            <summary>.
+            Creates the IWebHostBuilder.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+            <returns>Returns the configured webhost.</returns>
+        </member>
+        <member name="T:HealthGateway.Medication.Services.IMedicationRequestService">
+            <summary>
+            Defines the medication request service interface.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.IMedicationRequestService.GetMedicationRequests(System.String)">
+            <summary>
+            Gets the patient medication request.
+            </summary>
+            <param name="hdid">The hdid to retrieve records for.</param>
+            <returns>A RequestResult with MedicationHistory models as payload.</returns>
+        </member>
+        <member name="T:HealthGateway.Medication.Services.IMedicationService">
+            <summary>
+            The Medication data service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.IMedicationService.GetMedications(System.Collections.Generic.IList{System.String})">
+            <summary>
+            Gets the medications that match the DIN.
+            </summary>
+            <param name="medicationDinList">The ip address of the request.</param>
+            <returns>A List of MedicationStatement models.</returns>
+        </member>
+        <member name="T:HealthGateway.Medication.Services.IMedicationStatementService">
+            <summary>
+            The Medication data service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.IMedicationStatementService.GetMedicationStatementsHistory(System.String,System.String)">
+            <summary>
+            Gets the patient medication history.
+            </summary>
+            <param name="hdid">The hdid to retrieve records for.</param>
+            <param name="protectiveWord">The protective word.</param>
+            <returns>A MedicationHistoryResponse models.</returns>
+        </member>
+        <member name="T:HealthGateway.Medication.Services.MedicationRequestService">
+            <summary>
+            The Medication data service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.MedicationRequestService.#ctor(HealthGateway.Common.Services.IPatientService,HealthGateway.Medication.Delegates.IMedicationRequestDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Medication.Services.MedicationRequestService"/> class.
+            </summary>
+            <param name="patientService">The injected patient registry provider.</param>
+            <param name="medicationRequestDelegate">Injected medication statement delegate.</param>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.MedicationRequestService.GetMedicationRequests(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Medication.Services.RestMedicationService">
+            <summary>
+            The Medication data service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.RestMedicationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Medication.Services.RestMedicationService},HealthGateway.Database.Delegates.IDrugLookupDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Medication.Services.RestMedicationService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="drugLookupDelegate">The injected drug lookup delegate.</param>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.RestMedicationService.GetMedications(System.Collections.Generic.IList{System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Medication.Services.RestMedicationStatementService">
+            <summary>
+            The Medication data service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.RestMedicationStatementService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Medication.Services.RestMedicationStatementService},Microsoft.AspNetCore.Http.IHttpContextAccessor,HealthGateway.Common.Services.IPatientService,HealthGateway.Database.Delegates.IDrugLookupDelegate,HealthGateway.Medication.Delegates.IMedStatementDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Medication.Services.RestMedicationStatementService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpAccessor">The injected http context accessor provider.</param>
+            <param name="patientService">The injected patient registry provider.</param>
+            <param name="drugLookupDelegate">Injected drug lookup delegate.</param>
+            <param name="medicationStatementDelegate">Injected medication statement delegate.</param>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.RestMedicationStatementService.GetMedicationStatementsHistory(System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Medication.Startup">
+            <summary>
+            Configures the application during startup.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Startup.#ctor(Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Medication.Startup"/> class.
+            </summary>
+            <param name="env">The injected Environment provider.</param>
+            <param name="configuration">The injected configuration provider.</param>
+        </member>
+        <member name="M:HealthGateway.Medication.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services">The injected services provider.</param>
+        </member>
+        <member name="M:HealthGateway.Medication.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app">The application builder.</param>
+        </member>
+    </members>
+</doc>

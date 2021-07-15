@@ -1,5 +1,0 @@
-capabilities:
-  browserName: "firefox"
-  firefoxOptions:
-    args: ["--headless", "--disable-gpu"]
-baseUrl: "http://localhost:5000"

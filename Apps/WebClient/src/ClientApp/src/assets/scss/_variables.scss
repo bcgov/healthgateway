@@ -1,0 +1,124 @@
+// TODO: Color variables should be moved here and have bcgov reference these instead
+$primary: #036;
+$light_background: #fff;
+$soft_background: #f7f7f7;
+$medium_background: #d4d4d4;
+$primary_text: #fff;
+$bcgold: #fcba19;
+$soft_text: #747474;
+
+$lightBlue: #005095;
+$aquaBlue: #0092f1;
+$lightGrey: #edf1f8;
+$danger: #d93e45;
+
+$heading_color: #313132;
+
+$z_overlay: 998;
+$z_sidebar: 1020; // Less than modal backdrop (1040)
+$z_popover: 1030; // Less than modal backdrop (1040)
+$z_header: 1035;
+$z_datepicker: 1036; // more than header
+$z_loading_overlay: 1090;
+$z_application_rating: 1100;
+$z_top_layer: 9999;
+
+$header-height: 65px;
+$timeline-filter-height: 54px;
+$timeline-pagination-height: 54px;
+$timeline-dates-height: 54px;
+
+// Design System: Common Colours
+$hg-brand-primary: #003366;
+$hg-brand-secondary: #0092f1;
+$hg-brand-accent: #fcba19;
+$hg-text-primary: #313132;
+$hg-text-secondary: #606060;
+$hg-text-input: #606060;
+$hg-state-success: #2e8540;
+$hg-state-danger: #d72e3d;
+$hg-link: #1a5a96;
+$hg-background: #f2f2f2;
+$hg-background-navigation: #38598a;
+
+// Design System: Buttons
+$hg-button-disabled: #b8c2d0;
+
+$hg-button-primary: $hg-brand-primary;
+$hg-button-primary-border: $hg-button-primary;
+$hg-button-primary-text: white;
+$hg-button-primary-hover: #396497;
+$hg-button-primary-hover-border: $hg-button-primary-hover;
+$hg-button-primary-hover-text: white;
+$hg-button-primary-disabled: $hg-button-disabled;
+$hg-button-primary-disabled-border: $hg-button-primary-disabled;
+$hg-button-primary-disabled-text: white;
+
+$hg-button-secondary: white;
+$hg-button-secondary-border: $hg-button-primary;
+$hg-button-secondary-text: $hg-button-primary;
+$hg-button-secondary-hover: white;
+$hg-button-secondary-hover-border: #335c85;
+$hg-button-secondary-hover-text: #335c85;
+$hg-button-secondary-disabled: white;
+$hg-button-secondary-disabled-border: $hg-button-disabled;
+$hg-button-secondary-disabled-text: $hg-button-disabled;
+
+$hg-button-secondary-selected: #0092f1;
+$hg-button-secondary-selected-border: #0092f1;
+$hg-button-secondary-selected-text: white;
+$hg-button-secondary-selected-hover: #33a8fa;
+$hg-button-secondary-selected-hover-border: #33a8fa;
+$hg-button-secondary-selected-hover-text: white;
+$hg-button-secondary-selected-disabled: white;
+$hg-button-secondary-selected-disabled: $hg-button-disabled;
+$hg-button-secondary-selected-disabled-border: $hg-button-primary-disabled;
+$hg-button-secondary-selected-disabled-text: white;
+
+$hg-button-link: none;
+$hg-button-link-border: none;
+$hg-button-link-text: $hg-button-primary;
+$hg-button-link-hover: none;
+$hg-button-link-hover-border: none;
+$hg-button-link-hover-text: #2666ca;
+$hg-button-link-disabled: none;
+$hg-button-link-disabled-border: none;
+$hg-button-link-disabled-text: $hg-button-disabled;
+$hg-button-link-danger-text: #d72e3d;
+$hg-button-link-danger-hover-text: #f6727e;
+
+$hg-button-icon: none;
+$hg-button-icon-border: none;
+$hg-button-icon-text: white;
+$hg-button-icon-hover: none;
+$hg-button-icon-hover-border: none;
+$hg-button-icon-hover-text: white;
+$hg-button-icon-disabled: none;
+$hg-button-icon-disabled-border: #899bb5;
+$hg-button-icon-disabled-text: #899bb5;
+$hg-button-icon-selected: #0092f1;
+$hg-button-icon-selected-text: white;
+
+$hg-button-icon-light-text: #313132;
+
+$hg-button-icon-input-text: #0092f1;
+$hg-button-icon-input-border: #CED4DA;
+$hg-button-icon-input-background: white;
+$hg-button-icon-input-disabled-text: #899bb5;
+$hg-button-icon-input-disabled-background: #f7f7f7;
+$hg-button-icon-input-hover-text: #003366;
+
+$hg-button-icon-input-light-text: #899bb5;
+$hg-button-icon-input-light-hover-text: #313132;
+
+$hg-button-nav: $hg-brand-primary;
+$hg-button-nav-text: white;
+$hg-button-nav-hover: #335c85;
+$hg-button-nav-hover-text: white;
+$hg-button-nav-disabled: none;
+$hg-button-nav-disabled-text: #546f8a;
+$hg-button-nav-selected: #0092f1;
+$hg-button-nav-selected-text: white;
+
+$hg-button-resource-centre-text: $hg-brand-secondary;
+$hg-button-resource-centre-hover-text: $hg-brand-secondary;

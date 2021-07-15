@@ -1,117 +1,147 @@
-import { mutations } from "@/store/modules/auth/mutations";
-import { state as initialState } from "@/store/modules/auth/auth";
+import "@/plugins/inversify.config";
+
 import { User as OidcUser, UserSettings } from "oidc-client";
 
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.container";
+import { ILogger } from "@/services/interfaces";
+import { state as initialState } from "@/store/modules/auth/auth";
+import { mutations } from "@/store/modules/auth/mutations";
+
 describe("Auth mutations", () => {
-  test("Sets oidcAuth authenticated", () => {
-    let state = initialState;
-    let settings: UserSettings = {
-      id_token: "id_token",
-      session_state: "",
-      access_token: "access_token",
-      refresh_token: "refresh_token",
-      token_type: "",
-      scope: "test_scope_a test_scope_b",
-      profile: { name: "User Name", iss: "", sub: "", aud: "", exp: 0, iat: 0 },
-      expires_at: 0,
-      state: undefined
-    };
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    logger.initialize("info");
 
-    let user: OidcUser = new OidcUser(settings);
+    test("Sets oidcAuth authenticated", () => {
+        const state = initialState;
+        const settings: UserSettings = {
+            id_token: "id_token",
+            session_state: "",
+            access_token: "access_token",
+            refresh_token: "refresh_token",
+            token_type: "",
+            scope: "test_scope_a test_scope_b",
+            profile: {
+                name: "User Name",
+                iss: "",
+                sub: "",
+                aud: "",
+                exp: 0,
+                iat: 0,
+            },
+            expires_at: 0,
+            state: undefined,
+        };
 
-    // apply mutation
-    mutations.setOidcAuth(state, user);
+        const user: OidcUser = new OidcUser(settings);
 
-    // assert result
-    expect(state.isAuthenticated).toBe(true);
-    expect(state.authentication.scopes).toEqual(settings.scope.split(" "));
-    expect(state.authentication.idToken).toBe(settings.id_token);
-    expect(state.authentication.accessToken).toBe(settings.access_token);
-  });
+        // apply mutation
+        mutations.setOidcAuth(state, user);
 
-  test("Sets oidcAuth not authenticated", () => {
-    let state = initialState;
-    let settings: UserSettings = {
-      id_token: "",
-      session_state: "",
-      access_token: "access_token",
-      refresh_token: "refresh_token",
-      token_type: "",
-      scope: "test_scope",
-      profile: { name: "User Name", iss: "", sub: "", aud: "", exp: 0, iat: 0 },
-      expires_at: 0,
-      state: undefined
-    };
-    let user: OidcUser = new OidcUser(settings);
+        // assert result
+        expect(state.isAuthenticated).toBe(true);
+        expect(state.authentication.scopes).toEqual(settings.scope.split(" "));
+        expect(state.authentication.idToken).toBe(settings.id_token);
+        expect(state.authentication.accessToken).toBe(settings.access_token);
+    });
 
-    // apply mutation
-    mutations.setOidcAuth(state, user);
+    test("Sets oidcAuth not authenticated", () => {
+        const state = initialState;
+        const settings: UserSettings = {
+            id_token: "",
+            session_state: "",
+            access_token: "access_token",
+            refresh_token: "refresh_token",
+            token_type: "",
+            scope: "test_scope",
+            profile: {
+                name: "User Name",
+                iss: "",
+                sub: "",
+                aud: "",
+                exp: 0,
+                iat: 0,
+            },
+            expires_at: 0,
+            state: undefined,
+        };
+        const user: OidcUser = new OidcUser(settings);
 
-    // assert result
-    expect(state.isAuthenticated).toBe(false);
-    expect(state.authentication.scopes).toEqual(settings.scope.split(" "));
-    expect(state.authentication.idToken).toBe(settings.id_token);
-    expect(state.authentication.accessToken).toBe(settings.access_token);
-  });
+        // apply mutation
+        mutations.setOidcAuth(state, user);
 
-  test("Unsets oidc data", () => {
-    let state = initialState;
-    let settings: UserSettings = {
-      id_token: "id_token",
-      session_state: "",
-      access_token: "access_token",
-      refresh_token: "refresh_token",
-      token_type: "",
-      scope: "test_scope",
-      profile: { name: "User Name", iss: "", sub: "", aud: "", exp: 0, iat: 0 },
-      expires_at: 0,
-      state: undefined
-    };
-    let user: OidcUser = new OidcUser(settings);
+        // assert result
+        expect(state.isAuthenticated).toBe(false);
+        expect(state.authentication.scopes).toEqual(settings.scope.split(" "));
+        expect(state.authentication.idToken).toBe(settings.id_token);
+        expect(state.authentication.accessToken).toBe(settings.access_token);
+    });
 
-    // apply mutation
-    mutations.setOidcAuth(state, user);
+    test("Unsets oidc data", () => {
+        const state = initialState;
+        const settings: UserSettings = {
+            id_token: "id_token",
+            session_state: "",
+            access_token: "access_token",
+            refresh_token: "refresh_token",
+            token_type: "",
+            scope: "test_scope",
+            profile: {
+                name: "User Name",
+                iss: "",
+                sub: "",
+                aud: "",
+                exp: 0,
+                iat: 0,
+            },
+            expires_at: 0,
+            state: undefined,
+        };
+        const user: OidcUser = new OidcUser(settings);
 
-    // assert result
-    expect(state.isAuthenticated).toBe(true);
-    expect(state.authentication.scopes).toEqual(settings.scope.split(" "));
-    expect(state.authentication.idToken).toBe(settings.id_token);
-    expect(state.authentication.accessToken).toBe(settings.access_token);
+        // apply mutation
+        mutations.setOidcAuth(state, user);
 
-    mutations.unsetOidcAuth(state);
+        // assert result
+        expect(state.isAuthenticated).toBe(true);
+        expect(state.authentication.scopes).toEqual(settings.scope.split(" "));
+        expect(state.authentication.idToken).toBe(settings.id_token);
+        expect(state.authentication.accessToken).toBe(settings.access_token);
 
-    expect(state.isAuthenticated).toBe(false);
-    expect(state.authentication.scopes).toBe(undefined);
-    expect(state.authentication.idToken).toBe(undefined);
-    expect(state.authentication.accessToken).toBe(undefined);
-  });
+        mutations.unsetOidcAuth(state);
 
-  test("Sets oidc isChecked", () => {
-    let state = initialState;
-    // assert result
-    expect(state.authentication.isChecked).toBe(false);
+        expect(state.isAuthenticated).toBe(false);
+        expect(state.authentication.scopes).toBe(undefined);
+        expect(state.authentication.idToken).toBe(undefined);
+        expect(state.authentication.accessToken).toBe(undefined);
+    });
 
-    // apply mutation
-    mutations.setOidcAuthIsChecked(state);
-    expect(state.authentication.isChecked).toBe(true);
-  });
+    test("Sets oidc isChecked", () => {
+        const state = initialState;
+        // assert result
+        expect(state.authentication.isChecked).toBe(false);
 
-  test("Sets oidc error", () => {
-    let state = initialState;
+        // apply mutation
+        mutations.setOidcAuthIsChecked(state);
+        expect(state.authentication.isChecked).toBe(true);
+    });
 
-    const errorMessage: string = "some error string";
+    test("Sets oidc error", () => {
+        const state = initialState;
 
-    // apply mutation
-    mutations.setOidcError(state, errorMessage);
+        const errorMessage = "some error string";
 
-    // assert result
-    expect(state.error).toBe(errorMessage);
+        // apply mutation
+        mutations.setOidcError(state, errorMessage);
 
-    // apply mutation
-    const errorObject = { message: errorMessage, otherProp: false };
-    mutations.setOidcError(state, errorObject);
+        // assert result
+        expect(state.error).toBe(errorMessage);
 
-    // assert result
-    expect(state.error).toBe(errorObject.message);
-  });
+        // apply mutation
+        const errorObject = { message: errorMessage, otherProp: false };
+        mutations.setOidcError(state, errorObject);
+
+        // assert result
+        expect(state.error).toBe(errorObject);
+    });
 });

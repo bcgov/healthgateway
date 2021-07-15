@@ -1,29 +1,27 @@
 #!/usr/bin/env bash
+project=$1
+routeId=$2
 
-# oc project q6qfzk-dev
-# ./webclient.sh dev
-# ./route.sh dev jobscheduler hangfire "/admin/jobscheduler"
-# ./route.sh dev medication medication "/api/medicationservice"
-# ./route.sh dev patient patient "/api/patientservice"
-# ./route.sh dev immunization immunization "/api/immunizationservice"
+if [ -z "$project" ] 
+then
+  echo Parameter 1 must be set to the OCP Project name 0bd5ad-dev, 0bd5ad-test, 0bd5ad-prod etc
+  exit 98
+fi
 
-# oc project q6qfzk-test
-# ./route.sh test webclient webclient "" Redirect
-# ./route.sh test jobscheduler hangfire "/admin/jobscheduler"
-# ./route.sh test medication medication "/api/medicationservice"
-# ./route.sh test patient patient "/api/patientservice"
-# ./route.sh test immunization immunization "/api/immunizationservice"
 
-# oc project q6qfzk-test
-# ./route.sh demo webclient-demo webclient-demo "" Redirect
-# ./route.sh demo jobscheduler-demo hangfire-demo "/admin/jobscheduler"
-# ./route.sh demo medication-demo medication-demo "/api/medicationservice"
-# ./route.sh demo patient-demo patient-demo "/api/patientservice"
-# ./route.sh demo immunization-demo immunization-demo "/api/immunizationservice"
+if [ -z "$routeId" ] 
+then
+  echo 2nd Parameter must be the route identifier dev, test, poc, www
+  exit 99
+fi
 
-oc project q6qfzk-prod
-./route.sh www webclient webclient "" Redirect
-./route.sh www jobscheduler hangfire "/admin/jobscheduler"
-./route.sh www medication medication "/api/medicationservice"
-./route.sh www patient patient "/api/patientservice"
-./route.sh www immunization immunization "/api/immunizationservice"
+oc project $project
+./route.sh $routeId webclient webclient
+./route.sh $routeId jobscheduler hangfire "/admin/jobscheduler" Redirect
+./route.sh $routeId adminwebclient adminwebclient "/admin" Redirect
+./route.sh $routeId medication medication "/api/medicationservice"
+./route.sh $routeId patient patient "/api/patientservice"
+./route.sh $routeId immunization immunization "/api/immunizationservice"
+./route.sh $routeId laboratory laboratory "/api/laboratoryservice"
+./route.sh $routeId encounter encounter "/api/encounterservice"
+#./route.sh  odrproxy odrproxy "/dev/odrproxy"

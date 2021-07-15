@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Immunization.Models;
 
     /// <summary>
@@ -25,10 +26,17 @@ namespace HealthGateway.Immunization.Services
     public interface IImmunizationService
     {
         /// <summary>
-        /// Gets a list of immunization records.
+        /// Gets the ImmunizationEvent for the given id.
         /// </summary>
-        /// <param name="hdid">The health directed id for the subject.</param>
+        /// <param name="immunizationId">The security token representing the authenticated user.</param>
         /// <returns>Returns a list of immunizations.</returns>
-        Task<IEnumerable<ImmunizationView>> GetImmunizations(string hdid);
+        Task<RequestResult<ImmunizationEvent>> GetImmunization(string immunizationId);
+
+        /// <summary>
+        /// Gets the ImmunizationResult inluding load state and a list of immunization records.
+        /// </summary>
+        /// <param name="pageIndex">The page index to return.</param>
+        /// <returns>Returns a list of immunizations.</returns>
+        Task<RequestResult<ImmunizationResult>> GetImmunizations(int pageIndex = 0);
     }
 }

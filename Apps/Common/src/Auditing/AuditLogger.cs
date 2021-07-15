@@ -19,7 +19,7 @@ namespace HealthGateway.Common.Auditing
     using System.Linq;
     using System.Reflection;
     using System.Security.Claims;
-    using HealthGateway.Database.Constant;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;
@@ -36,8 +36,6 @@ namespace HealthGateway.Common.Auditing
     {
         private readonly ILogger<IAuditLogger> logger;
 
-        private readonly IConfiguration configuration;
-
         private readonly IWriteAuditEventDelegate writeEventDelegate;
 
         /// <summary>
@@ -45,11 +43,9 @@ namespace HealthGateway.Common.Auditing
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="writeEventDelegate">The audit event delegate.</param>
-        /// <param name="config">The configuration.</param>
-        public AuditLogger(ILogger<IAuditLogger> logger, IWriteAuditEventDelegate writeEventDelegate, IConfiguration config)
+        public AuditLogger(ILogger<IAuditLogger> logger, IWriteAuditEventDelegate writeEventDelegate)
         {
             this.logger = logger;
-            this.configuration = config;
             this.writeEventDelegate = writeEventDelegate;
         }
 
@@ -73,24 +69,24 @@ namespace HealthGateway.Common.Auditing
         /// <inheritdoc />
         public void PopulateWithHttpContext(HttpContext context, AuditEvent auditEvent)
         {
-            ClaimsIdentity claimsIdentity = (ClaimsIdentity)context.User.Identity;
-            Claim hdidClaim = claimsIdentity.Claims.Where(c => c.Type == "hdid").FirstOrDefault();
+            ClaimsIdentity? claimsIdentity = context.User.Identity as ClaimsIdentity;
+            Claim? hdidClaim = claimsIdentity?.Claims.FirstOrDefault(c => c.Type == "hdid");
             string? hdid = hdidClaim?.Value;
 
-            auditEvent.ApplicationType = this.GetApplicationType();
-            auditEvent.TransactionResultCode = this.GetTransactionResultType(context.Response.StatusCode);
+            auditEvent.ApplicationType = GetApplicationType();
+            auditEvent.TransactionResultCode = GetTransactionResultType(context.Response.StatusCode);
             auditEvent.ApplicationSubject = hdid;
 
             RouteValueDictionary routeValues = context.Request.RouteValues;
             auditEvent.TransactionName = @$"{routeValues["controller"]}\{routeValues["action"]}";
 
             auditEvent.Trace = context.TraceIdentifier;
-            auditEvent.ClientIP = context.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            auditEvent.ClientIP = context.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
             RouteData routeData = context.GetRouteData();
 
             // Some routes might not have the version
             auditEvent.TransactionVersion = routeData?.Values["version"] != null ?
-                routeData.Values["version"].ToString() : string.Empty;
+                routeData.Values["version"]?.ToString() : string.Empty;
         }
 
         /// <summary>
@@ -98,7 +94,7 @@ namespace HealthGateway.Common.Auditing
         /// </summary>
         /// <param name="statusCode">The http context status code.</param>
         /// <returns>The mapped transaction result.</returns>
-        private string GetTransactionResultType(int statusCode)
+        private static AuditTransactionResult GetTransactionResultType(int statusCode)
         {
             // Success codes (1xx, 2xx, 3xx)
             if (statusCode < 400)
@@ -126,7 +122,7 @@ namespace HealthGateway.Common.Auditing
         /// Gets the current audit application type from the assembly name.
         /// </summary>
         /// <returns>The mapped application type.</returns>
-        private string GetApplicationType()
+        private static string GetApplicationType()
         {
             AssemblyName assemblyName = Assembly.GetEntryAssembly() !.GetName();
             switch (assemblyName.Name)
@@ -145,6 +141,10 @@ namespace HealthGateway.Common.Auditing
                     return ApplicationType.Medication;
                 case "AdminWebClient":
                     return ApplicationType.AdminWebClient;
+                case "Laboratory":
+                    return ApplicationType.Laboratory;
+                case "Encounter":
+                    return ApplicationType.Encounter;
                 default:
                     throw new NotSupportedException($"Audit Error: Invalid application name '{assemblyName.Name}'");
             }

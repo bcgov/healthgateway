@@ -17,22 +17,25 @@ namespace HealthGateway.Medication.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
+    using System.Diagnostics;
     using System.Linq;
     using System.Net;
+    using System.Text.Json;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.ODR;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// The Medication data service.
@@ -43,8 +46,7 @@ namespace HealthGateway.Medication.Services
         private const int MinLengthProtectiveWord = 6;
         private readonly ILogger logger;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IPatientDelegate patientDelegate;
-        private readonly IHNClientDelegate hnClientDelegate;
+        private readonly IPatientService patientService;
         private readonly IDrugLookupDelegate drugLookupDelegate;
         private readonly IMedStatementDelegate medicationStatementDelegate;
 
@@ -53,109 +55,86 @@ namespace HealthGateway.Medication.Services
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        /// <param name="patientService">The injected patientService patient registry provider.</param>
-        /// <param name="hnClientDelegate">Injected HNClient Delegate.</param>
+        /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="drugLookupDelegate">Injected drug lookup delegate.</param>
         /// <param name="medicationStatementDelegate">Injected medication statement delegate.</param>
         public RestMedicationStatementService(
             ILogger<RestMedicationStatementService> logger,
             IHttpContextAccessor httpAccessor,
-            IPatientDelegate patientService,
-            IHNClientDelegate hnClientDelegate,
+            IPatientService patientService,
             IDrugLookupDelegate drugLookupDelegate,
             IMedStatementDelegate medicationStatementDelegate)
         {
             this.logger = logger;
             this.httpContextAccessor = httpAccessor;
-            this.patientDelegate = patientService;
-            this.hnClientDelegate = hnClientDelegate;
+            this.patientService = patientService;
             this.drugLookupDelegate = drugLookupDelegate;
             this.medicationStatementDelegate = medicationStatementDelegate;
         }
 
-        /// <inheritdoc/>
-        public async Task<RequestResult<List<MedicationStatement>>> GetMedicationStatements(string hdid, string? protectiveWord)
-        {
-            this.logger.LogTrace($"Getting list of medication statements... {hdid}");
-            HNMessage<List<MedicationStatement>> hnClientMedicationResult = await this.RetrieveMedicationStatements(hdid, protectiveWord).ConfigureAwait(true);
-            if (hnClientMedicationResult.Result == ResultType.Success)
-            {
-                // Filter the results to return only Dispensed or Filled prescriptions.
-                hnClientMedicationResult.Message = hnClientMedicationResult.Message
-                    .Where(rx => rx.PrescriptionStatus == PrescriptionStatus.Filled ||
-                                 rx.PrescriptionStatus == PrescriptionStatus.Discontinued)
-                    .ToList<MedicationStatement>();
-                this.PopulateBrandName(hnClientMedicationResult.Message.Select(r => r.MedicationSumary!).ToList());
-            }
-
-            RequestResult<List<MedicationStatement>> result = new RequestResult<List<MedicationStatement>>
-            {
-                ResultStatus = hnClientMedicationResult.Result,
-                ResultMessage = hnClientMedicationResult.ResultMessage,
-            };
-
-            if (result.ResultStatus == Common.Constants.ResultType.Success)
-            {
-                result.ResourcePayload = hnClientMedicationResult.Message;
-                result.PageIndex = 0;
-                result.PageSize = hnClientMedicationResult.Message.Count;
-                result.TotalResultCount = hnClientMedicationResult.Message.Count;
-            }
-
-            this.logger.LogDebug($"Finished getting list of medication statements... {JsonConvert.SerializeObject(result)}");
-
-            return result;
-        }
+        private static ActivitySource Source { get; } = new ActivitySource(nameof(RestMedicationStatementService));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<List<MedicationStatementHistory>>> GetMedicationStatementsHistory(string hdid, string? protectiveWord)
+        public async Task<RequestResult<IList<MedicationStatementHistory>>> GetMedicationStatementsHistory(string hdid, string? protectiveWord)
         {
-            this.logger.LogTrace($"Getting history of medication statements... {hdid}");
-            RequestResult<List<MedicationStatementHistory>> result = new RequestResult<List<MedicationStatementHistory>>();
-            var validationResult = ValidateProtectiveWord(protectiveWord);
-            bool okProtectiveWord = validationResult.Item1;
-            if (okProtectiveWord)
+            using (Source.StartActivity("GetMedicationStatementsHistory"))
             {
-                // Retrieve the phn
-                string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-                Patient patient = await this.patientDelegate.GetPatientAsync(hdid, jwtString).ConfigureAwait(true);
+                this.logger.LogDebug("Getting history of medication statements");
+                this.logger.LogTrace($"User hdid: {hdid}");
 
-                MedicationHistoryQuery historyQuery = new MedicationHistoryQuery()
+                RequestResult<IList<MedicationStatementHistory>> result = new RequestResult<IList<MedicationStatementHistory>>();
+                var validationResult = ValidateProtectiveWord(protectiveWord);
+                bool okProtectiveWord = validationResult.Item1;
+                if (okProtectiveWord)
                 {
-                    StartDate = patient.Birthdate,
-                    EndDate = System.DateTime.Now,
-                    PHN = patient.PersonalHealthNumber,
-                    PageSize = 20000,
-                };
-                IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
-                string ipv4Address = address.MapToIPv4().ToString();
-                HNMessage<MedicationHistoryResponse> response = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
-                result.ResultStatus = response.Result;
-                result.ResultMessage = response.ResultMessage;
-                if (response.Result == ResultType.Success)
-                {
-                    result.PageSize = historyQuery.PageSize;
-                    result.PageIndex = historyQuery.PageNumber;
-                    result.TotalResultCount = response.Message.Records;
-                    if (response.Message.Results != null)
+                    // Retrieve the phn
+                    RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
+                    if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                     {
-                        result.ResourcePayload = MedicationStatementHistory.FromODRModelList(response.Message.Results.ToList());
-                        this.PopulateBrandName(result.ResourcePayload.Select(r => r.MedicationSumary).ToList());
+                        PatientModel patient = patientResult.ResourcePayload;
+                        ODRHistoryQuery historyQuery = new ODRHistoryQuery()
+                        {
+                            StartDate = patient.Birthdate,
+                            EndDate = System.DateTime.Now,
+                            PHN = patient.PersonalHealthNumber,
+                            PageSize = 20000,
+                        };
+                        IPAddress? address = this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress;
+                        string ipv4Address = address?.MapToIPv4().ToString() ?? "Unknown";
+                        RequestResult<MedicationHistoryResponse> response = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
+                        result.ResultStatus = response.ResultStatus;
+                        result.ResultError = response.ResultError;
+                        if (response.ResultStatus == ResultType.Success)
+                        {
+                            result.PageSize = historyQuery.PageSize;
+                            result.PageIndex = historyQuery.PageNumber;
+                            if (response.ResourcePayload != null && response.ResourcePayload.Results != null)
+                            {
+                                result.TotalResultCount = response.ResourcePayload.TotalRecords;
+                                result.ResourcePayload = MedicationStatementHistory.FromODRModelList(response.ResourcePayload.Results.ToList());
+                                this.PopulateMedicationSummary(result.ResourcePayload.Select(r => r.MedicationSummary).ToList());
+                            }
+                            else
+                            {
+                                result.ResourcePayload = new List<MedicationStatementHistory>();
+                            }
+                        }
                     }
                     else
                     {
-                        result.ResourcePayload = new List<MedicationStatementHistory>();
+                        result.ResultError = patientResult.ResultError;
                     }
                 }
+                else
+                {
+                    this.logger.LogInformation($"Invalid protective word. {hdid}");
+                    result.ResultStatus = Common.Constants.ResultType.ActionRequired;
+                    result.ResultError = ErrorTranslator.ActionRequired(validationResult.Item2, ActionType.Protected);
+                }
+
+                this.logger.LogDebug($"Finished getting history of medication statements");
+                return result;
             }
-            else
-            {
-                this.logger.LogInformation($"Invalid protective word. {hdid}");
-                result.ResultStatus = ResultType.Protected;
-                result.ResultMessage = validationResult.Item2!;
-            }
-            this.logger.LogInformation($"Finished getting history of medication statements...{hdid}");
-            return result;
         }
 
         private static Tuple<bool, string?> ValidateProtectiveWord(string? protectiveWord)
@@ -191,50 +170,54 @@ namespace HealthGateway.Medication.Services
             return Tuple.Create(valid, errMsg);
         }
 
-        private async Task<HNMessage<List<MedicationStatement>>> RetrieveMedicationStatements(string hdid, string? protectiveWord)
+        private void PopulateMedicationSummary(List<MedicationSummary> medSummaries)
         {
-            HNMessage<List<MedicationStatement>> retMessage = null;
-            var validationResult = ValidateProtectiveWord(protectiveWord);
-            bool okProtectiveWord = validationResult.Item1;
-            if (okProtectiveWord)
+            using (Source.StartActivity("PopulateMedicationSummary"))
             {
-                string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-                string phn = await this.patientDelegate.GetPatientPHNAsync(hdid, jwtString).ConfigureAwait(true);
+                List<string> medicationIdentifiers = medSummaries.Select(s => s.DIN.PadLeft(8, '0')).ToList();
 
-                if (string.IsNullOrEmpty(phn))
+                this.logger.LogDebug("Getting drugs from DB");
+                this.logger.LogTrace($"Identifiers: {JsonSerializer.Serialize(medicationIdentifiers)}");
+                List<string> uniqueDrugIdentifers = medicationIdentifiers.Distinct().ToList();
+                this.logger.LogDebug($"Total DrugIdentifiers: {medicationIdentifiers.Count} | Unique identifiers:{uniqueDrugIdentifers.Count} ");
+
+                // Retrieve the brand names using the Federal data
+                IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(uniqueDrugIdentifers);
+                Dictionary<string, DrugProduct> drugProductsDict = drugProducts.ToDictionary(pcd => pcd.DrugIdentificationNumber, pcd => pcd);
+                Dictionary<string, PharmaCareDrug> provicialDict = new Dictionary<string, PharmaCareDrug>();
+                if (uniqueDrugIdentifers.Count > drugProductsDict.Count)
                 {
-                    return new HNMessage<List<MedicationStatement>>() { Result = ResultType.Error, ResultMessage = ErrorMessages.PhnNotFoundErrorMessage };
+                    // Get the DINs not found on the previous query
+                    List<string> notFoundDins = uniqueDrugIdentifers.Where(din => !drugProductsDict.Keys.Contains(din)).ToList();
+
+                    // Retrieve the brand names using the provincial data
+                    IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(notFoundDins);
+                    provicialDict = pharmaCareDrugs.ToDictionary(dp => dp.DINPIN, dp => dp);
                 }
 
-                IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
-                string ipv4Address = address.MapToIPv4().ToString();
+                this.logger.LogDebug("Finished getting drugs from DB");
+                this.logger.LogTrace($"Populating medication summary... {medSummaries.Count} records");
+                foreach (MedicationSummary mdSummary in medSummaries)
+                {
+                    string din = mdSummary.DIN.PadLeft(8, '0');
+                    if (drugProductsDict.ContainsKey(din))
+                    {
+                        mdSummary.BrandName = drugProductsDict[din].BrandName;
+                        mdSummary.Form = drugProductsDict[din].Form?.PharmaceuticalForm ?? string.Empty;
+                        mdSummary.Strength = drugProductsDict[din].ActiveIngredient?.Strength ?? string.Empty;
+                        mdSummary.StrengthUnit = drugProductsDict[din].ActiveIngredient?.StrengthUnit ?? string.Empty;
+                        mdSummary.Manufacturer = drugProductsDict[din].Company?.CompanyName ?? string.Empty;
+                    }
+                    else if (provicialDict.ContainsKey(din))
+                    {
+                        mdSummary.IsPin = true;
+                        mdSummary.BrandName = provicialDict[din].BrandName;
+                        mdSummary.Form = provicialDict[din].DosageForm ?? string.Empty;
+                    }
+                }
 
-                retMessage = await this.hnClientDelegate.GetMedicationStatementsAsync(phn, protectiveWord?.ToUpper(CultureInfo.CurrentCulture), phn, ipv4Address).ConfigureAwait(true);
+                this.logger.LogDebug($"Finished populating medication summary. {medSummaries.Count} records");
             }
-            else
-            {
-                this.logger.LogInformation($"Invalid protective word. {hdid}");
-                retMessage = new HNMessage<List<MedicationStatement>>(ResultType.Protected, validationResult.Item2);
-            }
-
-            return retMessage;
-        }
-
-        private void PopulateBrandName(List<MedicationSumary> medSummaries)
-        {
-            List<string> medicationIdentifiers = medSummaries.Select(s => s.DIN.PadLeft(8, '0')).ToList();
-
-            Dictionary<string, string> brandNameMap = this.drugLookupDelegate.GetDrugsBrandNameByDIN(medicationIdentifiers);
-
-            this.logger.LogTrace($"Populating brand name... {medSummaries.Count} records");
-            foreach (MedicationSumary mdSummary in medSummaries)
-            {
-                string din = mdSummary.DIN.PadLeft(8, '0');
-                mdSummary.BrandName =
-                    brandNameMap.ContainsKey(din) ? brandNameMap[din] : "Unknown brand name";
-            }
-
-            this.logger.LogDebug($"Finished populating brand name. {medSummaries.Count} records");
         }
     }
 }

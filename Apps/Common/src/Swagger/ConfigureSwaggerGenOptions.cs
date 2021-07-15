@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,18 +18,19 @@ namespace HealthGateway.Common.Swagger
 {
     using System;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
-    using System.IO;
-    using System.Reflection;
+    using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.Common.AccessManagement.Authorization.Requirements;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
+    using Microsoft.OpenApi.Models;
     using Swashbuckle.AspNetCore.SwaggerGen;
 
     /// <inheritdoc />
     /// <summary>
     /// Implementation of IConfigureOptions&lt;SwaggerGenOptions&gt;.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public sealed class ConfigureSwaggerGenOptions : IConfigureOptions<SwaggerGenOptions>
     {
         private readonly IApiVersionDescriptionProvider provider;
@@ -57,15 +58,29 @@ namespace HealthGateway.Common.Swagger
             options.IgnoreObsoleteActions();
             options.IgnoreObsoleteProperties();
 
-            this.AddSwaggerDocumentForEachDiscoveredApiVersion(options);
-            SetCommentsPathForSwaggerJsonAndUi(options);
-        }
+            options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                Type = SecuritySchemeType.Http,
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Scheme = "bearer",
+            });
 
-        private static void SetCommentsPathForSwaggerJsonAndUi(SwaggerGenOptions options)
-        {
-            var xmlFile = $"{Assembly.GetEntryAssembly() !.GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            options.IncludeXmlComments(xmlPath);
+            options.AddSecurityDefinition("apikey", new OpenApiSecurityScheme
+            {
+                Name = ApiKeyRequirement.ApiKeyHeaderNameDefault,
+                Description = $"Authorization using the {ApiKeyRequirement.ApiKeyHeaderNameDefault} header. Example: \"{ApiKeyRequirement.ApiKeyHeaderNameDefault} {{apiKey}}\"",
+                Type = SecuritySchemeType.ApiKey,
+                In = ParameterLocation.Header,
+                Scheme = "apikey",
+            });
+
+            // Add auth header filter
+            options.OperationFilter<AuthenticationRequirementsOperationFilter>();
+
+            this.AddSwaggerDocumentForEachDiscoveredApiVersion(options);
         }
 
         private void AddSwaggerDocumentForEachDiscoveredApiVersion(SwaggerGenOptions options)

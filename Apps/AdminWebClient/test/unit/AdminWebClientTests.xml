@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AdminWebClientTests</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.Admin.Test.Services.CommunicationControllerTests">
+            <summary>
+            CommunicationController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Test.Services.CommunicationControllerTests.ShouldAddCommunication">
+            <summary>
+            AddCommunication - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Test.Services.CommunicationControllerTests.ShouldGetCommunications">
+            <summary>
+            GetCommunications - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Test.Services.CommunicationControllerTests.ShouldUpdateCommunication">
+            <summary>
+            UpdateCommunication - Happy Path.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Test.Services.DashboardControllerTest">
+            <summary>
+            Unit Tests for Admin Dashboard.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Test.Services.DashboardControllerTest.ShouldGetDependentCount">
+            <summary>
+            GetUsersWithNotesCount should return the note count.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Test.Services.CommunicationServiceTests">
+            <summary>
+            CommunicationService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Test.Services.CommunicationServiceTests.ShouldAddCommunication">
+            <summary>
+            AddCommunication - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Test.Services.CommunicationServiceTests.AddCommunicationShouldReturnDBError">
+            <summary>
+            AddCommunication - DB Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Test.Services.CommunicationServiceTests.ShouldGetCommunications">
+            <summary>
+            GetCommunications - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Test.Services.CommunicationServiceTests.GetCommunicationsShouldReturnDBError">
+            <summary>
+            GetCommunications - DB Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Test.Services.CommunicationServiceTests.ShouldUpdateCommunication">
+            <summary>
+            UpdateCommunication - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Test.Services.CommunicationServiceTests.ShouldUpdateCommunicationWithDBError">
+            <summary>
+            UpdateCommunication - DB Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Test.Services.CommunicationServiceTests.ShouldEffectiveDateBeforeExpiryDateWhenUpdateCommunication">
+            <summary>
+            UpdateCommunication - Invalid Date Range.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Test.Services.CommunicationServiceTests.ShouldDeleteCommunication">
+            <summary>
+            DeleteCommunication - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Test.Services.CommunicationServiceTests.ShouldDeleteProcessedCommunicationReturnError">
+            <summary>
+            DeleteCommunication - Already Processed Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Test.Services.CommunicationServiceTests.ShouldDeleteCommunicationWithDBError">
+            <summary>
+            DeleteCommunication - DB Error.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Test.Services.DashboardServiceTests">
+            <summary>
+            DashboardService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Test.Services.DashboardServiceTests.ShouldGetDependentCount">
+            <summary>
+            GetDependentCount - Happy Path.
+            </summary>
+        </member>
+    </members>
+</doc>
