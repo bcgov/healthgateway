@@ -2,9 +2,11 @@ import { ResultType } from "@/constants/resulttype";
 import Encounter from "@/models/encounter";
 import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
+import { EntryType } from "@/models/timelineEntry";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { IEncounterService, ILogger } from "@/services/interfaces";
+import EventTracker from "@/utility/eventTracker";
 
 import { EncounterActions } from "./types";
 
@@ -41,6 +43,10 @@ export const actions: EncounterActions = {
                             context.dispatch("handleError", result.resultError);
                             reject(result.resultError);
                         } else {
+                            EventTracker.loadData(
+                                EntryType.Encounter,
+                                result.resourcePayload.length
+                            );
                             context.commit(
                                 "setPatientEncounters",
                                 result.resourcePayload
