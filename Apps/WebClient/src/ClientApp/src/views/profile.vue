@@ -915,7 +915,7 @@ export default class ProfileView extends Vue {
                                             class="mx-2"
                                             variant="danger"
                                             @click="closeAccount()"
-                                            >Close Account
+                                            >Delete Account
                                         </hg-button>
                                     </b-col>
                                 </b-row>
