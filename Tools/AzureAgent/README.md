@@ -12,6 +12,7 @@ As Docker Hub has recently put in place pull limits, a pull secret needs to be d
 oc project 0bd5ad-tools
 oc create secret docker-registry docker-secret --docker-server=docker.io --docker-username=healthopenshift --docker-password=[ASK TEAM] --docker-email=stephen.s.laws@gov.bc.ca
 oc secrets link builder docker-secret --for=pull
+oc secrets link deployer docker-secret --for=pull
 ```
 
 ## Creating a Personal Access Token
@@ -35,16 +36,24 @@ You need to ensure that the Network Security Policy has been applied to the name
 
 Please reference the [README.md](../BaseBuild/README.md) for detailed deployment instructions.
 
-To review the parameters execute:
+To create the AzureAgent image run the following in the tools project
+
+```console
+oc process -f ./openshift/AzureAgentBuild.yaml | oc apply -f -
+```
+
+verify that the build was successful before continuing on to deploy the agent.
+
+To review the parameters for the deployment execute:
 
 ```console
 oc process -f ./openshift/AzureAgent.yaml --parameters
 ```
 
-To create the Azure Agent, switch to your tools project and minimally execute:
+run as 
 
 ```console
-oc process -f ./openshift/AzureAgent.yaml -p AZ_DEVOPS_ORG_URL=<URL> -p AZ_DEVOPS_TOKEN=<PAT> | oc apply -f -
+oc process -f ./openshift/AzureAgent.yaml -p AZ_DEVOPS_ORG_URL=<URL> -p AZ_DEVOPS_TOKEN=<PAT> -p INSTALL_NAMESPACE=0bd5ad-tools | oc apply -f -
 ```
 
 Resulting in
@@ -69,11 +78,11 @@ error: map: map[] does not contain declared merge key: name
 
 This is simply the the Service Account not being re-recreated.
 
-You then need to run two additional role bindings to allow tools to view Dev deployments
+You then need to run two additional role bindings to allow tools to view Dev deployments and allow the other namespaces to pull images from tools.
 
 ```console
-oc process -f ./openshift/rb-dev.yaml -p NAMESPACE=0bd5ad | oc apply -f -
-oc process -f ./openshift/rb-tools.yaml -p NAMESPACE=0bd5ad | oc apply -f -
+oc process -f ./openshift/rb-dev.yaml -p SRC_PROJECT=0bd5ad-tools -p DST_PROJECT=0bd5ad-dev | oc apply -f -
+oc process -f ./openshift/rb-tools.yaml -p LICENSE=0bd5ad -p PULL_PROJECT=0bd5ad-tools | oc apply -f -
 ```
 
 ## Removing AzureAgent
@@ -81,13 +90,13 @@ oc process -f ./openshift/rb-tools.yaml -p NAMESPACE=0bd5ad | oc apply -f -
 List all resources created
 
 ```console
-oc get serviceaccount,rolebinding,en,nsp,cm,secret,is,bc,dc --selector app=azure-agent -o name
+oc get serviceaccount,rolebinding,hpa,cm,secret,is,bc,dc --selector app=azure-agent -o name
 ```
 
 Assuming that the above returns nothing unexpected, you can issue the delete:
 
 ```console
-oc delete serviceaccount,rolebinding,en,nsp,cm,secret,is,bc,dc --selector app=azure-agent -o name
+oc delete serviceaccount,rolebinding,hpa,cm,secret,is,bc,dc --selector app=azure-agent -o name
 ```
 
 ## Updating Agent Image

@@ -52,7 +52,9 @@ oc process -f ./commonSecrets.yaml -p CR_CERT_PASSWORD=[THE PASSWORD] | oc apply
 
 ### Salesforce secrets
 
-Needs to be updated - review salesforceSecrets.yaml
+```console
+oc process -f ./salesforceSecrets.yaml -p ENDPOINT=[] -p TOKENURI=[] -p CLIENTID=[] -p USERNAME=[] -p CLIENTSECRET=[] -p PASSWORD=[] | oc apply -f -
+```
 
 ### Aca-Py secrets
 
@@ -60,7 +62,7 @@ Needs to be updated - review salesforceSecrets.yaml
   oc process -f ./acaPySecrets.yaml --parameters
 ```
 
-Create the common config
+Create the config
 
 ```console
 oc process -f ./acaPySecrets.yaml -p AGENT_URL=[AGENT URL] -p AGENT_KEY=[AGENT KEY] -p WEBHOOK_KEY=[Webhook Key] | oc apply -f -
