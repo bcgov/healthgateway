@@ -69,7 +69,7 @@ export default class ReportsView extends Vue {
     private isLoading = false;
     private isGeneratingReport = false;
     private reportFormatType = ReportFormatType.PDF;
-    private reportComponent = "";
+    private reportComponentName = "";
     private reportTypeOptions = [{ value: "", text: "Select" }];
 
     private selectedStartDate: StringISODate | null = null;
@@ -94,7 +94,7 @@ export default class ReportsView extends Vue {
     }
 
     private get isMedicationReport() {
-        return this.reportComponent == "MedicationHistoryReportComponent";
+        return this.reportComponentName === "MedicationHistoryReportComponent";
     }
 
     private get medicationOptions(): SelectOption[] {
@@ -125,7 +125,7 @@ export default class ReportsView extends Vue {
     private get isDownloadDisabled(): boolean {
         return (
             this.isLoading ||
-            !this.reportComponent ||
+            !this.reportComponentName ||
             !this.patientData.hdid ||
             !this.hasRecords
         );
@@ -211,10 +211,14 @@ export default class ReportsView extends Vue {
     }
 
     private downloadReport() {
+        if (this.reportComponentName === "") {
+            return;
+        }
+
         this.isGeneratingReport = true;
         SnowPlow.trackEvent({
             action: "download_report",
-            text: `${this.reportComponent} ${this.reportFormatType}`,
+            text: `${this.reportComponentName} ${this.reportFormatType}`,
         });
 
         this.report
@@ -263,7 +267,7 @@ export default class ReportsView extends Vue {
                         <b-col class="mb-2" sm="">
                             <b-form-select
                                 id="reportType"
-                                v-model="reportComponent"
+                                v-model="reportComponentName"
                                 data-testid="reportType"
                                 :options="reportTypeOptions"
                             >
@@ -433,12 +437,12 @@ export default class ReportsView extends Vue {
                     :full-screen="false"
                 ></LoadingComponent>
                 <div
-                    v-if="reportComponent"
+                    v-if="reportComponentName"
                     data-testid="reportSample"
                     class="sample d-none d-md-block"
                 >
                     <component
-                        :is="reportComponent"
+                        :is="reportComponentName"
                         ref="report"
                         :filter="reportFilter"
                         @on-is-loading-changed="isLoading = $event"
