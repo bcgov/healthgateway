@@ -1,0 +1,22 @@
+name: PR$(Rev:.r) #Build number
+
+pr:
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - Apps/Mock
+
+trigger: none
+
+pool:
+  name: "HealthGateway"
+
+extends:
+  template: /Build/hg.yaml
+  parameters:
+    Application: Mock
+    DotNetTests: true
+    NPMInstall: false
+    NPMTests: false
