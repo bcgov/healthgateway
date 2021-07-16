@@ -59,12 +59,6 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
     private readonly headerClass = "immunization-report-table-header";
 
-    @Watch("isLoading")
-    @Emit()
-    private onIsLoadingChanged() {
-        return this.isLoading;
-    }
-
     private get isLoading(): boolean {
         return this.immunizationIsDeferred || this.isImmunizationLoading;
     }
@@ -126,11 +120,31 @@ export default class ImmunizationHistoryReportComponent extends Vue {
             });
     }
 
+    @Watch("isLoading")
+    @Emit()
+    private onIsLoadingChanged() {
+        return this.isLoading;
+    }
+
+    @Watch("isEmpty")
+    @Watch("isRecommendationEmpty")
+    @Emit()
+    private onIsEmptyChanged() {
+        return this.isEmpty && this.isRecommendationEmpty;
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.retrieveImmunizations({ hdid: this.user.hdid }).catch((err) => {
             this.logger.error(`Error loading immunization data: ${err}`);
         });
+    }
+
+    private mounted() {
+        this.$emit(
+            "on-is-empty-changed",
+            this.isEmpty && this.isRecommendationEmpty
+        );
     }
 
     public generateReport(
