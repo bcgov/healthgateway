@@ -15,7 +15,6 @@ import { Action, Getter } from "vuex-class";
 
 import FeedbackComponent from "@/components/feedback.vue";
 import UserPreferenceType from "@/constants/userPreferenceType";
-import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import type { UserPreference } from "@/models/userPreference";
@@ -89,11 +88,8 @@ export default class SidebarComponent extends Vue {
 
     private UserPreferenceType = UserPreferenceType;
 
-    private eventBus = EventBus;
-
     private logger!: ILogger;
 
-    private isNoteTutorialEnabled = false;
     private isExportTutorialEnabled = false;
 
     @Watch("$route")
@@ -104,7 +100,6 @@ export default class SidebarComponent extends Vue {
     @Watch("isOpen")
     private onIsOpen(val: boolean) {
         console.log("isOpen", val);
-        this.isNoteTutorialEnabled = false;
         this.isExportTutorialEnabled = false;
     }
 
@@ -130,7 +125,6 @@ export default class SidebarComponent extends Vue {
                     return;
                 }
 
-                this.isNoteTutorialEnabled = true;
                 this.isExportTutorialEnabled = true;
 
                 document.querySelectorAll(".button-text").forEach((button) => {
@@ -143,7 +137,6 @@ export default class SidebarComponent extends Vue {
             });
         });
 
-        this.isNoteTutorialEnabled = true;
         this.isExportTutorialEnabled = true;
     }
 
@@ -155,11 +148,6 @@ export default class SidebarComponent extends Vue {
         if (this.isOverlayVisible) {
             this.toggleSidebar();
         }
-    }
-
-    private createNote() {
-        this.clearOverlay();
-        this.eventBus.$emit(EventMessageName.CreateNote);
     }
 
     private dismissTutorial(userPreference: UserPreference) {
@@ -185,21 +173,6 @@ export default class SidebarComponent extends Vue {
         } else {
             return tutorialPopover?.value === "true";
         }
-    }
-
-    private get showNoteTutorial(): boolean {
-        return (
-            this.isPreferenceActive(
-                this.user.preferences[UserPreferenceType.TutorialMenuNote]
-            ) &&
-            this.isNoteTutorialEnabled &&
-            this.isTimeline &&
-            this.isActiveProfile
-        );
-    }
-
-    private set showNoteTutorial(value: boolean) {
-        this.isNoteTutorialEnabled = value;
     }
 
     private get showExportTutorial(): boolean {
@@ -244,10 +217,6 @@ export default class SidebarComponent extends Vue {
 
     private get isReports(): boolean {
         return this.$route.path == "/reports";
-    }
-
-    private get isNoteEnabled(): boolean {
-        return this.config.modules["Note"];
     }
 
     private get isDependentEnabled(): boolean {
@@ -299,73 +268,6 @@ export default class SidebarComponent extends Vue {
                             </b-col>
                         </b-row>
                     </hg-button>
-                    <div v-show="isTimeline && isActiveProfile">
-                        <!-- Note button -->
-                        <hg-button
-                            v-show="isNoteEnabled"
-                            id="add-a-note-row"
-                            data-testid="addNoteBtn"
-                            class="align-items-center my-2 p-0 m-0"
-                            :class="{ 'sub-menu': isOpen }"
-                            variant="nav"
-                            @click="createNote"
-                        >
-                            <b-row>
-                                <b-col
-                                    id="add-a-note-btn"
-                                    title="Add a Note"
-                                    :class="{ 'col-4': isOpen }"
-                                >
-                                    <hg-icon
-                                        icon="edit"
-                                        size="medium"
-                                        class="sub-menu m-auto"
-                                    />
-                                </b-col>
-                                <b-col
-                                    v-show="isOpen"
-                                    cols="8"
-                                    class="button-text sub-menu"
-                                >
-                                    <span>Add a Note</span>
-                                </b-col>
-                            </b-row>
-                        </hg-button>
-                        <b-popover
-                            ref="popover"
-                            triggers="manual"
-                            :show.sync="showNoteTutorial"
-                            target="add-a-note-row"
-                            custom-class="popover-style"
-                            fallback-placement="clockwise"
-                            placement="right"
-                            variant="dark"
-                            boundary="viewport"
-                        >
-                            <div>
-                                <hg-button
-                                    class="pop-over-close"
-                                    variant="icon"
-                                    @click="
-                                        dismissTutorial(
-                                            user.preferences[
-                                                UserPreferenceType
-                                                    .TutorialMenuNote
-                                            ]
-                                        )
-                                    "
-                                    >x</hg-button
-                                >
-                            </div>
-                            <div
-                                data-testid="notesPopover"
-                                class="popover-content"
-                            >
-                                Add Notes to track your important health events
-                                e.g. Broke ankle in Cuba
-                            </div>
-                        </b-popover>
-                    </div>
                     <!-- Credentials button -->
                     <hg-button
                         v-show="isCredentialsEnabled && isActiveProfile"
@@ -441,7 +343,6 @@ export default class SidebarComponent extends Vue {
                             </b-col>
                         </b-row>
                         <b-popover
-                            ref="popover-export-records"
                             triggers="manual"
                             :show.sync="showExportTutorial"
                             target="export-records-row"
@@ -453,7 +354,7 @@ export default class SidebarComponent extends Vue {
                         >
                             <div>
                                 <hg-button
-                                    class="pop-over-close"
+                                    class="float-right text-dark p-0 ml-2"
                                     variant="icon"
                                     @click="
                                         dismissTutorial(
@@ -463,7 +364,7 @@ export default class SidebarComponent extends Vue {
                                             ]
                                         )
                                     "
-                                    >x</hg-button
+                                    >×</hg-button
                                 >
                             </div>
                             <div
@@ -603,14 +504,6 @@ export default class SidebarComponent extends Vue {
 
 .button-text {
     text-align: left;
-    &.sub-menu {
-        font-size: 1em;
-    }
-    @media (max-width: 767px) {
-        &.sub-menu {
-            font-size: 0.8em;
-        }
-    }
 }
 
 hr {
@@ -654,18 +547,6 @@ hr {
     background-color: $primary;
 }
 
-.pop-over-close {
-    float: right;
-    padding-top: 0px;
-    color: black;
-    border: none;
-    background-color: transparent;
-}
-
-.popover-content {
-    max-width: 20rem;
-    color: black;
-}
 /* Small Devices*/
 @media (max-width: 470px) {
     .popover-content {

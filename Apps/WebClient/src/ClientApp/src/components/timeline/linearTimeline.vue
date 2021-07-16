@@ -3,10 +3,12 @@ import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry, { DateGroup, EntryType } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
 
+import AddNoteButtonComponent from "./addNoteButton.vue";
 import EncounterTimelineComponent from "./entryCard/encounter.vue";
 import ImmunizationTimelineComponent from "./entryCard/immunization.vue";
 import LaboratoryTimelineComponent from "./entryCard/laboratory.vue";
@@ -22,9 +24,13 @@ import NoteTimelineComponent from "./entryCard/note.vue";
         LaboratoryComponent: LaboratoryTimelineComponent,
         EncounterComponent: EncounterTimelineComponent,
         NoteComponent: NoteTimelineComponent,
+        "add-note-button": AddNoteButtonComponent,
     },
 })
 export default class LinearTimelineComponent extends Vue {
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     @Action("setLinearDate", { namespace: "timeline" })
     setLinearDate!: (linearDate: DateWrapper) => void;
 
@@ -93,6 +99,10 @@ export default class LinearTimelineComponent extends Vue {
 
         let newGroupArray = DateGroup.createGroups(this.visibleTimelineEntries);
         return DateGroup.sortGroups(newGroupArray);
+    }
+
+    private get isNoteEnabled(): boolean {
+        return this.config.modules["Note"];
     }
 
     @Watch("currentPage")
@@ -185,7 +195,7 @@ export default class LinearTimelineComponent extends Vue {
 <template>
     <div>
         <b-row
-            class="no-print sticky-top sticky-offset pt-2 pl-2"
+            class="no-print sticky-top sticky-offset pt-2 px-2"
             :class="{ 'header-offset': isHeaderShown }"
         >
             <b-col>
@@ -195,13 +205,17 @@ export default class LinearTimelineComponent extends Vue {
                     :link-gen="linkGen"
                     :number-of-pages="numberOfPages"
                     data-testid="pagination"
+                    limit="4"
                     first-number
                     last-number
                     next-text="Next"
                     prev-text="Prev"
                     use-router
                     class="pb-0"
-                ></b-pagination-nav>
+                />
+            </b-col>
+            <b-col v-if="isNoteEnabled" col cols="auto">
+                <add-note-button />
             </b-col>
         </b-row>
         <b-row

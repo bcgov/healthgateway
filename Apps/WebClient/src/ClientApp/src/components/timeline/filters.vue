@@ -382,7 +382,7 @@ export default class FilterComponent extends Vue {
             variant="secondary"
             @click.stop="toggleMobileView"
         >
-            <hg-icon icon="sliders-h" size="medium" aria-hidden="true" />
+            <hg-icon icon="sliders-h" size="medium" square aria-hidden="true" />
         </hg-button>
         <b-modal
             id="generic-message"

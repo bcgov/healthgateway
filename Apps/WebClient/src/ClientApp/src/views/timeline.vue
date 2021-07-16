@@ -458,13 +458,13 @@ export default class TimelineView extends Vue {
                     </b-row>
                 </div>
                 <LinearTimeline
-                    v-show="isLinearView && !isLoading"
+                    v-if="isLinearView && !isLoading"
                     :timeline-entries="filteredTimelineEntries"
                     :total-entries="getTotalCount()"
                 >
                 </LinearTimeline>
                 <CalendarTimeline
-                    v-show="!isLinearView && !isLoading"
+                    v-if="!isLinearView && !isLoading"
                     :timeline-entries="filteredTimelineEntries"
                     :total-entries="getTotalCount()"
                 >
