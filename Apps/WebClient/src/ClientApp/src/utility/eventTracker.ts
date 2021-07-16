@@ -34,4 +34,11 @@ export default abstract class EventTracker {
             });
         }
     }
+
+    public static downloadReport(eventName: string): void {
+        SnowPlow.trackEvent({
+            action: "download_report",
+            text: eventName,
+        });
+    }
 }

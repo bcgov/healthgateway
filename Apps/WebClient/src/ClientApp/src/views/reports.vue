@@ -26,7 +26,7 @@ import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import SnowPlow from "@/utility/snowPlow";
+import EventTracker from "@/utility/eventTracker";
 
 @Component({
     components: {
@@ -92,7 +92,7 @@ export default class ReportsView extends Vue {
     }
 
     private get isMedicationReport() {
-        return this.reportComponent == "MedicationHistoryReportComponent";
+        return this.reportComponent === MedicationHistoryReportComponent.name;
     }
 
     private get medicationOptions(): SelectOption[] {
@@ -129,31 +129,31 @@ export default class ReportsView extends Vue {
 
         if (this.config.modules["Medication"]) {
             this.reportTypeOptions.push({
-                value: "MedicationHistoryReportComponent",
+                value: MedicationHistoryReportComponent.name,
                 text: "Medications",
             });
         }
         if (this.config.modules["Encounter"]) {
             this.reportTypeOptions.push({
-                value: "MSPVisitsReportComponent",
+                value: MSPVisitsReportComponent.name,
                 text: "Health Visits",
             });
         }
         if (this.config.modules["Laboratory"]) {
             this.reportTypeOptions.push({
-                value: "COVID19ReportComponent",
+                value: COVID19ReportComponent.name,
                 text: "COVID-19 Test Results",
             });
         }
         if (this.config.modules["Immunization"]) {
             this.reportTypeOptions.push({
-                value: "ImmunizationHistoryReportComponent",
+                value: ImmunizationHistoryReportComponent.name,
                 text: "Immunizations",
             });
         }
         if (this.config.modules["MedicationRequest"]) {
             this.reportTypeOptions.push({
-                value: "MedicationRequestReportComponent",
+                value: MedicationRequestReportComponent.name,
                 text: "Special Authority Requests",
             });
         }
@@ -201,10 +201,8 @@ export default class ReportsView extends Vue {
 
     private downloadReport() {
         this.isGeneratingReport = true;
-        SnowPlow.trackEvent({
-            action: "download_report",
-            text: `${this.reportComponent} ${this.reportFormatType}`,
-        });
+
+        this.trackDownload();
 
         this.report
             .generateReport(this.reportFormatType, this.headerData)
@@ -232,6 +230,36 @@ export default class ReportsView extends Vue {
                 return "application/vnd.openxmlformats";
             default:
                 return "";
+        }
+    }
+
+    private trackDownload(): void {
+        let reportName = "";
+        switch (this.reportComponent) {
+            case MedicationHistoryReportComponent.name:
+                reportName = "Medication";
+                break;
+            case MSPVisitsReportComponent.name:
+                reportName = "Health Visits";
+                break;
+            case COVID19ReportComponent.name:
+                reportName = "COVID-19 Test";
+                break;
+            case ImmunizationHistoryReportComponent.name:
+                reportName = "Immunization";
+                break;
+            case MedicationRequestReportComponent.name:
+                reportName = "Special Authority Requests";
+                break;
+            default:
+                reportName = "";
+                break;
+        }
+        if (reportName !== "") {
+            const formatTypeName = ReportFormatType[this.reportFormatType];
+            const eventName = `${reportName} (${formatTypeName})`;
+
+            EventTracker.downloadReport(eventName);
         }
     }
 }
