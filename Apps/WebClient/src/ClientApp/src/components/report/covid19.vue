@@ -106,7 +106,7 @@ export default class COVID19ReportComponent extends Vue {
     }
 
     private mounted() {
-        this.$emit("on-is-empty-changed", this.isEmpty);
+        this.onIsEmptyChanged();
     }
 
     private checkResultReady(testStatus: string | null): boolean {

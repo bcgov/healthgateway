@@ -96,7 +96,7 @@ export default class MSPVisitsReportComponent extends Vue {
     }
 
     private mounted() {
-        this.$emit("on-is-empty-changed", this.isEmpty);
+        this.onIsEmptyChanged();
     }
 
     public async generateReport(

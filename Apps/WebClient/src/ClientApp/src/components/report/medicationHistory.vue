@@ -122,7 +122,7 @@ export default class MedicationHistoryReportComponent extends Vue {
     }
 
     private mounted() {
-        this.$emit("on-is-empty-changed", this.isEmpty);
+        this.onIsEmptyChanged();
     }
 
     public generateReport(

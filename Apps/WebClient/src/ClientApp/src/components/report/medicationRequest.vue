@@ -108,7 +108,7 @@ export default class MedicationRequestReportComponent extends Vue {
     }
 
     private mounted() {
-        this.$emit("on-is-empty-changed", this.isEmpty);
+        this.onIsEmptyChanged();
     }
 
     private prescriberName(medication: MedicationRequest) {
