@@ -3,14 +3,12 @@ import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import { DateGroup } from "@/models/timelineEntry";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
-import AddNoteButtonComponent from "../timeline/addNoteButton.vue";
 import CalendarBody from "./body.vue";
 import CalendarHeader from "./header.vue";
 
@@ -18,7 +16,6 @@ import CalendarHeader from "./header.vue";
     components: {
         CalendarHeader,
         CalendarBody,
-        "add-note-button": AddNoteButtonComponent,
     },
 })
 export default class CalendarComponent extends Vue {
@@ -29,9 +26,6 @@ export default class CalendarComponent extends Vue {
     @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
 
     @Getter("isLinearView", { namespace: "timeline" }) isLinearView!: boolean;
-
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
 
     @Prop() dateGroups!: DateGroup[];
 
@@ -97,10 +91,6 @@ export default class CalendarComponent extends Vue {
         }, []);
     }
 
-    private get isNoteEnabled(): boolean {
-        return this.config.modules["Note"];
-    }
-
     @Watch("currentMonth")
     private onCurrentMonth() {
         if (!this.isLinearView) {
@@ -131,9 +121,7 @@ export default class CalendarComponent extends Vue {
                     :available-months="availableMonths"
                 />
             </b-col>
-            <b-col v-if="isNoteEnabled" col cols="auto">
-                <add-note-button text-breakpoint="md" class="p-2" />
-            </b-col>
+            <slot name="add-note" />
         </b-row>
         <!-- body display date day and events -->
         <CalendarBody

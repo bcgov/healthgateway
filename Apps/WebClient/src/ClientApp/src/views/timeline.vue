@@ -11,10 +11,12 @@ import CovidModalComponent from "@/components/modal/covid.vue";
 import NoteEditComponent from "@/components/modal/noteEdit.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import ResourceCentreComponent from "@/components/resourceCentre.vue";
+import AddNoteButtonComponent from "@/components/timeline/addNoteButton.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
 import EntryDetailsComponent from "@/components/timeline/entryCard/entryDetails.vue";
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
+import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
@@ -50,9 +52,13 @@ library.add(faSearch);
         ErrorCard: ErrorCardComponent,
         Filters: FilterComponent,
         "resource-centre": ResourceCentreComponent,
+        "add-note-button": AddNoteButtonComponent,
     },
 })
 export default class TimelineView extends Vue {
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     @Action("setKeyword", { namespace: "timeline" })
     setKeyword!: (keyword: string) => void;
 
@@ -265,6 +271,10 @@ export default class TimelineView extends Vue {
         );
     }
 
+    private get isNoteEnabled(): boolean {
+        return this.config.modules["Note"];
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.fetchTimelineData();
@@ -458,16 +468,34 @@ export default class TimelineView extends Vue {
                     </b-row>
                 </div>
                 <LinearTimeline
-                    v-if="isLinearView && !isLoading"
+                    v-show="isLinearView && !isLoading"
                     :timeline-entries="filteredTimelineEntries"
                     :total-entries="getTotalCount()"
                 >
+                    <template #add-note>
+                        <b-col
+                            v-if="isNoteEnabled && isLinearView && !isLoading"
+                            col
+                            cols="auto"
+                        >
+                            <add-note-button />
+                        </b-col>
+                    </template>
                 </LinearTimeline>
                 <CalendarTimeline
-                    v-if="!isLinearView && !isLoading"
+                    v-show="!isLinearView && !isLoading"
                     :timeline-entries="filteredTimelineEntries"
                     :total-entries="getTotalCount()"
                 >
+                    <template #add-note>
+                        <b-col
+                            v-if="isNoteEnabled && !isLinearView && !isLoading"
+                            col
+                            cols="auto"
+                        >
+                            <add-note-button text-breakpoint="md" class="p-2" />
+                        </b-col>
+                    </template>
                 </CalendarTimeline>
                 <b-row v-if="isLoading">
                     <b-col>
