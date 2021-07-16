@@ -1,0 +1,3001 @@
+{
+    "uuid": "${uuid}",
+    "hdid": "${hdid}",
+    "requestingIP": "${requestingIP}",
+    "getMspVisitHistoryResponse": {
+        "totalRecords": 176,
+        "totalPages": 1,
+        "claims": [
+            {
+                "claimId": 1100276989,
+                "serviceDate": "2020-07-15",
+                "diagnosticCode": {
+                    "diagCode1": "311"
+                },
+                "specialtyDesc": "GENERAL PRACTICE",
+                "practitionerName": "ILCVAPPOJ CLPXWG",
+                "locationName": "OVMTJNMDO FHQXUA SMZRFHZQ",
+                "locationAddress": {
+                    "addrLine1": "IKI KNNH IOYHDW KXQRN",
+                    "city": "KELOWNA",
+                    "postalCode": "V1W3X7",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276979,
+                "serviceDate": "2020-07-14",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276990,
+                "serviceDate": "2020-07-14",
+                "diagnosticCode": {
+                    "diagCode1": "3000"
+                },
+                "specialtyDesc": "GENERAL PRACTICE",
+                "practitionerName": "DBR MPS CGRN VJDYOMH MZOAMZR",
+                "locationName": "TBOFBSTUF MLHXLCS KHRQHO TSB",
+                "locationAddress": {
+                    "addrLine1": "JCLK MFUPP YH",
+                    "city": "KELOWNA",
+                    "postalCode": "V1X7W3",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276987,
+                "serviceDate": "2020-07-14",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276986,
+                "serviceDate": "2020-07-14",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276980,
+                "serviceDate": "2020-07-14",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276984,
+                "serviceDate": "2020-07-14",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276983,
+                "serviceDate": "2020-07-14",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276982,
+                "serviceDate": "2020-07-14",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276981,
+                "serviceDate": "2020-07-14",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276985,
+                "serviceDate": "2020-07-14",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276970,
+                "serviceDate": "2020-07-13",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276978,
+                "serviceDate": "2020-07-13",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276977,
+                "serviceDate": "2020-07-13",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276976,
+                "serviceDate": "2020-07-13",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276971,
+                "serviceDate": "2020-07-13",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276974,
+                "serviceDate": "2020-07-13",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276973,
+                "serviceDate": "2020-07-13",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276972,
+                "serviceDate": "2020-07-13",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276975,
+                "serviceDate": "2020-07-13",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276961,
+                "serviceDate": "2020-07-12",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276969,
+                "serviceDate": "2020-07-12",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276968,
+                "serviceDate": "2020-07-12",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276967,
+                "serviceDate": "2020-07-12",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276962,
+                "serviceDate": "2020-07-12",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276965,
+                "serviceDate": "2020-07-12",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276964,
+                "serviceDate": "2020-07-12",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276963,
+                "serviceDate": "2020-07-12",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276966,
+                "serviceDate": "2020-07-12",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276952,
+                "serviceDate": "2020-07-11",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276960,
+                "serviceDate": "2020-07-11",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276959,
+                "serviceDate": "2020-07-11",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276958,
+                "serviceDate": "2020-07-11",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276953,
+                "serviceDate": "2020-07-11",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276956,
+                "serviceDate": "2020-07-11",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276955,
+                "serviceDate": "2020-07-11",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276954,
+                "serviceDate": "2020-07-11",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276957,
+                "serviceDate": "2020-07-11",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "TFWBLV GBXIK LRNSOII",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276943,
+                "serviceDate": "2020-07-10",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276951,
+                "serviceDate": "2020-07-10",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276950,
+                "serviceDate": "2020-07-10",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276949,
+                "serviceDate": "2020-07-10",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276944,
+                "serviceDate": "2020-07-10",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276947,
+                "serviceDate": "2020-07-10",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276946,
+                "serviceDate": "2020-07-10",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276945,
+                "serviceDate": "2020-07-10",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276948,
+                "serviceDate": "2020-07-10",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276094,
+                "serviceDate": "2020-07-09",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276942,
+                "serviceDate": "2020-07-09",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276941,
+                "serviceDate": "2020-07-09",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276940,
+                "serviceDate": "2020-07-09",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276095,
+                "serviceDate": "2020-07-09",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276938,
+                "serviceDate": "2020-07-09",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276937,
+                "serviceDate": "2020-07-09",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276936,
+                "serviceDate": "2020-07-09",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276939,
+                "serviceDate": "2020-07-09",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275873,
+                "serviceDate": "2020-07-08",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276988,
+                "serviceDate": "2020-07-08",
+                "diagnosticCode": {
+                    "diagCode1": "009"
+                },
+                "specialtyDesc": "GENERAL PRACTICE",
+                "practitionerName": "XSSANDPB DEUNPVKU DEWFDZF",
+                "locationName": "XSSANDPB DEUNPVKU DEWFDZF",
+                "locationAddress": {
+                    "addrLine1": "OVMTJNMDO MLHXLCS KHRQHO",
+                    "addrLine2": "IKIVKNNH IOYHDW KX",
+                    "city": "KELOWNA",
+                    "postalCode": "V1W3X7",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276093,
+                "serviceDate": "2020-07-08",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276092,
+                "serviceDate": "2020-07-08",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275874,
+                "serviceDate": "2020-07-08",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276090,
+                "serviceDate": "2020-07-08",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276089,
+                "serviceDate": "2020-07-08",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276088,
+                "serviceDate": "2020-07-08",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275875,
+                "serviceDate": "2020-07-08",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276091,
+                "serviceDate": "2020-07-08",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275864,
+                "serviceDate": "2020-07-07",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275872,
+                "serviceDate": "2020-07-07",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275871,
+                "serviceDate": "2020-07-07",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275870,
+                "serviceDate": "2020-07-07",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275865,
+                "serviceDate": "2020-07-07",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275868,
+                "serviceDate": "2020-07-07",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275867,
+                "serviceDate": "2020-07-07",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275866,
+                "serviceDate": "2020-07-07",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275869,
+                "serviceDate": "2020-07-07",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275855,
+                "serviceDate": "2020-07-06",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275863,
+                "serviceDate": "2020-07-06",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275862,
+                "serviceDate": "2020-07-06",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275861,
+                "serviceDate": "2020-07-06",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275856,
+                "serviceDate": "2020-07-06",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275859,
+                "serviceDate": "2020-07-06",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275858,
+                "serviceDate": "2020-07-06",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275857,
+                "serviceDate": "2020-07-06",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275860,
+                "serviceDate": "2020-07-06",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275846,
+                "serviceDate": "2020-07-05",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275854,
+                "serviceDate": "2020-07-05",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275853,
+                "serviceDate": "2020-07-05",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275852,
+                "serviceDate": "2020-07-05",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275851,
+                "serviceDate": "2020-07-05",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275850,
+                "serviceDate": "2020-07-05",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275849,
+                "serviceDate": "2020-07-05",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275848,
+                "serviceDate": "2020-07-05",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275847,
+                "serviceDate": "2020-07-05",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275839,
+                "serviceDate": "2020-07-04",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275840,
+                "serviceDate": "2020-07-04",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275841,
+                "serviceDate": "2020-07-04",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275842,
+                "serviceDate": "2020-07-04",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275838,
+                "serviceDate": "2020-07-04",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275844,
+                "serviceDate": "2020-07-04",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275845,
+                "serviceDate": "2020-07-04",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275837,
+                "serviceDate": "2020-07-04",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275843,
+                "serviceDate": "2020-07-04",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275830,
+                "serviceDate": "2020-07-03",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275831,
+                "serviceDate": "2020-07-03",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275832,
+                "serviceDate": "2020-07-03",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275833,
+                "serviceDate": "2020-07-03",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275834,
+                "serviceDate": "2020-07-03",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275835,
+                "serviceDate": "2020-07-03",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275836,
+                "serviceDate": "2020-07-03",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275828,
+                "serviceDate": "2020-07-03",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275829,
+                "serviceDate": "2020-07-03",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "PBVEH IRVILHW JTANCN",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275819,
+                "serviceDate": "2020-07-02",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275827,
+                "serviceDate": "2020-07-02",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275820,
+                "serviceDate": "2020-07-02",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275821,
+                "serviceDate": "2020-07-02",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275822,
+                "serviceDate": "2020-07-02",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275823,
+                "serviceDate": "2020-07-02",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275824,
+                "serviceDate": "2020-07-02",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275825,
+                "serviceDate": "2020-07-02",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275826,
+                "serviceDate": "2020-07-02",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274967,
+                "serviceDate": "2020-07-01",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274969,
+                "serviceDate": "2020-07-01",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274970,
+                "serviceDate": "2020-07-01",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274971,
+                "serviceDate": "2020-07-01",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274968,
+                "serviceDate": "2020-07-01",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274973,
+                "serviceDate": "2020-07-01",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274974,
+                "serviceDate": "2020-07-01",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100275818,
+                "serviceDate": "2020-07-01",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274972,
+                "serviceDate": "2020-07-01",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274965,
+                "serviceDate": "2020-06-30",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274745,
+                "serviceDate": "2020-06-30",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274960,
+                "serviceDate": "2020-06-30",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274961,
+                "serviceDate": "2020-06-30",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274966,
+                "serviceDate": "2020-06-30",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274963,
+                "serviceDate": "2020-06-30",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274964,
+                "serviceDate": "2020-06-30",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274744,
+                "serviceDate": "2020-06-30",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274962,
+                "serviceDate": "2020-06-30",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274722,
+                "serviceDate": "2020-06-29",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274725,
+                "serviceDate": "2020-06-29",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274728,
+                "serviceDate": "2020-06-29",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274731,
+                "serviceDate": "2020-06-29",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274734,
+                "serviceDate": "2020-06-29",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274737,
+                "serviceDate": "2020-06-29",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274740,
+                "serviceDate": "2020-06-29",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274743,
+                "serviceDate": "2020-06-29",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100276991,
+                "serviceDate": "2020-06-29",
+                "feeDesc": "CONE BIOPSY CERVIX (INCLUDES D\u0026C)",
+                "diagnosticCode": {
+                    "diagCode1": "622"
+                },
+                "specialtyDesc": "OBSTETRICS \u0026 GYNAECOLOGY",
+                "practitionerName": "EJPTXY SFVEY HJILX",
+                "locationName": "EJPTXY SFVEY",
+                "locationAddress": {
+                    "addrLine1": "JKF JQHM RAUHDBA YB",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y1P7",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274719,
+                "serviceDate": "2020-06-29",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274716,
+                "serviceDate": "2020-06-29",
+                "feeDesc": "VENEPUNCTURE",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274739,
+                "serviceDate": "2020-06-28",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274742,
+                "serviceDate": "2020-06-28",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274718,
+                "serviceDate": "2020-06-28",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274736,
+                "serviceDate": "2020-06-28",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274721,
+                "serviceDate": "2020-06-28",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274724,
+                "serviceDate": "2020-06-28",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274727,
+                "serviceDate": "2020-06-28",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274730,
+                "serviceDate": "2020-06-28",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274733,
+                "serviceDate": "2020-06-28",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274717,
+                "serviceDate": "2020-06-27",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274741,
+                "serviceDate": "2020-06-27",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274720,
+                "serviceDate": "2020-06-27",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274723,
+                "serviceDate": "2020-06-27",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274726,
+                "serviceDate": "2020-06-27",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274729,
+                "serviceDate": "2020-06-27",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274732,
+                "serviceDate": "2020-06-27",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274735,
+                "serviceDate": "2020-06-27",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274738,
+                "serviceDate": "2020-06-27",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274707,
+                "serviceDate": "2020-06-26",
+                "feeDesc": "TETRAHYDROCANNABINOIDS (THC), SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274710,
+                "serviceDate": "2020-06-26",
+                "feeDesc": "FENTANYL, URINE SCREENING IMMUNOASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274711,
+                "serviceDate": "2020-06-26",
+                "feeDesc": "OXYCODONE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274712,
+                "serviceDate": "2020-06-26",
+                "feeDesc": "ETHANOL, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274715,
+                "serviceDate": "2020-06-26",
+                "feeDesc": "COCAINE\/COCAINE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274714,
+                "serviceDate": "2020-06-26",
+                "feeDesc": "BENZODIAZEPINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274709,
+                "serviceDate": "2020-06-26",
+                "feeDesc": "AMPHETAMINES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274708,
+                "serviceDate": "2020-06-26",
+                "feeDesc": "METHADONE METABOLITE, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            },
+            {
+                "claimId": 1100274713,
+                "serviceDate": "2020-06-26",
+                "feeDesc": "OPIATES, SCREENING ASSAY",
+                "diagnosticCode": {
+                    "diagCode1": "01L"
+                },
+                "specialtyDesc": "LABORATORY MEDICINE",
+                "practitionerName": "LPCMN ODTQN W P",
+                "locationName": "WLEOJRFQ RAAL D RKTKFQZ",
+                "locationAddress": {
+                    "addrLine1": "IKI NNL MGOU PEGUAM",
+                    "city": "KELOWNA",
+                    "postalCode": "V1Y6J5",
+                    "province": "BC"
+                }
+            }
+        ]
+    }
+}

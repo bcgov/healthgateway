@@ -9,9 +9,45 @@
             The Odr Mock controller.
             </summary>
         </member>
-        <member name="M:HealthGateway.Mock.Controllers.OdrController.Encounter">
+        <member name="M:HealthGateway.Mock.Controllers.OdrController.Encounter(HealthGateway.Mock.Models.OdrRequest)">
             <summary>
             Gets mock data for encounters.
+            </summary>
+            <param name="request">The query request.</param>
+            <returns>The mocked encounter json.</returns>
+        </member>
+        <member name="M:HealthGateway.Mock.Controllers.OdrController.Medication(HealthGateway.Mock.Models.OdrRequest)">
+            <summary>
+            Gets mock data for encounters.
+            </summary>
+            <param name="request">The query request.</param>
+            <returns>The mocked encounter json.</returns>
+        </member>
+        <member name="M:HealthGateway.Mock.Controllers.OdrController.MaintainProtectiveWord(HealthGateway.Mock.Models.OdrRequest)">
+            <summary>
+            Gets mock data for encounters.
+            </summary>
+            <param name="request">The query request.</param>
+            <returns>The mocked encounter json.</returns>
+        </member>
+        <member name="T:HealthGateway.Mock.Models.OdrRequest">
+            <summary>
+            The odr request model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Mock.Models.OdrRequest.Id">
+            <summary>
+            Gets or sets the request id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Mock.Models.OdrRequest.HdId">
+            <summary>
+            Gets or sets the user hdid.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Mock.Models.OdrRequest.RequestingIP">
+            <summary>
+            Gets or sets the user ip.
             </summary>
         </member>
         <member name="T:HealthGateway.Mock.Program">
