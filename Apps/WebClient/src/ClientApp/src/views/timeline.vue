@@ -493,7 +493,7 @@ export default class TimelineView extends Vue {
                             col
                             cols="auto"
                         >
-                            <add-note-button text-breakpoint="md" class="p-2" />
+                            <add-note-button class="p-2" />
                         </b-col>
                     </template>
                 </CalendarTimeline>

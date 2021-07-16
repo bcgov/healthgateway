@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import UserPreferenceType from "@/constants/userPreferenceType";
@@ -13,8 +13,6 @@ import { ILogger } from "@/services/interfaces";
 
 @Component
 export default class AddNoteButtonComponent extends Vue {
-    @Prop({ default: "lg", required: false }) textBreakpoint!: string;
-
     @Getter("user", { namespace: "user" }) user!: User;
 
     @Action("updateUserPreference", { namespace: "user" })
@@ -82,15 +80,8 @@ export default class AddNoteButtonComponent extends Vue {
             variant="secondary"
             @click="createNote"
         >
-            <hg-icon
-                icon="edit"
-                size="medium"
-                :class="[`mr-${textBreakpoint}-2`]"
-                square
-            />
-            <span class="d-none" :class="[`d-${textBreakpoint}-inline`]"
-                >Add a Note</span
-            >
+            <hg-icon icon="edit" size="medium" class="mr-lg-2" square />
+            <span class="d-none d-lg-inline">Add a Note</span>
         </hg-button>
         <b-popover
             triggers="manual"
