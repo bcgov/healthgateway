@@ -44,7 +44,7 @@ npx cypress open
 If you want to verify the tests againt https://dev.healthgateway.gov.bc.ca then do not set the CYPRESS_BASE_URL environment variable.
 
 e2e: contains tests that will be run in the dev environment only.
-ui: contains tests that are either stubbed or costmetic only and can be run in any environment
+ui: contains tests that are either stubbed or cosmetic only and can be run in any environment
 mock: contains tests that are custom to the mock environment.
 
 ### Running via CLI
@@ -59,15 +59,15 @@ npx cypress run --spec "cypress/integration/ui/**/*,cypress/integration/e2e/**/*
 
 to Run the tests intended for the mock environment:
 
-````bash
-npx cypress run --spec "cypress/integration/ui/**/*,cypress/integration/mock/**/*" --env baseUrl=https://mock.healthgateway.gov.bc.ca
+```bash
+npx cypress run --spec "cypress/integration/ui/**/*,cypress/integration/mock/**/*" --config baseUrl=https://mock.healthgateway.gov.bc.ca
 ```
 
 You can also run Cypress as a specific browser by executing although this will launch and close Chrome many times.
 
 ```bash
 npx cypress run --browser chrome
-````
+```
 
 You can run a specific test
 
