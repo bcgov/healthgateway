@@ -2,7 +2,7 @@
 
 The Mock project provides mock data for testing purposes.
 
-## Run Encounter Service
+## Run Mock Service
 
 ### Command line
 
