@@ -23,6 +23,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Assets\Encounter.json" />
+    <EmbeddedResource Include="Assets\Medication.json" />
+    <EmbeddedResource Include="Assets\ProtectiveWord.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
   </ItemGroup>
 </Project>

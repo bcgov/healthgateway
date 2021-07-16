@@ -15,7 +15,14 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Mock.Controllers
 {
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Reflection;
+    using System.Text;
+    using System.Text.Json;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Utils;
+    using HealthGateway.Mock.Models;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -25,14 +32,80 @@ namespace HealthGateway.Mock.Controllers
     [ApiController]
     public class OdrController : ControllerBase
     {
+        private const string ProtectiveWord = "KEYWORD";
+
         /// <summary>
         /// Gets mock data for encounters.
         /// </summary>
-        [HttpGet]
+        /// <param name="request">The query request.</param>
+        /// <returns>The mocked encounter json.</returns>
+        [HttpPost]
+        [Route("encounter")]
         [Produces("application/json")]
-        public EmptyResult Encounter()
+        public ContentResult Encounter([FromBody] OdrRequest request)
         {
-            return new EmptyResult();
+            Dictionary<string, string> variables = new Dictionary<string, string>();
+            variables.Add("${uuid}", request.Id);
+            variables.Add("${hdid}", request.HdId);
+            variables.Add("${requestingIP}", request.RequestingIP);
+            string? payload = AssetReader.Read("HealthGateway.Mock.Assets.Encounter.json");
+            return new ContentResult { Content = ReplaceVariables(payload!, variables), ContentType = "application/json" }; 
+        }
+
+        /// <summary>
+        /// Gets mock data for encounters.
+        /// </summary>
+        /// <param name="request">The query request.</param>
+        /// <returns>The mocked encounter json.</returns>
+        [HttpPost]
+        [Route("medication")]
+        [Produces("application/json")]
+        public ContentResult Medication([FromBody] OdrRequest request)
+        {
+            Dictionary<string, string> variables = new Dictionary<string, string>();
+            variables.Add("${uuid}", request.Id);
+            variables.Add("${hdid}", request.HdId);
+            variables.Add("${requestingIP}", request.RequestingIP);
+            string? payload = AssetReader.Read("HealthGateway.Mock.Assets.Medication.json");
+            return new ContentResult { Content = ReplaceVariables(payload!, variables), ContentType = "application/json" };
+        }
+
+        /// <summary>
+        /// Gets mock data for encounters.
+        /// </summary>
+        /// <param name="request">The query request.</param>
+        /// <returns>The mocked encounter json.</returns>
+        [HttpPost]
+        [Route("maintainProtectiveWord")]
+        [Produces("application/json")]
+        public ContentResult MaintainProtectiveWord([FromBody] OdrRequest request)
+        {
+            Dictionary<string, string> variables = new Dictionary<string, string>();
+            variables.Add("${uuid}", request.Id);
+            variables.Add("${hdid}", request.HdId);
+            variables.Add("${requestingIP}", request.RequestingIP);
+
+            if (request.HdId == "RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ") // Protected User HDID
+            {
+                variables.Add("${value}", ProtectiveWord);
+            }
+            else
+            {
+                variables.Add("${value}", string.Empty);
+            }
+            string? payload = AssetReader.Read("HealthGateway.Mock.Assets.ProtectiveWord.json");
+            return new ContentResult { Content = ReplaceVariables(payload!, variables), ContentType = "application/json" };
+        }
+
+
+        private static string ReplaceVariables(string payload, Dictionary<string, string> variables)
+        {
+            foreach(KeyValuePair<string, string> variable in variables)
+            {
+                payload = payload.Replace(variable.Key, variable.Value, System.StringComparison.CurrentCulture);
+            }
+
+            return payload;
         }
     }
 }
