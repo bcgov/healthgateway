@@ -34,7 +34,7 @@ export default class CalendarTimelineComponent extends Vue {
 
 <template>
     <div class="timeline-calendar">
-        <CalendarComponent v-if="!timelineIsEmpty" :date-groups="dateGroups">
+        <CalendarComponent v-show="!timelineIsEmpty" :date-groups="dateGroups">
             <template #add-note>
                 <slot name="add-note" />
             </template>
