@@ -250,6 +250,7 @@ export default class SidebarComponent extends Vue {
                         data-testid="menuBtnTimelineLink"
                         to="/timeline"
                         variant="nav"
+                        class="my-3"
                         :class="{ selected: isTimeline }"
                     >
                         <b-row class="align-items-center">
@@ -302,9 +303,9 @@ export default class SidebarComponent extends Vue {
                         id="menuBtnDependents"
                         data-testid="menuBtnDependentsLink"
                         to="/dependents"
+                        variant="nav"
                         class="my-3"
                         :class="{ selected: isDependents }"
-                        variant="nav"
                     >
                         <b-row class="align-items-center">
                             <b-col title="Reports" :class="{ 'col-3': isOpen }">
@@ -322,6 +323,7 @@ export default class SidebarComponent extends Vue {
                         data-testid="menuBtnReportsLink"
                         to="/reports"
                         variant="nav"
+                        class="my-3"
                         :class="{ selected: isReports }"
                     >
                         <b-row
@@ -382,8 +384,8 @@ export default class SidebarComponent extends Vue {
                         id="menuBtnHealthInsights"
                         data-testid="menuBtnHealthInsightsLink"
                         to="/healthInsights"
-                        class="my-3"
                         variant="nav"
+                        class="my-3"
                         :class="{ selected: isHealthInsights }"
                     >
                         <b-row class="align-items-center">
