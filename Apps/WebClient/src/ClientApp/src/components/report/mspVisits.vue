@@ -62,7 +62,7 @@ export default class MSPVisitsReportComponent extends Vue {
     }
 
     private get isEmpty() {
-        return this.visibleRecords.length == 0;
+        return this.visibleRecords.length === 0;
     }
 
     private get items(): EncounterRow[] {
@@ -82,11 +82,21 @@ export default class MSPVisitsReportComponent extends Vue {
         return this.isLoading;
     }
 
+    @Watch("isEmpty")
+    @Emit()
+    private onIsEmptyChanged() {
+        return this.isEmpty;
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.retrieveEncounters({ hdid: this.user.hdid }).catch((err) => {
             this.logger.error(`Error loading encounter data: ${err}`);
         });
+    }
+
+    private mounted() {
+        this.$emit("on-is-empty-changed", this.isEmpty);
     }
 
     public async generateReport(

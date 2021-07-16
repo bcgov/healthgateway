@@ -76,6 +76,8 @@ export default class ReportsView extends Vue {
     private selectedEndDate: StringISODate | null = null;
     private selectedMedicationOptions: string[] = [];
 
+    private hasRecords = false;
+
     private reportFilter: ReportFilter = ReportFilterBuilder.create().build();
 
     private get headerData(): ReportHeader {
@@ -118,6 +120,15 @@ export default class ReportsView extends Vue {
                 value: x.brandName,
             };
         });
+    }
+
+    private get isDownloadDisabled(): boolean {
+        return (
+            this.isLoading ||
+            !this.reportComponent ||
+            !this.patientData.hdid ||
+            !this.hasRecords
+        );
     }
 
     private formatDate(date: string): string {
@@ -245,7 +256,7 @@ export default class ReportsView extends Vue {
                 <div class="my-3 px-3 py-4 form">
                     <b-row>
                         <b-col>
-                            <label for="reportType"> Record Type </label>
+                            <label for="reportType">Record Type</label>
                         </b-col>
                     </b-row>
                     <b-row align-h="between" class="py-2">
@@ -263,8 +274,7 @@ export default class ReportsView extends Vue {
                                 v-b-toggle.advanced-panel
                                 variant="link"
                                 data-testid="advancedBtn"
-                            >
-                                Advanced
+                                >Advanced
                             </hg-button>
                             <b-dropdown
                                 id="exportRecordBtn"
@@ -272,11 +282,7 @@ export default class ReportsView extends Vue {
                                 class="mb-1 ml-2"
                                 variant="primary"
                                 data-testid="exportRecordBtn"
-                                :disabled="
-                                    !reportComponent ||
-                                    isLoading ||
-                                    !patientData.hdid
-                                "
+                                :disabled="isDownloadDisabled"
                             >
                                 <b-dropdown-item
                                     @click="
@@ -436,6 +442,7 @@ export default class ReportsView extends Vue {
                         ref="report"
                         :filter="reportFilter"
                         @on-is-loading-changed="isLoading = $event"
+                        @on-is-empty-changed="hasRecords = !$event"
                     />
                 </div>
                 <div v-else>
