@@ -46,12 +46,6 @@ export default class MedicationRequestReportComponent extends Vue {
 
     private readonly headerClass = "medication-request-report-table-header";
 
-    @Watch("isLoading")
-    @Emit()
-    private onIsLoadingChanged() {
-        return this.isLoading;
-    }
-
     private get isEmpty() {
         return this.visibleRecords.length === 0;
     }
@@ -94,11 +88,27 @@ export default class MedicationRequestReportComponent extends Vue {
         });
     }
 
+    @Watch("isLoading")
+    @Emit()
+    private onIsLoadingChanged() {
+        return this.isLoading;
+    }
+
+    @Watch("isEmpty")
+    @Emit()
+    private onIsEmptyChanged() {
+        return this.isEmpty;
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.retrieve({ hdid: this.user.hdid }).catch((err) => {
             this.logger.error(`Error loading medication requests data: ${err}`);
         });
+    }
+
+    private mounted() {
+        this.onIsEmptyChanged();
     }
 
     private prescriberName(medication: MedicationRequest) {
