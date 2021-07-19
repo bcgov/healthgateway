@@ -185,7 +185,7 @@ export default class LinearTimelineComponent extends Vue {
 <template>
     <div>
         <b-row
-            class="no-print sticky-top sticky-offset pt-2 pl-2"
+            class="no-print sticky-top sticky-offset pt-2 px-2"
             :class="{ 'header-offset': isHeaderShown }"
         >
             <b-col>
@@ -195,14 +195,16 @@ export default class LinearTimelineComponent extends Vue {
                     :link-gen="linkGen"
                     :number-of-pages="numberOfPages"
                     data-testid="pagination"
+                    limit="4"
                     first-number
                     last-number
                     next-text="Next"
                     prev-text="Prev"
                     use-router
                     class="pb-0"
-                ></b-pagination-nav>
+                />
             </b-col>
+            <slot name="add-note" />
         </b-row>
         <b-row
             v-if="!timelineIsEmpty"
