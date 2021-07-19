@@ -23,6 +23,9 @@ import { ClientModule } from "@/router";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions } from "@/store/types";
 import ReportsView from "@/views/reports.vue";
+import Report from "@/models/report";
+import RequestResult from "@/models/requestResult";
+import { ResultType } from "@/constants/resulttype";
 
 interface ReportComponent extends Vue {
     generateReport(): Promise<void>;
@@ -81,6 +84,8 @@ function createWrapper(
 }
 
 describe("Report view", () => {
+    global.URL.createObjectURL = jest.fn();
+
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     logger.initialize("info");
 
@@ -249,9 +254,17 @@ describe("Report view", () => {
 
         const testIdModal = "[data-testid=messageModal]";
 
+        var result: RequestResult<Report> = {
+            totalResultCount: 1,
+            resourcePayload: { data: "", fileName: "someFileName" },
+            resultStatus: ResultType.Success,
+            pageIndex: 0,
+            pageSize: 1,
+        };
+
         // Execute Medication report
         await comboOptions.at(1).setSelected();
-        const mockedMedMethod = jest.fn().mockResolvedValue(undefined);
+        const mockedMedMethod = jest.fn().mockResolvedValue(result);
         (wrapper.vm.$refs.report as ReportComponent).generateReport =
             mockedMedMethod;
 
@@ -259,7 +272,7 @@ describe("Report view", () => {
 
         // Execute Encounter report
         await comboOptions.at(2).setSelected();
-        const mockedEncMethod = jest.fn().mockResolvedValue(undefined);
+        const mockedEncMethod = jest.fn().mockResolvedValue(result);
         (wrapper.vm.$refs.report as ReportComponent).generateReport =
             mockedEncMethod;
 
@@ -267,7 +280,7 @@ describe("Report view", () => {
 
         // Execute Lab report
         await comboOptions.at(3).setSelected();
-        const mockedLabMethod = jest.fn().mockResolvedValue(undefined);
+        const mockedLabMethod = jest.fn().mockResolvedValue(result);
         (wrapper.vm.$refs.report as ReportComponent).generateReport =
             mockedLabMethod;
 
@@ -275,7 +288,7 @@ describe("Report view", () => {
 
         // Execute Immz report
         await comboOptions.at(4).setSelected();
-        const mockedImmzMethod = jest.fn().mockResolvedValue(undefined);
+        const mockedImmzMethod = jest.fn().mockResolvedValue(result);
         (wrapper.vm.$refs.report as ReportComponent).generateReport =
             mockedImmzMethod;
 
@@ -283,7 +296,7 @@ describe("Report view", () => {
 
         // Execute Med Request report
         await comboOptions.at(5).setSelected();
-        const mockedMedRequestMethod = jest.fn().mockResolvedValue(undefined);
+        const mockedMedRequestMethod = jest.fn().mockResolvedValue(result);
         (wrapper.vm.$refs.report as ReportComponent).generateReport =
             mockedMedRequestMethod;
 

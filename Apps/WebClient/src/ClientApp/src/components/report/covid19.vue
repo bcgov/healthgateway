@@ -44,12 +44,6 @@ export default class COVID19ReportComponent extends Vue {
 
     private readonly headerClass = "laboratory-report-table-header";
 
-    @Watch("isLaboratoryLoading")
-    @Emit()
-    private onIsLoadingChanged() {
-        return this.isLaboratoryLoading;
-    }
-
     private get visibleRecords(): LaboratoryOrder[] {
         let records = this.laboratoryOrders.filter((record) => {
             return this.filter.allowsDate(
@@ -75,7 +69,7 @@ export default class COVID19ReportComponent extends Vue {
     }
 
     private get isEmpty() {
-        return this.visibleRecords.length == 0;
+        return this.visibleRecords.length === 0;
     }
 
     private get items(): LaboratoryRow[] {
@@ -92,11 +86,27 @@ export default class COVID19ReportComponent extends Vue {
         });
     }
 
+    @Watch("isLaboratoryLoading")
+    @Emit()
+    private onIsLoadingChanged() {
+        return this.isLaboratoryLoading;
+    }
+
+    @Watch("isEmpty")
+    @Emit()
+    private onIsEmptyChanged() {
+        return this.isEmpty;
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.retrieveLaboratory({ hdid: this.user.hdid }).catch((err) => {
             this.logger.error(`Error loading Covid19 data: ${err}`);
         });
+    }
+
+    private mounted() {
+        this.onIsEmptyChanged();
     }
 
     private checkResultReady(testStatus: string | null): boolean {

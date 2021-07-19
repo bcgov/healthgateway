@@ -26,7 +26,7 @@ import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import SnowPlow from "@/utility/snowPlow";
+import EventTracker from "@/utility/eventTracker";
 
 @Component({
     components: {
@@ -69,12 +69,14 @@ export default class ReportsView extends Vue {
     private isLoading = false;
     private isGeneratingReport = false;
     private reportFormatType = ReportFormatType.PDF;
-    private reportComponent = "";
+    private reportComponentName = "";
     private reportTypeOptions = [{ value: "", text: "Select" }];
 
     private selectedStartDate: StringISODate | null = null;
     private selectedEndDate: StringISODate | null = null;
     private selectedMedicationOptions: string[] = [];
+
+    private hasRecords = false;
 
     private reportFilter: ReportFilter = ReportFilterBuilder.create().build();
 
@@ -92,7 +94,9 @@ export default class ReportsView extends Vue {
     }
 
     private get isMedicationReport() {
-        return this.reportComponent == "MedicationHistoryReportComponent";
+        return (
+            this.reportComponentName === MedicationHistoryReportComponent.name
+        );
     }
 
     private get medicationOptions(): SelectOption[] {
@@ -120,6 +124,15 @@ export default class ReportsView extends Vue {
         });
     }
 
+    private get isDownloadDisabled(): boolean {
+        return (
+            this.isLoading ||
+            !this.reportComponentName ||
+            !this.patientData.hdid ||
+            !this.hasRecords
+        );
+    }
+
     private formatDate(date: string): string {
         return DateWrapper.format(date);
     }
@@ -129,31 +142,31 @@ export default class ReportsView extends Vue {
 
         if (this.config.modules["Medication"]) {
             this.reportTypeOptions.push({
-                value: "MedicationHistoryReportComponent",
+                value: MedicationHistoryReportComponent.name,
                 text: "Medications",
             });
         }
         if (this.config.modules["Encounter"]) {
             this.reportTypeOptions.push({
-                value: "MSPVisitsReportComponent",
+                value: MSPVisitsReportComponent.name,
                 text: "Health Visits",
             });
         }
         if (this.config.modules["Laboratory"]) {
             this.reportTypeOptions.push({
-                value: "COVID19ReportComponent",
+                value: COVID19ReportComponent.name,
                 text: "COVID-19 Test Results",
             });
         }
         if (this.config.modules["Immunization"]) {
             this.reportTypeOptions.push({
-                value: "ImmunizationHistoryReportComponent",
+                value: ImmunizationHistoryReportComponent.name,
                 text: "Immunizations",
             });
         }
         if (this.config.modules["MedicationRequest"]) {
             this.reportTypeOptions.push({
-                value: "MedicationRequestReportComponent",
+                value: MedicationRequestReportComponent.name,
                 text: "Special Authority Requests",
             });
         }
@@ -200,11 +213,13 @@ export default class ReportsView extends Vue {
     }
 
     private downloadReport() {
+        if (this.reportComponentName === "") {
+            return;
+        }
+
         this.isGeneratingReport = true;
-        SnowPlow.trackEvent({
-            action: "download_report",
-            text: `${this.reportComponent} ${this.reportFormatType}`,
-        });
+
+        this.trackDownload();
 
         this.report
             .generateReport(this.reportFormatType, this.headerData)
@@ -234,6 +249,36 @@ export default class ReportsView extends Vue {
                 return "";
         }
     }
+
+    private trackDownload(): void {
+        let reportName = "";
+        switch (this.reportComponentName) {
+            case MedicationHistoryReportComponent.name:
+                reportName = "Medication";
+                break;
+            case MSPVisitsReportComponent.name:
+                reportName = "Health Visits";
+                break;
+            case COVID19ReportComponent.name:
+                reportName = "COVID-19 Test";
+                break;
+            case ImmunizationHistoryReportComponent.name:
+                reportName = "Immunization";
+                break;
+            case MedicationRequestReportComponent.name:
+                reportName = "Special Authority Requests";
+                break;
+            default:
+                reportName = "";
+                break;
+        }
+        if (reportName !== "") {
+            const formatTypeName = ReportFormatType[this.reportFormatType];
+            const eventName = `${reportName} (${formatTypeName})`;
+
+            EventTracker.downloadReport(eventName);
+        }
+    }
 }
 </script>
 
@@ -245,14 +290,14 @@ export default class ReportsView extends Vue {
                 <div class="my-3 px-3 py-4 form">
                     <b-row>
                         <b-col>
-                            <label for="reportType"> Record Type </label>
+                            <label for="reportType">Record Type</label>
                         </b-col>
                     </b-row>
                     <b-row align-h="between" class="py-2">
                         <b-col class="mb-2" sm="">
                             <b-form-select
                                 id="reportType"
-                                v-model="reportComponent"
+                                v-model="reportComponentName"
                                 data-testid="reportType"
                                 :options="reportTypeOptions"
                             >
@@ -263,8 +308,7 @@ export default class ReportsView extends Vue {
                                 v-b-toggle.advanced-panel
                                 variant="link"
                                 data-testid="advancedBtn"
-                            >
-                                Advanced
+                                >Advanced
                             </hg-button>
                             <b-dropdown
                                 id="exportRecordBtn"
@@ -272,11 +316,7 @@ export default class ReportsView extends Vue {
                                 class="mb-1 ml-2"
                                 variant="primary"
                                 data-testid="exportRecordBtn"
-                                :disabled="
-                                    !reportComponent ||
-                                    isLoading ||
-                                    !patientData.hdid
-                                "
+                                :disabled="isDownloadDisabled"
                             >
                                 <b-dropdown-item
                                     @click="
@@ -427,15 +467,16 @@ export default class ReportsView extends Vue {
                     :full-screen="false"
                 ></LoadingComponent>
                 <div
-                    v-if="reportComponent"
+                    v-if="reportComponentName"
                     data-testid="reportSample"
                     class="sample d-none d-md-block"
                 >
                     <component
-                        :is="reportComponent"
+                        :is="reportComponentName"
                         ref="report"
                         :filter="reportFilter"
                         @on-is-loading-changed="isLoading = $event"
+                        @on-is-empty-changed="hasRecords = !$event"
                     />
                 </div>
                 <div v-else>
