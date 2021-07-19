@@ -28,15 +28,21 @@ import { ReportFormatType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import EventTracker from "@/utility/eventTracker";
 
+const medicationReport = "medication-report";
+const mspVisitReport = "mspvisit-report";
+const covid19Report = "covid19-report";
+const immunizationReport = "immunization-report";
+const medicationRequestReport = "medication-request-report";
+
 @Component({
     components: {
         LoadingComponent,
         "message-modal": MessageModalComponent,
-        MedicationHistoryReportComponent,
-        MSPVisitsReportComponent,
-        COVID19ReportComponent,
-        ImmunizationHistoryReportComponent,
-        MedicationRequestReportComponent,
+        medicationReport: MedicationHistoryReportComponent,
+        mspVisitReport: MSPVisitsReportComponent,
+        covid19Report: COVID19ReportComponent,
+        immunizationReport: ImmunizationHistoryReportComponent,
+        medicationRequestReport: MedicationRequestReportComponent,
         "hg-date-picker": DatePickerComponent,
         MultiSelectComponent,
         "resource-centre": ResourceCentreComponent,
@@ -94,9 +100,7 @@ export default class ReportsView extends Vue {
     }
 
     private get isMedicationReport() {
-        return (
-            this.reportComponentName === MedicationHistoryReportComponent.name
-        );
+        return this.reportComponentName === medicationReport;
     }
 
     private get medicationOptions(): SelectOption[] {
@@ -142,31 +146,31 @@ export default class ReportsView extends Vue {
 
         if (this.config.modules["Medication"]) {
             this.reportTypeOptions.push({
-                value: MedicationHistoryReportComponent.name,
+                value: medicationReport,
                 text: "Medications",
             });
         }
         if (this.config.modules["Encounter"]) {
             this.reportTypeOptions.push({
-                value: MSPVisitsReportComponent.name,
+                value: mspVisitReport,
                 text: "Health Visits",
             });
         }
         if (this.config.modules["Laboratory"]) {
             this.reportTypeOptions.push({
-                value: COVID19ReportComponent.name,
+                value: covid19Report,
                 text: "COVID-19 Test Results",
             });
         }
         if (this.config.modules["Immunization"]) {
             this.reportTypeOptions.push({
-                value: ImmunizationHistoryReportComponent.name,
+                value: immunizationReport,
                 text: "Immunizations",
             });
         }
         if (this.config.modules["MedicationRequest"]) {
             this.reportTypeOptions.push({
-                value: MedicationRequestReportComponent.name,
+                value: medicationRequestReport,
                 text: "Special Authority Requests",
             });
         }
