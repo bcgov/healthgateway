@@ -14,18 +14,18 @@ import VueRouter from "vue-router";
 import Vuex from "vuex";
 
 import { RegistrationStatus } from "@/constants/registrationStatus";
+import { ResultType } from "@/constants/resulttype";
 import { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import Report from "@/models/report";
+import RequestResult from "@/models/requestResult";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ClientModule } from "@/router";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions } from "@/store/types";
 import ReportsView from "@/views/reports.vue";
-import Report from "@/models/report";
-import RequestResult from "@/models/requestResult";
-import { ResultType } from "@/constants/resulttype";
 
 interface ReportComponent extends Vue {
     generateReport(): Promise<void>;
@@ -254,7 +254,7 @@ describe("Report view", () => {
 
         const testIdModal = "[data-testid=messageModal]";
 
-        var result: RequestResult<Report> = {
+        const result: RequestResult<Report> = {
             totalResultCount: 1,
             resourcePayload: { data: "", fileName: "someFileName" },
             resultStatus: ResultType.Success,
