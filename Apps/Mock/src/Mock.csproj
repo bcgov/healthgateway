@@ -25,6 +25,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Assets\Encounter.json" />
     <EmbeddedResource Include="Assets\Medication.json" />
+    <EmbeddedResource Include="Assets\MedicationRequest.json" />
     <EmbeddedResource Include="Assets\ProtectiveWord.json" />
   </ItemGroup>
 
