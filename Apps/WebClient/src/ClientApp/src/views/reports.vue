@@ -26,10 +26,13 @@ import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.container";
+import { ILogger } from "@/services/interfaces";
 import EventTracker from "@/utility/eventTracker";
 
 const medicationReport = "medication-report";
-const mspVisitReport = "mspvisit-report";
+const mspVisitReport = "msp-visit-report";
 const covid19Report = "covid19-report";
 const immunizationReport = "immunization-report";
 const medicationRequestReport = "medication-request-report";
@@ -86,6 +89,8 @@ export default class ReportsView extends Vue {
 
     private reportFilter: ReportFilter = ReportFilterBuilder.create().build();
 
+    private logger!: ILogger;
+
     private get headerData(): ReportHeader {
         return {
             phn: this.patientData.personalhealthnumber,
@@ -129,6 +134,7 @@ export default class ReportsView extends Vue {
     }
 
     private get isDownloadDisabled(): boolean {
+        this.logger.debug(`Report Component Name: ${this.reportComponentName}`);
         return (
             this.isLoading ||
             !this.reportComponentName ||
@@ -142,6 +148,7 @@ export default class ReportsView extends Vue {
     }
 
     private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.getPatientData();
 
         if (this.config.modules["Medication"]) {
@@ -257,19 +264,19 @@ export default class ReportsView extends Vue {
     private trackDownload(): void {
         let reportName = "";
         switch (this.reportComponentName) {
-            case MedicationHistoryReportComponent.name:
+            case medicationReport:
                 reportName = "Medication";
                 break;
-            case MSPVisitsReportComponent.name:
+            case mspVisitReport:
                 reportName = "Health Visits";
                 break;
-            case COVID19ReportComponent.name:
+            case covid19Report:
                 reportName = "COVID-19 Test";
                 break;
-            case ImmunizationHistoryReportComponent.name:
+            case immunizationReport:
                 reportName = "Immunization";
                 break;
-            case MedicationRequestReportComponent.name:
+            case medicationRequestReport:
                 reportName = "Special Authority Requests";
                 break;
             default:
