@@ -79,6 +79,8 @@ namespace HealthGateway.Common.Delegates
                 Uri endpoint = new Uri(this.nsConfig.Endpoint);
                 HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                this.logger.LogTrace($"Response: {response}");
+                this.logger.LogTrace($"Payload: {payload}");
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
@@ -160,6 +162,8 @@ namespace HealthGateway.Common.Delegates
                 this.logger.LogTrace($"Http content: {json}");
                 HttpResponseMessage response = await client.PutAsync(endpoint, content).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                this.logger.LogTrace($"Response: {response}");
+                this.logger.LogTrace($"Payload: {payload}");
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.Created:
