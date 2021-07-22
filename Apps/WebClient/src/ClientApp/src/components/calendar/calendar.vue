@@ -111,18 +111,18 @@ export default class CalendarComponent extends Vue {
 <template>
     <div class="calendar">
         <!-- header pick month -->
-        <CalendarHeader
-            class="sticky-top sticky-offset p-2"
-            :class="{ 'header-offset': isHeaderShown }"
-            :current-month.sync="currentMonth"
-            :title-format="titleFormat"
-            :available-months="availableMonths"
-        >
-        </CalendarHeader>
-        <b-row
-            class="sticky-top sticky-line"
-            :class="{ 'header-offset': isHeaderShown }"
-        />
+        <b-row>
+            <b-col>
+                <CalendarHeader
+                    class="sticky-top sticky-offset p-2"
+                    :class="{ 'header-offset': isHeaderShown }"
+                    :current-month.sync="currentMonth"
+                    :title-format="titleFormat"
+                    :available-months="availableMonths"
+                />
+            </b-col>
+            <slot name="add-note" />
+        </b-row>
         <!-- body display date day and events -->
         <CalendarBody
             class="pt-2 px-0 px-md-2"

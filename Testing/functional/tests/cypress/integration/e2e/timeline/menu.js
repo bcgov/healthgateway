@@ -84,7 +84,6 @@ describe("Menu System", () => {
             "href",
             "/timeline"
         );
-        cy.get("[data-testid=addNoteBtn]").should("be.visible");
         cy.get("[data-testid=menuBtnHealthInsightsLink]").should(
             "have.attr",
             "href",
