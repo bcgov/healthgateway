@@ -20,6 +20,7 @@ export const actions: ImmunizationActions = {
         return new Promise((resolve, reject) => {
             if (context.state.status === LoadStatus.LOADED) {
                 logger.debug(`Immunizations found stored, not querying!`);
+                resolve();
             } else {
                 logger.debug(`Retrieving Immunizations`);
                 context.commit("setRequested");

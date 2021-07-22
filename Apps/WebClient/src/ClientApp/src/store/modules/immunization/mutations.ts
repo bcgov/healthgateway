@@ -14,14 +14,12 @@ export const mutations: ImmunizationMutations = {
         state: ImmunizationState,
         immunizationResult: ImmunizationResult
     ) {
+        state.immunizations = immunizationResult.immunizations;
+        state.recommendations = immunizationResult.recommendations;
+        state.error = undefined;
         if (immunizationResult.loadState.refreshInProgress) {
-            state.immunizations = [];
-            state.error = undefined;
             state.status = LoadStatus.DEFERRED;
         } else {
-            state.immunizations = immunizationResult.immunizations;
-            state.recommendations = immunizationResult.recommendations;
-            state.error = undefined;
             state.status = LoadStatus.LOADED;
         }
     },
