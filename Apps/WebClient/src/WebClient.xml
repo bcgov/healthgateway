@@ -1991,12 +1991,13 @@
             <param name="inviteKey">The email invite key.</param>
             <returns>Returns a request result with appropriate result status..</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserEmailService.CreateUserEmail(System.String,System.String)">
+        <member name="M:HealthGateway.WebClient.Services.IUserEmailService.CreateUserEmail(System.String,System.String,System.Boolean)">
             <summary>
             Creates the a non-validated email.
             </summary>
             <param name="hdid">The user hdid.</param>
             <param name="emailAddress">Email address to be set for the user.</param>
+            <param name="isVerified">Indicates whether the email address is verified.</param>
             <returns>returns true if the email was sucessfully created.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Services.IUserEmailService.UpdateUserEmail(System.String,System.String)">
@@ -2039,12 +2040,13 @@
             <param name="jwtAuthTime">The date of last jwt authorization time.</param>
             <returns>The wrappeed user profile.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.DateTime)">
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.DateTime,System.String)">
             <summary>
             Saves the user profile to the database.
             </summary>
             <param name="createProfileRequest">The request to create a user profile model.</param>
             <param name="jwtAuthTime">The date of last jwt authorization time.</param>
+            <param name="jwtEmailAddress">The email address contained by the jwt.</param>
             <returns>The wrapped user profile.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CloseUserProfile(System.String,System.Guid)">
@@ -2265,7 +2267,7 @@
         <member name="M:HealthGateway.WebClient.Services.UserEmailService.ValidateEmail(System.String,System.Guid)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserEmailService.CreateUserEmail(System.String,System.String)">
+        <member name="M:HealthGateway.WebClient.Services.UserEmailService.CreateUserEmail(System.String,System.String,System.Boolean)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserEmailService.UpdateUserEmail(System.String,System.String)">
@@ -2314,7 +2316,7 @@
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserProfile(System.String,System.DateTime)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.DateTime)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.DateTime,System.String)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.CloseUserProfile(System.String,System.Guid)">

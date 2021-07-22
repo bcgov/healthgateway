@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -190,7 +190,7 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<IHttpContextAccessor>().Object);
 
             // Execute
-            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, DateTime.Today).ConfigureAwait(true);
+            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, DateTime.Today, It.IsAny<string>()).ConfigureAwait(true);
 
             // Verify
             notificationServiceMock.Verify(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()), Times.Once());
@@ -455,7 +455,7 @@ namespace HealthGateway.WebClient.Test.Services
                 cryptoDelegateMock.Object,
                 new Mock<IHttpContextAccessor>().Object);
 
-            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, DateTime.Today).ConfigureAwait(true);
+            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, DateTime.Today, It.IsAny<string>()).ConfigureAwait(true);
 
             return new Tuple<RequestResult<UserProfileModel>, UserProfileModel>(actualResult, expected);
         }
