@@ -24,8 +24,14 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Assets\Encounter.json" />
+    <EmbeddedResource Include="Assets\Immunization.json" />
+    <EmbeddedResource Include="Assets\Immunizations.json" />
+    <EmbeddedResource Include="Assets\LaboratoryOrders.json" />
+    <EmbeddedResource Include="Assets\LabReport.json" />
     <EmbeddedResource Include="Assets\Medication.json" />
     <EmbeddedResource Include="Assets\MedicationRequest.json" />
+    <EmbeddedResource Include="Assets\NotificationSettings-Get.json" />
+    <EmbeddedResource Include="Assets\NotificationSettings-Put.json" />
     <EmbeddedResource Include="Assets\ProtectiveWord.json" />
   </ItemGroup>
 
