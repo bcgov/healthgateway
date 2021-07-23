@@ -147,6 +147,13 @@ export default class TimelineView extends Vue {
 
     @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
 
+    private filterText = "";
+    private isPacificTime = false;
+    private logger!: ILogger;
+    private readonly dismissImmunizationBannerSeconds = 5;
+    private dismissImmunizationBannerCountdown = 0;
+    private initialImmunizationCount = 0;
+
     @Watch("filterText")
     private onFilterTextChanged() {
         this.setKeyword(this.filterText);
@@ -212,12 +219,8 @@ export default class TimelineView extends Vue {
         }
 
         // Add the immunization entries to the timeline list
-        if (!this.immunizationIsDeferred) {
-            for (let immunization of this.patientImmunizations) {
-                timelineEntries.push(
-                    new ImmunizationTimelineEntry(immunization)
-                );
-            }
+        for (let immunization of this.patientImmunizations) {
+            timelineEntries.push(new ImmunizationTimelineEntry(immunization));
         }
 
         timelineEntries = this.sortEntries(timelineEntries);
@@ -237,15 +240,6 @@ export default class TimelineView extends Vue {
 
         return filteredEntries;
     }
-
-    private filterText = "";
-
-    private isPacificTime = false;
-
-    private logger!: ILogger;
-
-    private readonly dismissImmunizationBannerSeconds = 5;
-    private dismissImmunizationBannerCountdown = 0;
 
     private get unverifiedEmail(): boolean {
         return !this.user.verifiedEmail && this.user.hasEmail;
@@ -307,7 +301,10 @@ export default class TimelineView extends Vue {
             this.getPatientData(),
             this.retrieveMedications({ hdid: this.user.hdid }),
             this.retrieveMedicationRequests({ hdid: this.user.hdid }),
-            this.retrieveImmunizations({ hdid: this.user.hdid }),
+            this.retrieveImmunizations({ hdid: this.user.hdid }).then(() => {
+                this.initialImmunizationCount =
+                    this.patientImmunizations.length;
+            }),
             this.retrieveLaboratory({ hdid: this.user.hdid }),
             this.retrieveEncounters({ hdid: this.user.hdid }),
             this.retrieveNotes({ hdid: this.user.hdid }),
@@ -408,7 +405,10 @@ export default class TimelineView extends Vue {
                             Still searching for immunization records
                         </h4>
                         <h4
-                            v-else-if="patientImmunizations.length > 0"
+                            v-else-if="
+                                patientImmunizations.length >
+                                initialImmunizationCount
+                            "
                             data-testid="immunizationReady"
                         >
                             Additional immunization records found. Loading into
