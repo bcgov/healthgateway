@@ -30,6 +30,53 @@
             <param name="request">The query request.</param>
             <returns>The mocked encounter json.</returns>
         </member>
+        <member name="T:HealthGateway.Mock.Controllers.PhsaController">
+            <summary>
+            The PHSA mock controller.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Mock.Controllers.PhsaController.LaboratoryOrders(System.String,System.String)">
+            <summary>
+            Gets mock data for laboratory orders.
+            </summary>
+            <param name="subjectHdid">The HDID of the patient.</param>
+            <param name="limit">The limit on the number of records returned.</param>
+            <returns>The mocked laboratory order json.</returns>
+        </member>
+        <member name="M:HealthGateway.Mock.Controllers.PhsaController.LabReport(System.String,System.String)">
+            <summary>
+            Gets mock data for laboratory reports.
+            </summary>
+            <param name="id">The laboratory order ID.</param>
+            <param name="subjectHdid">The HDID of the patient.</param>
+            <returns>The mocked laboratory report json.</returns>
+        </member>
+        <member name="M:HealthGateway.Mock.Controllers.PhsaController.Immunizations">
+            <summary>
+            Gets mock data for immunizations.
+            </summary>
+            <returns>The mocked immunization json.</returns>
+        </member>
+        <member name="M:HealthGateway.Mock.Controllers.PhsaController.Immunization(System.String)">
+            <summary>
+            Gets mock data for a particular immunization.
+            </summary>
+            <param name="immunizationId">The immunization ID.</param>
+            <returns>The mocked immunization json.</returns>
+        </member>
+        <member name="M:HealthGateway.Mock.Controllers.PhsaController.GetNotificationSettings">
+            <summary>
+            Gets mock data for notification settings.
+            </summary>
+            <returns>The mocked notification settings json.</returns>
+        </member>
+        <member name="M:HealthGateway.Mock.Controllers.PhsaController.UpdateNotificationSettings(HealthGateway.Mock.Models.NotificationSettingRequest)">
+            <summary>
+            Mocks the endpoint for updating notification settings.
+            </summary>
+            <param name="request">The new notification settings.</param>
+            <returns>The mocked notification settings json.</returns>
+        </member>
         <member name="T:HealthGateway.Mock.Controllers.SalesforceController">
             <summary>
             The Salesforce mock controller.
@@ -40,6 +87,56 @@
             Gets mock data for medication requests.
             </summary>
             <returns>The mocked medication request json.</returns>
+        </member>
+        <member name="T:HealthGateway.Mock.Models.NotificationSettingRequest">
+            <summary>
+            PHSA Notification Settings request model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Mock.Models.NotificationSettingRequest.SubjectHdid">
+            <summary>
+            Gets or sets a value indicating the subject HDID. This is an identifier person this notification is sent to.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Mock.Models.NotificationSettingRequest.SMSEnabled">
+            <summary>
+            Gets or sets a value indicating whether SMS notifications are enabled.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Mock.Models.NotificationSettingRequest.SMSNumber">
+            <summary>
+            Gets or sets the number to be used for SMS notifications.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Mock.Models.NotificationSettingRequest.SMSVerified">
+            <summary>
+            Gets or sets a value indicating whether the SMS number has been validated.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Mock.Models.NotificationSettingRequest.SMSScope">
+            <summary>
+            Gets or sets the SMS scope.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Mock.Models.NotificationSettingRequest.SMSVerificationCode">
+            <summary>
+            Gets or sets the code used to validate the ownership of the number.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Mock.Models.NotificationSettingRequest.EmailEnabled">
+            <summary>
+            Gets or sets a value indicating whether Email notifications are enabled.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Mock.Models.NotificationSettingRequest.EmailAddress">
+            <summary>
+            Gets or sets the email to be used for notifications.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Mock.Models.NotificationSettingRequest.EmailScope">
+            <summary>
+            Gets or sets the Email scope.
+            </summary>
         </member>
         <member name="T:HealthGateway.Mock.Models.OdrRequest">
             <summary>

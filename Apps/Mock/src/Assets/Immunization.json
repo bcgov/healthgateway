@@ -1,0 +1,25 @@
+{
+    "loadState": {
+        "signalRUrl": "/progress",
+        "signalRMethod": "Immunization",
+        "refreshInProgress": false
+    },
+    "result": {
+        "id": "42ad761e-9a71-47f4-1f9a-08d92ba03fd1",
+        "sourceSystemId": "5588010_55897841",
+        "name": "COVID-19 mRNA",
+        "targetedDisease": "COVID19",
+        "status": "Completed",
+        "providerOrClinic": "North Island Hospital, Campbell River & District",
+        "occurrenceDateTime": "2021-01-06T00:00:00",
+        "immunizationAgents": [
+            {
+                "code": "1119349007",
+                "name": "COVID-19 mRNA",
+                "lotNumber": "EL0203",
+                "productName": "Pfizer mRNA BNT162b2"
+            }
+        ],
+        "immunizationForecast": null
+    }
+}
