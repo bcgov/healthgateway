@@ -15,6 +15,9 @@ export default interface UserProfile {
     // Indicates whether the email was verified.
     isEmailVerified: boolean;
 
+    // The email from the user's external identity provider.
+    identityProviderEmail?: string | null;
+
     // The user SMS number.
     smsNumber: string;
 

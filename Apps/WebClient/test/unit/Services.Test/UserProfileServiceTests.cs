@@ -736,6 +736,7 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
+            expected.ProviderEmail = "expected@example.com";
             expected.HasTermsOfServiceUpdated = true;
 
             LegalAgreement termsOfService = new LegalAgreement()
@@ -792,7 +793,7 @@ namespace HealthGateway.WebClient.Test.Services
                 cryptoDelegateMock.Object,
                 new Mock<IHttpContextAccessor>().Object);
 
-            RequestResult<UserProfileModel> actualResult = service.GetUserProfile(this.hdid, DateTime.Now);
+            RequestResult<UserProfileModel> actualResult = service.GetUserProfile(this.hdid, DateTime.Now, "expected@example.com");
 
             return new Tuple<RequestResult<UserProfileModel>, UserProfileModel>(actualResult, expected);
         }

@@ -31,17 +31,18 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="jwtAuthTime">The date of last jwt authorization time.</param>
+        /// <param name="jwtEmailAddress">The email address contained in the jwt.</param>
         /// <returns>The wrappeed user profile.</returns>
-        RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime jwtAuthTime);
+        RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime jwtAuthTime, string? jwtEmailAddress);
 
         /// <summary>
         /// Saves the user profile to the database.
         /// </summary>
         /// <param name="createProfileRequest">The request to create a user profile model.</param>
         /// <param name="jwtAuthTime">The date of last jwt authorization time.</param>
-        /// <param name="jwtEmailAddress">The email address contained by the jwt.</param>
+        /// <param name="jwtEmailAddress">The email address contained in the jwt.</param>
         /// <returns>The wrapped user profile.</returns>
-        Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string jwtEmailAddress);
+        Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress);
 
         /// <summary>
         /// Closed the user profile.

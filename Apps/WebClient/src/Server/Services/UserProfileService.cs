@@ -98,7 +98,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime jwtAuthTime)
+        public RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime jwtAuthTime, string? jwtEmailAddress)
         {
             this.logger.LogTrace($"Getting user profile... {hdid}");
             DBResult<UserProfile> retVal = this.userProfileDelegate.GetUserProfile(hdid);
@@ -109,7 +109,7 @@ namespace HealthGateway.WebClient.Services
                 return new RequestResult<UserProfileModel>()
                 {
                     ResultStatus = ResultType.Success,
-                    ResourcePayload = new UserProfileModel(),
+                    ResourcePayload = new UserProfileModel() { IdentityProviderEmail = jwtEmailAddress },
                 };
             }
 
@@ -125,6 +125,7 @@ namespace HealthGateway.WebClient.Services
             RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
 
             UserProfileModel userProfile = UserProfileModel.CreateFromDbModel(retVal.Payload);
+            userProfile.IdentityProviderEmail = jwtEmailAddress;
             userProfile.HasTermsOfServiceUpdated = termsOfServiceResult.ResourcePayload?.EffectiveDate > previousLastLogin;
 
             if (!userProfile.IsEmailVerified)
@@ -152,7 +153,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string jwtEmailAddress)
+        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress)
         {
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
 
