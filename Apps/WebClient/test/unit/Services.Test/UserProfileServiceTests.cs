@@ -736,7 +736,7 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
-            expected.ProviderEmail = "expected@example.com";
+            expected.IdentityProviderEmail = "expected@example.com";
             expected.HasTermsOfServiceUpdated = true;
 
             LegalAgreement termsOfService = new LegalAgreement()
