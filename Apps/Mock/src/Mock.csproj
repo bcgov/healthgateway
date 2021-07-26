@@ -5,6 +5,9 @@
     <DocumentationFile>.\Mock.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CoreWCF.Http" Version="0.1.0" />
+    <PackageReference Include="CoreWCF.NetTcp" Version="0.1.0" />
+    <PackageReference Include="CoreWCF.Primitives" Version="0.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
   </ItemGroup>
@@ -26,6 +29,7 @@
     <EmbeddedResource Include="Assets\Encounter.json" />
     <EmbeddedResource Include="Assets\Medication.json" />
     <EmbeddedResource Include="Assets\ProtectiveWord.json" />
+    <EmbeddedResource Include="Assets\Patient.xml" />
   </ItemGroup>
 
   <ItemGroup>

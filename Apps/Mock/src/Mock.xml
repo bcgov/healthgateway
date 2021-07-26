@@ -68,6 +68,18 @@
             <param name="args">The command line arguments to be passed in.</param>
             <returns>Returns the configured webhost.</returns>
         </member>
+        <member name="T:HealthGateway.Mock.SOAP.Services.ClientRegistries">
+            <summary>
+            The Client Registries Mock soap services.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Mock.SOAP.Services.ClientRegistries.Encounter(HealthGateway.Mock.Models.OdrRequest)">
+            <summary>
+            Gets mock data for encounters.
+            </summary>
+            <param name="request">The query request.</param>
+            <returns>The mocked encounter json.</returns>
+        </member>
         <member name="T:HealthGateway.Mock.Startup">
             <summary>
             Configures the application during startup.

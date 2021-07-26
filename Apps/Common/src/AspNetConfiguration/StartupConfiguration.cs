@@ -499,7 +499,8 @@ namespace HealthGateway.Common.AspNetConfiguration
                 IConfigurationSection clientConfiguration = this.configuration.GetSection("PatientService:ClientRegistry");
                 EndpointAddress clientRegistriesEndpoint = new EndpointAddress(new Uri(clientConfiguration.GetValue<string>("ServiceUrl")));
 
-                // Load Certificate, Note:  As per reading we do not have to dispose of the certificate.
+                // Load Certificate
+                // Note: As per reading we do not have to dispose of the certificate.
                 string clientCertificatePath = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Path");
                 string certificatePassword = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Password");
                 X509Certificate2 clientRegistriesCertificate = new X509Certificate2(System.IO.File.ReadAllBytes(clientCertificatePath), certificatePassword);

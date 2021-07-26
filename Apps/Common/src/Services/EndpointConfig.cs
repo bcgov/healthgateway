@@ -35,9 +35,13 @@ namespace ServiceReference
         static partial void ConfigureEndpoint(ServiceEndpoint serviceEndpoint, ClientCredentials clientCredentials)
 #pragma warning restore S1172
         {
-            BasicHttpBinding binding = new BasicHttpBinding(BasicHttpSecurityMode.Transport);
+            /*BasicHttpBinding binding = new BasicHttpBinding(BasicHttpSecurityMode.Transport);
             binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Certificate;
-            serviceEndpoint.Binding = binding;
+            serviceEndpoint.Binding = binding;*/
+
+            //BasicHttpBinding binding = new BasicHttpBinding(BasicHttpSecurityMode.None);
+            //binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Certificate; 
+            //serviceEndpoint.Binding = binding;
         }
     }
 #pragma warning restore CA1801
