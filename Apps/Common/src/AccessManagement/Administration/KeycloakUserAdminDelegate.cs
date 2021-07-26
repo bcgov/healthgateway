@@ -108,20 +108,26 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// <returns>returns true when user deleted.</returns>
         private async Task<bool> DeleteUserAsync(Guid userId, JWTModel jwtModel)
         {
+            bool retVal = false;
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
-
             using HttpClient client = this.CreateHttpClient(baseUri, jwtModel.AccessToken!);
-
             HttpResponseMessage response = await client.DeleteAsync(new Uri(userId!.ToString(), UriKind.Relative)).ConfigureAwait(true);
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
+            {
+                retVal = true;
+            }
+            else
             {
                 string msg = $"Error performing DELETE Request: {userId}, HTTP StatusCode: {response.StatusCode}";
                 this.logger.LogError(msg);
 
-                throw new HttpRequestException(msg);
+                if (response.StatusCode != System.Net.HttpStatusCode.NotFound)
+                {
+                    throw new HttpRequestException(msg);
+                }
             }
 
-            return true;
+            return retVal;
         }
 
         /// <summary>

@@ -34,6 +34,7 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the users directed identifier.
         /// </summary>
+        [Required]
         [MaxLength(52)]
         [Column("HdId")]
         public string? UserProfileId { get; set; }
