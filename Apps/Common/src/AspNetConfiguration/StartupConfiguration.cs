@@ -424,10 +424,19 @@ namespace HealthGateway.Common.AspNetConfiguration
             this.Logger.LogDebug("ConfigureAuditServices...");
 
             services.AddMvc(options => options.Filters.Add(typeof(AuditFilter)));
-            services.AddDbContextPool<GatewayDbContext>(options => options.UseNpgsql(
-                    this.configuration.GetConnectionString("GatewayConnection")));
             services.AddScoped<IAuditLogger, AuditLogger>();
             services.AddTransient<IWriteAuditEventDelegate, DBWriteAuditEventDelegate>();
+        }
+
+        /// <summary>
+        /// Configures the Database services.
+        /// </summary>
+        /// <param name="services">The services collection provider.</param>
+        public void ConfigureDatabaseServices(IServiceCollection services)
+        {
+            this.Logger.LogDebug("ConfigureDatabaseServices...");
+            services.AddDbContextPool<GatewayDbContext>(options => options.UseNpgsql(
+                    this.configuration.GetConnectionString("GatewayConnection")));
         }
 
         /// <summary>

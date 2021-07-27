@@ -18,17 +18,17 @@
         </member>
         <member name="M:HealthGateway.Mock.Controllers.OdrController.Medication(HealthGateway.Mock.Models.OdrRequest)">
             <summary>
-            Gets mock data for encounters.
+            Gets mock data for medications.
             </summary>
             <param name="request">The query request.</param>
-            <returns>The mocked encounter json.</returns>
+            <returns>The mocked medication json.</returns>
         </member>
         <member name="M:HealthGateway.Mock.Controllers.OdrController.MaintainProtectiveWord(HealthGateway.Mock.Models.OdrRequest)">
             <summary>
-            Gets mock data for encounters.
+            Mocks the endpoint for retrieving the protective word.
             </summary>
             <param name="request">The query request.</param>
-            <returns>The mocked encounter json.</returns>
+            <returns>The mocked protective word json.</returns>
         </member>
         <member name="T:HealthGateway.Mock.Controllers.PhsaController">
             <summary>

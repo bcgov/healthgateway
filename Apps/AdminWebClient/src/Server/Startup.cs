@@ -72,6 +72,7 @@ namespace HealthGateway.AdminWebClient
             this.logger.LogDebug("Configure Services...");
 
             this.startupConfig.ConfigureForwardHeaders(services);
+            this.startupConfig.ConfigureDatabaseServices(services);
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuditServices(services);
             this.ConfigureAdminAuthenticationService(services);
