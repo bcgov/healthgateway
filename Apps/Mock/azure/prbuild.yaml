@@ -17,6 +17,6 @@ extends:
   template: /Build/hg.yaml
   parameters:
     Application: Mock
-    DotNetTests: true
+    DotNetTests: false
     NPMInstall: false
     NPMTests: false
