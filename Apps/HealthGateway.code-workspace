@@ -60,6 +60,10 @@
             "path": "Encounter"
         },
         {
+            "name": "Mock",
+            "path": "Mock"
+        },
+        {
             "path": "../Testing/functional/tests"
         },
         {
@@ -100,6 +104,7 @@
             "Patient",
             "WebClient",
             "Encounter",
+            "Mock",
             "tests",
             "sampler",
             "Design"

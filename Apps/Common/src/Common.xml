@@ -770,6 +770,12 @@
             </summary>
             <param name="services">The services collection provider.</param>
         </member>
+        <member name="M:HealthGateway.Common.AspNetConfiguration.StartupConfiguration.ConfigureDatabaseServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Configures the Database services.
+            </summary>
+            <param name="services">The services collection provider.</param>
+        </member>
         <member name="M:HealthGateway.Common.AspNetConfiguration.StartupConfiguration.ConfigureSwaggerServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             Configures the swagger services.

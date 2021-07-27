@@ -17,6 +17,7 @@ namespace ServiceReference
 {
     using System.ServiceModel;
     using System.ServiceModel.Description;
+    using Microsoft.Extensions.Configuration;
 #pragma warning disable CA1801 // Parameter clientCredentials of method ConfigureEndpoint is never used
 
     /// <summary>
@@ -35,9 +36,12 @@ namespace ServiceReference
         static partial void ConfigureEndpoint(ServiceEndpoint serviceEndpoint, ClientCredentials clientCredentials)
 #pragma warning restore S1172
         {
-            BasicHttpBinding binding = new BasicHttpBinding(BasicHttpSecurityMode.Transport);
-            binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Certificate;
-            serviceEndpoint.Binding = binding;
+            if (clientCredentials.ClientCertificate.Certificate != null)
+            {
+                BasicHttpBinding binding = new (BasicHttpSecurityMode.Transport);
+                binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Certificate;
+                serviceEndpoint.Binding = binding;
+            }
         }
     }
 #pragma warning restore CA1801

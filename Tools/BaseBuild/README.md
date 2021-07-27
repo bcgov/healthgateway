@@ -86,7 +86,8 @@ To create the services for a given namespace do the following
 ./deploy_services.sh NAMESPACE ENVIRONMENT ASPNETCORE_ENVIRONMENT
 ```
 
-Deloying CDOGs within Health Gateway
+#### Deloying CDOGs within Health Gateway
+
 Import the image from the bcgov docker hub repo. We have setup an Azure pipline to automate this but manually
 
 ```console
@@ -115,6 +116,15 @@ Deploy the service
 
 ```console
 oc process -f ./hgcdogs.yaml -p ENV=[dev/test/production] | oc apply -f -
+```
+
+### Mock Environment
+
+Special instructions to deploy the mock controller
+
+```console
+oc process -f ./service.yaml -p NAME=mock -p APP_NAME=mock -p TOOLS_NAMESPACE=0bd5ad-tools -p ENV=mock -p ASPNETCORE_ENVIRONMENT=hgmock | oc apply -f -
+./route.sh mock mock mock "/api/mockservice"
 ```
 
 TODO: ODR in tools
