@@ -436,7 +436,7 @@ export default class TimelineView extends Vue {
 
                 <b-row id="pageTitle" class="px-2">
                     <b-col cols="6" class="px-0">
-                        <h1 id="Subject">Timeline</h1>
+                        <h1 id="Subject" class="my-0">Timeline</h1>
                     </b-col>
                     <b-col cols="6" align-self="end" class="px-0">
                         <hg-button
