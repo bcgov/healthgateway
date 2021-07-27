@@ -54,10 +54,12 @@ export const actions: MedicationStatementActions = {
                             );
                             reject(result.resultError);
                         } else {
-                            EventTracker.loadData(
-                                EntryType.Medication,
-                                result.resourcePayload.length
-                            );
+                            if (result.resultStatus === ResultType.Success) {
+                                EventTracker.loadData(
+                                    EntryType.Medication,
+                                    result.resourcePayload.length
+                                );
+                            }
                             context.commit(
                                 "setMedicationStatementResult",
                                 result
