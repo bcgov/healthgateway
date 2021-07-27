@@ -38,7 +38,7 @@ namespace ServiceReference
         {
             if (clientCredentials.ClientCertificate.Certificate != null)
             {
-                BasicHttpBinding binding = new(BasicHttpSecurityMode.Transport);
+                BasicHttpBinding binding = new (BasicHttpSecurityMode.Transport);
                 binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Certificate;
                 serviceEndpoint.Binding = binding;
             }

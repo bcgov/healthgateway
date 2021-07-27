@@ -30,28 +30,31 @@ namespace HealthGateway.Mock.SOAP.Services
     public class ClientRegistries : QUPA_AR101102_PortType
     {
         /// <inheritdoc />
-        public async Task<HCIM_IN_GetDemographicsResponse1> HCIM_IN_GetDemographicsAsync(HCIM_IN_GetDemographicsRequest request)
+        public Task<HCIM_IN_GetDemographicsResponse1> HCIM_IN_GetDemographicsAsync(HCIM_IN_GetDemographicsRequest request)
         {
-            string? fixtureString = AssetReader.Read("HealthGateway.Mock.Assets.Patient.xml");
-            if (fixtureString == null)
+            return Task.Run(() =>
             {
-                return new HCIM_IN_GetDemographicsResponse1();
-            }
+                string? fixtureString = AssetReader.Read("HealthGateway.Mock.Assets.Patient.xml");
+                if (fixtureString == null)
+                {
+                    return new HCIM_IN_GetDemographicsResponse1();
+                }
 
-            XDocument value = XDocument.Parse(fixtureString);
-            using XmlReader reader = value.CreateReader();
-            using Message message = Message.CreateMessage(reader, int.MaxValue, MessageVersion.Soap11);
-            XmlDictionaryReader dictReader = message.GetReaderAtBodyContents();
-            XmlSerializer xmlSerializer = new (typeof(HCIM_IN_GetDemographicsResponse), null, null, new XmlRootAttribute("HCIM_IN_GetDemographicsResponse"), "urn:hl7-org:v3");
-            HCIM_IN_GetDemographicsResponse? response = (HCIM_IN_GetDemographicsResponse?)xmlSerializer.Deserialize(dictReader);
-            if (response == null)
-            {
-                return new HCIM_IN_GetDemographicsResponse1();
-            }
-            else
-            {
-                return new HCIM_IN_GetDemographicsResponse1(response);
-            }
+                XDocument value = XDocument.Parse(fixtureString);
+                using XmlReader reader = value.CreateReader();
+                using Message message = Message.CreateMessage(reader, int.MaxValue, MessageVersion.Soap11);
+                XmlDictionaryReader dictReader = message.GetReaderAtBodyContents();
+                XmlSerializer xmlSerializer = new(typeof(HCIM_IN_GetDemographicsResponse), null, null, new XmlRootAttribute("HCIM_IN_GetDemographicsResponse"), "urn:hl7-org:v3");
+                HCIM_IN_GetDemographicsResponse? response = (HCIM_IN_GetDemographicsResponse?)xmlSerializer.Deserialize(dictReader);
+                if (response == null)
+                {
+                    return new HCIM_IN_GetDemographicsResponse1();
+                }
+                else
+                {
+                    return new HCIM_IN_GetDemographicsResponse1(response);
+                }
+            });
         }
 
         /// <inheritdoc />
