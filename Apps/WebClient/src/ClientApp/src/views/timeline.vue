@@ -435,10 +435,10 @@ export default class TimelineView extends Vue {
                 </div>
 
                 <b-row id="pageTitle" class="px-2">
-                    <b-col cols="7" class="px-0">
+                    <b-col cols="6" class="px-0">
                         <h1 id="Subject">Timeline</h1>
                     </b-col>
-                    <b-col cols="5" align-self="end" class="px-0">
+                    <b-col cols="6" align-self="end" class="px-0">
                         <hg-button
                             :disabled="covidImmunizations.length === 0"
                             data-testid="covidcard-btn"
