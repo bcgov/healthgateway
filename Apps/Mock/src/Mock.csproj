@@ -5,6 +5,9 @@
     <DocumentationFile>.\Mock.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CoreWCF.Http" Version="0.1.0" />
+    <PackageReference Include="CoreWCF.NetTcp" Version="0.1.0" />
+    <PackageReference Include="CoreWCF.Primitives" Version="0.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
   </ItemGroup>
@@ -12,6 +15,10 @@
     <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
       <Value>$(MSBuildProjectFullPath)/src</Value>
     </SonarQubeSetting>
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-svcutil.xmlserializer" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +40,7 @@
     <EmbeddedResource Include="Assets\NotificationSettings-Get.json" />
     <EmbeddedResource Include="Assets\NotificationSettings-Put.json" />
     <EmbeddedResource Include="Assets\ProtectiveWord.json" />
+    <EmbeddedResource Include="Assets\Patient.xml" />
   </ItemGroup>
 
   <ItemGroup>

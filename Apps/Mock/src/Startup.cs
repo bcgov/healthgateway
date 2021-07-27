@@ -16,9 +16,16 @@
 namespace HealthGateway.Mock
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.ServiceModel.Dispatcher;
+    using CoreWCF;
+    using CoreWCF.Configuration;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Services;
+    using HealthGateway.Mock.ServiceReference;
+    using HealthGateway.Mock.SOAP.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Server.Kestrel.Core;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -29,6 +36,7 @@ namespace HealthGateway.Mock
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -37,6 +45,7 @@ namespace HealthGateway.Mock
         /// <param name="configuration">The injected configuration provider.</param>
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
+            this.configuration = configuration;
             this.startupConfig = new StartupConfiguration(configuration, env);
         }
 
@@ -50,6 +59,22 @@ namespace HealthGateway.Mock
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureAccessControl(services);
+
+            services.AddServiceModelServices();
+
+            // If using Kestrel:
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+
+            // If using IIS:
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+
+            services.AddTransient<IClientMessageInspector, LoggingMessageInspector>();
         }
 
         /// <summary>
@@ -62,6 +87,14 @@ namespace HealthGateway.Mock
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseRest(app);
+
+            app.UseServiceModel(builder =>
+            {
+                string path = "v1/api/ClientRegistries/HCIM_IN_GetDemographicsAsync";
+                string url = this.configuration.GetSection("Settings").GetValue<string>("HostUrl") + path;
+                builder.AddService<ClientRegistries>()
+                        .AddServiceEndpoint<ClientRegistries, QUPA_AR101102_PortType>(new BasicHttpBinding(), url);
+            });
         }
     }
 }

@@ -44,12 +44,14 @@ namespace HealthGateway.Mock.Controllers
         [Produces("application/json")]
         public ContentResult Encounter([FromBody] OdrRequest request)
         {
-            Dictionary<string, string> variables = new Dictionary<string, string>();
-            variables.Add("${uuid}", request.Id);
-            variables.Add("${hdid}", request.HdId);
-            variables.Add("${requestingIP}", request.RequestingIP);
-            string? payload = AssetReader.Read("HealthGateway.Mock.Assets.Encounter.json");
-            return new ContentResult { Content = ReplaceVariables(payload!, variables), ContentType = "application/json" }; 
+            Dictionary<string, string> variables = new ()
+            {
+                { "${uuid}", request.Id },
+                { "${hdid}", request.HdId },
+                { "${requestingIP}", request.RequestingIP },
+            };
+            string? fixtureString = AssetReader.Read("HealthGateway.Mock.Assets.Encounter.json");
+            return new ContentResult { Content = ReplaceVariables(fixtureString!, variables), ContentType = "application/json" };
         }
 
         /// <summary>
@@ -62,12 +64,14 @@ namespace HealthGateway.Mock.Controllers
         [Produces("application/json")]
         public ContentResult Medication([FromBody] OdrRequest request)
         {
-            Dictionary<string, string> variables = new Dictionary<string, string>();
-            variables.Add("${uuid}", request.Id);
-            variables.Add("${hdid}", request.HdId);
-            variables.Add("${requestingIP}", request.RequestingIP);
-            string? payload = AssetReader.Read("HealthGateway.Mock.Assets.Medication.json");
-            return new ContentResult { Content = ReplaceVariables(payload!, variables), ContentType = "application/json" };
+            Dictionary<string, string> variables = new ()
+            {
+                { "${uuid}", request.Id },
+                { "${hdid}", request.HdId },
+                { "${requestingIP}", request.RequestingIP },
+            };
+            string? fixtureString = AssetReader.Read("HealthGateway.Mock.Assets.Medication.json");
+            return new ContentResult { Content = ReplaceVariables(fixtureString!, variables), ContentType = "application/json" };
         }
 
         /// <summary>
@@ -80,12 +84,15 @@ namespace HealthGateway.Mock.Controllers
         [Produces("application/json")]
         public ContentResult MaintainProtectiveWord([FromBody] OdrRequest request)
         {
-            Dictionary<string, string> variables = new Dictionary<string, string>();
-            variables.Add("${uuid}", request.Id);
-            variables.Add("${hdid}", request.HdId);
-            variables.Add("${requestingIP}", request.RequestingIP);
+            Dictionary<string, string> variables = new ()
+            {
+                { "${uuid}", request.Id },
+                { "${hdid}", request.HdId },
+                { "${requestingIP}", request.RequestingIP },
+            };
 
-            if (request.HdId == "RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ") // Protected User HDID
+            // Protected User HDID
+            if (request.HdId == "RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ")
             {
                 variables.Add("${value}", ProtectiveWord);
             }
@@ -93,19 +100,19 @@ namespace HealthGateway.Mock.Controllers
             {
                 variables.Add("${value}", string.Empty);
             }
-            string? payload = AssetReader.Read("HealthGateway.Mock.Assets.ProtectiveWord.json");
-            return new ContentResult { Content = ReplaceVariables(payload!, variables), ContentType = "application/json" };
+
+            string? fixtureString = AssetReader.Read("HealthGateway.Mock.Assets.ProtectiveWord.json");
+            return new ContentResult { Content = ReplaceVariables(fixtureString!, variables), ContentType = "application/json" };
         }
 
-
-        private static string ReplaceVariables(string payload, Dictionary<string, string> variables)
+        private static string ReplaceVariables(string fixtureString, Dictionary<string, string> variables)
         {
-            foreach(KeyValuePair<string, string> variable in variables)
+            foreach (KeyValuePair<string, string> variable in variables)
             {
-                payload = payload.Replace(variable.Key, variable.Value, System.StringComparison.CurrentCulture);
+                fixtureString = fixtureString.Replace(variable.Key, variable.Value, System.StringComparison.CurrentCulture);
             }
 
-            return payload;
+            return fixtureString;
         }
     }
 }
