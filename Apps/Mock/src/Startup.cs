@@ -56,6 +56,7 @@ namespace HealthGateway.Mock
         public void ConfigureServices(IServiceCollection services)
         {
             this.startupConfig.ConfigureForwardHeaders(services);
+            this.startupConfig.ConfigureDatabaseServices(services);
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureAccessControl(services);

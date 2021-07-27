@@ -47,6 +47,7 @@ namespace HealthGateway.Patient
         public void ConfigureServices(IServiceCollection services)
         {
             this.startupConfig.ConfigureForwardHeaders(services);
+            this.startupConfig.ConfigureDatabaseServices(services);
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
