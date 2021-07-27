@@ -21,4 +21,5 @@ export interface OidcUserProfile {
     hdid: string;
     idp: string;
     name: string;
+    email: string;
 }

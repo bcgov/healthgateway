@@ -156,10 +156,10 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public bool CreateUserEmail(string hdid, string emailAddress)
+        public bool CreateUserEmail(string hdid, string emailAddress, bool isVerified)
         {
             this.logger.LogTrace($"Creating user email...");
-            this.AddVerificationEmail(hdid, emailAddress, Guid.NewGuid());
+            this.AddVerificationEmail(hdid, emailAddress, Guid.NewGuid(), isVerified);
             this.logger.LogDebug($"Finished creating user email");
             return true;
         }
@@ -208,7 +208,7 @@ namespace HealthGateway.WebClient.Services
             return true;
         }
 
-        private void AddVerificationEmail(string hdid, string toEmail, Guid inviteKey)
+        private void AddVerificationEmail(string hdid, string toEmail, Guid inviteKey, bool isVerified = false)
         {
             float verificationExpiryHours = (float)this.emailVerificationExpirySeconds / 3600;
 
@@ -235,7 +235,14 @@ namespace HealthGateway.WebClient.Services
 
             this.messageVerificationDelegate.Insert(messageVerification);
 
-            this.emailQueueService.QueueNewEmail(messageVerification.Email);
+            if (isVerified)
+            {
+                this.ValidateEmail(hdid, inviteKey);
+            }
+            else
+            {
+                this.emailQueueService.QueueNewEmail(messageVerification.Email);
+            }
         }
     }
 }
