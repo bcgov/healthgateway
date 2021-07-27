@@ -94,7 +94,6 @@ namespace HealthGateway.Mock
                 builder.AddService<ClientRegistries>()
                         .AddServiceEndpoint<ClientRegistries, QUPA_AR101102_PortType>(new BasicHttpBinding(), url);
             });
-
         }
     }
 }

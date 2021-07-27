@@ -32,27 +32,26 @@ namespace HealthGateway.Mock.SOAP.Services
         /// <inheritdoc />
         public async Task<HCIM_IN_GetDemographicsResponse1> HCIM_IN_GetDemographicsAsync(HCIM_IN_GetDemographicsRequest request)
         {
-            string? payload = AssetReader.Read("HealthGateway.Mock.Assets.Patient.xml");
-            if (payload == null)
+            string? fixtureString = AssetReader.Read("HealthGateway.Mock.Assets.Patient.xml");
+            if (fixtureString == null)
             {
                 return new HCIM_IN_GetDemographicsResponse1();
             }
 
-            XDocument value = XDocument.Parse(payload);
+            XDocument value = XDocument.Parse(fixtureString);
             using XmlReader reader = value.CreateReader();
             using Message message = Message.CreateMessage(reader, int.MaxValue, MessageVersion.Soap11);
             XmlDictionaryReader dictReader = message.GetReaderAtBodyContents();
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(HCIM_IN_GetDemographicsResponse), null, null, new XmlRootAttribute("HCIM_IN_GetDemographicsResponse"), "urn:hl7-org:v3");
-            HCIM_IN_GetDemographicsResponse? o = (HCIM_IN_GetDemographicsResponse?)xmlSerializer.Deserialize(dictReader);
-            if (o == null)
+            XmlSerializer xmlSerializer = new (typeof(HCIM_IN_GetDemographicsResponse), null, null, new XmlRootAttribute("HCIM_IN_GetDemographicsResponse"), "urn:hl7-org:v3");
+            HCIM_IN_GetDemographicsResponse? response = (HCIM_IN_GetDemographicsResponse?)xmlSerializer.Deserialize(dictReader);
+            if (response == null)
             {
                 return new HCIM_IN_GetDemographicsResponse1();
             }
             else
             {
-                return new HCIM_IN_GetDemographicsResponse1(o);
+                return new HCIM_IN_GetDemographicsResponse1(response);
             }
-
         }
 
         /// <inheritdoc />

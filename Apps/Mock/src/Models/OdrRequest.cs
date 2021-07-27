@@ -39,6 +39,5 @@ namespace HealthGateway.Mock.Models
         /// </summary>
         [JsonPropertyName("requestingIP")]
         public string RequestingIP { get; set; } = string.Empty;
-
     }
 }
