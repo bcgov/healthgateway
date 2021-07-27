@@ -21,13 +21,13 @@ namespace HealthGateway.Mock
     using CoreWCF.Configuration;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Services;
+    using HealthGateway.Mock.ServiceReference;
     using HealthGateway.Mock.SOAP.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Server.Kestrel.Core;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using ServiceReference;
 
     /// <summary>
     /// Configures the application during startup.
@@ -86,46 +86,15 @@ namespace HealthGateway.Mock
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseRest(app);
 
+            string path = "v1/api/ClientRegistries/HCIM_IN_GetDemographicsAsync";
+            string url = $"http://localhost:7000/{path}";
+
             app.UseServiceModel(builder =>
             {
-                /*WSHttpBinding GetTransportWithMessageCredentialBinding()
-                {
-                    var serverBindingHttpsUserPassword = new WSHttpBinding(SecurityMode.TransportWithMessageCredential);
-                    serverBindingHttpsUserPassword.Security.Message.ClientCredentialType = MessageCredentialType.UserName;
-                    return serverBindingHttpsUserPassword;
-                }*/
-
-                //builder.ConfigureServiceHostBase<Controllers.ClientRegistriesController>(CustomUserNamePasswordValidatorCore.AddToHost);
-
-
-                void ConfigureSoapService<TService, TContract>(string serviceprefix) where TService : class
-                {
-                    //Settings settings = new Settings().SetDefaults("localhost", serviceprefix);
-                    builder.AddService<TService>()
-                        .AddServiceEndpoint<TService, TContract>(new BasicHttpBinding(), "http://localhost:7000/v1/api/ClientRegistries/EchoWithGet");
-
-                    /*.AddServiceEndpoint<TService, TContract>(new WSHttpBinding(SecurityMode.None),
-                        settings.wsHttpAddress.LocalPath)
-                    .AddServiceEndpoint<TService, TContract>(new WSHttpBinding(SecurityMode.Transport),
-                        settings.wsHttpsAddress.LocalPath)
-                    .AddServiceEndpoint<TService, TContract>(new NetTcpBinding(),
-                        settings.netTcpAddress.LocalPath);*/
-                    //Settings settings = new Settings().SetDefaults("localhost", serviceprefix);
-                    /*builder.AddService<TService>()
-                        .AddServiceEndpoint<TService, TContract>(
-                            GetTransportWithMessageCredentialBinding(), settings.wsHttpAddressValidateUserPassword.LocalPath)
-                        .AddServiceEndpoint<TService, TContract>(new BasicHttpBinding(),
-                            settings.basicHttpAddress.LocalPath);
-                        .AddServiceEndpoint<TService, TContract>(new WSHttpBinding(SecurityMode.None),
-                            settings.wsHttpAddress.LocalPath)
-                        .AddServiceEndpoint<TService, TContract>(new WSHttpBinding(SecurityMode.Transport),
-                            settings.wsHttpsAddress.LocalPath)
-                        .AddServiceEndpoint<TService, TContract>(new NetTcpBinding(),
-                            settings.netTcpAddress.LocalPath);*/
-                }
-
-                ConfigureSoapService<ClientRegistries, QUPA_AR101102_PortType>(nameof(ClientRegistries));
+                builder.AddService<ClientRegistries>()
+                        .AddServiceEndpoint<ClientRegistries, QUPA_AR101102_PortType>(new BasicHttpBinding(), url);
             });
+
         }
     }
 }

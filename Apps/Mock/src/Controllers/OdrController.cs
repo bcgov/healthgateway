@@ -49,7 +49,7 @@ namespace HealthGateway.Mock.Controllers
             variables.Add("${hdid}", request.HdId);
             variables.Add("${requestingIP}", request.RequestingIP);
             string? payload = AssetReader.Read("HealthGateway.Mock.Assets.Encounter.json");
-            return new ContentResult { Content = ReplaceVariables(payload!, variables), ContentType = "application/json" }; 
+            return new ContentResult { Content = ReplaceVariables(payload!, variables), ContentType = "application/json" };
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace HealthGateway.Mock.Controllers
 
         private static string ReplaceVariables(string payload, Dictionary<string, string> variables)
         {
-            foreach(KeyValuePair<string, string> variable in variables)
+            foreach (KeyValuePair<string, string> variable in variables)
             {
                 payload = payload.Replace(variable.Key, variable.Value, System.StringComparison.CurrentCulture);
             }
