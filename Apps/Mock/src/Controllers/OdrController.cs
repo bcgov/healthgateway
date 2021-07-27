@@ -55,10 +55,10 @@ namespace HealthGateway.Mock.Controllers
         }
 
         /// <summary>
-        /// Gets mock data for encounters.
+        /// Gets mock data for medications.
         /// </summary>
         /// <param name="request">The query request.</param>
-        /// <returns>The mocked encounter json.</returns>
+        /// <returns>The mocked medication json.</returns>
         [HttpPost]
         [Route("medication")]
         [Produces("application/json")]
@@ -75,10 +75,10 @@ namespace HealthGateway.Mock.Controllers
         }
 
         /// <summary>
-        /// Gets mock data for encounters.
+        /// Mocks the endpoint for retrieving the protective word.
         /// </summary>
         /// <param name="request">The query request.</param>
-        /// <returns>The mocked encounter json.</returns>
+        /// <returns>The mocked protective word json.</returns>
         [HttpPost]
         [Route("maintainProtectiveWord")]
         [Produces("application/json")]
