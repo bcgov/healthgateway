@@ -96,6 +96,11 @@ export default class RegistrationView extends Vue {
                 if (oidcUser) {
                     this.oidcUser = oidcUser;
 
+                    if (this.oidcUser.email !== null) {
+                        this.email = this.oidcUser.email;
+                        this.emailConfirmation = this.oidcUser.email;
+                    }
+
                     return this.userProfileService
                         .validateAge(oidcUser.hdid)
                         .then((isValid) => {
