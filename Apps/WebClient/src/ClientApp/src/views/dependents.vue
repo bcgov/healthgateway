@@ -94,7 +94,7 @@ export default class DependentsView extends Vue {
                     <b-col>
                         <b-row id="pageTitle">
                             <b-col cols="7">
-                                <h1 id="Subject">Dependents</h1>
+                                <h1 id="Subject" class="my-0">Dependents</h1>
                             </b-col>
                             <b-col cols="5" align-self="end">
                                 <hg-button
