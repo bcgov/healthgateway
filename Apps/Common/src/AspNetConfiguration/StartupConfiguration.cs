@@ -497,9 +497,9 @@ namespace HealthGateway.Common.AspNetConfiguration
             services.AddTransient<QUPA_AR101102_PortType>(s =>
             {
                 IConfigurationSection clientConfiguration = this.configuration.GetSection("PatientService:ClientRegistry");
-                EndpointAddress clientRegistriesEndpoint = new(new Uri(clientConfiguration.GetValue<string>("ServiceUrl")));
+                EndpointAddress clientRegistriesEndpoint = new (new Uri(clientConfiguration.GetValue<string>("ServiceUrl")));
 
-                QUPA_AR101102_PortTypeClient client = new(
+                QUPA_AR101102_PortTypeClient client = new (
                                         QUPA_AR101102_PortTypeClient.EndpointConfiguration.QUPA_AR101102_Port,
                                         clientRegistriesEndpoint);
                 if (clientConfiguration.GetValue<bool>("IsSecure", true))
@@ -508,7 +508,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                     // Note: As per reading we do not have to dispose of the certificate.
                     string clientCertificatePath = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Path");
                     string certificatePassword = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Password");
-                    X509Certificate2 clientRegistriesCertificate = new(System.IO.File.ReadAllBytes(clientCertificatePath), certificatePassword);
+                    X509Certificate2 clientRegistriesCertificate = new (System.IO.File.ReadAllBytes(clientCertificatePath), certificatePassword);
                     client.ClientCredentials.ClientCertificate.Certificate = clientRegistriesCertificate;
                     client.Endpoint.EndpointBehaviors.Add(s.GetService<IEndpointBehavior>());
                     client.ClientCredentials.ServiceCertificate.SslCertificateAuthentication =
@@ -534,7 +534,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         public void ConfigureTracing(IServiceCollection services)
         {
             this.Logger.LogDebug("Setting up OpenTelemetry");
-            OpenTelemetryConfig config = new();
+            OpenTelemetryConfig config = new ();
             this.configuration.GetSection("OpenTelemetry").Bind(config);
             if (config.Enabled)
             {
@@ -761,10 +761,10 @@ namespace HealthGateway.Common.AspNetConfiguration
         {
             this.Logger.LogDebug("OnAuthenticationFailed...");
 
-            AuditEvent auditEvent = new()
+            AuditEvent auditEvent = new ()
             {
                 AuditEventDateTime = DateTime.UtcNow,
-                TransactionDuration = 0 // There's not a way to calculate the duration here.
+                TransactionDuration = 0, // There's not a way to calculate the duration here.
             };
 
             auditLogger.PopulateWithHttpContext(context.HttpContext, auditEvent);

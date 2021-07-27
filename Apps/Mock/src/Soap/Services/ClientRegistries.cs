@@ -44,7 +44,7 @@ namespace HealthGateway.Mock.SOAP.Services
                 using XmlReader reader = value.CreateReader();
                 using Message message = Message.CreateMessage(reader, int.MaxValue, MessageVersion.Soap11);
                 XmlDictionaryReader dictReader = message.GetReaderAtBodyContents();
-                XmlSerializer xmlSerializer = new(typeof(HCIM_IN_GetDemographicsResponse), null, null, new XmlRootAttribute("HCIM_IN_GetDemographicsResponse"), "urn:hl7-org:v3");
+                XmlSerializer xmlSerializer = new (typeof(HCIM_IN_GetDemographicsResponse), null, null, new XmlRootAttribute("HCIM_IN_GetDemographicsResponse"), "urn:hl7-org:v3");
                 HCIM_IN_GetDemographicsResponse? response = (HCIM_IN_GetDemographicsResponse?)xmlSerializer.Deserialize(dictReader);
                 if (response == null)
                 {
