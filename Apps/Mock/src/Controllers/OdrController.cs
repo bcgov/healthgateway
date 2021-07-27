@@ -91,7 +91,8 @@ namespace HealthGateway.Mock.Controllers
                 { "${requestingIP}", request.RequestingIP },
             };
 
-            if (request.HdId == "RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ") // Protected User HDID
+            // Protected User HDID
+            if (request.HdId == "RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ")
             {
                 variables.Add("${value}", ProtectiveWord);
             }

@@ -36,6 +36,7 @@ namespace HealthGateway.Mock
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -44,6 +45,7 @@ namespace HealthGateway.Mock
         /// <param name="configuration">The injected configuration provider.</param>
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
+            this.configuration = configuration;
             this.startupConfig = new StartupConfiguration(configuration, env);
         }
 
@@ -86,11 +88,10 @@ namespace HealthGateway.Mock
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseRest(app);
 
-            string path = "v1/api/ClientRegistries/HCIM_IN_GetDemographicsAsync";
-            string url = $"http://localhost:7000/{path}";
-
             app.UseServiceModel(builder =>
             {
+                string path = "v1/api/ClientRegistries/HCIM_IN_GetDemographicsAsync";
+                string url = this.configuration.GetSection("Settings").GetValue<string>("HostUrl") + path;
                 builder.AddService<ClientRegistries>()
                         .AddServiceEndpoint<ClientRegistries, QUPA_AR101102_PortType>(new BasicHttpBinding(), url);
             });
