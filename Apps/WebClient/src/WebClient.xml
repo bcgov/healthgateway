@@ -1472,11 +1472,6 @@
             Gets or sets a value indicating whether the user accepted the terms of service.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.UserProfileModel.IdentityProviderEmail">
-            <summary>
-            Gets or sets the email from the user's external identity provider.
-            </summary>
-        </member>
         <member name="P:HealthGateway.WebClient.Models.UserProfileModel.Email">
             <summary>
             Gets or sets the user email.
@@ -2037,13 +2032,12 @@
             The User Profile service.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.GetUserProfile(System.String,System.DateTime,System.String)">
+        <member name="M:HealthGateway.WebClient.Services.IUserProfileService.GetUserProfile(System.String,System.DateTime)">
             <summary>
             Gets the user profile model.
             </summary>
             <param name="hdid">The requested user hdid.</param>
             <param name="jwtAuthTime">The date of last jwt authorization time.</param>
-            <param name="jwtEmailAddress">The email address contained in the jwt.</param>
             <returns>The wrappeed user profile.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.DateTime,System.String)">
@@ -2052,7 +2046,7 @@
             </summary>
             <param name="createProfileRequest">The request to create a user profile model.</param>
             <param name="jwtAuthTime">The date of last jwt authorization time.</param>
-            <param name="jwtEmailAddress">The email address contained in the jwt.</param>
+            <param name="jwtEmailAddress">The email address contained by the jwt.</param>
             <returns>The wrapped user profile.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Services.IUserProfileService.CloseUserProfile(System.String,System.Guid)">
@@ -2319,7 +2313,7 @@
             <param name="cryptoDelegate">Injected Crypto delegate.</param>
             <param name="httpContextAccessor">The injected http context accessor provider.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserProfile(System.String,System.DateTime,System.String)">
+        <member name="M:HealthGateway.WebClient.Services.UserProfileService.GetUserProfile(System.String,System.DateTime)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserProfileService.CreateUserProfile(HealthGateway.WebClient.Models.CreateUserRequest,System.DateTime,System.String)">

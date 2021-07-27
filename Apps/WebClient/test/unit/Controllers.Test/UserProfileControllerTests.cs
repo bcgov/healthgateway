@@ -484,7 +484,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
-            userProfileServiceMock.Setup(s => s.GetUserProfile(this.hdid, It.IsAny<DateTime>(), It.IsAny<string>())).Returns(expected);
+            userProfileServiceMock.Setup(s => s.GetUserProfile(this.hdid, It.IsAny<DateTime>())).Returns(expected);
             userProfileServiceMock.Setup(s => s.GetActiveTermsOfService()).Returns(new RequestResult<TermsOfServiceModel>());
             userProfileServiceMock.Setup(s => s.GetUserPreferences(this.hdid)).Returns(new RequestResult<Dictionary<string, UserPreferenceModel>>() { ResourcePayload = userPreferencePayloadMock });
 

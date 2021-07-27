@@ -13,7 +13,6 @@ import { RegistrationStatus } from "@/constants/registrationStatus";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import type { OidcUserProfile } from "@/models/user";
-import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import {
@@ -34,9 +33,6 @@ library.add(faExclamationTriangle);
 export default class RegistrationView extends Vue {
     @Prop() inviteKey?: string;
     @Prop() inviteEmail?: string;
-
-    @Getter("user", { namespace: "user" })
-    user!: User;
 
     @Action("checkRegistration", { namespace: "user" })
     checkRegistration!: () => Promise<boolean>;
@@ -75,10 +71,7 @@ export default class RegistrationView extends Vue {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.minimumAge = this.webClientConfig.minPatientAge;
 
-        if (this.user.identityProviderEmail !== null) {
-            this.email = this.user.identityProviderEmail;
-            this.emailConfirmation = this.user.identityProviderEmail;
-        } else if (
+        if (
             this.webClientConfig.registrationStatus == RegistrationStatus.Open
         ) {
             this.email = "";

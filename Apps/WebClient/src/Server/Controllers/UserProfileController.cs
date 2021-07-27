@@ -96,7 +96,7 @@ namespace HealthGateway.WebClient.Controllers
             {
                 ClaimsPrincipal user = httpContext.User;
                 DateTime jwtAuthTime = GetAuthDateTime(user);
-                string? jwtEmailAddress = user.FindFirstValue(ClaimTypes.Email);
+                string jwtEmailAddress = user.FindFirstValue(ClaimTypes.Email);
                 RequestResult<UserProfileModel> result = await this.userProfileService.CreateUserProfile(createUserRequest, jwtAuthTime, jwtEmailAddress).ConfigureAwait(true);
                 return new JsonResult(result);
             }
@@ -126,9 +126,8 @@ namespace HealthGateway.WebClient.Controllers
             this.logger.LogTrace($"HTTP context user: {JsonConvert.SerializeObject(user, jsonSettings)}");
 
             DateTime jwtAuthTime = GetAuthDateTime(user);
-            string? jwtEmailAddress = user.FindFirstValue(ClaimTypes.Email);
 
-            RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid, jwtAuthTime, jwtEmailAddress);
+            RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid, jwtAuthTime);
 
             if (result.ResourcePayload != null)
             {

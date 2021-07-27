@@ -5,7 +5,6 @@ import type { UserPreference } from "@/models/userPreference";
 export default class User {
     public hdid = "";
     public acceptedTermsOfService = false;
-    public identityProviderEmail: string | null = null;
     public hasEmail = false;
     public verifiedEmail = false;
     public hasSMS = false;

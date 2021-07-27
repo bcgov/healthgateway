@@ -33,11 +33,6 @@ export const mutations: UserMutation = {
         );
         Vue.set(
             state.user,
-            "identityProviderEmail",
-            userProfile ? userProfile.identityProviderEmail : null
-        );
-        Vue.set(
-            state.user,
             "hasTermsOfServiceUpdated",
             userProfile ? userProfile.hasTermsOfServiceUpdated : false
         );

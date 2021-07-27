@@ -53,11 +53,6 @@ namespace HealthGateway.WebClient.Models
         public bool AcceptedTermsOfService { get; set; }
 
         /// <summary>
-        /// Gets or sets the email from the user's external identity provider.
-        /// </summary>
-        public string? IdentityProviderEmail { get; set; }
-
-        /// <summary>
         /// Gets or sets the user email.
         /// </summary>
         public string? Email { get; set; }
