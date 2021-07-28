@@ -92,11 +92,12 @@ namespace HealthGateway.Mock
 
             app.UseServiceModel(builder =>
             {
-                string path = "/v1/api/ClientRegistries/HCIM_IN_GetDemographicsAsync";
+                string path = "v1/api/ClientRegistries/HCIM_IN_GetDemographicsAsync";
+                string url = this.configuration.GetSection("Settings").GetValue<string>("HostUrl") + path;
 
                 var binding = new BasicHttpBinding(BasicHttpSecurityMode.Transport);
                 builder.AddService<ClientRegistries>()
-                        .AddServiceEndpoint<ClientRegistries, QUPA_AR101102_PortType>(binding, path);
+                        .AddServiceEndpoint<ClientRegistries, QUPA_AR101102_PortType>(binding, url);
             });
         }
     }
