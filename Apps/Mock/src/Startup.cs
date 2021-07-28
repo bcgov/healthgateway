@@ -18,6 +18,7 @@ namespace HealthGateway.Mock
     using System.Diagnostics.CodeAnalysis;
     using System.ServiceModel.Dispatcher;
     using CoreWCF;
+    using CoreWCF.Channels;
     using CoreWCF.Configuration;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Services;
@@ -91,10 +92,11 @@ namespace HealthGateway.Mock
 
             app.UseServiceModel(builder =>
             {
-                string path = "v1/api/ClientRegistries/HCIM_IN_GetDemographicsAsync";
-                string url = this.configuration.GetSection("Settings").GetValue<string>("HostUrl") + path;
+                string path = "/v1/api/ClientRegistries/HCIM_IN_GetDemographicsAsync";
+
+                var binding = new BasicHttpBinding(BasicHttpSecurityMode.Transport);
                 builder.AddService<ClientRegistries>()
-                        .AddServiceEndpoint<ClientRegistries, QUPA_AR101102_PortType>(new BasicHttpBinding(), url);
+                        .AddServiceEndpoint<ClientRegistries, QUPA_AR101102_PortType>(binding, path);
             });
         }
     }
