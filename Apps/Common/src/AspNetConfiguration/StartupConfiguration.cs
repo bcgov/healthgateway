@@ -526,6 +526,10 @@ namespace HealthGateway.Common.AspNetConfiguration
                             CertificateValidationMode = X509CertificateValidationMode.None,
                             RevocationMode = X509RevocationMode.NoCheck,
                         };
+
+                    BasicHttpBinding binding = new (BasicHttpSecurityMode.Transport);
+                    binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Certificate;
+                    client.Endpoint.Binding = binding;
                 }
 
                 return client;
