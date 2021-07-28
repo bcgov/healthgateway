@@ -40,7 +40,9 @@
     <EmbeddedResource Include="Assets\NotificationSettings-Get.json" />
     <EmbeddedResource Include="Assets\NotificationSettings-Put.json" />
     <EmbeddedResource Include="Assets\ProtectiveWord.json" />
-    <EmbeddedResource Include="Assets\Patient.xml" />
+    <EmbeddedResource Include="Assets\Patient.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
