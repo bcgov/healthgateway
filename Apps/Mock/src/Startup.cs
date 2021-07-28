@@ -95,7 +95,7 @@ namespace HealthGateway.Mock
                 string path = "v1/api/ClientRegistries/HCIM_IN_GetDemographicsAsync";
                 string url = this.configuration.GetSection("Settings").GetValue<string>("BasePath") + path;
 
-                var binding = new BasicHttpBinding(BasicHttpSecurityMode.Transport);
+                BasicHttpBinding binding = new (BasicHttpSecurityMode.Transport);
                 builder.AddService<ClientRegistries>()
                         .AddServiceEndpoint<ClientRegistries, QUPA_AR101102_PortType>(binding, url);
             });
