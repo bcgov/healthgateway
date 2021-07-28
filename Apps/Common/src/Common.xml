@@ -5697,17 +5697,10 @@
         <member name="P:ServiceReference.SLIST_PQ.digits">
             <remarks/>
         </member>
-        <member name="T:ServiceReference.QUPA_AR101102_PortTypeClient">
+        <member name="T:ServiceReference.QUPA_AR101102_PortTypeClient2">
             <summary>
             Port type client.
             </summary>
-        </member>
-        <member name="M:ServiceReference.QUPA_AR101102_PortTypeClient.ConfigureEndpoint(System.ServiceModel.Description.ServiceEndpoint,System.ServiceModel.Description.ClientCredentials)">
-            <summary>
-            Configures the GetDemographics client.
-            </summary>
-            <param name="serviceEndpoint">the service endpoint.</param>
-            <param name="clientCredentials">the client credentials.</param>
         </member>
     </members>
 </doc>

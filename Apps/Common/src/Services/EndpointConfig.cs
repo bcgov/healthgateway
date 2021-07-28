@@ -24,25 +24,9 @@ namespace ServiceReference
     /// Port type client.
     /// </summary>
 #pragma warning disable CA1707 // Identifiers should not contain underscores
-    public partial class QUPA_AR101102_PortTypeClient
+    public class QUPA_AR101102_PortTypeClient2
 #pragma warning restore CA1707
     {
-        /// <summary>
-        /// Configures the GetDemographics client.
-        /// </summary>
-        /// <param name="serviceEndpoint">the service endpoint.</param>
-        /// <param name="clientCredentials">the client credentials.</param>
-#pragma warning disable S1172
-        static partial void ConfigureEndpoint(ServiceEndpoint serviceEndpoint, ClientCredentials clientCredentials)
-#pragma warning restore S1172
-        {
-            if (clientCredentials.ClientCertificate.Certificate != null)
-            {
-                BasicHttpBinding binding = new (BasicHttpSecurityMode.Transport);
-                binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Certificate;
-                serviceEndpoint.Binding = binding;
-            }
-        }
     }
 #pragma warning restore CA1801
 }
