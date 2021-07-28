@@ -5697,10 +5697,5 @@
         <member name="P:ServiceReference.SLIST_PQ.digits">
             <remarks/>
         </member>
-        <member name="T:ServiceReference.QUPA_AR101102_PortTypeClient2">
-            <summary>
-            Port type client.
-            </summary>
-        </member>
     </members>
 </doc>

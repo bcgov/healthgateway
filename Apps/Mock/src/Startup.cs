@@ -93,7 +93,7 @@ namespace HealthGateway.Mock
             app.UseServiceModel(builder =>
             {
                 string path = "v1/api/ClientRegistries/HCIM_IN_GetDemographicsAsync";
-                string url = this.configuration.GetSection("Settings").GetValue<string>("HostUrl") + path;
+                string url = this.configuration.GetSection("Settings").GetValue<string>("BasePath") + path;
 
                 var binding = new BasicHttpBinding(BasicHttpSecurityMode.Transport);
                 builder.AddService<ClientRegistries>()
