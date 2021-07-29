@@ -770,6 +770,12 @@
             </summary>
             <param name="services">The services collection provider.</param>
         </member>
+        <member name="M:HealthGateway.Common.AspNetConfiguration.StartupConfiguration.ConfigureDatabaseServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Configures the Database services.
+            </summary>
+            <param name="services">The services collection provider.</param>
+        </member>
         <member name="M:HealthGateway.Common.AspNetConfiguration.StartupConfiguration.ConfigureSwaggerServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             Configures the swagger services.
@@ -5690,18 +5696,6 @@
         </member>
         <member name="P:ServiceReference.SLIST_PQ.digits">
             <remarks/>
-        </member>
-        <member name="T:ServiceReference.QUPA_AR101102_PortTypeClient">
-            <summary>
-            Port type client.
-            </summary>
-        </member>
-        <member name="M:ServiceReference.QUPA_AR101102_PortTypeClient.ConfigureEndpoint(System.ServiceModel.Description.ServiceEndpoint,System.ServiceModel.Description.ClientCredentials)">
-            <summary>
-            Configures the GetDemographics client.
-            </summary>
-            <param name="serviceEndpoint">the service endpoint.</param>
-            <param name="clientCredentials">the client credentials.</param>
         </member>
     </members>
 </doc>

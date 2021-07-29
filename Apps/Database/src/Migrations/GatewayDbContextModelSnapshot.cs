@@ -18,7 +18,7 @@ namespace HealthGateway.Database.Migrations
             modelBuilder
                 .HasDefaultSchema("gateway")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.7")
+                .HasAnnotation("ProductVersion", "5.0.8")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.HasSequence("gateway.trace_seq")
@@ -1819,6 +1819,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UserProfileId")
+                        .IsRequired()
                         .HasMaxLength(52)
                         .HasColumnType("character varying(52)")
                         .HasColumnName("HdId");
@@ -3565,7 +3566,9 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasOne("HealthGateway.Database.Models.UserProfile", null)
                         .WithMany("Verifications")
-                        .HasForeignKey("UserProfileId");
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("HealthGateway.Database.Models.MessagingVerificationTypeCode", null)
                         .WithMany()

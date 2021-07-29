@@ -96,7 +96,8 @@ namespace HealthGateway.WebClient.Controllers
             {
                 ClaimsPrincipal user = httpContext.User;
                 DateTime jwtAuthTime = GetAuthDateTime(user);
-                RequestResult<UserProfileModel> result = await this.userProfileService.CreateUserProfile(createUserRequest, jwtAuthTime).ConfigureAwait(true);
+                string jwtEmailAddress = user.FindFirstValue(ClaimTypes.Email);
+                RequestResult<UserProfileModel> result = await this.userProfileService.CreateUserProfile(createUserRequest, jwtAuthTime, jwtEmailAddress).ConfigureAwait(true);
                 return new JsonResult(result);
             }
 

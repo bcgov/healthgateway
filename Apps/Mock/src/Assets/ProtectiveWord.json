@@ -1,0 +1,10 @@
+{
+    "uuid": "${uuid}",
+    "hdid": "${hdid}",
+    "requestingIP": "${requestingIP}",
+    "maintainProtectiveWord": {
+        "operator": "Get",
+        "PHN": "${phn}",
+        "value":"${value}"
+    }
+}

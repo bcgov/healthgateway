@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,8 +36,9 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="emailAddress">Email address to be set for the user.</param>
+        /// <param name="isVerified">Indicates whether the email address is verified.</param>
         /// <returns>returns true if the email was sucessfully created.</returns>
-        bool CreateUserEmail(string hdid, string emailAddress);
+        bool CreateUserEmail(string hdid, string emailAddress, bool isVerified);
 
         /// <summary>
         /// Updates the user email.

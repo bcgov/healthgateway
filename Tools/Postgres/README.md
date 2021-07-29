@@ -42,47 +42,6 @@ oc delete pvc,secret,configmap,rolebinding,role,sa -l cluster-name=patroni-postg
 Volumes left over to cleanup
 Service account
 
-### OpenShift 3
-
-Process the template patroni.yaml in Openshift, the parameters are self explanatory, populate them as needed.
-
-The objects created include: 1) Stateful Set Patroni-postgres containing 3 pods. 1) Master service (eg patroni-postgres-master)
-Points to the elected master pod, which contains the transactional
-database (selector is application=patroni-postgres, cluster-name=patroni-postgres, role=master). 1) Replica service (eg patroni-postgres-replica)
-Points to the replica pods, which contains the read-only database,
-we are currently configured for 2 replica pods (selector is application=patroni-postgres, cluster-name=patroni-postgres, role=replica). 1) Service account "patroni" with a role binding to the "patroni" role. 1) Volumes for each of the pods (5gb default). 1) Config map that stores the current master pod (patroni-postgres-leader). 1) Config map that stores the database configuration like "max_connections" (patroni-postgres-config). 1) Secret containing username and password.
-
-#### Initial Configuration
-
-Connect to the database as postgres user and execute the following:
-
-```bash
-CREATE ROLE gateway WITH
-  LOGIN
-  INHERIT
-  NOCREATEDB
-  NOCREATEROLE
-  PASSWORD 'UPDATEME';
-
-CREATE DATABASE gateway WITH
-  OWNER = gateway
-  ENCODING = 'UTF8'
-  LC_COLLATE = 'en_US.UTF-8'
-  LC_CTYPE = 'en_US.UTF-8'
-  TABLESPACE = pg_default
-  CONNECTION LIMIT = -1
-  TEMPLATE template0;
-
-ALTER DATABASE gateway OWNER TO gateway;
-```
-
-Connect to the database as postgres but set the maintenance DB to gateway and execute
-
-```bash
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-ALTER SCHEMA public OWNER to gateway;
-```
-
 ## Troubleshooting
 
 ### Identifying the master node

@@ -13,6 +13,7 @@ parameters:
       - Medication
       - Patient
       - WebClient
+      - Mock
       - NotSpecified
 
   - name: OpenShiftName

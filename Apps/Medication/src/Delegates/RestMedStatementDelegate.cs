@@ -128,7 +128,7 @@ namespace HealthGateway.Medication.Delegates
                             };
 
                             string json = JsonSerializer.Serialize(request, options);
-                            using HttpContent content = new StringContent(json);
+                            using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
                             Uri endpoint = new Uri(this.baseURL, this.odrConfig.PatientProfileEndpoint);
                             HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
                             string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
@@ -268,7 +268,7 @@ namespace HealthGateway.Medication.Delegates
                 };
                 string json = JsonSerializer.Serialize(request, options);
                 Uri endpoint = new Uri(this.baseURL, this.odrConfig.ProtectiveWordEndpoint);
-                using HttpContent content = new StringContent(json);
+                using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
                 HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)

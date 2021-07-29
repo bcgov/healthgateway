@@ -43,7 +43,7 @@ namespace HealthGateway.WebClient.Test.Services
             {
                 ResourcePayload = new ReportModel()
                 {
-                    Data = "base64data"
+                    Data = "base64data",
                 },
                 ResultStatus = Common.Constants.ResultType.Success,
             };

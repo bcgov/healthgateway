@@ -45,6 +45,7 @@
         "isomorphic-fetch": "^3.0.0",
         "jest": "^26.6.3",
         "jest-canvas-mock": "^2.3.1",
+        "jest-fetch-mock": "^3.0.3",
         "jest-sonar-reporter": "^2.0.0",
         "jest-transform-stub": "^2.0.0",
         "mini-css-extract-plugin": "^1.6.1",

@@ -18,7 +18,6 @@ then
   echo Parameter 3 must be set and is the dotnet environment name ex: hgpoc, hgdev, hgtest, Production
 fi
 
-oc project $namespace
 oc process -f ./service.yaml -p NAME=webclient -p APP_NAME=webclient -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
 oc process -f ./service.yaml -p NAME=hangfire -p APP_NAME=hangfire -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
 oc process -f ./service.yaml -p NAME=adminwebclient -p APP_NAME=adminwebclient -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -

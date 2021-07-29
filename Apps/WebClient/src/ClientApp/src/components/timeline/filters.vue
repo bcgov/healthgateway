@@ -215,7 +215,7 @@ export default class FilterComponent extends Vue {
 
 <template>
     <div class="filters-wrapper">
-        <div class="filters-width d-none d-md-block">
+        <div class="filters-width d-none d-lg-block">
             <hg-button
                 id="filterBtn"
                 class="w-100"
@@ -377,12 +377,12 @@ export default class FilterComponent extends Vue {
         <!-- Mobile view specific modal-->
         <hg-button
             data-testid="mobileFilterDropdown"
-            class="d-sm-inline d-md-none"
+            class="d-inline d-lg-none"
             :class="{ 'filter-selected': hasFilterSelected }"
             variant="secondary"
             @click.stop="toggleMobileView"
         >
-            <hg-icon icon="sliders-h" size="medium" aria-hidden="true" />
+            <hg-icon icon="sliders-h" size="medium" square aria-hidden="true" />
         </hg-button>
         <b-modal
             id="generic-message"

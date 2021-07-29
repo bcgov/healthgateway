@@ -1,6 +1,6 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faIdCard, faSearch } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -11,10 +11,13 @@ import CovidModalComponent from "@/components/modal/covid.vue";
 import NoteEditComponent from "@/components/modal/noteEdit.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import ResourceCentreComponent from "@/components/resourceCentre.vue";
+import AddNoteButtonComponent from "@/components/timeline/addNoteButton.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
 import EntryDetailsComponent from "@/components/timeline/entryCard/entryDetails.vue";
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
+import EventBus, { EventMessageName } from "@/eventbus";
+import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
@@ -35,8 +38,9 @@ import UserNote from "@/models/userNote";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
+import SnowPlow from "@/utility/snowPlow";
 
-library.add(faSearch);
+library.add(faSearch, faIdCard);
 
 @Component({
     components: {
@@ -50,9 +54,13 @@ library.add(faSearch);
         ErrorCard: ErrorCardComponent,
         Filters: FilterComponent,
         "resource-centre": ResourceCentreComponent,
+        "add-note-button": AddNoteButtonComponent,
     },
 })
 export default class TimelineView extends Vue {
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     @Action("setKeyword", { namespace: "timeline" })
     setKeyword!: (keyword: string) => void;
 
@@ -110,6 +118,9 @@ export default class TimelineView extends Vue {
     @Getter("immunizations", { namespace: "immunization" })
     patientImmunizations!: ImmunizationEvent[];
 
+    @Getter("covidImmunizations", { namespace: "immunization" })
+    covidImmunizations!: ImmunizationEvent[];
+
     @Getter("patientEncounters", { namespace: "encounter" })
     patientEncounters!: Encounter[];
 
@@ -140,6 +151,14 @@ export default class TimelineView extends Vue {
     @Getter("user", { namespace: "user" }) user!: User;
 
     @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
+
+    private filterText = "";
+    private isPacificTime = false;
+    private logger!: ILogger;
+    private readonly dismissImmunizationBannerSeconds = 5;
+    private dismissImmunizationBannerCountdown = 0;
+    private initialImmunizationCount = 0;
+    private eventBus = EventBus;
 
     @Watch("filterText")
     private onFilterTextChanged() {
@@ -206,12 +225,8 @@ export default class TimelineView extends Vue {
         }
 
         // Add the immunization entries to the timeline list
-        if (!this.immunizationIsDeferred) {
-            for (let immunization of this.patientImmunizations) {
-                timelineEntries.push(
-                    new ImmunizationTimelineEntry(immunization)
-                );
-            }
+        for (let immunization of this.patientImmunizations) {
+            timelineEntries.push(new ImmunizationTimelineEntry(immunization));
         }
 
         timelineEntries = this.sortEntries(timelineEntries);
@@ -231,15 +246,6 @@ export default class TimelineView extends Vue {
 
         return filteredEntries;
     }
-
-    private filterText = "";
-
-    private isPacificTime = false;
-
-    private logger!: ILogger;
-
-    private readonly dismissImmunizationBannerSeconds = 5;
-    private dismissImmunizationBannerCountdown = 0;
 
     private get unverifiedEmail(): boolean {
         return !this.user.verifiedEmail && this.user.hasEmail;
@@ -263,6 +269,10 @@ export default class TimelineView extends Vue {
             this.isNoteLoading ||
             this.isCommentLoading
         );
+    }
+
+    private get isNoteEnabled(): boolean {
+        return this.config.modules["Note"];
     }
 
     private created() {
@@ -297,7 +307,10 @@ export default class TimelineView extends Vue {
             this.getPatientData(),
             this.retrieveMedications({ hdid: this.user.hdid }),
             this.retrieveMedicationRequests({ hdid: this.user.hdid }),
-            this.retrieveImmunizations({ hdid: this.user.hdid }),
+            this.retrieveImmunizations({ hdid: this.user.hdid }).then(() => {
+                this.initialImmunizationCount =
+                    this.patientImmunizations.length;
+            }),
             this.retrieveLaboratory({ hdid: this.user.hdid }),
             this.retrieveEncounters({ hdid: this.user.hdid }),
             this.retrieveNotes({ hdid: this.user.hdid }),
@@ -315,6 +328,14 @@ export default class TimelineView extends Vue {
         return timelineEntries.sort((a, b) =>
             a.date.isAfter(b.date) ? -1 : a.date.isBefore(b.date) ? 1 : 0
         );
+    }
+
+    private showCard(): void {
+        SnowPlow.trackEvent({
+            action: "view_card",
+            text: "COVID Card",
+        });
+        this.eventBus.$emit(EventMessageName.TimelineCovidCard);
     }
 }
 </script>
@@ -398,7 +419,10 @@ export default class TimelineView extends Vue {
                             Still searching for immunization records
                         </h4>
                         <h4
-                            v-else-if="patientImmunizations.length > 0"
+                            v-else-if="
+                                patientImmunizations.length >
+                                initialImmunizationCount
+                            "
                             data-testid="immunizationReady"
                         >
                             Additional immunization records found. Loading into
@@ -410,10 +434,28 @@ export default class TimelineView extends Vue {
                     </b-alert>
                 </div>
 
-                <div id="pageTitle" class="px-2">
-                    <h1 id="subject">Timeline</h1>
-                    <hr class="mb-0" />
-                </div>
+                <b-row id="pageTitle" class="px-2">
+                    <b-col cols="6" class="px-0">
+                        <h1 id="subject" class="my-0">Timeline</h1>
+                    </b-col>
+                    <b-col cols="6" align-self="end" class="px-0">
+                        <hg-button
+                            :disabled="covidImmunizations.length === 0"
+                            data-testid="covidcard-btn"
+                            class="float-right"
+                            variant="primary"
+                            @click="showCard()"
+                        >
+                            <hg-icon
+                                icon="id-card"
+                                size="medium"
+                                class="mr-2"
+                            />
+                            <span>COVID-19 Card</span>
+                        </hg-button>
+                    </b-col>
+                </b-row>
+                <hr class="mb-0 mx-2" />
                 <div
                     class="sticky-top sticky-offset px-2"
                     :class="{ 'header-offset': isHeaderShown }"
@@ -462,12 +504,30 @@ export default class TimelineView extends Vue {
                     :timeline-entries="filteredTimelineEntries"
                     :total-entries="getTotalCount()"
                 >
+                    <template #add-note>
+                        <b-col
+                            v-if="isNoteEnabled && isLinearView && !isLoading"
+                            col
+                            cols="auto"
+                        >
+                            <add-note-button />
+                        </b-col>
+                    </template>
                 </LinearTimeline>
                 <CalendarTimeline
                     v-show="!isLinearView && !isLoading"
                     :timeline-entries="filteredTimelineEntries"
                     :total-entries="getTotalCount()"
                 >
+                    <template #add-note>
+                        <b-col
+                            v-if="isNoteEnabled && !isLinearView && !isLoading"
+                            col
+                            cols="auto"
+                        >
+                            <add-note-button class="p-2" />
+                        </b-col>
+                    </template>
                 </CalendarTimeline>
                 <b-row v-if="isLoading">
                     <b-col>
@@ -518,10 +578,10 @@ export default class TimelineView extends Vue {
 
 #pageTitle {
     color: $primary;
+}
 
-    hr {
-        border-top: 2px solid $primary;
-    }
+hr {
+    border-top: 2px solid $primary;
 }
 
 .form-group {

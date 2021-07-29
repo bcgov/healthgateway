@@ -2,9 +2,11 @@ import { ResultType } from "@/constants/resulttype";
 import { LaboratoryOrder } from "@/models/laboratory";
 import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
+import { EntryType } from "@/models/timelineEntry";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
+import EventTracker from "@/utility/eventTracker";
 
 import { LaboratoryActions } from "./types";
 
@@ -38,6 +40,10 @@ export const actions: LaboratoryActions = {
                     .getOrders(params.hdid)
                     .then((result) => {
                         if (result.resultStatus === ResultType.Success) {
+                            EventTracker.loadData(
+                                EntryType.Laboratory,
+                                result.resourcePayload.length
+                            );
                             context.commit(
                                 "setLaboratoryOrders",
                                 result.resourcePayload

@@ -49,28 +49,6 @@ objects:
       podSelector: {}
       policyTypes:
         - Ingress
-  - apiVersion: security.devops.gov.bc.ca/v1alpha1
-    kind: NetworkSecurityPolicy
-    metadata:
-      name: any-to-any
-    spec:
-      description: |
-        allow all pods to communicate
-      source:
-        - - "$namespace=${NAMESPACE_PREFIX}-${ENVIRONMENT}"
-      destination:
-        - - "$namespace=*"
-  - apiVersion: security.devops.gov.bc.ca/v1alpha1
-    kind: NetworkSecurityPolicy
-    metadata:
-      name: any-to-external
-    spec:
-      description: |
-        Allow all pods to talk to external systems
-      source:
-        - - "$namespace=${NAMESPACE_PREFIX}-${ENVIRONMENT}"
-      destination:
-        - - "ext:network=any"
 parameters:
   - name: NAMESPACE_PREFIX
     displayName: Namespace Prefix

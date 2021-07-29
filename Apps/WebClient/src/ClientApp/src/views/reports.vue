@@ -26,17 +26,26 @@ import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import SnowPlow from "@/utility/snowPlow";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.container";
+import { ILogger } from "@/services/interfaces";
+import EventTracker from "@/utility/eventTracker";
+
+const medicationReport = "medication-report";
+const mspVisitReport = "msp-visit-report";
+const covid19Report = "covid19-report";
+const immunizationReport = "immunization-report";
+const medicationRequestReport = "medication-request-report";
 
 @Component({
     components: {
         LoadingComponent,
         "message-modal": MessageModalComponent,
-        MedicationHistoryReportComponent,
-        MSPVisitsReportComponent,
-        COVID19ReportComponent,
-        ImmunizationHistoryReportComponent,
-        MedicationRequestReportComponent,
+        medicationReport: MedicationHistoryReportComponent,
+        mspVisitReport: MSPVisitsReportComponent,
+        covid19Report: COVID19ReportComponent,
+        immunizationReport: ImmunizationHistoryReportComponent,
+        medicationRequestReport: MedicationRequestReportComponent,
         "hg-date-picker": DatePickerComponent,
         MultiSelectComponent,
         "resource-centre": ResourceCentreComponent,
@@ -69,14 +78,18 @@ export default class ReportsView extends Vue {
     private isLoading = false;
     private isGeneratingReport = false;
     private reportFormatType = ReportFormatType.PDF;
-    private reportComponent = "";
+    private reportComponentName = "";
     private reportTypeOptions = [{ value: "", text: "Select" }];
 
     private selectedStartDate: StringISODate | null = null;
     private selectedEndDate: StringISODate | null = null;
     private selectedMedicationOptions: string[] = [];
 
+    private hasRecords = false;
+
     private reportFilter: ReportFilter = ReportFilterBuilder.create().build();
+
+    private logger!: ILogger;
 
     private get headerData(): ReportHeader {
         return {
@@ -92,7 +105,7 @@ export default class ReportsView extends Vue {
     }
 
     private get isMedicationReport() {
-        return this.reportComponent == "MedicationHistoryReportComponent";
+        return this.reportComponentName === medicationReport;
     }
 
     private get medicationOptions(): SelectOption[] {
@@ -120,40 +133,51 @@ export default class ReportsView extends Vue {
         });
     }
 
+    private get isDownloadDisabled(): boolean {
+        this.logger.debug(`Report Component Name: ${this.reportComponentName}`);
+        return (
+            this.isLoading ||
+            !this.reportComponentName ||
+            !this.patientData.hdid ||
+            !this.hasRecords
+        );
+    }
+
     private formatDate(date: string): string {
         return DateWrapper.format(date);
     }
 
     private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.getPatientData();
 
         if (this.config.modules["Medication"]) {
             this.reportTypeOptions.push({
-                value: "MedicationHistoryReportComponent",
+                value: medicationReport,
                 text: "Medications",
             });
         }
         if (this.config.modules["Encounter"]) {
             this.reportTypeOptions.push({
-                value: "MSPVisitsReportComponent",
+                value: mspVisitReport,
                 text: "Health Visits",
             });
         }
         if (this.config.modules["Laboratory"]) {
             this.reportTypeOptions.push({
-                value: "COVID19ReportComponent",
+                value: covid19Report,
                 text: "COVID-19 Test Results",
             });
         }
         if (this.config.modules["Immunization"]) {
             this.reportTypeOptions.push({
-                value: "ImmunizationHistoryReportComponent",
+                value: immunizationReport,
                 text: "Immunizations",
             });
         }
         if (this.config.modules["MedicationRequest"]) {
             this.reportTypeOptions.push({
-                value: "MedicationRequestReportComponent",
+                value: medicationRequestReport,
                 text: "Special Authority Requests",
             });
         }
@@ -200,11 +224,13 @@ export default class ReportsView extends Vue {
     }
 
     private downloadReport() {
+        if (this.reportComponentName === "") {
+            return;
+        }
+
         this.isGeneratingReport = true;
-        SnowPlow.trackEvent({
-            action: "download_report",
-            text: `${this.reportComponent} ${this.reportFormatType}`,
-        });
+
+        this.trackDownload();
 
         this.report
             .generateReport(this.reportFormatType, this.headerData)
@@ -234,6 +260,36 @@ export default class ReportsView extends Vue {
                 return "";
         }
     }
+
+    private trackDownload(): void {
+        let reportName = "";
+        switch (this.reportComponentName) {
+            case medicationReport:
+                reportName = "Medication";
+                break;
+            case mspVisitReport:
+                reportName = "Health Visits";
+                break;
+            case covid19Report:
+                reportName = "COVID-19 Test";
+                break;
+            case immunizationReport:
+                reportName = "Immunization";
+                break;
+            case medicationRequestReport:
+                reportName = "Special Authority Requests";
+                break;
+            default:
+                reportName = "";
+                break;
+        }
+        if (reportName !== "") {
+            const formatTypeName = ReportFormatType[this.reportFormatType];
+            const eventName = `${reportName} (${formatTypeName})`;
+
+            EventTracker.downloadReport(eventName);
+        }
+    }
 }
 </script>
 
@@ -245,14 +301,14 @@ export default class ReportsView extends Vue {
                 <div class="my-3 px-3 py-4 form">
                     <b-row>
                         <b-col>
-                            <label for="reportType"> Record Type </label>
+                            <label for="reportType">Record Type</label>
                         </b-col>
                     </b-row>
                     <b-row align-h="between" class="py-2">
                         <b-col class="mb-2" sm="">
                             <b-form-select
                                 id="reportType"
-                                v-model="reportComponent"
+                                v-model="reportComponentName"
                                 data-testid="reportType"
                                 :options="reportTypeOptions"
                             >
@@ -263,8 +319,7 @@ export default class ReportsView extends Vue {
                                 v-b-toggle.advanced-panel
                                 variant="link"
                                 data-testid="advancedBtn"
-                            >
-                                Advanced
+                                >Advanced
                             </hg-button>
                             <b-dropdown
                                 id="exportRecordBtn"
@@ -272,11 +327,7 @@ export default class ReportsView extends Vue {
                                 class="mb-1 ml-2"
                                 variant="primary"
                                 data-testid="exportRecordBtn"
-                                :disabled="
-                                    !reportComponent ||
-                                    isLoading ||
-                                    !patientData.hdid
-                                "
+                                :disabled="isDownloadDisabled"
                             >
                                 <b-dropdown-item
                                     @click="
@@ -427,15 +478,16 @@ export default class ReportsView extends Vue {
                     :full-screen="false"
                 ></LoadingComponent>
                 <div
-                    v-if="reportComponent"
+                    v-if="reportComponentName"
                     data-testid="reportSample"
                     class="sample d-none d-md-block"
                 >
                     <component
-                        :is="reportComponent"
+                        :is="reportComponentName"
                         ref="report"
                         :filter="reportFilter"
                         @on-is-loading-changed="isLoading = $event"
+                        @on-is-empty-changed="hasRecords = !$event"
                     />
                 </div>
                 <div v-else>
