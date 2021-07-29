@@ -57,6 +57,7 @@ namespace HealthGateway.Immunization
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureTracing(services);
             this.startupConfig.ConfigureAccessControl(services);
+            this.startupConfig.ConfigurePatientAccess(services);
 
             // Add Services
             services.AddTransient<IImmunizationService, ImmunizationService>();

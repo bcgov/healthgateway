@@ -20,6 +20,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Services;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Models.PHSA;
@@ -31,15 +32,47 @@ namespace HealthGateway.Immunization.Services
     public class ImmunizationService : IImmunizationService
     {
         private readonly IImmunizationDelegate immunizationDelegate;
+        private readonly IPatientService patientService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmunizationService"/> class.
         /// </summary>
         /// <param name="immunizationDelegate">The factory to create immunization delegates.</param>
+        /// <param name="patientService">The injected patient registry provider.</param>
         public ImmunizationService(
-            IImmunizationDelegate immunizationDelegate)
+            IImmunizationDelegate immunizationDelegate,
+            IPatientService patientService)
         {
             this.immunizationDelegate = immunizationDelegate;
+            this.patientService = patientService;
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<string>> GetCovidCard(string identifier, PatientIdentifierType identifierType)
+        {
+            RequestResult<string> retVal = new ()
+            {
+                ResultStatus = ResultType.Error,
+            };
+            string? phn = null;
+            if (identifierType == PatientIdentifierType.HDID)
+            {
+                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(identifier).ConfigureAwait(true);
+                if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
+                {
+                    phn = patientResult.ResourcePayload.PersonalHealthNumber;
+                }
+                else
+                {
+                    retVal.ResultError = patientResult.ResultError;
+                }
+            }
+            else
+            {
+                phn = identifier;
+            }
+
+            return retVal;
         }
 
         /// <inheritdoc/>
