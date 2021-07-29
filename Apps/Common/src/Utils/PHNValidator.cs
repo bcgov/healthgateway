@@ -31,7 +31,7 @@ namespace HealthGateway.Common.Utils
         /// <summary>
         /// Validates the supplied value is a proper Personal Health Number.
         /// </summary>
-        /// <param name="value">The Personal Health Number to validate</param>
+        /// <param name="value">The Personal Health Number to validate.</param>
         /// <returns>True if valid.</returns>
         public static bool ValidPHN(string? value)
         {
