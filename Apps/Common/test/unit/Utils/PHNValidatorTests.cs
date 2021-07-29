@@ -29,8 +29,8 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldNotBeNullOrEmpty()
         {
-            Assert.False(PHNValidator.ValidPHN(string.Empty));
-            Assert.False(PHNValidator.ValidPHN(null));
+            Assert.False(PHNValidator.IsValid(string.Empty));
+            Assert.False(PHNValidator.IsValid(null));
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldBe10Digits()
         {
-            Assert.False(PHNValidator.ValidPHN("0123456789"));
+            Assert.False(PHNValidator.IsValid("0123456789"));
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldBeNumeric()
         {
-            Assert.False(PHNValidator.ValidPHN("A123456780"));
+            Assert.False(PHNValidator.IsValid("A123456780"));
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldStartWithANine()
         {
-            Assert.False(PHNValidator.ValidPHN("8123456789"));
+            Assert.False(PHNValidator.IsValid("8123456789"));
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldNotValidate()
         {
-            Assert.False(PHNValidator.ValidPHN("9123456781"));
+            Assert.False(PHNValidator.IsValid("9123456781"));
         }
 
         /// <summary>
@@ -75,9 +75,9 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldValidate()
         {
-            Assert.True(PHNValidator.ValidPHN("9735353315"));
-            Assert.True(PHNValidator.ValidPHN("9735361219"));
-            Assert.True(PHNValidator.ValidPHN("9735 361 219"));
+            Assert.True(PHNValidator.IsValid("9735353315"));
+            Assert.True(PHNValidator.IsValid("9735361219"));
+            Assert.True(PHNValidator.IsValid("9735 361 219"));
         }
     }
 }

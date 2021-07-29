@@ -33,7 +33,7 @@ namespace HealthGateway.Common.Utils
         /// </summary>
         /// <param name="value">The Personal Health Number to validate.</param>
         /// <returns>True if valid.</returns>
-        public static bool ValidPHN(string? value)
+        public static bool IsValid(string? value)
         {
             bool retVal = false;
             if (!string.IsNullOrEmpty(value))
@@ -42,11 +42,10 @@ namespace HealthGateway.Common.Utils
                 string phn = regex.Replace(value.ToString(), string.Empty);
                 if (phn.Length == 10 && phn.All(c => char.IsDigit(c)) && phn[0] == '9')
                 {
-                    int digit;
                     int checksum = 0;
                     for (int i = 1; i < 9; i++)
                     {
-                        digit = Convert.ToInt16(phn[i].ToString(), CultureInfo.InvariantCulture);
+                        int digit = Convert.ToInt16(phn[i].ToString(), CultureInfo.InvariantCulture);
                         checksum += (digit * PHNsigDigits[i - 1]) % 11;
                     }
 

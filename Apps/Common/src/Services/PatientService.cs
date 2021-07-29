@@ -102,7 +102,7 @@ namespace HealthGateway.Common.Services
                         break;
                     case PatientIdentifierType.PHN:
                         this.logger.LogDebug("Performing Patient lookup by PHN");
-                        if (PHNValidator.ValidPHN(identifier))
+                        if (PHNValidator.IsValid(identifier))
                         {
                             requestResult = await this.patientDelegate.GetDemographicsByPHNAsync(identifier).ConfigureAwait(true);
                         }
