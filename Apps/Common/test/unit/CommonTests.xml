@@ -670,12 +670,17 @@
             GetPatient - DB Error.
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Services.PatientServiceTests.ShoulSearchByValidIdentifier">
+        <member name="M:HealthGateway.CommonTests.Services.PatientServiceTests.ShouldSearchByValidIdentifier">
             <summary>
             GetPatient - Valid ID.
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Services.PatientServiceTests.ShoulBeEmptyIfInvalidIdentifier">
+        <member name="M:HealthGateway.CommonTests.Services.PatientServiceTests.ShouldFailModCheck">
+            <summary>
+            GetPatient - Valid ID.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Services.PatientServiceTests.ShoulBeEmptyIfInvalidIdentifierType">
             <summary>
             GetPatient - Invalid Id.
             </summary>
@@ -793,6 +798,41 @@
         <member name="M:HealthGateway.CommonTests.Utils.MockMethodInfo.AuthorizedMethod">
             <summary>
             Authorized Method.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Utils.PHNValidatorTests">
+            <summary>
+            Test class for the PHN Validator class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.PHNValidatorTests.ShouldNotBeNullOrEmpty">
+            <summary>
+            Null value is invalid.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.PHNValidatorTests.ShouldBe10Digits">
+            <summary>
+            PHN Must be 10 digits long.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.PHNValidatorTests.ShouldBeNumeric">
+            <summary>
+            PHN Must be numeric.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.PHNValidatorTests.ShouldStartWithANine">
+            <summary>
+            Should start with a 9.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.PHNValidatorTests.ShouldNotValidate">
+            <summary>
+            Fail Mod check.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Utils.PHNValidatorTests.ShouldValidate">
+            <summary>
+            Happy Path, validate a couple of test PHNs.
             </summary>
         </member>
         <member name="T:HealthGateway.CommonTests.Utils.StringManipulatorTests">

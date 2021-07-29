@@ -15,11 +15,16 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Services
 {
+    using System;
     using System.Diagnostics;
+    using System.Globalization;
+    using System.Linq;
+    using System.Text.RegularExpressions;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -101,7 +106,17 @@ namespace HealthGateway.Common.Services
                         break;
                     case PatientIdentifierType.PHN:
                         this.logger.LogDebug("Performing Patient lookup by PHN");
-                        requestResult = await this.patientDelegate.GetDemographicsByPHNAsync(identifier).ConfigureAwait(true);
+                        if (PHNValidator.ValidPHN(identifier))
+                        {
+                            requestResult = await this.patientDelegate.GetDemographicsByPHNAsync(identifier).ConfigureAwait(true);
+                        }
+                        else
+                        {
+                            requestResult.ResultStatus = ResultType.ActionRequired;
+                            requestResult.ResultError = new RequestResultError() { ResultMessage = $"Internal Error: PatientIdentifier is invalid '{identifier}'", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
+                            this.logger.LogDebug($"The PHN provided is invalid: {identifier}");
+                        }
+
                         break;
                     default:
                         this.logger.LogDebug($"Failed Patient lookup unknown PatientIdentifierType");
