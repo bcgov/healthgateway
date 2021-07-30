@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Controllers
 {
+    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Constants;
@@ -58,23 +59,23 @@ namespace HealthGateway.Immunization.Controllers
         /// <summary>
         /// Gets the covid card for the supplied patient identifier.
         /// </summary>
-        /// <param name="identifier">The patient identifier to fetch the covid card for.</param>
-        /// <param name="identifierType">Type type of identifier passed in.</param>
+        /// <param name="phn">The patient phn to fetch the covid card for.</param>
+        /// <param name="birthDate">The birthdate of the identified patient.</param>
         /// <returns>TThe PDF Covid Card.</returns>
-        /// <response code="200">Returns the List of Immunization records.</response>
+        /// <response code="200">Returns the Covid Card.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
-        [Authorize(Policy = "Super Secure new Policy")]
+        [AllowAnonymous]
         [Route("Lookup")]
-        public async Task<IActionResult> Get([FromHeader] string identifier, [FromHeader] PatientIdentifierType identifierType)
+        public async Task<IActionResult> Get([FromHeader] string phn, [FromHeader] DateTime birthDate)
         {
-            this.logger.LogDebug($"Getting Covid Card for Patient Identifier {identifier}");
-            RequestResult<string> result = await this.service.GetCovidCard(identifier, identifierType).ConfigureAwait(true);
+            this.logger.LogDebug($"Getting Covid Card for Patient {phn}");
+            RequestResult<string> result = await this.service.GetCovidCard(phn, birthDate).ConfigureAwait(true);
 
-            this.logger.LogDebug($"Finished getting Covid Card for Patient Identifier {identifier}");
+            this.logger.LogDebug($"Finished getting Covid Card for Patient Identifier {phn}");
             return new JsonResult(result);
         }
 
@@ -83,7 +84,7 @@ namespace HealthGateway.Immunization.Controllers
         /// </summary>
         /// <param name="hdid">The hdid patient id.</param>
         /// <returns>The PDF Covid Card.</returns>
-        /// <response code="200">Returns the List of Immunization records.</response>
+        /// <response code="200">Returns the Covid Card.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
@@ -93,7 +94,7 @@ namespace HealthGateway.Immunization.Controllers
         public async Task<IActionResult> Get([FromQuery] string hdid)
         {
             this.logger.LogDebug($"Getting Covid Card for HDID for {hdid}");
-            RequestResult<string> result = await this.service.GetCovidCard(hdid, PatientIdentifierType.HDID).ConfigureAwait(true);
+            RequestResult<string> result = await this.service.GetCovidCard(hdid).ConfigureAwait(true);
 
             this.logger.LogDebug($"Finished getting Covid Card for HDID for {hdid}");
             return new JsonResult(result);

@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
+    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
@@ -48,28 +49,43 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<string>> GetCovidCard(string identifier, PatientIdentifierType identifierType)
+        public async Task<RequestResult<string>> GetCovidCard(string hdid)
         {
             RequestResult<string> retVal = new ()
             {
                 ResultStatus = ResultType.Error,
             };
-            string? phn = null;
-            if (identifierType == PatientIdentifierType.HDID)
+            RequestResult<ImmunizationCard> cardResult = await this.immunizationDelegate.GetImmunizationCard(hdid, string.Empty).ConfigureAwait(true);
+            if (cardResult.ResultStatus == ResultType.Success && cardResult.ResourcePayload != null)
             {
-                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(identifier).ConfigureAwait(true);
-                if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
-                {
-                    phn = patientResult.ResourcePayload.PersonalHealthNumber;
-                }
-                else
-                {
-                    retVal.ResultError = patientResult.ResultError;
-                }
+                retVal.ResourcePayload = cardResult.ResourcePayload.PaperRecord.Data ?? string.Empty;
+                retVal.ResultStatus = ResultType.Success;
             }
             else
             {
-                phn = identifier;
+                retVal.ResultError = cardResult.ResultError;
+            }
+
+            return retVal;
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<string>> GetCovidCard(string phn, DateTime birthDate)
+        {
+            RequestResult<string> retVal = new ()
+            {
+                ResultStatus = ResultType.Error,
+            };
+
+            RequestResult<ImmunizationCard> cardResult = await this.immunizationDelegate.GetImmunizationCard(phn, birthDate, string.Empty).ConfigureAwait(true);
+            if (cardResult.ResultStatus == ResultType.Success && cardResult.ResourcePayload != null)
+            {
+                retVal.ResourcePayload = cardResult.ResourcePayload.PaperRecord.Data ?? string.Empty;
+                retVal.ResultStatus = ResultType.Success;
+            }
+            else
+            {
+                retVal.ResultError = cardResult.ResultError;
             }
 
             return retVal;

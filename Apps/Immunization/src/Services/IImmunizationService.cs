@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
+    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
@@ -41,11 +42,18 @@ namespace HealthGateway.Immunization.Services
         Task<RequestResult<ImmunizationResult>> GetImmunizations(int pageIndex = 0);
 
         /// <summary>
-        /// Gets the covid card for the supplied identifier.
+        /// Gets the covid card for the supplied hdid.
         /// </summary>
-        /// <param name="identifier">The identifier to fetch the covid card for.</param>
-        /// <param name="identifierType">The type of identifier being used.</param>
+        /// <param name="hdid">The identifier to fetch the covid card for.</param>
         /// <returns>The base64 encoded PDF in a RequestResult.</returns>
-        Task<RequestResult<string>> GetCovidCard(string identifier, PatientIdentifierType identifierType);
+        Task<RequestResult<string>> GetCovidCard(string hdid);
+
+        /// <summary>
+        /// Gets the covid card for the supplied phn.
+        /// </summary>
+        /// <param name="phn">The identifier to fetch the covid card for.</param>
+        /// <param name="birthDate">The birthdate that matches the identified patient.</param>
+        /// <returns>The base64 encoded PDF in a RequestResult.</returns>
+        Task<RequestResult<string>> GetCovidCard(string phn, DateTime birthDate);
     }
 }

@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Delegates
 {
+    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
@@ -39,5 +40,22 @@ namespace HealthGateway.Immunization.Delegates
         /// <param name="pageIndex">The page index to return.</param>
         /// <returns>The PHSAResult including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
         Task<RequestResult<PHSAResult<ImmunizationResponse>>> GetImmunizations(int pageIndex = 0);
+
+        /// <summary>
+        /// Gets the immunization card for the supplied HDID and Immunization Disease.
+        /// </summary>
+        /// <param name="hdid">The hdid to query.</param>
+        /// <param name="immunizationDisease">The associated disease to query.</param>
+        /// <returns>A Immunization Card.</returns>
+        Task<RequestResult<ImmunizationCard>> GetImmunizationCard(string hdid, string immunizationDisease);
+
+        /// <summary>
+        /// Gets the immunization card for the supplied PHN and Immunization Disease.
+        /// </summary>
+        /// <param name="phn">The Personal Health Number to query.</param>
+        /// <param name="birthDate">The date of birth associated to the PHN.</param>
+        /// <param name="immunizationDisease">The associated disease to query.</param>
+        /// <returns>A Immunization Card.</returns>
+        Task<RequestResult<ImmunizationCard>> GetImmunizationCard(string phn, DateTime birthDate, string immunizationDisease);
     }
 }
