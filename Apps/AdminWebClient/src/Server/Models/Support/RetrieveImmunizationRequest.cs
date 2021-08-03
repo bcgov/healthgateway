@@ -13,14 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Models
+namespace HealthGateway.Admin.Models.Support
 {
     using System;
 
     /// <summary>
-    /// Represents a support validation request.
+    /// Represents a request to retrieve immunization information.
     /// </summary>
-    public class ValidateSupportRequest
+    public class RetrieveImmunizationRequest
     {
         /// <summary>
         /// Gets or sets the first name.
