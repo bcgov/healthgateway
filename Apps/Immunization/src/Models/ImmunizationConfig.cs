@@ -21,9 +21,14 @@ namespace HealthGateway.Immunization.Models
     public class ImmunizationConfig
     {
         /// <summary>
-        /// Gets or sets the Lab external endpoint.
+        /// Gets or sets the Immunizations external endpoint.
         /// </summary>
         public string Endpoint { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Immunization Card endpoint.
+        /// </summary>
+        public string CardEndpoint { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the total number of records to retrieve in one call.

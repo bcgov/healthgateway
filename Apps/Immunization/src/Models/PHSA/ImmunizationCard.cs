@@ -26,12 +26,12 @@ namespace HealthGateway.Immunization.Models.PHSA
         /// Gets or sets the wallet card media.
         /// </summary>
         [JsonPropertyName("walletCard")]
-        public Media WalletCard { get; set; } = new Media();
+        public CardFile WalletCard { get; set; } = new CardFile();
 
         /// <summary>
         /// Gets or sets the paper media.
         /// </summary>
         [JsonPropertyName("paperRecord")]
-        public Media PaperRecord { get; set; } = new Media();
+        public CardFile PaperRecord { get; set; } = new CardFile();
     }
 }

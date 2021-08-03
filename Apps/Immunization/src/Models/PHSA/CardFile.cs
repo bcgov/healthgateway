@@ -20,7 +20,7 @@ namespace HealthGateway.Immunization.Models.PHSA
     /// <summary>
     /// An object representing a file received from PHSA.
     /// </summary>
-    public class Media
+    public class CardFile
     {
         /// <summary>
         /// Gets or sets the media type of the data attribute.

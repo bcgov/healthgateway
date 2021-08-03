@@ -48,14 +48,5 @@ namespace HealthGateway.Immunization.Delegates
         /// <param name="immunizationDisease">The associated disease to query.</param>
         /// <returns>A Immunization Card.</returns>
         Task<RequestResult<ImmunizationCard>> GetImmunizationCard(string hdid, string immunizationDisease);
-
-        /// <summary>
-        /// Gets the immunization card for the supplied PHN and Immunization Disease.
-        /// </summary>
-        /// <param name="phn">The Personal Health Number to query.</param>
-        /// <param name="birthDate">The date of birth associated to the PHN.</param>
-        /// <param name="immunizationDisease">The associated disease to query.</param>
-        /// <returns>A Immunization Card.</returns>
-        Task<RequestResult<ImmunizationCard>> GetImmunizationCard(string phn, DateTime birthDate, string immunizationDisease);
     }
 }

@@ -15,13 +15,11 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
-    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Common.Services;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Models.PHSA;
@@ -32,20 +30,17 @@ namespace HealthGateway.Immunization.Services
     /// </summary>
     public class ImmunizationService : IImmunizationService
     {
+        private const string CovidDisease = "COVID19";
         private readonly IImmunizationDelegate immunizationDelegate;
-        private readonly IPatientService patientService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmunizationService"/> class.
         /// </summary>
         /// <param name="immunizationDelegate">The factory to create immunization delegates.</param>
-        /// <param name="patientService">The injected patient registry provider.</param>
         public ImmunizationService(
-            IImmunizationDelegate immunizationDelegate,
-            IPatientService patientService)
+            IImmunizationDelegate immunizationDelegate)
         {
             this.immunizationDelegate = immunizationDelegate;
-            this.patientService = patientService;
         }
 
         /// <inheritdoc/>
@@ -55,29 +50,7 @@ namespace HealthGateway.Immunization.Services
             {
                 ResultStatus = ResultType.Error,
             };
-            RequestResult<ImmunizationCard> cardResult = await this.immunizationDelegate.GetImmunizationCard(hdid, string.Empty).ConfigureAwait(true);
-            if (cardResult.ResultStatus == ResultType.Success && cardResult.ResourcePayload != null)
-            {
-                retVal.ResourcePayload = cardResult.ResourcePayload.PaperRecord.Data ?? string.Empty;
-                retVal.ResultStatus = ResultType.Success;
-            }
-            else
-            {
-                retVal.ResultError = cardResult.ResultError;
-            }
-
-            return retVal;
-        }
-
-        /// <inheritdoc/>
-        public async Task<RequestResult<string>> GetCovidCard(string phn, DateTime birthDate)
-        {
-            RequestResult<string> retVal = new ()
-            {
-                ResultStatus = ResultType.Error,
-            };
-
-            RequestResult<ImmunizationCard> cardResult = await this.immunizationDelegate.GetImmunizationCard(phn, birthDate, string.Empty).ConfigureAwait(true);
+            RequestResult<ImmunizationCard> cardResult = await this.immunizationDelegate.GetImmunizationCard(hdid, CovidDisease).ConfigureAwait(true);
             if (cardResult.ResultStatus == ResultType.Success && cardResult.ResourcePayload != null)
             {
                 retVal.ResourcePayload = cardResult.ResourcePayload.PaperRecord.Data ?? string.Empty;
