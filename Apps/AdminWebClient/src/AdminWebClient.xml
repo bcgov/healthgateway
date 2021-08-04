@@ -409,6 +409,35 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="T:HealthGateway.Admin.Server.Delegates.IImmunizationAdminDelegate">
+            <summary>
+            Provides access to Administrative Immunization data.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Delegates.IImmunizationAdminDelegate.GetImmunizations(System.String,System.DateTime,System.Int32)">
+            <summary>
+            Gets the immunizations for the provided PHN.
+            </summary>
+            <param name="phn">The PHN to query for Immunizations.</param>
+            <param name="birthDate">The birthdate for the provided PHN.</param>
+            <param name="pageIndex">The page index to return.</param>
+            <returns>The wrapped Immunization response.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Server.Delegates.RestImmunizationAdminDelegate">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Delegates.RestImmunizationAdminDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Server.Delegates.RestImmunizationAdminDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Server.Delegates.RestImmunizationAdminDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpClientService">The injected http client service.</param>
+            <param name="configuration">The injected configuration provider.</param>
+            <param name="httpContextAccessor">The Http Context accessor.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Delegates.RestImmunizationAdminDelegate.GetImmunizations(System.String,System.DateTime,System.Int32)">
+            <inheritdoc/>
+        </member>
         <member name="T:HealthGateway.Admin.Server.Mappers.CommentCsvMap">
             <summary>
             Maps the Comment model to a CSV.
@@ -690,6 +719,21 @@
         <member name="P:HealthGateway.Admin.Models.ForwardProxiesConfiguration.BasePath">
             <summary>
             Gets or sets the base path.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.ImmunizationConfig">
+            <summary>
+            Provides configuration data for the Admin Immunization Delegate.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.ImmunizationConfig.Endpoint">
+            <summary>
+            Gets or sets the Lab external endpoint.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.ImmunizationConfig.FetchSize">
+            <summary>
+            Gets or sets the total number of records to retrieve in one call.
             </summary>
         </member>
         <member name="T:HealthGateway.Admin.Models.OpenIdConnectConfiguration">

@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,26 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models.PHSA.Recommendation
+namespace HealthGateway.Admin.Models
 {
-    using System.Collections.Generic;
-    using System.Text.Json.Serialization;
-
     /// <summary>
-    /// The PHSA Date Criterion data model.
+    /// Provides configuration data for the Admin Immunization Delegate.
     /// </summary>
-    public class DateCriterion
+    public class ImmunizationConfig
     {
         /// <summary>
-        /// Gets or sets the Date Criterion codes.
+        /// Gets or sets the Lab external endpoint.
         /// </summary>
-        [JsonPropertyName("dateCriterionCode")]
-        public DateCriterionCode DateCriterionCode { get; set; } = new DateCriterionCode();
+        public string Endpoint { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Date Criterion value.
+        /// Gets or sets the total number of records to retrieve in one call.
         /// </summary>
-        [JsonPropertyName("value")]
-        public string Value { get; set; } = string.Empty;
+        public string FetchSize { get; set; } = string.Empty;
     }
 }

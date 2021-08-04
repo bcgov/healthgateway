@@ -13,30 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Delegates
+namespace HealthGateway.Admin.Server.Delegates
 {
+    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
-    /// Interface that defines a delegate to retrieve immunization information.
+    /// Provides access to Administrative Immunization data.
     /// </summary>
-    public interface IImmunizationDelegate
+    public interface IImmunizationAdminDelegate
     {
         /// <summary>
-        /// Returns the matching immunization for the given id.
+        /// Gets the immunizations for the provided PHN.
         /// </summary>
-        /// <param name="immunizationId">The id of the immunization to retrieve.</param>
-        /// <returns>The immunization that matches the given id.</returns>
-        Task<RequestResult<PHSAResult<ImmunizationViewResponse>>> GetImmunization(string immunizationId);
-
-        /// <summary>
-        /// Returns a PHSA Result including the load state and a List of Immunizations for the authenticated user.
-        /// It has a collection of one or more Immunizations.
-        /// </summary>
+        /// <param name="phn">The PHN to query for Immunizations.</param>
+        /// <param name="birthDate">The birthdate for the provided PHN.</param>
         /// <param name="pageIndex">The page index to return.</param>
-        /// <returns>The PHSAResult including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
-        Task<RequestResult<PHSAResult<ImmunizationResponse>>> GetImmunizations(int pageIndex = 0);
+        /// <returns>The wrapped Immunization response.</returns>
+        Task<RequestResult<PHSAResult<ImmunizationResponse>>> GetImmunizations(string phn, DateTime birthDate, int pageIndex = 0);
     }
 }

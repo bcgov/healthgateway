@@ -31,7 +31,6 @@ namespace HealthGateway.Immunization.Delegates
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Immunization.Models;
-    using HealthGateway.Immunization.Models.PHSA;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.WebUtilities;

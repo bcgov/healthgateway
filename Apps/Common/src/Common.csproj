@@ -9,6 +9,7 @@
     <None Remove="Authorization\**" />
     <None Remove="ServiceReference\dotnet-svcutil.params.json" />
     <None Remove="Models\AcaPy\" />
+    <None Remove="Models\PHSA\Recommendation\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.24" />
@@ -71,6 +72,7 @@
     <Folder Include="resources\" />
     <Folder Include="ServiceReference\" />
     <Folder Include="Models\AcaPy\" />
+    <Folder Include="Models\PHSA\Recommendation\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ServiceReference\dotnet-svcutil.params.json" Condition="'$(ExcludeConfigFilesFromBuildOutput)'=='true'">
