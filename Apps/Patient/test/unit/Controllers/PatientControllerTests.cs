@@ -20,9 +20,8 @@ namespace HealthGateway.Patient.Test.Controllers
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Controllers;
-    using Microsoft.AspNetCore.Http;
+    using HealthGateway.Patient.Models;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -32,7 +31,6 @@ namespace HealthGateway.Patient.Test.Controllers
     public class PatientControllerTests
     {
         private const string MockedHdId = "mockedHdId";
-        private const string MockedEmailAddress = "mockedEmailAddress";
         private const string MockedFirstName = "mockedFirstName";
         private const string MockedLastName = "mockedLastName";
         private const string MockedGender = "Male";
@@ -45,20 +43,39 @@ namespace HealthGateway.Patient.Test.Controllers
         public void GetPatients()
         {
             Mock<IPatientService> patientService = new Mock<IPatientService>();
-            var expectedResult = new RequestResult<PatientModel>()
+            var mockResult = new RequestResult<Common.Models.PatientModel>()
             {
-                ResourcePayload = new PatientModel()
+                ResultStatus = Common.Constants.ResultType.Success,
+                ResourcePayload = new ()
                 {
                     Birthdate = DateTime.Now,
-                    EmailAddress = MockedEmailAddress,
                     FirstName = MockedFirstName,
                     LastName = MockedLastName,
                     Gender = MockedGender,
                     HdId = MockedHdId,
                     PersonalHealthNumber = MockedPersonalHealthNumber,
+                    PhysicalAddress = new Address()
+                    {
+                        City = "Victoria",
+                        State = "BC",
+                        Country = "CA",
+                    },
                 },
             };
-            patientService.Setup(x => x.GetPatient(It.IsAny<string>(), Common.Constants.PatientIdentifierType.HDID)).ReturnsAsync(expectedResult);
+            var expectedResult = new RequestResult<Models.PatientModel>()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                ResourcePayload = new Models.PatientModel()
+                {
+                    Birthdate = mockResult.ResourcePayload.Birthdate,
+                    FirstName = mockResult.ResourcePayload.FirstName,
+                    LastName = mockResult.ResourcePayload.LastName,
+                    Gender = mockResult.ResourcePayload.Gender,
+                    HdId = mockResult.ResourcePayload.HdId,
+                    PersonalHealthNumber = mockResult.ResourcePayload.PersonalHealthNumber,
+                },
+            };
+            patientService.Setup(x => x.GetPatient(It.IsAny<string>(), Common.Constants.PatientIdentifierType.HDID)).ReturnsAsync(mockResult);
 
             PatientController patientController = new PatientController(patientService.Object);
             var actualResult = patientController.GetPatient("123");

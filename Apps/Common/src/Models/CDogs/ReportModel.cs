@@ -13,9 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models
+namespace HealthGateway.Common.Models.CDogs
 {
-     /// <summary>
+    /// <summary>
     /// Object that defines a report.
     /// </summary>
     public class ReportModel
