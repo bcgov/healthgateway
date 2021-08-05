@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models
+namespace HealthGateway.Common.Models.CDogs
 {
     /// <summary>
     /// The configuration for the ODR portion of the ResetMedStatement delegate.

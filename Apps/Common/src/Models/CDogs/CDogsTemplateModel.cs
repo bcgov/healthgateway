@@ -13,22 +13,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Delegates
+namespace HealthGateway.Common.Models.CDogs
 {
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
-    using HealthGateway.WebClient.Models;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The CDogs report service.
+    /// Model that defines the cdogs template.
     /// </summary>
-    public interface ICDogsDelegate
+    public class CDogsTemplateModel
     {
         /// <summary>
-        /// Generates a report based on the request model provided.
+        /// Gets or sets the template content.
         /// </summary>
-        /// <param name="request">The cdogs request model.</param>
-        /// <returns>The report data.</returns>
-        Task<RequestResult<ReportModel>> GenerateReportAsync(CDogsRequestModel request);
+        [JsonPropertyName("content")]
+        public string Content { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the content encoding type.
+        /// </summary>
+        [JsonPropertyName("encodingType")]
+        public string EncodingType { get; set; } = "base64";
+
+        /// <summary>
+        /// Gets or sets the file type.
+        /// </summary>
+        [JsonPropertyName("fileType")]
+        public string FileType { get; set; } = "docx";
     }
 }

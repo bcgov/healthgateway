@@ -19,11 +19,11 @@ namespace HealthGateway.WebClient.Services
     using System.Globalization;
     using System.IO;
     using System.Reflection;
-    using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
-    using HealthGateway.WebClient.Delegates;
+    using HealthGateway.Common.Models.CDogs;
     using HealthGateway.WebClient.Models;
     using Microsoft.Extensions.Logging;
 
