@@ -102,7 +102,7 @@ namespace HealthGateway.Medication.Delegates.Test
                             DispenseDate = DateTime.Now,
                             DispensingPharmacy = new Pharmacy()
                             {
-                                Address = new Address()
+                                Address = new ()
                                 {
                                     City = "City",
                                     Country = "Country",
