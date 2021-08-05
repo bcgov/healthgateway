@@ -15,31 +15,19 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Models.Support
 {
-    using System;
-
     /// <summary>
-    /// Represents a request to retrieve immunization information.
+    /// Represents a request to mail document.
     /// </summary>
-    public class RetrieveImmunizationRequest
+    public class MailDocumentRequest
     {
         /// <summary>
-        /// Gets or sets the first name.
-        /// </summary>
-        public string FirstName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the last name.
-        /// </summary>
-        public string LastName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the date of birth.
-        /// </summary>
-        public DateTime DateOfBirth { get; set; }
-
-        /// <summary>
-        /// Gets or sets the personal health number.
+        /// Gets or sets the personal health number to retrieve.
         /// </summary>
         public string PersonalHealthNumber { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the address to mail the document.
+        /// </summary>
+        public Address MailAddress { get; set; }
     }
 }
