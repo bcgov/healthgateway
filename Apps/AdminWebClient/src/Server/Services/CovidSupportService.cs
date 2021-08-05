@@ -32,18 +32,26 @@ namespace HealthGateway.Admin.Services
     {
         private readonly IPatientService patientService;
         private readonly IImmunizationDelegate immunizationDelegate;
+        private readonly IMailDelegate mailDelegate;
+        private readonly ICDogsDelegate cDogsDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CovidSupportService"/> class.
         /// </summary>
         /// <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
         /// <param name="immunizationDelegate">Delegate that provides immunization information.</param>
+        /// <param name="mailDelegate">Delegate that provides mailing functionality.</param>
+        /// <param name="cDogsDelegate">Delegate that provides document generation functionality.</param>
         public CovidSupportService(
             IPatientService patientService,
-            IImmunizationDelegate immunizationDelegate)
+            IImmunizationDelegate immunizationDelegate,
+            IMailDelegate mailDelegate,
+            ICDogsDelegate cDogsDelegate)
         {
             this.patientService = patientService;
             this.immunizationDelegate = immunizationDelegate;
+            this.mailDelegate = mailDelegate;
+            this.cDogsDelegate = cDogsDelegate;
         }
 
         /// <inheritdoc />
@@ -98,13 +106,9 @@ namespace HealthGateway.Admin.Services
 
                 // Send CDogs request
 
-                return new PrimitiveRequestResult<bool>()
-                {
-                    ResourcePayload = true,
-                    PageIndex = 0,
-                    PageSize = 0,
-                    ResultStatus = ResultType.Success,
-                };
+                string document = "";
+
+                return Task.Run(async () => await this.mailDelegate.QueueDocument(document).ConfigureAwait(true)).Result;
             }
             else
             {
