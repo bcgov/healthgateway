@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Models
 {
     using System.Collections.Generic;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Represents an address.
@@ -23,10 +24,27 @@ namespace HealthGateway.Common.Models
     public class Address
     {
         /// <summary>
-        /// Gets or sets the street lines.
+        /// Initializes a new instance of the <see cref="Address"/> class.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team Decision")]
-        public IList<string> StreetLines { get; set; } = new List<string>();
+        public Address()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Address"/> class.
+        /// </summary>
+        /// <param name="streetLines">The list of address street lines.</param>
+        [JsonConstructor]
+        public Address(
+            IList<string> streetLines)
+        {
+            this.StreetLines = streetLines;
+        }
+
+        /// <summary>
+        /// Gets the street lines.
+        /// </summary>
+        public IList<string> StreetLines { get; } = new List<string>();
 
         /// <summary>
         /// Gets or sets the city name.
