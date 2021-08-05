@@ -18,6 +18,7 @@ namespace HealthGateway.CommonTests.Delegates
     using System;
     using System.Globalization;
     using System.Threading.Tasks;
+    using DeepEqual.Syntax;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
@@ -46,6 +47,22 @@ namespace HealthGateway.CommonTests.Delegates
             string expectedFirstName = "Jane";
             string expectedLastName = "Doe";
             string expectedGender = "Female";
+            Address expectedPhysicalAddr = new ()
+            {
+                StreetLines = { "Line 1", "Line 2", "Physical", },
+                City = "city",
+                Country = "CA",
+                PostalCode = "N0N0N0",
+                State = "BC",
+            };
+            Address expectedPostalAddr = new ()
+            {
+                StreetLines = { "Line 1", "Line 2", "Postal", },
+                City = "city",
+                Country = "CA",
+                PostalCode = "N0N0N0",
+                State = "BC",
+            };
             DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
 
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget =
@@ -59,6 +76,103 @@ namespace HealthGateway.CommonTests.Delegates
                                 extension = expectedHdId,
                             },
                         },
+                    addr = new AD[]
+                    {
+                        new ()
+                        {
+                            use = new cs_PostalAddressUse[]
+                            {
+                                cs_PostalAddressUse.PHYS,
+                            },
+                            Items = new ADXP[]
+                            {
+                                new ADStreetAddressLine
+                                {
+                                    Text = new string[]
+                                    {
+                                        expectedPhysicalAddr.StreetLines[0],
+                                        expectedPhysicalAddr.StreetLines[1],
+                                        expectedPhysicalAddr.StreetLines[2],
+                                    },
+                                },
+                                new ADCity
+                                {
+                                    Text = new string[]
+                                    {
+                                        expectedPhysicalAddr.City,
+                                    },
+                                },
+                                new ADState
+                                {
+                                    Text = new string[]
+                                    {
+                                        expectedPhysicalAddr.State,
+                                    },
+                                },
+                                new ADPostalCode
+                                {
+                                    Text = new string[]
+                                    {
+                                        expectedPhysicalAddr.PostalCode,
+                                    },
+                                },
+                                new ADCountry
+                                {
+                                    Text = new string[]
+                                    {
+                                        expectedPhysicalAddr.Country,
+                                    },
+                                },
+                            },
+                        },
+                        new ()
+                        {
+                            use = new cs_PostalAddressUse[]
+                            {
+                                cs_PostalAddressUse.PST,
+                            },
+                            Items = new ADXP[]
+                            {
+                                new ADStreetAddressLine
+                                {
+                                    Text = new string[]
+                                    {
+                                        expectedPostalAddr.StreetLines[0],
+                                        expectedPostalAddr.StreetLines[1],
+                                        expectedPostalAddr.StreetLines[2],
+                                    },
+                                },
+                                new ADCity
+                                {
+                                    Text = new string[]
+                                    {
+                                        expectedPostalAddr.City,
+                                    },
+                                },
+                                new ADState
+                                {
+                                    Text = new string[]
+                                    {
+                                        expectedPostalAddr.State,
+                                    },
+                                },
+                                new ADPostalCode
+                                {
+                                    Text = new string[]
+                                    {
+                                        expectedPostalAddr.PostalCode,
+                                    },
+                                },
+                                new ADCountry
+                                {
+                                    Text = new string[]
+                                    {
+                                        expectedPostalAddr.Country,
+                                    },
+                                },
+                            },
+                        },
+                    },
                     identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
                     {
                         id = new II[]
@@ -139,6 +253,8 @@ namespace HealthGateway.CommonTests.Delegates
             Assert.Equal(expectedLastName, actual.ResourcePayload?.LastName);
             Assert.Equal(expectedBirthDate, actual.ResourcePayload?.Birthdate);
             Assert.Equal(expectedGender, actual.ResourcePayload?.Gender);
+            Assert.True(actual.ResourcePayload?.PhysicalAddress.IsDeepEqual(expectedPhysicalAddr));
+            Assert.True(actual.ResourcePayload?.PostalAddress.IsDeepEqual(expectedPostalAddr));
         }
 
         /// <summary>
