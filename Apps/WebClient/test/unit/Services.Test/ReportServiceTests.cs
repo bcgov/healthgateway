@@ -15,15 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Test.Services
 {
-    using System;
     using System.Text.Json;
     using DeepEqual.Syntax;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
-    using HealthGateway.WebClient.Delegates;
+    using HealthGateway.Common.Models.CDogs;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
-    using Microsoft.Extensions.Caching.Memory;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;

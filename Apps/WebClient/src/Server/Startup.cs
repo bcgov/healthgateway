@@ -24,7 +24,6 @@ namespace HealthGateway.WebClient
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.WebClient.Delegates;
     using HealthGateway.WebClient.Listeners;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
@@ -36,7 +35,6 @@ namespace HealthGateway.WebClient
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Logging;
     using VueCliMiddleware;
 
     /// <summary>
