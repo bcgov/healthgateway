@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,21 +15,23 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Models.Support
 {
-    using HealthGateway.Common.Models;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents a request to mail document.
+    /// Represents the report patient.
     /// </summary>
-    public class MailDocumentRequest
+    public class ReportPatient
     {
         /// <summary>
-        /// Gets or sets the personal health number to retrieve.
+        /// Gets or sets the name of the patient.
         /// </summary>
-        public string PersonalHealthNumber { get; set; } = string.Empty;
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the address to mail the document.
+        /// Gets or sets patient date of birth.
         /// </summary>
-        public Address MailAddress { get; set; } = new Address();
+        [JsonPropertyName("dateOfBirth")]
+        public string DateOfBirth { get; set; } = string.Empty;
     }
 }

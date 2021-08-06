@@ -23,6 +23,9 @@
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Server\Assets\Templates\CovidCard.docx" />
+  </ItemGroup>
+  <ItemGroup>
     <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
       <Value>$(MSBuildProjectFullPath)/Server</Value>
     </SonarQubeSetting>

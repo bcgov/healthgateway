@@ -17,9 +17,10 @@ namespace HealthGateway.Admin.Services
 {
     using HealthGateway.Admin.Models.Support;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.CDogs;
 
     /// <summary>
-    /// Service that provides Support for Covid.
+    /// Service that provides Covid Support functionality.
     /// </summary>
     public interface ICovidSupportService
     {
@@ -42,6 +43,6 @@ namespace HealthGateway.Admin.Services
         /// </summary>
         /// <param name="phn">The personal health number that matches the person to retrieve.</param>
         /// <returns>The encoded document.</returns>
-        RequestResult<string> RetrieveDocument(string phn);
+        RequestResult<ReportModel> RetrieveDocument(string phn);
     }
 }

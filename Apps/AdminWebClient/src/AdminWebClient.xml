@@ -151,6 +151,47 @@
             </summary>
             <returns>The Health Gatway Configuration.</returns>
         </member>
+        <member name="T:HealthGateway.Admin.Controllers.CovidSupportController">
+            <summary>
+            Web API to handle Covid support requests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.CovidSupportController.#ctor(HealthGateway.Admin.Services.ICovidSupportService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.CovidSupportController"/> class.
+            </summary>
+            <param name="covidSupportService">The injected covid support service.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.CovidSupportController.GetPatient(System.String)">
+            <summary>
+            Adds a given communication to the backend.
+            </summary>
+            <returns>The added communication wrapped in a RequestResult.</returns>
+            <param name="phn">The personal health number that matches the person to retrieve.</param>
+            <response code="200">Returns the wrapped result of the request.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.CovidSupportController.MailDocument(HealthGateway.Admin.Models.Support.MailDocumentRequest)">
+            <summary>
+            Updates a given communication to the backend.
+            </summary>
+            <returns>The updated communication wrapped in a RequestResult.</returns>
+            <param name="request">The mail document request.</param>
+            <response code="200">Returns the wrapped result of the request.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.CovidSupportController.RetrieveDocument(System.String)">
+            <summary>
+            Gets the covid immunization document.
+            </summary>
+            <returns>The encoded immunization document.</returns>
+            <param name="phn">The personal health number that matches the document to retrieve.</param>
+            <response code="200">Returns the wrapped result of the request.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.Admin.Controllers.CsvExportController">
             <summary>
             Web API to export data from Health Gateway and return CSV files.
@@ -742,6 +783,172 @@
             Gets or sets whether Https Meta Data is required.
             </summary>
         </member>
+        <member name="T:HealthGateway.Admin.Models.Support.CovidInformation">
+            <summary>
+            Represents the retrieved immunization information.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.Support.CovidInformation.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Models.Support.CovidInformation"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.Support.CovidInformation.#ctor(HealthGateway.Common.Models.PatientModel,System.Collections.Generic.IList{HealthGateway.Common.Models.Immunization.ImmunizationEvent})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Models.Support.CovidInformation"/> class.
+            </summary>
+            <param name="patient">The patient information.</param>
+            <param name="immunizations">The list of immunizations.</param>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.CovidInformation.Patient">
+            <summary>
+            Gets or sets the retrieved patient information.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.CovidInformation.Immunizations">
+            <summary>
+            Gets the retrieved immunizations. Empty if no covid immunizations where found.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.Support.CovidReport">
+            <summary>
+            Represents the retrieved immunization information.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.Support.CovidReport.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Models.Support.CovidReport"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.Support.CovidReport.#ctor(System.Collections.Generic.IList{HealthGateway.Admin.Models.Support.ReportDose})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Models.Support.CovidReport"/> class.
+            </summary>
+            <param name="doses">A list of report doses.</param>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.CovidReport.Address">
+            <summary>
+            Gets or sets the report address. Null if no address is specified.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.CovidReport.Patient">
+            <summary>
+            Gets or sets the report patient.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.CovidReport.ImmunizationName">
+            <summary>
+            Gets or sets the immunization name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.CovidReport.Doses">
+            <summary>
+            Gets the report doses. Empty if immunization doses.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.Support.CovidReport.FromModel(HealthGateway.Admin.Models.Support.CovidInformation,HealthGateway.Common.Models.Address)">
+            <summary>
+            Gets the report doses. Empty if immunization doses.
+            </summary>
+            <param name="model">The model to base the report on.</param>
+            <param name="address">The report address. Can be null.</param>
+            <returns>The added communication wrapped in a RequestResult.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.Support.MailDocumentRequest">
+            <summary>
+            Represents a request to mail document.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.MailDocumentRequest.PersonalHealthNumber">
+            <summary>
+            Gets or sets the personal health number to retrieve.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.MailDocumentRequest.MailAddress">
+            <summary>
+            Gets or sets the address to mail the document.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.Support.ReportAddress">
+            <summary>
+            Represents the report address.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.ReportAddress.Addressee">
+            <summary>
+            Gets or sets the name of the person on the address.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.ReportAddress.Street">
+            <summary>
+            Gets or sets the street name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.ReportAddress.City">
+            <summary>
+            Gets or sets the city name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.ReportAddress.ProvinceOrState">
+            <summary>
+            Gets or sets the province or state.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.ReportAddress.PostalCode">
+            <summary>
+            Gets or sets the postal code.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.ReportAddress.Country">
+            <summary>
+            Gets or sets the country.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.Support.ReportDose">
+            <summary>
+            Represents a dose of the report.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.ReportDose.Product">
+            <summary>
+            Gets or sets the dose product.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.ReportDose.ImmunizingAgent">
+            <summary>
+            Gets or sets the dose immunizing agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.ReportDose.Provider">
+            <summary>
+            Gets or sets the dose provider.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.ReportDose.Date">
+            <summary>
+            Gets or sets the dose date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.ReportDose.LotNumber">
+            <summary>
+            Gets or sets the dose lot number.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.Support.ReportPatient">
+            <summary>
+            Represents the report patient.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.ReportPatient.Name">
+            <summary>
+            Gets or sets the name of the patient.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.ReportPatient.DateOfBirth">
+            <summary>
+            Gets or sets patient date of birth.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Admin.Models.TimeOutsConfiguration">
             <summary>
             Various timeout values used by the VUE Admin application.
@@ -1003,6 +1210,30 @@
             </summary>
             <returns>The external configuration data.</returns>
         </member>
+        <member name="T:HealthGateway.Admin.Services.CovidSupportService">
+            <summary>
+            Service that provides functionality to admin emails.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.CovidSupportService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.CovidSupportService},HealthGateway.Common.Services.IPatientService,HealthGateway.Common.Delegates.IImmunizationDelegate,HealthGateway.Common.Delegates.ICDogsDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.CovidSupportService"/> class.
+            </summary>
+            <param name="logger">The injected logger provider.</param>
+            <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
+            <param name="immunizationDelegate">Delegate that provides immunization information.</param>
+            <param name="mailDelegate">Delegate that provides mailing functionality.</param>
+            <param name="cDogsDelegate">Delegate that provides document generation functionality.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.CovidSupportService.GetCovidInformation(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.CovidSupportService.MailDocument(HealthGateway.Admin.Models.Support.MailDocumentRequest)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.CovidSupportService.RetrieveDocument(System.String)">
+            <inheritdoc />
+        </member>
         <member name="T:HealthGateway.Admin.Services.CsvExportService">
             <inheritdoc />
         </member>
@@ -1140,6 +1371,32 @@
             Creates and returns Configuration data for clients.
             </summary>
             <returns>The Config object containing configuration elements useful for client consumption.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Services.ICovidSupportService">
+            <summary>
+            Service that provides Covid Support functionality.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.ICovidSupportService.GetCovidInformation(System.String)">
+            <summary>
+            Gets the patient and immunization information.
+            </summary>
+            <param name="phn">The personal health number that matches the person to retrieve.</param>
+            <returns>The covid ionformation wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.ICovidSupportService.MailDocument(HealthGateway.Admin.Models.Support.MailDocumentRequest)">
+            <summary>
+            Gets all the emails in the system up to the pageSize.
+            </summary>
+            <param name="request">The request information to retrieve patient information.</param>
+            <returns>A RequestResult with True if the request was sucessfull.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.ICovidSupportService.RetrieveDocument(System.String)">
+            <summary>
+            Gets all the emails in the system up to the pageSize.
+            </summary>
+            <param name="phn">The personal health number that matches the person to retrieve.</param>
+            <returns>The encoded document.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Services.ICsvExportService">
             <summary>
@@ -1319,6 +1576,18 @@
         </member>
         <member name="M:HealthGateway.Admin.Services.UserFeedbackService.DissociateFeedbackTag(System.Guid,HealthGateway.Admin.Models.UserFeedbackTagView)">
             <inheritdoc />
+        </member>
+        <member name="T:HealthGateway.Common.Delegates.IMailDelegate">
+            <summary>
+            Defines a delegate to mail documents.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.IMailDelegate.QueueDocument(System.String)">
+            <summary>
+            Sents a document to be mailed.
+            </summary>
+            <param name="document">The document to mail.</param>
+            <returns>True if the document was sucessfully queued for sending.</returns>
         </member>
         <member name="T:HealthGateway.AdminWebClient.Pages.ErrorPage">
             <summary>

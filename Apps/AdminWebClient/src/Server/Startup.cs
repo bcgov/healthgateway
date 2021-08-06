@@ -21,6 +21,7 @@ namespace HealthGateway.AdminWebClient
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authorization.Admin;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Authentication.Cookies;
@@ -89,6 +90,7 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<IEmailAdminService, EmailAdminService>();
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<ICsvExportService, CsvExportService>();
+            services.AddTransient<ICovidSupportService, CovidSupportService>();
 
             // Add delegates
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
@@ -102,6 +104,8 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<ICommentDelegate, DBCommentDelegate>();
             services.AddTransient<IAdminTagDelegate, DBAdminTagDelegate>();
             services.AddTransient<IFeedbackTagDelegate, DBFeedbackTagDelegate>();
+            services.AddTransient<IImmunizationDelegate, RestImmunizationDelegate>();
+            services.AddTransient<ICDogsDelegate, CDogsDelegate>();
 
             // Configure SPA
             services.AddControllersWithViews();

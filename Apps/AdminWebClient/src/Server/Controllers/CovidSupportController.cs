@@ -27,7 +27,7 @@ namespace HealthGateway.Admin.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
-    [Authorize(Roles = "AdminUser")]
+    // [Authorize(Roles = "AdminUser")]
     public class CovidSupportController
     {
         private readonly ICovidSupportService covidSupportService;
@@ -53,7 +53,7 @@ namespace HealthGateway.Admin.Controllers
         [Route("Patient")]
         public IActionResult GetPatient([FromHeader] string phn)
         {
-            return new JsonResult(this.covidSupportService.GetPatient(phn));
+            return new JsonResult(this.covidSupportService.GetCovidInformation(phn));
         }
 
         /// <summary>

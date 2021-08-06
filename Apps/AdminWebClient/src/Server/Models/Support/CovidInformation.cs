@@ -46,9 +46,9 @@ namespace HealthGateway.Admin.Models.Support
         }
 
         /// <summary>
-        /// Gets or sets the retrieved patient information. Null if no person retrieved.
+        /// Gets or sets the retrieved patient information.
         /// </summary>
-        public PatientModel? Patient { get; set; }
+        public PatientModel Patient { get; set; } = new PatientModel();
 
         /// <summary>
         /// Gets the retrieved immunizations. Empty if no covid immunizations where found.

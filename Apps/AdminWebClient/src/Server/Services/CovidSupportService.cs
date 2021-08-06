@@ -16,47 +16,61 @@
 
 namespace HealthGateway.Admin.Services
 {
+    using System;
     using System.Collections.Generic;
+    using System.Globalization;
+    using System.IO;
+    using System.Reflection;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models.Support;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.CDogs;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Services;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Service that provides functionality to admin emails.
     /// </summary>
     public class CovidSupportService : ICovidSupportService
     {
+        private readonly ILogger<CovidSupportService> logger;
         private readonly IPatientService patientService;
         private readonly IImmunizationDelegate immunizationDelegate;
-        private readonly IMailDelegate mailDelegate;
+        //private readonly IMailDelegate mailDelegate;
         private readonly ICDogsDelegate cDogsDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CovidSupportService"/> class.
         /// </summary>
+        /// <param name="logger">The injected logger provider.</param>
         /// <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
         /// <param name="immunizationDelegate">Delegate that provides immunization information.</param>
         /// <param name="mailDelegate">Delegate that provides mailing functionality.</param>
         /// <param name="cDogsDelegate">Delegate that provides document generation functionality.</param>
         public CovidSupportService(
+            ILogger<CovidSupportService> logger,
             IPatientService patientService,
             IImmunizationDelegate immunizationDelegate,
-            IMailDelegate mailDelegate,
+            //IMailDelegate mailDelegate,
             ICDogsDelegate cDogsDelegate)
         {
+            this.logger = logger;
             this.patientService = patientService;
             this.immunizationDelegate = immunizationDelegate;
-            this.mailDelegate = mailDelegate;
+            //this.mailDelegate = mailDelegate;
             this.cDogsDelegate = cDogsDelegate;
         }
 
         /// <inheritdoc />
         public RequestResult<CovidInformation> GetCovidInformation(string phn)
         {
+            this.logger.LogDebug($"Retrieving covid information");
+            this.logger.LogTrace($"For PHN: {phn}");
+
             Task<RequestResult<PatientModel>> patientTask = this.patientService.GetPatient(phn, PatientIdentifierType.PHN);
             Task<RequestResult<IList<ImmunizationEvent>>> immunizationTask = this.immunizationDelegate.GetCovidImmunization(phn);
             Task.WaitAll(patientTask, immunizationTask);
@@ -65,6 +79,7 @@ namespace HealthGateway.Admin.Services
             {
                 if (immunizationTask.Result.ResultStatus == ResultType.Success)
                 {
+                    this.logger.LogDebug($"Sucessfully retrieved patient and immunization.");
                     return new RequestResult<CovidInformation>()
                     {
                         PageIndex = 0,
@@ -75,6 +90,7 @@ namespace HealthGateway.Admin.Services
                 }
                 else
                 {
+                    this.logger.LogError($"Error retrieving immunization information.");
                     return new RequestResult<CovidInformation>()
                     {
                         PageIndex = 0,
@@ -86,6 +102,7 @@ namespace HealthGateway.Admin.Services
             }
             else
             {
+                this.logger.LogError($"Error retrieving patient information.");
                 return new RequestResult<CovidInformation>()
                 {
                     PageIndex = 0,
@@ -99,19 +116,29 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc />
         public PrimitiveRequestResult<bool> MailDocument(MailDocumentRequest request)
         {
+            this.logger.LogDebug($"Mailing document");
+            this.logger.LogTrace($"For PHN: {request.PersonalHealthNumber}");
+
             RequestResult<CovidInformation> covidInfo = this.GetCovidInformation(request.PersonalHealthNumber);
             if (covidInfo.ResultStatus == ResultType.Success)
             {
                 // Compose CDogs with address
+                CDogsRequestModel cdogsRequest = CreateCdogsRequest(covidInfo.ResourcePayload, request.MailAddress);
 
                 // Send CDogs request
+                RequestResult<ReportModel> retVal = Task.Run(async () => await this.cDogsDelegate.GenerateReportAsync(cdogsRequest).ConfigureAwait(true)).Result;
 
-                string document = "";
-
-                return Task.Run(async () => await this.mailDelegate.QueueDocument(document).ConfigureAwait(true)).Result;
+                //return Task.Run(async () => await this.mailDelegate.QueueDocument("TODO").ConfigureAwait(true)).Result;
+                return new PrimitiveRequestResult<bool>()
+                {
+                    PageIndex = 0,
+                    PageSize = 0,
+                    ResultStatus = ResultType.Success,
+                };
             }
             else
             {
+                this.logger.LogError($"Error retrieving covid information.");
                 return new PrimitiveRequestResult<bool>()
                 {
                     PageIndex = 0,
@@ -123,26 +150,23 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<string> RetrieveDocument(string phn)
+        public RequestResult<ReportModel> RetrieveDocument(string phn)
         {
+            this.logger.LogDebug($"Retrieving covid document");
+            this.logger.LogTrace($"For PHN: {phn}");
+
             RequestResult<CovidInformation> covidInfo = this.GetCovidInformation(phn);
             if (covidInfo.ResultStatus == ResultType.Success)
             {
                 // Compose CDogs with address
+                CDogsRequestModel cdogsRequest = CreateCdogsRequest(covidInfo.ResourcePayload);
 
                 // Send CDogs request
-
-                return new RequestResult<string>()
-                {
-                    ResourcePayload = "testo",
-                    PageIndex = 0,
-                    PageSize = 0,
-                    ResultStatus = ResultType.Success,
-                };
+                return Task.Run(async () => await this.cDogsDelegate.GenerateReportAsync(cdogsRequest).ConfigureAwait(true)).Result;
             }
             else
             {
-                return new RequestResult<string>()
+                return new RequestResult<ReportModel>()
                 {
                     PageIndex = 0,
                     PageSize = 0,
@@ -150,6 +174,49 @@ namespace HealthGateway.Admin.Services
                     ResultError = covidInfo.ResultError,
                 };
             }
+        }
+
+        private static CDogsRequestModel CreateCdogsRequest(CovidInformation information, Address? address = null)
+        {
+            string reportName = Guid.NewGuid().ToString() + DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.CurrentCulture);
+            return new()
+            {
+                Data = JsonElementFromObject(CovidReport.FromModel(information, address)),
+                Options = new CDogsOptionsModel()
+                {
+                    Overwrite = true,
+                    ConvertTo = "PDF",
+                    ReportName = reportName,
+                },
+                Template = new CDogsTemplateModel()
+                {
+                    Content = ReadTemplate(),
+                    FileType = "docx",
+                },
+            };
+        }
+
+        private static string ReadTemplate()
+        {
+            string resourceName = $"HealthGateway.AdminWebClient.Server.Assets.Templates.CovidCard.docx";
+            Assembly? assembly = Assembly.GetAssembly(typeof(CovidSupportService));
+            Stream? resourceStream = assembly!.GetManifestResourceStream(resourceName);
+
+            if (resourceStream == null)
+            {
+                throw new FileNotFoundException($"Template {resourceName} not found.");
+            }
+
+            using MemoryStream memoryStream = new();
+            resourceStream.CopyTo(memoryStream);
+            return Convert.ToBase64String(memoryStream.ToArray());
+        }
+
+        public static JsonElement JsonElementFromObject(CovidReport value)
+        {
+            byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(value);
+            using JsonDocument doc = JsonDocument.Parse(bytes);
+            return doc.RootElement.Clone();
         }
     }
 }
