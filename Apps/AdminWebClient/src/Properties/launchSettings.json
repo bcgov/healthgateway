@@ -9,7 +9,7 @@
             "launchBrowser": true,
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
-                "ServerOnly": "true"
+                "ServerOnly": "false"
             },
             "applicationUrl": "http://localhost:5010"
         }
