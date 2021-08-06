@@ -6,6 +6,7 @@ export const SERVICE_IDENTIFIER = {
     EmailAdminService: Symbol.for("EmailAdminService"),
     CommunicationService: Symbol.for("CommunicationService"),
     SupportService: Symbol.for("SupportService"),
+    CovidSupportService: Symbol.for("CovidSupportService"),
 };
 
 export const DELEGATE_IDENTIFIER = {
