@@ -18,9 +18,11 @@ namespace HealthGateway.AdminWebClient
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authorization.Admin;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Authentication.Cookies;
@@ -102,6 +104,7 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<ICommentDelegate, DBCommentDelegate>();
             services.AddTransient<IAdminTagDelegate, DBAdminTagDelegate>();
             services.AddTransient<IFeedbackTagDelegate, DBFeedbackTagDelegate>();
+            services.AddTransient<IMailDelegate, SFTPMailDelegate>();
 
             // Configure SPA
             services.AddControllersWithViews();
