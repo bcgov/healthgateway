@@ -742,6 +742,66 @@
             Gets or sets whether Https Meta Data is required.
             </summary>
         </member>
+        <member name="T:HealthGateway.Admin.Models.Support.RetrieveImmunizationRequest">
+            <summary>
+            Represents a request to retrieve immunization information.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.RetrieveImmunizationRequest.FirstName">
+            <summary>
+            Gets or sets the first name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.RetrieveImmunizationRequest.LastName">
+            <summary>
+            Gets or sets the last name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.RetrieveImmunizationRequest.DateOfBirth">
+            <summary>
+            Gets or sets the date of birth.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.RetrieveImmunizationRequest.PersonalHealthNumber">
+            <summary>
+            Gets or sets the personal health number.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.Support.RetrieveImmunizationResult">
+            <summary>
+            Represents the retrieved immunization information.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.RetrieveImmunizationResult.IsValid">
+            <summary>
+            Gets or sets a value indicating whether the provided information matches.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.RetrieveImmunizationResult.NameOnAddress">
+            <summary>
+            Gets or sets the name on the retrieved address.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.RetrieveImmunizationResult.Address">
+            <summary>
+            Gets or sets the retrieved address.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.RetrieveImmunizationResult.EncodedDocument">
+            <summary>
+            Gets or sets the immunization document encoded (TODO: verify that is comming from PHSA).
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.RetrieveImmunizationResult.EncodingType">
+            <summary>
+            Gets or sets the immunization document encoded (TODO: verify that is comming from PHSA).
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Support.RetrieveImmunizationResult.DocumentName">
+            <summary>
+            Gets or sets the document name (TODO: verify that is needed).
+            </summary>
+        </member>
         <member name="T:HealthGateway.Admin.Models.TimeOutsConfiguration">
             <summary>
             Various timeout values used by the VUE Admin application.

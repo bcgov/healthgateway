@@ -1,4 +1,5 @@
 <script lang="ts">
+import { saveAs } from "file-saver";
 import { Component, Vue, Watch } from "vue-property-decorator";
 
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
@@ -156,16 +157,35 @@ export default class CovidCardView extends Vue {
     private handleSubmit() {
         this.isLoading = true;
         this.covidSupportService
-            .submitCard(this.phn, this.address)
-            .then(() => {
-                this.searchResult = null;
+            .mailDocument({
+                personalHealthNumber: this.phn,
+                address: this.address,
+            })
+            .then((mailResult) => {
+                if (mailResult) {
+                    this.searchResult = null;
+                    this.showFeedback = true;
+                    this.bannerFeedback = {
+                        type: ResultType.Success,
+                        title: "Success",
+                        message: "Covid card mailed successfully.",
+                    };
+                } else {
+                    this.showFeedback = true;
+                    this.bannerFeedback = {
+                        type: ResultType.Error,
+                        title: "Error",
+                        message:
+                            "Something went wrong when mailing the card, please try again later.",
+                    };
+                }
             })
             .catch(() => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
-                    title: "Search Error",
-                    message: "Unknown error searching patient data",
+                    title: "Mail Error",
+                    message: "Unknown error mailing report",
                 };
             })
             .finally(() => {
@@ -174,8 +194,30 @@ export default class CovidCardView extends Vue {
     }
 
     private handlePrint() {
-        console.log(this.address);
-        this.searchResult = null;
+        this.isLoading = true;
+        this.covidSupportService
+            .retrieveDocument(this.phn)
+            .then((documentResult) => {
+                if (documentResult) {
+                    const downloadLink = `data:application/pdf;base64,${documentResult.document}`;
+                    fetch(downloadLink).then((res) => {
+                        res.blob().then((blob) => {
+                            saveAs(blob, documentResult.fileName);
+                        });
+                    });
+                }
+            })
+            .catch(() => {
+                this.showFeedback = true;
+                this.bannerFeedback = {
+                    type: ResultType.Error,
+                    title: "Download Error",
+                    message: "Unknown error downloading report",
+                };
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
     }
 
     private onEditModeChange() {
@@ -365,24 +407,3 @@ export default class CovidCardView extends Vue {
         </v-form>
     </v-container>
 </template>
-
-<style lang="scss">
-.dashboard-rating-card {
-    .v-rating {
-        font-size: 10px;
-        padding: 0px !important;
-        margin-top: 0px !important;
-        margin-bottom: 0px !important;
-    }
-    .v-rating .v-icon {
-        padding: 0px;
-    }
-}
-
-.refresh-button {
-    position: fixed;
-    right: 16px;
-    top: 80px;
-    z-index: 1000;
-}
-</style>
