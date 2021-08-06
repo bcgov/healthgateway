@@ -60,10 +60,10 @@ namespace HealthGateway.Admin.Controllers
         /// <returns>The authentication model representing the current ASP.Net Core Authentication cookie.</returns>
         [HttpGet]
         [ProducesResponseType(200)]
-        public async Task<AuthenticationData> GetAuthenticationData()
+        public AuthenticationData GetAuthenticationData()
         {
             AuthenticationData authData = this.authenticationService.GetAuthenticationData();
-            authData.Token = await this.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true) ?? string.Empty;
+            authData.Token = Task.Run(async () => await this.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true)).Result ?? string.Empty;
             return authData;
         }
 
