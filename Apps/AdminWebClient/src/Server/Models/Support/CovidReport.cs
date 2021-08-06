@@ -48,21 +48,25 @@ namespace HealthGateway.Admin.Models.Support
         /// <summary>
         /// Gets or sets the report address. Null if no address is specified.
         /// </summary>
+        [JsonPropertyName("address")]
         public ReportAddress? Address { get; set; }
 
         /// <summary>
         /// Gets or sets the report patient.
         /// </summary>
+        [JsonPropertyName("patient")]
         public ReportPatient Patient { get; set; } = new ReportPatient();
 
         /// <summary>
         /// Gets or sets the immunization name.
         /// </summary>
+        [JsonPropertyName("immunizationName")]
         public string ImmunizationName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets the report doses. Empty if immunization doses.
         /// </summary>
+        [JsonPropertyName("doses")]
         public IList<ReportDose> Doses { get; }
 
         /// <summary>
@@ -74,16 +78,19 @@ namespace HealthGateway.Admin.Models.Support
         public static CovidReport FromModel(CovidInformation model, Address? address)
         {
             List<ReportDose> doses = new();
-            foreach (ImmunizationEvent immunization in model.Immunizations)
+            IList<ImmunizationEvent> sortedImmunizations = model.Immunizations.OrderBy(x => x.DateOfImmunization).ToList();
+            for (int doseIndex = 0; doseIndex < sortedImmunizations.Count; doseIndex++)
             {
+                ImmunizationEvent immunization = sortedImmunizations[doseIndex];
                 ImmunizationAgent agent = immunization.Immunization.ImmunizationAgents.First();
                 doses.Add(new ReportDose()
                 {
-                    Date = immunization.DateOfImmunization.ToString("YYYY-MMM-dd", CultureInfo.CurrentCulture),
+                    Date = immunization.DateOfImmunization.ToString("yyyy-MMM-dd", CultureInfo.CurrentCulture),
                     ImmunizingAgent = agent.Name,
                     LotNumber = agent.LotNumber,
                     Provider = immunization.ProviderOrClinic,
-
+                    Product = agent.ProductName,
+                    Number = (doseIndex + 1).ToString(CultureInfo.CurrentCulture),
                 });
             }
 
@@ -97,13 +104,13 @@ namespace HealthGateway.Admin.Models.Support
                     Country = address.Country,
                     PostalCode = address.PostalCode,
                     ProvinceOrState = address.State,
-                    Street = string.Join("\\n", address.StreetLines),
+                    Street = string.Join("\n", address.StreetLines),
                 },
                 ImmunizationName = "COVID-19",
                 Patient = new ReportPatient()
                 {
                     Name = patientName,
-                    DateOfBirth = model.Patient.Birthdate.ToString("YYYY-MMM-dd", CultureInfo.CurrentCulture),
+                    DateOfBirth = model.Patient.Birthdate.ToString("yyyy-MMM-dd", CultureInfo.CurrentCulture),
                 },
             };
         }

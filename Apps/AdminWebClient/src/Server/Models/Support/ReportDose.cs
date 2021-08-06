@@ -23,6 +23,12 @@ namespace HealthGateway.Admin.Models.Support
     public class ReportDose
     {
         /// <summary>
+        /// Gets or sets the dose number.
+        /// </summary>
+        [JsonPropertyName("number")]
+        public string Number { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the dose product.
         /// </summary>
         [JsonPropertyName("product")]

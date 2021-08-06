@@ -159,7 +159,13 @@ namespace HealthGateway.Admin.Services
             if (covidInfo.ResultStatus == ResultType.Success)
             {
                 // Compose CDogs with address
-                CDogsRequestModel cdogsRequest = CreateCdogsRequest(covidInfo.ResourcePayload);
+                CDogsRequestModel cdogsRequest = CreateCdogsRequest(covidInfo.ResourcePayload, new Address(new List<string>() { "line 1", "line 2" })
+                {
+                    City = "Le city",
+                    Country = "Boljuria",
+                    PostalCode = "abc123",
+                    State = "BC",
+                });
 
                 // Send CDogs request
                 return Task.Run(async () => await this.cDogsDelegate.GenerateReportAsync(cdogsRequest).ConfigureAwait(true)).Result;
@@ -185,7 +191,7 @@ namespace HealthGateway.Admin.Services
                 Options = new CDogsOptionsModel()
                 {
                     Overwrite = true,
-                    ConvertTo = "PDF",
+                    ConvertTo = "pdf",
                     ReportName = reportName,
                 },
                 Template = new CDogsTemplateModel()
@@ -198,21 +204,18 @@ namespace HealthGateway.Admin.Services
 
         private static string ReadTemplate()
         {
-            string resourceName = $"HealthGateway.AdminWebClient.Server.Assets.Templates.CovidCard.docx";
-            Assembly? assembly = Assembly.GetAssembly(typeof(CovidSupportService));
-            Stream? resourceStream = assembly!.GetManifestResourceStream(resourceName);
+            string resourceName = "HealthGateway.Admin.Server.Assets.Templates.CovidCard.docx";
+            string? assetFile = Common.Utils.AssetReader.Read(resourceName, true);
 
-            if (resourceStream == null)
+            if (assetFile == null)
             {
                 throw new FileNotFoundException($"Template {resourceName} not found.");
             }
 
-            using MemoryStream memoryStream = new();
-            resourceStream.CopyTo(memoryStream);
-            return Convert.ToBase64String(memoryStream.ToArray());
+            return assetFile;
         }
 
-        public static JsonElement JsonElementFromObject(CovidReport value)
+        private static JsonElement JsonElementFromObject(CovidReport value)
         {
             byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(value);
             using JsonDocument doc = JsonDocument.Parse(bytes);

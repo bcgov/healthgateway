@@ -909,6 +909,11 @@
             Represents a dose of the report.
             </summary>
         </member>
+        <member name="P:HealthGateway.Admin.Models.Support.ReportDose.Number">
+            <summary>
+            Gets or sets the dose number.
+            </summary>
+        </member>
         <member name="P:HealthGateway.Admin.Models.Support.ReportDose.Product">
             <summary>
             Gets or sets the dose product.
