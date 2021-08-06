@@ -26,6 +26,13 @@ namespace HealthGateway.Admin.Server.Delegates
     public interface IImmunizationAdminDelegate
     {
         /// <summary>
+        /// Gets a specific immunization by id.
+        /// </summary>
+        /// <param name="immunizationId">The Immunization to fetch.</param>
+        /// <returns>The wrapped Immunization response.</returns>
+        Task<RequestResult<PHSAResult<ImmunizationViewResponse>>> GetImmunization(string immunizationId);
+
+        /// <summary>
         /// Gets the immunizations for the provided PHN.
         /// </summary>
         /// <param name="phn">The PHN to query for Immunizations.</param>

@@ -16,12 +16,24 @@
 namespace HealthGateway.Admin.Server.Delegates
 {
     using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.Net;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Net.Mime;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -54,10 +66,124 @@ namespace HealthGateway.Admin.Server.Delegates
             configuration.Bind(ImmunizationConfigSectionKey, this.immunizationConfig);
         }
 
+        private static ActivitySource Source { get; } = new ActivitySource(nameof(RestImmunizationAdminDelegate));
+
         /// <inheritdoc/>
-        public Task<RequestResult<PHSAResult<ImmunizationResponse>>> GetImmunizations(string phn, DateTime birthDate, int pageIndex = 0)
+        public async Task<RequestResult<PHSAResult<ImmunizationViewResponse>>> GetImmunization(string immunizationId)
         {
-            throw new System.NotImplementedException();
+            using Activity? activity = Source.StartActivity("GetImmunization");
+            this.logger.LogDebug($"Getting immunization {immunizationId}...");
+
+            string endpointString = string.Format(CultureInfo.InvariantCulture, "{0}/{1}", this.immunizationConfig.Endpoint, immunizationId);
+            RequestResult<PHSAResult<ImmunizationViewResponse>> retVal = await this.ParsePHSAResult<ImmunizationViewResponse>(new Uri(endpointString)).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished getting Immunization {immunizationId}");
+
+            return retVal;
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<PHSAResult<ImmunizationResponse>>> GetImmunizations(string phn, DateTime birthDate, int pageIndex = 0)
+        {
+            using Activity? activity = Source.StartActivity("GetImmunizations");
+            this.logger.LogDebug($"Getting immunizations...");
+
+            Dictionary<string, string?> query = new ()
+            {
+                ["phn"] = phn,
+                ["dob"] = birthDate.ToString("YYYYMMDD", CultureInfo.InvariantCulture),
+                ["limit"] = this.immunizationConfig.FetchSize,
+            };
+            Uri endpoint = new Uri(QueryHelpers.AddQueryString(this.immunizationConfig.Endpoint, query));
+            RequestResult<PHSAResult<ImmunizationResponse>> retVal = await this.ParsePHSAResult<ImmunizationResponse>(endpoint).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished getting Immunizations");
+
+            return retVal;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Team Decision>")]
+        private async Task<RequestResult<PHSAResult<T>>> ParsePHSAResult<T>(Uri endpoint)
+        {
+            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
+            if (httpContext != null)
+            {
+                string? bearerToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+                if (bearerToken != null)
+                {
+                    RequestResult<PHSAResult<T>> retVal = new ()
+                    {
+                        ResultStatus = ResultType.Error,
+                        PageIndex = 0,
+                    };
+
+                    try
+                    {
+                        using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+                        client.DefaultRequestHeaders.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                        HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
+                        string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                        this.logger.LogTrace($"Response: {response}");
+
+                        switch (response.StatusCode)
+                        {
+                            case HttpStatusCode.OK:
+                                var options = new JsonSerializerOptions
+                                {
+                                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                                    IgnoreNullValues = true,
+                                    WriteIndented = true,
+                                };
+                                this.logger.LogTrace($"Response payload: {payload}");
+                                PHSAResult<T>? phsaResult = JsonSerializer.Deserialize<PHSAResult<T>>(payload, options);
+                                if (phsaResult != null && phsaResult.Result != null)
+                                {
+                                    retVal.ResultStatus = ResultType.Success;
+                                    retVal.ResourcePayload = phsaResult;
+                                    retVal.TotalResultCount = 1;
+                                    retVal.PageSize = int.Parse(this.immunizationConfig.FetchSize, CultureInfo.InvariantCulture);
+                                }
+                                else
+                                {
+                                    retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                                }
+
+                                break;
+                            case HttpStatusCode.NoContent: // No Immunizations exits for this user
+                                retVal.ResultStatus = ResultType.Success;
+                                retVal.ResourcePayload = new PHSAResult<T>();
+                                retVal.TotalResultCount = 0;
+                                retVal.PageSize = int.Parse(this.immunizationConfig.FetchSize, CultureInfo.InvariantCulture);
+                                break;
+                            case HttpStatusCode.Forbidden:
+                                retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                                break;
+                            default:
+                                retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Immunizations Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                                this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                                break;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Immunization data: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                        this.logger.LogError($"Unexpected exception retrieving Immunization data {e}");
+                    }
+
+                    return retVal;
+                }
+            }
+
+            return new RequestResult<PHSAResult<T>>()
+            {
+                ResultStatus = ResultType.Error,
+                ResultError = new RequestResultError()
+                {
+                    ResultMessage = "Error retrieving bearer token",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Immunization),
+                },
+            };
         }
     }
 }

@@ -73,7 +73,6 @@ namespace HealthGateway.Admin.Services
                 List<string> userRoles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(role => role.Value).ToList();
                 authData.Roles = this.enabledRoles.Intersect(userRoles).ToList();
                 authData.IsAuthorized = authData.Roles.Count > 0;
-                authData.Token = user.FindFirstValue("access_token") ?? string.Empty;
             }
 
             return authData;

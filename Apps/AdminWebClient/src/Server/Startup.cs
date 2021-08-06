@@ -18,6 +18,7 @@ namespace HealthGateway.AdminWebClient
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authorization.Admin;
@@ -102,6 +103,7 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<ICommentDelegate, DBCommentDelegate>();
             services.AddTransient<IAdminTagDelegate, DBAdminTagDelegate>();
             services.AddTransient<IFeedbackTagDelegate, DBFeedbackTagDelegate>();
+            services.AddTransient<IImmunizationAdminDelegate, RestImmunizationAdminDelegate>();
 
             // Configure SPA
             services.AddControllersWithViews();
@@ -215,21 +217,6 @@ namespace HealthGateway.AdminWebClient
 
                 options.Events = new OpenIdConnectEvents()
                 {
-                    OnTokenValidated = ctx =>
-                    {
-                        JwtSecurityToken accessToken = ctx.SecurityToken;
-                        if (accessToken != null)
-                        {
-                            ClaimsIdentity? identity = ctx.Principal?.Identity as ClaimsIdentity;
-                            if (identity != null)
-                            {
-                                identity.AddClaim(new Claim("access_token", accessToken.RawData));
-                                this.logger.LogTrace($"Token = {accessToken.RawData}");
-                            }
-                        }
-
-                        return Task.FromResult(0);
-                    },
                     OnRedirectToIdentityProvider = ctx =>
                     {
                         if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
