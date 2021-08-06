@@ -17,6 +17,7 @@ namespace HealthGateway.Common.Delegates
 {
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.CDogs;
 
     /// <summary>
     /// Defines a delegate to mail documents.
@@ -28,6 +29,6 @@ namespace HealthGateway.Common.Delegates
         /// </summary>
         /// <param name="document">The document to mail.</param>
         /// <returns>True if the document was sucessfully queued for sending.</returns>
-        Task<PrimitiveRequestResult<bool>> QueueDocument(string document);
+        Task<PrimitiveRequestResult<bool>> QueueDocument(ReportModel document);
     }
 }

@@ -40,8 +40,7 @@ namespace HealthGateway.Admin.Services
         private readonly ILogger<CovidSupportService> logger;
         private readonly IPatientService patientService;
         private readonly IImmunizationDelegate immunizationDelegate;
-
-        // private readonly IMailDelegate mailDelegate;
+        private readonly IMailDelegate mailDelegate;
         private readonly ICDogsDelegate cDogsDelegate;
 
         /// <summary>
@@ -56,15 +55,13 @@ namespace HealthGateway.Admin.Services
             ILogger<CovidSupportService> logger,
             IPatientService patientService,
             IImmunizationDelegate immunizationDelegate,
-
-            // IMailDelegate mailDelegate,
+            IMailDelegate mailDelegate,
             ICDogsDelegate cDogsDelegate)
         {
             this.logger = logger;
             this.patientService = patientService;
             this.immunizationDelegate = immunizationDelegate;
-
-            // this.mailDelegate = mailDelegate;
+            this.mailDelegate = mailDelegate;
             this.cDogsDelegate = cDogsDelegate;
         }
 
@@ -129,15 +126,24 @@ namespace HealthGateway.Admin.Services
                 CDogsRequestModel cdogsRequest = CreateCdogsRequest(covidInfo.ResourcePayload, request.MailAddress);
 
                 // Send CDogs request
-                RequestResult<ReportModel> retVal = Task.Run(async () => await this.cDogsDelegate.GenerateReportAsync(cdogsRequest).ConfigureAwait(true)).Result;
+                RequestResult<ReportModel> reportResult = Task.Run(async () => await this.cDogsDelegate.GenerateReportAsync(cdogsRequest).ConfigureAwait(true)).Result;
 
-                // return Task.Run(async () => await this.mailDelegate.QueueDocument("TODO").ConfigureAwait(true)).Result;
-                return new PrimitiveRequestResult<bool>()
+                if (reportResult.ResultStatus == ResultType.Success)
                 {
-                    PageIndex = 0,
-                    PageSize = 0,
-                    ResultStatus = ResultType.Success,
-                };
+                    this.logger.LogDebug($"Queueing document");
+                    return Task.Run(async () => await this.mailDelegate.QueueDocument(reportResult.ResourcePayload).ConfigureAwait(true)).Result;
+                }
+                else
+                {
+                    this.logger.LogError($"Error during document generation.");
+                    return new PrimitiveRequestResult<bool>()
+                    {
+                        PageIndex = 0,
+                        PageSize = 0,
+                        ResultStatus = ResultType.Error,
+                        ResultError = reportResult.ResultError,
+                    };
+                }
             }
             else
             {
@@ -161,14 +167,8 @@ namespace HealthGateway.Admin.Services
             RequestResult<CovidInformation> covidInfo = this.GetCovidInformation(phn);
             if (covidInfo.ResultStatus == ResultType.Success)
             {
-                // Compose CDogs with address
-                CDogsRequestModel cdogsRequest = CreateCdogsRequest(covidInfo.ResourcePayload, new Address(new List<string>() { "line 1", "line 2" })
-                {
-                    City = "Le city",
-                    Country = "Boljuria",
-                    PostalCode = "abc123",
-                    State = "BC",
-                });
+                // Compose CDogs request
+                CDogsRequestModel cdogsRequest = CreateCdogsRequest(covidInfo.ResourcePayload);
 
                 // Send CDogs request
                 return Task.Run(async () => await this.cDogsDelegate.GenerateReportAsync(cdogsRequest).ConfigureAwait(true)).Result;

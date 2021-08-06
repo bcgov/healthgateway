@@ -1220,7 +1220,7 @@
             Service that provides functionality to admin emails.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Services.CovidSupportService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.CovidSupportService},HealthGateway.Common.Services.IPatientService,HealthGateway.Common.Delegates.IImmunizationDelegate,HealthGateway.Common.Delegates.ICDogsDelegate)">
+        <member name="M:HealthGateway.Admin.Services.CovidSupportService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.CovidSupportService},HealthGateway.Common.Services.IPatientService,HealthGateway.Common.Delegates.IImmunizationDelegate,HealthGateway.Common.Delegates.IMailDelegate,HealthGateway.Common.Delegates.ICDogsDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.CovidSupportService"/> class.
             </summary>
@@ -1587,7 +1587,7 @@
             Defines a delegate to mail documents.
             </summary>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.IMailDelegate.QueueDocument(System.String)">
+        <member name="M:HealthGateway.Common.Delegates.IMailDelegate.QueueDocument(HealthGateway.Common.Models.CDogs.ReportModel)">
             <summary>
             Sents a document to be mailed.
             </summary>

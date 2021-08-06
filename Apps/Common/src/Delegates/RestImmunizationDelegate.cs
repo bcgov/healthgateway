@@ -100,11 +100,11 @@ namespace HealthGateway.Common.Delegates
                                     Name = "Agent Name",
                                     LotNumber = "Lot Number",
                                     ProductName = "Agent Product Name",
-                                    },
                                 },
                             },
                         },
                     },
+                },
             });
         }
 
