@@ -40,7 +40,8 @@ namespace HealthGateway.Admin.Services
         private readonly ILogger<CovidSupportService> logger;
         private readonly IPatientService patientService;
         private readonly IImmunizationDelegate immunizationDelegate;
-        //private readonly IMailDelegate mailDelegate;
+
+        // private readonly IMailDelegate mailDelegate;
         private readonly ICDogsDelegate cDogsDelegate;
 
         /// <summary>
@@ -55,13 +56,15 @@ namespace HealthGateway.Admin.Services
             ILogger<CovidSupportService> logger,
             IPatientService patientService,
             IImmunizationDelegate immunizationDelegate,
-            //IMailDelegate mailDelegate,
+
+            // IMailDelegate mailDelegate,
             ICDogsDelegate cDogsDelegate)
         {
             this.logger = logger;
             this.patientService = patientService;
             this.immunizationDelegate = immunizationDelegate;
-            //this.mailDelegate = mailDelegate;
+
+            // this.mailDelegate = mailDelegate;
             this.cDogsDelegate = cDogsDelegate;
         }
 
@@ -128,7 +131,7 @@ namespace HealthGateway.Admin.Services
                 // Send CDogs request
                 RequestResult<ReportModel> retVal = Task.Run(async () => await this.cDogsDelegate.GenerateReportAsync(cdogsRequest).ConfigureAwait(true)).Result;
 
-                //return Task.Run(async () => await this.mailDelegate.QueueDocument("TODO").ConfigureAwait(true)).Result;
+                // return Task.Run(async () => await this.mailDelegate.QueueDocument("TODO").ConfigureAwait(true)).Result;
                 return new PrimitiveRequestResult<bool>()
                 {
                     PageIndex = 0,
@@ -185,7 +188,7 @@ namespace HealthGateway.Admin.Services
         private static CDogsRequestModel CreateCdogsRequest(CovidInformation information, Address? address = null)
         {
             string reportName = Guid.NewGuid().ToString() + DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.CurrentCulture);
-            return new()
+            return new ()
             {
                 Data = JsonElementFromObject(CovidReport.FromModel(information, address)),
                 Options = new CDogsOptionsModel()

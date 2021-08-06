@@ -76,27 +76,33 @@ namespace HealthGateway.Common.Delegates
             this.immunizationEndpoint = $"{endpoint}{path}";
         }
 
+        /// <inheritdoc/>
         public Task<RequestResult<IList<ImmunizationEvent>>> GetCovidImmunization(string phn)
         {
             return Task.Run(() => new RequestResult<IList<ImmunizationEvent>>()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new List<ImmunizationEvent>() {
-                    new ImmunizationEvent() {
+                ResourcePayload = new List<ImmunizationEvent>()
+                {
+                    new ImmunizationEvent()
+                    {
                         Id = "abc",
                         DateOfImmunization = DateTime.Now,
                         ProviderOrClinic = "Clinic ABC",
                         Status = "Completed",
-                        Immunization = new ImmunizationDefinition(){
-                            ImmunizationAgents= new List<ImmunizationAgent>() {
-                                new ImmunizationAgent(){
+                        Immunization = new ImmunizationDefinition()
+                        {
+                            ImmunizationAgents = new List<ImmunizationAgent>()
+                            {
+                                new ImmunizationAgent()
+                                {
                                     Code = "Agent Code",
                                     Name = "Agent Name",
                                     LotNumber = "Lot Number",
                                     ProductName = "Agent Product Name",
                                     },
                                 },
-                            }
+                            },
                         },
                     },
             });
@@ -111,7 +117,7 @@ namespace HealthGateway.Common.Delegates
                 string? bearerToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
                 if (bearerToken != null)
                 {
-                    RequestResult<ImmunizationEvent> retVal = new()
+                    RequestResult<ImmunizationEvent> retVal = new ()
                     {
                         ResultStatus = ResultType.Error,
                         PageIndex = 0,
@@ -123,7 +129,7 @@ namespace HealthGateway.Common.Delegates
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                     string endpointString = string.Format(CultureInfo.InvariantCulture, "{0}{1}", this.immunizationEndpoint, immunizationId);
-                    Dictionary<string, string?> query = new()
+                    Dictionary<string, string?> query = new ()
                     {
                         ["hdid"] = hdid,
                     };

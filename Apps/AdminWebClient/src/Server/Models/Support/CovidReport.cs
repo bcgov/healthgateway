@@ -77,7 +77,7 @@ namespace HealthGateway.Admin.Models.Support
         /// <returns>The added communication wrapped in a RequestResult.</returns>
         public static CovidReport FromModel(CovidInformation model, Address? address)
         {
-            List<ReportDose> doses = new();
+            List<ReportDose> doses = new ();
             IList<ImmunizationEvent> sortedImmunizations = model.Immunizations.OrderBy(x => x.DateOfImmunization).ToList();
             for (int doseIndex = 0; doseIndex < sortedImmunizations.Count; doseIndex++)
             {
