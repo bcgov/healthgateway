@@ -36,16 +36,6 @@
   <ItemGroup>
     <Content Include="ClientApp\tsconfig.json" />
     <Content Include="Server\Controllers\AuthenticationController.cs" />
-    <Content Include="Server\Controllers\TestController.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Server\Delegates\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Server\Delegates\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Server\Controllers\AuthenticationController %28copy%29.cs" />
   </ItemGroup>
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
