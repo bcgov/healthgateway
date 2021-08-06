@@ -119,7 +119,7 @@ export default class CovidCardView extends Vue {
         this.isLoading = true;
 
         this.covidSupportService
-            .searchByPHN(this.phn)
+            .getPatient(this.phn)
             .then((result) => {
                 this.phn = null;
                 this.searchResult = result;
