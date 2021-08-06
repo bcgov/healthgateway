@@ -193,6 +193,42 @@ namespace HealthGateway.Common.Delegates
             return true;
         }
 
+        private static Address? MapAddress(AD? address)
+        {
+            Address? retAddress = null;
+            if (address != null)
+            {
+                retAddress = new Address();
+                foreach (ADXP item in address.Items)
+                {
+                    switch (item)
+                    {
+                        case ADStreetAddressLine line:
+                            foreach (string s in line.Text)
+                            {
+                                retAddress.AddLine(s ?? string.Empty);
+                            }
+
+                            break;
+                        case ADCity city:
+                            retAddress.City = city.Text[0] ?? string.Empty;
+                            break;
+                        case ADState state:
+                            retAddress.State = state.Text[0] ?? string.Empty;
+                            break;
+                        case ADPostalCode postalCode:
+                            retAddress.PostalCode = postalCode.Text[0] ?? string.Empty;
+                            break;
+                        case ADCountry country:
+                            retAddress.Country = country.Text[0] ?? string.Empty;
+                            break;
+                    }
+                }
+            }
+
+            return retAddress;
+        }
+
         private RequestResult<PatientModel> CheckResponseCode(string responseCode)
         {
             if (responseCode.Contains("BCHCIM.GD.2.0018", StringComparison.InvariantCulture))
@@ -276,7 +312,6 @@ namespace HealthGateway.Common.Delegates
                 {
                     Birthdate = dob,
                     Gender = gender,
-                    EmailAddress = string.Empty,
                 };
 
                 PN? nameSection = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.C));
@@ -315,6 +350,13 @@ namespace HealthGateway.Common.Delegates
                         ResultStatus = ResultType.ActionRequired,
                         ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
                     };
+                }
+
+                AD[] addresses = retrievedPerson.addr;
+                if (addresses != null)
+                {
+                    patient.PhysicalAddress = MapAddress(addresses.FirstOrDefault(addr => addr.use.Any(u => u == cs_PostalAddressUse.PHYS)));
+                    patient.PostalAddress = MapAddress(addresses.FirstOrDefault(addr => addr.use.Any(u => u == cs_PostalAddressUse.PST)));
                 }
 
                 return new RequestResult<PatientModel>()

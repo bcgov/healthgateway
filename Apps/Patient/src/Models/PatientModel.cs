@@ -14,7 +14,7 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-namespace HealthGateway.Common.Models
+namespace HealthGateway.Patient.Models
 {
     using System;
     using System.Text.Json.Serialization;
@@ -34,6 +34,20 @@ namespace HealthGateway.Common.Models
             this.FirstName = string.Empty;
             this.LastName = string.Empty;
             this.Gender = string.Empty;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PatientModel"/> class.
+        /// </summary>
+        /// <param name="patient">The patient service model object.</param>
+        public PatientModel(Common.Models.PatientModel patient)
+        {
+            this.HdId = patient.HdId;
+            this.PersonalHealthNumber = patient.PersonalHealthNumber;
+            this.FirstName = patient.FirstName;
+            this.LastName = patient.LastName;
+            this.Gender = patient.Gender;
+            this.Birthdate = patient.Birthdate;
         }
 
         /// <summary>
@@ -71,15 +85,5 @@ namespace HealthGateway.Common.Models
         /// </summary>
         [JsonPropertyName("gender")]
         public string Gender { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Physical address for the patient.
-        /// </summary>
-        public Address? PhysicalAddress { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Postal address for the patient.
-        /// </summary>
-        public Address? PostalAddress { get; set; }
     }
 }
