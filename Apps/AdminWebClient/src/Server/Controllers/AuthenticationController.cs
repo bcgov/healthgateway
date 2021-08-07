@@ -15,10 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Controllers
 {
-    using System.Threading.Tasks;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.Authorization.Admin;
-    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -33,7 +31,7 @@ namespace HealthGateway.Admin.Controllers
     [Produces("application/json")]
     public class AuthenticationController : Controller
     {
-        private readonly Services.IAuthenticationService authenticationService;
+        private readonly IAuthenticationService authenticationService;
         private readonly ILogger<AuthenticationController> logger;
         private readonly IHttpContextAccessor httpContextAccessor;
 
@@ -43,7 +41,7 @@ namespace HealthGateway.Admin.Controllers
         /// <param name="authenticationService">The injected auth service provider.</param>
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="httpContextAccessor">The injected httpContextAccessor.</param>
-        public AuthenticationController(Services.IAuthenticationService authenticationService, ILogger<AuthenticationController> logger, IHttpContextAccessor httpContextAccessor)
+        public AuthenticationController(IAuthenticationService authenticationService, ILogger<AuthenticationController> logger, IHttpContextAccessor httpContextAccessor)
         {
             this.authenticationService = authenticationService;
             this.logger = logger;
@@ -63,7 +61,6 @@ namespace HealthGateway.Admin.Controllers
         public AuthenticationData GetAuthenticationData()
         {
             AuthenticationData authData = this.authenticationService.GetAuthenticationData();
-            authData.Token = Task.Run(async () => await this.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true)).Result ?? string.Empty;
             return authData;
         }
 

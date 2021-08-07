@@ -25,10 +25,12 @@ namespace HealthGateway.Admin.Server.Delegates
     using System.Net.Mime;
     using System.Text.Json;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Models;
+    using HealthGateway.Admin.Models.Immunization;
+    using HealthGateway.Admin.Parsers.Immunization;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authentication;
@@ -69,6 +71,35 @@ namespace HealthGateway.Admin.Server.Delegates
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestImmunizationAdminDelegate));
 
         /// <inheritdoc/>
+        public async Task<RequestResult<ImmunizationEvent>> GetImmunizationEvent(string immunizationId)
+        {
+            using Activity? activity = Source.StartActivity("GetImmunizationEvent");
+            RequestResult<ImmunizationEvent> retVal;
+            RequestResult<PHSAResult<ImmunizationViewResponse>> immsResponse = await this.GetImmunization(immunizationId).ConfigureAwait(true);
+            if (immsResponse.ResultStatus == ResultType.Success)
+            {
+                retVal = new ()
+                {
+                    ResultStatus = immsResponse.ResultStatus,
+                    ResourcePayload = EventParser.FromPHSAModel(immsResponse.ResourcePayload!.Result),
+                    PageIndex = immsResponse.PageIndex,
+                    PageSize = immsResponse.PageSize,
+                    TotalResultCount = immsResponse.TotalResultCount,
+                };
+            }
+            else
+            {
+                retVal = new ()
+                {
+                    ResultStatus = immsResponse.ResultStatus,
+                    ResultError = immsResponse.ResultError,
+                };
+            }
+
+            return retVal;
+        }
+
+        /// <inheritdoc/>
         public async Task<RequestResult<PHSAResult<ImmunizationViewResponse>>> GetImmunization(string immunizationId)
         {
             using Activity? activity = Source.StartActivity("GetImmunization");
@@ -82,20 +113,67 @@ namespace HealthGateway.Admin.Server.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PHSAResult<ImmunizationResponse>>> GetImmunizations(string phn, DateTime birthDate, int pageIndex = 0)
+        public async Task<RequestResult<ImmunizationResult>> GetImmunizationEvents(PatientModel patient, int pageIndex = 0)
+        {
+            using Activity? activity = Source.StartActivity("GetImmunizationEvents");
+            RequestResult<ImmunizationResult> retVal;
+            RequestResult<PHSAResult<IList<ImmunizationViewResponse>>> immsResponse = await this.GetImmunizations(patient, pageIndex).ConfigureAwait(true);
+            if (immsResponse.ResultStatus == ResultType.Success && immsResponse.ResourcePayload != null)
+            {
+                retVal = new ()
+                {
+                    ResultStatus = immsResponse.ResultStatus,
+                    ResultError = immsResponse.ResultError,
+                    PageIndex = immsResponse.PageIndex,
+                    PageSize = immsResponse.PageSize,
+                    TotalResultCount = immsResponse.ResourcePayload.Result?.Count ?? 0,
+                    ResourcePayload = new ImmunizationResult(
+                            LoadStateModel.FromPHSAModel(immsResponse.ResourcePayload.LoadState),
+                            EventParser.FromPHSAModelList(immsResponse.ResourcePayload.Result)),
+                };
+            }
+            else
+            {
+                retVal = new ()
+                {
+                    ResultStatus = immsResponse.ResultStatus,
+                    ResultError = immsResponse.ResultError,
+                };
+            }
+
+            return retVal;
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<PHSAResult<IList<ImmunizationViewResponse>>>> GetImmunizations(PatientModel patient, int pageIndex = 0)
         {
             using Activity? activity = Source.StartActivity("GetImmunizations");
             this.logger.LogDebug($"Getting immunizations...");
-
-            Dictionary<string, string?> query = new ()
+            RequestResult<PHSAResult<IList<ImmunizationViewResponse>>> retVal;
+            if (!string.IsNullOrEmpty(patient.PersonalHealthNumber) && patient.Birthdate != DateTime.MinValue)
             {
-                ["phn"] = phn,
-                ["dob"] = birthDate.ToString("YYYYMMDD", CultureInfo.InvariantCulture),
-                ["limit"] = this.immunizationConfig.FetchSize,
-            };
-            Uri endpoint = new Uri(QueryHelpers.AddQueryString(this.immunizationConfig.Endpoint, query));
-            RequestResult<PHSAResult<ImmunizationResponse>> retVal = await this.ParsePHSAResult<ImmunizationResponse>(endpoint).ConfigureAwait(true);
-            this.logger.LogDebug($"Finished getting Immunizations");
+                Dictionary<string, string?> query = new ()
+                {
+                    ["phn"] = patient.PersonalHealthNumber,
+                    ["dob"] = patient.Birthdate.ToString("YYYYMMDD", CultureInfo.InvariantCulture),
+                    ["limit"] = this.immunizationConfig.FetchSize,
+                };
+                Uri endpoint = new Uri(QueryHelpers.AddQueryString(this.immunizationConfig.Endpoint, query));
+                retVal = await this.ParsePHSAResult<IList<ImmunizationViewResponse>>(endpoint).ConfigureAwait(true);
+                this.logger.LogDebug($"Finished getting Immunizations");
+            }
+            else
+            {
+                retVal = new ()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = $"Patient PHN ({patient.PersonalHealthNumber}) or DOB ({patient.Birthdate}) Invalid",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    },
+                };
+            }
 
             return retVal;
         }
@@ -117,6 +195,7 @@ namespace HealthGateway.Admin.Server.Delegates
 
                     try
                     {
+                        using Activity? activity = Source.StartActivity("Communicating with PHSA");
                         using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
@@ -178,7 +257,7 @@ namespace HealthGateway.Admin.Server.Delegates
             return new RequestResult<PHSAResult<T>>()
             {
                 ResultStatus = ResultType.Error,
-                ResultError = new RequestResultError()
+                ResultError = new ()
                 {
                     ResultMessage = "Error retrieving bearer token",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Immunization),

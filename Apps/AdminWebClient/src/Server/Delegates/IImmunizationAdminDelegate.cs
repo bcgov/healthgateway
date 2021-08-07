@@ -15,8 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Delegates
 {
-    using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Models.Immunization;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
 
@@ -30,15 +31,31 @@ namespace HealthGateway.Admin.Server.Delegates
         /// </summary>
         /// <param name="immunizationId">The Immunization to fetch.</param>
         /// <returns>The wrapped Immunization response.</returns>
+        Task<RequestResult<Common.Models.Immunization.ImmunizationEvent>> GetImmunizationEvent(string immunizationId);
+
+        /// <summary>
+        /// Gets a specific immunization by id.
+        /// </summary>
+        /// <param name="immunizationId">The Immunization to fetch.</param>
+        /// <returns>The wrapped Immunization response.</returns>
         Task<RequestResult<PHSAResult<ImmunizationViewResponse>>> GetImmunization(string immunizationId);
 
         /// <summary>
-        /// Gets the immunizations for the provided PHN.
+        /// Gets the immunizations for the provided Patient.
+        /// The patient must have the PHN and DOB provided.
         /// </summary>
-        /// <param name="phn">The PHN to query for Immunizations.</param>
-        /// <param name="birthDate">The birthdate for the provided PHN.</param>
+        /// <param name="patient">The patient to query for Immunizations.</param>
         /// <param name="pageIndex">The page index to return.</param>
         /// <returns>The wrapped Immunization response.</returns>
-        Task<RequestResult<PHSAResult<ImmunizationResponse>>> GetImmunizations(string phn, DateTime birthDate, int pageIndex = 0);
+        Task<RequestResult<PHSAResult<IList<ImmunizationViewResponse>>>> GetImmunizations(PatientModel patient, int pageIndex = 0);
+
+        /// <summary>
+        /// Gets the immunizations for the provided Patient.
+        /// The patient must have the PHN and DOB provided.
+        /// </summary>
+        /// <param name="patient">The patient to query for Immunizations.</param>
+        /// <param name="pageIndex">The page index to return.</param>
+        /// <returns>The wrapped Immunization response.</returns>
+        Task<RequestResult<ImmunizationResult>> GetImmunizationEvents(PatientModel patient, int pageIndex = 0);
     }
 }

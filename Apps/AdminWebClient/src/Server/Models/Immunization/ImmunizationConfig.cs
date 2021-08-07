@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Models
+namespace HealthGateway.Admin.Models.Immunization
 {
     /// <summary>
     /// Provides configuration data for the Admin Immunization Delegate.
