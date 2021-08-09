@@ -64,17 +64,17 @@ namespace HealthGateway.Admin.Models.Support
         public string ImmunizationName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets the report doses. Empty if immunization doses.
+        /// Gets the report doses. Empty if no covid doses found.
         /// </summary>
         [JsonPropertyName("doses")]
         public IList<ReportDose> Doses { get; }
 
         /// <summary>
-        /// Gets the report doses. Empty if immunization doses.
+        /// Transforms the given model to a Covid report request using the address passed if availiable.
         /// </summary>
         /// <param name="model">The model to base the report on.</param>
         /// <param name="address">The report address. Can be null.</param>
-        /// <returns>The added communication wrapped in a RequestResult.</returns>
+        /// <returns>A new Covid report object.</returns>
         public static CovidReport FromModel(CovidInformation model, Address? address)
         {
             List<ReportDose> doses = new ();

@@ -42,9 +42,9 @@ namespace HealthGateway.Admin.Controllers
         }
 
         /// <summary>
-        /// Adds a given communication to the backend.
+        /// Retrieves the patient's covid information for the given identifier.
         /// </summary>
-        /// <returns>The added communication wrapped in a RequestResult.</returns>
+        /// <returns>The covid information for the given phn identifier.</returns>
         /// <param name="phn">The personal health number that matches the person to retrieve.</param>
         /// <response code="200">Returns the wrapped result of the request.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -57,9 +57,9 @@ namespace HealthGateway.Admin.Controllers
         }
 
         /// <summary>
-        /// Updates a given communication to the backend.
+        /// Provides an api to send immunization information though mail to a given land address.
         /// </summary>
-        /// <returns>The updated communication wrapped in a RequestResult.</returns>
+        /// <returns>A wrapped result indicating the mail status.</returns>
         /// <param name="request">The mail document request.</param>
         /// <response code="200">Returns the wrapped result of the request.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>

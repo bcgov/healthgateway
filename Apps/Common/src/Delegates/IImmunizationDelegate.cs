@@ -32,12 +32,5 @@ namespace HealthGateway.Common.Delegates
         /// <param name="immunizationId">The immunization id.</param>
         /// <returns>The immunization record with the given id.</returns>
         Task<RequestResult<ImmunizationEvent>> GetImmunization(string hdid, string immunizationId);
-
-        /// <summary>
-        /// Gets the immunization covid records for the given id.
-        /// </summary>
-        /// <param name="phn">The phn on the user.</param>
-        /// <returns>The immunization record with the given id.</returns>
-        Task<RequestResult<IList<ImmunizationEvent>>> GetCovidImmunization(string phn);
     }
 }
