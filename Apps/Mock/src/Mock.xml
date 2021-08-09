@@ -77,6 +77,14 @@
             <param name="request">The new notification settings.</param>
             <returns>The mocked notification settings json.</returns>
         </member>
+        <member name="M:HealthGateway.Mock.Controllers.PhsaController.UpdateNotificationSettings(System.String,System.String)">
+            <summary>
+            Mocks the endpoint for retrieving covid immunization events.
+            </summary>
+            <param name="phn">The phn of the patient.</param>
+            <param name="dob">The date of birth of the patient.</param>
+            <returns>The mocked covid immunization response json.</returns>
+        </member>
         <member name="T:HealthGateway.Mock.Controllers.SalesforceController">
             <summary>
             The Salesforce mock controller.

@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,24 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Delegates
+namespace HealthGateway.Admin.Models.Support
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.Immunization;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Defines a delegate to retrieve immunization records.
+    /// Represents the report patient.
     /// </summary>
-    public interface IImmunizationDelegate
+    public class ReportPatient
     {
         /// <summary>
-        /// Gets an immunization record for the given id.
+        /// Gets or sets the name of the patient.
         /// </summary>
-        /// <param name="hdid">The hdid patient id.</param>
-        /// <param name="immunizationId">The immunization id.</param>
-        /// <returns>The immunization record with the given id.</returns>
-        Task<RequestResult<ImmunizationEvent>> GetImmunization(string hdid, string immunizationId);
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets patient date of birth.
+        /// </summary>
+        [JsonPropertyName("dateOfBirth")]
+        public string DateOfBirth { get; set; } = string.Empty;
     }
 }

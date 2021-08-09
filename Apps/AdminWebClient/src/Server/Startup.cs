@@ -91,6 +91,7 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<IEmailAdminService, EmailAdminService>();
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<ICsvExportService, CsvExportService>();
+            services.AddTransient<ICovidSupportService, CovidSupportService>();
 
             // Add delegates
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
@@ -106,6 +107,7 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<IFeedbackTagDelegate, DBFeedbackTagDelegate>();
             services.AddTransient<IImmunizationAdminDelegate, RestImmunizationAdminDelegate>();
             services.AddTransient<IMailDelegate, SFTPMailDelegate>();
+            services.AddTransient<ICDogsDelegate, CDogsDelegate>();
 
             // Configure SPA
             services.AddControllersWithViews();
@@ -139,6 +141,9 @@ namespace HealthGateway.AdminWebClient
             }
 
             bool debugerAttached = System.Diagnostics.Debugger.IsAttached;
+            bool serverOnly = bool.Parse(System.Environment.GetEnvironmentVariable("ServerOnly") ?? "false");
+
+            bool launchDevSpa = debugerAttached && !serverOnly;
 
             app.UseEndpoints(endpoints =>
                 {
@@ -147,7 +152,7 @@ namespace HealthGateway.AdminWebClient
                         name: "default",
                         pattern: "{controller}/{action=Index}/{id?}");
 
-                    if (env.IsDevelopment() && debugerAttached)
+                    if (env.IsDevelopment() && launchDevSpa)
                     {
                         endpoints.MapToVueCliProxy(
                             "{*path}",
@@ -161,7 +166,7 @@ namespace HealthGateway.AdminWebClient
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
-                if (env.IsDevelopment() && !debugerAttached)
+                if (env.IsDevelopment() && !launchDevSpa)
                 {
                     // change this to whatever webpack dev server says it's running on
 #pragma warning disable S1075

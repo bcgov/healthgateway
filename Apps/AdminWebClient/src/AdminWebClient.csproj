@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
+    <RootNamespace>HealthGateway.Admin</RootNamespace>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
     <SpaRoot>ClientApp\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
-    <RootNamespace>HealthGateway.Admin</RootNamespace>
     <DocumentationFile>.\AdminWebClient.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
@@ -18,10 +18,7 @@
     <PackageReference Include="VueCliMiddleware" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="stylecop.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Common\src\Common.csproj" />
+    <AdditionalFiles Include="..\..\stylecop.json" />
   </ItemGroup>
   <ItemGroup>
     <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
@@ -29,14 +26,17 @@
     </SonarQubeSetting>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\src\Common.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
     <Content Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
     <None Include="$(SpaRoot)**" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ClientApp\tsconfig.json" />
-    <Content Include="Server\Controllers\AuthenticationController.cs" />
+    <EmbeddedResource Include="Server\Assets\Templates\CovidCard.docx" />
   </ItemGroup>
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
