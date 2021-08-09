@@ -23,6 +23,7 @@ namespace HealthGateway.Common.Delegates
     /// </summary>
     public interface IMailDelegate
     {
+        /// <summary>
         /// Sends a document to be mailed.
         /// </summary>
         /// <param name="document">The document to be mailed.</param>

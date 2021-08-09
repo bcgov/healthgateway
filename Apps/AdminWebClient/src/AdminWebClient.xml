@@ -450,6 +450,82 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="T:HealthGateway.Admin.Server.Delegates.IImmunizationAdminDelegate">
+            <summary>
+            Provides access to Administrative Immunization data.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Delegates.IImmunizationAdminDelegate.GetImmunizationEvent(System.String)">
+            <summary>
+            Gets a specific immunization by id.
+            </summary>
+            <param name="immunizationId">The Immunization to fetch.</param>
+            <returns>The wrapped Immunization response.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Delegates.IImmunizationAdminDelegate.GetImmunization(System.String)">
+            <summary>
+            Gets a specific immunization by id.
+            </summary>
+            <param name="immunizationId">The Immunization to fetch.</param>
+            <returns>The wrapped Immunization response.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Delegates.IImmunizationAdminDelegate.GetImmunizations(HealthGateway.Common.Models.PatientModel,System.Int32)">
+            <summary>
+            Gets the immunizations for the provided Patient.
+            The patient must have the PHN and DOB provided.
+            </summary>
+            <param name="patient">The patient to query for Immunizations.</param>
+            <param name="pageIndex">The page index to return.</param>
+            <returns>The wrapped Immunization response.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Delegates.IImmunizationAdminDelegate.GetImmunizationEvents(HealthGateway.Common.Models.PatientModel,System.Int32)">
+            <summary>
+            Gets the immunizations for the provided Patient.
+            The patient must have the PHN and DOB provided.
+            </summary>
+            <param name="patient">The patient to query for Immunizations.</param>
+            <param name="pageIndex">The page index to return.</param>
+            <returns>The wrapped Immunization response.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Server.Delegates.RestImmunizationAdminDelegate">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Delegates.RestImmunizationAdminDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Server.Delegates.RestImmunizationAdminDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Server.Delegates.RestImmunizationAdminDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpClientService">The injected http client service.</param>
+            <param name="configuration">The injected configuration provider.</param>
+            <param name="httpContextAccessor">The Http Context accessor.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Delegates.RestImmunizationAdminDelegate.GetImmunizationEvent(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Delegates.RestImmunizationAdminDelegate.GetImmunization(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Delegates.RestImmunizationAdminDelegate.GetImmunizationEvents(HealthGateway.Common.Models.PatientModel,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Delegates.RestImmunizationAdminDelegate.GetImmunizations(HealthGateway.Common.Models.PatientModel,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Admin.Server.Delegates.SFTPMailDelegate">
+            <summary>
+            A delegate to mail documents over SFTP.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Delegates.SFTPMailDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Server.Delegates.SFTPMailDelegate},Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Server.Delegates.SFTPMailDelegate"/> class.
+            </summary>
+            <param name="logger">The injected logger provider.</param>
+            <param name="configuration">The injected configuration provider.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Delegates.SFTPMailDelegate.SendDocument(HealthGateway.Common.Models.CDogs.ReportModel)">
+            <inheritdoc/>
+        </member>
         <member name="T:HealthGateway.Admin.Server.Mappers.CommentCsvMap">
             <summary>
             Maps the Comment model to a CSV.
@@ -478,6 +554,41 @@
         <member name="M:HealthGateway.Admin.Server.Mappers.UserProfileCsvMap.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Server.Mappers.UserProfileCsvMap"/> class.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Server.Models.DocumentStorageConfiguration">
+            <summary>
+            Configuration data for external document storage.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Server.Models.DocumentStorageConfiguration.SftpHostname">
+            <summary>
+            Gets or sets the hostname for the server where documents will be stored.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Server.Models.DocumentStorageConfiguration.SftpPort">
+            <summary>
+            Gets or sets the port for the server where documents will be stored.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Server.Models.DocumentStorageConfiguration.SftpUsername">
+            <summary>
+            Gets or sets the username for accessing the server where documents will be stored.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Server.Models.DocumentStorageConfiguration.SftpFolderPath">
+            <summary>
+            Gets or sets the path to the folder where documents will be stored on the server.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Server.Models.DocumentStorageConfiguration.PrivateKeyPath">
+            <summary>
+            Gets or sets the local path to the private key.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Server.Models.DocumentStorageConfiguration.PrivateKeyPassphrase">
+            <summary>
+            Gets or sets the passphrase for accessing the private key.
             </summary>
         </member>
         <member name="T:HealthGateway.Admin.Models.AdminConfiguration">
@@ -732,6 +843,65 @@
             <summary>
             Gets or sets the base path.
             </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.Immunization.ImmunizationConfig">
+            <summary>
+            Provides configuration data for the Admin Immunization Delegate.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Immunization.ImmunizationConfig.Endpoint">
+            <summary>
+            Gets or sets the Lab external endpoint.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Immunization.ImmunizationConfig.FetchSize">
+            <summary>
+            Gets or sets the total number of records to retrieve in one call.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.Immunization.ImmunizationResult">
+            <summary>
+            Represents Immunization Result.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.Immunization.ImmunizationResult.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Models.Immunization.ImmunizationResult"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.Immunization.ImmunizationResult.#ctor(HealthGateway.Admin.Models.Immunization.LoadStateModel,System.Collections.Generic.IList{HealthGateway.Common.Models.Immunization.ImmunizationEvent})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Models.Immunization.ImmunizationResult"/> class.
+            </summary>
+            <param name="loadState">The load state model.</param>
+            <param name="immunizations">The list of immunizations.</param>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Immunization.ImmunizationResult.LoadState">
+            <summary>
+            Gets or sets the Load State.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Immunization.ImmunizationResult.Immunizations">
+            <summary>
+            Gets the list of Immunizations events.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.Immunization.LoadStateModel">
+            <summary>
+            The Load State record data model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Immunization.LoadStateModel.RefreshInProgress">
+            <summary>
+            Gets or sets a value indicating whether the Load State is in the RefreshInProgress status.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.Immunization.LoadStateModel.FromPHSAModel(HealthGateway.Common.Models.PHSA.PHSALoadState)">
+            <summary>
+            Creates a Load State Model object from a PHSA model.
+            </summary>
+            <param name="model">The Load State to convert.</param>
+            <returns>A LoadStateModel object.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Models.OpenIdConnectConfiguration">
             <summary>
@@ -1220,7 +1390,7 @@
             Service that provides functionality to admin emails.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Services.CovidSupportService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.CovidSupportService},HealthGateway.Common.Services.IPatientService,HealthGateway.Common.Delegates.IImmunizationDelegate,HealthGateway.Common.Delegates.IMailDelegate,HealthGateway.Common.Delegates.ICDogsDelegate)">
+        <member name="M:HealthGateway.Admin.Services.CovidSupportService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.CovidSupportService},HealthGateway.Common.Services.IPatientService,HealthGateway.Admin.Server.Delegates.IImmunizationAdminDelegate,HealthGateway.Common.Delegates.IMailDelegate,HealthGateway.Common.Delegates.ICDogsDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.CovidSupportService"/> class.
             </summary>
@@ -1582,17 +1752,86 @@
         <member name="M:HealthGateway.Admin.Services.UserFeedbackService.DissociateFeedbackTag(System.Guid,HealthGateway.Admin.Models.UserFeedbackTagView)">
             <inheritdoc />
         </member>
+        <member name="T:HealthGateway.Admin.Parsers.Immunization.AgentParser">
+            <summary>
+            Provides parser methods for ImmunizationAgents.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Parsers.Immunization.AgentParser.FromPHSAModel(HealthGateway.Common.Models.PHSA.ImmunizationAgentResponse)">
+            <summary>
+            Creates a Immunization Model object from a PHSA model.
+            </summary>
+            <param name="model">The immunization object to convert.</param>
+            <returns>The newly created ImmunizationModel object.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Parsers.Immunization.AgentParser.FromPHSAModelList(System.Collections.Generic.IEnumerable{HealthGateway.Common.Models.PHSA.ImmunizationAgentResponse})">
+            <summary>
+            Creates a List of ImmunizationAgents object from a PHSA model.
+            </summary>
+            <param name="immunizationAgentResponse">The list of PHSA models to convert.</param>
+            <returns>A list of ImmunizationAgent objects.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Parsers.Immunization.AgentParser.FromPHSACodesModel(System.Collections.Generic.IEnumerable{HealthGateway.Common.Models.PHSA.Recommendation.SystemCode})">
+            <summary>
+            Creates a List of ImmunizationAgents object from a PHSA model.
+            </summary>
+            <param name="vaccineCodes">The list of PHSA models to convert.</param>
+            <returns>A list of ImmunizationAgent objects.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Parsers.Immunization.DefinitionParser">
+            <summary>
+            Provides parsing methods for Immunization definitions.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Parsers.Immunization.DefinitionParser.FromPHSAModel(HealthGateway.Common.Models.PHSA.Recommendation.VaccineCode)">
+            <summary>
+            Creates an ImmunizationDefinition object from a PHSA model.
+            </summary>
+            <param name="model">The vaccine code object to convert.</param>
+            <returns>The newly created ImmunizationDefinition object.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Parsers.Immunization.EventParser">
+            <summary>
+            Provides parsing methods for Immunization Events.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Parsers.Immunization.EventParser.FromPHSAModel(HealthGateway.Common.Models.PHSA.ImmunizationViewResponse)">
+            <summary>
+            Creates a ImmunizationEvent object from a PHSA model.
+            </summary>
+            <param name="model">The immunization view object to convert.</param>
+            <returns>The newly created ImmunizationEvent object.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Parsers.Immunization.EventParser.FromPHSAModelList(System.Collections.Generic.IEnumerable{HealthGateway.Common.Models.PHSA.ImmunizationViewResponse})">
+            <summary>
+            Creates a ImmunizationEvent object from a PHSA model.
+            </summary>
+            <param name="immunizations">The list of PHSA models to convert.</param>
+            <returns>A list of ImmunizationEvent objects.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Parsers.Immunization.ForecastParser">
+            <summary>
+            Provides methods for parsing Immunization Forecast.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Parsers.Immunization.ForecastParser.FromPHSAModel(HealthGateway.Common.Models.PHSA.ImmunizationForecastResponse)">
+            <summary>
+            Creates a ImmunizationForecast object from a PHSA model.
+            </summary>
+            <param name="model">The immunization forecast object to convert.</param>
+            <returns>The newly created ImmunizationForecast object.</returns>
+        </member>
         <member name="T:HealthGateway.Common.Delegates.IMailDelegate">
             <summary>
             Defines a delegate to mail documents.
             </summary>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.IMailDelegate.QueueDocument(HealthGateway.Common.Models.CDogs.ReportModel)">
+        <member name="M:HealthGateway.Common.Delegates.IMailDelegate.SendDocument(HealthGateway.Common.Models.CDogs.ReportModel)">
             <summary>
-            Sents a document to be mailed.
+            Sends a document to be mailed.
             </summary>
-            <param name="document">The document to mail.</param>
-            <returns>True if the document was sucessfully queued for sending.</returns>
+            <param name="document">The document to be mailed.</param>
+            <returns>True if the document was sucessfully transferred.</returns>
         </member>
         <member name="T:HealthGateway.AdminWebClient.Pages.ErrorPage">
             <summary>

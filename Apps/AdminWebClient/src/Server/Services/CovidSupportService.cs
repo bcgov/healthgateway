@@ -17,18 +17,17 @@
 namespace HealthGateway.Admin.Services
 {
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
-    using System.Reflection;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Models.Immunization;
     using HealthGateway.Admin.Models.Support;
+    using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.CDogs;
-    using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Services;
     using Microsoft.Extensions.Logging;
 
@@ -39,7 +38,7 @@ namespace HealthGateway.Admin.Services
     {
         private readonly ILogger<CovidSupportService> logger;
         private readonly IPatientService patientService;
-        private readonly IImmunizationDelegate immunizationDelegate;
+        private readonly IImmunizationAdminDelegate immunizationDelegate;
         private readonly IMailDelegate mailDelegate;
         private readonly ICDogsDelegate cDogsDelegate;
 
@@ -54,7 +53,7 @@ namespace HealthGateway.Admin.Services
         public CovidSupportService(
             ILogger<CovidSupportService> logger,
             IPatientService patientService,
-            IImmunizationDelegate immunizationDelegate,
+            IImmunizationAdminDelegate immunizationDelegate,
             IMailDelegate mailDelegate,
             ICDogsDelegate cDogsDelegate)
         {
@@ -71,46 +70,49 @@ namespace HealthGateway.Admin.Services
             this.logger.LogDebug($"Retrieving covid information");
             this.logger.LogTrace($"For PHN: {phn}");
 
-            Task<RequestResult<PatientModel>> patientTask = this.patientService.GetPatient(phn, PatientIdentifierType.PHN);
-            Task<RequestResult<IList<ImmunizationEvent>>> immunizationTask = this.immunizationDelegate.GetCovidImmunization(phn);
-            Task.WaitAll(patientTask, immunizationTask);
-
-            if (patientTask.Result.ResultStatus == ResultType.Success)
+            return Task.Run(async () =>
             {
-                if (immunizationTask.Result.ResultStatus == ResultType.Success)
+                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.PHN).ConfigureAwait(true);
+
+                if (patientResult.ResultStatus == ResultType.Success)
                 {
-                    this.logger.LogDebug($"Sucessfully retrieved patient and immunization.");
-                    return new RequestResult<CovidInformation>()
+                    this.logger.LogDebug($"Sucessfully retrieved patient.");
+                    RequestResult<ImmunizationResult> immunizationResult = await this.immunizationDelegate.GetImmunizationEvents(patientResult.ResourcePayload).ConfigureAwait(true);
+                    if (immunizationResult.ResultStatus == ResultType.Success)
                     {
-                        PageIndex = 0,
-                        PageSize = 1,
-                        ResourcePayload = new CovidInformation(patientTask.Result.ResourcePayload, immunizationTask.Result.ResourcePayload),
-                        ResultStatus = ResultType.Success,
-                    };
+                        this.logger.LogDebug($"Sucessfully retrieved immunization.");
+                        return new RequestResult<CovidInformation>()
+                        {
+                            PageIndex = 0,
+                            PageSize = 1,
+                            ResourcePayload = new CovidInformation(patientResult.ResourcePayload, immunizationResult.ResourcePayload!.Immunizations),
+                            ResultStatus = ResultType.Success,
+                        };
+                    }
+                    else
+                    {
+                        this.logger.LogError($"Error retrieving immunization information.");
+                        return new RequestResult<CovidInformation>()
+                        {
+                            PageIndex = 0,
+                            PageSize = 0,
+                            ResultStatus = ResultType.Error,
+                            ResultError = immunizationResult.ResultError,
+                        };
+                    }
                 }
                 else
                 {
-                    this.logger.LogError($"Error retrieving immunization information.");
+                    this.logger.LogError($"Error retrieving patient information.");
                     return new RequestResult<CovidInformation>()
                     {
                         PageIndex = 0,
                         PageSize = 0,
                         ResultStatus = ResultType.Error,
-                        ResultError = immunizationTask.Result.ResultError,
+                        ResultError = patientResult.ResultError,
                     };
                 }
-            }
-            else
-            {
-                this.logger.LogError($"Error retrieving patient information.");
-                return new RequestResult<CovidInformation>()
-                {
-                    PageIndex = 0,
-                    PageSize = 0,
-                    ResultStatus = ResultType.Error,
-                    ResultError = patientTask.Result.ResultError,
-                };
-            }
+            }).Result;
         }
 
         /// <inheritdoc />
@@ -131,7 +133,7 @@ namespace HealthGateway.Admin.Services
                 if (reportResult.ResultStatus == ResultType.Success)
                 {
                     this.logger.LogDebug($"Queueing document");
-                    return Task.Run(async () => await this.mailDelegate.QueueDocument(reportResult.ResourcePayload).ConfigureAwait(true)).Result;
+                    return this.mailDelegate.SendDocument(reportResult.ResourcePayload);
                 }
                 else
                 {
@@ -188,7 +190,7 @@ namespace HealthGateway.Admin.Services
         private static CDogsRequestModel CreateCdogsRequest(CovidInformation information, Address? address = null)
         {
             string reportName = Guid.NewGuid().ToString() + DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.CurrentCulture);
-            return new ()
+            return new()
             {
                 Data = JsonElementFromObject(CovidReport.FromModel(information, address)),
                 Options = new CDogsOptionsModel()
