@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,27 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Admin.Models.Immunization
 {
-    using System.Text.Json.Serialization;
-
     /// <summary>
-    /// Representation of the result sent by PHSA.
+    /// Provides configuration data for the Admin Immunization Delegate.
     /// </summary>
-    /// <typeparam name="T">The result object type.</typeparam>
-    public class PHSAResult<T>
+    public class ImmunizationConfig
     {
         /// <summary>
-        /// Gets or sets the LoadState.
+        /// Gets or sets the Lab external endpoint.
         /// </summary>
-        [JsonPropertyName("loadState")]
-        public PHSALoadState LoadState { get; set; } = new PHSALoadState();
+        public string Endpoint { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the result section.
+        /// Gets or sets the total number of records to retrieve in one call.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        [JsonPropertyName("result")]
-        public T? Result { get; set; } = default(T);
+        public string FetchSize { get; set; } = string.Empty;
     }
 }

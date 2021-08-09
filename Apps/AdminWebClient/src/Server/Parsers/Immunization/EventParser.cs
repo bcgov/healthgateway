@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Parser
+namespace HealthGateway.Admin.Parsers.Immunization
 {
     using System.Collections.Generic;
     using HealthGateway.Common.Models.Immunization;
@@ -46,20 +46,20 @@ namespace HealthGateway.Immunization.Parser
         /// <summary>
         /// Creates a ImmunizationEvent object from a PHSA model.
         /// </summary>
-        /// <param name="immunizationViewResponse">The list of PHSA models to convert.</param>
+        /// <param name="immunizations">The list of PHSA models to convert.</param>
         /// <returns>A list of ImmunizationEvent objects.</returns>
-        public static IList<ImmunizationEvent> FromPHSAModelList(IEnumerable<ImmunizationViewResponse>? immunizationViewResponse)
+        public static IList<ImmunizationEvent> FromPHSAModelList(IEnumerable<ImmunizationViewResponse>? immunizations)
         {
-            List<ImmunizationEvent> immunizations = new List<ImmunizationEvent>();
-            if (immunizationViewResponse != null)
+            List<ImmunizationEvent> immsEvents = new List<ImmunizationEvent>();
+            if (immunizations != null)
             {
-                foreach (ImmunizationViewResponse immunizationViewModel in immunizationViewResponse)
+                foreach (ImmunizationViewResponse immunizationViewModel in immunizations)
                 {
-                    immunizations.Add(EventParser.FromPHSAModel(immunizationViewModel));
+                    immsEvents.Add(EventParser.FromPHSAModel(immunizationViewModel));
                 }
             }
 
-            return immunizations;
+            return immsEvents;
         }
     }
 }

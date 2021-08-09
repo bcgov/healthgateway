@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Delegates
 {
-    using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.CDogs;
 
@@ -24,11 +23,10 @@ namespace HealthGateway.Common.Delegates
     /// </summary>
     public interface IMailDelegate
     {
-        /// <summary>
-        /// Sents a document to be mailed.
+        /// Sends a document to be mailed.
         /// </summary>
-        /// <param name="document">The document to mail.</param>
-        /// <returns>True if the document was sucessfully queued for sending.</returns>
-        Task<PrimitiveRequestResult<bool>> QueueDocument(ReportModel document);
+        /// <param name="document">The document to be mailed.</param>
+        /// <returns>True if the document was sucessfully transferred.</returns>
+        PrimitiveRequestResult<bool> SendDocument(ReportModel document);
     }
 }
