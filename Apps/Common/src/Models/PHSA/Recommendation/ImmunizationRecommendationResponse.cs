@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models.PHSA.Recommendation
+namespace HealthGateway.Common.Models.PHSA.Recommendation
 {
     using System;
     using System.Collections.Generic;

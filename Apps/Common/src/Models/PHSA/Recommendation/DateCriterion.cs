@@ -13,37 +13,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models.PHSA
+namespace HealthGateway.Common.Models.PHSA.Recommendation
 {
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Defines a PHSA Immunization Agent model.
+    /// The PHSA Date Criterion data model.
     /// </summary>
-    public class ImmunizationAgentResponse
+    public class DateCriterion
     {
         /// <summary>
-        /// Gets or sets the Immunization id.
+        /// Gets or sets the Date Criterion codes.
         /// </summary>
-        [JsonPropertyName("code")]
-        public string Code { get; set; } = string.Empty;
+        [JsonPropertyName("dateCriterionCode")]
+        public DateCriterionCode DateCriterionCode { get; set; } = new DateCriterionCode();
 
         /// <summary>
-        /// Gets or sets the Immunization Name.
+        /// Gets or sets the Date Criterion value.
         /// </summary>
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Immunization Lot Number.
-        /// </summary>
-        [JsonPropertyName("lotNumber")]
-        public string LotNumber { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Immunization Product Name.
-        /// </summary>
-        [JsonPropertyName("productName")]
-        public string ProductName { get; set; } = string.Empty;
+        [JsonPropertyName("value")]
+        public string Value { get; set; } = string.Empty;
     }
 }
