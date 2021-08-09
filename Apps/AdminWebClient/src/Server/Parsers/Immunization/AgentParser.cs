@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Parser
+namespace HealthGateway.Admin.Parsers.Immunization
 {
     using System.Collections.Generic;
     using HealthGateway.Common.Models.Immunization;
