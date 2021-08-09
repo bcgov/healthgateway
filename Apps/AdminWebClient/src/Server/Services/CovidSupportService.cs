@@ -190,7 +190,7 @@ namespace HealthGateway.Admin.Services
         private static CDogsRequestModel CreateCdogsRequest(CovidInformation information, Address? address = null)
         {
             string reportName = Guid.NewGuid().ToString() + DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.CurrentCulture);
-            return new()
+            return new ()
             {
                 Data = JsonElementFromObject(CovidReport.FromModel(information, address)),
                 Options = new CDogsOptionsModel()
