@@ -13,26 +13,28 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models.PHSA.Recommendation
+namespace HealthGateway.Admin.Parsers.Immunization
 {
-    using System.Collections.Generic;
-    using System.Text.Json.Serialization;
+    using HealthGateway.Common.Models.Immunization;
+    using HealthGateway.Common.Models.PHSA.Recommendation;
 
     /// <summary>
-    /// The PHSA Date Criterion data model.
+    /// Provides parsing methods for Immunization definitions.
     /// </summary>
-    public class DateCriterion
+    public static class DefinitionParser
     {
         /// <summary>
-        /// Gets or sets the Date Criterion codes.
+        /// Creates an ImmunizationDefinition object from a PHSA model.
         /// </summary>
-        [JsonPropertyName("dateCriterionCode")]
-        public DateCriterionCode DateCriterionCode { get; set; } = new DateCriterionCode();
-
-        /// <summary>
-        /// Gets or sets the Date Criterion value.
-        /// </summary>
-        [JsonPropertyName("value")]
-        public string Value { get; set; } = string.Empty;
+        /// <param name="model">The vaccine code object to convert.</param>
+        /// <returns>The newly created ImmunizationDefinition object.</returns>
+        public static ImmunizationDefinition FromPHSAModel(VaccineCode model)
+        {
+            return new ImmunizationDefinition()
+            {
+                Name = model.VaccineCodeText,
+                ImmunizationAgents = AgentParser.FromPHSACodesModel(model.VaccineCodes),
+            };
+        }
     }
 }

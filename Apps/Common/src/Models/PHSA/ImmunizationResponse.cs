@@ -13,11 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models.PHSA
+namespace HealthGateway.Common.Models.PHSA
 {
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
-    using HealthGateway.Immunization.Models.PHSA.Recommendation;
+    using HealthGateway.Common.Models.PHSA.Recommendation;
 
     /// <summary>
     /// Represents Immunization Response.
