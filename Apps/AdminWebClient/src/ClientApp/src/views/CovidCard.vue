@@ -37,7 +37,7 @@ export default class CovidCardView extends Vue {
     private showFeedback = false;
 
     private phn = "";
-    private address: Address = new Address();
+    private address: Address = {} as Address;
     private immunizations: ImmunizationRow[] = [];
     private searchResult: CovidCardPatientResult | null = null;
     private covidSupportService!: ICovidSupportService;
@@ -133,7 +133,7 @@ export default class CovidCardView extends Vue {
         this.searchResult = null;
         this.isEditMode = false;
         this.immunizations = [];
-        this.address = new Address();
+        this.address = {} as Address;
 
         if (emptySearchField) {
             this.phn = "";
@@ -202,7 +202,7 @@ export default class CovidCardView extends Vue {
         } else if (backupAddress) {
             this.address = { ...backupAddress };
         } else {
-            this.address = new Address();
+            this.address = {} as Address;
         }
     }
 
