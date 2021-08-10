@@ -163,7 +163,7 @@ namespace HealthGateway.Admin.Server.Delegates
                 Dictionary<string, string?> query = new ()
                 {
                     ["phn"] = patient.PersonalHealthNumber,
-                    ["dob"] = patient.Birthdate.ToString("YYYYMMDD", CultureInfo.InvariantCulture),
+                    ["dob"] = patient.Birthdate.ToString("yyyyMMdd", CultureInfo.InvariantCulture),
                     ["limit"] = this.immunizationConfig.FetchSize,
                 };
                 Uri endpoint = new Uri(QueryHelpers.AddQueryString(this.immunizationConfig.Endpoint, query));
