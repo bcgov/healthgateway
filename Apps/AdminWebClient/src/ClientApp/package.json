@@ -32,7 +32,7 @@
     "devDependencies": {
         "@fortawesome/fontawesome-free": "^5.15.4",
         "@mdi/font": "^5.9.55",
-        "@types/luxon": "^1.27.0",
+        "@types/luxon": "^2.0.0",
         "@types/node": "^16.4.3",
         "@typescript-eslint/eslint-plugin": "^4.22.0",
         "@typescript-eslint/parser": "^4.22.0",
