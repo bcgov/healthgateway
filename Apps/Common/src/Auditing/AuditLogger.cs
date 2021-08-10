@@ -73,9 +73,18 @@ namespace HealthGateway.Common.Auditing
             Claim? hdidClaim = claimsIdentity?.Claims.FirstOrDefault(c => c.Type == "hdid");
             string? hdid = hdidClaim?.Value;
 
+            Claim? idirClaim = claimsIdentity?.Claims.FirstOrDefault(c => c.Type == "preferred_username");
+            string? idir = idirClaim?.Value;
+
+            // Query PHN header for Admin WebClient CovidCard actions
+            context.Request.Headers.TryGetValue("phn", out var phnHeader);
+            string? subjectPhn = phnHeader.FirstOrDefault();
+
             auditEvent.ApplicationType = GetApplicationType();
             auditEvent.TransactionResultCode = GetTransactionResultType(context.Response.StatusCode);
-            auditEvent.ApplicationSubject = hdid;
+
+            auditEvent.ApplicationSubject = hdid ?? subjectPhn;
+            auditEvent.CreatedBy = hdid ?? idir ?? UserId.DefaultUser;
 
             RouteValueDictionary routeValues = context.Request.RouteValues;
             auditEvent.TransactionName = @$"{routeValues["controller"]}\{routeValues["action"]}";
