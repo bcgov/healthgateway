@@ -21,7 +21,7 @@ namespace HealthGateway.Immunization.Models
     using System.Linq;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Models.Immunization;
-    using HealthGateway.Immunization.Models.PHSA.Recommendation;
+    using HealthGateway.Common.Models.PHSA.Recommendation;
     using HealthGateway.Immunization.Parser;
 
     /// <summary>
