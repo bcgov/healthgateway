@@ -33,11 +33,11 @@ namespace HealthGateway.Admin.Models.Immunization
         /// <summary>
         /// Gets or sets the number of retry attempts if PHSA is loading.
         /// </summary>
-        public int MaximumRetries { get; set; };
+        public int MaximumRetries { get; set; }
 
         /// <summary>
         /// Gets or sets the number of seconds to wait before retrying.
         /// </summary>
-        public int RetryWait { get; set; };
+        public int RetryWait { get; set; }
     }
 }
