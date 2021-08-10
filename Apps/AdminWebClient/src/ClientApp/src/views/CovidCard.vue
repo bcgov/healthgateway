@@ -194,8 +194,8 @@ export default class CovidCardView extends Vue {
     }
 
     private setAddress(
-        defaultAddress: Address | undefined,
-        backupAddress: Address | undefined
+        defaultAddress: Address | null,
+        backupAddress: Address | null
     ) {
         if (defaultAddress) {
             this.address = { ...defaultAddress };
