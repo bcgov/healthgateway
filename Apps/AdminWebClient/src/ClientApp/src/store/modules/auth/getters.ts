@@ -38,8 +38,8 @@ export const getters: GetterTree<AuthState, RootState> = {
         const { authentication } = state;
         return authentication?.roles.includes(UserRoles.Reviewer) ?? false;
     },
-    isCovidSupport(state: AuthState): boolean {
+    isSupportUser(state: AuthState): boolean {
         const { authentication } = state;
-        return authentication?.roles.includes(UserRoles.CovidSupport) ?? false;
+        return authentication?.roles.includes(UserRoles.SupportUser) ?? false;
     },
 };

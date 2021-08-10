@@ -15,8 +15,8 @@ export default class MainNavbar extends Vue {
     private isUserReviewer!: boolean;
     @Getter("isSuperAdmin", { namespace: "auth" })
     private isUserAdmin!: boolean;
-    @Getter("isCovidSupport", { namespace: "auth" })
-    private isCovidSupport!: boolean;
+    @Getter("isSupportUser", { namespace: "auth" })
+    private isUserSupportUser!: boolean;
 
     private isOpen = true;
     private drawer = false;
@@ -77,10 +77,10 @@ export default class MainNavbar extends Vue {
                 visible: this.isUserAdmin,
             },
             {
-                title: "Covid Card",
+                title: "COVID-19 Card",
                 icon: "fa-address-card",
                 to: "/covidcard",
-                visible: this.isCovidSupport || this.isUserAdmin,
+                visible: this.isUserSupportUser,
             },
         ];
     }

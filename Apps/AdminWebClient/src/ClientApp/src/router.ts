@@ -90,11 +90,11 @@ const routes = [
     },
     {
         path: "/covidcard",
-        name: "Covid Card",
+        name: "COVID-19 Immunization Card",
         component: CovidCardView,
         meta: {
             requiresAuth: true,
-            validRoles: [UserRoles.Admin, UserRoles.CovidSupport],
+            validRoles: [UserRoles.SupportUser],
         },
     },
     {

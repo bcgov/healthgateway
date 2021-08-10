@@ -1,7 +1,7 @@
 // Country names object using 2-letter country codes to reference country name
 // ISO 3166 Alpha-2 Format: [2 letter Country Code]: [Country Name]
 // Sorted alphabetical by country name (special characters on bottom)
-export const CountryList = {
+export const CountryList: Record<string, string> = {
     AF: "Afghanistan",
     AL: "Albania",
     DZ: "Algeria",

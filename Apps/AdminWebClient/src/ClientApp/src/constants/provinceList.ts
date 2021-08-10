@@ -1,4 +1,4 @@
-export const ProvinceList = {
+export const ProvinceList: Record<string, string> = {
     AB: "Alberta",
     BC: "British Columbia",
     MB: "Manitoba",

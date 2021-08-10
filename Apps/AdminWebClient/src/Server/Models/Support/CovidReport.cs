@@ -110,7 +110,7 @@ namespace HealthGateway.Admin.Models.Support
                 Patient = new ReportPatient()
                 {
                     Name = patientName,
-                    DateOfBirth = model.Patient.Birthdate.ToString("yyyy-MMM-dd", CultureInfo.CurrentCulture),
+                    DateOfBirth = model.Patient.Birthdate.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture),
                 },
             };
         }

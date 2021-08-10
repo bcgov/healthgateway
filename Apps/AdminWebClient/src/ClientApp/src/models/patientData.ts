@@ -6,6 +6,7 @@ export default class PatientData {
     public personalhealthnumber!: string;
     public firstname!: string;
     public lastname!: string;
-    public birthdate?: StringISODate;
-    public address?: Address;
+    public birthdate!: StringISODate;
+    public physicalAddress?: Address;
+    public postalAddress?: Address;
 }
