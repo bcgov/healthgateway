@@ -16,6 +16,7 @@ import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ICovidSupportService } from "@/services/interfaces";
+import { Mask, phnMask, postalCodeMask, zipCodeMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
 
 interface ImmunizationRow {
@@ -85,14 +86,14 @@ export default class CovidCardView extends Vue {
     }
 
     private get provinceStateList() {
-        if (this.selectedCountry == "CA") {
+        if (this.selectedCountry === "CA") {
             return Object.keys(ProvinceList).map((provinceCode) => {
                 return {
                     text: ProvinceList[provinceCode],
                     value: provinceCode,
                 };
             });
-        } else if (this.selectedCountry == "US") {
+        } else if (this.selectedCountry === "US") {
             return Object.keys(StateList).map((stateCode) => {
                 return {
                     text: StateList[stateCode],
@@ -123,6 +124,19 @@ export default class CovidCardView extends Vue {
         return this.formatDate(this.searchResult.patient.birthdate);
     }
 
+    private get phnMask(): Mask {
+        return phnMask;
+    }
+
+    private get postalCodeMask(): Mask | undefined {
+        if (this.selectedCountry === "CA") {
+            return postalCodeMask;
+        } else if (this.selectedCountry === "US") {
+            return zipCodeMask;
+        }
+        return undefined;
+    }
+
     private mounted() {
         this.covidSupportService = container.get(
             SERVICE_IDENTIFIER.CovidSupportService
@@ -143,7 +157,8 @@ export default class CovidCardView extends Vue {
     private handleSearch() {
         this.clear(false);
 
-        if (!PHNValidator.IsValid(this.phn)) {
+        const phnDigits = this.phn.replace(/[^0-9]/g, "");
+        if (!PHNValidator.IsValid(phnDigits)) {
             this.showFeedback = true;
             this.bannerFeedback = {
                 type: ResultType.Error,
@@ -156,7 +171,7 @@ export default class CovidCardView extends Vue {
         this.isLoading = true;
 
         this.covidSupportService
-            .getPatient(this.phn)
+            .getPatient(phnDigits)
             .then((result) => {
                 this.phn = "";
                 this.searchResult = result;
@@ -311,8 +326,8 @@ export default class CovidCardView extends Vue {
                         <v-col>
                             <v-text-field
                                 v-model="phn"
+                                v-mask="phnMask"
                                 label="PHN"
-                                maxlength="10"
                             />
                         </v-col>
                         <v-col cols="auto">
@@ -464,6 +479,15 @@ export default class CovidCardView extends Vue {
                         </v-col>
                         <v-col cols md="4">
                             <v-text-field
+                                v-if="postalCodeMask !== undefined"
+                                v-model="address.postalCode"
+                                v-mask="postalCodeMask"
+                                label="Postal Code"
+                                :disabled="!isEditMode"
+                                autocomplete="chrome-off"
+                            />
+                            <v-text-field
+                                v-else
                                 v-model="address.postalCode"
                                 label="Postal Code"
                                 :disabled="!isEditMode"
