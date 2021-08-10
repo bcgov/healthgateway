@@ -124,7 +124,7 @@ namespace HealthGateway.Admin.Server.Delegates
             {
                 immsResponse = await this.GetImmunizations(patient, pageIndex).ConfigureAwait(true);
             }
-            while (this.Retry(immsResponse) && retries++ < this.immunizationConfig.MaximumRetries);
+            while (this.ShouldRetry(immsResponse) && retries++ < this.immunizationConfig.MaximumRetries);
 
             if (immsResponse.ResultStatus == ResultType.Success && immsResponse.ResourcePayload != null)
             {
@@ -191,7 +191,7 @@ namespace HealthGateway.Admin.Server.Delegates
         /// </summary>
         /// <param name="result">The response from the Immunization delegate.</param>
         /// <returns>true if a retry should be attempted by the delegate.</returns>
-        private bool Retry(RequestResult<PHSAResult<IList<ImmunizationViewResponse>>> result)
+        private bool ShouldRetry(RequestResult<PHSAResult<IList<ImmunizationViewResponse>>> result)
         {
             bool retry = result.ResultStatus == ResultType.Success &&
                          result.ResourcePayload != null &&
