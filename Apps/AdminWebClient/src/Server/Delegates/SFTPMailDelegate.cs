@@ -19,6 +19,7 @@ namespace HealthGateway.Admin.Server.Delegates
     using System.Diagnostics;
     using System.IO;
     using HealthGateway.Admin.Server.Models;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -85,6 +86,7 @@ namespace HealthGateway.Admin.Server.Delegates
             if (!this.connectionInitialized)
             {
                 retVal.ResourcePayload = false;
+                retVal.ResultStatus = ResultType.Error;
                 retVal.ResultError = new RequestResultError() { ResultMessage = $"Connection is not initialized", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
                 this.logger.LogError($"Document could not be mailed because connection is not initialized");
             }
@@ -103,10 +105,12 @@ namespace HealthGateway.Admin.Server.Delegates
                     sftpClient.Disconnect();
 
                     retVal.ResourcePayload = true;
+                    retVal.ResultStatus = ResultType.Success;
                 }
                 catch (Exception e)
                 {
                     retVal.ResourcePayload = false;
+                    retVal.ResultStatus = ResultType.Error;
                     retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception mailing document: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SFTP) };
                     this.logger.LogError($"Unexpected exception in QueueDocument {e}");
                 }
