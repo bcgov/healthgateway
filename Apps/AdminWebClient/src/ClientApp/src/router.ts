@@ -1,8 +1,10 @@
 import Vue from "vue";
 import VueRouter, { Route } from "vue-router";
 
+import { UserRoles } from "@/constants/userRoles";
 import store from "@/store/store";
 import CommunicationView from "@/views/Communication.vue";
+import CovidCardView from "@/views/CovidCard.vue";
 import DashboardView from "@/views/Dashboard.vue";
 import FeedbackView from "@/views/Feedback.vue";
 import LoginView from "@/views/Login.vue";
@@ -11,8 +13,6 @@ import ResendEmailView from "@/views/ResendEmail.vue";
 import StatsView from "@/views/Stats.vue";
 import SupportView from "@/views/Support.vue";
 import UnauthorizedView from "@/views/Unauthorized.vue";
-
-import { UserRoles } from "./constants/userRoles";
 
 Vue.use(VueRouter);
 
@@ -87,6 +87,15 @@ const routes = [
         props: (route: Route) => ({
             hdid: route.query.hdid,
         }),
+    },
+    {
+        path: "/covidcard",
+        name: "COVID-19 Immunization Card",
+        component: CovidCardView,
+        meta: {
+            requiresAuth: true,
+            validRoles: [UserRoles.SupportUser],
+        },
     },
     {
         path: "/unauthorized",

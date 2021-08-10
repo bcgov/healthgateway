@@ -17,6 +17,7 @@ import {
     IAuthenticationService,
     ICommunicationService,
     IConfigService,
+    ICovidSupportService,
     IDashboardService,
     IEmailAdminService,
     IHttpDelegate,
@@ -52,6 +53,10 @@ const supportService: ISupportService = container.get(
     SERVICE_IDENTIFIER.SupportService
 );
 
+const covidSupportService: ICovidSupportService = container.get(
+    SERVICE_IDENTIFIER.CovidSupportService
+);
+
 configService.initialize(httpDelegate);
 // Initialize the store only then start the app
 store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
@@ -73,6 +78,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     emailAdminService.initialize(httpDelegate);
     communicationService.initialize(httpDelegate);
     supportService.initialize(httpDelegate);
+    covidSupportService.initialize(httpDelegate);
     initializeVue();
 });
 

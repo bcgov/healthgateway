@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,42 +43,42 @@ namespace HealthGateway.Common.Models
         public string HdId { get; set; }
 
         /// <summary>
-        /// Gets or sets the patient PHN.
+        /// Gets or sets the patient's PHN.
         /// </summary>
         [JsonPropertyName("personalhealthnumber")]
         public string PersonalHealthNumber { get; set; }
 
         /// <summary>
-        /// Gets or sets the patient first name.
+        /// Gets or sets the patient's first name.
         /// </summary>
         [JsonPropertyName("firstname")]
         public string FirstName { get; set; }
 
         /// <summary>
-        /// Gets or sets the patient last name.
+        /// Gets or sets the patient's last name.
         /// </summary>
         [JsonPropertyName("lastname")]
         public string LastName { get; set; }
 
         /// <summary>
-        /// Gets or sets the patients date of birth.
+        /// Gets or sets the patient's date of birth.
         /// </summary>
         [JsonPropertyName("birthdate")]
         public DateTime Birthdate { get; set; }
 
         /// <summary>
-        /// Gets or sets the patients gender.
+        /// Gets or sets the patient's gender.
         /// </summary>
         [JsonPropertyName("gender")]
         public string Gender { get; set; }
 
         /// <summary>
-        /// Gets or sets the Physical address for the patient.
+        /// Gets or sets the physical address for the patient.
         /// </summary>
         public Address? PhysicalAddress { get; set; }
 
         /// <summary>
-        /// Gets or sets the Postal address for the patient.
+        /// Gets or sets the postal address for the patient.
         /// </summary>
         public Address? PostalAddress { get; set; }
     }
