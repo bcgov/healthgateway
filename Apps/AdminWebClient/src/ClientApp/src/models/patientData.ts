@@ -7,6 +7,6 @@ export default interface PatientData {
     firstname: string;
     lastname: string;
     birthdate: StringISODate;
-    physicalAddress: Address;
-    postalAddress: Address;
+    physicalAddress: Address | null;
+    postalAddress: Address | null;
 }
