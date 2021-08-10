@@ -404,7 +404,7 @@ export default class CovidCardView extends Vue {
                             <v-btn
                                 type="button"
                                 class="primary"
-                                :disabled="immunizations.length > 0"
+                                :disabled="immunizations.length === 0"
                                 @click="handlePrint()"
                             >
                                 <span>Print</span>
@@ -492,7 +492,7 @@ export default class CovidCardView extends Vue {
                             <v-btn
                                 type="submit"
                                 class="mx-2 primary"
-                                :disabled="immunizations.length > 0"
+                                :disabled="immunizations.length === 0"
                             >
                                 <span>Mail</span>
                                 <v-icon class="ml-2" size="sm"
