@@ -215,6 +215,7 @@ export default class CovidCardView extends Vue {
                 mailAddress: this.address,
             })
             .then((mailResult) => {
+                debugger;
                 if (mailResult) {
                     this.searchResult = null;
                     this.showFeedback = true;
@@ -279,8 +280,8 @@ export default class CovidCardView extends Vue {
     private onEditModeChange() {
         if (!this.isEditMode) {
             this.setAddress(
-                this.searchResult?.patient?.postalAddress,
-                this.searchResult?.patient?.physicalAddress
+                this.searchResult?.patient?.postalAddress ?? null,
+                this.searchResult?.patient?.physicalAddress ?? null
             );
         }
     }
