@@ -16,7 +16,7 @@
 namespace HealthGateway.Immunization.Parser
 {
     using HealthGateway.Common.Models.Immunization;
-    using HealthGateway.Immunization.Models.PHSA.Recommendation;
+    using HealthGateway.Common.Models.PHSA.Recommendation;
 
     /// <summary>
     /// Provides parsing methods for Immunization definitions.

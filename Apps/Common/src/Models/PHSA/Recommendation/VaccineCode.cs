@@ -13,37 +13,44 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models.PHSA.Recommendation
+namespace HealthGateway.Common.Models.PHSA.Recommendation
 {
+    using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The PHSA System Code data model.
+    /// The PHSA Vaccine Code data model.
     /// </summary>
-    public class SystemCode
+    public class VaccineCode
     {
         /// <summary>
-        /// Gets or sets the Code text.
+        /// Initializes a new instance of the <see cref="VaccineCode"/> class.
         /// </summary>
-        [JsonPropertyName("code")]
-        public string Code { get; set; } = string.Empty;
+        public VaccineCode()
+        {
+            this.VaccineCodes = new List<SystemCode>();
+        }
 
         /// <summary>
-        /// Gets or sets the Common Type.
+        /// Initializes a new instance of the <see cref="VaccineCode"/> class.
         /// </summary>
-        [JsonPropertyName("commonType")]
-        public string CommonType { get; set; } = string.Empty;
+        /// <param name="vaccineCodes">The initialized list of vaccine codes.</param>
+        [JsonConstructor]
+        public VaccineCode(IList<SystemCode> vaccineCodes)
+        {
+            this.VaccineCodes = vaccineCodes;
+        }
 
         /// <summary>
-        /// Gets or sets the Display.
+        /// Gets or sets the Vaccine Code Text.
         /// </summary>
-        [JsonPropertyName("display")]
-        public string Display { get; set; } = string.Empty;
+        [JsonPropertyName("vaccineCodeText")]
+        public string VaccineCodeText { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the System.
+        /// Gets the Vaccine codes.
         /// </summary>
-        [JsonPropertyName("system")]
-        public string System { get; set; } = string.Empty;
+        [JsonPropertyName("vaccineCodes")]
+        public IList<SystemCode> VaccineCodes { get; }
     }
 }

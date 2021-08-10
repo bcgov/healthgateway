@@ -19,6 +19,7 @@ namespace HealthGateway.Admin.Services
     using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading.Tasks;
     using HealthGateway.Admin.Models;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
@@ -73,6 +74,7 @@ namespace HealthGateway.Admin.Services
                 List<string> userRoles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(role => role.Value).ToList();
                 authData.Roles = this.enabledRoles.Intersect(userRoles).ToList();
                 authData.IsAuthorized = authData.Roles.Count > 0;
+                authData.Token = Task.Run(async () => await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true)).Result ?? string.Empty;
             }
 
             return authData;
