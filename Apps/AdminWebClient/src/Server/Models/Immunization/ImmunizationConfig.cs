@@ -29,5 +29,15 @@ namespace HealthGateway.Admin.Models.Immunization
         /// Gets or sets the total number of records to retrieve in one call.
         /// </summary>
         public string FetchSize { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the number of retry attempts if PHSA is loading.
+        /// </summary>
+        public int MaximumRetries { get; set; };
+
+        /// <summary>
+        /// Gets or sets the number of seconds to wait before retrying.
+        /// </summary>
+        public int RetryWait { get; set; };
     }
 }

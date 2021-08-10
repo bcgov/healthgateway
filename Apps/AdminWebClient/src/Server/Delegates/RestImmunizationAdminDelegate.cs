@@ -24,6 +24,7 @@ namespace HealthGateway.Admin.Server.Delegates
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models.Immunization;
     using HealthGateway.Admin.Parsers.Immunization;
@@ -117,7 +118,14 @@ namespace HealthGateway.Admin.Server.Delegates
         {
             using Activity? activity = Source.StartActivity("GetImmunizationEvents");
             RequestResult<ImmunizationResult> retVal;
-            RequestResult<PHSAResult<IList<ImmunizationViewResponse>>> immsResponse = await this.GetImmunizations(patient, pageIndex).ConfigureAwait(true);
+            RequestResult<PHSAResult<IList<ImmunizationViewResponse>>> immsResponse;
+            int retries = 0;
+            do
+            {
+                immsResponse = await this.GetImmunizations(patient, pageIndex).ConfigureAwait(true);
+            }
+            while (this.ShouldRetry(immsResponse) && retries++ < this.immunizationConfig.MaximumRetries);
+
             if (immsResponse.ResultStatus == ResultType.Success && immsResponse.ResourcePayload != null)
             {
                 retVal = new ()
@@ -155,7 +163,7 @@ namespace HealthGateway.Admin.Server.Delegates
                 Dictionary<string, string?> query = new ()
                 {
                     ["phn"] = patient.PersonalHealthNumber,
-                    ["dob"] = patient.Birthdate.ToString("YYYYMMDD", CultureInfo.InvariantCulture),
+                    ["dob"] = patient.Birthdate.ToString("yyyyMMdd", CultureInfo.InvariantCulture),
                     ["limit"] = this.immunizationConfig.FetchSize,
                 };
                 Uri endpoint = new Uri(QueryHelpers.AddQueryString(this.immunizationConfig.Endpoint, query));
@@ -176,6 +184,24 @@ namespace HealthGateway.Admin.Server.Delegates
             }
 
             return retVal;
+        }
+
+        /// <summary>
+        /// Determines if the Immunization records are being refreshed and waits if true.
+        /// </summary>
+        /// <param name="result">The response from the Immunization delegate.</param>
+        /// <returns>true if a retry should be attempted by the delegate.</returns>
+        private bool ShouldRetry(RequestResult<PHSAResult<IList<ImmunizationViewResponse>>> result)
+        {
+            bool retry = result.ResultStatus == ResultType.Success &&
+                         result.ResourcePayload != null &&
+                         result.ResourcePayload.LoadState.RefreshInProgress;
+            if (retry)
+            {
+                Thread.Sleep(this.immunizationConfig.RetryWait);
+            }
+
+            return retry;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Team Decision>")]
