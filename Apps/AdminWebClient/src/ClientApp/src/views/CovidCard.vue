@@ -215,7 +215,6 @@ export default class CovidCardView extends Vue {
                 mailAddress: this.address,
             })
             .then((mailResult) => {
-                debugger;
                 if (mailResult) {
                     this.searchResult = null;
                     this.showFeedback = true;
