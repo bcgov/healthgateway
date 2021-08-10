@@ -1,9 +1,9 @@
 import Address from "./address";
 
-export default class CovidCardMailRequest {
+export default interface CovidCardMailRequest {
     // Gets or sets the patient health number.
-    public personalHealthNumber!: string;
+    personalHealthNumber: string;
 
     // Gets or sets the patient covid immunization records.
-    public mailAddress!: Address;
+    mailAddress: Address;
 }

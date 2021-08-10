@@ -1,7 +1,7 @@
-export default class CovidCardDocumentResult {
+export default interface CovidCardDocumentResult {
     // Gets or sets the document data.
-    public data!: string;
+    data: string;
 
     // Gets or sets the file name.
-    public fileName!: string;
+    fileName: string;
 }
