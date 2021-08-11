@@ -73,7 +73,6 @@ namespace HealthGateway.Common.Filters
 
             // Write the event
             this.auditService.PopulateWithHttpContext(context.HttpContext, auditEvent);
-            auditEvent.CreatedBy = nameof(AuditFilter);
             auditEvent.CreatedDateTime = DateTime.UtcNow;
             this.auditService.WriteAuditEvent(auditEvent);
         }
