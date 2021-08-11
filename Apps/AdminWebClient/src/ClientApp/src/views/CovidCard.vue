@@ -12,7 +12,7 @@ import { StateList } from "@/constants/stateList";
 import Address from "@/models/address";
 import BannerFeedback from "@/models/bannerFeedback";
 import CovidCardPatientResult from "@/models/covidCardPatientResult";
-import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
+import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ICovidSupportService } from "@/services/interfaces";
@@ -300,13 +300,11 @@ export default class CovidCardView extends Vue {
         }
     }
 
-    private formatDate(date: StringISODateTime): string {
+    private formatDate(date: StringISODate): string {
         if (!date) {
             return "";
         }
-        return new DateWrapper(date, { isUtc: true }).format(
-            DateWrapper.defaultFormat
-        );
+        return new DateWrapper(date).format(DateWrapper.defaultFormat);
     }
 }
 </script>
