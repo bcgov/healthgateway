@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Controllers
 {
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.CDogs;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;

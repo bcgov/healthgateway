@@ -45,7 +45,6 @@ export const actions: ActionTree<AuthState, RootState> = {
                 .then((authData) => {
                     if (authData.isAuthenticated) {
                         context.commit("authenticationLoaded", authData);
-                        console.log(authData.token);
                     } else {
                         authService.startLoginFlow(params.redirectPath);
                     }

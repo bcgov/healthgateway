@@ -23,10 +23,10 @@ namespace HealthGateway.WebClient.Test.Delegates
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.CDogs;
     using HealthGateway.Common.Services;
-    using HealthGateway.WebClient.Delegates;
-    using HealthGateway.WebClient.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;

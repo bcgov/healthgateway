@@ -8,7 +8,8 @@
             "commandName": "Project",
             "launchBrowser": true,
             "environmentVariables": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ServerOnly": "false"
             },
             "applicationUrl": "http://localhost:5010"
         }

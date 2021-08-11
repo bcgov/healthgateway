@@ -24,14 +24,11 @@ namespace HealthGateway.Immunization.Test.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Models.PHSA.Recommendation;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
-    using HealthGateway.Immunization.Models.PHSA;
-    using HealthGateway.Immunization.Models.PHSA.Recommendation;
     using HealthGateway.Immunization.Parser;
     using HealthGateway.Immunization.Services;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 

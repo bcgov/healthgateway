@@ -17,7 +17,7 @@ namespace HealthGateway.Immunization.Models
 {
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
-    using HealthGateway.Immunization.Models.PHSA.Recommendation;
+    using HealthGateway.Common.Models.PHSA.Recommendation;
 
     /// <summary>
     /// Represents a target disease.

@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Test.Controllers
 {
     using DeepEqual.Syntax;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.CDogs;
     using HealthGateway.WebClient.Controllers;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;

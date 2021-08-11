@@ -9,6 +9,7 @@ import {
     IAuthenticationService,
     ICommunicationService,
     IConfigService,
+    ICovidSupportService,
     IDashboardService,
     IEmailAdminService,
     IHttpDelegate,
@@ -18,6 +19,7 @@ import {
 import { RestAuthenticationService } from "@/services/restAuthenticationService";
 import { RestCommunicationService } from "@/services/restCommunicationService";
 import { RestConfigService } from "@/services/restConfigService";
+import { RestCovidSupportService } from "@/services/restCovidSupportService";
 import { RestEmailAdminService } from "@/services/restEmailAdminService";
 import { RestSupportService } from "@/services/restSupportService";
 import { RestUserFeedbackService } from "@/services/restUserFeedbackService";
@@ -50,6 +52,10 @@ container
 container
     .bind<ISupportService>(SERVICE_IDENTIFIER.SupportService)
     .to(RestSupportService)
+    .inSingletonScope();
+container
+    .bind<ICovidSupportService>(SERVICE_IDENTIFIER.CovidSupportService)
+    .to(RestCovidSupportService)
     .inSingletonScope();
 container
     .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)

@@ -220,7 +220,7 @@
                                     "commonType": "AgentCode"
                                 }
                             ],
-                            "vaccineCodeText": null
+                            "vaccineCodeText": "Covid Vaccine Text Agent"
                         },
                         "targetDisease": null,
                         "forecastStatus": {
@@ -235,7 +235,9 @@
                                 "value": "2021-03-04"
                             },
                             {
-                                "dateCriterionCode": { "text": "Forecast by Agent Due Date" },
+                                "dateCriterionCode": {
+                                    "text": "Forecast by Agent Due Date"
+                                },
                                 "value": "2021-05-13"
                             }
                         ]
@@ -250,7 +252,7 @@
                                     "commonType": "AntiGenCode"
                                 }
                             ],
-                            "vaccineCodeText": null
+                            "vaccineCodeText": "Covid Vaccine Disease Text"
                         },
                         "targetDisease": {
                             "targetDiseaseCodes": [
@@ -274,7 +276,9 @@
                                 "value": "2021-03-04"
                             },
                             {
-                                "dateCriterionCode": { "text": "Forecast by Disease Due Date" },
+                                "dateCriterionCode": {
+                                    "text": "Forecast by Disease Due Date"
+                                },
                                 "value": "2021-05-13"
                             }
                         ]

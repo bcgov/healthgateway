@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,7 +33,6 @@ namespace HealthGateway.Common.Models
             this.PersonalHealthNumber = string.Empty;
             this.FirstName = string.Empty;
             this.LastName = string.Empty;
-            this.EmailAddress = string.Empty;
             this.Gender = string.Empty;
         }
 
@@ -44,39 +43,43 @@ namespace HealthGateway.Common.Models
         public string HdId { get; set; }
 
         /// <summary>
-        /// Gets or sets the patient PHN.
+        /// Gets or sets the patient's PHN.
         /// </summary>
         [JsonPropertyName("personalhealthnumber")]
         public string PersonalHealthNumber { get; set; }
 
         /// <summary>
-        /// Gets or sets the patient first name.
+        /// Gets or sets the patient's first name.
         /// </summary>
         [JsonPropertyName("firstname")]
         public string FirstName { get; set; }
 
         /// <summary>
-        /// Gets or sets the patient last name.
+        /// Gets or sets the patient's last name.
         /// </summary>
         [JsonPropertyName("lastname")]
         public string LastName { get; set; }
 
         /// <summary>
-        /// Gets or sets the patients date of birth.
+        /// Gets or sets the patient's date of birth.
         /// </summary>
         [JsonPropertyName("birthdate")]
         public DateTime Birthdate { get; set; }
 
         /// <summary>
-        /// Gets or sets the patients email.
-        /// </summary>
-        [JsonPropertyName("email")]
-        public string EmailAddress { get; set; }
-
-        /// <summary>
-        /// Gets or sets the patients gender.
+        /// Gets or sets the patient's gender.
         /// </summary>
         [JsonPropertyName("gender")]
         public string Gender { get; set; }
+
+        /// <summary>
+        /// Gets or sets the physical address for the patient.
+        /// </summary>
+        public Address? PhysicalAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets the postal address for the patient.
+        /// </summary>
+        public Address? PostalAddress { get; set; }
     }
 }
