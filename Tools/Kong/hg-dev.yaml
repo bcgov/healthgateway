@@ -17,7 +17,7 @@ services:
       - https
     - name: jwt-keycloak
       tags: [ns.hg-dev]
-      enabled: true
+      enabled: false
       config:
         client_roles: null
         allowed_iss:
@@ -40,10 +40,16 @@ services:
         algorithm: RS256
         realm_roles: null
         consumer_match_claim: azp
+    - name: cors
+      tags: [ns.hg-dev]
+      enabled: true
+      config: 
+        preflight_continue: true
     routes:
       - name: GetAll
         methods:
           - GET
+          - OPTIONS
         hosts:
           - hg-dev.api.gov.bc.ca
         paths:
@@ -55,6 +61,7 @@ services:
       - name: GetById
         methods:
           - GET
+          - OPTIONS
         hosts:
           - hg-dev.api.gov.bc.ca
         paths:
