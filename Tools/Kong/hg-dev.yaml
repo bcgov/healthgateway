@@ -1,0 +1,82 @@
+_format_version: "1.1"
+services:
+  - name: HealthGateway.Dev.ImmunizationService
+    url: http://immunization.0bd5ad-dev.svc:8080
+    routes:
+      - name: DEV-ImmunizationGetAll
+        methods:
+          - GET
+        hosts:
+          - hg-dev.api.gov.bc.ca
+        paths:
+          - /v1/api/Immunization
+        strip_path: false
+        tags:
+          - OAS3_import
+          - ns.hg-dev
+        plugins:
+          - name: jwt-keycloak
+            tags: [ns.hg-dev]
+            enabled: true
+            config:
+              client_roles: null
+              allowed_iss:
+                - https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f
+              run_on_preflight: true
+              iss_key_grace_period: 10
+              maximum_expiration: 0
+              claims_to_verify:
+                - exp
+              consumer_match_claim_custom_id: false
+              cookie_names: []
+              scope: null
+              uri_param_names:
+                - jwt
+              roles: null
+              consumer_match: false
+              well_known_template: https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f/.well-known/openid-configuration
+              consumer_match_ignore_not_found: false
+              anonymous: null
+              algorithm: RS256
+              realm_roles: null
+              consumer_match_claim: azp
+      - name: DEV-ImmunizationGetByID
+        methods:
+          - GET
+        hosts:
+          - hg-dev.api.gov.bc.ca
+        paths:
+          - /v1/api/Immunization/(?<immunizationId>\S+)$
+        strip_path: false
+        tags:
+          - OAS3_import
+          - ns.hg-dev
+        plugins:
+          - name: jwt-keycloak
+            tags: [ns.hg-dev]
+            enabled: true
+            config:
+              client_roles: null
+              allowed_iss:
+                - https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f
+              run_on_preflight: true
+              iss_key_grace_period: 10
+              maximum_expiration: 0
+              claims_to_verify:
+                - exp
+              consumer_match_claim_custom_id: false
+              cookie_names: []
+              scope: null
+              uri_param_names:
+                - jwt
+              roles: null
+              consumer_match: false
+              well_known_template: https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f/.well-known/openid-configuration
+              consumer_match_ignore_not_found: false
+              anonymous: null
+              algorithm: RS256
+              realm_roles: null
+              consumer_match_claim: azp
+    tags:
+      - OAS3_import
+      - ns.hg-dev
