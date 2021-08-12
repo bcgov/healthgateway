@@ -1,6 +1,6 @@
 _format_version: "1.1"
 services:
-  - name: HealthGateway.Dev.ImmunizationService
+  - name: ImmunizationService
     url: http://immunization.0bd5ad-dev.svc:8080
     plugins:
     - name: rate-limiting
@@ -41,7 +41,7 @@ services:
         realm_roles: null
         consumer_match_claim: azp
     routes:
-      - name: DEV-ImmunizationGetAll
+      - name: GetAll
         methods:
           - GET
         hosts:
@@ -52,7 +52,7 @@ services:
         tags:
           - OAS3_import
           - ns.hg-dev
-      - name: DEV-ImmunizationGetByID
+      - name: GetById
         methods:
           - GET
         hosts:
