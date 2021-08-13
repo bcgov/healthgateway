@@ -203,7 +203,7 @@ namespace HealthGateway.Common.Delegates
                 {
                     switch (item)
                     {
-                        case ADStreetAddressLine line:
+                        case ADStreetAddressLine line when line.Text != null:
                             foreach (string s in line.Text)
                             {
                                 retAddress.AddLine(s ?? string.Empty);
