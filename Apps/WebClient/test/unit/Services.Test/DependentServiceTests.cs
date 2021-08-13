@@ -307,7 +307,7 @@ namespace HealthGateway.WebClient.Test.Services
                 };
             }
 
-            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>())).Returns(Task.FromResult(patientResult));
+            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(patientResult));
 
             // (3) Setup other common Mocks
             IDependentService dependentService = SetupCommonMocks(mockDependentDelegate, mockPatientService);
@@ -350,7 +350,7 @@ namespace HealthGateway.WebClient.Test.Services
                 };
             }
 
-            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>())).Returns(Task.FromResult(patientResult));
+            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(patientResult));
 
             ResourceDelegate expectedDbDependent = new ResourceDelegate() { ProfileHdid = this.mockParentHdId, ResourceOwnerHdid = this.mockHdId };
 

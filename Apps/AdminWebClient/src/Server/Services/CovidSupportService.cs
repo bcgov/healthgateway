@@ -72,7 +72,7 @@ namespace HealthGateway.Admin.Services
 
             return Task.Run(async () =>
             {
-                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.PHN).ConfigureAwait(true);
+                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.PHN, true).ConfigureAwait(true);
 
                 if (patientResult.ResultStatus == ResultType.Success)
                 {
