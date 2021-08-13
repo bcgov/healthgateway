@@ -246,6 +246,11 @@ export default class CovidCardView extends Vue {
         this.selectedDestination = Countries[this.address.country]
             ? Countries[this.address.country][0]
             : "";
+
+        // select Canada if the address has a province but no country
+        if (this.address.country === "" && Provinces[this.address.state]) {
+            this.selectedDestination = Countries.CA[0];
+        }
     }
 
     private handleSubmit() {
