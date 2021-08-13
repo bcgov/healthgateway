@@ -60,6 +60,7 @@ namespace HealthGateway.Immunization
 
             // Add Services
             services.AddTransient<IImmunizationService, ImmunizationService>();
+            services.AddTransient<IVaccineStatusService, VaccineStatusService>();
 
             // Add delegates
             services.AddTransient<IImmunizationDelegate, RestImmunizationDelegate>();

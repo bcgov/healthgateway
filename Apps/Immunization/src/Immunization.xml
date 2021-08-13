@@ -44,6 +44,41 @@
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
             <response code="503">The service is unavailable for use.</response>
         </member>
+        <member name="T:HealthGateway.Immunization.Controllers.VaccineStatusController">
+            <summary>
+            The VaccineStatus controller.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Controllers.VaccineStatusController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Immunization.Controllers.VaccineStatusController},HealthGateway.Immunization.Services.IVaccineStatusService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Controllers.VaccineStatusController"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="vaccineStatusService">The injected vaccine status service.</param>
+        </member>
+        <member name="M:HealthGateway.Immunization.Controllers.VaccineStatusController.GetVaccineStatus(System.String,System.String)">
+            <summary>
+            Requests the vaccine status for the supplied PHN and Date of Birth.
+            </summary>
+            <param name="phn">The personal health number to query.</param>
+            <param name="dateOfBirth">The date of birth (yyyyMMdd) for the supplied PHN.</param>
+            <returns>The wrapped vaccine status.</returns>
+            <response code="200">Returns the Vaccine status.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+            <response code="503">The service is unavailable for use.</response>
+        </member>
+        <member name="M:HealthGateway.Immunization.Controllers.VaccineStatusController.GetVaccineStatus(System.Guid)">
+            <summary>
+            Requests the vaccine status for the supplied id.
+            </summary>
+            <param name="id">The vaccine status id.</param>
+            <returns>The wrapped vaccine status.</returns>
+            <response code="200">Returns the Vaccine status.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+            <response code="503">The service is unavailable for use.</response>
+        </member>
         <member name="T:HealthGateway.Immunization.Delegates.IImmunizationDelegate">
             <summary>
             Interface that defines a delegate to retrieve immunization information.
@@ -249,6 +284,36 @@
             <param name="model">The immunization view object to convert.</param>
             <returns>The newly created ImmunizationEvent object.</returns>
         </member>
+        <member name="T:HealthGateway.Immunization.Models.VaccineStatus">
+            <summary>
+            TThe Vaccine Status model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.VaccineStatus.Id">
+            <summary>
+            Gets or sets a value indicating the ID to be used to fetch the vaccine status.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.VaccineStatus.PersonalHealthNumber">
+            <summary>
+            Gets or sets the patient's PHN.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.VaccineStatus.FirstName">
+            <summary>
+            Gets or sets the patient's first name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.VaccineStatus.LastName">
+            <summary>
+            Gets or sets the patient's last name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.VaccineStatus.Birthdate">
+            <summary>
+            Gets or sets the patient's date of birth.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Immunization.Parser.AgentParser">
             <summary>
             Provides parser methods for ImmunizationAgents.
@@ -370,6 +435,42 @@
             <inheritdoc/>
         </member>
         <member name="M:HealthGateway.Immunization.Services.ImmunizationService.GetImmunizations(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Immunization.Services.IVaccineStatusService">
+            <summary>
+            The Vaccine Status data service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Services.IVaccineStatusService.GetVaccineStatus(System.String,System.String)">
+            <summary>
+            Gets the ImmunizationEvent for the given id.
+            </summary>
+            <param name="phn">The security token representing the authenticated user.</param>
+            <param name="dateOfBirth">The date of birth in yyyyMMdd format.</param>
+            <returns>Returns a list of immunizations.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Services.IVaccineStatusService.GetVaccineStatus(System.Guid)">
+            <summary>
+            Gets the ImmunizationResult inluding load state and a list of immunization records.
+            </summary>
+            <param name="id">The ID to query for vaccine status.</param>
+            <returns>Returns a list of immunizations.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Services.VaccineStatusService">
+            <summary>
+            The Vaccine Status data service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Services.VaccineStatusService.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Services.VaccineStatusService"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Services.VaccineStatusService.GetVaccineStatus(System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Immunization.Services.VaccineStatusService.GetVaccineStatus(System.Guid)">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.Immunization.Startup">
