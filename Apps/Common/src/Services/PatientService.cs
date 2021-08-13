@@ -121,6 +121,7 @@ namespace HealthGateway.Common.Services
                         break;
                 }
 
+                // Only cache if validation is enabled (as some clients could get invalid data) and when successful.
                 if (!disableIdValidation && requestResult.ResultStatus == ResultType.Success && requestResult.ResourcePayload != null)
                 {
                     this.CachePatient(requestResult.ResourcePayload);

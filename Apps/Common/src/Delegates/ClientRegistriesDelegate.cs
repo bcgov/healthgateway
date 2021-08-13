@@ -329,7 +329,7 @@ namespace HealthGateway.Common.Delegates
                     }
                 }
 
-                // Populates the PHN 
+                // Populates the PHN
                 II? identifiedPersonId = retrievedPerson.identifiedPerson.id.GetValue(0) as II;
                 string? personIdentifierType = identifiedPersonId?.root;
                 string personIdentifier = identifiedPersonId?.extension ?? string.Empty;
