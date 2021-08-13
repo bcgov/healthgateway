@@ -333,7 +333,7 @@ namespace HealthGateway.Common.Delegates
                 II? identifiedPersonId = retrievedPerson.identifiedPerson.id.GetValue(0) as II;
                 string? personIdentifierType = identifiedPersonId?.root;
                 string personIdentifier = identifiedPersonId?.extension ?? string.Empty;
-                if (!disableIDValidation && !ClientRegistriesDelegate.SetIdentifier(personIdentifierType, personIdentifier, patient))
+                if (!ClientRegistriesDelegate.SetIdentifier(personIdentifierType, personIdentifier, patient) && !disableIDValidation)
                 {
                     this.logger.LogWarning($"Client Registry returned a person with a person identifier not recognized. No PHN or HDID was populated.");
                     return new RequestResult<PatientModel>()
@@ -347,7 +347,7 @@ namespace HealthGateway.Common.Delegates
                 II? subjectId = retrievedPerson.id?.GetValue(0) as II;
                 string? subjectIdentifierType = subjectId?.root;
                 string subjectIdentifier = subjectId?.extension ?? string.Empty;
-                if (!disableIDValidation && !ClientRegistriesDelegate.SetIdentifier(subjectIdentifierType, subjectIdentifier, patient))
+                if (!ClientRegistriesDelegate.SetIdentifier(subjectIdentifierType, subjectIdentifier, patient) && !disableIDValidation)
                 {
                     this.logger.LogWarning($"Client Registry returned a person with a subject identifier not recognized. No PHN or HDID was populated.");
                     return new RequestResult<PatientModel>()
