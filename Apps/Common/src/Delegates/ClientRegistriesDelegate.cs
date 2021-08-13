@@ -176,7 +176,6 @@ namespace HealthGateway.Common.Delegates
             for (int i = 0; i < nameSection.Items.Length; i++)
             {
                 ENXP name = nameSection.Items[i];
-
                 if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
                 {
                     givenNameList.Add(name.Text[0]);
@@ -317,12 +316,17 @@ namespace HealthGateway.Common.Delegates
                 PN? nameSection = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.C));
                 if (!ClientRegistriesDelegate.SetNames(nameSection, patient))
                 {
-                    this.logger.LogWarning($"Client Registry returned a person with an invalid name.");
-                    return new RequestResult<PatientModel>()
+                    this.logger.LogWarning($"Client Registry returned a person without a Documented Name, attempting Legal...");
+                    nameSection = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.L));
+                    if (!ClientRegistriesDelegate.SetNames(nameSection, patient))
                     {
-                        ResultStatus = ResultType.ActionRequired,
-                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.InvalidName),
-                    };
+                        this.logger.LogWarning($"Client Registry returned a person without a Legal Name.");
+                        return new RequestResult<PatientModel>()
+                        {
+                            ResultStatus = ResultType.ActionRequired,
+                            ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.InvalidName),
+                        };
+                    }
                 }
 
                 II? identifiedPersonId = (II?)retrievedPerson.identifiedPerson.id.GetValue(0);
