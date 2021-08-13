@@ -87,7 +87,7 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
-        public async System.Threading.Tasks.Task<RequestResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.HDID)
+        public async System.Threading.Tasks.Task<RequestResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.HDID, bool disableIdValidation = false)
         {
             using Activity? activity = Source.StartActivity("GetPatient");
             RequestResult<PatientModel> requestResult = new RequestResult<PatientModel>();
@@ -98,13 +98,13 @@ namespace HealthGateway.Common.Services
                 {
                     case PatientIdentifierType.HDID:
                         this.logger.LogDebug("Performing Patient lookup by HDID");
-                        requestResult = await this.patientDelegate.GetDemographicsByHDIDAsync(identifier).ConfigureAwait(true);
+                        requestResult = await this.patientDelegate.GetDemographicsByHDIDAsync(identifier, disableIdValidation).ConfigureAwait(true);
                         break;
                     case PatientIdentifierType.PHN:
                         this.logger.LogDebug("Performing Patient lookup by PHN");
                         if (PHNValidator.IsValid(identifier))
                         {
-                            requestResult = await this.patientDelegate.GetDemographicsByPHNAsync(identifier).ConfigureAwait(true);
+                            requestResult = await this.patientDelegate.GetDemographicsByPHNAsync(identifier, disableIdValidation).ConfigureAwait(true);
                         }
                         else
                         {
@@ -121,7 +121,7 @@ namespace HealthGateway.Common.Services
                         break;
                 }
 
-                if (requestResult.ResultStatus == ResultType.Success && requestResult.ResourcePayload != null)
+                if (!disableIdValidation && requestResult.ResultStatus == ResultType.Success && requestResult.ResourcePayload != null)
                 {
                     this.CachePatient(requestResult.ResourcePayload);
                 }

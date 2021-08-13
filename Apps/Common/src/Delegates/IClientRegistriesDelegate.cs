@@ -27,14 +27,16 @@ namespace HealthGateway.Common.Delegates
         /// Gets the patient record.
         /// </summary>
         /// <param name="hdid">The hdid to retrieve the patient demographics in.</param>
+        /// <param name="disableIdValidation">Disables the validation on HDID/PHN when true.</param>
         /// <returns>The patient information.</returns>
-        Task<RequestResult<PatientModel>> GetDemographicsByHDIDAsync(string hdid);
+        Task<RequestResult<PatientModel>> GetDemographicsByHDIDAsync(string hdid, bool disableIdValidation = false);
 
         /// <summary>
         /// Gets the patient record.
         /// </summary>
         /// <param name="phn">The phn to retrive the patient demographics information.</param>
+        /// <param name="disableIdValidation">Disables the validation on HDID/PHN when true.</param>
         /// <returns>The patient information.</returns>
-        Task<RequestResult<PatientModel>> GetDemographicsByPHNAsync(string phn);
+        Task<RequestResult<PatientModel>> GetDemographicsByPHNAsync(string phn, bool disableIdValidation = false);
     }
 }
