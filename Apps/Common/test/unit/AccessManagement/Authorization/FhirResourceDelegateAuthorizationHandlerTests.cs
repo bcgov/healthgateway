@@ -195,7 +195,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
 
             Mock<IPatientService> mockPatientService = new Mock<IPatientService>();
             mockPatientService
-                .Setup(s => s.GetPatient(this.resourceHDID, PatientIdentifierType.HDID))
+                .Setup(s => s.GetPatient(this.resourceHDID, PatientIdentifierType.HDID, false))
                 .ReturnsAsync(getPatientResult);
 
             FhirResourceDelegateAuthorizationHandler authHandler = new FhirResourceDelegateAuthorizationHandler(
@@ -237,7 +237,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
 
             Mock<IPatientService> mockPatientService = new Mock<IPatientService>();
             mockPatientService
-                .Setup(s => s.GetPatient(this.resourceHDID, PatientIdentifierType.HDID))
+                .Setup(s => s.GetPatient(this.resourceHDID, PatientIdentifierType.HDID, false))
                 .ReturnsAsync(getPatientResult);
 
             FhirResourceDelegateAuthorizationHandler authHandler = new FhirResourceDelegateAuthorizationHandler(

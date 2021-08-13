@@ -112,7 +112,7 @@ namespace HealthGateway.CommonTests.Services
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>())
                 .Build();
-            patientDelegateMock.Setup(p => p.GetDemographicsByPHNAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsByPHNAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
 
             IPatientService service = new PatientService(
                 new Mock<ILogger<PatientService>>().Object,
@@ -151,7 +151,7 @@ namespace HealthGateway.CommonTests.Services
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>())
                 .Build();
-            patientDelegateMock.Setup(p => p.GetDemographicsByPHNAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsByPHNAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
 
             IPatientService service = new PatientService(
                 new Mock<ILogger<PatientService>>().Object,
@@ -191,7 +191,7 @@ namespace HealthGateway.CommonTests.Services
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>())
                 .Build();
-            patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
 
             IPatientService service = new PatientService(
                 new Mock<ILogger<PatientService>>().Object,
@@ -226,7 +226,7 @@ namespace HealthGateway.CommonTests.Services
                 .AddInMemoryCollection(configDictionary)
                 .Build();
 
-            patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
 
             DBResult<GenericCache> dbResult = new DBResult<GenericCache>()
             {
@@ -269,8 +269,8 @@ namespace HealthGateway.CommonTests.Services
                 .AddInMemoryCollection(configDictionary)
                 .Build();
 
-            patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
-            patientDelegateMock.Setup(p => p.GetDemographicsByPHNAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsByPHNAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
 
             DBResult<GenericCache> dbResult = new DBResult<GenericCache>()
             {

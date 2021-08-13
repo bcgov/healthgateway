@@ -140,7 +140,7 @@ namespace HealthGateway.WebClient.Test.Services
                 .ReturnsAsync(requestResultImmunization);
 
             Mock<IClientRegistriesDelegate> clientRegistriesDelegateMock = new Mock<IClientRegistriesDelegate>();
-            clientRegistriesDelegateMock.Setup(s => s.GetDemographicsByHDIDAsync(HdId)).ReturnsAsync(requestResultPatient);
+            clientRegistriesDelegateMock.Setup(s => s.GetDemographicsByHDIDAsync(HdId, false)).ReturnsAsync(requestResultPatient);
 
             Mock<IWalletIssuerDelegate> walletIssuerDelegateMock = new Mock<IWalletIssuerDelegate>();
             walletIssuerDelegateMock

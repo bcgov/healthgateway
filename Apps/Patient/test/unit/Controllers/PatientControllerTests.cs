@@ -75,7 +75,7 @@ namespace HealthGateway.Patient.Test.Controllers
                     PersonalHealthNumber = mockResult.ResourcePayload.PersonalHealthNumber,
                 },
             };
-            patientService.Setup(x => x.GetPatient(It.IsAny<string>(), Common.Constants.PatientIdentifierType.HDID)).ReturnsAsync(mockResult);
+            patientService.Setup(x => x.GetPatient(It.IsAny<string>(), Common.Constants.PatientIdentifierType.HDID, false)).ReturnsAsync(mockResult);
 
             PatientController patientController = new PatientController(patientService.Object);
             var actualResult = patientController.GetPatient("123");
