@@ -37,7 +37,10 @@ namespace HealthGateway.Immunization.Services
         /// <inheritdoc/>
         public async Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth)
         {
-            RequestResult<VaccineStatus> retVal;
+            RequestResult<VaccineStatus> retVal = new ()
+            {
+                ResultStatus = Common.Constants.ResultType.Error,
+            };
             DateTime? dob = null;
             try
             {
@@ -50,25 +53,14 @@ namespace HealthGateway.Immunization.Services
 
             if (dob != null && PHNValidator.IsValid(phn))
             {
-                retVal = new ()
-                {
-                    ResultStatus = Common.Constants.ResultType.Success,
-                    ResourcePayload = new ()
-                    {
-                    },
-                    TotalResultCount = 1,
-                };
+                // TODO: Call Delegate and parse response
             }
             else
             {
-                retVal = new ()
+                retVal.ResultStatus = Common.Constants.ResultType.ActionRequired;
+                retVal.ResultError = new RequestResultError()
                 {
-                    ResultStatus = Common.Constants.ResultType.Success,
-                    ResourcePayload = new ()
-                    {
-                        PersonalHealthNumber = phn,
-                    },
-                    TotalResultCount = 1,
+                    ActionCode = Common.ErrorHandling.ActionType.Invalid,
                 };
             }
 
@@ -78,6 +70,7 @@ namespace HealthGateway.Immunization.Services
         /// <inheritdoc/>
         public async Task<RequestResult<VaccineStatus>> GetVaccineStatus(Guid id)
         {
+            // TODO: Replace with call to delegate and map return data.
             return new RequestResult<VaccineStatus>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
