@@ -15,6 +15,10 @@ const ProfileView = () =>
     import(/* webpackChunkName: "profile" */ "@/views/profile.vue");
 const LandingView = () =>
     import(/* webpackChunkName: "landing" */ "@/views/landing.vue");
+const VaccinationStatusView = () =>
+    import(
+        /* webpackChunkName: "vaccinationStatus" */ "@/views/vaccinationStatus.vue"
+    );
 const NotFoundView = () =>
     import(/* webpackChunkName: "notFound" */ "@/views/errors/notFound.vue");
 const LoginView = () =>
@@ -205,6 +209,17 @@ const routes = [
         meta: {
             validStates: [UserState.registered],
             requiredModules: [ClientModule.Dependent],
+        },
+    },
+    {
+        path: "/vaccination-status",
+        component: VaccinationStatusView,
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.registered,
+                UserState.pendingDeletion,
+            ],
         },
     },
     {
