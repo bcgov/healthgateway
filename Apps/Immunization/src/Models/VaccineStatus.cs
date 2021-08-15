@@ -17,6 +17,7 @@ namespace HealthGateway.Immunization.Models
 {
     using System;
     using System.Text.Json.Serialization;
+    using HealthGateway.Immunization.Constants;
 
     /// <summary>
     /// TThe Vaccine Status model.
@@ -28,6 +29,21 @@ namespace HealthGateway.Immunization.Models
         /// </summary>
         [JsonPropertyName("id")]
         public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the VaccineStatus has been retrieved.
+        /// Will be set to true if the object has been fully loaded.
+        /// When false, only ID, Loaded, and RetryIn will be populated.
+        /// </summary>
+        [JsonPropertyName("loaded")]
+        public bool Loaded { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimal amount of time that should be waited before another request.
+        /// The unit of measurement is in milliseconds.
+        /// </summary>
+        [JsonPropertyName("retryin")]
+        public int RetryIn { get; set; }
 
         /// <summary>
         /// Gets or sets the patient's PHN.
@@ -52,5 +68,17 @@ namespace HealthGateway.Immunization.Models
         /// </summary>
         [JsonPropertyName("birthdate")]
         public DateTime? Birthdate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of doses of the vaccine that have been administered to the identified PHN.
+        /// </summary>
+        [JsonPropertyName("doses")]
+        public int Doses { get; set; }
+
+        /// <summary>
+        /// Gets or sets the vaccine state.
+        /// </summary>
+        [JsonPropertyName("state")]
+        public VaccineState State { get; set; }
     }
 }
