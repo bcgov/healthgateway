@@ -197,7 +197,8 @@ export default class LandingView extends Vue {
                     width="auto"
                     height="auto"
                     alt="Devices"
-            /></b-col>
+                />
+            </b-col>
             <b-col class="col-12 col-sm-7 col-lg-5 devices-text my-3 ml-md-4">
                 <b-row
                     v-for="icon in icons"
@@ -223,13 +224,15 @@ export default class LandingView extends Vue {
                             data-testid="btnLogin"
                             variant="primary"
                             class="btn-auth-landing"
-                            ><img
+                        >
+                            <img
                                 class="mr-2 mb-1"
                                 :src="bcsclogo"
                                 height="16"
                                 alt="BC Services Card App Icon"
-                            />Log In with BC Services Card App</hg-button
-                        >
+                            />
+                            <span>Log In with BC Services Card App</span>
+                        </hg-button>
                     </router-link>
                 </b-row>
                 <b-row
@@ -245,28 +248,32 @@ export default class LandingView extends Vue {
                                 ? 'registration'
                                 : 'registrationInfo'
                         "
-                        >Register
+                    >
+                        Register
                     </router-link>
                 </b-row>
             </b-col>
         </b-row>
-        <b-row v-else class="align-items-center pt-2 pb-5 align-middle"
-            ><b-col class="cols-12 text-center">
+        <b-row v-else class="align-items-center pt-2 pb-5 align-middle">
+            <b-col class="cols-12 text-center">
                 <hr class="py-4" />
                 <b-row class="py-2">
-                    <b-col class="title"
-                        >The site is offline for maintenance</b-col
-                    ></b-row
-                >
-                <b-row class="py-3"
-                    ><b-col data-testid="offlineMessage" class="sub-title">
+                    <b-col class="title">
+                        The site is offline for maintenance
+                    </b-col>
+                </b-row>
+                <b-row class="py-3">
+                    <b-col data-testid="offlineMessage" class="sub-title">
                         {{ offlineMessage }}
-                    </b-col></b-row
-                >
-                <b-row class="pt-5"
-                    ><b-col> <hr class="pt-5" /> </b-col>
-                </b-row> </b-col
-        ></b-row>
+                    </b-col>
+                </b-row>
+                <b-row class="pt-5">
+                    <b-col>
+                        <hr class="pt-5" />
+                    </b-col>
+                </b-row>
+            </b-col>
+        </b-row>
         <b-row class="tile-section my-0 my-md-1">
             <b-col>
                 <b-row
@@ -291,7 +298,8 @@ export default class LandingView extends Vue {
                             width="auto"
                             height="auto"
                             alt="B.C. Government Logo"
-                    /></b-col>
+                        />
+                    </b-col>
                     <b-col class="col-12 col-md-5" :class="getTileClass(index)">
                         <div class="text-wrapper mx-4 position-absolute">
                             <h2 class="font-weight-normal">{{ tile.title }}</h2>
