@@ -17,6 +17,9 @@ export default class HgButtonComponent extends Vue {
             case "secondary":
                 result.push("hg-button", "hg-secondary");
                 break;
+            case "success":
+                result.push("hg-button", "hg-success");
+                break;
             case "link":
                 result.push("hg-button", "hg-link");
                 break;
@@ -61,6 +64,8 @@ export default class HgButtonComponent extends Vue {
                 return "primary";
             case "secondary":
                 return "outline-primary";
+            case "success":
+                return "success";
             case "link":
                 return "link";
             case "nav":
@@ -156,6 +161,26 @@ export default class HgButtonComponent extends Vue {
                 text-decoration-color: $hg-button-secondary-selected-hover-text;
                 text-decoration-line: underline;
             }
+        }
+    }
+
+    &.hg-success {
+        background: $hg-button-success;
+        border-color: $hg-button-success-border;
+        color: $hg-button-success-text;
+
+        &:disabled {
+            background: $hg-button-success-disabled;
+            border-color: $hg-button-success-disabled-border;
+            color: $hg-button-success-disabled-text;
+        }
+
+        &:hover:not([disabled]),
+        &:active:not([disabled]) {
+            background: $hg-button-success-hover;
+            border-color: $hg-button-success-hover-border;
+            color: $hg-button-success-hover-text;
+            text-decoration-color: $hg-button-success-hover-text;
         }
     }
 

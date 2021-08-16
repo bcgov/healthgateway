@@ -18,6 +18,7 @@ import Image03 from "@/assets/images/landing/003_reduced-3.jpeg";
 import Image04 from "@/assets/images/landing/004_reduced-living-room.jpeg";
 import Image05 from "@/assets/images/landing/005_reduced-family.jpeg";
 import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
+import VaccinationStatusBannerImage from "@/assets/images/landing/vaccination-status-banner-image.png";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
 
@@ -60,6 +61,7 @@ export default class LandingView extends Vue {
     private logo: string = Image00;
     private devices: string = Image02;
     private bcsclogo: string = Image06;
+    private vaccinationStatusBannerImage: string = VaccinationStatusBannerImage;
     private isOpenRegistration = false;
 
     private icons: Icon[] = [
@@ -274,6 +276,36 @@ export default class LandingView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
+        <b-row
+            class="
+                mx-n2
+                px-lg-4
+                bg-success
+                text-white
+                justify-content-center
+                align-items-center
+            "
+        >
+            <b-col cols="auto" class="d-none d-md-block">
+                <img
+                    :src="vaccinationStatusBannerImage"
+                    alt="Vaccination Status Logo"
+                    class="vaccination-status-logo img-fluid m-2"
+                />
+            </b-col>
+            <b-col md="6" lg="auto">
+                <h2 class="text-center my-5">
+                    <span>Need a COVID‑19 Quick Access Card?</span>
+                    <hg-button
+                        variant="success"
+                        to="/vaccination-status"
+                        class="m-2 ml-4"
+                    >
+                        Get Status
+                    </hg-button>
+                </h2>
+            </b-col>
+        </b-row>
         <b-row class="tile-section my-0 my-md-1">
             <b-col>
                 <b-row
@@ -363,6 +395,10 @@ export default class LandingView extends Vue {
                 color: darkgray;
             }
         }
+    }
+
+    .vaccination-status-logo {
+        max-height: 8rem;
     }
 
     .tile-section {

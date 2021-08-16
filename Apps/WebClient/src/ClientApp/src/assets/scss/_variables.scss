@@ -75,6 +75,16 @@ $hg-button-secondary-selected-disabled: $hg-button-disabled;
 $hg-button-secondary-selected-disabled-border: $hg-button-primary-disabled;
 $hg-button-secondary-selected-disabled-text: white;
 
+$hg-button-success: $hg-state-success;
+$hg-button-success-border: white;
+$hg-button-success-text: white;
+$hg-button-success-hover: #215f2d;
+$hg-button-success-hover-border: white;
+$hg-button-success-hover-text: white;
+$hg-button-success-disabled: $hg-button-disabled;
+$hg-button-success-disabled-border: white;
+$hg-button-success-disabled-text: white;
+
 $hg-button-link: none;
 $hg-button-link-border: none;
 $hg-button-link-text: $hg-button-primary;
@@ -102,7 +112,7 @@ $hg-button-icon-selected-text: white;
 $hg-button-icon-light-text: #313132;
 
 $hg-button-icon-input-text: #0092f1;
-$hg-button-icon-input-border: #CED4DA;
+$hg-button-icon-input-border: #ced4da;
 $hg-button-icon-input-background: white;
 $hg-button-icon-input-disabled-text: #899bb5;
 $hg-button-icon-input-disabled-background: #f7f7f7;
