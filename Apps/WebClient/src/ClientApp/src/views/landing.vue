@@ -160,29 +160,9 @@ export default class LandingView extends Vue {
 
 <template>
     <div class="landing mx-2">
-        <b-row
-            class="
-                title-section
-                justify-content-center
-                align-items-center
-                mx-1 mx-md-5
-                my-2
-            "
-        >
-            <b-col class="col-12 mx-0 px-0">
-                <div class="title-text">
-                    <b-row class="mx-0 px-0">
-                        <h1 class="text-center w-100 py-3">Health Gateway</h1>
-                    </b-row>
-                    <b-row>
-                        <h3 class="text-center font-weight-normal w-100 p-3">
-                            A single place for BC residents to access their
-                            health records
-                        </h3>
-                    </b-row>
-                </div>
-            </b-col>
-        </b-row>
+        <h3 class="text-center font-weight-normal my-4 mx-1">
+            A single place for BC residents to access their health records
+        </h3>
         <b-row
             v-if="!isOffline"
             class="
@@ -201,26 +181,29 @@ export default class LandingView extends Vue {
                     alt="Devices"
                 />
             </b-col>
-            <b-col class="col-12 col-sm-7 col-lg-5 devices-text my-3 ml-md-4">
+            <b-col class="col-12 col-sm-7 col-lg-5 devices-text ml-md-4">
                 <b-row
                     v-for="icon in icons"
                     :key="icon.label"
-                    class="my-4 ml-auto justify-content-start"
+                    class="my-4 align-items-center"
                     :class="icon.active ? 'status-active' : 'status-inactive'"
+                    no-gutters
                 >
-                    <hg-icon
-                        :icon="icon.definition"
-                        size="large"
-                        fixed-width
-                        class="mr-2"
-                    />
-                    <span>
+                    <b-col cols="auto">
+                        <hg-icon
+                            :icon="icon.definition"
+                            size="large"
+                            fixed-width
+                            class="mr-2"
+                        />
+                    </b-col>
+                    <b-col>
                         <span>{{ icon.label }}</span>
                         <span v-if="!icon.active"> (Coming soon)</span>
-                    </span>
+                    </b-col>
                 </b-row>
-                <b-row v-if="!oidcIsAuthenticated">
-                    <router-link to="/login" class="col-lg-12">
+                <div class="my-5">
+                    <router-link v-if="!oidcIsAuthenticated" to="/login">
                         <hg-button
                             id="btnLogin"
                             data-testid="btnLogin"
@@ -236,24 +219,20 @@ export default class LandingView extends Vue {
                             <span>Log In with BC Services Card App</span>
                         </hg-button>
                     </router-link>
-                </b-row>
-                <b-row
-                    v-if="!oidcIsAuthenticated"
-                    class="col-12 col-sm-7 col-lg-5 devices-text my-3"
-                >
-                    <span class="mr-2">Need an account?</span>
-                    <router-link
-                        id="btnStart"
-                        data-testid="btnStart"
-                        :to="
-                            isOpenRegistration
-                                ? 'registration'
-                                : 'registrationInfo'
-                        "
-                    >
-                        Register
-                    </router-link>
-                </b-row>
+                    <div v-if="!oidcIsAuthenticated" class="my-3">
+                        <span class="mr-2">Need an account?</span>
+                        <router-link
+                            id="btnStart"
+                            data-testid="btnStart"
+                            :to="
+                                isOpenRegistration
+                                    ? 'registration'
+                                    : 'registrationInfo'
+                            "
+                            >Register</router-link
+                        >
+                    </div>
+                </div>
             </b-col>
         </b-row>
         <b-row v-else class="align-items-center pt-2 pb-5 align-middle">
@@ -280,6 +259,7 @@ export default class LandingView extends Vue {
             class="
                 mx-n2
                 px-lg-4
+                mb-5 mb-md-0
                 bg-success
                 text-white
                 justify-content-center
