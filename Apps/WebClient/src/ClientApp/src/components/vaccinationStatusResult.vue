@@ -26,11 +26,16 @@ export default class VaccinationStatusResultView extends Vue {
             name: "BONNET PROTERVITY",
             dateOfBirth: "1967-06-02T00:00:00",
             status: VaccinationStatus.FullyVaccinated,
+            doses: 2,
         },
     };
 
     private get vaccinationStatus(): VaccinationStatus | undefined {
         return this.result?.vaccinationIndication.status;
+    }
+
+    private get vaccinationDoses(): number | undefined {
+        return this.result?.vaccinationIndication.doses;
     }
 
     private get isFullyVaccinated(): boolean {
@@ -104,6 +109,34 @@ export default class VaccinationStatusResultView extends Vue {
                                 disabled
                             />
                         </b-form-group>
+                    </b-col>
+                </b-row>
+                <b-row v-show="showDetails" class="justify-content-center">
+                    <b-col cols="auto">
+                        <img
+                            v-if="isFullyVaccinated"
+                            src="@/assets/images/vaccination-status/fully-vaccinated.svg"
+                            alt="Fully Vaccinated"
+                            class="vaccination-stage"
+                        />
+                        <img
+                            v-else-if="vaccinationDoses === 2"
+                            src="@/assets/images/vaccination-status/dose-2.svg"
+                            alt="One Dose"
+                            class="vaccination-stage"
+                        />
+                        <img
+                            v-else-if="vaccinationDoses === 1"
+                            src="@/assets/images/vaccination-status/dose-1.svg"
+                            alt="One Dose"
+                            class="vaccination-stage"
+                        />
+                        <img
+                            v-else
+                            src="@/assets/images/vaccination-status/no-doses.svg"
+                            alt="No Doses"
+                            class="vaccination-stage"
+                        />
                     </b-col>
                 </b-row>
             </div>
@@ -182,5 +215,9 @@ export default class VaccinationStatusResultView extends Vue {
             border: 5px dashed white;
         }
     }
+}
+
+img.vaccination-stage {
+    height: 4.5em;
 }
 </style>

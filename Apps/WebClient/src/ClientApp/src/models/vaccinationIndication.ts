@@ -10,4 +10,7 @@ export default interface VaccinationIndication {
 
     // The patient's vaccination status
     status: VaccinationStatus;
+
+    // The number of vaccination doses the patient has received
+    doses: number;
 }
