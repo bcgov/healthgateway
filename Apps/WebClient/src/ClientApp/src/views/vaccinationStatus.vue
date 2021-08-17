@@ -56,80 +56,101 @@ export default class VaccinationStatusView extends Vue {
 <template>
     <div>
         <vaccination-status-result v-if="displayResult" />
-        <form v-else class="container my-3" @submit.prevent="handleSubmit">
-            <h1>COVID-19 Vaccination Status</h1>
-            <hr />
-            <h2>Please Provide the Following</h2>
-            <b-row>
-                <b-col cols="12" sm="auto">
-                    <b-form-group
-                        label="Personal Health Number"
-                        label-for="phn"
-                    >
-                        <b-form-input
-                            id="phn"
-                            v-model="phn"
-                            data-testid="phnInput"
-                            :state="isValid($v.phn)"
-                            @blur="$v.phn.$touch()"
-                        />
-                        <b-form-invalid-feedback v-if="!$v.phn.required">
-                            Personal Health Number is required.
-                        </b-form-invalid-feedback>
-                        <b-form-invalid-feedback v-else-if="!$v.phn.formatted">
-                            Personal Health Number must be valid.
-                        </b-form-invalid-feedback>
-                    </b-form-group>
+        <div v-else>
+            <b-row no-gutters class="header align-items-center p-3">
+                <b-col cols="auto">
+                    <img
+                        class="img-fluid mr-3"
+                        src="@/assets/images/gov/bcid-symbol-rev.svg"
+                        width="30"
+                        alt="BC Mark"
+                    />
+                </b-col>
+                <b-col class="align-items-center">
+                    <h3 class="text-white m-0">Health Gateway</h3>
                 </b-col>
             </b-row>
-            <b-row>
-                <b-col cols="12" sm="auto">
-                    <b-form-group
-                        label="Date of Birth"
-                        label-for="dateOfBirth"
-                        :state="isValid($v.dateOfBirth)"
-                    >
-                        <date-picker
-                            id="dateOfBirth"
-                            v-model="dateOfBirth"
-                            data-testid="dateOfBirthInput"
+            <form class="container my-3" @submit.prevent="handleSubmit">
+                <h1>COVID-19 Vaccination Status</h1>
+                <hr />
+                <h2>Please Provide the Following</h2>
+                <b-row>
+                    <b-col cols="12" sm="auto">
+                        <b-form-group
+                            label="Personal Health Number"
+                            label-for="phn"
+                        >
+                            <b-form-input
+                                id="phn"
+                                v-model="phn"
+                                data-testid="phnInput"
+                                :state="isValid($v.phn)"
+                                @blur="$v.phn.$touch()"
+                            />
+                            <b-form-invalid-feedback v-if="!$v.phn.required">
+                                Personal Health Number is required.
+                            </b-form-invalid-feedback>
+                            <b-form-invalid-feedback
+                                v-else-if="!$v.phn.formatted"
+                            >
+                                Personal Health Number must be valid.
+                            </b-form-invalid-feedback>
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col cols="12" sm="auto">
+                        <b-form-group
+                            label="Date of Birth"
+                            label-for="dateOfBirth"
                             :state="isValid($v.dateOfBirth)"
-                            @blur="$v.dateOfBirth.$touch()"
-                        />
-                        <b-form-invalid-feedback
-                            v-if="
-                                $v.dateOfBirth.$dirty &&
-                                !$v.dateOfBirth.required
-                            "
-                            force-show
                         >
-                            A valid date of birth is required.
-                        </b-form-invalid-feedback>
-                        <b-form-invalid-feedback
-                            v-else-if="
-                                $v.dateOfBirth.$dirty &&
-                                !$v.dateOfBirth.maxValue
-                            "
-                            force-show
-                        >
-                            Date of birth must be before today.
-                        </b-form-invalid-feedback>
-                    </b-form-group>
-                </b-col>
-            </b-row>
-            <hr />
-            <div class="text-center">
-                <hg-button variant="secondary" class="mr-2" to="/">
-                    Cancel
-                </hg-button>
-                <hg-button variant="primary" type="submit">
-                    Get Status
-                </hg-button>
-            </div>
-        </form>
+                            <date-picker
+                                id="dateOfBirth"
+                                v-model="dateOfBirth"
+                                data-testid="dateOfBirthInput"
+                                :state="isValid($v.dateOfBirth)"
+                                @blur="$v.dateOfBirth.$touch()"
+                            />
+                            <b-form-invalid-feedback
+                                v-if="
+                                    $v.dateOfBirth.$dirty &&
+                                    !$v.dateOfBirth.required
+                                "
+                                force-show
+                            >
+                                A valid date of birth is required.
+                            </b-form-invalid-feedback>
+                            <b-form-invalid-feedback
+                                v-else-if="
+                                    $v.dateOfBirth.$dirty &&
+                                    !$v.dateOfBirth.maxValue
+                                "
+                                force-show
+                            >
+                                Date of birth must be before today.
+                            </b-form-invalid-feedback>
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+                <hr />
+                <div class="text-center">
+                    <hg-button variant="secondary" class="mr-2" to="/">
+                        Cancel
+                    </hg-button>
+                    <hg-button variant="primary" type="submit">
+                        Get Status
+                    </hg-button>
+                </div>
+            </form>
+        </div>
     </div>
 </template>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
+.header {
+    background-color: $hg-brand-primary;
+}
 </style>
