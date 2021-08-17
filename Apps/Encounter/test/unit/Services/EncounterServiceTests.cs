@@ -105,7 +105,7 @@ namespace HealthGateway.Encounter.Test.Service
             mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(delegateResult);
 
             var mockPatientService = new Mock<IPatientService>();
-            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>())).ReturnsAsync(this.patientResult);
+            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).ReturnsAsync(this.patientResult);
 
             var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(this.GetHttpContext());
@@ -144,7 +144,7 @@ namespace HealthGateway.Encounter.Test.Service
             mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             var mockPatientService = new Mock<IPatientService>();
-            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>())).Returns(Task.FromResult(this.patientResult));
+            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(this.patientResult));
 
             var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(this.GetHttpContext());
@@ -187,7 +187,7 @@ namespace HealthGateway.Encounter.Test.Service
             };
 
             var mockPatientService = new Mock<IPatientService>();
-            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>())).Returns(Task.FromResult(errorPatientResult));
+            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(errorPatientResult));
 
             var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(this.GetHttpContext());

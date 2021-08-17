@@ -1,4 +1,7 @@
-export const StateList: Record<string, string> = {
+// Correlates 2-letter state abbreviations with state names for addressing
+// [2 letter State Abbreviation]: [State Name]
+// Sorted alphabetical by state name
+export const States: Record<string, string> = {
     AL: "Alabama",
     AK: "Alaska",
     AZ: "Arizona",

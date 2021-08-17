@@ -53,7 +53,7 @@ namespace HealthGateway.Common.Delegates
         private static ActivitySource Source { get; } = new ActivitySource(nameof(ClientRegistriesDelegate));
 
         /// <inheritdoc />
-        public async System.Threading.Tasks.Task<RequestResult<PatientModel>> GetDemographicsByHDIDAsync(string hdid)
+        public async System.Threading.Tasks.Task<RequestResult<PatientModel>> GetDemographicsByHDIDAsync(string hdid, bool disableIdValidation = false)
         {
             using (Source.StartActivity("GetDemographicsByHDIDAsync"))
             {
@@ -63,7 +63,7 @@ namespace HealthGateway.Common.Delegates
                 {
                     // Perform the request
                     HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
-                    return this.ParseResponse(reply);
+                    return this.ParseResponse(reply, disableIdValidation);
                 }
                 catch (CommunicationException e)
                 {
@@ -78,7 +78,7 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc />
-        public async System.Threading.Tasks.Task<RequestResult<PatientModel>> GetDemographicsByPHNAsync(string phn)
+        public async System.Threading.Tasks.Task<RequestResult<PatientModel>> GetDemographicsByPHNAsync(string phn, bool disableIdValidation = false)
         {
             using (Source.StartActivity("GetDemographicsByPHNAsync"))
             {
@@ -88,7 +88,7 @@ namespace HealthGateway.Common.Delegates
                 {
                     // Perform the request
                     HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
-                    return this.ParseResponse(reply);
+                    return this.ParseResponse(reply, disableIdValidation);
                 }
                 catch (CommunicationException e)
                 {
@@ -176,7 +176,6 @@ namespace HealthGateway.Common.Delegates
             for (int i = 0; i < nameSection.Items.Length; i++)
             {
                 ENXP name = nameSection.Items[i];
-
                 if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
                 {
                     givenNameList.Add(name.Text[0]);
@@ -203,7 +202,7 @@ namespace HealthGateway.Common.Delegates
                 {
                     switch (item)
                     {
-                        case ADStreetAddressLine line:
+                        case ADStreetAddressLine line when line.Text != null:
                             foreach (string s in line.Text)
                             {
                                 retAddress.AddLine(s ?? string.Empty);
@@ -273,7 +272,7 @@ namespace HealthGateway.Common.Delegates
             };
         }
 
-        private RequestResult<PatientModel> ParseResponse(HCIM_IN_GetDemographicsResponse1 reply)
+        private RequestResult<PatientModel> ParseResponse(HCIM_IN_GetDemographicsResponse1 reply, bool disableIDValidation)
         {
             using (Source.StartActivity("ParsePatientResponse"))
             {
@@ -317,19 +316,24 @@ namespace HealthGateway.Common.Delegates
                 PN? nameSection = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.C));
                 if (!ClientRegistriesDelegate.SetNames(nameSection, patient))
                 {
-                    this.logger.LogWarning($"Client Registry returned a person with an invalid name.");
-                    return new RequestResult<PatientModel>()
+                    this.logger.LogWarning($"Client Registry returned a person without a Documented Name, attempting Legal...");
+                    nameSection = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.L));
+                    if (!ClientRegistriesDelegate.SetNames(nameSection, patient))
                     {
-                        ResultStatus = ResultType.ActionRequired,
-                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.InvalidName),
-                    };
+                        this.logger.LogWarning($"Client Registry returned a person without a Legal Name.");
+                        return new RequestResult<PatientModel>()
+                        {
+                            ResultStatus = ResultType.ActionRequired,
+                            ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.InvalidName),
+                        };
+                    }
                 }
 
-                II? identifiedPersonId = (II?)retrievedPerson.identifiedPerson.id.GetValue(0);
+                // Populates the PHN
+                II? identifiedPersonId = retrievedPerson.identifiedPerson.id.GetValue(0) as II;
                 string? personIdentifierType = identifiedPersonId?.root;
                 string personIdentifier = identifiedPersonId?.extension ?? string.Empty;
-
-                if (!ClientRegistriesDelegate.SetIdentifier(personIdentifierType, personIdentifier, patient))
+                if (!ClientRegistriesDelegate.SetIdentifier(personIdentifierType, personIdentifier, patient) && !disableIDValidation)
                 {
                     this.logger.LogWarning($"Client Registry returned a person with a person identifier not recognized. No PHN or HDID was populated.");
                     return new RequestResult<PatientModel>()
@@ -339,10 +343,11 @@ namespace HealthGateway.Common.Delegates
                     };
                 }
 
-                II? subjectId = (II?)retrievedPerson.id.GetValue(0);
+                // Populates the HDID
+                II? subjectId = retrievedPerson.id?.GetValue(0) as II;
                 string? subjectIdentifierType = subjectId?.root;
                 string subjectIdentifier = subjectId?.extension ?? string.Empty;
-                if (!ClientRegistriesDelegate.SetIdentifier(subjectIdentifierType, subjectIdentifier, patient))
+                if (!ClientRegistriesDelegate.SetIdentifier(subjectIdentifierType, subjectIdentifier, patient) && !disableIDValidation)
                 {
                     this.logger.LogWarning($"Client Registry returned a person with a subject identifier not recognized. No PHN or HDID was populated.");
                     return new RequestResult<PatientModel>()

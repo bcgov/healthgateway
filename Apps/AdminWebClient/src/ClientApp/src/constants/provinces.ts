@@ -1,4 +1,7 @@
-export const ProvinceList: Record<string, string> = {
+// Correlates 2-letter province abbreviations with province names for addressing
+// [2 letter Province Abbreviation]: [Province Name]
+// Sorted alphabetical by province name
+export const Provinces: Record<string, string> = {
     AB: "Alberta",
     BC: "British Columbia",
     MB: "Manitoba",

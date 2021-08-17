@@ -212,7 +212,7 @@ namespace HealthGateway.WebClient.Test.Services
             };
             Mock<IPatientService> patientServiceMock = new Mock<IPatientService>();
             patientServiceMock
-                .Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID))
+                .Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false))
                 .ReturnsAsync(new RequestResult<PatientModel>
                 {
                     ResultStatus = ResultType.Success,
