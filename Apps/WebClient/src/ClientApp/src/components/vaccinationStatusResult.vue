@@ -120,13 +120,17 @@ export default class VaccinationStatusResultView extends Vue {
                             class="vaccination-stage"
                         />
                         <img
-                            v-else-if="vaccinationDoses === 2"
+                            v-else-if="
+                                isPartiallyVaccinated && vaccinationDoses === 2
+                            "
                             src="@/assets/images/vaccination-status/dose-2.svg"
-                            alt="One Dose"
+                            alt="Two Doses"
                             class="vaccination-stage"
                         />
                         <img
-                            v-else-if="vaccinationDoses === 1"
+                            v-else-if="
+                                isPartiallyVaccinated && vaccinationDoses === 1
+                            "
                             src="@/assets/images/vaccination-status/dose-1.svg"
                             alt="One Dose"
                             class="vaccination-stage"
