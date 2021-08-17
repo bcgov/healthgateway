@@ -68,23 +68,5 @@ namespace HealthGateway.Immunization.Controllers
             this.logger.LogTrace($"Fetching Vaccine Status for PHN: {phn}, and DOB: {dateOfBirth}");
             return await this.vaccineStatusService.GetVaccineStatus(phn, dateOfBirth).ConfigureAwait(true);
         }
-
-        /// <summary>
-        /// Requests the vaccine status for the supplied id.
-        /// </summary>
-        /// <param name="id">The vaccine status id.</param>
-        /// <returns>The wrapped vaccine status.</returns>
-        /// <response code="200">Returns the Vaccine status.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        /// <response code="503">The service is unavailable for use.</response>
-        [HttpGet]
-        [Produces("application/json")]
-        [Route("{id}")]
-        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus(Guid id)
-        {
-            this.logger.LogDebug($"Fetching Vaccine status for {id}");
-            return await this.vaccineStatusService.GetVaccineStatus(id).ConfigureAwait(true);
-        }
     }
 }

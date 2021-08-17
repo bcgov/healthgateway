@@ -23,16 +23,21 @@ namespace HealthGateway.Immunization.Constants
         /// <summary>
         /// Indicates that we have insufficient information to determine vaccine status.
         /// </summary>
-        Unknown,
-
-        /// <summary>
-        /// Indicates the Patient is fully vaccinated.
-        /// </summary>
-        Complete,
+        NotFound,
 
         /// <summary>
         /// Indicates the Patient is partially vaccinated.
         /// </summary>
-        Partial,
+        PartialDosesReceived,
+
+        /// <summary>
+        /// Indicates the Patient is fully vaccinated.
+        /// </summary>
+        AllDosesReceived,
+
+        /// <summary>
+        /// Indicates the Patient is exempt.
+        /// </summary>
+        Exempt 
     }
 }

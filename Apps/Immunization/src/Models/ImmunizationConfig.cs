@@ -18,12 +18,22 @@ namespace HealthGateway.Immunization.Models
     /// <summary>
     /// Provides configuration data for the Immunization Delegate.
     /// </summary>
-    public class ImmunizationConfig
+    public class PHSAConfig
     {
         /// <summary>
-        /// Gets or sets the Lab external endpoint.
+        /// Gets or sets the phsa base endpoint.
         /// </summary>
-        public string Endpoint { get; set; } = string.Empty;
+        public string BaseUrl { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the immunization endpoint.
+        /// </summary>
+        public string ImmunizationEndpoint { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the vaccine status endpoint.
+        /// </summary>
+        public string VaccineStatusEndpoint { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the total number of records to retrieve in one call.

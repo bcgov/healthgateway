@@ -13,25 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Services
+namespace HealthGateway.Immunization.Delegates
 {
     using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.Immunization;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Models;
 
     /// <summary>
-    /// The Vaccine Status data service.
+    /// Interface that defines a delegate to retrieve vaccine status information.
     /// </summary>
-    public interface IVaccineStatusService
+    public interface IVaccineStatusDelegate
     {
         /// <summary>
-        /// Gets the ImmunizationEvent for the given id.
+        /// Returns the vaccine status for the given patient.
         /// </summary>
-        /// <param name="phn">The security token representing the authenticated user.</param>
-        /// <param name="dateOfBirth">The date of birth in yyyyMMdd format.</param>
-        /// <returns>Returns a list of immunizations.</returns>
-        Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth);
+        /// <param name="phn">The personal health number of the patient.</param>
+        /// <param name="dob">The date of birth of the patient.</param>
+        /// <param name="accessToken">The connection access token.</param>
+        /// <returns>The vaccine status result for the given patient.</returns>
+        Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(string phn, DateTime dob, string accessToken);
     }
 }
