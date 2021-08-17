@@ -35,7 +35,7 @@ namespace HealthGateway.Immunization.Test.Services
     /// <summary>
     /// ImmunizationService's Unit Tests.
     /// </summary>
-    public class ImmsServiceTests
+    public class ImmunizationServiceTests
     {
         private readonly string recomendationSetId = "set-recomendation-id";
         private readonly string diseaseEligibleDateString = "2021-02-02";

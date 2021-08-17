@@ -43,7 +43,7 @@ namespace HealthGateway.Immunization.Test.Delegates
     /// <summary>
     /// RestImmunizationDelegate's Unit Tests.
     /// </summary>
-    public class ImmsDelegateTests
+    public class ImmunizationDelegateTests
     {
         private readonly IConfiguration configuration;
         private readonly string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
@@ -51,9 +51,9 @@ namespace HealthGateway.Immunization.Test.Delegates
         private readonly string userId = "1001";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImmsDelegateTests"/> class.
+        /// Initializes a new instance of the <see cref="ImmunizationDelegateTests"/> class.
         /// </summary>
-        public ImmsDelegateTests()
+        public ImmunizationDelegateTests()
         {
             this.configuration = GetIConfigurationRoot();
         }

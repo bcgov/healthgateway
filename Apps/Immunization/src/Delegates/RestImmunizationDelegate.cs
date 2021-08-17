@@ -42,7 +42,7 @@ namespace HealthGateway.Immunization.Delegates
     /// </summary>
     public class RestImmunizationDelegate : IImmunizationDelegate
     {
-        private const string phsaConfigSectionKey = "PHSA";
+        private const string PHSAConfigSectionKey = "PHSA";
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
         private readonly PHSAConfig phsaConfig;
@@ -69,7 +69,7 @@ namespace HealthGateway.Immunization.Delegates
             this.httpClientService = httpClientService;
             this.httpContextAccessor = httpContextAccessor;
             this.phsaConfig = new ();
-            configuration.Bind(phsaConfigSectionKey, this.phsaConfig);
+            configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
         }
 
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestImmunizationDelegate));

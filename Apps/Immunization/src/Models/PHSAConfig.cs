@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Models
 {
+    using System;
+
     /// <summary>
     /// Provides configuration data for the Immunization Delegate.
     /// </summary>
@@ -23,7 +25,7 @@ namespace HealthGateway.Immunization.Models
         /// <summary>
         /// Gets or sets the phsa base endpoint.
         /// </summary>
-        public string BaseUrl { get; set; } = string.Empty;
+        public Uri BaseUrl { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the immunization endpoint.

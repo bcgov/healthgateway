@@ -39,7 +39,7 @@ namespace HealthGateway.Immunization.Services
         private readonly IAuthenticationDelegate authDelegate;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly Uri tokenUri;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="VaccineStatusService"/> class.
         /// </summary>

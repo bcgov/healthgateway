@@ -120,7 +120,7 @@
         </member>
         <member name="M:HealthGateway.Immunization.Delegates.IVaccineStatusDelegate.GetVaccineStatus(System.String,System.DateTime,System.String)">
             <summary>
-            Returns the matching immunization for the given id.
+            Returns the vaccine status for the given patient.
             </summary>
             <param name="phn">The personal health number of the patient.</param>
             <param name="dob">The date of birth of the patient.</param>
@@ -157,12 +157,7 @@
             Implementation that uses HTTP to retrieve immunization information.
             </summary>
         </member>
-        <member name="F:HealthGateway.Immunization.Delegates.RestVaccineStatusDelegate.httpContextAccessor">
-            <summary>
-            Gets or sets the http context accessor.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.Immunization.Delegates.RestVaccineStatusDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Immunization.Delegates.RestImmunizationDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+        <member name="M:HealthGateway.Immunization.Delegates.RestVaccineStatusDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Immunization.Delegates.RestVaccineStatusDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Delegates.RestVaccineStatusDelegate"/> class.
             </summary>
@@ -173,31 +168,6 @@
         </member>
         <member name="M:HealthGateway.Immunization.Delegates.RestVaccineStatusDelegate.GetVaccineStatus(System.String,System.DateTime,System.String)">
             <inheritdoc/>
-        </member>
-        <member name="T:HealthGateway.Immunization.Models.PHSAConfig">
-            <summary>
-            Provides configuration data for the Immunization Delegate.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.PHSAConfig.BaseUrl">
-            <summary>
-            Gets or sets the phsa base endpoint.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.PHSAConfig.ImmunizationEndpoint">
-            <summary>
-            Gets or sets the immunization endpoint.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.PHSAConfig.VaccineStatusEndpoint">
-            <summary>
-            Gets or sets the vaccine status endpoint.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.PHSAConfig.FetchSize">
-            <summary>
-            Gets or sets the total number of records to retrieve in one call.
-            </summary>
         </member>
         <member name="T:HealthGateway.Immunization.Models.ImmunizationRecommendation">
             <summary>
@@ -314,6 +284,31 @@
             </summary>
             <param name="model">The Load State to convert.</param>
             <returns>A LoadStateModel object.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.PHSAConfig">
+            <summary>
+            Provides configuration data for the Immunization Delegate.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSAConfig.BaseUrl">
+            <summary>
+            Gets or sets the phsa base endpoint.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSAConfig.ImmunizationEndpoint">
+            <summary>
+            Gets or sets the immunization endpoint.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSAConfig.VaccineStatusEndpoint">
+            <summary>
+            Gets or sets the vaccine status endpoint.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSAConfig.FetchSize">
+            <summary>
+            Gets or sets the total number of records to retrieve in one call.
+            </summary>
         </member>
         <member name="T:HealthGateway.Immunization.Models.TargetDisease">
             <summary>
