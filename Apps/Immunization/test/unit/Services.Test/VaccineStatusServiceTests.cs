@@ -78,7 +78,7 @@ namespace HealthGateway.Immunization.Test.Services
                 ResourcePayload = new VaccineStatus()
                 {
                     Loaded = true,
-                    RetryIn = 1000,
+                    RetryIn = 500,
                     PersonalHealthNumber = this.phn,
                     FirstName = "Bob",
                     LastName = "Test",

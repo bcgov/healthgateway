@@ -34,10 +34,12 @@ namespace HealthGateway.Immunization.Services
     /// </summary>
     public class VaccineStatusService : IVaccineStatusService
     {
+        private const string PHSAConfigSectionKey = "PHSA";
         private const string AuthConfigSectionName = "ClientAuthentication";
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
         private readonly IAuthenticationDelegate authDelegate;
         private readonly ClientCredentialsTokenRequest tokenRequest;
+        private readonly PHSAConfig phsaConfig;
         private readonly Uri tokenUri;
 
         /// <summary>
@@ -58,7 +60,10 @@ namespace HealthGateway.Immunization.Services
             this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
             this.tokenRequest = new ClientCredentialsTokenRequest();
             configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
-}
+
+            this.phsaConfig = new PHSAConfig();
+            configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
+        }
 
         /// <inheritdoc/>
         public async Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth)
@@ -121,7 +126,7 @@ namespace HealthGateway.Immunization.Services
             if (result.ResourcePayload != null)
             {
                 retVal.ResourcePayload.Loaded = !result.ResourcePayload.LoadState.RefreshInProgress;
-                retVal.ResourcePayload.RetryIn = result.ResourcePayload.LoadState.BackOffMilliseconds;
+                retVal.ResourcePayload.RetryIn = Math.Max(result.ResourcePayload.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds);
             }
 
             return retVal;

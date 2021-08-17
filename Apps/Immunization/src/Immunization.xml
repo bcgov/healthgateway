@@ -310,6 +310,11 @@
             Gets or sets the total number of records to retrieve in one call.
             </summary>
         </member>
+        <member name="P:HealthGateway.Immunization.Models.PHSAConfig.BackOffMilliseconds">
+            <summary>
+            Gets or sets the default time to wait for a new request.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Immunization.Models.TargetDisease">
             <summary>
             Represents a target disease.
