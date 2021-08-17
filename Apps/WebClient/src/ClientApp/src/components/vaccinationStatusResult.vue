@@ -70,14 +70,8 @@ export default class VaccinationStatusResultView extends Vue {
 </script>
 
 <template>
-    <div class="d-flex flex-column fill-height">
+    <div class="d-flex flex-column flex-grow-1">
         <div class="header text-white">
-            <img
-                class="img-fluid m-3"
-                src="@/assets/images/gov/bcid-logo-rev-en.svg"
-                width="181"
-                alt="BC Mark"
-            />
             <div class="container pb-3">
                 <h1 class="text-center">COVID-19 Vaccination Status</h1>
                 <h4 class="text-center">Government of BC</h4>

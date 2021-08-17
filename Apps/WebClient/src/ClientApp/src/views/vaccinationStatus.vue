@@ -54,22 +54,17 @@ export default class VaccinationStatusView extends Vue {
 </script>
 
 <template>
-    <div>
+    <div class="fill-height d-flex flex-column">
+        <div class="header">
+            <img
+                class="img-fluid m-3"
+                src="@/assets/images/gov/bcid-logo-rev-en.svg"
+                width="181"
+                alt="BC Mark"
+            />
+        </div>
         <vaccination-status-result v-if="displayResult" />
         <div v-else>
-            <b-row no-gutters class="header align-items-center p-3">
-                <b-col cols="auto">
-                    <img
-                        class="img-fluid mr-3"
-                        src="@/assets/images/gov/bcid-symbol-rev.svg"
-                        width="30"
-                        alt="BC Mark"
-                    />
-                </b-col>
-                <b-col class="align-items-center">
-                    <h3 class="text-white m-0">Health Gateway</h3>
-                </b-col>
-            </b-row>
             <form class="container my-3" @submit.prevent="handleSubmit">
                 <h1>COVID-19 Vaccination Status</h1>
                 <hr />
