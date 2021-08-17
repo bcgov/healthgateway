@@ -58,7 +58,7 @@ namespace HealthGateway.Immunization.Test.Services
                 ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = new PHSAResult<VaccineStatusResult>()
                 {
-                    LoadState = new PHSALoadState() { RefreshInProgress = false, BackOffMilliseconds = 1000 },
+                    LoadState = new PHSALoadState() { RefreshInProgress = false, BackOffMilliseconds = 500 },
                     Result = new VaccineStatusResult()
                     {
                         FirstName = "Bob",
@@ -78,7 +78,7 @@ namespace HealthGateway.Immunization.Test.Services
                 ResourcePayload = new VaccineStatus()
                 {
                     Loaded = true,
-                    RetryIn = 500,
+                    RetryIn = 10000,
                     PersonalHealthNumber = this.phn,
                     FirstName = "Bob",
                     LastName = "Test",
