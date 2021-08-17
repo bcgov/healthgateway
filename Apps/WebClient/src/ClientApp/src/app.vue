@@ -105,6 +105,7 @@ export default class App extends Vue {
             this.host.startsWith("WWW.HEALTHGATEWAY"));
 
     private windowWidth = 0;
+    private vaccinationStatusPath = "/vaccination-status";
 
     constructor() {
         super();
@@ -147,6 +148,18 @@ export default class App extends Vue {
             }
         }
     }
+
+    private get isHeaderVisible(): boolean {
+        return this.$route.path !== this.vaccinationStatusPath;
+    }
+
+    private get isFooterVisible(): boolean {
+        return this.$route.path !== this.vaccinationStatusPath;
+    }
+
+    private get isCommunicationVisible(): boolean {
+        return this.$route.path !== this.vaccinationStatusPath;
+    }
 }
 </script>
 
@@ -159,11 +172,11 @@ export default class App extends Vue {
             </div>
         </div>
 
-        <NavHeader />
+        <NavHeader v-show="isHeaderVisible" />
         <b-row>
             <NavSidebar class="no-print sticky-top vh-100" />
             <main class="col fill-height d-flex flex-column">
-                <CommunicationComponent />
+                <CommunicationComponent v-show="isCommunicationVisible" />
                 <ErrorCard
                     title="Whoops!"
                     description="An error occurred."
@@ -174,7 +187,7 @@ export default class App extends Vue {
             </main>
         </b-row>
 
-        <footer class="footer no-print">
+        <footer v-show="isFooterVisible" class="footer no-print">
             <NavFooter />
         </footer>
 

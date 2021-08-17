@@ -70,13 +70,13 @@ export default class VaccinationStatusResultView extends Vue {
 </script>
 
 <template>
-    <div class="d-flex flex-column fill-height">
+    <div class="d-flex flex-column flex-grow-1">
         <div class="header text-white">
-            <div class="container py-3">
+            <div class="container pb-3">
                 <h1 class="text-center">COVID-19 Vaccination Status</h1>
                 <h4 class="text-center">Government of BC</h4>
                 <hr style="border-top: 2px solid #fcba19" />
-                <div class="my-3 text-center">
+                <div class="mb-2 text-center">
                     <hg-button variant="secondary" @click="toggleDetails">
                         <span v-if="showDetails">Hide Details</span>
                         <span v-else>Show Details</span>
@@ -93,7 +93,7 @@ export default class VaccinationStatusResultView extends Vue {
                             <b-form-input id="name" v-model="name" disabled />
                         </b-form-group>
                     </b-col>
-                    <b-col v-show="showDetails" cols="12" md="6">
+                    <b-col v-show="showDetails" cols="12" md="3">
                         <b-form-group
                             label="Date of Birth"
                             label-for="dateOfBirth"
@@ -111,12 +111,13 @@ export default class VaccinationStatusResultView extends Vue {
         <div
             class="
                 vaccination-indicator
-                p-5
+                p-3
                 text-white
                 flex-grow-1
                 d-flex
                 align-items-center
-                justify-content-center
+                justify-content-between
+                flex-column
             "
             :class="{
                 'fully-vaccinated': isFullyVaccinated,
@@ -124,7 +125,7 @@ export default class VaccinationStatusResultView extends Vue {
                 'not-found': isVaccinationNotFound,
             }"
         >
-            <div class="vaccination-box p-5 d-inline-block text-center">
+            <div class="vaccination-box m-4 p-5 d-inline-block text-center">
                 <hg-icon
                     v-show="isFullyVaccinated"
                     icon="check-circle"
@@ -136,6 +137,16 @@ export default class VaccinationStatusResultView extends Vue {
                     <div>Vaccinated</div>
                 </h1>
                 <h1 v-else-if="isVaccinationNotFound">Not Found</h1>
+            </div>
+            <div>
+                <hg-button variant="secondary" to="/">Done</hg-button>
+                <hg-button
+                    v-if="isPartiallyVaccinated || isFullyVaccinated"
+                    variant="primary"
+                    class="ml-3"
+                >
+                    Save for Later
+                </hg-button>
             </div>
         </div>
     </div>

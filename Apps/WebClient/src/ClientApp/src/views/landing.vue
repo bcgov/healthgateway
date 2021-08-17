@@ -18,6 +18,7 @@ import Image03 from "@/assets/images/landing/003_reduced-3.jpeg";
 import Image04 from "@/assets/images/landing/004_reduced-living-room.jpeg";
 import Image05 from "@/assets/images/landing/005_reduced-family.jpeg";
 import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
+import VaccinationStatusBannerImage from "@/assets/images/landing/vaccination-status-banner-image.png";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
 
@@ -60,6 +61,7 @@ export default class LandingView extends Vue {
     private logo: string = Image00;
     private devices: string = Image02;
     private bcsclogo: string = Image06;
+    private vaccinationStatusBannerImage: string = VaccinationStatusBannerImage;
     private isOpenRegistration = false;
 
     private icons: Icon[] = [
@@ -158,29 +160,9 @@ export default class LandingView extends Vue {
 
 <template>
     <div class="landing mx-2">
-        <b-row
-            class="
-                title-section
-                justify-content-center
-                align-items-center
-                mx-1 mx-md-5
-                my-2
-            "
-        >
-            <b-col class="col-12 mx-0 px-0">
-                <div class="title-text">
-                    <b-row class="mx-0 px-0">
-                        <h1 class="text-center w-100 py-3">Health Gateway</h1>
-                    </b-row>
-                    <b-row>
-                        <h3 class="text-center font-weight-normal w-100 p-3">
-                            A single place for BC residents to access their
-                            health records
-                        </h3>
-                    </b-row>
-                </div>
-            </b-col>
-        </b-row>
+        <h3 class="text-center font-weight-normal my-4 mx-1">
+            A single place for BC residents to access their health records
+        </h3>
         <b-row
             v-if="!isOffline"
             class="
@@ -197,76 +179,113 @@ export default class LandingView extends Vue {
                     width="auto"
                     height="auto"
                     alt="Devices"
-            /></b-col>
-            <b-col class="col-12 col-sm-7 col-lg-5 devices-text my-3 ml-md-4">
+                />
+            </b-col>
+            <b-col class="col-12 col-sm-7 col-lg-5 devices-text ml-md-4">
                 <b-row
                     v-for="icon in icons"
                     :key="icon.label"
-                    class="my-4 ml-auto justify-content-start"
+                    class="my-4 align-items-center"
                     :class="icon.active ? 'status-active' : 'status-inactive'"
+                    no-gutters
                 >
-                    <hg-icon
-                        :icon="icon.definition"
-                        size="large"
-                        fixed-width
-                        class="mr-2"
-                    />
-                    <span>
+                    <b-col cols="auto">
+                        <hg-icon
+                            :icon="icon.definition"
+                            size="large"
+                            fixed-width
+                            class="mr-2"
+                        />
+                    </b-col>
+                    <b-col>
                         <span>{{ icon.label }}</span>
                         <span v-if="!icon.active"> (Coming soon)</span>
-                    </span>
+                    </b-col>
                 </b-row>
-                <b-row v-if="!oidcIsAuthenticated">
-                    <router-link to="/login" class="col-lg-12">
+                <div class="my-5">
+                    <router-link v-if="!oidcIsAuthenticated" to="/login">
                         <hg-button
                             id="btnLogin"
                             data-testid="btnLogin"
                             variant="primary"
                             class="btn-auth-landing"
-                            ><img
+                        >
+                            <img
                                 class="mr-2 mb-1"
                                 :src="bcsclogo"
                                 height="16"
                                 alt="BC Services Card App Icon"
-                            />Log In with BC Services Card App</hg-button
+                            />
+                            <span>Log In with BC Services Card App</span>
+                        </hg-button>
+                    </router-link>
+                    <div v-if="!oidcIsAuthenticated" class="my-3">
+                        <span class="mr-2">Need an account?</span>
+                        <router-link
+                            id="btnStart"
+                            data-testid="btnStart"
+                            :to="
+                                isOpenRegistration
+                                    ? 'registration'
+                                    : 'registrationInfo'
+                            "
+                            >Register</router-link
                         >
-                    </router-link>
+                    </div>
+                </div>
+            </b-col>
+        </b-row>
+        <b-row v-else class="align-items-center pt-2 pb-5 align-middle">
+            <b-col class="cols-12 text-center">
+                <hr class="py-4" />
+                <b-row class="py-2">
+                    <b-col class="title">
+                        The site is offline for maintenance
+                    </b-col>
                 </b-row>
-                <b-row
-                    v-if="!oidcIsAuthenticated"
-                    class="col-12 col-sm-7 col-lg-5 devices-text my-3"
-                >
-                    <span class="mr-2">Need an account?</span>
-                    <router-link
-                        id="btnStart"
-                        data-testid="btnStart"
-                        :to="
-                            isOpenRegistration
-                                ? 'registration'
-                                : 'registrationInfo'
-                        "
-                        >Register
-                    </router-link>
+                <b-row class="py-3">
+                    <b-col data-testid="offlineMessage" class="sub-title">
+                        {{ offlineMessage }}
+                    </b-col>
+                </b-row>
+                <b-row class="pt-5">
+                    <b-col>
+                        <hr class="pt-5" />
+                    </b-col>
                 </b-row>
             </b-col>
         </b-row>
-        <b-row v-else class="align-items-center pt-2 pb-5 align-middle"
-            ><b-col class="cols-12 text-center">
-                <hr class="py-4" />
-                <b-row class="py-2">
-                    <b-col class="title"
-                        >The site is offline for maintenance</b-col
-                    ></b-row
-                >
-                <b-row class="py-3"
-                    ><b-col data-testid="offlineMessage" class="sub-title">
-                        {{ offlineMessage }}
-                    </b-col></b-row
-                >
-                <b-row class="pt-5"
-                    ><b-col> <hr class="pt-5" /> </b-col>
-                </b-row> </b-col
-        ></b-row>
+        <b-row
+            class="
+                mx-n2
+                px-lg-4
+                mb-5 mb-md-0
+                bg-success
+                text-white
+                justify-content-center
+                align-items-center
+            "
+        >
+            <b-col cols="auto" class="d-none d-md-block">
+                <img
+                    :src="vaccinationStatusBannerImage"
+                    alt="Vaccination Status Logo"
+                    class="vaccination-status-logo img-fluid m-2"
+                />
+            </b-col>
+            <b-col md="6" lg="auto">
+                <h2 class="text-center my-5">
+                    <span>Need a COVID‑19 Quick Access Card?</span>
+                    <hg-button
+                        variant="success"
+                        to="/vaccination-status"
+                        class="m-2 ml-4"
+                    >
+                        Get Status
+                    </hg-button>
+                </h2>
+            </b-col>
+        </b-row>
         <b-row class="tile-section my-0 my-md-1">
             <b-col>
                 <b-row
@@ -291,7 +310,8 @@ export default class LandingView extends Vue {
                             width="auto"
                             height="auto"
                             alt="B.C. Government Logo"
-                    /></b-col>
+                        />
+                    </b-col>
                     <b-col class="col-12 col-md-5" :class="getTileClass(index)">
                         <div class="text-wrapper mx-4 position-absolute">
                             <h2 class="font-weight-normal">{{ tile.title }}</h2>
@@ -355,6 +375,10 @@ export default class LandingView extends Vue {
                 color: darkgray;
             }
         }
+    }
+
+    .vaccination-status-logo {
+        max-height: 8rem;
     }
 
     .tile-section {
