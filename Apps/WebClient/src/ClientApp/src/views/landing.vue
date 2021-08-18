@@ -160,6 +160,36 @@ export default class LandingView extends Vue {
 
 <template>
     <div class="landing mx-2">
+        <b-row
+            class="
+                mx-n2
+                px-lg-4
+                bg-success
+                text-white
+                justify-content-center
+                align-items-center
+            "
+        >
+            <b-col cols="auto" class="d-none d-md-block">
+                <img
+                    :src="vaccinationStatusBannerImage"
+                    alt="Vaccination Status Logo"
+                    class="vaccination-status-logo img-fluid m-2"
+                />
+            </b-col>
+            <b-col md="6" lg="auto">
+                <h2 class="text-center my-5">
+                    <span>Need Your COVID-19 Vaccine Status?</span>
+                    <hg-button
+                        variant="success"
+                        to="/vaccination-status"
+                        class="m-2 ml-4"
+                    >
+                        Get Status
+                    </hg-button>
+                </h2>
+            </b-col>
+        </b-row>
         <h3 class="text-center font-weight-normal my-4 mx-1">
             A single place for BC residents to access their health records
         </h3>
@@ -253,37 +283,6 @@ export default class LandingView extends Vue {
                         <hr class="pt-5" />
                     </b-col>
                 </b-row>
-            </b-col>
-        </b-row>
-        <b-row
-            class="
-                mx-n2
-                px-lg-4
-                mb-5 mb-md-0
-                bg-success
-                text-white
-                justify-content-center
-                align-items-center
-            "
-        >
-            <b-col cols="auto" class="d-none d-md-block">
-                <img
-                    :src="vaccinationStatusBannerImage"
-                    alt="Vaccination Status Logo"
-                    class="vaccination-status-logo img-fluid m-2"
-                />
-            </b-col>
-            <b-col md="6" lg="auto">
-                <h2 class="text-center my-5">
-                    <span>Need a COVID‑19 Quick Access Card?</span>
-                    <hg-button
-                        variant="success"
-                        to="/vaccination-status"
-                        class="m-2 ml-4"
-                    >
-                        Get Status
-                    </hg-button>
-                </h2>
             </b-col>
         </b-row>
         <b-row class="tile-section my-0 my-md-1">
