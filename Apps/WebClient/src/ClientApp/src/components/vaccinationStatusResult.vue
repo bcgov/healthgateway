@@ -73,36 +73,42 @@ export default class VaccinationStatusResultView extends Vue {
                 <h1 class="text-center">COVID-19 Vaccination Status</h1>
                 <h4 class="text-center">Government of BC</h4>
                 <hr style="border-top: 2px solid #fcba19" />
-                <div class="mb-2 text-center">
-                    <hg-button variant="secondary" @click="toggleDetails">
-                        <span v-if="showDetails">Hide Details</span>
-                        <span v-else>Show Details</span>
-                        <hg-icon
-                            :icon="showDetails ? 'eye-slash' : 'eye'"
-                            class="ml-2"
-                            square
-                        />
-                    </hg-button>
-                </div>
-                <b-row>
-                    <b-col>
-                        <b-form-group label="Name" label-for="name">
-                            <b-form-input id="name" v-model="name" disabled />
-                        </b-form-group>
-                    </b-col>
-                    <b-col v-show="showDetails" cols="12" md="3">
-                        <b-form-group
-                            label="Date of Birth"
-                            label-for="dateOfBirth"
-                        >
-                            <b-form-input
-                                id="dateOfBirth"
-                                v-model="dateOfBirth"
-                                disabled
+                <div v-if="name.length > 0">
+                    <div class="mb-2 text-center">
+                        <hg-button variant="secondary" @click="toggleDetails">
+                            <span v-if="showDetails">Hide Details</span>
+                            <span v-else>Show Details</span>
+                            <hg-icon
+                                :icon="showDetails ? 'eye-slash' : 'eye'"
+                                class="ml-2"
+                                square
                             />
-                        </b-form-group>
-                    </b-col>
-                </b-row>
+                        </hg-button>
+                    </div>
+                    <b-row>
+                        <b-col>
+                            <b-form-group label="Name" label-for="name">
+                                <b-form-input
+                                    id="name"
+                                    v-model="name"
+                                    disabled
+                                />
+                            </b-form-group>
+                        </b-col>
+                        <b-col v-show="showDetails" cols="12" md="3">
+                            <b-form-group
+                                label="Date of Birth"
+                                label-for="dateOfBirth"
+                            >
+                                <b-form-input
+                                    id="dateOfBirth"
+                                    v-model="dateOfBirth"
+                                    disabled
+                                />
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                </div>
                 <b-row v-show="showDetails" class="justify-content-center">
                     <b-col cols="auto">
                         <img
