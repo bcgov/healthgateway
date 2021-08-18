@@ -7,10 +7,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
+import { Getter } from "vuex-class";
 
-import { VaccinationStatus } from "@/constants/vaccinationStatus";
+import { VaccinationState } from "@/constants/vaccinationState";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
-import VaccinationIndicationResult from "@/models/vaccinationIndicationResult";
+import VaccinationStatus from "@/models/vaccinationStatus";
 
 library.add(faCheckCircle, faEye, faEyeSlash);
 
@@ -18,54 +19,45 @@ library.add(faCheckCircle, faEye, faEyeSlash);
 export default class VaccinationStatusResultView extends Vue {
     private showDetails = false;
 
-    private result: VaccinationIndicationResult | undefined = {
-        loadState: {
-            refreshInProgress: false,
-        },
-        vaccinationIndication: {
-            name: "BONNET PROTERVITY",
-            dateOfBirth: "1967-06-02T00:00:00",
-            status: VaccinationStatus.FullyVaccinated,
-            doses: 2,
-        },
-    };
+    @Getter("vaccinationStatus", { namespace: "vaccinationStatus" }) status!:
+        | VaccinationStatus
+        | undefined;
 
-    private get vaccinationStatus(): VaccinationStatus | undefined {
-        return this.result?.vaccinationIndication.status;
+    private get vaccinationState(): VaccinationState | undefined {
+        return this.status?.state;
     }
 
     private get vaccinationDoses(): number | undefined {
-        return this.result?.vaccinationIndication.doses;
+        return this.status?.doses;
     }
 
     private get isFullyVaccinated(): boolean {
-        return this.vaccinationStatus === VaccinationStatus.FullyVaccinated;
+        return this.vaccinationState === VaccinationState.FullyVaccinated;
     }
 
     private get isPartiallyVaccinated(): boolean {
-        return this.vaccinationStatus === VaccinationStatus.PartiallyVaccinated;
+        return this.vaccinationState === VaccinationState.PartiallyVaccinated;
     }
 
     private get isVaccinationNotFound(): boolean {
-        return this.vaccinationStatus === VaccinationStatus.NotFound;
+        return this.vaccinationState === VaccinationState.NotFound;
     }
 
     private get name(): string {
-        return this.result?.vaccinationIndication.name ?? "";
+        return [this.status?.firstname ?? "", this.status?.lastname ?? ""]
+            .filter((name) => name?.length > 0)
+            .join(" ");
     }
 
     private get dateOfBirth(): string {
-        if (this.result === undefined) {
-            return "";
-        }
-        return this.formatDate(this.result.vaccinationIndication.dateOfBirth);
+        return this.formatDate(this.status?.birthdate ?? null);
     }
 
     private toggleDetails() {
         this.showDetails = !this.showDetails;
     }
 
-    private formatDate(date: StringISODate): string {
+    private formatDate(date: StringISODate | null): string {
         if (!date) {
             return "";
         }

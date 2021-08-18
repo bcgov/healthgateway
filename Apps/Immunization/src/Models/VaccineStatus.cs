@@ -20,7 +20,7 @@ namespace HealthGateway.Immunization.Models
     using HealthGateway.Immunization.Constants;
 
     /// <summary>
-    /// TThe Vaccine Status model.
+    /// The Vaccine Status model.
     /// </summary>
     public class VaccineStatus
     {

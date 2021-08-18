@@ -75,7 +75,7 @@ namespace HealthGateway.Immunization.Services
             DateTime dob;
             try
             {
-                dob = DateTime.ParseExact(dateOfBirth, "yyyyMMdd", CultureInfo.InvariantCulture);
+                dob = DateTime.ParseExact(dateOfBirth, "yyyy-MM-dd", CultureInfo.InvariantCulture);
             }
             catch (Exception e) when (e is FormatException || e is ArgumentNullException)
             {

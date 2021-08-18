@@ -1,12 +1,17 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Watch } from "vue-property-decorator";
 import { required } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
+import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/datePicker.vue";
 import VaccinationStatusResultComponent from "@/components/vaccinationStatusResult.vue";
-import { DateWrapper } from "@/models/dateWrapper";
+import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import VaccinationStatus from "@/models/vaccinationStatus";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.container";
+import { ILogger } from "@/services/interfaces";
 import PHNValidator from "@/utility/phnValidator";
 
 const validPersonalHealthNumber = (value: string): boolean => {
@@ -21,6 +26,17 @@ const validPersonalHealthNumber = (value: string): boolean => {
     },
 })
 export default class VaccinationStatusView extends Vue {
+    @Action("retrieve", { namespace: "vaccinationStatus" })
+    retrieveVaccinationStatus!: (params: {
+        phn: string;
+        dateOfBirth: StringISODate;
+    }) => Promise<void>;
+
+    @Getter("vaccinationStatus", { namespace: "vaccinationStatus" }) status!:
+        | VaccinationStatus
+        | undefined;
+
+    private logger!: ILogger;
     private displayResult = false;
 
     private phn = "";
@@ -40,6 +56,13 @@ export default class VaccinationStatusView extends Vue {
         };
     }
 
+    @Watch("status")
+    private onStatusChange() {
+        if (this.status?.loaded) {
+            this.displayResult = true;
+        }
+    }
+
     private isValid(param: Validation): boolean | undefined {
         return param.$dirty ? !param.$invalid : undefined;
     }
@@ -47,8 +70,23 @@ export default class VaccinationStatusView extends Vue {
     private handleSubmit() {
         this.$v.$touch();
         if (!this.$v.$invalid) {
-            this.displayResult = true;
+            this.retrieveVaccinationStatus({
+                phn: this.phn,
+                dateOfBirth: this.dateOfBirth,
+            })
+                .then(() => {
+                    this.logger.debug("Vaccination status retrieved");
+                })
+                .catch((err) => {
+                    this.logger.error(
+                        `Error retrieving vaccination status: ${err}`
+                    );
+                });
         }
+    }
+
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 }
 </script>
