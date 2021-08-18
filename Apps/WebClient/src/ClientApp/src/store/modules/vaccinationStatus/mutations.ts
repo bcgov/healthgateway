@@ -1,3 +1,4 @@
+import BannerError from "@/models/bannerError";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
 
@@ -5,6 +6,7 @@ import { VaccinationStatusMutations, VaccinationStatusState } from "./types";
 
 export const mutations: VaccinationStatusMutations = {
     setRequested(state: VaccinationStatusState) {
+        state.error = undefined;
         state.status =
             state.status === LoadStatus.DEFERRED
                 ? LoadStatus.ASYNC_REQUESTED
@@ -15,11 +17,11 @@ export const mutations: VaccinationStatusMutations = {
         vaccinationStatus: VaccinationStatus
     ) {
         state.vaccinationStatus = vaccinationStatus;
-        state.error = undefined;
         state.status = LoadStatus.LOADED;
     },
-    vaccinationStatusError(state: VaccinationStatusState, error: Error) {
-        state.statusMessage = error.message;
+    vaccinationStatusError(state: VaccinationStatusState, error: BannerError) {
+        state.vaccinationStatus = undefined;
+        state.error = error;
         state.status = LoadStatus.ERROR;
     },
 };

@@ -6,6 +6,7 @@ import {
     MutationTree,
 } from "vuex";
 
+import BannerError from "@/models/bannerError";
 import { StringISODate } from "@/models/dateWrapper";
 import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
@@ -13,9 +14,8 @@ import VaccinationStatus from "@/models/vaccinationStatus";
 import { RootState } from "@/store/types";
 
 export interface VaccinationStatusState {
-    vaccinationStatus: VaccinationStatus | undefined;
-    statusMessage: string;
-    error?: ResultError;
+    vaccinationStatus?: VaccinationStatus;
+    error?: BannerError;
     status: LoadStatus;
 }
 
@@ -25,6 +25,7 @@ export interface VaccinationStatusGetters
         state: VaccinationStatusState
     ): VaccinationStatus | undefined;
     isLoading(state: VaccinationStatusState): boolean;
+    error(state: VaccinationStatusState): BannerError | undefined;
 }
 
 type StoreContext = ActionContext<VaccinationStatusState, RootState>;
@@ -44,7 +45,10 @@ export interface VaccinationStatusMutations
         state: VaccinationStatusState,
         vaccinationStatus: VaccinationStatus
     ): void;
-    vaccinationStatusError(state: VaccinationStatusState, error: Error): void;
+    vaccinationStatusError(
+        state: VaccinationStatusState,
+        error: BannerError
+    ): void;
 }
 
 export interface VaccinationStatusModule

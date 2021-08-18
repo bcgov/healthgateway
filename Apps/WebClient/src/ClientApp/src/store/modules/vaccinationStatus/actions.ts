@@ -4,6 +4,7 @@ import { ResultError } from "@/models/requestResult";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger, IVaccinationStatusService } from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
 
 import { VaccinationStatusActions } from "./types";
 
@@ -56,12 +57,12 @@ export const actions: VaccinationStatusActions = {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(error)}`);
-        context.commit("vaccinationStatusError", error);
-
-        context.dispatch(
-            "errorBanner/addResultError",
-            { message: "Fetch Vaccination Status Error", error },
-            { root: true }
+        context.commit(
+            "vaccinationStatusError",
+            ErrorTranslator.toBannerError(
+                "Error Retrieving Vaccination Status",
+                error
+            )
         );
     },
 };
