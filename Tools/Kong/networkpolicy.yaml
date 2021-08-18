@@ -3,7 +3,9 @@ apiVersion: networking.k8s.io/v1
 metadata:
   name: allow-kong-to-gateway
 spec:
-  podSelector: {}
+  podSelector:
+    matchLabels:
+      app: immunization
   ingress:
     - from:
         - namespaceSelector:

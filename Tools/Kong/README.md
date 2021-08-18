@@ -15,17 +15,19 @@ oc apply -f networkpolicy.yaml
 
 Based on reading the Kong documentation you should have the gwa cli installed locally and should have completed namespaces for each environment along with secrets.
 
-Create a local .env file with the information provided after creating the secret
+Grab the appropriate environment file from Sharepoint and name it .env on the ilesystem.
+
+Set the required environment variables
 
 ```console
-GWA_NAMESPACE=
-CLIENT_ID=
-CLIENT_SECRET=
-GWA_ENV=prod
+export environment=dev
+export licensePlate=0bd5ad
+export kongNamespace=hg-dev
 ```
 
-finally publish the Kong configuration for the environment
+Evaluate the template and publish to the Kong Gateway API
 
 ```console
-gwa pg hg-dev.yaml
+eval "echo \"$(cat immunization.tmpl)\"" > imms-$environment.yaml
+gwa pg imms-$environment.yaml
 ```
