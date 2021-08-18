@@ -191,34 +191,32 @@ export default class VaccinationStatusView extends Vue {
                         Get Status
                     </hg-button>
                 </div>
-                <b-alert
-                    v-if="error"
-                    variant="danger"
-                    class="no-print my-3"
-                    :show="error !== undefined"
-                    dismissible
-                >
-                    <h4>{{ error.title }}</h4>
-                    <h6>{{ error.errorCode }}</h6>
-                    <div class="pl-4">
-                        <p data-testid="errorTextDescription">
-                            {{ error.description }}
-                        </p>
-                        <p data-testid="errorTextDetails">
-                            {{ error.detail }}
-                        </p>
-                        <p
-                            v-if="error.traceId"
-                            data-testid="errorSupportDetails"
-                        >
-                            If this issue persists, contact
-                            HealthGateway@gov.bc.ca and provide
-                            {{ error.traceId }}
-                        </p>
-                    </div>
-                </b-alert>
             </form>
         </div>
+
+        <b-alert
+            v-if="error !== undefined"
+            variant="danger"
+            class="no-print my-3"
+            :show="error !== undefined"
+            dismissible
+        >
+            <h4>{{ error.title }}</h4>
+            <h6>{{ error.errorCode }}</h6>
+            <div class="pl-4">
+                <p data-testid="errorTextDescription">
+                    {{ error.description }}
+                </p>
+                <p data-testid="errorTextDetails">
+                    {{ error.detail }}
+                </p>
+                <p v-if="error.traceId" data-testid="errorSupportDetails">
+                    If this issue persists, contact HealthGateway@gov.bc.ca and
+                    provide
+                    {{ error.traceId }}
+                </p>
+            </div>
+        </b-alert>
     </div>
 </template>
 
