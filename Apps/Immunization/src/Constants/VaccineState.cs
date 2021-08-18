@@ -13,38 +13,31 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Immunization.Constants
 {
-    using System;
-    using System.Text.Json.Serialization;
-
     /// <summary>
-    /// Representation of the load state sent by PHSA.
+    /// Represents the state of the Vaccine as applied to a Patient.
     /// </summary>
-    public class PHSALoadState
+    public enum VaccineState
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the PHSA Load State is in the RefreshInProgress status.
+        /// Indicates that we have insufficient information to determine vaccine status.
         /// </summary>
-        [JsonPropertyName("refreshInProgress")]
-        public bool RefreshInProgress { get; set; }
+        NotFound,
 
         /// <summary>
-        /// Gets or sets the SignalR url.
+        /// Indicates the Patient is partially vaccinated.
         /// </summary>
-        [JsonPropertyName("signalRUrl")]
-        public Uri? SignalRUrl { get; set; }
+        PartialDosesReceived,
 
         /// <summary>
-        /// Gets or sets the SignalR method.
+        /// Indicates the Patient is fully vaccinated.
         /// </summary>
-        [JsonPropertyName("signalRMethod")]
-        public string? SignalRMethod { get; set; }
+        AllDosesReceived,
 
         /// <summary>
-        /// Gets or sets a value indicating the number of milliseconds to wait before requerying.
+        /// Indicates the Patient is exempt.
         /// </summary>
-        [JsonPropertyName("backOffMilliseconds")]
-        public int BackOffMilliseconds { get; set; }
+        Exempt,
     }
 }

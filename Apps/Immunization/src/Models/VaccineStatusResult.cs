@@ -13,38 +13,45 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Immunization.Models
 {
     using System;
     using System.Text.Json.Serialization;
+    using HealthGateway.Immunization.Constants;
 
     /// <summary>
-    /// Representation of the load state sent by PHSA.
+    /// TThe Vaccine Status model.
     /// </summary>
-    public class PHSALoadState
+    public class VaccineStatusResult
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the PHSA Load State is in the RefreshInProgress status.
+        /// Gets or sets the patient's first name.
         /// </summary>
-        [JsonPropertyName("refreshInProgress")]
-        public bool RefreshInProgress { get; set; }
+        [JsonPropertyName("firstName")]
+        public string? FirstName { get; set; }
 
         /// <summary>
-        /// Gets or sets the SignalR url.
+        /// Gets or sets the patient's last name.
         /// </summary>
-        [JsonPropertyName("signalRUrl")]
-        public Uri? SignalRUrl { get; set; }
+        [JsonPropertyName("lastName")]
+        public string? LastName { get; set; }
 
         /// <summary>
-        /// Gets or sets the SignalR method.
+        /// Gets or sets the patient's date of birth.
         /// </summary>
-        [JsonPropertyName("signalRMethod")]
-        public string? SignalRMethod { get; set; }
+        [JsonPropertyName("dob")]
+        public DateTime? Birthdate { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating the number of milliseconds to wait before requerying.
+        /// Gets or sets the number of doses of the vaccine that have been administered to the identified PHN.
         /// </summary>
-        [JsonPropertyName("backOffMilliseconds")]
-        public int BackOffMilliseconds { get; set; }
+        [JsonPropertyName("doseCount")]
+        public int DoseCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the vaccine state.
+        /// </summary>
+        [JsonPropertyName("statusIndicator")]
+        public string StatusIndicator { get; set; } = string.Empty;
     }
 }
