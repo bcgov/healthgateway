@@ -4,6 +4,7 @@ import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
 import { StringISODate } from "@/models/dateWrapper";
 import { ServiceName } from "@/models/errorInterfaces";
+import Report from "@/models/report";
 import RequestResult from "@/models/requestResult";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -57,6 +58,41 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
                 })
                 .catch((err) => {
                     this.logger.error(`Fetch error: ${err}`);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.Immunization
+                        )
+                    );
+                });
+        });
+    }
+
+    public getReport(
+        phn: string,
+        dateOfBirth: StringISODate
+    ): Promise<RequestResult<Report>> {
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                reject();
+                return;
+            }
+
+            const headers: Dictionary<string> = {};
+            headers["phn"] = phn;
+            headers["dateOfBirth"] = dateOfBirth;
+
+            return this.http
+                .post<RequestResult<Report>>(
+                    `${this.baseUri}${this.VACCINATION_STATUS_BASE_URI}`,
+                    null,
+                    headers
+                )
+                .then((requestResult) => {
+                    resolve(requestResult);
+                })
+                .catch((err) => {
+                    this.logger.error(`Fetch report error: ${err}`);
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,

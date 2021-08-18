@@ -18,6 +18,7 @@ namespace HealthGateway.Immunization.Services
     using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.CDogs;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Immunization.Models;
 
@@ -27,11 +28,19 @@ namespace HealthGateway.Immunization.Services
     public interface IVaccineStatusService
     {
         /// <summary>
-        /// Gets the ImmunizationEvent for the given id.
+        /// Gets the vaccine status for the given patient info.
         /// </summary>
-        /// <param name="phn">The security token representing the authenticated user.</param>
-        /// <param name="dateOfBirth">The date of birth in yyyyMMdd format.</param>
-        /// <returns>Returns a list of immunizations.</returns>
+        /// <param name="phn">The patient personal health number.</param>
+        /// <param name="dateOfBirth">The patient date of birth in yyyyMMdd format.</param>
+        /// <returns>Returns the vaccine status.</returns>
         Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth);
+
+        /// <summary>
+        /// Gets the vaccine status pdf for the given patient info.
+        /// </summary>
+        /// <param name="phn">The patient personal health number.</param>
+        /// <param name="dateOfBirth">The date of birth in yyyyMMdd format.</param>
+        /// <returns>Returns the vaccine status pdf document.</returns>
+        Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth);
     }
 }
