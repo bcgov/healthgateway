@@ -1,6 +1,6 @@
 _format_version: \"1.1\"
 services:
-  - name: ImmunizationService
+  - name: ImmunizationService-$kongNamespace
     url: http://immunization.$licensePlate-$environment.svc:8080
     plugins:
       - name: rate-limiting
@@ -20,7 +20,7 @@ services:
         config:
           preflight_continue: true
     routes:
-      - name: GetAll
+      - name: GetAll-$kongNamespace
         methods:
           - GET
         hosts:
@@ -35,7 +35,7 @@ services:
             config:
               client_roles: null
               allowed_iss:
-                - https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f
+                - $keycloakUri
               run_on_preflight: true
               iss_key_grace_period: 10
               maximum_expiration: 0
@@ -48,7 +48,7 @@ services:
                 - jwt
               roles: null
               consumer_match: false
-              well_known_template: https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f/.well-known/openid-configuration
+              well_known_template: $keycloakUri/.well-known/openid-configuration
               consumer_match_ignore_not_found: false
               anonymous: null
               algorithm: RS256
@@ -57,7 +57,7 @@ services:
         tags:
           - OAS3_import
           - ns.$kongNamespace
-      - name: OptionsAll
+      - name: OptionsAll-$kongNamespace
         methods:
           - OPTIONS
         hosts:
@@ -68,7 +68,7 @@ services:
         tags:
           - OAS3_import
           - ns.$kongNamespace
-      - name: GetById
+      - name: GetById-$kongNamespace
         methods:
           - GET
         hosts:
@@ -83,7 +83,7 @@ services:
             config:
               client_roles: null
               allowed_iss:
-                - https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f
+                - $keycloakUri
               run_on_preflight: true
               iss_key_grace_period: 10
               maximum_expiration: 0
@@ -96,7 +96,7 @@ services:
                 - jwt
               roles: null
               consumer_match: false
-              well_known_template: https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f/.well-known/openid-configuration
+              well_known_template: $keycloakUri/.well-known/openid-configuration
               consumer_match_ignore_not_found: false
               anonymous: null
               algorithm: RS256
@@ -105,7 +105,7 @@ services:
         tags:
           - OAS3_import
           - ns.$kongNamespace
-      - name: OptionsById
+      - name: OptionsById-$kongNamespace
         methods:
           - OPTIONS
         hosts:
@@ -116,7 +116,7 @@ services:
         tags:
           - OAS3_import
           - ns.$kongNamespace
-      - name: GetVaccineStatus
+      - name: GetVaccineStatus-$kongNamespace
         methods:
           - GET
         hosts:
@@ -127,7 +127,7 @@ services:
         tags:
           - OAS3_import
           - ns.$kongNamespace
-      - name: OptionsVaccineStatus
+      - name: OptionsVaccineStatus-$kongNamespace
         methods:
           - OPTIONS
         hosts:
@@ -138,7 +138,7 @@ services:
         tags:
           - OAS3_import
           - ns.$kongNamespace
-      - name: GetVaccineStatusPDF
+      - name: GetVaccineStatusPDF-$kongNamespace
         methods:
           - POST
         hosts:
@@ -149,7 +149,7 @@ services:
         tags:
           - OAS3_import
           - ns.$kongNamespace
-      - name: OptionsVaccineStatusPDF
+      - name: OptionsVaccineStatusPDF-$kongNamespace
         methods:
           - OPTIONS
         hosts:

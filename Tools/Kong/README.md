@@ -23,11 +23,12 @@ Set the required environment variables
 export environment=dev
 export licensePlate=0bd5ad
 export kongNamespace=hg-dev
+export keycloakUri=https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f
 ```
 
 Evaluate the template and publish to the Kong Gateway API
 
 ```console
 eval "echo \"$(cat immunization.tmpl)\"" > imms-$environment.yaml
-gwa pg imms-$environment.yaml
+./gwa pg imms-$environment.yaml
 ```
