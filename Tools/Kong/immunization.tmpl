@@ -119,23 +119,12 @@ services:
       - name: VaccineStatus-$kongNamespace
         methods:
           - GET
-          - OPTIONS
-        hosts:
-          - $kongNamespace.api.gov.bc.ca
-        paths:
-          - /v1/api/VaccineStatus
-        strip_path: false
-        tags:
-          - OAS3_import
-          - ns.$kongNamespace
-      - name: VaccineStatusPDF-$kongNamespace
-        methods:
           - POST
           - OPTIONS
         hosts:
           - $kongNamespace.api.gov.bc.ca
         paths:
-          - /v1/api/VaccineStatusPDF
+          - /v1/api/VaccineStatus
         strip_path: false
         tags:
           - OAS3_import
