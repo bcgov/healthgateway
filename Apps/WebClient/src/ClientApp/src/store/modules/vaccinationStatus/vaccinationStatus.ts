@@ -6,7 +6,6 @@ import { mutations } from "./mutations";
 import { VaccinationStatusModule, VaccinationStatusState } from "./types";
 
 const state: VaccinationStatusState = {
-    statusMessage: "",
     vaccinationStatus: undefined,
     error: undefined,
     status: LoadStatus.NONE,

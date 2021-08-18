@@ -1,3 +1,4 @@
+import BannerError from "@/models/bannerError";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
 
@@ -11,5 +12,8 @@ export const getters: VaccinationStatusGetters = {
     },
     isLoading(state: VaccinationStatusState): boolean {
         return state.status === LoadStatus.REQUESTED;
+    },
+    error(state: VaccinationStatusState): BannerError | undefined {
+        return state.error;
     },
 };

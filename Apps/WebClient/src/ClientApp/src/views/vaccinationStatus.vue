@@ -6,7 +6,10 @@ import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/datePicker.vue";
+import ErrorCardComponent from "@/components/errorCard.vue";
+import LoadingComponent from "@/components/loading.vue";
 import VaccinationStatusResultComponent from "@/components/vaccinationStatusResult.vue";
+import BannerError from "@/models/bannerError";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -23,6 +26,8 @@ const validPersonalHealthNumber = (value: string): boolean => {
     components: {
         "vaccination-status-result": VaccinationStatusResultComponent,
         "date-picker": DatePickerComponent,
+        "error-card": ErrorCardComponent,
+        LoadingComponent,
     },
 })
 export default class VaccinationStatusView extends Vue {
@@ -32,12 +37,18 @@ export default class VaccinationStatusView extends Vue {
         dateOfBirth: StringISODate;
     }) => Promise<void>;
 
-    @Getter("vaccinationStatus", { namespace: "vaccinationStatus" }) status!:
-        | VaccinationStatus
-        | undefined;
+    @Getter("vaccinationStatus", { namespace: "vaccinationStatus" })
+    status!: VaccinationStatus | undefined;
+
+    @Getter("isLoading", { namespace: "vaccinationStatus" })
+    isLoading!: boolean;
+
+    @Getter("error", { namespace: "vaccinationStatus" })
+    error!: BannerError | undefined;
 
     private logger!: ILogger;
     private displayResult = false;
+    private errorDisplaySeconds = 5;
 
     private phn = "";
     private dateOfBirth = "";
@@ -93,6 +104,7 @@ export default class VaccinationStatusView extends Vue {
 
 <template>
     <div class="fill-height d-flex flex-column">
+        <LoadingComponent :is-loading="isLoading" />
         <div class="header">
             <img
                 class="img-fluid m-3"
@@ -171,10 +183,40 @@ export default class VaccinationStatusView extends Vue {
                     <hg-button variant="secondary" class="mr-2" to="/">
                         Cancel
                     </hg-button>
-                    <hg-button variant="primary" type="submit">
+                    <hg-button
+                        variant="primary"
+                        type="submit"
+                        :disabled="isLoading"
+                    >
                         Get Status
                     </hg-button>
                 </div>
+                <b-alert
+                    v-if="error"
+                    variant="danger"
+                    class="no-print my-3"
+                    :show="error !== undefined"
+                    dismissible
+                >
+                    <h4>{{ error.title }}</h4>
+                    <h6>{{ error.errorCode }}</h6>
+                    <div class="pl-4">
+                        <p data-testid="errorTextDescription">
+                            {{ error.description }}
+                        </p>
+                        <p data-testid="errorTextDetails">
+                            {{ error.detail }}
+                        </p>
+                        <p
+                            v-if="error.traceId"
+                            data-testid="errorSupportDetails"
+                        >
+                            If this issue persists, contact
+                            HealthGateway@gov.bc.ca and provide
+                            {{ error.traceId }}
+                        </p>
+                    </div>
+                </b-alert>
             </form>
         </div>
     </div>
