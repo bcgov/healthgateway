@@ -30,19 +30,19 @@ namespace HealthGateway.Common.Models.PHSA
         public bool RefreshInProgress { get; set; }
 
         /// <summary>
-        /// Gets or sets the signalR url.
+        /// Gets or sets the SignalR url.
         /// </summary>
         [JsonPropertyName("signalRUrl")]
         public Uri? SignalRUrl { get; set; }
 
         /// <summary>
-        /// Gets or sets the signal.
+        /// Gets or sets the SignalR method.
         /// </summary>
         [JsonPropertyName("signalRMethod")]
         public string? SignalRMethod { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the PHSA Load State is in the RefreshInProgress status.
+        /// Gets or sets a value indicating the number of milliseconds to wait before requerying.
         /// </summary>
         [JsonPropertyName("backOffMilliseconds")]
         public int BackOffMilliseconds { get; set; }
