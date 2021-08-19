@@ -49,14 +49,19 @@ interface Tile {
 export default class LandingView extends Vue {
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
-    @Getter("oidcIsAuthenticated", {
-        namespace: "auth",
-    })
+
+    @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated!: boolean;
-    @Getter("isOffline", {
-        namespace: "config",
-    })
+
+    @Getter("isOffline", { namespace: "config" })
     isOffline!: boolean;
+
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
+    private get isVaccinationStatusEnabled(): boolean {
+        return this.config.modules["VaccinationStatus"];
+    }
 
     private logo: string = Image00;
     private devices: string = Image02;
@@ -161,6 +166,7 @@ export default class LandingView extends Vue {
 <template>
     <div class="landing mx-2">
         <b-row
+            v-if="isVaccinationStatusEnabled"
             class="
                 mx-n2
                 px-lg-4
