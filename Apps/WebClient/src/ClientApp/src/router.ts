@@ -112,6 +112,7 @@ export enum ClientModule {
     Dependent = "Dependent",
     Note = "Note",
     Credential = "Credential",
+    VaccinationStatus = "VaccinationStatus",
 }
 
 function getAvailableModules() {
@@ -220,6 +221,7 @@ const routes = [
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
+            requiredModules: [ClientModule.VaccinationStatus],
         },
     },
     {
