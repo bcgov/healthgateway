@@ -30,6 +30,10 @@ export const actions: VaccinationStatusActions = {
                         const payload = result.resourcePayload;
                         if (!payload.loaded && payload.retryin > 0) {
                             logger.info("VaccinationStatus not loaded");
+                            context.commit(
+                                "setStatusMessage",
+                                "We're busy but will continue to try to fetch your record...."
+                            );
                             setTimeout(() => {
                                 logger.info(
                                     "Re-querying for vaccination status"
@@ -39,10 +43,11 @@ export const actions: VaccinationStatusActions = {
                                     dateOfBirth: params.dateOfBirth,
                                 });
                             }, payload.retryin);
+                            resolve();
+                        } else {
+                            context.commit("setVaccinationStatus", payload);
+                            resolve();
                         }
-
-                        context.commit("setVaccinationStatus", payload);
-                        resolve();
                     } else {
                         context.dispatch("handleError", result.resultError);
                         reject(result.resultError);

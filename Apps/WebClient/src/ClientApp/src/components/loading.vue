@@ -23,6 +23,7 @@ export default class LoadingComponent extends Vue {
     @Prop() isLoading!: boolean;
     @Prop() isCustom!: boolean;
     @Prop({ default: true }) fullScreen!: boolean;
+    @Prop() text!: string | undefined;
     private step = 0;
     private intervalId = 0;
 
@@ -77,7 +78,11 @@ export default class LoadingComponent extends Vue {
             :active.sync="isLoading"
             data-testid="loadingSpinner"
             :is-full-page="true"
-        ></loading>
+        >
+            <template v-if="text" #after>
+                <div class="m-3">{{ text }}</div>
+            </template>
+        </loading>
         <div v-else>
             <div class="spinner" data-testid="timelineLoading">
                 <div id="first" class="double-bounce">

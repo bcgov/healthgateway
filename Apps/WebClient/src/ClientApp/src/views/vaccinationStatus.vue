@@ -46,6 +46,9 @@ export default class VaccinationStatusView extends Vue {
     @Getter("error", { namespace: "vaccinationStatus" })
     error!: BannerError | undefined;
 
+    @Getter("statusMessage", { namespace: "vaccinationStatus" })
+    statusMessage!: string;
+
     private logger!: ILogger;
     private displayResult = false;
     private errorDisplaySeconds = 5;
@@ -104,7 +107,7 @@ export default class VaccinationStatusView extends Vue {
 
 <template>
     <div class="fill-height d-flex flex-column">
-        <LoadingComponent :is-loading="isLoading" />
+        <LoadingComponent :is-loading="isLoading" :text="statusMessage" />
         <div class="header">
             <img
                 class="img-fluid m-3"
@@ -225,5 +228,19 @@ export default class VaccinationStatusView extends Vue {
 
 .header {
     background-color: $hg-brand-primary;
+}
+</style>
+
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+
+.vld-overlay {
+    .vld-background {
+        opacity: 0.75;
+    }
+
+    .vld-icon {
+        text-align: center;
+    }
 }
 </style>

@@ -9,6 +9,7 @@ const state: VaccinationStatusState = {
     vaccinationStatus: undefined,
     error: undefined,
     status: LoadStatus.NONE,
+    statusMessage: "",
 };
 
 const namespaced = true;
