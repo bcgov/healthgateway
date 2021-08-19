@@ -16,16 +16,13 @@
 namespace HealthGateway.Immunization.Test.Controllers
 {
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Immunization.Controllers;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;

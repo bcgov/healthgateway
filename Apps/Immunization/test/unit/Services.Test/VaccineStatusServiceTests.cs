@@ -16,21 +16,16 @@
 namespace HealthGateway.Immunization.Test.Services
 {
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
-    using System.Linq;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Common.Models.PHSA.Recommendation;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
-    using HealthGateway.Immunization.Parser;
     using HealthGateway.Immunization.Services;
     using Microsoft.Extensions.Configuration;
     using Moq;

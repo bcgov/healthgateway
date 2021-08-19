@@ -15,27 +15,14 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Test.Delegates
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
     using System.Net;
     using System.Net.Http;
-    using System.Security.Claims;
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
-    using DeepEqual.Syntax;
-    using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Common.Models.PHSA.Recommendation;
     using HealthGateway.Common.Services;
-    using HealthGateway.Immunization.Constants;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
