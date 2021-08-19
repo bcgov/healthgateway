@@ -44,6 +44,7 @@ namespace HealthGateway.Immunization.Test.Services
         private readonly string phn = "9735353315";
         private readonly DateTime dob = new DateTime(1990, 01, 05);
         private readonly string accessToken = "XXDDXX";
+        private readonly string captchaToken = "CCCCTT";
 
         private readonly IConfiguration configuration = GetIConfigurationRoot();
 
@@ -94,13 +95,17 @@ namespace HealthGateway.Immunization.Test.Services
             Mock<IAuthenticationDelegate> mockAuthDelegate = new Mock<IAuthenticationDelegate>();
             mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>())).Returns(jwtModel);
 
+            Mock<ICaptchaDelegate> mockCaptchaDelegate = new Mock<ICaptchaDelegate>();
+            mockCaptchaDelegate.Setup(s => s.IsCaptchaValid(this.captchaToken)).ReturnsAsync(true);
+
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                new Mock<ICDogsDelegate>().Object);
+                new Mock<ICDogsDelegate>().Object,
+                mockCaptchaDelegate.Object);
 
-            var actualResult = await service.GetVaccineStatus(this.phn, this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture)).ConfigureAwait(true);
+            var actualResult = await service.GetVaccineStatus(this.phn, this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture), this.captchaToken).ConfigureAwait(true);
             Assert.True(expectedResult.IsDeepEqual(actualResult));
         }
 
@@ -115,9 +120,10 @@ namespace HealthGateway.Immunization.Test.Services
                 this.configuration,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<ICDogsDelegate>().Object);
+                new Mock<ICDogsDelegate>().Object,
+                new Mock<ICaptchaDelegate>().Object);
 
-            var actualResult = await service.GetVaccineStatus("123", this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture)).ConfigureAwait(true);
+            var actualResult = await service.GetVaccineStatus("123", this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture), this.captchaToken).ConfigureAwait(true);
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
 
@@ -132,9 +138,10 @@ namespace HealthGateway.Immunization.Test.Services
                 this.configuration,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<ICDogsDelegate>().Object);
+                new Mock<ICDogsDelegate>().Object,
+                new Mock<ICaptchaDelegate>().Object);
 
-            var actualResult = await service.GetVaccineStatus(this.phn, "yyyyMMddx").ConfigureAwait(true);
+            var actualResult = await service.GetVaccineStatus(this.phn, "yyyyMMddx", this.captchaToken).ConfigureAwait(true);
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
 

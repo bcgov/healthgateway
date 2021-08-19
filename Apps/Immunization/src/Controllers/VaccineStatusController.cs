@@ -16,6 +16,7 @@
 namespace HealthGateway.Immunization.Controllers
 {
     using System;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
@@ -57,6 +58,7 @@ namespace HealthGateway.Immunization.Controllers
         /// </summary>
         /// <param name="phn">The personal health number to query.</param>
         /// <param name="dateOfBirth">The date of birth (yyyyMMdd) for the supplied PHN.</param>
+        /// <param name="token">The recaptcha token.</param>
         /// <returns>The wrapped vaccine status.</returns>
         /// <response code="200">Returns the Vaccine status.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -64,10 +66,10 @@ namespace HealthGateway.Immunization.Controllers
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
-        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus([FromHeader] string phn, [FromHeader] string dateOfBirth)
+        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string token)
         {
             this.logger.LogTrace($"Fetching Vaccine Status for PHN: {phn}, and DOB: {dateOfBirth}");
-            return await this.vaccineStatusService.GetVaccineStatus(phn, dateOfBirth).ConfigureAwait(true);
+            return await this.vaccineStatusService.GetVaccineStatus(phn, dateOfBirth, token).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -75,6 +77,7 @@ namespace HealthGateway.Immunization.Controllers
         /// </summary>
         /// <param name="phn">The personal health number to query.</param>
         /// <param name="dateOfBirth">The date of birth (yyyyMMdd) for the supplied PHN.</param>
+        /// <param name="token">The recaptcha token.</param>
         /// <returns>The wrapped vaccine status.</returns>
         /// <response code="200">Returns the Vaccine status.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -82,10 +85,10 @@ namespace HealthGateway.Immunization.Controllers
         /// <response code="503">The service is unavailable for use.</response>
         [HttpPost]
         [Produces("application/json")]
-        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF([FromHeader] string phn, [FromHeader] string dateOfBirth)
+        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string token)
         {
             this.logger.LogTrace($"Fetching Vaccine Status PDF for PHN: {phn}, and DOB: {dateOfBirth}");
-            return await this.vaccineStatusService.GetVaccineStatusPDF(phn, dateOfBirth).ConfigureAwait(true);
+            return await this.vaccineStatusService.GetVaccineStatusPDF(phn, dateOfBirth, token).ConfigureAwait(true);
         }
     }
 }

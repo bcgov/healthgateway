@@ -37,6 +37,7 @@ namespace HealthGateway.Immunization.Test.Controllers
     {
         private readonly string phn = "1234567890";
         private readonly string dob = "19900105";
+        private readonly string token = "XXXX";
 
         /// <summary>
         /// GetVaccineStatus - Happy Path.
@@ -59,14 +60,14 @@ namespace HealthGateway.Immunization.Test.Controllers
             };
 
             Mock<IVaccineStatusService> svcMock = new Mock<IVaccineStatusService>();
-            svcMock.Setup(s => s.GetVaccineStatus(this.phn, this.dob)).ReturnsAsync(expectedRequestResult);
+            svcMock.Setup(s => s.GetVaccineStatus(this.phn, this.dob, this.token)).ReturnsAsync(expectedRequestResult);
 
             VaccineStatusController controller = new VaccineStatusController(
                 new Mock<ILogger<VaccineStatusController>>().Object,
                 svcMock.Object);
 
             // Act
-            RequestResult<VaccineStatus> actual = await controller.GetVaccineStatus(this.phn, this.dob).ConfigureAwait(true);
+            RequestResult<VaccineStatus> actual = await controller.GetVaccineStatus(this.phn, this.dob, this.token).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(Common.Constants.ResultType.Success, actual.ResultStatus);
