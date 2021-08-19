@@ -1,4 +1,5 @@
 <script lang="ts">
+import { load } from "recaptcha-v3";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { required } from "vuelidate/lib/validators";
@@ -10,6 +11,7 @@ import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import VaccinationStatusResultComponent from "@/components/vaccinationStatusResult.vue";
 import BannerError from "@/models/bannerError";
+import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -35,7 +37,11 @@ export default class VaccinationStatusView extends Vue {
     retrieveVaccinationStatus!: (params: {
         phn: string;
         dateOfBirth: StringISODate;
+        token: string;
     }) => Promise<void>;
+
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
 
     @Getter("vaccinationStatus", { namespace: "vaccinationStatus" })
     status!: VaccinationStatus | undefined;
@@ -45,6 +51,9 @@ export default class VaccinationStatusView extends Vue {
 
     @Getter("error", { namespace: "vaccinationStatus" })
     error!: BannerError | undefined;
+
+    @Getter("statusMessage", { namespace: "vaccinationStatus" })
+    statusMessage!: string;
 
     private logger!: ILogger;
     private displayResult = false;
@@ -81,17 +90,36 @@ export default class VaccinationStatusView extends Vue {
     private handleSubmit() {
         this.$v.$touch();
         if (!this.$v.$invalid) {
-            this.retrieveVaccinationStatus({
-                phn: this.phn,
-                dateOfBirth: this.dateOfBirth,
-            })
-                .then(() => {
-                    this.logger.debug("Vaccination status retrieved");
+            load(this.webClientConfig.captchaSiteKey)
+                .then((recaptcha) => {
+                    recaptcha.showBadge();
+                    recaptcha
+                        .execute("retrieveVaccinationStatus")
+                        .then((token) => {
+                            this.retrieveVaccinationStatus({
+                                phn: this.phn,
+                                dateOfBirth: this.dateOfBirth,
+                                token,
+                            })
+                                .then(() => {
+                                    this.logger.debug(
+                                        "Vaccination status retrieved"
+                                    );
+                                })
+                                .catch((err) => {
+                                    this.logger.error(
+                                        `Error retrieving vaccination status: ${err}`
+                                    );
+                                });
+                        })
+                        .catch((err) => {
+                            this.logger.error(
+                                `Error executing captcha action: ${err}`
+                            );
+                        });
                 })
                 .catch((err) => {
-                    this.logger.error(
-                        `Error retrieving vaccination status: ${err}`
-                    );
+                    this.logger.error(`Error loading captcha: ${err}`);
                 });
         }
     }
@@ -104,7 +132,7 @@ export default class VaccinationStatusView extends Vue {
 
 <template>
     <div class="fill-height d-flex flex-column">
-        <LoadingComponent :is-loading="isLoading" />
+        <LoadingComponent :is-loading="isLoading" :text="statusMessage" />
         <div class="header">
             <img
                 class="img-fluid m-3"
@@ -113,12 +141,37 @@ export default class VaccinationStatusView extends Vue {
                 alt="BC Mark"
             />
         </div>
+        <div v-if="error !== undefined" class="container">
+            <b-alert
+                variant="danger"
+                class="no-print my-3"
+                :show="error !== undefined"
+                dismissible
+            >
+                <h4>{{ error.title }}</h4>
+                <h6>{{ error.errorCode }}</h6>
+                <div class="pl-4">
+                    <p data-testid="errorTextDescription">
+                        {{ error.description }}
+                    </p>
+                    <p data-testid="errorTextDetails">
+                        {{ error.detail }}
+                    </p>
+                    <p v-if="error.traceId" data-testid="errorSupportDetails">
+                        If this issue persists, contact HealthGateway@gov.bc.ca
+                        and provide
+                        <span class="trace-id">{{ error.traceId }}</span>
+                    </p>
+                </div>
+            </b-alert>
+        </div>
         <vaccination-status-result v-if="displayResult" />
         <div v-else>
+            <div class="p-3 bg-success text-white" no-gutters>
+                <h3 class="text-center m-0">COVID‑19 Vaccination Check</h3>
+            </div>
             <form class="container my-3" @submit.prevent="handleSubmit">
-                <h1>COVID-19 Vaccination Status</h1>
-                <hr />
-                <h2>Please Provide the Following</h2>
+                <p>Please provide the following.</p>
                 <b-row>
                     <b-col cols="12" sm="auto">
                         <b-form-group
@@ -179,7 +232,7 @@ export default class VaccinationStatusView extends Vue {
                     </b-col>
                 </b-row>
                 <hr />
-                <div class="text-center">
+                <div class="text-center my-3">
                     <hg-button variant="secondary" class="mr-2" to="/">
                         Cancel
                     </hg-button>
@@ -188,35 +241,22 @@ export default class VaccinationStatusView extends Vue {
                         type="submit"
                         :disabled="isLoading"
                     >
-                        Get Status
+                        Check
                     </hg-button>
                 </div>
+                <p>
+                    Your information is being collected to provide you with your
+                    COVID-19 vaccination status under s. 26(c) of the
+                    <em>Freedom of Information and Protection of Privacy Act</em
+                    >. Contact the Ministry Privacy Officer at
+                    <a href="mailto:MOH.Privacy.Officer@gov.bc.ca"
+                        >MOH.Privacy.Officer@gov.bc.ca</a
+                    >
+                    or 778-698-5849 if you have any questions about this
+                    collection.
+                </p>
             </form>
         </div>
-
-        <b-alert
-            v-if="error !== undefined"
-            variant="danger"
-            class="no-print my-3"
-            :show="error !== undefined"
-            dismissible
-        >
-            <h4>{{ error.title }}</h4>
-            <h6>{{ error.errorCode }}</h6>
-            <div class="pl-4">
-                <p data-testid="errorTextDescription">
-                    {{ error.description }}
-                </p>
-                <p data-testid="errorTextDetails">
-                    {{ error.detail }}
-                </p>
-                <p v-if="error.traceId" data-testid="errorSupportDetails">
-                    If this issue persists, contact HealthGateway@gov.bc.ca and
-                    provide
-                    {{ error.traceId }}
-                </p>
-            </div>
-        </b-alert>
     </div>
 </template>
 
@@ -225,5 +265,23 @@ export default class VaccinationStatusView extends Vue {
 
 .header {
     background-color: $hg-brand-primary;
+}
+
+.trace-id {
+    overflow-wrap: anywhere;
+}
+</style>
+
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+
+.vld-overlay {
+    .vld-background {
+        opacity: 0.75;
+    }
+
+    .vld-icon {
+        text-align: center;
+    }
 }
 </style>

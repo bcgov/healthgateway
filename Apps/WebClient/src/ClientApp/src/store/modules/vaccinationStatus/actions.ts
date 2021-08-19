@@ -12,7 +12,7 @@ import { VaccinationStatusActions } from "./types";
 export const actions: VaccinationStatusActions = {
     retrieve(
         context,
-        params: { phn: string; dateOfBirth: StringISODate }
+        params: { phn: string; dateOfBirth: StringISODate; token: string }
     ): Promise<void> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         const vaccinationStatusService: IVaccinationStatusService =
@@ -24,12 +24,20 @@ export const actions: VaccinationStatusActions = {
             logger.debug(`Retrieving Vaccination Status`);
             context.commit("setRequested");
             vaccinationStatusService
-                .getVaccinationStatus(params.phn, params.dateOfBirth)
+                .getVaccinationStatus(
+                    params.phn,
+                    params.dateOfBirth,
+                    params.token
+                )
                 .then((result) => {
                     if (result.resultStatus === ResultType.Success) {
                         const payload = result.resourcePayload;
                         if (!payload.loaded && payload.retryin > 0) {
                             logger.info("VaccinationStatus not loaded");
+                            context.commit(
+                                "setStatusMessage",
+                                "We're busy but will continue to try to fetch your record...."
+                            );
                             setTimeout(() => {
                                 logger.info(
                                     "Re-querying for vaccination status"
@@ -39,10 +47,11 @@ export const actions: VaccinationStatusActions = {
                                     dateOfBirth: params.dateOfBirth,
                                 });
                             }, payload.retryin);
+                            resolve();
+                        } else {
+                            context.commit("setVaccinationStatus", payload);
+                            resolve();
                         }
-
-                        context.commit("setVaccinationStatus", payload);
-                        resolve();
                     } else {
                         context.dispatch("handleError", result.resultError);
                         reject(result.resultError);
@@ -56,7 +65,7 @@ export const actions: VaccinationStatusActions = {
     },
     getReport(
         context,
-        params: { phn: string; dateOfBirth: StringISODate }
+        params: { phn: string; dateOfBirth: StringISODate; token: string }
     ): Promise<Report> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         const vaccinationStatusService: IVaccinationStatusService =
@@ -67,7 +76,7 @@ export const actions: VaccinationStatusActions = {
         return new Promise((resolve, reject) => {
             logger.debug(`Retrieving Vaccination Status PDF`);
             vaccinationStatusService
-                .getReport(params.phn, params.dateOfBirth)
+                .getReport(params.phn, params.dateOfBirth, params.token)
                 .then((result) => {
                     if (result.resultStatus === ResultType.Success) {
                         const payload = result.resourcePayload;

@@ -79,5 +79,10 @@ namespace HealthGateway.WebClient.Models
         /// This value is populated at runtime with the client invoking the web service.
         /// </summary>
         public string? ClientIP { get; set; }
+
+        /// <summary>
+        /// Gets or sets the captcha site key.
+        /// </summary>
+        public string? CaptchaSiteKey { get; set; }
     }
 }

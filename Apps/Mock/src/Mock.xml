@@ -77,7 +77,7 @@
             <param name="request">The new notification settings.</param>
             <returns>The mocked notification settings json.</returns>
         </member>
-        <member name="M:HealthGateway.Mock.Controllers.PhsaController.UpdateNotificationSettings(System.String,System.String)">
+        <member name="M:HealthGateway.Mock.Controllers.PhsaController.GetCovidImmunizations(System.String,System.String)">
             <summary>
             Mocks the endpoint for retrieving covid immunization events.
             </summary>

@@ -18,6 +18,7 @@ export interface VaccinationStatusState {
     vaccinationStatus?: VaccinationStatus;
     error?: BannerError;
     status: LoadStatus;
+    statusMessage: string;
 }
 
 export interface VaccinationStatusGetters
@@ -27,6 +28,7 @@ export interface VaccinationStatusGetters
     ): VaccinationStatus | undefined;
     isLoading(state: VaccinationStatusState): boolean;
     error(state: VaccinationStatusState): BannerError | undefined;
+    statusMessage(state: VaccinationStatusState): string;
 }
 
 type StoreContext = ActionContext<VaccinationStatusState, RootState>;
@@ -34,11 +36,11 @@ export interface VaccinationStatusActions
     extends ActionTree<VaccinationStatusState, RootState> {
     retrieve(
         context: StoreContext,
-        params: { phn: string; dateOfBirth: StringISODate }
+        params: { phn: string; dateOfBirth: StringISODate; token: string }
     ): Promise<void>;
     getReport(
         context: StoreContext,
-        params: { phn: string; dateOfBirth: StringISODate }
+        params: { phn: string; dateOfBirth: StringISODate; token: string }
     ): Promise<Report>;
     handleError(context: StoreContext, error: ResultError): void;
 }
@@ -53,6 +55,10 @@ export interface VaccinationStatusMutations
     vaccinationStatusError(
         state: VaccinationStatusState,
         error: BannerError
+    ): void;
+    setStatusMessage(
+        state: VaccinationStatusState,
+        statusMessage: string
     ): void;
 }
 

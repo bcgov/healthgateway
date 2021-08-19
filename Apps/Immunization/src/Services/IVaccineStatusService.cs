@@ -32,15 +32,17 @@ namespace HealthGateway.Immunization.Services
         /// </summary>
         /// <param name="phn">The patient personal health number.</param>
         /// <param name="dateOfBirth">The patient date of birth in yyyyMMdd format.</param>
+        /// <param name="token">The captcha token.</param>
         /// <returns>Returns the vaccine status.</returns>
-        Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth);
+        Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth, string token);
 
         /// <summary>
         /// Gets the vaccine status pdf for the given patient info.
         /// </summary>
         /// <param name="phn">The patient personal health number.</param>
         /// <param name="dateOfBirth">The date of birth in yyyyMMdd format.</param>
+        /// <param name="token">The captcha token.</param>
         /// <returns>Returns the vaccine status pdf document.</returns>
-        Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth);
+        Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string token);
     }
 }
