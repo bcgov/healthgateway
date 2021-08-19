@@ -146,7 +146,7 @@ namespace HealthGateway.Immunization.Services
         {
             RequestResult<VaccineStatus> vaccineStatusResult = await this.GetVaccineStatus(phn, dateOfBirth).ConfigureAwait(true);
 
-            if (vaccineStatusResult.ResultStatus == ResultType.Success)
+            if (vaccineStatusResult.ResultStatus == ResultType.Success && vaccineStatusResult.ResourcePayload!.State != VaccineState.NotFound)
             {
                 VaccineStatus vaccineStatus = vaccineStatusResult.ResourcePayload!;
 

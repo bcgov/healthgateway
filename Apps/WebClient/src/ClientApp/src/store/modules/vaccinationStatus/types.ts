@@ -11,6 +11,7 @@ import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { RootState } from "@/store/types";
+import Report from "@/models/report";
 
 export interface VaccinationStatusState {
     vaccinationStatus: VaccinationStatus | undefined;
@@ -34,6 +35,10 @@ export interface VaccinationStatusActions
         context: StoreContext,
         params: { phn: string; dateOfBirth: StringISODate }
     ): Promise<void>;
+    getReport(
+        context: StoreContext,
+        params: { phn: string; dateOfBirth: StringISODate }
+    ): Promise<Report>;
     handleError(context: StoreContext, error: ResultError): void;
 }
 
