@@ -8,11 +8,11 @@ import {
 
 import BannerError from "@/models/bannerError";
 import { StringISODate } from "@/models/dateWrapper";
+import Report from "@/models/report";
 import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { RootState } from "@/store/types";
-import Report from "@/models/report";
 
 export interface VaccinationStatusState {
     vaccinationStatus?: VaccinationStatus;
