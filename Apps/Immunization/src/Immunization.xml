@@ -411,7 +411,7 @@
         </member>
         <member name="T:HealthGateway.Immunization.Models.VaccineStatusReportRequest">
             <summary>
-            The Vaccine Status model.
+            The Vaccine Status Report Request model.
             </summary>
         </member>
         <member name="P:HealthGateway.Immunization.Models.VaccineStatusReportRequest.Name">
