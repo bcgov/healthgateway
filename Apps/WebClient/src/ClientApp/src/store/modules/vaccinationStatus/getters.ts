@@ -16,4 +16,7 @@ export const getters: VaccinationStatusGetters = {
     error(state: VaccinationStatusState): BannerError | undefined {
         return state.error;
     },
+    statusMessage(state: VaccinationStatusState): string {
+        return state.statusMessage;
+    },
 };
