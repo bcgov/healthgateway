@@ -175,25 +175,26 @@ export default class LandingView extends Vue {
                 justify-content-center
                 align-items-center
             "
+            no-gutters
         >
             <b-col cols="auto" class="d-none d-md-block">
                 <img
                     :src="vaccinationStatusBannerImage"
-                    alt="Vaccination Status Logo"
-                    class="vaccination-status-logo img-fluid m-2"
+                    alt="Vaccination Check Logo"
+                    class="vaccination-check-logo img-fluid m-2"
                 />
             </b-col>
-            <b-col md="6" lg="auto">
-                <h2 class="text-center my-5">
-                    <span>Need Your COVID-19 Vaccine Status?</span>
-                    <hg-button
-                        variant="success"
-                        to="/vaccination-status"
-                        class="m-2 ml-4"
-                    >
-                        Get Status
-                    </hg-button>
-                </h2>
+            <b-col col md="7" lg="auto">
+                <h3 class="text-center m-3">Check Your COVID‑19 Vaccination</h3>
+            </b-col>
+            <b-col cols="auto">
+                <hg-button
+                    variant="success"
+                    to="/vaccination-status"
+                    class="m-3"
+                >
+                    Start
+                </hg-button>
             </b-col>
         </b-row>
         <h3 class="text-center font-weight-normal my-4 mx-1">
@@ -382,8 +383,8 @@ export default class LandingView extends Vue {
         }
     }
 
-    .vaccination-status-logo {
-        max-height: 8rem;
+    .vaccination-check-logo {
+        max-height: 3rem;
     }
 
     .tile-section {
