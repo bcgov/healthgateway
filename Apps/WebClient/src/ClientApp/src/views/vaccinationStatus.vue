@@ -116,12 +116,37 @@ export default class VaccinationStatusView extends Vue {
                 alt="BC Mark"
             />
         </div>
+        <div v-if="error !== undefined" class="container">
+            <b-alert
+                variant="danger"
+                class="no-print my-3"
+                :show="error !== undefined"
+                dismissible
+            >
+                <h4>{{ error.title }}</h4>
+                <h6>{{ error.errorCode }}</h6>
+                <div class="pl-4">
+                    <p data-testid="errorTextDescription">
+                        {{ error.description }}
+                    </p>
+                    <p data-testid="errorTextDetails">
+                        {{ error.detail }}
+                    </p>
+                    <p v-if="error.traceId" data-testid="errorSupportDetails">
+                        If this issue persists, contact HealthGateway@gov.bc.ca
+                        and provide
+                        <span class="trace-id">{{ error.traceId }}</span>
+                    </p>
+                </div>
+            </b-alert>
+        </div>
         <vaccination-status-result v-if="displayResult" />
         <div v-else>
+            <div class="p-3 bg-success text-white" no-gutters>
+                <h3 class="text-center m-0">COVID‑19 Vaccination Check</h3>
+            </div>
             <form class="container my-3" @submit.prevent="handleSubmit">
-                <h1>COVID-19 Vaccination Status</h1>
-                <hr />
-                <h2>Please Provide the Following</h2>
+                <p>Please provide the following.</p>
                 <b-row>
                     <b-col cols="12" sm="auto">
                         <b-form-group
@@ -182,7 +207,7 @@ export default class VaccinationStatusView extends Vue {
                     </b-col>
                 </b-row>
                 <hr />
-                <div class="text-center">
+                <div class="text-center my-3">
                     <hg-button variant="secondary" class="mr-2" to="/">
                         Cancel
                     </hg-button>
@@ -191,35 +216,22 @@ export default class VaccinationStatusView extends Vue {
                         type="submit"
                         :disabled="isLoading"
                     >
-                        Get Status
+                        Check
                     </hg-button>
                 </div>
+                <p>
+                    Your information is being collected to provide you with your
+                    COVID-19 vaccination status under s. 26(c) of the
+                    <em>Freedom of Information and Protection of Privacy Act</em
+                    >. Contact the Ministry Privacy Officer at
+                    <a href="mailto:MOH.Privacy.Officer@gov.bc.ca"
+                        >MOH.Privacy.Officer@gov.bc.ca</a
+                    >
+                    or 778-698-5849 if you have any questions about this
+                    collection.
+                </p>
             </form>
         </div>
-
-        <b-alert
-            v-if="error !== undefined"
-            variant="danger"
-            class="no-print my-3"
-            :show="error !== undefined"
-            dismissible
-        >
-            <h4>{{ error.title }}</h4>
-            <h6>{{ error.errorCode }}</h6>
-            <div class="pl-4">
-                <p data-testid="errorTextDescription">
-                    {{ error.description }}
-                </p>
-                <p data-testid="errorTextDetails">
-                    {{ error.detail }}
-                </p>
-                <p v-if="error.traceId" data-testid="errorSupportDetails">
-                    If this issue persists, contact HealthGateway@gov.bc.ca and
-                    provide
-                    {{ error.traceId }}
-                </p>
-            </div>
-        </b-alert>
     </div>
 </template>
 
@@ -228,6 +240,10 @@ export default class VaccinationStatusView extends Vue {
 
 .header {
     background-color: $hg-brand-primary;
+}
+
+.trace-id {
+    overflow-wrap: anywhere;
 }
 </style>
 
