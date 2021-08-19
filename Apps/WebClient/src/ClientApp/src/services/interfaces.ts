@@ -63,11 +63,13 @@ export interface IVaccinationStatusService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getVaccinationStatus(
         phn: string,
-        dateOfBirth: StringISODate
+        dateOfBirth: StringISODate,
+        token: string
     ): Promise<RequestResult<VaccinationStatus>>;
     getReport(
         phn: string,
-        dateOfBirth: StringISODate
+        dateOfBirth: StringISODate,
+        token: string
     ): Promise<RequestResult<Report>>;
 }
 

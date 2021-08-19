@@ -81,29 +81,57 @@
             <param name="logger">Injected Logger Provider.</param>
             <param name="vaccineStatusService">The injected vaccine status service.</param>
         </member>
-        <member name="M:HealthGateway.Immunization.Controllers.VaccineStatusController.GetVaccineStatus(System.String,System.String)">
+        <member name="M:HealthGateway.Immunization.Controllers.VaccineStatusController.GetVaccineStatus(System.String,System.String,System.String)">
             <summary>
             Requests the vaccine status for the supplied PHN and Date of Birth.
             </summary>
             <param name="phn">The personal health number to query.</param>
             <param name="dateOfBirth">The date of birth (yyyyMMdd) for the supplied PHN.</param>
+            <param name="token">The recaptcha token.</param>
             <returns>The wrapped vaccine status.</returns>
             <response code="200">Returns the Vaccine status.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
             <response code="503">The service is unavailable for use.</response>
         </member>
-        <member name="M:HealthGateway.Immunization.Controllers.VaccineStatusController.GetVaccineStatusPDF(System.String,System.String)">
+        <member name="M:HealthGateway.Immunization.Controllers.VaccineStatusController.GetVaccineStatusPDF(System.String,System.String,System.String)">
             <summary>
             Requests the vaccine status PDF for the supplied PHN and Date of Birth.
             </summary>
             <param name="phn">The personal health number to query.</param>
             <param name="dateOfBirth">The date of birth (yyyyMMdd) for the supplied PHN.</param>
+            <param name="token">The recaptcha token.</param>
             <returns>The wrapped vaccine status.</returns>
             <response code="200">Returns the Vaccine status.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
             <response code="503">The service is unavailable for use.</response>
+        </member>
+        <member name="T:HealthGateway.Immunization.Delegates.CaptchaDelegate">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Immunization.Delegates.CaptchaDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Immunization.Delegates.CaptchaDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Delegates.CaptchaDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpClientService">The injected http client service.</param>
+            <param name="configuration">The injected configuration provider.</param>
+        </member>
+        <member name="M:HealthGateway.Immunization.Delegates.CaptchaDelegate.IsCaptchaValid(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Immunization.Delegates.ICaptchaDelegate">
+            <summary>
+            Interface that defines a delegate to validate a captcha token.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Delegates.ICaptchaDelegate.IsCaptchaValid(System.String)">
+            <summary>
+            Validates a captcha token.
+            </summary>
+            <param name="token">The captcha token.</param>
+            <returns>A value indicating whether the token is valid or not.</returns>
         </member>
         <member name="T:HealthGateway.Immunization.Delegates.IImmunizationDelegate">
             <summary>
@@ -180,6 +208,31 @@
         </member>
         <member name="M:HealthGateway.Immunization.Delegates.RestVaccineStatusDelegate.GetVaccineStatus(System.String,System.DateTime,System.String)">
             <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.CaptchaConfig">
+            <summary>
+            Provides configuration data for the Captcha Delegate.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.CaptchaConfig.SecretKey">
+            <summary>
+            Gets or sets the captcha secret key.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.CaptchaConfig.VerificationUrl">
+            <summary>
+            Gets or sets the captcha verification endpoint.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.CaptchaVerificationResponse">
+            <summary>
+            Represents an Immunization Recommendation.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.CaptchaVerificationResponse.Success">
+            <summary>
+            Gets or sets a value indicating whether the captcha is valid or not.
+            </summary>
         </member>
         <member name="T:HealthGateway.Immunization.Models.ImmunizationRecommendation">
             <summary>
@@ -592,20 +645,22 @@
             The Vaccine Status data service.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Services.IVaccineStatusService.GetVaccineStatus(System.String,System.String)">
+        <member name="M:HealthGateway.Immunization.Services.IVaccineStatusService.GetVaccineStatus(System.String,System.String,System.String)">
             <summary>
             Gets the vaccine status for the given patient info.
             </summary>
             <param name="phn">The patient personal health number.</param>
             <param name="dateOfBirth">The patient date of birth in yyyyMMdd format.</param>
+            <param name="token">The captcha token.</param>
             <returns>Returns the vaccine status.</returns>
         </member>
-        <member name="M:HealthGateway.Immunization.Services.IVaccineStatusService.GetVaccineStatusPDF(System.String,System.String)">
+        <member name="M:HealthGateway.Immunization.Services.IVaccineStatusService.GetVaccineStatusPDF(System.String,System.String,System.String)">
             <summary>
             Gets the vaccine status pdf for the given patient info.
             </summary>
             <param name="phn">The patient personal health number.</param>
             <param name="dateOfBirth">The date of birth in yyyyMMdd format.</param>
+            <param name="token">The captcha token.</param>
             <returns>Returns the vaccine status pdf document.</returns>
         </member>
         <member name="T:HealthGateway.Immunization.Services.VaccineStatusService">
@@ -613,7 +668,7 @@
             The Vaccine Status data service.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Services.VaccineStatusService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Common.AccessManagement.Authentication.IAuthenticationDelegate,HealthGateway.Immunization.Delegates.IVaccineStatusDelegate,HealthGateway.Common.Delegates.ICDogsDelegate)">
+        <member name="M:HealthGateway.Immunization.Services.VaccineStatusService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Common.AccessManagement.Authentication.IAuthenticationDelegate,HealthGateway.Immunization.Delegates.IVaccineStatusDelegate,HealthGateway.Common.Delegates.ICDogsDelegate,HealthGateway.Immunization.Delegates.ICaptchaDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Services.VaccineStatusService"/> class.
             </summary>
@@ -621,11 +676,12 @@
             <param name="authDelegate">The OAuth2 authentication service.</param>
             <param name="vaccineStatusDelegate">The injected vaccine status delegate.</param>
             <param name="cDogsDelegate">Delegate that provides document generation functionality.</param>
+            <param name="captchaDelegate">The injected captcha delegate.</param>
         </member>
-        <member name="M:HealthGateway.Immunization.Services.VaccineStatusService.GetVaccineStatus(System.String,System.String)">
+        <member name="M:HealthGateway.Immunization.Services.VaccineStatusService.GetVaccineStatus(System.String,System.String,System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:HealthGateway.Immunization.Services.VaccineStatusService.GetVaccineStatusPDF(System.String,System.String)">
+        <member name="M:HealthGateway.Immunization.Services.VaccineStatusService.GetVaccineStatusPDF(System.String,System.String,System.String)">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.Immunization.Startup">

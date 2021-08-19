@@ -32,6 +32,28 @@
             </summary>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
+        <member name="T:HealthGateway.Immunization.Test.Delegates.CaptchaDelegateTests">
+            <summary>
+            VaccineStatusDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.CaptchaDelegateTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Test.Delegates.CaptchaDelegateTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.CaptchaDelegateTests.IsCaptchaValidTrue">
+            <summary>
+            IsCaptchaValid - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.CaptchaDelegateTests.IsCaptchaValidError">
+            <summary>
+            IsCaptchaValid - Error.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
         <member name="T:HealthGateway.Immunization.Test.Delegates.ImmunizationDelegateTests">
             <summary>
             RestImmunizationDelegate's Unit Tests.

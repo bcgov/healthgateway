@@ -36,7 +36,8 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
 
     public getVaccinationStatus(
         phn: string,
-        dateOfBirth: StringISODate
+        dateOfBirth: StringISODate,
+        token: string
     ): Promise<RequestResult<VaccinationStatus>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
@@ -47,6 +48,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
             const headers: Dictionary<string> = {};
             headers["phn"] = phn;
             headers["dateOfBirth"] = dateOfBirth;
+            headers["token"] = token;
 
             return this.http
                 .getWithCors<RequestResult<VaccinationStatus>>(
@@ -70,7 +72,8 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
 
     public getReport(
         phn: string,
-        dateOfBirth: StringISODate
+        dateOfBirth: StringISODate,
+        token: string
     ): Promise<RequestResult<Report>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
@@ -81,6 +84,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
             const headers: Dictionary<string> = {};
             headers["phn"] = phn;
             headers["dateOfBirth"] = dateOfBirth;
+            headers["token"] = token;
 
             return this.http
                 .post<RequestResult<Report>>(

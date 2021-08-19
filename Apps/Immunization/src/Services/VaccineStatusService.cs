@@ -44,6 +44,7 @@ namespace HealthGateway.Immunization.Services
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
         private readonly IAuthenticationDelegate authDelegate;
         private readonly ICDogsDelegate cDogsDelegate;
+        private readonly ICaptchaDelegate captchaDelegate;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly PHSAConfig phsaConfig;
         private readonly Uri tokenUri;
@@ -55,15 +56,18 @@ namespace HealthGateway.Immunization.Services
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="vaccineStatusDelegate">The injected vaccine status delegate.</param>
         /// <param name="cDogsDelegate">Delegate that provides document generation functionality.</param>
+        /// <param name="captchaDelegate">The injected captcha delegate.</param>
         public VaccineStatusService(
             IConfiguration configuration,
             IAuthenticationDelegate authDelegate,
             IVaccineStatusDelegate vaccineStatusDelegate,
-            ICDogsDelegate cDogsDelegate)
+            ICDogsDelegate cDogsDelegate,
+            ICaptchaDelegate captchaDelegate)
         {
             this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.authDelegate = authDelegate;
             this.cDogsDelegate = cDogsDelegate;
+            this.captchaDelegate = captchaDelegate;
 
             IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
             this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
@@ -75,7 +79,7 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth)
+        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth, string token)
         {
             RequestResult<VaccineStatus> retVal = new ()
             {
@@ -103,6 +107,18 @@ namespace HealthGateway.Immunization.Services
                 retVal.ResultError = new RequestResultError()
                 {
                     ResultMessage = "Error parsing phn",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                };
+                return retVal;
+            }
+
+            bool isTokenValid = await this.captchaDelegate.IsCaptchaValid(token).ConfigureAwait(true);
+            if (!isTokenValid)
+            {
+                retVal.ResultStatus = Common.Constants.ResultType.Error;
+                retVal.ResultError = new RequestResultError()
+                {
+                    ResultMessage = "Invalid captcha token",
                     ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
                 };
                 return retVal;
@@ -143,9 +159,9 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth)
+        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string token)
         {
-            RequestResult<VaccineStatus> vaccineStatusResult = await this.GetVaccineStatus(phn, dateOfBirth).ConfigureAwait(true);
+            RequestResult<VaccineStatus> vaccineStatusResult = await this.GetVaccineStatus(phn, dateOfBirth, token).ConfigureAwait(true);
 
             if (vaccineStatusResult.ResultStatus == ResultType.Success &&
                 vaccineStatusResult.ResourcePayload != null &&

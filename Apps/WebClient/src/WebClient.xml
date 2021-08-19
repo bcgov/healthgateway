@@ -1571,6 +1571,11 @@
             This value is populated at runtime with the client invoking the web service.
             </summary>
         </member>
+        <member name="P:HealthGateway.WebClient.Models.WebClientConfiguration.CaptchaSiteKey">
+            <summary>
+            Gets or sets the captcha site key.
+            </summary>
+        </member>
         <member name="T:HealthGateway.WebClient.Program">
             <summary>
             The entry point for the project.
