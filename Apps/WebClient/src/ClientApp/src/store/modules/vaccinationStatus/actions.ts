@@ -1,5 +1,6 @@
 import { ResultType } from "@/constants/resulttype";
 import { StringISODate } from "@/models/dateWrapper";
+import Report from "@/models/report";
 import { ResultError } from "@/models/requestResult";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
@@ -42,6 +43,35 @@ export const actions: VaccinationStatusActions = {
 
                         context.commit("setVaccinationStatus", payload);
                         resolve();
+                    } else {
+                        context.dispatch("handleError", result.resultError);
+                        reject(result.resultError);
+                    }
+                })
+                .catch((error) => {
+                    context.dispatch("handleError", error);
+                    reject(error);
+                });
+        });
+    },
+    getReport(
+        context,
+        params: { phn: string; dateOfBirth: StringISODate }
+    ): Promise<Report> {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const vaccinationStatusService: IVaccinationStatusService =
+            container.get<IVaccinationStatusService>(
+                SERVICE_IDENTIFIER.VaccinationStatusService
+            );
+
+        return new Promise((resolve, reject) => {
+            logger.debug(`Retrieving Vaccination Status PDF`);
+            vaccinationStatusService
+                .getReport(params.phn, params.dateOfBirth)
+                .then((result) => {
+                    if (result.resultStatus === ResultType.Success) {
+                        const payload = result.resourcePayload;
+                        resolve(payload);
                     } else {
                         context.dispatch("handleError", result.resultError);
                         reject(result.resultError);

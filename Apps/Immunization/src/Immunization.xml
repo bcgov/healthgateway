@@ -93,6 +93,18 @@
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
             <response code="503">The service is unavailable for use.</response>
         </member>
+        <member name="M:HealthGateway.Immunization.Controllers.VaccineStatusController.GetVaccineStatusPDF(System.String,System.String)">
+            <summary>
+            Requests the vaccine status PDF for the supplied PHN and Date of Birth.
+            </summary>
+            <param name="phn">The personal health number to query.</param>
+            <param name="dateOfBirth">The date of birth (yyyyMMdd) for the supplied PHN.</param>
+            <returns>The wrapped vaccine status.</returns>
+            <response code="200">Returns the Vaccine status.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+            <response code="503">The service is unavailable for use.</response>
+        </member>
         <member name="T:HealthGateway.Immunization.Delegates.IImmunizationDelegate">
             <summary>
             Interface that defines a delegate to retrieve immunization information.
@@ -346,7 +358,7 @@
         </member>
         <member name="T:HealthGateway.Immunization.Models.VaccineStatus">
             <summary>
-            TThe Vaccine Status model.
+            The Vaccine Status model.
             </summary>
         </member>
         <member name="P:HealthGateway.Immunization.Models.VaccineStatus.Id">
@@ -395,6 +407,31 @@
         <member name="P:HealthGateway.Immunization.Models.VaccineStatus.State">
             <summary>
             Gets or sets the vaccine state.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.VaccineStatusReportRequest">
+            <summary>
+            The Vaccine Status Report Request model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.VaccineStatusReportRequest.Name">
+            <summary>
+            Gets or sets the patient's first name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.VaccineStatusReportRequest.Birthdate">
+            <summary>
+            Gets or sets the patient's date of birth.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.VaccineStatusReportRequest.Status">
+            <summary>
+            Gets or sets the patient's status.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.VaccineStatusReportRequest.Doses">
+            <summary>
+            Gets or sets the patient's doses.
             </summary>
         </member>
         <member name="T:HealthGateway.Immunization.Models.VaccineStatusResult">
@@ -557,26 +594,38 @@
         </member>
         <member name="M:HealthGateway.Immunization.Services.IVaccineStatusService.GetVaccineStatus(System.String,System.String)">
             <summary>
-            Gets the ImmunizationEvent for the given id.
+            Gets the vaccine status for the given patient info.
             </summary>
-            <param name="phn">The security token representing the authenticated user.</param>
+            <param name="phn">The patient personal health number.</param>
+            <param name="dateOfBirth">The patient date of birth in yyyyMMdd format.</param>
+            <returns>Returns the vaccine status.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Services.IVaccineStatusService.GetVaccineStatusPDF(System.String,System.String)">
+            <summary>
+            Gets the vaccine status pdf for the given patient info.
+            </summary>
+            <param name="phn">The patient personal health number.</param>
             <param name="dateOfBirth">The date of birth in yyyyMMdd format.</param>
-            <returns>Returns a list of immunizations.</returns>
+            <returns>Returns the vaccine status pdf document.</returns>
         </member>
         <member name="T:HealthGateway.Immunization.Services.VaccineStatusService">
             <summary>
             The Vaccine Status data service.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Services.VaccineStatusService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Common.AccessManagement.Authentication.IAuthenticationDelegate,HealthGateway.Immunization.Delegates.IVaccineStatusDelegate)">
+        <member name="M:HealthGateway.Immunization.Services.VaccineStatusService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Common.AccessManagement.Authentication.IAuthenticationDelegate,HealthGateway.Immunization.Delegates.IVaccineStatusDelegate,HealthGateway.Common.Delegates.ICDogsDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Services.VaccineStatusService"/> class.
             </summary>
             <param name="configuration">The configuration to use.</param>
             <param name="authDelegate">The OAuth2 authentication service.</param>
             <param name="vaccineStatusDelegate">The injected vaccine status delegate.</param>
+            <param name="cDogsDelegate">Delegate that provides document generation functionality.</param>
         </member>
         <member name="M:HealthGateway.Immunization.Services.VaccineStatusService.GetVaccineStatus(System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Immunization.Services.VaccineStatusService.GetVaccineStatusPDF(System.String,System.String)">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.Immunization.Startup">

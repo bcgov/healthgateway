@@ -65,6 +65,10 @@ export interface IVaccinationStatusService {
         phn: string,
         dateOfBirth: StringISODate
     ): Promise<RequestResult<VaccinationStatus>>;
+    getReport(
+        phn: string,
+        dateOfBirth: StringISODate
+    ): Promise<RequestResult<Report>>;
 }
 
 export interface IPatientService {
@@ -182,7 +186,11 @@ export interface IHttpDelegate {
     setAuthorizationHeader(accessToken: string): void;
     getWithCors<T>(url: string, headers?: Dictionary<string>): Promise<T>;
     get<T>(url: string, headers?: Dictionary<string>): Promise<T>;
-    post<T>(url: string, payload: unknown): Promise<T>;
+    post<T>(
+        url: string,
+        payload: unknown,
+        headers?: Dictionary<string>
+    ): Promise<T>;
     put<T>(
         url: string,
         payload: unknown,

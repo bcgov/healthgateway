@@ -32,6 +32,12 @@
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" />
   </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Templates\VaccineStatusCard_Partial1Dose.docx" />
+    <EmbeddedResource Include="Assets\Templates\VaccineStatusCard_Partial2Doses.docx" />
+    <EmbeddedResource Include="Assets\Templates\VaccineStatusCard_FullyVaccinated.docx" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="..\..\.editorconfig" />
   </ItemGroup>

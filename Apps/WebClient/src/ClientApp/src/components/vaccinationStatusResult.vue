@@ -5,23 +5,39 @@ import {
     faEye,
     faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
+import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
+import LoadingComponent from "@/components/loading.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import Report from "@/models/report";
 import VaccinationStatus from "@/models/vaccinationStatus";
+import { ILogger } from "@/services/interfaces";
 
 library.add(faCheckCircle, faEye, faEyeSlash);
 
-@Component
+@Component({
+    components: {
+        LoadingComponent,
+    },
+})
 export default class VaccinationStatusResultView extends Vue {
+    private isDownloading = false;
     private showDetails = false;
+    private logger!: ILogger;
 
     @Getter("vaccinationStatus", { namespace: "vaccinationStatus" }) status!:
         | VaccinationStatus
         | undefined;
+
+    @Action("getReport", { namespace: "vaccinationStatus" })
+    getReport!: (params: {
+        phn: string;
+        dateOfBirth: StringISODate;
+    }) => Promise<Report>;
 
     private get vaccinationState(): VaccinationState | undefined {
         return this.status?.state;
@@ -63,11 +79,40 @@ export default class VaccinationStatusResultView extends Vue {
         }
         return new DateWrapper(date).format(DateWrapper.defaultFormat);
     }
+
+    private download() {
+        this.isDownloading = true;
+        this.getReport({
+            phn: this.status?.personalhealthnumber || "",
+            dateOfBirth: new DateWrapper(this.status?.birthdate || "").format(
+                "yyyy-MM-dd"
+            ),
+        })
+            .then((documentResult) => {
+                if (documentResult) {
+                    const downloadLink = `data:application/pdf;base64,${documentResult.data}`;
+                    fetch(downloadLink).then((res) => {
+                        res.blob().then((blob) => {
+                            saveAs(blob, documentResult.fileName);
+                        });
+                    });
+                }
+            })
+            .catch((err) => {
+                this.logger.error(
+                    `Error retrieving vaccination status pdf: ${err}`
+                );
+            })
+            .finally(() => {
+                this.isDownloading = false;
+            });
+    }
 }
 </script>
 
 <template>
     <div class="d-flex flex-column flex-grow-1">
+        <LoadingComponent :is-loading="isDownloading"></LoadingComponent>
         <div class="header text-white">
             <div class="container pb-3">
                 <h1 class="text-center">COVID-19 Vaccination Status</h1>
@@ -179,6 +224,7 @@ export default class VaccinationStatusResultView extends Vue {
                     v-if="isPartiallyVaccinated || isFullyVaccinated"
                     variant="primary"
                     class="ml-3"
+                    @click="download"
                 >
                     Save for Later
                 </hg-button>
