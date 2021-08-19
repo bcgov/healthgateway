@@ -100,7 +100,7 @@ namespace HealthGateway.Immunization.Test.Services
                 mockDelegate.Object,
                 new Mock<ICDogsDelegate>().Object);
 
-            var actualResult = await service.GetVaccineStatus(this.phn, this.dob.ToString("yyyyMMdd", CultureInfo.CurrentCulture)).ConfigureAwait(true);
+            var actualResult = await service.GetVaccineStatus(this.phn, this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture)).ConfigureAwait(true);
             Assert.True(expectedResult.IsDeepEqual(actualResult));
         }
 
@@ -117,7 +117,7 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<IVaccineStatusDelegate>().Object,
                 new Mock<ICDogsDelegate>().Object);
 
-            var actualResult = await service.GetVaccineStatus("123", this.dob.ToString("yyyyMMdd", CultureInfo.CurrentCulture)).ConfigureAwait(true);
+            var actualResult = await service.GetVaccineStatus("123", this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture)).ConfigureAwait(true);
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
 
