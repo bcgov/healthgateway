@@ -23,6 +23,7 @@ namespace HealthGateway.Immunization.Test.Services
     using DeepEqual.Syntax;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
