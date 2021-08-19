@@ -15,6 +15,7 @@ import { navbar } from "./modules/navbar/navbar";
 import { note } from "./modules/note/note";
 import { timeline } from "./modules/timeline/timeline";
 import { user } from "./modules/user/user";
+import { vaccinationStatus } from "./modules/vaccinationStatus/vaccinationStatus";
 import { GatewayStoreOptions, RootState } from "./types";
 
 @injectable()
@@ -56,5 +57,6 @@ export class StoreOptions implements GatewayStoreOptions {
         errorBanner,
         timeline,
         credential,
+        vaccinationStatus,
     };
 }

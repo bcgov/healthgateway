@@ -17,6 +17,7 @@ export const SERVICE_IDENTIFIER = {
     UserRatingService: Symbol.for("UserRatingService"),
     CredentialService: Symbol.for("CredentialService"),
     ReportService: Symbol.for("ReportService"),
+    VaccinationStatusService: Symbol.for("VaccinationStatusService"),
 };
 
 export const DELEGATE_IDENTIFIER = {

@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Models.PHSA
 {
+    using System;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -27,5 +28,23 @@ namespace HealthGateway.Common.Models.PHSA
         /// </summary>
         [JsonPropertyName("refreshInProgress")]
         public bool RefreshInProgress { get; set; }
+
+        /// <summary>
+        /// Gets or sets the SignalR url.
+        /// </summary>
+        [JsonPropertyName("signalRUrl")]
+        public Uri? SignalRUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the SignalR method.
+        /// </summary>
+        [JsonPropertyName("signalRMethod")]
+        public string? SignalRMethod { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the number of milliseconds to wait before requerying.
+        /// </summary>
+        [JsonPropertyName("backOffMilliseconds")]
+        public int BackOffMilliseconds { get; set; }
     }
 }
