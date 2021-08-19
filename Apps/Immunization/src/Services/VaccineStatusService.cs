@@ -175,7 +175,6 @@ namespace HealthGateway.Immunization.Services
                     ResultError = vaccineStatusResult.ResultError,
                 };
             }
-
         }
 
         private static CDogsRequestModel CreateCdogsRequest(VaccineStatusReportRequest vaccineStatus)
