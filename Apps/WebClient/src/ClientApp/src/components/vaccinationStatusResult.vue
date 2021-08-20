@@ -7,10 +7,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
+import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import Report from "@/models/report";
@@ -22,6 +23,7 @@ library.add(faCheckCircle, faEye, faEyeSlash);
 @Component({
     components: {
         LoadingComponent,
+        MessageModalComponent,
     },
 })
 export default class VaccinationStatusResultView extends Vue {
@@ -38,6 +40,9 @@ export default class VaccinationStatusResultView extends Vue {
         phn: string;
         dateOfBirth: StringISODate;
     }) => Promise<Report>;
+
+    @Ref("sensitivedocumentDownloadModal")
+    readonly sensitivedocumentDownloadModal!: MessageModalComponent;
 
     private get vaccinationState(): VaccinationState | undefined {
         return this.status?.state;
@@ -78,6 +83,10 @@ export default class VaccinationStatusResultView extends Vue {
             return "";
         }
         return new DateWrapper(date).format(DateWrapper.defaultFormat);
+    }
+
+    private showSensitiveDocumentDownloadModal() {
+        this.sensitivedocumentDownloadModal.showModal();
     }
 
     private download() {
@@ -223,12 +232,18 @@ export default class VaccinationStatusResultView extends Vue {
                     v-if="isPartiallyVaccinated || isFullyVaccinated"
                     variant="primary"
                     class="ml-3"
-                    @click="download"
+                    @click="showSensitiveDocumentDownloadModal()"
                 >
                     Save for Later
                 </hg-button>
             </div>
         </div>
+        <MessageModalComponent
+            ref="sensitivedocumentDownloadModal"
+            title="Sensitive Document Download"
+            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+            @submit="download"
+        />
     </div>
 </template>
 

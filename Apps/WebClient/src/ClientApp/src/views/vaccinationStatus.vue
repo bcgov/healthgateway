@@ -1,5 +1,4 @@
 <script lang="ts">
-import { load } from "recaptcha-v3";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { required } from "vuelidate/lib/validators";
@@ -11,7 +10,6 @@ import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import VaccinationStatusResultComponent from "@/components/vaccinationStatusResult.vue";
 import BannerError from "@/models/bannerError";
-import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -37,11 +35,7 @@ export default class VaccinationStatusView extends Vue {
     retrieveVaccinationStatus!: (params: {
         phn: string;
         dateOfBirth: StringISODate;
-        token: string;
     }) => Promise<void>;
-
-    @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
 
     @Getter("vaccinationStatus", { namespace: "vaccinationStatus" })
     status!: VaccinationStatus | undefined;
@@ -90,36 +84,17 @@ export default class VaccinationStatusView extends Vue {
     private handleSubmit() {
         this.$v.$touch();
         if (!this.$v.$invalid) {
-            load(this.webClientConfig.captchaSiteKey)
-                .then((recaptcha) => {
-                    recaptcha.showBadge();
-                    recaptcha
-                        .execute("retrieveVaccinationStatus")
-                        .then((token) => {
-                            this.retrieveVaccinationStatus({
-                                phn: this.phn,
-                                dateOfBirth: this.dateOfBirth,
-                                token,
-                            })
-                                .then(() => {
-                                    this.logger.debug(
-                                        "Vaccination status retrieved"
-                                    );
-                                })
-                                .catch((err) => {
-                                    this.logger.error(
-                                        `Error retrieving vaccination status: ${err}`
-                                    );
-                                });
-                        })
-                        .catch((err) => {
-                            this.logger.error(
-                                `Error executing captcha action: ${err}`
-                            );
-                        });
+            this.retrieveVaccinationStatus({
+                phn: this.phn,
+                dateOfBirth: this.dateOfBirth,
+            })
+                .then(() => {
+                    this.logger.debug("Vaccination status retrieved");
                 })
                 .catch((err) => {
-                    this.logger.error(`Error loading captcha: ${err}`);
+                    this.logger.error(
+                        `Error retrieving vaccination status: ${err}`
+                    );
                 });
         }
     }

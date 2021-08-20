@@ -12,7 +12,7 @@ import { VaccinationStatusActions } from "./types";
 export const actions: VaccinationStatusActions = {
     retrieve(
         context,
-        params: { phn: string; dateOfBirth: StringISODate; token: string }
+        params: { phn: string; dateOfBirth: StringISODate }
     ): Promise<void> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         const vaccinationStatusService: IVaccinationStatusService =
@@ -23,39 +23,54 @@ export const actions: VaccinationStatusActions = {
         return new Promise((resolve, reject) => {
             logger.debug(`Retrieving Vaccination Status`);
             context.commit("setRequested");
+            logger.debug(`Retrieving Captcha token`);
             vaccinationStatusService
-                .getVaccinationStatus(
-                    params.phn,
-                    params.dateOfBirth,
-                    params.token
-                )
-                .then((result) => {
-                    if (result.resultStatus === ResultType.Success) {
-                        const payload = result.resourcePayload;
-                        if (!payload.loaded && payload.retryin > 0) {
-                            logger.info("VaccinationStatus not loaded");
-                            context.commit(
-                                "setStatusMessage",
-                                "We're busy but will continue to try to fetch your record...."
-                            );
-                            setTimeout(() => {
-                                logger.info(
-                                    "Re-querying for vaccination status"
+                .getCaptchaToken()
+                .then((token) => {
+                    vaccinationStatusService
+                        .getVaccinationStatus(
+                            params.phn,
+                            params.dateOfBirth,
+                            token
+                        )
+                        .then((result) => {
+                            if (result.resultStatus === ResultType.Success) {
+                                const payload = result.resourcePayload;
+                                if (!payload.loaded && payload.retryin > 0) {
+                                    logger.info("VaccinationStatus not loaded");
+                                    context.commit(
+                                        "setStatusMessage",
+                                        "We're busy but will continue to try to fetch your record...."
+                                    );
+                                    setTimeout(() => {
+                                        logger.info(
+                                            "Re-querying for vaccination status"
+                                        );
+                                        context.dispatch("retrieve", {
+                                            phn: params.phn,
+                                            dateOfBirth: params.dateOfBirth,
+                                        });
+                                    }, payload.retryin);
+                                    resolve();
+                                } else {
+                                    context.commit(
+                                        "setVaccinationStatus",
+                                        payload
+                                    );
+                                    resolve();
+                                }
+                            } else {
+                                context.dispatch(
+                                    "handleError",
+                                    result.resultError
                                 );
-                                context.dispatch("retrieve", {
-                                    phn: params.phn,
-                                    dateOfBirth: params.dateOfBirth,
-                                });
-                            }, payload.retryin);
-                            resolve();
-                        } else {
-                            context.commit("setVaccinationStatus", payload);
-                            resolve();
-                        }
-                    } else {
-                        context.dispatch("handleError", result.resultError);
-                        reject(result.resultError);
-                    }
+                                reject(result.resultError);
+                            }
+                        })
+                        .catch((error) => {
+                            context.dispatch("handleError", error);
+                            reject(error);
+                        });
                 })
                 .catch((error) => {
                     context.dispatch("handleError", error);
@@ -65,7 +80,7 @@ export const actions: VaccinationStatusActions = {
     },
     getReport(
         context,
-        params: { phn: string; dateOfBirth: StringISODate; token: string }
+        params: { phn: string; dateOfBirth: StringISODate }
     ): Promise<Report> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         const vaccinationStatusService: IVaccinationStatusService =
@@ -74,17 +89,29 @@ export const actions: VaccinationStatusActions = {
             );
 
         return new Promise((resolve, reject) => {
-            logger.debug(`Retrieving Vaccination Status PDF`);
+            logger.debug(`Retrieving Captcha token`);
             vaccinationStatusService
-                .getReport(params.phn, params.dateOfBirth, params.token)
-                .then((result) => {
-                    if (result.resultStatus === ResultType.Success) {
-                        const payload = result.resourcePayload;
-                        resolve(payload);
-                    } else {
-                        context.dispatch("handleError", result.resultError);
-                        reject(result.resultError);
-                    }
+                .getCaptchaToken()
+                .then((token) => {
+                    logger.debug(`Retrieving Vaccination Status PDF`);
+                    vaccinationStatusService
+                        .getReport(params.phn, params.dateOfBirth, token)
+                        .then((result) => {
+                            if (result.resultStatus === ResultType.Success) {
+                                const payload = result.resourcePayload;
+                                resolve(payload);
+                            } else {
+                                context.dispatch(
+                                    "handleError",
+                                    result.resultError
+                                );
+                                reject(result.resultError);
+                            }
+                        })
+                        .catch((error) => {
+                            context.dispatch("handleError", error);
+                            reject(error);
+                        });
                 })
                 .catch((error) => {
                     context.dispatch("handleError", error);
