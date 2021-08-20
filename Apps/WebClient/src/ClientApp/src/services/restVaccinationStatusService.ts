@@ -34,7 +34,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
         this.baseUri = config.serviceEndpoints["Immunization"];
         this.http = http;
         this.isEnabled = config.webClient.modules["Immunization"];
-        this.captchaSiteKey = config.webClient.captchaSiteKey;
+        this.captchaSiteKey = config.webClient.captchaSiteKey || "";
     }
 
     public getVaccinationStatus(
