@@ -11,8 +11,8 @@ import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
+import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
-import MessageModalComponent from "@/modal/genericMessage.vue";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import Report from "@/models/report";
 import VaccinationStatus from "@/models/vaccinationStatus";
