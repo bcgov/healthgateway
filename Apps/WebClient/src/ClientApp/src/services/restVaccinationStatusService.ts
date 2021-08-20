@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+import { load } from "recaptcha-v3";
 
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
@@ -24,6 +25,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
     private baseUri = "";
     private http!: IHttpDelegate;
     private isEnabled = false;
+    private captchaSiteKey = "";
 
     public initialize(
         config: ExternalConfiguration,
@@ -32,6 +34,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
         this.baseUri = config.serviceEndpoints["Immunization"];
         this.http = http;
         this.isEnabled = config.webClient.modules["Immunization"];
+        this.captchaSiteKey = config.webClient.captchaSiteKey;
     }
 
     public getVaccinationStatus(
@@ -103,6 +106,30 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
                             ServiceName.Immunization
                         )
                     );
+                });
+        });
+    }
+
+    getCaptchaToken(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            load(this.captchaSiteKey || "")
+                .then((recaptcha) => {
+                    recaptcha.showBadge();
+                    recaptcha
+                        .execute("vaccinationStatus")
+                        .then((token) => {
+                            resolve(token);
+                        })
+                        .catch((err) => {
+                            this.logger.error(
+                                `Error executing captcha action: ${err}`
+                            );
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    this.logger.error(`Error loading captcha: ${err}`);
+                    reject(err);
                 });
         });
     }

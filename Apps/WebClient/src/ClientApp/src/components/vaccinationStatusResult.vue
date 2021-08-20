@@ -6,14 +6,13 @@ import {
     faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
-import { load } from "recaptcha-v3";
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
-import type { WebClientConfiguration } from "@/models/configData";
+import MessageModalComponent from "@/modal/genericMessage.vue";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import Report from "@/models/report";
 import VaccinationStatus from "@/models/vaccinationStatus";
@@ -24,15 +23,13 @@ library.add(faCheckCircle, faEye, faEyeSlash);
 @Component({
     components: {
         LoadingComponent,
+        MessageModalComponent,
     },
 })
 export default class VaccinationStatusResultView extends Vue {
     private isDownloading = false;
     private showDetails = false;
     private logger!: ILogger;
-
-    @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
 
     @Getter("vaccinationStatus", { namespace: "vaccinationStatus" }) status!:
         | VaccinationStatus
@@ -42,8 +39,10 @@ export default class VaccinationStatusResultView extends Vue {
     getReport!: (params: {
         phn: string;
         dateOfBirth: StringISODate;
-        token: string;
     }) => Promise<Report>;
+
+    @Ref("sensitivedocumentDownloadModal")
+    readonly sensitivedocumentDownloadModal!: MessageModalComponent;
 
     private get vaccinationState(): VaccinationState | undefined {
         return this.status?.state;
@@ -86,51 +85,35 @@ export default class VaccinationStatusResultView extends Vue {
         return new DateWrapper(date).format(DateWrapper.defaultFormat);
     }
 
+    private showSensitiveDocumentDownloadModal() {
+        this.sensitivedocumentDownloadModal.showModal();
+    }
+
     private download() {
         this.isDownloading = true;
-        load(this.webClientConfig.captchaSiteKey || "")
-            .then((recaptcha) => {
-                recaptcha.showBadge();
-                recaptcha
-                    .execute("retrieveVaccinationStatus")
-                    .then((token) => {
-                        this.getReport({
-                            phn: this.status?.personalhealthnumber || "",
-                            dateOfBirth: new DateWrapper(
-                                this.status?.birthdate || ""
-                            ).format("yyyy-MM-dd"),
-                            token,
-                        })
-                            .then((documentResult) => {
-                                if (documentResult) {
-                                    const downloadLink = `data:application/pdf;base64,${documentResult.data}`;
-                                    fetch(downloadLink).then((res) => {
-                                        res.blob().then((blob) => {
-                                            saveAs(
-                                                blob,
-                                                documentResult.fileName
-                                            );
-                                        });
-                                    });
-                                }
-                            })
-                            .catch((err) => {
-                                this.logger.error(
-                                    `Error retrieving vaccination status pdf: ${err}`
-                                );
-                            })
-                            .finally(() => {
-                                this.isDownloading = false;
-                            });
-                    })
-                    .catch((err) => {
-                        this.logger.error(
-                            `Error executing captcha action: ${err}`
-                        );
+        this.getReport({
+            phn: this.status?.personalhealthnumber || "",
+            dateOfBirth: new DateWrapper(this.status?.birthdate || "").format(
+                "yyyy-MM-dd"
+            ),
+        })
+            .then((documentResult) => {
+                if (documentResult) {
+                    const downloadLink = `data:application/pdf;base64,${documentResult.data}`;
+                    fetch(downloadLink).then((res) => {
+                        res.blob().then((blob) => {
+                            saveAs(blob, documentResult.fileName);
+                        });
                     });
+                }
             })
             .catch((err) => {
-                this.logger.error(`Error loading captcha: ${err}`);
+                this.logger.error(
+                    `Error retrieving vaccination status pdf: ${err}`
+                );
+            })
+            .finally(() => {
+                this.isDownloading = false;
             });
     }
 }
@@ -249,12 +232,18 @@ export default class VaccinationStatusResultView extends Vue {
                     v-if="isPartiallyVaccinated || isFullyVaccinated"
                     variant="primary"
                     class="ml-3"
-                    @click="download"
+                    @click="showSensitiveDocumentDownloadModal()"
                 >
                     Save for Later
                 </hg-button>
             </div>
         </div>
+        <MessageModalComponent
+            ref="sensitivedocumentDownloadModal"
+            title="Sensitive Document Download"
+            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+            @submit="download"
+        />
     </div>
 </template>
 

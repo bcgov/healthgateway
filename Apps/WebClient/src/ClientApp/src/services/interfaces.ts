@@ -71,6 +71,7 @@ export interface IVaccinationStatusService {
         dateOfBirth: StringISODate,
         token: string
     ): Promise<RequestResult<Report>>;
+    getCaptchaToken(): Promise<string>;
 }
 
 export interface IPatientService {
