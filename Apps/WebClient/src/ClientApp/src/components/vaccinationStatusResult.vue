@@ -141,8 +141,7 @@ export default class VaccinationStatusResultView extends Vue {
         <LoadingComponent :is-loading="isDownloading"></LoadingComponent>
         <div class="header text-white">
             <div class="container pb-3">
-                <h1 class="text-center">COVID-19 Vaccination Status</h1>
-                <h4 class="text-center">Government of BC</h4>
+                <h3 class="text-center">COVID-19 Vaccination Check</h3>
                 <hr style="border-top: 2px solid #fcba19" />
                 <div v-if="name.length > 0">
                     <div class="mb-2 text-center">
