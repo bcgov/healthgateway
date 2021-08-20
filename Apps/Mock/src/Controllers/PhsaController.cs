@@ -121,7 +121,7 @@ namespace HealthGateway.Mock.Controllers
         [HttpPost]
         [Route("Support/Immunizations")]
         [Produces("application/json")]
-        public ContentResult GetCovidImmunizations([FromBody] string phn, [FromBody] string dob)
+        public ContentResult GetCovidImmunizations([FromHeader] string phn, [FromHeader] string dob)
         {
             string? payload = AssetReader.Read("HealthGateway.Mock.Assets.CovidImmunizations.json");
             return new ContentResult { Content = payload!, ContentType = "application/json" };

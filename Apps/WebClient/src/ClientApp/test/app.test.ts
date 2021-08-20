@@ -12,6 +12,7 @@ import { ILogger } from "@/services/interfaces";
 
 describe("Home view", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    const router = new VueRouter();
     logger.initialize("info");
 
     const localVue = createLocalVue();
@@ -22,6 +23,7 @@ describe("Home view", () => {
 
     const wrapper = shallowMount(AppComponent, {
         localVue,
+        router,
         store: store,
     });
 

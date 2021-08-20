@@ -21,75 +21,153 @@
             </summary>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
-        <member name="T:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests">
+        <member name="T:HealthGateway.Immunization.Test.Controllers.VaccineStatusControllerTests">
+            <summary>
+            VaccineStatusController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Controllers.VaccineStatusControllerTests.ShouldGetVaccineStatus">
+            <summary>
+            GetVaccineStatus - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Test.Delegates.CaptchaDelegateTests">
+            <summary>
+            VaccineStatusDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.CaptchaDelegateTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Test.Delegates.CaptchaDelegateTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.CaptchaDelegateTests.IsCaptchaValidTrue">
+            <summary>
+            IsCaptchaValid - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.CaptchaDelegateTests.IsCaptchaValidError">
+            <summary>
+            IsCaptchaValid - Error.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Test.Delegates.ImmunizationDelegateTests">
             <summary>
             RestImmunizationDelegate's Unit Tests.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.#ctor">
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmunizationDelegateTests.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests"/> class.
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Test.Delegates.ImmunizationDelegateTests"/> class.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.GetImmunization">
-            <summary>
-            GetImmunizations - Happy Path.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.GetImmunizations">
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmunizationDelegateTests.GetImmunization">
             <summary>
             GetImmunizations - Happy Path.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.BadData">
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmunizationDelegateTests.GetImmunizations">
+            <summary>
+            GetImmunizations - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmunizationDelegateTests.BadData">
             <summary>
             GetImmunizations - Bad Data.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.NoContent">
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmunizationDelegateTests.NoContent">
             <summary>
             GetImmunizations - No Content.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.Forbidden">
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmunizationDelegateTests.Forbidden">
             <summary>
             GetImmunizations - Forbidden.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.RequestTimeout">
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmunizationDelegateTests.RequestTimeout">
             <summary>
             GetImmunizations - RequestTimeout.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.Exception">
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmunizationDelegateTests.Exception">
             <summary>
             GetImmunizations - HttpRequestException.
             </summary>
         </member>
-        <member name="T:HealthGateway.Immunization.Test.Services.ImmsServiceTests">
+        <member name="T:HealthGateway.Immunization.Test.Delegates.VaccineStatusDelegateTests">
+            <summary>
+            VaccineStatusDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.VaccineStatusDelegateTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Test.Delegates.VaccineStatusDelegateTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.VaccineStatusDelegateTests.GetVaccineStatus">
+            <summary>
+            GetVaccineStatus - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.VaccineStatusDelegateTests.GetVaccineStatusNoContent">
+            <summary>
+            GetVaccineStatus - No Content.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Test.Services.ImmunizationServiceTests">
             <summary>
             ImmunizationService's Unit Tests.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Test.Services.ImmsServiceTests.ShouldGetImmunizations">
+        <member name="M:HealthGateway.Immunization.Test.Services.ImmunizationServiceTests.ShouldGetImmunizations">
             <summary>
             GetImmunizations - Happy Path.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Test.Services.ImmsServiceTests.ShouldGetImmunization">
+        <member name="M:HealthGateway.Immunization.Test.Services.ImmunizationServiceTests.ShouldGetImmunization">
             <summary>
             GetImmunization - Happy Path.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Test.Services.ImmsServiceTests.ShouldGetRecomendation">
+        <member name="M:HealthGateway.Immunization.Test.Services.ImmunizationServiceTests.ShouldGetRecomendation">
             <summary>
             GetImmunizations - Happy Path (With Recommendations).
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Test.Services.ImmsServiceTests.ValidateImmunizationError">
+        <member name="M:HealthGateway.Immunization.Test.Services.ImmunizationServiceTests.ValidateImmunizationError">
             <summary>
             GetImmunizations - Request Error.
             </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Test.Services.VaccineStatusServiceTests">
+            <summary>
+            VaccineStatusService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Services.VaccineStatusServiceTests.ShouldGetVaccineStatus">
+            <summary>
+            GetVaccineStatus - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Services.VaccineStatusServiceTests.ShouldErrorOnPHN">
+            <summary>
+            GetVaccineStatus - Invalid PHN.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Services.VaccineStatusServiceTests.ShouldErrorOnDOB">
+            <summary>
+            GetVaccineStatus - Invalid DOB.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
     </members>
 </doc>

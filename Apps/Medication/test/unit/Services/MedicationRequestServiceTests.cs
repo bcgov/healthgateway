@@ -151,7 +151,7 @@ namespace HealthGateway.Medication.Services.Test
         private static Mock<IPatientService> CreatePatientService(string hdid, RequestResult<PatientModel> response)
         {
             Mock<IPatientService> mockPatientService = new Mock<IPatientService>();
-            mockPatientService.Setup(s => s.GetPatient(hdid, It.IsAny<PatientIdentifierType>())).ReturnsAsync(response);
+            mockPatientService.Setup(s => s.GetPatient(hdid, It.IsAny<PatientIdentifierType>(), false)).ReturnsAsync(response);
             return mockPatientService;
         }
     }

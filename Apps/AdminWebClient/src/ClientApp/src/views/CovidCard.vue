@@ -4,15 +4,15 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import LoadingComponent from "@/components/core/Loading.vue";
-import { CountryList } from "@/constants/countryList";
-import { ProvinceList } from "@/constants/provinceList";
+import { Countries, InternationalDestinations } from "@/constants/countries";
+import { Provinces } from "@/constants/provinces";
 import { ResultType } from "@/constants/resulttype";
 import { SnackbarPosition } from "@/constants/snackbarPosition";
-import { StateList } from "@/constants/stateList";
+import { States } from "@/constants/states";
 import Address from "@/models/address";
 import BannerFeedback from "@/models/bannerFeedback";
 import CovidCardPatientResult from "@/models/covidCardPatientResult";
-import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
+import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ICovidSupportService } from "@/services/interfaces";
@@ -26,6 +26,14 @@ interface ImmunizationRow {
     clinic: string;
 }
 
+const emptyAddress: Address = {
+    streetLines: [],
+    city: "",
+    state: "",
+    postalCode: "",
+    country: "",
+};
+
 @Component({
     components: {
         LoadingComponent,
@@ -38,11 +46,11 @@ export default class CovidCardView extends Vue {
     private showFeedback = false;
 
     private phn = "";
-    private address: Address = {} as Address;
+    private address: Address = { ...emptyAddress };
     private immunizations: ImmunizationRow[] = [];
     private searchResult: CovidCardPatientResult | null = null;
     private covidSupportService!: ICovidSupportService;
-    private selectedCountry = "";
+    private selectedDestination = "";
 
     private bannerFeedback: BannerFeedback = {
         type: ResultType.NONE,
@@ -70,15 +78,30 @@ export default class CovidCardView extends Vue {
         },
     ];
 
-    private get countryList() {
-        return Object.keys(CountryList).map((countryCode) => {
-            return { text: CountryList[countryCode], value: countryCode };
-        });
+    private get internationalDestinations() {
+        // sort destinations alphabetically except place Canada and US at the top
+        const destinations = Object.keys(InternationalDestinations)
+            .filter(
+                (destination) =>
+                    destination !== Countries.CA[0] &&
+                    destination !== Countries.US[0]
+            )
+            .sort();
+        destinations.unshift(Countries.CA[0], Countries.US[0]);
+
+        return destinations.map((destination) => ({
+            text: destination,
+            value: destination,
+        }));
     }
 
-    @Watch("selectedCountry")
-    private onCountryChanged() {
-        this.address.country = this.selectedCountry;
+    @Watch("selectedDestination")
+    private onSelectedDestinationChanged() {
+        const countryCode = InternationalDestinations[this.selectedDestination];
+        const countryName = Countries[countryCode][0] ?? "";
+        this.address.country = this.isCanadaSelected
+            ? ""
+            : countryName.toLocaleUpperCase();
     }
 
     private get patientName() {
@@ -86,23 +109,31 @@ export default class CovidCardView extends Vue {
     }
 
     private get provinceStateList() {
-        if (this.selectedCountry === "CA") {
-            return Object.keys(ProvinceList).map((provinceCode) => {
+        if (this.isCanadaSelected) {
+            return Object.keys(Provinces).map((provinceCode) => {
                 return {
-                    text: ProvinceList[provinceCode],
+                    text: Provinces[provinceCode],
                     value: provinceCode,
                 };
             });
-        } else if (this.selectedCountry === "US") {
-            return Object.keys(StateList).map((stateCode) => {
+        } else if (this.isUnitedStatesSelected) {
+            return Object.keys(States).map((stateCode) => {
                 return {
-                    text: StateList[stateCode],
+                    text: States[stateCode],
                     value: stateCode,
                 };
             });
         } else {
             return [];
         }
+    }
+
+    private get isCanadaSelected() {
+        return this.selectedDestination === Countries.CA[0];
+    }
+
+    private get isUnitedStatesSelected() {
+        return this.selectedDestination === Countries.US[0];
     }
 
     private get snackbarPosition(): string {
@@ -129,9 +160,9 @@ export default class CovidCardView extends Vue {
     }
 
     private get postalCodeMask(): Mask | undefined {
-        if (this.selectedCountry === "CA") {
+        if (this.isCanadaSelected) {
             return postalCodeMask;
-        } else if (this.selectedCountry === "US") {
+        } else if (this.isUnitedStatesSelected) {
             return zipCodeMask;
         }
         return undefined;
@@ -147,7 +178,7 @@ export default class CovidCardView extends Vue {
         this.searchResult = null;
         this.isEditMode = false;
         this.immunizations = [];
-        this.address = {} as Address;
+        this.address = { ...emptyAddress };
 
         if (emptySearchField) {
             this.phn = "";
@@ -179,7 +210,6 @@ export default class CovidCardView extends Vue {
                     this.searchResult?.patient?.postalAddress,
                     this.searchResult?.patient?.physicalAddress
                 );
-                this.selectedCountry = this.address.country;
                 this.immunizations =
                     this.searchResult.immunizations?.map((immz) => {
                         return {
@@ -217,7 +247,17 @@ export default class CovidCardView extends Vue {
         } else if (backupAddress) {
             this.address = { ...backupAddress };
         } else {
-            this.address = {} as Address;
+            this.address = { ...emptyAddress };
+        }
+
+        // convert country code to country name
+        this.selectedDestination = Countries[this.address.country]
+            ? Countries[this.address.country][0]
+            : "";
+
+        // select Canada if the address has a province but no country
+        if (this.address.country === "" && Provinces[this.address.state]) {
+            this.selectedDestination = Countries.CA[0];
         }
     }
 
@@ -300,13 +340,11 @@ export default class CovidCardView extends Vue {
         }
     }
 
-    private formatDate(date: StringISODateTime): string {
+    private formatDate(date: StringISODate): string {
         if (!date) {
             return "";
         }
-        return new DateWrapper(date, { isUtc: true }).format(
-            DateWrapper.defaultFormat
-        );
+        return new DateWrapper(date).format(DateWrapper.defaultFormat);
     }
 }
 </script>
@@ -496,8 +534,8 @@ export default class CovidCardView extends Vue {
                         </v-col>
                         <v-col cols md="8" xl="4">
                             <v-select
-                                v-model="selectedCountry"
-                                :items="countryList"
+                                v-model="selectedDestination"
+                                :items="internationalDestinations"
                                 label="Country"
                                 :disabled="!isEditMode"
                                 autocomplete="chrome-off"

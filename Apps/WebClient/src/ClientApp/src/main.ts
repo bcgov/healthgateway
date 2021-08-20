@@ -61,6 +61,7 @@ import {
     IUserNoteService,
     IUserProfileService,
     IUserRatingService,
+    IVaccinationStatusService,
 } from "@/services/interfaces";
 
 import { RootState } from "./store/types";
@@ -142,6 +143,9 @@ configService.getConfiguration().then((config: ExternalConfiguration) => {
     const reportService: IReportService = container.get(
         SERVICE_IDENTIFIER.ReportService
     );
+    const vaccinationStatusService: IVaccinationStatusService = container.get(
+        SERVICE_IDENTIFIER.VaccinationStatusService
+    );
     const storeProvider: IStoreProvider = container.get(
         STORE_IDENTIFIER.StoreProvider
     );
@@ -167,6 +171,7 @@ configService.getConfiguration().then((config: ExternalConfiguration) => {
     credentialService.initialize(config, httpDelegate);
     dependentService.initialize(config, httpDelegate);
     reportService.initialize(httpDelegate);
+    vaccinationStatusService.initialize(config, httpDelegate);
 
     Vue.use(IdleVue, {
         eventEmitter: new Vue(),
