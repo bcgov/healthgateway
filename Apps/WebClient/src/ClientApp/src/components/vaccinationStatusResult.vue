@@ -6,12 +6,14 @@ import {
     faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
+import { load } from "recaptcha-v3";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
+import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import Report from "@/models/report";
 import VaccinationStatus from "@/models/vaccinationStatus";
@@ -29,6 +31,9 @@ export default class VaccinationStatusResultView extends Vue {
     private showDetails = false;
     private logger!: ILogger;
 
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
+
     @Getter("vaccinationStatus", { namespace: "vaccinationStatus" }) status!:
         | VaccinationStatus
         | undefined;
@@ -37,6 +42,7 @@ export default class VaccinationStatusResultView extends Vue {
     getReport!: (params: {
         phn: string;
         dateOfBirth: StringISODate;
+        token: string;
     }) => Promise<Report>;
 
     private get vaccinationState(): VaccinationState | undefined {
@@ -82,29 +88,49 @@ export default class VaccinationStatusResultView extends Vue {
 
     private download() {
         this.isDownloading = true;
-        this.getReport({
-            phn: this.status?.personalhealthnumber || "",
-            dateOfBirth: new DateWrapper(this.status?.birthdate || "").format(
-                "yyyy-MM-dd"
-            ),
-        })
-            .then((documentResult) => {
-                if (documentResult) {
-                    const downloadLink = `data:application/pdf;base64,${documentResult.data}`;
-                    fetch(downloadLink).then((res) => {
-                        res.blob().then((blob) => {
-                            saveAs(blob, documentResult.fileName);
-                        });
+        load(this.webClientConfig.captchaSiteKey || "")
+            .then((recaptcha) => {
+                recaptcha.showBadge();
+                recaptcha
+                    .execute("retrieveVaccinationStatus")
+                    .then((token) => {
+                        this.getReport({
+                            phn: this.status?.personalhealthnumber || "",
+                            dateOfBirth: new DateWrapper(
+                                this.status?.birthdate || ""
+                            ).format("yyyy-MM-dd"),
+                            token,
+                        })
+                            .then((documentResult) => {
+                                if (documentResult) {
+                                    const downloadLink = `data:application/pdf;base64,${documentResult.data}`;
+                                    fetch(downloadLink).then((res) => {
+                                        res.blob().then((blob) => {
+                                            saveAs(
+                                                blob,
+                                                documentResult.fileName
+                                            );
+                                        });
+                                    });
+                                }
+                            })
+                            .catch((err) => {
+                                this.logger.error(
+                                    `Error retrieving vaccination status pdf: ${err}`
+                                );
+                            })
+                            .finally(() => {
+                                this.isDownloading = false;
+                            });
+                    })
+                    .catch((err) => {
+                        this.logger.error(
+                            `Error executing captcha action: ${err}`
+                        );
                     });
-                }
             })
             .catch((err) => {
-                this.logger.error(
-                    `Error retrieving vaccination status pdf: ${err}`
-                );
-            })
-            .finally(() => {
-                this.isDownloading = false;
+                this.logger.error(`Error loading captcha: ${err}`);
             });
     }
 }

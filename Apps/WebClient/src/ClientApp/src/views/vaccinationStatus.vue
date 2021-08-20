@@ -90,7 +90,7 @@ export default class VaccinationStatusView extends Vue {
     private handleSubmit() {
         this.$v.$touch();
         if (!this.$v.$invalid) {
-            load(this.webClientConfig.captchaSiteKey)
+            load(this.webClientConfig.captchaSiteKey || "")
                 .then((recaptcha) => {
                     recaptcha.showBadge();
                     recaptcha
