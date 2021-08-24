@@ -668,14 +668,13 @@
             The Vaccine Status data service.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Services.VaccineStatusService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Common.AccessManagement.Authentication.IAuthenticationDelegate,HealthGateway.Immunization.Delegates.IVaccineStatusDelegate,HealthGateway.Common.Delegates.ICDogsDelegate,HealthGateway.Immunization.Delegates.ICaptchaDelegate)">
+        <member name="M:HealthGateway.Immunization.Services.VaccineStatusService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Common.AccessManagement.Authentication.IAuthenticationDelegate,HealthGateway.Immunization.Delegates.IVaccineStatusDelegate,HealthGateway.Immunization.Delegates.ICaptchaDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Services.VaccineStatusService"/> class.
             </summary>
             <param name="configuration">The configuration to use.</param>
             <param name="authDelegate">The OAuth2 authentication service.</param>
             <param name="vaccineStatusDelegate">The injected vaccine status delegate.</param>
-            <param name="cDogsDelegate">Delegate that provides document generation functionality.</param>
             <param name="captchaDelegate">The injected captcha delegate.</param>
         </member>
         <member name="M:HealthGateway.Immunization.Services.VaccineStatusService.GetVaccineStatus(System.String,System.String,System.String)">
