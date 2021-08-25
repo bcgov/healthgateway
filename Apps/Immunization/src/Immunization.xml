@@ -158,12 +158,11 @@
             Interface that defines a delegate to retrieve vaccine status information.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Delegates.IVaccineStatusDelegate.GetVaccineStatus(System.String,System.DateTime,System.String)">
+        <member name="M:HealthGateway.Immunization.Delegates.IVaccineStatusDelegate.GetVaccineStatus(HealthGateway.Immunization.Models.VaccineStatusQuery,System.String)">
             <summary>
             Returns the vaccine status for the given patient.
             </summary>
-            <param name="phn">The personal health number of the patient.</param>
-            <param name="dob">The date of birth of the patient.</param>
+            <param name="query">The vaccine status query.</param>
             <param name="accessToken">The connection access token.</param>
             <returns>The vaccine status result for the given patient.</returns>
         </member>
@@ -206,7 +205,7 @@
             <param name="configuration">The injected configuration provider.</param>
             <param name="httpContextAccessor">The Http Context accessor.</param>
         </member>
-        <member name="M:HealthGateway.Immunization.Delegates.RestVaccineStatusDelegate.GetVaccineStatus(System.String,System.DateTime,System.String)">
+        <member name="M:HealthGateway.Immunization.Delegates.RestVaccineStatusDelegate.GetVaccineStatus(HealthGateway.Immunization.Models.VaccineStatusQuery,System.String)">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.Immunization.Models.CaptchaConfig">
@@ -460,6 +459,21 @@
         <member name="P:HealthGateway.Immunization.Models.VaccineStatus.State">
             <summary>
             Gets or sets the vaccine state.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Models.VaccineStatusQuery">
+            <summary>
+            The Vaccine Status Query model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.VaccineStatusQuery.PersonalHealthNumber">
+            <summary>
+            Gets or sets the Personal Health Number.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Immunization.Models.VaccineStatusQuery.DateOfBirth">
+            <summary>
+            Gets or sets the persons date of birth.
             </summary>
         </member>
         <member name="T:HealthGateway.Immunization.Models.VaccineStatusReportRequest">

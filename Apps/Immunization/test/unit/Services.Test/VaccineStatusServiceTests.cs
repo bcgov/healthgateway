@@ -46,9 +46,8 @@ namespace HealthGateway.Immunization.Test.Services
         /// <summary>
         /// GetVaccineStatus - Happy Path.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetVaccineStatus()
+        public void ShouldGetVaccineStatus()
         {
             RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new RequestResult<PHSAResult<VaccineStatusResult>>()
             {
@@ -85,7 +84,7 @@ namespace HealthGateway.Immunization.Test.Services
             };
 
             Mock<IVaccineStatusDelegate> mockDelegate = new Mock<IVaccineStatusDelegate>();
-            mockDelegate.Setup(s => s.GetVaccineStatus(this.phn, this.dob, this.accessToken)).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken)).Returns(Task.FromResult(delegateResult));
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new Mock<IAuthenticationDelegate>();
             mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>())).Returns(jwtModel);
@@ -100,16 +99,15 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ICDogsDelegate>().Object,
                 mockCaptchaDelegate.Object);
 
-            var actualResult = await service.GetVaccineStatus(this.phn, this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture), this.captchaToken).ConfigureAwait(true);
+            var actualResult = Task.Run(async () => await service.GetVaccineStatus(this.phn, this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture), this.captchaToken).ConfigureAwait(true)).Result;
             Assert.True(expectedResult.IsDeepEqual(actualResult));
         }
 
         /// <summary>
         /// GetVaccineStatus - Invalid PHN.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldErrorOnPHN()
+        public void ShouldErrorOnPHN()
         {
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
@@ -118,16 +116,15 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ICDogsDelegate>().Object,
                 new Mock<ICaptchaDelegate>().Object);
 
-            var actualResult = await service.GetVaccineStatus("123", this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture), this.captchaToken).ConfigureAwait(true);
+            var actualResult = Task.Run(async () => await service.GetVaccineStatus("123", this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture), this.captchaToken).ConfigureAwait(true)).Result;
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
 
         /// <summary>
         /// GetVaccineStatus - Invalid DOB.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldErrorOnDOB()
+        public void ShouldErrorOnDOB()
         {
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
@@ -136,7 +133,7 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ICDogsDelegate>().Object,
                 new Mock<ICaptchaDelegate>().Object);
 
-            var actualResult = await service.GetVaccineStatus(this.phn, "yyyyMMddx", this.captchaToken).ConfigureAwait(true);
+            var actualResult = Task.Run(async () => await service.GetVaccineStatus(this.phn, "yyyyMMddx", this.captchaToken).ConfigureAwait(true)).Result;
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
 

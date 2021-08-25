@@ -29,10 +29,9 @@ namespace HealthGateway.Immunization.Delegates
         /// <summary>
         /// Returns the vaccine status for the given patient.
         /// </summary>
-        /// <param name="phn">The personal health number of the patient.</param>
-        /// <param name="dob">The date of birth of the patient.</param>
+        /// <param name="query">The vaccine status query.</param>
         /// <param name="accessToken">The connection access token.</param>
         /// <returns>The vaccine status result for the given patient.</returns>
-        Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(string phn, DateTime dob, string accessToken);
+        Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken);
     }
 }
