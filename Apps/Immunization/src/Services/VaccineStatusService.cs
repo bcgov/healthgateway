@@ -23,7 +23,6 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.CDogs;
@@ -43,7 +42,6 @@ namespace HealthGateway.Immunization.Services
         private const string AuthConfigSectionName = "ClientAuthentication";
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
         private readonly IAuthenticationDelegate authDelegate;
-        private readonly ICDogsDelegate cDogsDelegate;
         private readonly ICaptchaDelegate captchaDelegate;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly PHSAConfig phsaConfig;
@@ -55,18 +53,15 @@ namespace HealthGateway.Immunization.Services
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="vaccineStatusDelegate">The injected vaccine status delegate.</param>
-        /// <param name="cDogsDelegate">Delegate that provides document generation functionality.</param>
         /// <param name="captchaDelegate">The injected captcha delegate.</param>
         public VaccineStatusService(
             IConfiguration configuration,
             IAuthenticationDelegate authDelegate,
             IVaccineStatusDelegate vaccineStatusDelegate,
-            ICDogsDelegate cDogsDelegate,
             ICaptchaDelegate captchaDelegate)
         {
             this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.authDelegate = authDelegate;
-            this.cDogsDelegate = cDogsDelegate;
             this.captchaDelegate = captchaDelegate;
 
             IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
@@ -159,91 +154,9 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string token)
+        public Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string token)
         {
-            RequestResult<VaccineStatus> vaccineStatusResult = await this.GetVaccineStatus(phn, dateOfBirth, token).ConfigureAwait(true);
-
-            if (vaccineStatusResult.ResultStatus == ResultType.Success &&
-                vaccineStatusResult.ResourcePayload != null &&
-                vaccineStatusResult.ResourcePayload!.State != VaccineState.NotFound)
-            {
-                VaccineStatus vaccineStatus = vaccineStatusResult.ResourcePayload!;
-
-                // Compose CDogs request
-                CDogsRequestModel cdogsRequest = CreateCdogsRequest(new ()
-                {
-                    Name = $"{vaccineStatus.FirstName} {vaccineStatus.LastName}",
-                    Birthdate = vaccineStatus.Birthdate!.Value.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture),
-                    Status = vaccineStatus.State,
-                    Doses = vaccineStatus.Doses,
-                });
-
-                // Send CDogs request
-                return Task.Run(async () => await this.cDogsDelegate.GenerateReportAsync(cdogsRequest).ConfigureAwait(true)).Result;
-            }
-            else
-            {
-                return new RequestResult<ReportModel>()
-                {
-                    PageIndex = 0,
-                    PageSize = 0,
-                    ResultStatus = ResultType.Error,
-                    ResultError = vaccineStatusResult.ResultError,
-                };
-            }
-        }
-
-        private static CDogsRequestModel CreateCdogsRequest(VaccineStatusReportRequest vaccineStatus)
-        {
-            string reportName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture) + "-" + Guid.NewGuid().ToString("N");
-            string documentName = "VaccineStatusCard_FullyVaccinated";
-            if (vaccineStatus.Status == VaccineState.PartialDosesReceived)
-            {
-                if (vaccineStatus.Doses == 1)
-                {
-                    documentName = "VaccineStatusCard_Partial1Dose";
-                }
-                else
-                {
-                    documentName = "VaccineStatusCard_Partial2Doses";
-                }
-            }
-
-            string resourceName = $"HealthGateway.Immunization.Assets.Templates.{documentName}.docx";
-            return new ()
-            {
-                Data = JsonElementFromObject(vaccineStatus),
-                Options = new CDogsOptionsModel()
-                {
-                    Overwrite = true,
-                    ConvertTo = "pdf",
-                    ReportName = reportName,
-                },
-                Template = new CDogsTemplateModel()
-                {
-                    Content = ReadTemplate(resourceName),
-                    FileType = "docx",
-                },
-            };
-        }
-
-        private static string ReadTemplate(string resourceName)
-        {
-            string? assetFile = AssetReader.Read(resourceName, true);
-
-            if (assetFile == null)
-            {
-                throw new FileNotFoundException($"Template {resourceName} not found.");
-            }
-
-            return assetFile;
-        }
-
-        private static JsonElement JsonElementFromObject(VaccineStatusReportRequest value)
-        {
-            byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(value);
-            using JsonDocument doc = JsonDocument.Parse(bytes);
-            return doc.RootElement.Clone();
+            throw new NotImplementedException();
         }
     }
 }

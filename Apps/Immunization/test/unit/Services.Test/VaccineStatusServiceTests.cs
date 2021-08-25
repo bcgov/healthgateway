@@ -21,7 +21,6 @@ namespace HealthGateway.Immunization.Test.Services
     using DeepEqual.Syntax;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Delegates;
@@ -97,7 +96,6 @@ namespace HealthGateway.Immunization.Test.Services
                 this.configuration,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                new Mock<ICDogsDelegate>().Object,
                 mockCaptchaDelegate.Object);
 
             var actualResult = await service.GetVaccineStatus(this.phn, this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture), this.captchaToken).ConfigureAwait(true);
@@ -115,7 +113,6 @@ namespace HealthGateway.Immunization.Test.Services
                 this.configuration,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<ICDogsDelegate>().Object,
                 new Mock<ICaptchaDelegate>().Object);
 
             var actualResult = await service.GetVaccineStatus("123", this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture), this.captchaToken).ConfigureAwait(true);
@@ -133,7 +130,6 @@ namespace HealthGateway.Immunization.Test.Services
                 this.configuration,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<ICDogsDelegate>().Object,
                 new Mock<ICaptchaDelegate>().Object);
 
             var actualResult = await service.GetVaccineStatus(this.phn, "yyyyMMddx", this.captchaToken).ConfigureAwait(true);
