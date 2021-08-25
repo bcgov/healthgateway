@@ -22,6 +22,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
+    using HealthGateway.Immunization.Models.PHSA;
     using HealthGateway.Immunization.Parser;
 
     /// <summary>
@@ -29,6 +30,7 @@ namespace HealthGateway.Immunization.Services
     /// </summary>
     public class ImmunizationService : IImmunizationService
     {
+        private const string CovidDisease = "COVID19";
         private readonly IImmunizationDelegate immunizationDelegate;
 
         /// <summary>
@@ -39,6 +41,27 @@ namespace HealthGateway.Immunization.Services
             IImmunizationDelegate immunizationDelegate)
         {
             this.immunizationDelegate = immunizationDelegate;
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<string>> GetCovidCard(string hdid)
+        {
+            RequestResult<string> retVal = new ()
+            {
+                ResultStatus = ResultType.Error,
+            };
+            RequestResult<ImmunizationCard> cardResult = await this.immunizationDelegate.GetImmunizationCard(hdid, CovidDisease).ConfigureAwait(true);
+            if (cardResult.ResultStatus == ResultType.Success && cardResult.ResourcePayload != null)
+            {
+                retVal.ResourcePayload = cardResult.ResourcePayload.PaperRecord.Data ?? string.Empty;
+                retVal.ResultStatus = ResultType.Success;
+            }
+            else
+            {
+                retVal.ResultError = cardResult.ResultError;
+            }
+
+            return retVal;
         }
 
         /// <inheritdoc/>

@@ -21,7 +21,7 @@ namespace HealthGateway.Admin.Models.Immunization
     public class ImmunizationConfig
     {
         /// <summary>
-        /// Gets or sets the Lab external endpoint.
+        /// Gets or sets the Immunizations external endpoint.
         /// </summary>
         public string Endpoint { get; set; } = string.Empty;
 

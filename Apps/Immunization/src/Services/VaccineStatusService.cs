@@ -152,6 +152,7 @@ namespace HealthGateway.Immunization.Services
                     LastName = payload.LastName,
                     Doses = payload.DoseCount,
                     State = Enum.Parse<VaccineState>(payload.StatusIndicator),
+                    QRCode = payload.QRCode,
                 };
             }
 
