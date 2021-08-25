@@ -31,6 +31,7 @@ namespace HealthGateway.Immunization.Delegates
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Immunization.Models;
+    using HealthGateway.Immunization.Models.PHSA;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.WebUtilities;
@@ -101,6 +102,55 @@ namespace HealthGateway.Immunization.Delegates
             Uri endpoint = new Uri(QueryHelpers.AddQueryString(endpointString, query));
             RequestResult<PHSAResult<ImmunizationResponse>> retVal = await this.ParsePHSAResult<ImmunizationResponse>(endpoint).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting Immunizations");
+
+            return retVal;
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<ImmunizationCard>> GetImmunizationCard(string hdid, string immunizationDisease)
+        {
+            using Activity? activity = Source.StartActivity("GetImmunizationCard");
+            this.logger.LogDebug($"Getting immunizations card for patient {hdid}");
+            RequestResult<ImmunizationCard> retVal = new ()
+            {
+                ResultStatus = ResultType.Error,
+                PageIndex = 0,
+            };
+            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
+            if (httpContext != null)
+            {
+                string? bearerToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+                if (bearerToken != null)
+                {
+                    string endpointString = $"{this.phsaConfig.BaseUrl}{this.phsaConfig.ImmunizationEndpoint}/RecordCards/{immunizationDisease}";
+                    this.logger.LogDebug($"Immunization card Endpoint string is {endpointString}");
+                    Uri endpoint = new (endpointString);
+                    using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+                    client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                    HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    this.logger.LogTrace($"Response: {response}");
+                    switch (response.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            break;
+                        case HttpStatusCode.NoContent:
+                            retVal.ResultStatus = ResultType.Success;
+                            break;
+                        case HttpStatusCode.Forbidden:
+                            retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                            this.logger.LogWarning($"{retVal.ResultError.ResultMessage}");
+                            break;
+                        default:
+                            retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Immunizations Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                            this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                            break;
+                    }
+                }
+            }
 
             return retVal;
         }

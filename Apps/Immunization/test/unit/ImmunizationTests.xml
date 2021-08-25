@@ -155,19 +155,16 @@
             <summary>
             GetVaccineStatus - Happy Path.
             </summary>
-            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
         <member name="M:HealthGateway.Immunization.Test.Services.VaccineStatusServiceTests.ShouldErrorOnPHN">
             <summary>
             GetVaccineStatus - Invalid PHN.
             </summary>
-            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
         <member name="M:HealthGateway.Immunization.Test.Services.VaccineStatusServiceTests.ShouldErrorOnDOB">
             <summary>
             GetVaccineStatus - Invalid DOB.
             </summary>
-            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
     </members>
 </doc>

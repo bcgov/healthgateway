@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,31 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Models.Immunization
+namespace HealthGateway.Immunization.Models
 {
+    using System;
+    using System.Text.Json.Serialization;
+
     /// <summary>
-    /// Provides configuration data for the Admin Immunization Delegate.
+    /// The Vaccine Status Query model.
     /// </summary>
-    public class ImmunizationConfig
+    public class VaccineStatusQuery
     {
         /// <summary>
-        /// Gets or sets the Immunizations external endpoint.
+        /// Gets or sets the Personal Health Number.
         /// </summary>
-        public string Endpoint { get; set; } = string.Empty;
+        [JsonPropertyName("phn")]
+        public string PersonalHealthNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the total number of records to retrieve in one call.
+        /// Gets or sets the persons date of birth.
         /// </summary>
-        public string FetchSize { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the number of retry attempts if PHSA is loading.
-        /// </summary>
-        public int MaximumRetries { get; set; }
-
-        /// <summary>
-        /// Gets or sets the number of seconds to wait before retrying.
-        /// </summary>
-        public int RetryWait { get; set; }
+        [JsonPropertyName("dateOfBirth")]
+        public DateTime DateOfBirth { get; set; }
     }
 }

@@ -16,9 +16,7 @@
 namespace HealthGateway.Immunization.Delegates
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Globalization;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -32,9 +30,7 @@ namespace HealthGateway.Immunization.Delegates
     using HealthGateway.Common.Services;
     using HealthGateway.Immunization.Constants;
     using HealthGateway.Immunization.Models;
-    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -73,10 +69,11 @@ namespace HealthGateway.Immunization.Delegates
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestVaccineStatusDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(string phn, DateTime dob, string accessToken)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
+        public async Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken)
         {
             using Activity? activity = Source.StartActivity("GetVaccineStatus");
-            this.logger.LogDebug($"Getting vaccine status {phn.Substring(0, 5)} {dob}...");
+            this.logger.LogDebug($"Getting vaccine status {query.PersonalHealthNumber.Substring(0, 5)} {query.DateOfBirth}...");
             string endpointString = $"{this.phsaConfig.BaseUrl}{this.phsaConfig.VaccineStatusEndpoint}";
 
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
@@ -96,7 +93,7 @@ namespace HealthGateway.Immunization.Delegates
                     IgnoreNullValues = true,
                     WriteIndented = true,
                 };
-                string json = JsonSerializer.Serialize(new { phn, dob }, jsonOptions);
+                string json = JsonSerializer.Serialize(query, jsonOptions);
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                 using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
 
@@ -166,7 +163,7 @@ namespace HealthGateway.Immunization.Delegates
                 this.logger.LogError($"Unexpected exception retrieving vaccine status {e}");
             }
 
-            this.logger.LogDebug($"Finished getting vaccine status {phn.Substring(0, 5)} {dob}");
+            this.logger.LogDebug($"Finished getting vaccine status {query.PersonalHealthNumber.Substring(0, 5)} {query.DateOfBirth}");
             return retVal;
         }
     }

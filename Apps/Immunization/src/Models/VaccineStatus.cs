@@ -18,6 +18,7 @@ namespace HealthGateway.Immunization.Models
     using System;
     using System.Text.Json.Serialization;
     using HealthGateway.Immunization.Constants;
+    using HealthGateway.Immunization.Models.PHSA;
 
     /// <summary>
     /// The Vaccine Status model.
@@ -80,5 +81,11 @@ namespace HealthGateway.Immunization.Models
         /// </summary>
         [JsonPropertyName("state")]
         public VaccineState State { get; set; }
+
+        /// <summary>
+        /// Gets or sets the QR code.
+        /// </summary>
+        [JsonPropertyName("qrCode")]
+        public EncodedMedia QRCode { get; set; } = new ();
     }
 }
