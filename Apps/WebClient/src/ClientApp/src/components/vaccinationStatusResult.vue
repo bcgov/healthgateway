@@ -13,6 +13,7 @@ import { Action, Getter } from "vuex-class";
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
+import BannerError from "@/models/bannerError";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import Report from "@/models/report";
 import VaccinationStatus from "@/models/vaccinationStatus";
@@ -34,6 +35,9 @@ export default class VaccinationStatusResultView extends Vue {
     @Getter("vaccinationStatus", { namespace: "vaccinationStatus" }) status!:
         | VaccinationStatus
         | undefined;
+
+    @Getter("error", { namespace: "vaccinationStatus" })
+    error!: BannerError | undefined;
 
     @Action("getReport", { namespace: "vaccinationStatus" })
     getReport!: (params: {
@@ -195,6 +199,30 @@ export default class VaccinationStatusResultView extends Vue {
                     </b-col>
                 </b-row>
             </div>
+        </div>
+        <div v-if="error !== undefined" class="container">
+            <b-alert
+                variant="danger"
+                class="no-print my-3"
+                :show="error !== undefined"
+                dismissible
+            >
+                <h4>{{ error.title }}</h4>
+                <h6>{{ error.errorCode }}</h6>
+                <div class="pl-4">
+                    <p data-testid="errorTextDescription">
+                        {{ error.description }}
+                    </p>
+                    <p data-testid="errorTextDetails">
+                        {{ error.detail }}
+                    </p>
+                    <p v-if="error.traceId" data-testid="errorSupportDetails">
+                        If this issue persists, contact HealthGateway@gov.bc.ca
+                        and provide
+                        <span class="trace-id">{{ error.traceId }}</span>
+                    </p>
+                </div>
+            </b-alert>
         </div>
         <div
             class="
