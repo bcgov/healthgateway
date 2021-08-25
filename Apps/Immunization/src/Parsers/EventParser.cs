@@ -17,7 +17,7 @@ namespace HealthGateway.Immunization.Parser
 {
     using System.Collections.Generic;
     using HealthGateway.Common.Models.Immunization;
-    using HealthGateway.Immunization.Models.PHSA;
+    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
     /// Provides parsing methods for Immunization Events.

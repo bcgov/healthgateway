@@ -3,6 +3,7 @@ import "tiptap-vuetify/dist/main.css";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { TiptapVuetifyPlugin } from "tiptap-vuetify";
+import { VueMaskDirective } from "v-mask";
 import Vue from "vue";
 import DatetimePicker from "vuetify-datetime-picker";
 
@@ -17,6 +18,7 @@ import {
     IAuthenticationService,
     ICommunicationService,
     IConfigService,
+    ICovidSupportService,
     IDashboardService,
     IEmailAdminService,
     IHttpDelegate,
@@ -32,6 +34,7 @@ Vue.use(TiptapVuetifyPlugin, {
     vuetify,
     iconsGroup: "md",
 });
+Vue.directive("mask", VueMaskDirective);
 Vue.filter("date", dateFilter);
 Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 
@@ -50,6 +53,10 @@ const emailAdminService: IEmailAdminService = container.get(
 
 const supportService: ISupportService = container.get(
     SERVICE_IDENTIFIER.SupportService
+);
+
+const covidSupportService: ICovidSupportService = container.get(
+    SERVICE_IDENTIFIER.CovidSupportService
 );
 
 configService.initialize(httpDelegate);
@@ -73,6 +80,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     emailAdminService.initialize(httpDelegate);
     communicationService.initialize(httpDelegate);
     supportService.initialize(httpDelegate);
+    covidSupportService.initialize(httpDelegate);
     initializeVue();
 });
 

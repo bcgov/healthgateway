@@ -31,7 +31,6 @@ namespace HealthGateway.Immunization.Delegates
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Immunization.Models;
-    using HealthGateway.Immunization.Models.PHSA;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.WebUtilities;
@@ -43,10 +42,10 @@ namespace HealthGateway.Immunization.Delegates
     /// </summary>
     public class RestImmunizationDelegate : IImmunizationDelegate
     {
-        private const string ImmunizationConfigSectionKey = "Immunization";
+        private const string PHSAConfigSectionKey = "PHSA";
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly ImmunizationConfig immunizationConfig;
+        private readonly PHSAConfig phsaConfig;
 
         /// <summary>
         /// Gets or sets the http context accessor.
@@ -69,8 +68,8 @@ namespace HealthGateway.Immunization.Delegates
             this.logger = logger;
             this.httpClientService = httpClientService;
             this.httpContextAccessor = httpContextAccessor;
-            this.immunizationConfig = new ImmunizationConfig();
-            configuration.Bind(ImmunizationConfigSectionKey, this.immunizationConfig);
+            this.phsaConfig = new ();
+            configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
         }
 
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestImmunizationDelegate));
@@ -81,7 +80,7 @@ namespace HealthGateway.Immunization.Delegates
             using Activity? activity = Source.StartActivity("GetImmunization");
             this.logger.LogDebug($"Getting immunization {immunizationId}...");
 
-            string endpointString = string.Format(CultureInfo.InvariantCulture, "{0}/{1}", this.immunizationConfig.Endpoint, immunizationId);
+            string endpointString = $"{this.phsaConfig.BaseUrl}{this.phsaConfig.ImmunizationEndpoint}/{immunizationId}";
             RequestResult<PHSAResult<ImmunizationViewResponse>> retVal = await this.ParsePHSAResult<ImmunizationViewResponse>(new Uri(endpointString)).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting Immunization {immunizationId}");
 
@@ -96,9 +95,10 @@ namespace HealthGateway.Immunization.Delegates
 
             Dictionary<string, string?> query = new ()
             {
-                ["limit"] = this.immunizationConfig.FetchSize,
+                ["limit"] = this.phsaConfig.FetchSize,
             };
-            Uri endpoint = new Uri(QueryHelpers.AddQueryString(this.immunizationConfig.Endpoint, query));
+            string endpointString = $"{this.phsaConfig.BaseUrl}{this.phsaConfig.ImmunizationEndpoint}";
+            Uri endpoint = new Uri(QueryHelpers.AddQueryString(endpointString, query));
             RequestResult<PHSAResult<ImmunizationResponse>> retVal = await this.ParsePHSAResult<ImmunizationResponse>(endpoint).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting Immunizations");
 
@@ -195,7 +195,7 @@ namespace HealthGateway.Immunization.Delegates
                                     retVal.ResultStatus = Common.Constants.ResultType.Success;
                                     retVal.ResourcePayload = phsaResult;
                                     retVal.TotalResultCount = 1;
-                                    retVal.PageSize = int.Parse(this.immunizationConfig.FetchSize, CultureInfo.InvariantCulture);
+                                    retVal.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);
                                 }
                                 else
                                 {
@@ -207,7 +207,7 @@ namespace HealthGateway.Immunization.Delegates
                                 retVal.ResultStatus = Common.Constants.ResultType.Success;
                                 retVal.ResourcePayload = new PHSAResult<T>();
                                 retVal.TotalResultCount = 0;
-                                retVal.PageSize = int.Parse(this.immunizationConfig.FetchSize, CultureInfo.InvariantCulture);
+                                retVal.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);
                                 break;
                             case HttpStatusCode.Forbidden:
                                 retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };

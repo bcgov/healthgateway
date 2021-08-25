@@ -28,6 +28,6 @@ namespace HealthGateway.Admin.Services
         /// Gets all the emails in the system up to the pageSize.
         /// </summary>
         /// <returns>A List of notes wrapped in a RequestResult.</returns>
-        public RequestResult<IEnumerable<AdminEmail>> GetEmails();
+        RequestResult<IEnumerable<AdminEmail>> GetEmails();
     }
 }

@@ -66,6 +66,14 @@ namespace HealthGateway.Common.ErrorHandling
         }
 
         /// <summary>
+        /// Gets the general data validation error.
+        /// </summary>
+        public static ActionType Invalid
+        {
+            get { return new ActionType("INVALID"); }
+        }
+
+        /// <summary>
         /// Gets or sets the value that holds the internal representation of the ActionType.
         /// </summary>
         public string Value { get; set; }

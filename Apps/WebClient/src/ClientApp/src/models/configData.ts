@@ -69,6 +69,8 @@ export interface WebClientConfiguration {
     clientIP?: string;
     // Gets or sets the sets the offline configuration.
     offlineMode?: OfflineModeConfiguration;
+    // Gets or sets the captcha site key.
+    captchaSiteKey?: string;
 }
 
 // Various timeout values used by the VUE WebClient application.

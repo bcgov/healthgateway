@@ -2,6 +2,9 @@ import { Dictionary } from "vue-router/types/router";
 
 import Communication from "@/models/adminCommunication";
 import AuthenticationData from "@/models/authenticationData";
+import CovidCardDocumentResult from "@/models/covidCardDocumentResult";
+import CovidCardMailRequest from "@/models/covidCardMailRequest";
+import CovidCardPatientResult from "@/models/covidCardPatientResult";
 import Email from "@/models/email";
 import ExternalConfiguration from "@/models/externalConfiguration";
 import MessageVerification from "@/models/messageVerification";
@@ -67,6 +70,13 @@ export interface ISupportService {
         type: QueryType,
         query: string
     ): Promise<MessageVerification[]>;
+}
+
+export interface ICovidSupportService {
+    initialize(http: IHttpDelegate): void;
+    getPatient(phn: string): Promise<CovidCardPatientResult>;
+    retrieveDocument(phn: string): Promise<CovidCardDocumentResult>;
+    mailDocument(request: CovidCardMailRequest): Promise<boolean>;
 }
 
 export interface IHttpDelegate {

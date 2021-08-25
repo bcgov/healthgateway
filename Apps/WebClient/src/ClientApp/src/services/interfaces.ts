@@ -12,6 +12,7 @@ import {
     ExternalConfiguration,
     OpenIdConnectConfiguration,
 } from "@/models/configData";
+import { StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
 import Encounter from "@/models/encounter";
 import type ImmunizationResult from "@/models/immunizationResult";
@@ -30,6 +31,7 @@ import UserNote from "@/models/userNote";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserRating from "@/models/userRating";
+import VaccinationStatus from "@/models/vaccinationStatus";
 import { WalletConnection, WalletCredential } from "@/models/wallet";
 import { RootState } from "@/store/types";
 
@@ -55,6 +57,21 @@ export interface IImmunizationService {
     getPatientImmunizations(
         hdid: string
     ): Promise<RequestResult<ImmunizationResult>>;
+}
+
+export interface IVaccinationStatusService {
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
+    getVaccinationStatus(
+        phn: string,
+        dateOfBirth: StringISODate,
+        token: string
+    ): Promise<RequestResult<VaccinationStatus>>;
+    getReport(
+        phn: string,
+        dateOfBirth: StringISODate,
+        token: string
+    ): Promise<RequestResult<Report>>;
+    getCaptchaToken(): Promise<string>;
 }
 
 export interface IPatientService {
@@ -172,7 +189,11 @@ export interface IHttpDelegate {
     setAuthorizationHeader(accessToken: string): void;
     getWithCors<T>(url: string, headers?: Dictionary<string>): Promise<T>;
     get<T>(url: string, headers?: Dictionary<string>): Promise<T>;
-    post<T>(url: string, payload: unknown): Promise<T>;
+    post<T>(
+        url: string,
+        payload: unknown,
+        headers?: Dictionary<string>
+    ): Promise<T>;
     put<T>(
         url: string,
         payload: unknown,

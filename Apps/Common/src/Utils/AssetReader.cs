@@ -16,6 +16,7 @@
 
 namespace HealthGateway.Common.Utils
 {
+    using System;
     using System.IO;
     using System.Reflection;
     using System.Text;
@@ -26,11 +27,12 @@ namespace HealthGateway.Common.Utils
     public static class AssetReader
     {
         /// <summary>
-        /// Formats the supplied datetime as a date string.
+        /// Retrieves the assset with the specified name.
         /// </summary>
         /// <param name="asset">The asset name with its namespace.</param>
+        /// <param name="toBase64">True if the asset should be base 64 encode.</param>
         /// <returns>The read asset as a string.</returns>
-        public static string? Read(string asset)
+        public static string? Read(string asset, bool toBase64 = false)
         {
             Assembly? assembly = Assembly.GetCallingAssembly();
             Stream? resourceStream = assembly!.GetManifestResourceStream(asset);
@@ -39,8 +41,17 @@ namespace HealthGateway.Common.Utils
                 return null;
             }
 
-            using StreamReader reader = new StreamReader(resourceStream!, Encoding.UTF8);
-            return reader.ReadToEnd();
+            if (toBase64)
+            {
+                using MemoryStream memoryStream = new MemoryStream();
+                resourceStream.CopyTo(memoryStream);
+                return Convert.ToBase64String(memoryStream.ToArray());
+            }
+            else
+            {
+                using StreamReader reader = new StreamReader(resourceStream!, Encoding.UTF8);
+                return reader.ReadToEnd();
+            }
         }
     }
 }

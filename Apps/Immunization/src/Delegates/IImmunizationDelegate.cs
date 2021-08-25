@@ -19,7 +19,6 @@ namespace HealthGateway.Immunization.Delegates
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Immunization.Models.PHSA;
 
     /// <summary>
     /// Interface that defines a delegate to retrieve immunization information.

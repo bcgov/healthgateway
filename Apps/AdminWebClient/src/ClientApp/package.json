@@ -9,15 +9,18 @@
         "lintfix": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\" --fix"
     },
     "dependencies": {
-        "@fortawesome/fontawesome-svg-core": "^1.2.35",
-        "@fortawesome/free-solid-svg-icons": "^5.15.3",
+        "@fortawesome/fontawesome-svg-core": "^1.2.36",
+        "@fortawesome/free-solid-svg-icons": "^5.15.4",
         "@fortawesome/vue-fontawesome": "^2.0.2",
+        "@types/file-saver": "^2.0.3",
         "core-js": "^3.11.2",
+        "file-saver": "^2.0.5",
         "inversify": "^5.1.1",
         "luxon": "^1.28.0",
         "reflect-metadata": "^0.1.13",
         "register-service-worker": "^1.7.2",
         "tiptap-vuetify": "^2.24.0",
+        "v-mask": "^2.2.4",
         "vee-validate": "^3.4.5",
         "vue": "^2.6.12",
         "vue-class-component": "^7.2.6",
@@ -30,10 +33,10 @@
         "vuex-class": "^0.3.2"
     },
     "devDependencies": {
-        "@fortawesome/fontawesome-free": "^5.15.3",
+        "@fortawesome/fontawesome-free": "^5.15.4",
         "@mdi/font": "^5.9.55",
         "@types/luxon": "^1.27.0",
-        "@types/node": "^16.4.3",
+        "@types/node": "^16.6.2",
         "@typescript-eslint/eslint-plugin": "^4.22.0",
         "@typescript-eslint/parser": "^4.22.0",
         "@vue/cli-plugin-eslint": "^4.5.12",
