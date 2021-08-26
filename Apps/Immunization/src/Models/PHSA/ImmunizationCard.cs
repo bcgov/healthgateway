@@ -13,25 +13,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Delegates
+namespace HealthGateway.Immunization.Models.PHSA
 {
-    using System;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Immunization.Models;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Interface that defines a delegate to retrieve vaccine status information.
+    /// Represents an Immunization Card.
     /// </summary>
-    public interface IVaccineStatusDelegate
+    public class ImmunizationCard
     {
         /// <summary>
-        /// Returns the vaccine status for the given patient.
+        /// Gets or sets the wallet card media.
         /// </summary>
-        /// <param name="query">The vaccine status query.</param>
-        /// <param name="accessToken">The connection access token.</param>
-        /// <returns>The vaccine status result for the given patient.</returns>
-        Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken);
+        [JsonPropertyName("walletCard")]
+        public EncodedMedia WalletCard { get; set; } = new ();
+
+        /// <summary>
+        /// Gets or sets the paper media.
+        /// </summary>
+        [JsonPropertyName("paperRecord")]
+        public EncodedMedia PaperRecord { get; set; } = new ();
+
+        /// <summary>
+        /// Gets or sets the QR code associated.
+        /// </summary>
+        [JsonPropertyName("qrCode")]
+        public EncodedMedia QRCode { get; set; } = new ();
     }
 }

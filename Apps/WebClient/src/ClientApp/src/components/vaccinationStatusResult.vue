@@ -13,6 +13,7 @@ import { Action, Getter } from "vuex-class";
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
+import BannerError from "@/models/bannerError";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import Report from "@/models/report";
 import VaccinationStatus from "@/models/vaccinationStatus";
@@ -34,6 +35,9 @@ export default class VaccinationStatusResultView extends Vue {
     @Getter("vaccinationStatus", { namespace: "vaccinationStatus" }) status!:
         | VaccinationStatus
         | undefined;
+
+    @Getter("error", { namespace: "vaccinationStatus" })
+    error!: BannerError | undefined;
 
     @Action("getReport", { namespace: "vaccinationStatus" })
     getReport!: (params: {
@@ -72,6 +76,15 @@ export default class VaccinationStatusResultView extends Vue {
 
     private get dateOfBirth(): string {
         return this.formatDate(this.status?.birthdate ?? null);
+    }
+
+    private get qrCodeUrl(): string | null {
+        const qrCode = this.status?.qrCode;
+        if (qrCode?.mediaType && qrCode?.encoding && qrCode?.data) {
+            return `data:${qrCode.mediaType};${qrCode.encoding},${qrCode.data}`;
+        } else {
+            return null;
+        }
     }
 
     private toggleDetails() {
@@ -127,38 +140,28 @@ export default class VaccinationStatusResultView extends Vue {
                 <h3 class="text-center">COVID-19 Vaccination Check</h3>
                 <hr style="border-top: 2px solid #fcba19" />
                 <div v-if="name.length > 0">
-                    <div class="mb-2 text-center">
-                        <hg-button variant="secondary" @click="toggleDetails">
-                            <span v-if="showDetails">Hide Details</span>
-                            <span v-else>Show Details</span>
-                            <hg-icon
-                                :icon="showDetails ? 'eye-slash' : 'eye'"
-                                class="ml-2"
-                                square
-                            />
-                        </hg-button>
-                    </div>
                     <b-row>
-                        <b-col>
-                            <b-form-group label="Name" label-for="name">
-                                <b-form-input
-                                    id="name"
-                                    v-model="name"
-                                    disabled
-                                />
-                            </b-form-group>
+                        <b-col cols="12">
+                            <small>Name:</small>
+                            <p>{{ name }}</p>
                         </b-col>
-                        <b-col v-show="showDetails" cols="12" md="3">
-                            <b-form-group
-                                label="Date of Birth"
-                                label-for="dateOfBirth"
+                        <b-col v-show="showDetails">
+                            <small>Date of Birth:</small>
+                            <p>{{ dateOfBirth }}</p>
+                        </b-col>
+                        <b-col class="mb-3 text-right">
+                            <hg-button
+                                variant="secondary"
+                                @click="toggleDetails"
                             >
-                                <b-form-input
-                                    id="dateOfBirth"
-                                    v-model="dateOfBirth"
-                                    disabled
+                                <span v-if="showDetails">Hide Details</span>
+                                <span v-else>Show Details</span>
+                                <hg-icon
+                                    :icon="showDetails ? 'eye-slash' : 'eye'"
+                                    class="ml-2"
+                                    square
                                 />
-                            </b-form-group>
+                            </hg-button>
                         </b-col>
                     </b-row>
                 </div>
@@ -195,6 +198,38 @@ export default class VaccinationStatusResultView extends Vue {
                     </b-col>
                 </b-row>
             </div>
+            <div class="text-center">
+                <img
+                    v-if="qrCodeUrl !== null"
+                    v-show="showDetails"
+                    :src="qrCodeUrl"
+                    class="qr-code"
+                />
+            </div>
+        </div>
+        <div v-if="error !== undefined" class="container">
+            <b-alert
+                variant="danger"
+                class="no-print my-3"
+                :show="error !== undefined"
+                dismissible
+            >
+                <h4>{{ error.title }}</h4>
+                <h6>{{ error.errorCode }}</h6>
+                <div class="pl-4">
+                    <p data-testid="errorTextDescription">
+                        {{ error.description }}
+                    </p>
+                    <p data-testid="errorTextDetails">
+                        {{ error.detail }}
+                    </p>
+                    <p v-if="error.traceId" data-testid="errorSupportDetails">
+                        If this issue persists, contact HealthGateway@gov.bc.ca
+                        and provide
+                        <span class="trace-id">{{ error.traceId }}</span>
+                    </p>
+                </div>
+            </b-alert>
         </div>
         <div
             class="
@@ -281,5 +316,10 @@ export default class VaccinationStatusResultView extends Vue {
 
 img.vaccination-stage {
     height: 4.5em;
+}
+
+.qr-code {
+    width: 100%;
+    max-width: 460px;
 }
 </style>

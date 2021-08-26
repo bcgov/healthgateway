@@ -11,4 +11,11 @@ export default interface VaccinationStatus {
     birthdate: StringISODate | null;
     doses: number;
     state: VaccinationState;
+    qrCode: EncodedMedia;
+}
+
+export interface EncodedMedia {
+    mediaType: string | null;
+    encoding: string | null;
+    data: string | null;
 }

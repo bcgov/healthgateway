@@ -31,6 +31,7 @@ namespace HealthGateway.Immunization.Delegates
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Immunization.Models;
+    using HealthGateway.Immunization.Models.PHSA;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.WebUtilities;
@@ -105,6 +106,24 @@ namespace HealthGateway.Immunization.Delegates
             return retVal;
         }
 
+        /// <inheritdoc/>
+        public async Task<RequestResult<PHSAResult<ImmunizationCard>>> GetImmunizationCard(string hdid, string immunizationDisease)
+        {
+            using Activity? activity = Source.StartActivity("GetImmunizationCard");
+            this.logger.LogDebug($"Getting immunization Card...");
+
+            Dictionary<string, string?> query = new ()
+            {
+                ["limit"] = this.phsaConfig.FetchSize,
+            };
+            string endpointString = $"{this.phsaConfig.BaseUrl}{this.phsaConfig.ImmunizationEndpoint}/RecordCards/{immunizationDisease}";
+            Uri endpoint = new Uri(QueryHelpers.AddQueryString(endpointString, query));
+            RequestResult<PHSAResult<ImmunizationCard>> retVal = await this.ParsePHSAResult<ImmunizationCard>(endpoint).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished getting Immunization Card");
+
+            return retVal;
+        }
+
         private async Task<RequestResult<PHSAResult<T>>> ParsePHSAResult<T>(Uri endpoint)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
@@ -143,7 +162,7 @@ namespace HealthGateway.Immunization.Delegates
                                 PHSAResult<T>? phsaResult = JsonSerializer.Deserialize<PHSAResult<T>>(payload, options);
                                 if (phsaResult != null && phsaResult.Result != null)
                                 {
-                                    retVal.ResultStatus = Common.Constants.ResultType.Success;
+                                    retVal.ResultStatus = ResultType.Success;
                                     retVal.ResourcePayload = phsaResult;
                                     retVal.TotalResultCount = 1;
                                     retVal.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);

@@ -51,7 +51,6 @@ export default class VaccinationStatusView extends Vue {
 
     private logger!: ILogger;
     private displayResult = false;
-    private errorDisplaySeconds = 5;
 
     private phn = "";
     private dateOfBirth = "";
@@ -116,36 +115,42 @@ export default class VaccinationStatusView extends Vue {
                 alt="BC Mark"
             />
         </div>
-        <div v-if="error !== undefined" class="container">
-            <b-alert
-                variant="danger"
-                class="no-print my-3"
-                :show="error !== undefined"
-                dismissible
-            >
-                <h4>{{ error.title }}</h4>
-                <h6>{{ error.errorCode }}</h6>
-                <div class="pl-4">
-                    <p data-testid="errorTextDescription">
-                        {{ error.description }}
-                    </p>
-                    <p data-testid="errorTextDetails">
-                        {{ error.detail }}
-                    </p>
-                    <p v-if="error.traceId" data-testid="errorSupportDetails">
-                        If this issue persists, contact HealthGateway@gov.bc.ca
-                        and provide
-                        <span class="trace-id">{{ error.traceId }}</span>
-                    </p>
-                </div>
-            </b-alert>
-        </div>
         <vaccination-status-result v-if="displayResult" />
-        <div v-else>
+        <div v-else class="d-flex flex-column flex-grow-1">
             <div class="p-3 bg-success text-white" no-gutters>
                 <h3 class="text-center m-0">COVID‑19 Vaccination Check</h3>
             </div>
-            <form class="container my-3" @submit.prevent="handleSubmit">
+            <div v-if="error !== undefined" class="container">
+                <b-alert
+                    variant="danger"
+                    class="no-print my-3"
+                    :show="error !== undefined"
+                    dismissible
+                >
+                    <h4>{{ error.title }}</h4>
+                    <h6>{{ error.errorCode }}</h6>
+                    <div class="pl-4">
+                        <p data-testid="errorTextDescription">
+                            {{ error.description }}
+                        </p>
+                        <p data-testid="errorTextDetails">
+                            {{ error.detail }}
+                        </p>
+                        <p
+                            v-if="error.traceId"
+                            data-testid="errorSupportDetails"
+                        >
+                            If this issue persists, contact
+                            HealthGateway@gov.bc.ca and provide
+                            <span class="trace-id">{{ error.traceId }}</span>
+                        </p>
+                    </div>
+                </b-alert>
+            </div>
+            <form
+                class="container d-flex flex-column flex-grow-1 my-3"
+                @submit.prevent="handleSubmit"
+            >
                 <p>Please provide the following.</p>
                 <b-row>
                     <b-col cols="12" sm="auto">
@@ -206,7 +211,6 @@ export default class VaccinationStatusView extends Vue {
                         </b-form-group>
                     </b-col>
                 </b-row>
-                <hr />
                 <div class="text-center my-3">
                     <hg-button variant="secondary" class="mr-2" to="/">
                         Cancel
@@ -219,7 +223,7 @@ export default class VaccinationStatusView extends Vue {
                         Check
                     </hg-button>
                 </div>
-                <p>
+                <p class="flex-grow-1 my-3">
                     Your information is being collected to provide you with your
                     COVID-19 vaccination status under s. 26(c) of the
                     <em>Freedom of Information and Protection of Privacy Act</em
@@ -230,6 +234,17 @@ export default class VaccinationStatusView extends Vue {
                     or 778-698-5849 if you have any questions about this
                     collection.
                 </p>
+                <div class="small">
+                    This site is protected by reCAPTCHA and the Google
+                    <a href="https://policies.google.com/privacy"
+                        >Privacy Policy</a
+                    >
+                    and
+                    <a href="https://policies.google.com/terms"
+                        >Terms of Service</a
+                    >
+                    apply.
+                </div>
             </form>
         </div>
     </div>
@@ -258,5 +273,9 @@ export default class VaccinationStatusView extends Vue {
     .vld-icon {
         text-align: center;
     }
+}
+
+.grecaptcha-badge {
+    visibility: hidden;
 }
 </style>
