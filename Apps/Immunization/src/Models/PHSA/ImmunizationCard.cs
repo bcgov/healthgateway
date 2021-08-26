@@ -33,5 +33,11 @@ namespace HealthGateway.Immunization.Models.PHSA
         /// </summary>
         [JsonPropertyName("paperRecord")]
         public EncodedMedia PaperRecord { get; set; } = new ();
+
+        /// <summary>
+        /// Gets or sets the QR code associated.
+        /// </summary>
+        [JsonPropertyName("qrCode")]
+        public EncodedMedia QRCode { get; set; } = new ();
     }
 }

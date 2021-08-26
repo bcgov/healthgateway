@@ -44,16 +44,16 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<string>> GetCovidCard(string hdid)
+        public async Task<RequestResult<PHSAResult<ImmunizationCard>>> GetCovidCard(string hdid)
         {
-            RequestResult<string> retVal = new ()
+            RequestResult<PHSAResult<ImmunizationCard>> retVal = new ()
             {
                 ResultStatus = ResultType.Error,
             };
-            RequestResult<ImmunizationCard> cardResult = await this.immunizationDelegate.GetImmunizationCard(hdid, CovidDisease).ConfigureAwait(true);
+            RequestResult<PHSAResult<ImmunizationCard>> cardResult = await this.immunizationDelegate.GetImmunizationCard(hdid, CovidDisease).ConfigureAwait(true);
             if (cardResult.ResultStatus == ResultType.Success && cardResult.ResourcePayload != null)
             {
-                retVal.ResourcePayload = cardResult.ResourcePayload.PaperRecord.Data ?? string.Empty;
+                retVal.ResourcePayload = cardResult.ResourcePayload;
                 retVal.ResultStatus = ResultType.Success;
             }
             else

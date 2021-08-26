@@ -15,11 +15,12 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
-    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Immunization;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Models;
+    using HealthGateway.Immunization.Models.PHSA;
 
     /// <summary>
     /// The Immunization data service.
@@ -45,6 +46,6 @@ namespace HealthGateway.Immunization.Services
         /// </summary>
         /// <param name="hdid">The identifier to fetch the covid card for.</param>
         /// <returns>The base64 encoded PDF in a RequestResult.</returns>
-        Task<RequestResult<string>> GetCovidCard(string hdid);
+        Task<RequestResult<PHSAResult<ImmunizationCard>>> GetCovidCard(string hdid);
     }
 }
