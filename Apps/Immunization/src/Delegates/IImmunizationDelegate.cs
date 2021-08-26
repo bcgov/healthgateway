@@ -46,6 +46,6 @@ namespace HealthGateway.Immunization.Delegates
         /// <param name="hdid">The hdid to query.</param>
         /// <param name="immunizationDisease">The associated disease to query.</param>
         /// <returns>A Immunization Card.</returns>
-        Task<RequestResult<ImmunizationCard>> GetImmunizationCard(string hdid, string immunizationDisease);
+        Task<RequestResult<PHSAResult<ImmunizationCard>>> GetImmunizationCard(string hdid, string immunizationDisease);
     }
 }

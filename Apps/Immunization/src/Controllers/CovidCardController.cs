@@ -20,6 +20,8 @@ namespace HealthGateway.Immunization.Controllers
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Immunization.Models.PHSA;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -70,7 +72,7 @@ namespace HealthGateway.Immunization.Controllers
         public async Task<IActionResult> Get([FromQuery] string hdid)
         {
             this.logger.LogDebug($"Getting Covid Card for HDID for {hdid}");
-            RequestResult<string> result = await this.service.GetCovidCard(hdid).ConfigureAwait(true);
+            RequestResult<PHSAResult<ImmunizationCard>> result = await this.service.GetCovidCard(hdid).ConfigureAwait(true);
 
             this.logger.LogDebug($"Finished getting Covid Card for HDID for {hdid}");
             return new JsonResult(result);
