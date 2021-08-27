@@ -21,6 +21,7 @@ namespace HealthGateway.Immunization.Test.Services
     using DeepEqual.Syntax;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Delegates;
@@ -95,7 +96,8 @@ namespace HealthGateway.Immunization.Test.Services
                 this.configuration,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                mockCaptchaDelegate.Object);
+                mockCaptchaDelegate.Object,
+                new Mock<IIronPDFDelegate>().Object);
 
             var actualResult = Task.Run(async () => await service.GetVaccineStatus(this.phn, this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture), this.captchaToken).ConfigureAwait(true)).Result;
             Assert.True(expectedResult.IsDeepEqual(actualResult));
@@ -111,7 +113,8 @@ namespace HealthGateway.Immunization.Test.Services
                 this.configuration,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<ICaptchaDelegate>().Object);
+                new Mock<ICaptchaDelegate>().Object,
+                new Mock<IIronPDFDelegate>().Object);
 
             var actualResult = Task.Run(async () => await service.GetVaccineStatus("123", this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture), this.captchaToken).ConfigureAwait(true)).Result;
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
@@ -127,7 +130,8 @@ namespace HealthGateway.Immunization.Test.Services
                 this.configuration,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<ICaptchaDelegate>().Object);
+                new Mock<ICaptchaDelegate>().Object,
+                new Mock<IIronPDFDelegate>().Object);
 
             var actualResult = Task.Run(async () => await service.GetVaccineStatus(this.phn, "yyyyMMddx", this.captchaToken).ConfigureAwait(true)).Result;
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
