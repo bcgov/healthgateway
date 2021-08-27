@@ -107,10 +107,10 @@ namespace HealthGateway.Immunization.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PHSAResult<ImmunizationCard>>> GetImmunizationCard(string hdid, string immunizationDisease)
+        public async Task<RequestResult<PHSAResult<ImmunizationCard>>> GetVaccineHistory(string hdid, string immunizationDisease)
         {
-            using Activity? activity = Source.StartActivity("GetImmunizationCard");
-            this.logger.LogDebug($"Getting immunization Card...");
+            using Activity? activity = Source.StartActivity("GetVaccineHistory");
+            this.logger.LogDebug($"Getting vaccine history...");
 
             Dictionary<string, string?> query = new ()
             {
@@ -119,7 +119,7 @@ namespace HealthGateway.Immunization.Delegates
             string endpointString = $"{this.phsaConfig.BaseUrl}{this.phsaConfig.ImmunizationEndpoint}/RecordCards/{immunizationDisease}";
             Uri endpoint = new Uri(QueryHelpers.AddQueryString(endpointString, query));
             RequestResult<PHSAResult<ImmunizationCard>> retVal = await this.ParsePHSAResult<ImmunizationCard>(endpoint).ConfigureAwait(true);
-            this.logger.LogDebug($"Finished getting Immunization Card");
+            this.logger.LogDebug($"Finished getting vaccine history.");
 
             return retVal;
         }

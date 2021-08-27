@@ -20,22 +20,21 @@ namespace HealthGateway.Immunization.Controllers
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Immunization.Models.PHSA;
+    using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// The Immunization controller.
+    /// The COVID-19 Vaccine Record controller.
     /// </summary>
     [Authorize]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
     [TypeFilter(typeof(AvailabilityFilter))]
-    public class CovidCardController : ControllerBase
+    public class CovidVaccineRecordController : ControllerBase
     {
         private readonly ILogger logger;
 
@@ -45,11 +44,11 @@ namespace HealthGateway.Immunization.Controllers
         private readonly IImmunizationService service;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CovidCardController"/> class.
+        /// Initializes a new instance of the <see cref="CovidVaccineRecordController"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="svc">The immunization data service.</param>
-        public CovidCardController(
+        public CovidVaccineRecordController(
             ILogger<ImmunizationController> logger,
             IImmunizationService svc)
         {
@@ -58,11 +57,11 @@ namespace HealthGateway.Immunization.Controllers
         }
 
         /// <summary>
-        /// Gets the Covid card for the supplied hdid if the user is the owner or has delegated access.
+        /// Gets the COVID-19 vaccine record for the supplied HDID if the user is the owner or has delegated access.
         /// </summary>
-        /// <param name="hdid">The hdid patient id.</param>
-        /// <returns>The PDF Covid Card.</returns>
-        /// <response code="200">Returns the Covid Card.</response>
+        /// <param name="hdid">The patient's HDID.</param>
+        /// <returns>The PDF Vaccine Record.</returns>
+        /// <response code="200">Returns the vaccine record.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
@@ -71,10 +70,10 @@ namespace HealthGateway.Immunization.Controllers
         [Authorize(Policy = ImmunizationPolicy.Read)]
         public async Task<IActionResult> Get([FromQuery] string hdid)
         {
-            this.logger.LogDebug($"Getting Covid Card for HDID for {hdid}");
-            RequestResult<PHSAResult<ImmunizationCard>> result = await this.service.GetCovidCard(hdid).ConfigureAwait(true);
+            this.logger.LogDebug($"Getting vaccine record for HDID {hdid}");
+            RequestResult<CovidVaccineRecord> result = await this.service.GetCovidVaccineRecord(hdid).ConfigureAwait(true);
 
-            this.logger.LogDebug($"Finished getting Covid Card for HDID for {hdid}");
+            this.logger.LogDebug($"Finished getting vaccine record for HDID {hdid}");
             return new JsonResult(result);
         }
     }

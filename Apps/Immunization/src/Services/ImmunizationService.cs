@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
+    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
@@ -24,6 +25,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Models.PHSA;
     using HealthGateway.Immunization.Parser;
+    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// The Immunization data service.
@@ -31,34 +33,54 @@ namespace HealthGateway.Immunization.Services
     public class ImmunizationService : IImmunizationService
     {
         private const string CovidDisease = "COVID19";
+        private const string PHSAConfigSectionKey = "PHSA";
         private readonly IImmunizationDelegate immunizationDelegate;
+        private readonly PHSAConfig phsaConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmunizationService"/> class.
         /// </summary>
+        /// <param name="configuration">The configuration to use.</param>
         /// <param name="immunizationDelegate">The factory to create immunization delegates.</param>
         public ImmunizationService(
+            IConfiguration configuration,
             IImmunizationDelegate immunizationDelegate)
         {
             this.immunizationDelegate = immunizationDelegate;
+
+            this.phsaConfig = new PHSAConfig();
+            configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PHSAResult<ImmunizationCard>>> GetCovidCard(string hdid)
+        public async Task<RequestResult<CovidVaccineRecord>> GetCovidVaccineRecord(string hdid)
         {
-            RequestResult<PHSAResult<ImmunizationCard>> retVal = new ()
+            RequestResult<CovidVaccineRecord> retVal = new ()
             {
                 ResultStatus = ResultType.Error,
             };
-            RequestResult<PHSAResult<ImmunizationCard>> cardResult = await this.immunizationDelegate.GetImmunizationCard(hdid, CovidDisease).ConfigureAwait(true);
-            if (cardResult.ResultStatus == ResultType.Success && cardResult.ResourcePayload != null)
+            RequestResult<PHSAResult<ImmunizationCard>> result = await this.immunizationDelegate.GetVaccineHistory(hdid, CovidDisease).ConfigureAwait(true);
+            ImmunizationCard? payload = result.ResourcePayload?.Result;
+            if (result.ResultStatus == ResultType.Success && payload != null)
             {
-                retVal.ResourcePayload = cardResult.ResourcePayload;
+                retVal.ResourcePayload = new ()
+                {
+                    Document = payload.PaperRecord,
+                    QRCode = payload.QRCode,
+                };
                 retVal.ResultStatus = ResultType.Success;
             }
             else
             {
-                retVal.ResultError = cardResult.ResultError;
+                retVal.ResultStatus = ResultType.Error;
+                retVal.ResultError = result.ResultError;
+                retVal.ResourcePayload = new CovidVaccineRecord();
+            }
+
+            if (result.ResourcePayload != null)
+            {
+                retVal.ResourcePayload.Loaded = !result.ResourcePayload.LoadState.RefreshInProgress;
+                retVal.ResourcePayload.RetryIn = Math.Max(result.ResourcePayload.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds);
             }
 
             return retVal;

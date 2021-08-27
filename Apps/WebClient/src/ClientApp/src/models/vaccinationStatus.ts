@@ -1,5 +1,6 @@
 import { VaccinationState } from "@/constants/vaccinationState";
 import { StringISODate } from "@/models/dateWrapper";
+import EncodedMedia from "@/models/encodedMedia";
 
 export default interface VaccinationStatus {
     id: string;
@@ -12,10 +13,4 @@ export default interface VaccinationStatus {
     doses: number;
     state: VaccinationState;
     qrCode: EncodedMedia;
-}
-
-export interface EncodedMedia {
-    mediaType: string | null;
-    encoding: string | null;
-    data: string | null;
 }

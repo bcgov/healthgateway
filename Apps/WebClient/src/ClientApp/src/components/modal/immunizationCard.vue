@@ -6,13 +6,14 @@ import { Action, Getter } from "vuex-class";
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
+import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import PatientData from "@/models/patientData";
+import RequestResult from "@/models/requestResult";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
-import { ILogger } from "@/services/interfaces";
-import PDFUtil from "@/utility/pdfUtil";
+import { IImmunizationService, ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 
 interface Dose {
@@ -141,14 +142,42 @@ export default class ImmunizationCardComponent extends Vue {
             action: "download_card",
             text: "COVID Card PDF",
         });
-        this.$nextTick(() => {
-            PDFUtil.generatePdf(
-                "HealthGateway_ImmunizationHistory.pdf",
-                this.cardModal.$refs.content as HTMLElement
-            ).finally(() => {
+
+        const immunizationService: IImmunizationService =
+            container.get<IImmunizationService>(
+                SERVICE_IDENTIFIER.ImmunizationService
+            );
+
+        immunizationService
+            .getCovidVaccineRecord(this.patientData.hdid)
+            .then((result: RequestResult<CovidVaccineRecord>) => {
+                const payload = result.resourcePayload;
+                if (!payload.loaded) {
+                    this.logger.error(
+                        "COVID Card PDF could not be retrieved: " +
+                            result.resultError?.resultMessage
+                    );
+                } else if (
+                    payload.document.data === null ||
+                    payload.document.data.length == 0
+                ) {
+                    this.logger.error("COVID Card PDF is empty");
+                } else {
+                    const mimeType = result.resourcePayload.document.mediaType;
+                    const downloadLink = `data:${mimeType};base64,${result.resourcePayload.document.data}`;
+                    fetch(downloadLink).then((res) => {
+                        res.blob().then((blob) => {
+                            saveAs(
+                                blob,
+                                "HealthGateway_ImmunizationHistory.pdf"
+                            );
+                        });
+                    });
+                }
+            })
+            .finally(() => {
                 this.isPreview = true;
             });
-        });
     }
 }
 </script>
