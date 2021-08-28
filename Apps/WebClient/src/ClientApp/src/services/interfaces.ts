@@ -12,6 +12,7 @@ import {
     ExternalConfiguration,
     OpenIdConnectConfiguration,
 } from "@/models/configData";
+import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
 import Encounter from "@/models/encounter";
@@ -57,6 +58,9 @@ export interface IImmunizationService {
     getPatientImmunizations(
         hdid: string
     ): Promise<RequestResult<ImmunizationResult>>;
+    getCovidVaccineRecord(
+        hdid: string
+    ): Promise<RequestResult<CovidVaccineRecord>>;
 }
 
 export interface IVaccinationStatusService {

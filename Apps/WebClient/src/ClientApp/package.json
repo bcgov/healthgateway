@@ -79,7 +79,6 @@
         "cookie-storage": "^6.1.0",
         "core-js": "^3.11.2",
         "file-saver": "^2.0.5",
-        "html2pdf.js": "^0.9.3",
         "idle-vue": "^2.0.5",
         "image-webpack-loader": "^7.0.1",
         "inversify": "^5.1.1",
