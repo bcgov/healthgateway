@@ -188,11 +188,7 @@ export default class LandingView extends Vue {
                 <h3 class="text-center m-3">Check Your COVID‑19 Vaccination</h3>
             </b-col>
             <b-col cols="auto">
-                <hg-button
-                    variant="success"
-                    to="/vaccination-status"
-                    class="m-3"
-                >
+                <hg-button variant="success" to="/vaccinecard" class="m-3">
                     Start
                 </hg-button>
             </b-col>

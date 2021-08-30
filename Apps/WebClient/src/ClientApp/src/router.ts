@@ -213,7 +213,7 @@ const routes = [
         },
     },
     {
-        path: "/vaccination-status",
+        path: "/vaccinecard",
         component: VaccinationStatusView,
         meta: {
             validStates: [
