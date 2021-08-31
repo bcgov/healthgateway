@@ -105,7 +105,7 @@ export default class VaccinationStatusView extends Vue {
 </script>
 
 <template>
-    <div class="fill-height d-flex flex-column">
+    <div class="background fill-height d-flex flex-column">
         <LoadingComponent :is-loading="isLoading" :text="statusMessage" />
         <div class="header">
             <img
@@ -252,6 +252,10 @@ export default class VaccinationStatusView extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
+.background {
+    background-color: $hg-background;
+}
 
 .header {
     background-color: $hg-brand-primary;
