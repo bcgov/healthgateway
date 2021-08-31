@@ -174,8 +174,8 @@ namespace HealthGateway.Immunization.Services
         public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string token)
         {
             RequestResult<VaccineStatus> requestResult = await this.GetVaccineStatus(phn, dateOfBirth, token).ConfigureAwait(true);
-            IronPDFRequestModel pdfRequest = new IronPDFRequestModel();
-            pdfRequest.FileName = "CovidVaccineStatus";
+            IronPDFRequestModel pdfRequest = new ();
+            pdfRequest.FileName = "BCVaccineCard";
             pdfRequest.Data.Add("bcLogoImageSrc", AssetReader.Read("HealthGateway.Immunization.Assets.Images.bcid-logo-rev-en.png", true));
             pdfRequest.HtmlTemplate = AssetReader.Read("HealthGateway.Immunization.Assets.Templates.VaccineStatusCard.html") !;
 

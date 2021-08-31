@@ -61,14 +61,14 @@ namespace HealthGateway.Common.Delegates
                     }
                 }
 
-                using HtmlToPdf renderer = new HtmlToPdf();
+                using HtmlToPdf renderer = new ();
                 PdfDocument pdfDoc = renderer.RenderHtmlAsPdf(html);
 
                 this.logger.LogTrace("Applying metadata to PDF");
                 pdfDoc.SecuritySettings.AllowUserAnnotations = this.Configuration.AllowUserAnnotations;
                 if (this.Configuration.AllowUserEdits)
                 {
-                    pdfDoc.SecuritySettings.AllowUserEdits = IronPdf.Security.PdfEditSecurity.NoEdit;
+                    pdfDoc.SecuritySettings.AllowUserEdits = PdfDocument.PdfSecuritySettings.PdfEditSecurity.NoEdit;
                 }
 
                 pdfDoc.MetaData.Producer = this.Configuration.Producer;
