@@ -105,7 +105,7 @@ export default class App extends Vue {
             this.host.startsWith("WWW.HEALTHGATEWAY"));
 
     private windowWidth = 0;
-    private vaccinationStatusPath = "/vaccination-status";
+    private vaccineCardPath = "/vaccinecard";
 
     constructor() {
         super();
@@ -150,15 +150,15 @@ export default class App extends Vue {
     }
 
     private get isHeaderVisible(): boolean {
-        return this.$route.path !== this.vaccinationStatusPath;
+        return this.$route.path !== this.vaccineCardPath;
     }
 
     private get isFooterVisible(): boolean {
-        return this.$route.path !== this.vaccinationStatusPath;
+        return this.$route.path !== this.vaccineCardPath;
     }
 
     private get isCommunicationVisible(): boolean {
-        return this.$route.path !== this.vaccinationStatusPath;
+        return this.$route.path !== this.vaccineCardPath;
     }
 }
 </script>

@@ -4,6 +4,7 @@ import {
     faCheckCircle,
     faEye,
     faEyeSlash,
+    faHandPointer,
 } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
@@ -19,7 +20,7 @@ import Report from "@/models/report";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { ILogger } from "@/services/interfaces";
 
-library.add(faCheckCircle, faEye, faEyeSlash);
+library.add(faCheckCircle, faEye, faEyeSlash, faHandPointer);
 
 @Component({
     components: {
@@ -129,149 +130,198 @@ export default class VaccinationStatusResultView extends Vue {
                 this.isDownloading = false;
             });
     }
+
+    private handleCloseQrModal() {
+        this.$bvModal.hide("big-qr");
+    }
 }
 </script>
 
 <template>
-    <div class="d-flex flex-column flex-grow-1">
+    <div
+        class="
+            vaccination-card
+            align-self-center
+            flex-grow-1
+            w-100
+            d-flex
+            flex-column
+            p-3
+            rounded
+        "
+    >
         <LoadingComponent :is-loading="isDownloading"></LoadingComponent>
         <div class="header text-white">
-            <div class="container pb-3">
-                <h3 class="text-center">COVID-19 Vaccination Check</h3>
+            <div class="container p-3 pt-0 pt-sm-3">
+                <h3 class="text-center">BC Vaccine Card</h3>
                 <hr style="border-top: 2px solid #fcba19" />
-                <div v-if="name.length > 0">
-                    <b-row>
-                        <b-col cols="12">
-                            <small>Name:</small>
-                            <p>{{ name }}</p>
-                        </b-col>
-                        <b-col v-show="showDetails">
-                            <small>Date of Birth:</small>
-                            <p>{{ dateOfBirth }}</p>
-                        </b-col>
-                        <b-col class="mb-3 text-right">
+                <p class="text-center">{{ name }}</p>
+                <div class="text-center">
+                    <img
+                        v-if="isFullyVaccinated"
+                        src="@/assets/images/vaccination-status/fully-vaccinated.svg"
+                        alt="Fully Vaccinated"
+                        class="vaccination-stage"
+                    />
+                    <img
+                        v-else-if="
+                            isPartiallyVaccinated && vaccinationDoses === 2
+                        "
+                        src="@/assets/images/vaccination-status/dose-2.svg"
+                        alt="Two Doses"
+                        class="vaccination-stage"
+                    />
+                    <img
+                        v-else-if="
+                            isPartiallyVaccinated && vaccinationDoses === 1
+                        "
+                        src="@/assets/images/vaccination-status/dose-1.svg"
+                        alt="One Dose"
+                        class="vaccination-stage"
+                    />
+                </div>
+            </div>
+        </div>
+        <div class="justify-content-between">
+            <div
+                class="
+                    vaccination-result
+                    p-3
+                    flex-grow-1
+                    d-flex
+                    align-items-center
+                    justify-content-center
+                    flex-column
+                    text-center text-white
+                "
+                :class="{
+                    'fully-vaccinated': isFullyVaccinated,
+                    'partially-vaccinated': isPartiallyVaccinated,
+                    'not-found': isVaccinationNotFound,
+                }"
+            >
+                <h2 v-if="isFullyVaccinated" class="d-flex align-items-center">
+                    <hg-icon
+                        v-show="isFullyVaccinated"
+                        icon="check-circle"
+                        class="mr-2 big-icon"
+                    />
+                    <span>Vaccinated</span>
+                </h2>
+                <h2 v-else-if="isPartiallyVaccinated">Partially Vaccinated</h2>
+                <h2 v-else-if="isVaccinationNotFound">Not Found</h2>
+                <div
+                    v-if="qrCodeUrl !== null && !isVaccinationNotFound"
+                    class="text-center"
+                >
+                    <img
+                        v-b-modal.big-qr
+                        :src="qrCodeUrl"
+                        class="d-sm-none small-qr-code img-fluid m-3"
+                    />
+                    <img
+                        :src="qrCodeUrl"
+                        class="d-none d-sm-block small-qr-code img-fluid m-3"
+                    />
+                    <p v-b-modal.big-qr class="d-sm-none m-0">
+                        <hg-icon icon="hand-pointer" class="mr-2" />
+                        <span>Tap to zoom in</span>
+                    </p>
+                    <b-modal
+                        id="big-qr"
+                        centered
+                        title="Have it ready to scan"
+                        title-class="flex-grow-1 text-center"
+                        body-class="p-0"
+                        footer-class="justify-content-center"
+                    >
+                        <img :src="qrCodeUrl" class="big-qr-code img-fluid" />
+                        <template #modal-footer>
                             <hg-button
                                 variant="secondary"
-                                @click="toggleDetails"
+                                @click="handleCloseQrModal()"
                             >
-                                <span v-if="showDetails">Hide Details</span>
-                                <span v-else>Show Details</span>
-                                <hg-icon
-                                    :icon="showDetails ? 'eye-slash' : 'eye'"
-                                    class="ml-2"
-                                    square
-                                />
+                                Close
                             </hg-button>
-                        </b-col>
-                    </b-row>
+                        </template>
+                    </b-modal>
                 </div>
-                <b-row v-show="showDetails" class="justify-content-center">
-                    <b-col cols="auto">
-                        <img
-                            v-if="isFullyVaccinated"
-                            src="@/assets/images/vaccination-status/fully-vaccinated.svg"
-                            alt="Fully Vaccinated"
-                            class="vaccination-stage"
-                        />
-                        <img
-                            v-else-if="
-                                isPartiallyVaccinated && vaccinationDoses === 2
-                            "
-                            src="@/assets/images/vaccination-status/dose-2.svg"
-                            alt="Two Doses"
-                            class="vaccination-stage"
-                        />
-                        <img
-                            v-else-if="
-                                isPartiallyVaccinated && vaccinationDoses === 1
-                            "
-                            src="@/assets/images/vaccination-status/dose-1.svg"
-                            alt="One Dose"
-                            class="vaccination-stage"
-                        />
-                        <img
-                            v-else
-                            src="@/assets/images/vaccination-status/no-doses.svg"
-                            alt="No Doses"
-                            class="vaccination-stage"
-                        />
-                    </b-col>
-                </b-row>
-            </div>
-            <div class="text-center">
-                <img
-                    v-if="qrCodeUrl !== null"
-                    v-show="showDetails"
-                    :src="qrCodeUrl"
-                    class="qr-code"
-                />
             </div>
         </div>
-        <div v-if="error !== undefined" class="container">
-            <b-alert
-                variant="danger"
-                class="no-print my-3"
-                :show="error !== undefined"
-                dismissible
+        <div class="bg-white">
+            <div
+                v-if="isPartiallyVaccinated || isVaccinationNotFound"
+                class="callout"
             >
-                <h4>{{ error.title }}</h4>
-                <h6>{{ error.errorCode }}</h6>
-                <div class="pl-4">
-                    <p data-testid="errorTextDescription">
-                        {{ error.description }}
-                    </p>
-                    <p data-testid="errorTextDetails">
-                        {{ error.detail }}
-                    </p>
-                    <p v-if="error.traceId" data-testid="errorSupportDetails">
-                        If this issue persists, contact HealthGateway@gov.bc.ca
-                        and provide
-                        <span class="trace-id">{{ error.traceId }}</span>
-                    </p>
-                </div>
-            </b-alert>
-        </div>
-        <div
-            class="
-                vaccination-indicator
-                p-3
-                text-white
-                flex-grow-1
-                d-flex
-                align-items-center
-                justify-content-between
-                flex-column
-            "
-            :class="{
-                'fully-vaccinated': isFullyVaccinated,
-                'partially-vaccinated': isPartiallyVaccinated,
-                'not-found': isVaccinationNotFound,
-            }"
-        >
-            <div class="vaccination-box m-4 p-5 d-inline-block text-center">
-                <hg-icon
-                    v-show="isFullyVaccinated"
-                    icon="check-circle"
-                    class="mb-2"
-                />
-                <h1 v-if="isFullyVaccinated">Vaccinated</h1>
-                <h1 v-else-if="isPartiallyVaccinated">
-                    <div>Partially</div>
-                    <div>Vaccinated</div>
-                </h1>
-                <h1 v-else-if="isVaccinationNotFound">Not Found</h1>
+                <p>You're fully vaccinated 7 days after dose 2.</p>
+                <ul class="m-0">
+                    <li>
+                        <a
+                            href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof#help"
+                            rel="noopener"
+                            target="_blank"
+                        >
+                            There's a mistake with my record
+                        </a>
+                    </li>
+                    <li v-if="isVaccinationNotFound">
+                        <a
+                            href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/register"
+                            rel="noopener"
+                            target="_blank"
+                        >
+                            I want to get vaccinated
+                        </a>
+                    </li>
+                    <li v-if="isPartiallyVaccinated">
+                        <a
+                            href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/register"
+                            rel="noopener"
+                            target="_blank"
+                        >
+                            Get dose 2
+                        </a>
+                    </li>
+                </ul>
             </div>
-            <div>
-                <hg-button variant="secondary" to="/">Done</hg-button>
-                <hg-button
-                    v-if="isPartiallyVaccinated || isFullyVaccinated"
-                    variant="primary"
-                    class="ml-3"
-                    @click="showSensitiveDocumentDownloadModal()"
+            <div v-if="error !== undefined" class="container">
+                <b-alert
+                    variant="danger"
+                    class="no-print my-3"
+                    :show="error !== undefined"
+                    dismissible
                 >
-                    Save for Later
-                </hg-button>
+                    <h4>{{ error.title }}</h4>
+                    <h6>{{ error.errorCode }}</h6>
+                    <div class="pl-4">
+                        <p data-testid="errorTextDescription">
+                            {{ error.description }}
+                        </p>
+                        <p data-testid="errorTextDetails">
+                            {{ error.detail }}
+                        </p>
+                        <p
+                            v-if="error.traceId"
+                            data-testid="errorSupportDetails"
+                        >
+                            If this issue persists, contact
+                            HealthGateway@gov.bc.ca and provide
+                            <span class="trace-id">{{ error.traceId }}</span>
+                        </p>
+                    </div>
+                </b-alert>
             </div>
+        </div>
+        <div class="actions p-3 d-flex justify-content-between bg-white">
+            <hg-button variant="secondary" to="/">Done</hg-button>
+            <hg-button
+                v-if="isPartiallyVaccinated || isFullyVaccinated"
+                variant="primary"
+                class="ml-3"
+                @click="showSensitiveDocumentDownloadModal()"
+            >
+                Save a Copy
+            </hg-button>
         </div>
         <MessageModalComponent
             ref="sensitivedocumentDownloadModal"
@@ -285,41 +335,56 @@ export default class VaccinationStatusResultView extends Vue {
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-.header {
-    background-color: $hg-brand-primary;
+.vaccination-card {
+    max-width: 470px;
 }
 
-.vaccination-indicator {
+.header {
+    background-color: $hg-brand-primary;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+
+.vaccination-result {
     &.fully-vaccinated {
         background-color: $hg-state-success;
-        .vaccination-box {
-            border: 8px solid white;
 
-            .hg-icon {
-                font-size: 2.5rem;
-            }
+        .hg-icon.big-icon {
+            font-size: 2rem;
         }
     }
     &.partially-vaccinated {
         background-color: $hg-background-navigation;
-        .vaccination-box {
-            border: 5px dashed white;
-        }
     }
     &.not-found {
         background-color: #6c757d;
-        .vaccination-box {
-            border: 5px dashed white;
-        }
+        min-height: 335px;
     }
 }
 
 img.vaccination-stage {
-    height: 4.5em;
+    height: 3em;
 }
 
-.qr-code {
+.small-qr-code {
+    width: 230px;
+}
+
+.big-qr-code {
     width: 100%;
-    max-width: 460px;
+}
+
+.callout {
+    margin: 1rem;
+    padding: 1rem;
+    border-left: 0.25rem solid $hg-brand-secondary;
+    border-radius: 0.25rem;
+    background-color: $hg-background;
+    color: $hg-text-primary;
+}
+
+.actions {
+    border-bottom-left-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
 }
 </style>
