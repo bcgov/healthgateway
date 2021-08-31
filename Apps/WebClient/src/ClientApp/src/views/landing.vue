@@ -1,6 +1,7 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
+    faClipboardCheck,
     faEdit,
     faExclamationTriangle,
     faFlask,
@@ -18,11 +19,11 @@ import Image03 from "@/assets/images/landing/003_reduced-3.jpeg";
 import Image04 from "@/assets/images/landing/004_reduced-living-room.jpeg";
 import Image05 from "@/assets/images/landing/005_reduced-family.jpeg";
 import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
-import VaccinationStatusBannerImage from "@/assets/images/landing/vaccination-status-banner-image.png";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
 
 library.add(
+    faClipboardCheck,
     faEdit,
     faExclamationTriangle,
     faFlask,
@@ -66,7 +67,6 @@ export default class LandingView extends Vue {
     private logo: string = Image00;
     private devices: string = Image02;
     private bcsclogo: string = Image06;
-    private vaccinationStatusBannerImage: string = VaccinationStatusBannerImage;
     private isOpenRegistration = false;
 
     private icons: Icon[] = [
@@ -98,6 +98,12 @@ export default class LandingView extends Vue {
             name: "Encounter",
             definition: "user-md",
             label: "Health Visits (Mar 2021)",
+            active: false,
+        },
+        {
+            name: "VaccinationStatus",
+            definition: "clipboard-check",
+            label: "BC Vaccine Card (Sep 2021)",
             active: false,
         },
         {
@@ -167,29 +173,28 @@ export default class LandingView extends Vue {
     <div class="landing mx-2">
         <b-row
             v-if="isVaccinationStatusEnabled"
-            class="
-                mx-n2
-                px-lg-4
-                bg-success
-                text-white
-                justify-content-center
-                align-items-center
-            "
-            no-gutters
+            class="vaccine-card-banner mx-n2 p-2 justify-content-center"
         >
-            <b-col cols="auto" class="d-none d-md-block">
+            <b-col
+                cols="12"
+                sm="auto"
+                class="
+                    text-center
+                    d-flex
+                    align-items-center
+                    justify-content-center
+                "
+            >
                 <img
-                    :src="vaccinationStatusBannerImage"
-                    alt="Vaccination Check Logo"
-                    class="vaccination-check-logo img-fluid m-2"
+                    src="@/assets/images/vaccine-card/vaccine-card-banner-image.svg"
+                    alt="Vaccine Card Logo"
+                    class="m-2"
                 />
+                <h3 class="my-2">BC Vaccine Card</h3>
             </b-col>
-            <b-col col md="7" lg="auto">
-                <h3 class="text-center m-3">Check Your COVID‑19 Vaccination</h3>
-            </b-col>
-            <b-col cols="auto">
-                <hg-button variant="success" to="/vaccinecard" class="m-3">
-                    Start
+            <b-col cols="12" sm="auto" class="d-flex justify-content-center">
+                <hg-button variant="primary" to="/vaccinecard" class="m-2">
+                    Get Card
                 </hg-button>
             </b-col>
         </b-row>
@@ -226,7 +231,7 @@ export default class LandingView extends Vue {
                         <hg-icon
                             :icon="icon.definition"
                             size="large"
-                            fixed-width
+                            square
                             class="mr-2"
                         />
                     </b-col>
@@ -379,8 +384,14 @@ export default class LandingView extends Vue {
         }
     }
 
-    .vaccination-check-logo {
-        max-height: 3rem;
+    .vaccine-card-banner {
+        background: $hg-vaccine-card-header;
+        color: #212529;
+
+        img {
+            width: 2.5rem;
+            height: 2.5rem;
+        }
     }
 
     .tile-section {

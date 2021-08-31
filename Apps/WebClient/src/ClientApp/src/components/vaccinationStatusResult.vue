@@ -204,7 +204,8 @@ export default class VaccinationStatusResultView extends Vue {
                     <hg-icon
                         v-show="isFullyVaccinated"
                         icon="check-circle"
-                        class="mr-2 big-icon"
+                        size="extra-large"
+                        class="mr-2"
                     />
                     <span>Vaccinated</span>
                 </h2>
@@ -348,10 +349,6 @@ export default class VaccinationStatusResultView extends Vue {
 .vaccination-result {
     &.fully-vaccinated {
         background-color: $hg-state-success;
-
-        .hg-icon.big-icon {
-            font-size: 2rem;
-        }
     }
     &.partially-vaccinated {
         background-color: $hg-background-navigation;

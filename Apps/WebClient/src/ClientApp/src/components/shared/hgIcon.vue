@@ -25,6 +25,9 @@ export default class HgIconComponent extends Vue {
             case "large":
                 result.push("hg-large");
                 break;
+            case "extra-large":
+                result.push("hg-extra-large");
+                break;
             default:
                 return [];
         }
@@ -57,6 +60,9 @@ export default class HgIconComponent extends Vue {
     }
     &.hg-large {
         font-size: 1.5rem;
+    }
+    &.hg-extra-large {
+        font-size: 2rem;
     }
     &.hg-square {
         width: 1em;
