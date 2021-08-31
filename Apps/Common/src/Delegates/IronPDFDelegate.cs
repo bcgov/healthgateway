@@ -65,12 +65,6 @@ namespace HealthGateway.Common.Delegates
                 PdfDocument pdfDoc = renderer.RenderHtmlAsPdf(html);
 
                 this.logger.LogTrace("Applying metadata to PDF");
-                pdfDoc.SecuritySettings.AllowUserAnnotations = this.Configuration.AllowUserAnnotations;
-                if (this.Configuration.AllowUserEdits)
-                {
-                    pdfDoc.SecuritySettings.AllowUserEdits = PdfDocument.PdfSecuritySettings.PdfEditSecurity.NoEdit;
-                }
-
                 pdfDoc.MetaData.Producer = this.Configuration.Producer;
                 pdfDoc.MetaData.Author = this.Configuration.Author;
                 pdfDoc.MetaData.Subject = this.Configuration.Subject;
