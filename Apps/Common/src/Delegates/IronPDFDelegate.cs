@@ -61,7 +61,7 @@ namespace HealthGateway.Common.Delegates
                     }
                 }
 
-                using HtmlToPdf renderer = new ();
+                using HtmlToPdf renderer = new HtmlToPdf();
                 renderer.RenderingOptions.PrintHtmlBackgrounds = true;
                 PdfDocument pdfDoc = renderer.RenderHtmlAsPdf(html);
 
@@ -91,18 +91,21 @@ namespace HealthGateway.Common.Delegates
 
         private static void InitializeLicense(ILogger logger, IronPDFConfig config)
         {
-            if (!License.IsLicensed && !string.IsNullOrEmpty(config.LicenseKey))
+            if (!License.IsLicensed)
             {
-                logger.LogDebug("Applying IronPdf license");
-                License.LicenseKey = config.LicenseKey;
-                if (!License.IsLicensed)
+                if (!string.IsNullOrEmpty(config.LicenseKey))
                 {
-                    logger.LogWarning("IronPdf is NOT licensed and will result in watermarks");
+                    logger.LogInformation("Applying IronPdf license");
+                    License.LicenseKey = config.LicenseKey;
+                    if (!License.IsLicensed)
+                    {
+                        logger.LogWarning("IronPdf is invalid and will result in watermarks");
+                    }
                 }
-            }
-            else
-            {
-                logger.LogWarning("IronPdf license was not configured and will result in watermarks");
+                else
+                {
+                    logger.LogWarning("IronPdf license was not configured and will result in watermarks");
+                }
             }
         }
     }
