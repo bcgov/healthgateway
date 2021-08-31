@@ -129,6 +129,54 @@ services:
         tags:
           - OAS3_import
           - ns.$kongNamespace
+      - name: GetVaccineRecord-kongNamespace
+        methods:
+          - GET
+        hosts:
+          - $kongNamespace.api.gov.bc.ca
+        paths:
+          - /v1/api/CovidVaccineRecord
+        plugins:
+          - name: jwt-keycloak
+            tags: [ns.$kongNamespace]
+            enabled: true
+            config:
+              client_roles: null
+              allowed_iss:
+                - $keycloakUri
+              run_on_preflight: true
+              iss_key_grace_period: 10
+              maximum_expiration: 0
+              claims_to_verify:
+                - exp
+              consumer_match_claim_custom_id: false
+              cookie_names: []
+              scope: null
+              uri_param_names:
+                - jwt
+              roles: null
+              consumer_match: false
+              well_known_template: $keycloakUri/.well-known/openid-configuration
+              consumer_match_ignore_not_found: false
+              anonymous: null
+              algorithm: RS256
+              realm_roles: null
+              consumer_match_claim: azp
+        strip_path: false
+        tags:
+          - OAS3_import
+          - ns.$kongNamespace           
+      - name: OptionsVaccineRecord-kongNamespace
+        methods:
+          - OPTIONS
+        hosts:
+          - $kongNamespace.api.gov.bc.ca
+        paths:
+          - /v1/api/CovidVaccineRecord
+        strip_path: false
+        tags:
+          - OAS3_import
+          - ns.$kongNamespace      
     tags:
       - OAS3_import
       - ns.$kongNamespace
