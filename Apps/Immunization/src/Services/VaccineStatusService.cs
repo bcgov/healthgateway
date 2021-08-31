@@ -48,7 +48,6 @@ namespace HealthGateway.Immunization.Services
         private const string BorderSolid = "solid";
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
         private readonly IAuthenticationDelegate authDelegate;
-        private readonly ICaptchaDelegate captchaDelegate;
         private readonly IIronPDFDelegate ironPdfDelegate;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly PHSAConfig phsaConfig;
@@ -60,18 +59,15 @@ namespace HealthGateway.Immunization.Services
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="vaccineStatusDelegate">The injected vaccine status delegate.</param>
-        /// <param name="captchaDelegate">The injected captcha delegate.</param>
         /// <param name="ironPdfDelegate">The injected ironpdf delegate.</param>
         public VaccineStatusService(
             IConfiguration configuration,
             IAuthenticationDelegate authDelegate,
             IVaccineStatusDelegate vaccineStatusDelegate,
-            ICaptchaDelegate captchaDelegate,
             IIronPDFDelegate ironPdfDelegate)
         {
             this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.authDelegate = authDelegate;
-            this.captchaDelegate = captchaDelegate;
             this.ironPdfDelegate = ironPdfDelegate;
 
             IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
@@ -84,7 +80,7 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth, string token)
+        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth)
         {
             RequestResult<VaccineStatus> retVal = new ()
             {
@@ -112,18 +108,6 @@ namespace HealthGateway.Immunization.Services
                 retVal.ResultError = new RequestResultError()
                 {
                     ResultMessage = "Error parsing phn",
-                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-                };
-                return retVal;
-            }
-
-            bool isTokenValid = await this.captchaDelegate.IsCaptchaValid(token).ConfigureAwait(true);
-            if (!isTokenValid)
-            {
-                retVal.ResultStatus = Common.Constants.ResultType.Error;
-                retVal.ResultError = new RequestResultError()
-                {
-                    ResultMessage = "Invalid captcha token",
                     ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
                 };
                 return retVal;
@@ -171,9 +155,9 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string token)
+        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth)
         {
-            RequestResult<VaccineStatus> requestResult = await this.GetVaccineStatus(phn, dateOfBirth, token).ConfigureAwait(true);
+            RequestResult<VaccineStatus> requestResult = await this.GetVaccineStatus(phn, dateOfBirth).ConfigureAwait(true);
             IronPDFRequestModel pdfRequest = new ();
             pdfRequest.FileName = "BCVaccineCard";
             pdfRequest.Data.Add("bcLogoImageSrc", AssetReader.Read("HealthGateway.Immunization.Assets.Images.bcid-logo-rev-en.png", true));

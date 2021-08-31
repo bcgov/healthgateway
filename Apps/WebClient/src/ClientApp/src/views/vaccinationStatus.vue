@@ -234,17 +234,6 @@ export default class VaccinationStatusView extends Vue {
                     or 778-698-5849 if you have any questions about this
                     collection.
                 </p>
-                <div class="small">
-                    This site is protected by reCAPTCHA and the Google
-                    <a href="https://policies.google.com/privacy"
-                        >Privacy Policy</a
-                    >
-                    and
-                    <a href="https://policies.google.com/terms"
-                        >Terms of Service</a
-                    >
-                    apply.
-                </div>
             </form>
         </div>
     </div>
@@ -277,9 +266,5 @@ export default class VaccinationStatusView extends Vue {
     .vld-icon {
         text-align: center;
     }
-}
-
-.grecaptcha-badge {
-    visibility: hidden;
 }
 </style>

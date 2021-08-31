@@ -1,5 +1,4 @@
 import { injectable } from "inversify";
-import { load } from "recaptcha-v3";
 
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
@@ -25,7 +24,6 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
     private baseUri = "";
     private http!: IHttpDelegate;
     private isEnabled = false;
-    private captchaSiteKey = "";
 
     public initialize(
         config: ExternalConfiguration,
@@ -34,13 +32,11 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
         this.baseUri = config.serviceEndpoints["Immunization"];
         this.http = http;
         this.isEnabled = config.webClient.modules["Immunization"];
-        this.captchaSiteKey = config.webClient.captchaSiteKey || "";
     }
 
     public getVaccinationStatus(
         phn: string,
-        dateOfBirth: StringISODate,
-        token: string
+        dateOfBirth: StringISODate
     ): Promise<RequestResult<VaccinationStatus>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
@@ -51,7 +47,6 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
             const headers: Dictionary<string> = {};
             headers["phn"] = phn;
             headers["dateOfBirth"] = dateOfBirth;
-            headers["token"] = token;
 
             return this.http
                 .getWithCors<RequestResult<VaccinationStatus>>(
@@ -75,8 +70,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
 
     public getReport(
         phn: string,
-        dateOfBirth: StringISODate,
-        token: string
+        dateOfBirth: StringISODate
     ): Promise<RequestResult<Report>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
@@ -87,7 +81,6 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
             const headers: Dictionary<string> = {};
             headers["phn"] = phn;
             headers["dateOfBirth"] = dateOfBirth;
-            headers["token"] = token;
 
             return this.http
                 .post<RequestResult<Report>>(
@@ -106,30 +99,6 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
                             ServiceName.Immunization
                         )
                     );
-                });
-        });
-    }
-
-    getCaptchaToken(): Promise<string> {
-        return new Promise((resolve, reject) => {
-            load(this.captchaSiteKey || "")
-                .then((recaptcha) => {
-                    recaptcha.showBadge();
-                    recaptcha
-                        .execute("vaccinationStatus")
-                        .then((token) => {
-                            resolve(token);
-                        })
-                        .catch((err) => {
-                            this.logger.error(
-                                `Error executing captcha action: ${err}`
-                            );
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
-                    this.logger.error(`Error loading captcha: ${err}`);
-                    reject(err);
                 });
         });
     }

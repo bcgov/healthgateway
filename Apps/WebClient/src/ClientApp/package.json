@@ -85,7 +85,6 @@
         "luxon": "^1.28.0",
         "oidc-client": "^1.11.5",
         "qrcode": "^1.4.4",
-        "recaptcha-v3": "^1.10.0",
         "reflect-metadata": "^0.1.13",
         "vue": "^2.6.12",
         "vue-chartjs": "^3.5.1",

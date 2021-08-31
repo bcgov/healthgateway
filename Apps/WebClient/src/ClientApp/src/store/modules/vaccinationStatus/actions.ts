@@ -23,54 +23,35 @@ export const actions: VaccinationStatusActions = {
         return new Promise((resolve, reject) => {
             logger.debug(`Retrieving Vaccination Status`);
             context.commit("setRequested");
-            logger.debug(`Retrieving Captcha token`);
             vaccinationStatusService
-                .getCaptchaToken()
-                .then((token) => {
-                    vaccinationStatusService
-                        .getVaccinationStatus(
-                            params.phn,
-                            params.dateOfBirth,
-                            token
-                        )
-                        .then((result) => {
-                            if (result.resultStatus === ResultType.Success) {
-                                const payload = result.resourcePayload;
-                                if (!payload.loaded && payload.retryin > 0) {
-                                    logger.info("VaccinationStatus not loaded");
-                                    context.commit(
-                                        "setStatusMessage",
-                                        "We're busy but will continue to try to fetch your record...."
-                                    );
-                                    setTimeout(() => {
-                                        logger.info(
-                                            "Re-querying for vaccination status"
-                                        );
-                                        context.dispatch("retrieve", {
-                                            phn: params.phn,
-                                            dateOfBirth: params.dateOfBirth,
-                                        });
-                                    }, payload.retryin);
-                                    resolve();
-                                } else {
-                                    context.commit(
-                                        "setVaccinationStatus",
-                                        payload
-                                    );
-                                    resolve();
-                                }
-                            } else {
-                                context.dispatch(
-                                    "handleError",
-                                    result.resultError
+                .getVaccinationStatus(params.phn, params.dateOfBirth)
+                .then((result) => {
+                    if (result.resultStatus === ResultType.Success) {
+                        const payload = result.resourcePayload;
+                        if (!payload.loaded && payload.retryin > 0) {
+                            logger.info("VaccinationStatus not loaded");
+                            context.commit(
+                                "setStatusMessage",
+                                "We're busy but will continue to try to fetch your record...."
+                            );
+                            setTimeout(() => {
+                                logger.info(
+                                    "Re-querying for vaccination status"
                                 );
-                                reject(result.resultError);
-                            }
-                        })
-                        .catch((error) => {
-                            context.dispatch("handleError", error);
-                            reject(error);
-                        });
+                                context.dispatch("retrieve", {
+                                    phn: params.phn,
+                                    dateOfBirth: params.dateOfBirth,
+                                });
+                            }, payload.retryin);
+                            resolve();
+                        } else {
+                            context.commit("setVaccinationStatus", payload);
+                            resolve();
+                        }
+                    } else {
+                        context.dispatch("handleError", result.resultError);
+                        reject(result.resultError);
+                    }
                 })
                 .catch((error) => {
                     context.dispatch("handleError", error);
@@ -82,36 +63,22 @@ export const actions: VaccinationStatusActions = {
         context,
         params: { phn: string; dateOfBirth: StringISODate }
     ): Promise<Report> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         const vaccinationStatusService: IVaccinationStatusService =
             container.get<IVaccinationStatusService>(
                 SERVICE_IDENTIFIER.VaccinationStatusService
             );
 
         return new Promise((resolve, reject) => {
-            logger.debug(`Retrieving Captcha token`);
             vaccinationStatusService
-                .getCaptchaToken()
-                .then((token) => {
-                    logger.debug(`Retrieving Vaccination Status PDF`);
-                    vaccinationStatusService
-                        .getReport(params.phn, params.dateOfBirth, token)
-                        .then((result) => {
-                            if (result.resultStatus === ResultType.Success) {
-                                const payload = result.resourcePayload;
-                                resolve(payload);
-                            } else {
-                                context.dispatch(
-                                    "handleError",
-                                    result.resultError
-                                );
-                                reject(result.resultError);
-                            }
-                        })
-                        .catch((error) => {
-                            context.dispatch("handleError", error);
-                            reject(error);
-                        });
+                .getReport(params.phn, params.dateOfBirth)
+                .then((result) => {
+                    if (result.resultStatus === ResultType.Success) {
+                        const payload = result.resourcePayload;
+                        resolve(payload);
+                    } else {
+                        context.dispatch("handleError", result.resultError);
+                        reject(result.resultError);
+                    }
                 })
                 .catch((error) => {
                     context.dispatch("handleError", error);

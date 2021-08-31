@@ -36,11 +36,11 @@ export interface VaccinationStatusActions
     extends ActionTree<VaccinationStatusState, RootState> {
     retrieve(
         context: StoreContext,
-        params: { phn: string; dateOfBirth: StringISODate; token: string }
+        params: { phn: string; dateOfBirth: StringISODate }
     ): Promise<void>;
     getReport(
         context: StoreContext,
-        params: { phn: string; dateOfBirth: StringISODate; token: string }
+        params: { phn: string; dateOfBirth: StringISODate }
     ): Promise<Report>;
     handleError(context: StoreContext, error: ResultError): void;
 }
