@@ -62,7 +62,6 @@ namespace HealthGateway.Common.Delegates
                 }
 
                 using HtmlToPdf renderer = new HtmlToPdf();
-                renderer.RenderingOptions.PrintHtmlBackgrounds = true;
                 PdfDocument pdfDoc = renderer.RenderHtmlAsPdf(html);
 
                 this.logger.LogTrace("Applying metadata to PDF");
