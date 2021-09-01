@@ -145,7 +145,7 @@ namespace HealthGateway.Admin.Services
             }
 
             ReportModel report = statusReport.ResourcePayload;
-            report.FileName = $"HLTCVD.{Guid.NewGuid()}.MMM.DD.YYYY.pdf";
+            report.FileName = $"HLTCVD.{Guid.NewGuid()}.{DateTime.Now.ToString("MMM.DD.YYYY", CultureInfo.InvariantCulture)}.pdf";
             return this.mailDelegate.SendDocument(report);
         }
 
