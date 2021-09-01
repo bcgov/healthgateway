@@ -122,5 +122,10 @@
             GetVaccineStatus - Invalid DOB.
             </summary>
         </member>
+        <member name="M:HealthGateway.Immunization.Test.Services.VaccineStatusServiceTests.ShouldErrorOnDOV">
+            <summary>
+            GetVaccineStatus - Invalid DOV.
+            </summary>
+        </member>
     </members>
 </doc>

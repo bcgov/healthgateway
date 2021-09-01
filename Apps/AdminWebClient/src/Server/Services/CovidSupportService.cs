@@ -147,7 +147,7 @@ namespace HealthGateway.Admin.Services
             this.logger.LogDebug($"Retrieving covid document");
             this.logger.LogTrace($"For PHN: {phn}");
 
-            RequestResult<CovidInformation> covidInfo = await this.GetCovidInformation(phn);
+            RequestResult<CovidInformation> covidInfo = await this.GetCovidInformation(phn).ConfigureAwait(true);
 
             if (covidInfo.ResultStatus != ResultType.Success)
             {

@@ -15,11 +15,11 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Controllers
 {
+    using System.Threading.Tasks;
     using HealthGateway.Admin.Models.Support;
     using HealthGateway.Admin.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Web API to handle Covid support requests.

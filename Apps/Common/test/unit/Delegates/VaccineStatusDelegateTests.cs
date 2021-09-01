@@ -147,12 +147,17 @@ namespace HealthGateway.Immunization.Test.Delegates
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
+            var myConfiguration = new Dictionary<string, string>
+            {
+                { "PHSA:BaseUrl", "https://some-test-url/" },
+            };
             return new ConfigurationBuilder()
 
                 // .SetBasePath(outputPath)
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("appsettings.Development.json", optional: true)
                 .AddJsonFile("appsettings.local.json", optional: true)
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
 
