@@ -51,18 +51,27 @@ namespace HealthGateway.Admin.Server.Delegates
             this.logger = logger;
             this.documentStorageConfiguration = new DocumentStorageConfiguration();
             configuration.Bind(DocumentStorageConfigurationSectionKey, this.documentStorageConfiguration);
-
             try
             {
+                PrivateKeyFile privateKey;
+                if (!string.IsNullOrEmpty(this.documentStorageConfiguration.PrivateKeyPassphrase))
+                {
+                    privateKey = new PrivateKeyFile(
+                        this.documentStorageConfiguration.PrivateKeyPath,
+                        this.documentStorageConfiguration.PrivateKeyPassphrase);
+                }
+                else
+                {
+                    privateKey = new PrivateKeyFile(this.documentStorageConfiguration.PrivateKeyPath);
+                }
+
                 this.connectionInfo = new (
-                    this.documentStorageConfiguration.SftpHostname,
-                    this.documentStorageConfiguration.SftpPort,
+                this.documentStorageConfiguration.SftpHostname,
+                this.documentStorageConfiguration.SftpPort,
+                this.documentStorageConfiguration.SftpUsername,
+                new PrivateKeyAuthenticationMethod(
                     this.documentStorageConfiguration.SftpUsername,
-                    new PrivateKeyAuthenticationMethod(
-                        this.documentStorageConfiguration.SftpUsername,
-                        new PrivateKeyFile(
-                            this.documentStorageConfiguration.PrivateKeyPath,
-                            this.documentStorageConfiguration.PrivateKeyPassphrase)));
+                    privateKey));
                 this.connectionInitialized = true;
             }
             catch (Exception e)
