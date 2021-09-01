@@ -28,6 +28,15 @@ namespace HealthGateway.Common.Delegates
         /// </summary>
         /// <param name="request">The ironpdf request model.</param>
         /// <returns>The report model.</returns>
-        RequestResult<ReportModel> GeneratePDF(IronPDFRequestModel request);
+        RequestResult<ReportModel> Generate(IronPDFRequestModel request);
+
+        /// <summary>
+        /// Merges two pdf documents.
+        /// </summary>
+        /// <param name="report1">The base64 string of the first pdf document.</param>
+        /// <param name="report2">The base64 string of the second pdf document.</param>
+        /// <param name="fileName">The file name.</param>
+        /// <returns>The report model of the merged pdf.</returns>
+        RequestResult<ReportModel> Merge(string report1, string report2, string fileName);
     }
 }

@@ -38,6 +38,11 @@ namespace HealthGateway.Common.Models.PHSA
         public string VaccineStatusEndpoint { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the vaccine status endpoint.
+        /// </summary>
+        public string RecordCardEndpoint { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the total number of records to retrieve in one call.
         /// </summary>
         public string FetchSize { get; set; } = string.Empty;
@@ -46,5 +51,10 @@ namespace HealthGateway.Common.Models.PHSA
         /// Gets or sets the default time to wait for a new request.
         /// </summary>
         public int BackOffMilliseconds { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum number of retries.
+        /// </summary>
+        public int MaxRetries { get; set; }
     }
 }

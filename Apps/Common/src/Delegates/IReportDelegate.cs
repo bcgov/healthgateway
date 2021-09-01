@@ -31,5 +31,14 @@ namespace HealthGateway.Common.Delegates
         /// <param name="address">The optional patient address information.</param>
         /// <returns>Returns the vaccine status pdf document.</returns>
         RequestResult<ReportModel> GetVaccineStatusPDF(VaccineStatus vaccineStatus, Address? address);
+
+        /// <summary>
+        /// Gets the vaccine status and record card pdf.
+        /// </summary>
+        /// <param name="vaccineStatus">The vaccine status information.</param>
+        /// <param name="address">The optional patient address information.</param>
+        /// <param name="base64RecordCard">The base64 of the record card PDF.</param>
+        /// <returns>Returns the report model containing the pdf document.</returns>
+        RequestResult<ReportModel> GetVaccineStatusAndRecordPDF(VaccineStatus vaccineStatus, Address? address, string base64RecordCard);
     }
 }

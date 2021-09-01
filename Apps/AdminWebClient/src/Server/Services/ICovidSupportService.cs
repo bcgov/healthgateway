@@ -29,7 +29,7 @@ namespace HealthGateway.Admin.Services
         /// </summary>
         /// <param name="phn">The personal health number that matches the person to retrieve.</param>
         /// <returns>The covid ionformation wrapped in a RequestResult.</returns>
-        RequestResult<CovidInformation> GetCovidInformation(string phn);
+        Task<RequestResult<CovidInformation>> GetCovidInformation(string phn);
 
         /// <summary>
         /// Gets all the emails in the system up to the pageSize.

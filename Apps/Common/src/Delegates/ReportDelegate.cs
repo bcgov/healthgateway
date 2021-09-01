@@ -91,7 +91,14 @@ namespace HealthGateway.Common.Delegates
                     break;
             }
 
-            return this.ironPdfDelegate.GeneratePDF(pdfRequest);
+            return this.ironPdfDelegate.Generate(pdfRequest);
+        }
+
+        /// <inheritdoc/>
+        public RequestResult<ReportModel> GetVaccineStatusAndRecordPDF(VaccineStatus vaccineStatus, Address? address, string base64RecordCard)
+        {
+            RequestResult<ReportModel> vaccineStatusResult = this.GetVaccineStatusPDF(vaccineStatus, address);
+            return this.ironPdfDelegate.Merge(vaccineStatusResult.ResourcePayload!.Data, base64RecordCard, vaccineStatusResult.ResourcePayload.FileName);
         }
     }
 }

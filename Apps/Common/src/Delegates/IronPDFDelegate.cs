@@ -47,7 +47,7 @@ namespace HealthGateway.Common.Delegates
         private IronPDFConfig Configuration { get; set; } = new ();
 
         /// <inheritdoc/>
-        public RequestResult<ReportModel> GeneratePDF(IronPDFRequestModel request)
+        public RequestResult<ReportModel> Generate(IronPDFRequestModel request)
         {
             string html = request.HtmlTemplate;
             this.logger.LogTrace("Generating PDF");
@@ -80,6 +80,30 @@ namespace HealthGateway.Common.Delegates
                     },
                 };
             }
+        }
+
+        /// <inheritdoc/>
+        public RequestResult<ReportModel> Merge(string report1, string report2, string fileName)
+        {
+            using PdfDocument pdfDoc1 = new PdfDocument(Convert.FromBase64String(report1));
+            using PdfDocument pdfDoc2 = new PdfDocument(Convert.FromBase64String(report2));
+            using PdfDocument pdfDoc = pdfDoc2.PrependPdf(pdfDoc1);
+
+            this.logger.LogTrace("Applying metadata to PDF");
+            pdfDoc.MetaData.Producer = this.Configuration.Producer;
+            pdfDoc.MetaData.Author = this.Configuration.Author;
+            pdfDoc.MetaData.Subject = this.Configuration.Subject;
+            pdfDoc.MetaData.Title = this.Configuration.Title;
+
+            return new RequestResult<ReportModel>()
+            {
+                ResultStatus = ResultType.Success,
+                ResourcePayload = new ReportModel()
+                {
+                    Data = Convert.ToBase64String(pdfDoc.Stream.ToArray()),
+                    FileName = fileName,
+                },
+            };
         }
 
         private static void InitializeLicense(ILogger logger, IronPDFConfig config)

@@ -79,54 +79,51 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<CovidInformation> GetCovidInformation(string phn)
+        public async Task<RequestResult<CovidInformation>> GetCovidInformation(string phn)
         {
             this.logger.LogDebug($"Retrieving covid information");
             this.logger.LogTrace($"For PHN: {phn}");
 
-            return Task.Run(async () =>
-            {
-                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.PHN, true).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.PHN, true).ConfigureAwait(true);
 
-                if (patientResult.ResultStatus == ResultType.Success)
+            if (patientResult.ResultStatus == ResultType.Success)
+            {
+                this.logger.LogDebug($"Sucessfully retrieved patient.");
+                RequestResult<ImmunizationResult> immunizationResult = await this.immunizationDelegate.GetImmunizationEvents(patientResult.ResourcePayload).ConfigureAwait(true);
+                if (immunizationResult.ResultStatus == ResultType.Success)
                 {
-                    this.logger.LogDebug($"Sucessfully retrieved patient.");
-                    RequestResult<ImmunizationResult> immunizationResult = await this.immunizationDelegate.GetImmunizationEvents(patientResult.ResourcePayload).ConfigureAwait(true);
-                    if (immunizationResult.ResultStatus == ResultType.Success)
+                    this.logger.LogDebug($"Sucessfully retrieved immunization.");
+                    return new RequestResult<CovidInformation>()
                     {
-                        this.logger.LogDebug($"Sucessfully retrieved immunization.");
-                        return new RequestResult<CovidInformation>()
-                        {
-                            PageIndex = 0,
-                            PageSize = 1,
-                            ResourcePayload = new CovidInformation(patientResult.ResourcePayload, immunizationResult.ResourcePayload!.Immunizations),
-                            ResultStatus = ResultType.Success,
-                        };
-                    }
-                    else
-                    {
-                        this.logger.LogError($"Error retrieving immunization information.");
-                        return new RequestResult<CovidInformation>()
-                        {
-                            PageIndex = 0,
-                            PageSize = 0,
-                            ResultStatus = ResultType.Error,
-                            ResultError = immunizationResult.ResultError,
-                        };
-                    }
+                        PageIndex = 0,
+                        PageSize = 1,
+                        ResourcePayload = new CovidInformation(patientResult.ResourcePayload, immunizationResult.ResourcePayload!.Immunizations),
+                        ResultStatus = ResultType.Success,
+                    };
                 }
                 else
                 {
-                    this.logger.LogError($"Error retrieving patient information.");
+                    this.logger.LogError($"Error retrieving immunization information.");
                     return new RequestResult<CovidInformation>()
                     {
                         PageIndex = 0,
                         PageSize = 0,
                         ResultStatus = ResultType.Error,
-                        ResultError = patientResult.ResultError,
+                        ResultError = immunizationResult.ResultError,
                     };
                 }
-            }).Result;
+            }
+            else
+            {
+                this.logger.LogError($"Error retrieving patient information.");
+                return new RequestResult<CovidInformation>()
+                {
+                    PageIndex = 0,
+                    PageSize = 0,
+                    ResultStatus = ResultType.Error,
+                    ResultError = patientResult.ResultError,
+                };
+            }
         }
 
         /// <inheritdoc />
@@ -150,7 +147,7 @@ namespace HealthGateway.Admin.Services
             this.logger.LogDebug($"Retrieving covid document");
             this.logger.LogTrace($"For PHN: {phn}");
 
-            RequestResult<CovidInformation> covidInfo = this.GetCovidInformation(phn);
+            RequestResult<CovidInformation> covidInfo = await this.GetCovidInformation(phn);
 
             if (covidInfo.ResultStatus != ResultType.Success)
             {
@@ -181,17 +178,38 @@ namespace HealthGateway.Admin.Services
                 };
             }
 
-            VaccineStatusQuery query = new ()
+            VaccineStatusQuery statusQuery = new ()
             {
                 PersonalHealthNumber = phn,
                 DateOfBirth = covidInfo.ResourcePayload!.Patient.Birthdate,
             };
             RequestResult<PHSAResult<VaccineStatusResult>> statusResult =
-                await this.vaccineStatusDelegate.GetVaccineStatus(query, bearerToken).ConfigureAwait(true);
+                await this.vaccineStatusDelegate.GetVaccineStatus(statusQuery, bearerToken).ConfigureAwait(true);
 
             if (statusResult.ResultStatus != ResultType.Success)
             {
-                this.logger.LogError($"Error during document generation.");
+                this.logger.LogError($"Error getting vaccine status.");
+                return new RequestResult<ReportModel>()
+                {
+                    PageIndex = 0,
+                    PageSize = 0,
+                    ResultStatus = ResultType.Error,
+                    ResultError = statusResult.ResultError,
+                };
+            }
+
+            RecordCardQuery cardQuery = new ()
+            {
+                PersonalHealthNumber = phn,
+                DateOfBirth = covidInfo.ResourcePayload!.Patient.Birthdate,
+                ImmunizationDisease = "COVID19",
+            };
+            RequestResult<PHSAResult<RecordCard>> recordCardResult =
+                await this.vaccineStatusDelegate.GetRecordCard(cardQuery, bearerToken).ConfigureAwait(true);
+
+            if (recordCardResult.ResultStatus != ResultType.Success)
+            {
+                this.logger.LogError($"Error getting record card.");
                 return new RequestResult<ReportModel>()
                 {
                     PageIndex = 0,
@@ -218,6 +236,8 @@ namespace HealthGateway.Admin.Services
                 };
             }
 
+            string? base64RecordCard = recordCardResult.ResourcePayload?.Result?.PaperRecord.Data;
+
             VaccineStatus vaccineStatus = new VaccineStatus()
             {
                 Birthdate = payload.Birthdate,
@@ -229,7 +249,7 @@ namespace HealthGateway.Admin.Services
                 QRCode = payload.QRCode,
             };
 
-            return this.reportDelegate.GetVaccineStatusPDF(vaccineStatus, address);
+            return this.reportDelegate.GetVaccineStatusAndRecordPDF(vaccineStatus, address, base64RecordCard);
 
             // Merge PDF with PHSA
         }

@@ -165,5 +165,101 @@ namespace HealthGateway.Common.Delegates.PHSA
             this.logger.LogDebug($"Finished getting vaccine status {query.PersonalHealthNumber.Substring(0, 5)} {query.DateOfBirth}");
             return retVal;
         }
+
+        /// <inheritdoc/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
+        public async Task<RequestResult<PHSAResult<RecordCard>>> GetRecordCard(RecordCardQuery query, string accessToken)
+        {
+            using Activity? activity = Source.StartActivity("GetRecordCard");
+            this.logger.LogDebug($"Getting record card {query.PersonalHealthNumber.Substring(0, 5)} {query.DateOfBirth}...");
+            string endpointString = $"{this.phsaConfig.BaseUrl}{this.phsaConfig.RecordCardEndpoint}";
+
+            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
+            string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+
+            RequestResult<PHSAResult<RecordCard>> retVal = new ()
+            {
+                ResultStatus = ResultType.Error,
+                PageIndex = 0,
+            };
+
+            try
+            {
+                var jsonOptions = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    IgnoreNullValues = true,
+                    WriteIndented = true,
+                };
+                string json = JsonSerializer.Serialize(query, jsonOptions);
+                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+                using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
+
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
+                client.DefaultRequestHeaders.Add("X-Forward-For", ipAddress);
+
+                HttpResponseMessage response = await client.PostAsync(new Uri(endpointString), content).ConfigureAwait(true);
+                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                this.logger.LogTrace($"Response: {response}");
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                        this.logger.LogTrace($"Response payload: {payload}");
+                        PHSAResult<RecordCard>? phsaResult = JsonSerializer.Deserialize<PHSAResult<RecordCard>>(payload, jsonOptions);
+                        if (phsaResult != null && phsaResult.Result != null)
+                        {
+                            retVal.ResultStatus = ResultType.Success;
+                            retVal.ResourcePayload = phsaResult;
+                            retVal.TotalResultCount = 1;
+                        }
+                        else
+                        {
+                            retVal.ResultError = new RequestResultError()
+                            {
+                                ResultMessage = "Error with JSON data",
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            };
+                        }
+
+                        break;
+                    case HttpStatusCode.NoContent: // No vaccine status exists for this patient
+                        retVal.ResultStatus = ResultType.Success;
+                        retVal.ResourcePayload = new PHSAResult<RecordCard>()
+                        {
+                            Result = new RecordCard(),
+                        };
+                        retVal.TotalResultCount = 0;
+                        break;
+                    case HttpStatusCode.Forbidden:
+                        retVal.ResultError = new RequestResultError()
+                        {
+                            ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
+                        break;
+                    default:
+                        retVal.ResultError = new RequestResultError()
+                        {
+                            ResultMessage = $"Unable to connect to Immunizations/VaccineStatus Endpoint, HTTP Error {response.StatusCode}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
+                        this.logger.LogError($"Unable to connect to endpoint {endpointString}, HTTP Error {response.StatusCode}\n{payload}");
+                        break;
+                }
+            }
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
+            {
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting vaccine status: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                this.logger.LogError($"Unexpected exception retrieving vaccine status {e}");
+            }
+
+            this.logger.LogDebug($"Finished getting vaccine status {query.PersonalHealthNumber.Substring(0, 5)} {query.DateOfBirth}");
+            return retVal;
+        }
     }
 }
