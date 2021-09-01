@@ -134,11 +134,19 @@ namespace HealthGateway.Admin.Services
 
             RequestResult<ReportModel> statusReport = await this.RetrieveDocumentAsync(request.PersonalHealthNumber, request.MailAddress).ConfigureAwait(true);
 
-            return new PrimitiveRequestResult<bool>()
+            if (statusReport.ResultStatus != ResultType.Success || statusReport.ResourcePayload == null)
             {
-                ResourcePayload = statusReport.ResultStatus == ResultType.Success,
-                ResultError = statusReport.ResultError,
-            };
+                return new PrimitiveRequestResult<bool>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResourcePayload = false,
+                    ResultError = statusReport.ResultError,
+                };
+            }
+
+            ReportModel report = statusReport.ResourcePayload;
+            report.FileName = $"HLTCVD.{Guid.NewGuid()}.MMM.DD.YYYY.pdf";
+            return this.mailDelegate.SendDocument(report);
         }
 
         /// <inheritdoc />
