@@ -62,6 +62,10 @@ namespace HealthGateway.Immunization.Services
             this.reportDelegate = reportDelegate;
 
             this.vaccineStatusDelegate = vaccineStatusDelegate;
+
+            IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
+            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
+            this.tokenRequest = new ClientCredentialsTokenRequest();
             configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
 
             this.phsaConfig = new PHSAConfig();
