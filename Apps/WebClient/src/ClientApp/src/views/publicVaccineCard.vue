@@ -1,6 +1,7 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { required } from "vuelidate/lib/validators";
@@ -11,9 +12,10 @@ import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
 import DatePickerComponent from "@/components/datePicker.vue";
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
-import VaccinationStatusResultComponent from "@/components/vaccinationStatusResult.vue";
+import VaccineCardComponent from "@/components/vaccineCard.vue";
 import BannerError from "@/models/bannerError";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import Report from "@/models/report";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
@@ -29,13 +31,13 @@ const validPersonalHealthNumber = (value: string): boolean => {
 
 @Component({
     components: {
-        "vaccination-status-result": VaccinationStatusResultComponent,
+        "vaccine-card": VaccineCardComponent,
         "date-picker": DatePickerComponent,
         "error-card": ErrorCardComponent,
         LoadingComponent,
     },
 })
-export default class VaccinationStatusView extends Vue {
+export default class PublicVaccineCardView extends Vue {
     @Action("retrieve", { namespace: "vaccinationStatus" })
     retrieveVaccinationStatus!: (params: {
         phn: string;
@@ -55,10 +57,18 @@ export default class VaccinationStatusView extends Vue {
     @Getter("statusMessage", { namespace: "vaccinationStatus" })
     statusMessage!: string;
 
+    @Action("getReport", { namespace: "vaccinationStatus" })
+    getReport!: (params: {
+        phn: string;
+        dateOfBirth: StringISODate;
+        dateOfVaccine: StringISODate;
+    }) => Promise<Report>;
+
     private bcsclogo: string = Image06;
 
     private logger!: ILogger;
     private displayResult = false;
+    private isDownloading = false;
 
     private phn = "";
     private dateOfBirth = "";
@@ -113,6 +123,37 @@ export default class VaccinationStatusView extends Vue {
         }
     }
 
+    private download() {
+        this.isDownloading = true;
+        this.getReport({
+            phn: this.status?.personalhealthnumber || "",
+            dateOfBirth: new DateWrapper(this.status?.birthdate || "").format(
+                "yyyy-MM-dd"
+            ),
+            dateOfVaccine: new DateWrapper(
+                this.status?.vaccinedate || ""
+            ).format("yyyy-MM-dd"),
+        })
+            .then((documentResult) => {
+                if (documentResult) {
+                    const downloadLink = `data:application/pdf;base64,${documentResult.data}`;
+                    fetch(downloadLink).then((res) => {
+                        res.blob().then((blob) => {
+                            saveAs(blob, documentResult.fileName);
+                        });
+                    });
+                }
+            })
+            .catch((err) => {
+                this.logger.error(
+                    `Error retrieving vaccination status pdf: ${err}`
+                );
+            })
+            .finally(() => {
+                this.isDownloading = false;
+            });
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
@@ -130,7 +171,14 @@ export default class VaccinationStatusView extends Vue {
                 alt="BC Mark"
             />
         </div>
-        <vaccination-status-result v-if="displayResult" />
+        <vaccine-card
+            v-if="displayResult"
+            :status="status"
+            :is-loading="isDownloading"
+            :error="error"
+            class="vaccine-card align-self-center w-100 p-3 rounded"
+            @download="download"
+        />
         <div v-else class="flex-grow-1 d-flex flex-column">
             <div class="vaccine-card-banner p-3">
                 <div class="container d-flex align-items-center">
@@ -364,6 +412,10 @@ export default class VaccinationStatusView extends Vue {
 .login-button {
     background-color: #1a5a95 !important;
     border-color: #1a5a95 !important;
+}
+
+.vaccine-card {
+    max-width: 470px;
 }
 </style>
 

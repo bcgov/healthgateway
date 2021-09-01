@@ -7,7 +7,7 @@ import { Action, Getter } from "vuex-class";
 
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
-import CovidModalComponent from "@/components/modal/covid.vue";
+import CovidTestModalComponent from "@/components/modal/covidTestModal.vue";
 import NoteEditComponent from "@/components/modal/noteEdit.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import ResourceCentreComponent from "@/components/resourceCentre.vue";
@@ -46,7 +46,7 @@ library.add(faSearch, faIdCard);
     components: {
         LoadingComponent,
         ProtectiveWordComponent,
-        CovidModalComponent,
+        CovidTestModalComponent,
         NoteEditComponent,
         EntryDetailsComponent,
         LinearTimeline: LinearTimelineComponent,
@@ -549,7 +549,7 @@ export default class TimelineView extends Vue {
             </b-col>
         </b-row>
         <resource-centre />
-        <CovidModalComponent :is-loading="isLoading" />
+        <CovidTestModalComponent :is-loading="isLoading" />
         <ProtectiveWordComponent :is-loading="isLoading" />
         <NoteEditComponent :is-loading="isLoading" />
         <EntryDetailsComponent :is-loading="isLoading" />

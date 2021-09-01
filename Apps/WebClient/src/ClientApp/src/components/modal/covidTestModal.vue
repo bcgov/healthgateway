@@ -12,7 +12,7 @@ import User from "@/models/user";
 import type { UserPreference } from "@/models/userPreference";
 
 @Component
-export default class CovidModalComponent extends Vue {
+export default class CovidTestModalComponent extends Vue {
     @Action("updateUserPreference", { namespace: "user" })
     updateUserPreference!: (params: { userPreference: UserPreference }) => void;
 

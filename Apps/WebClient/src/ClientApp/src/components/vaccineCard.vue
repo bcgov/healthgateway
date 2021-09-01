@@ -2,25 +2,19 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faCheckCircle,
-    faEye,
-    faEyeSlash,
     faHandPointer,
 } from "@fortawesome/free-solid-svg-icons";
-import { saveAs } from "file-saver";
 import Vue from "vue";
-import { Component, Ref } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { Component, Prop, Ref } from "vue-property-decorator";
 
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
-import Report from "@/models/report";
 import VaccinationStatus from "@/models/vaccinationStatus";
-import { ILogger } from "@/services/interfaces";
 
-library.add(faCheckCircle, faEye, faEyeSlash, faHandPointer);
+library.add(faCheckCircle, faHandPointer);
 
 @Component({
     components: {
@@ -28,24 +22,12 @@ library.add(faCheckCircle, faEye, faEyeSlash, faHandPointer);
         MessageModalComponent,
     },
 })
-export default class VaccinationStatusResultView extends Vue {
-    private isDownloading = false;
-    private showDetails = false;
-    private logger!: ILogger;
-
-    @Getter("vaccinationStatus", { namespace: "vaccinationStatus" }) status!:
-        | VaccinationStatus
+export default class VaccineCardComponent extends Vue {
+    @Prop({ required: true }) status!: VaccinationStatus | undefined;
+    @Prop({ required: false, default: false }) isLoading!: boolean;
+    @Prop({ required: false, default: undefined }) error!:
+        | BannerError
         | undefined;
-
-    @Getter("error", { namespace: "vaccinationStatus" })
-    error!: BannerError | undefined;
-
-    @Action("getReport", { namespace: "vaccinationStatus" })
-    getReport!: (params: {
-        phn: string;
-        dateOfBirth: StringISODate;
-        dateOfVaccine: StringISODate;
-    }) => Promise<Report>;
 
     @Ref("sensitivedocumentDownloadModal")
     readonly sensitivedocumentDownloadModal!: MessageModalComponent;
@@ -89,10 +71,6 @@ export default class VaccinationStatusResultView extends Vue {
         }
     }
 
-    private toggleDetails() {
-        this.showDetails = !this.showDetails;
-    }
-
     private formatDate(date: StringISODate | null): string {
         if (!date) {
             return "";
@@ -105,34 +83,7 @@ export default class VaccinationStatusResultView extends Vue {
     }
 
     private download() {
-        this.isDownloading = true;
-        this.getReport({
-            phn: this.status?.personalhealthnumber || "",
-            dateOfBirth: new DateWrapper(this.status?.birthdate || "").format(
-                "yyyy-MM-dd"
-            ),
-            dateOfVaccine: new DateWrapper(
-                this.status?.vaccinedate || ""
-            ).format("yyyy-MM-dd"),
-        })
-            .then((documentResult) => {
-                if (documentResult) {
-                    const downloadLink = `data:application/pdf;base64,${documentResult.data}`;
-                    fetch(downloadLink).then((res) => {
-                        res.blob().then((blob) => {
-                            saveAs(blob, documentResult.fileName);
-                        });
-                    });
-                }
-            })
-            .catch((err) => {
-                this.logger.error(
-                    `Error retrieving vaccination status pdf: ${err}`
-                );
-            })
-            .finally(() => {
-                this.isDownloading = false;
-            });
+        this.$emit("download");
     }
 
     private handleCloseQrModal() {
@@ -142,19 +93,8 @@ export default class VaccinationStatusResultView extends Vue {
 </script>
 
 <template>
-    <div
-        class="
-            vaccination-card
-            align-self-center
-            flex-grow-1
-            w-100
-            d-flex
-            flex-column
-            p-3
-            rounded
-        "
-    >
-        <LoadingComponent :is-loading="isDownloading"></LoadingComponent>
+    <div>
+        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <div class="header text-white">
             <div class="container p-3 pt-0 pt-sm-3">
                 <h3 class="text-center">BC Vaccine Card</h3>
@@ -339,10 +279,6 @@ export default class VaccinationStatusResultView extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-
-.vaccination-card {
-    max-width: 470px;
-}
 
 .header {
     background-color: $hg-brand-primary;

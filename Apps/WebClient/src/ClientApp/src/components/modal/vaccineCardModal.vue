@@ -31,7 +31,7 @@ interface Dose {
         "hg-loading": LoadingComponent,
     },
 })
-export default class ImmunizationCardComponent extends Vue {
+export default class VaccineCardModalComponent extends Vue {
     @Action("getPatientData", { namespace: "user" })
     getPatientData!: () => Promise<void>;
 
