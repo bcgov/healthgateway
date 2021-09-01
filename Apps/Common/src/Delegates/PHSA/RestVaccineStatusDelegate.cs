@@ -72,7 +72,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         public async Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken)
         {
             using Activity? activity = Source.StartActivity("GetVaccineStatus");
-            this.logger.LogDebug($"Getting vaccine status {query.PersonalHealthNumber.Substring(0, 5)} {query.DateOfBirth}...");
+            this.logger.LogDebug($"Getting vaccine status {query.PersonalHealthNumber.Substring(0, 5)} {query.DateOfBirth} {query.DateOfVaccine}...");
             string endpointString = $"{this.phsaConfig.BaseUrl}{this.phsaConfig.VaccineStatusEndpoint}";
 
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;

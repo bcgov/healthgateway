@@ -40,7 +40,6 @@ namespace HealthGateway.Immunization.Services
         private const string AuthConfigSectionName = "ClientAuthentication";
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
         private readonly IAuthenticationDelegate authDelegate;
-        private readonly ICaptchaDelegate captchaDelegate;
         private readonly IReportDelegate reportDelegate;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly PHSAConfig phsaConfig;
@@ -52,23 +51,17 @@ namespace HealthGateway.Immunization.Services
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="vaccineStatusDelegate">The injected vaccine status delegate.</param>
-        /// <param name="captchaDelegate">The injected captcha delegate.</param>
         /// <param name="reportDelegate">The injected report delegate.</param>
         public VaccineStatusService(
             IConfiguration configuration,
             IAuthenticationDelegate authDelegate,
             IVaccineStatusDelegate vaccineStatusDelegate,
-            ICaptchaDelegate captchaDelegate,
             IReportDelegate reportDelegate)
         {
-            this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.authDelegate = authDelegate;
-            this.captchaDelegate = captchaDelegate;
             this.reportDelegate = reportDelegate;
 
-            IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
-            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
-            this.tokenRequest = new ClientCredentialsTokenRequest();
+            this.vaccineStatusDelegate = vaccineStatusDelegate;
             configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
 
             this.phsaConfig = new PHSAConfig();
@@ -76,12 +69,13 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth, string token)
+        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth, string dateOfVaccine)
         {
             RequestResult<VaccineStatus> retVal = new ()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
             };
+
             DateTime dob;
             try
             {
@@ -98,6 +92,22 @@ namespace HealthGateway.Immunization.Services
                 return retVal;
             }
 
+            DateTime dov;
+            try
+            {
+                dov = DateTime.ParseExact(dateOfVaccine, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            }
+            catch (Exception e) when (e is FormatException || e is ArgumentNullException)
+            {
+                retVal.ResultStatus = Common.Constants.ResultType.Error;
+                retVal.ResultError = new RequestResultError()
+                {
+                    ResultMessage = "Error parsing date of vaccine",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                };
+                return retVal;
+            }
+
             if (!PHNValidator.IsValid(phn))
             {
                 retVal.ResultStatus = Common.Constants.ResultType.Error;
@@ -109,22 +119,11 @@ namespace HealthGateway.Immunization.Services
                 return retVal;
             }
 
-            bool isTokenValid = await this.captchaDelegate.IsCaptchaValid(token).ConfigureAwait(true);
-            if (!isTokenValid)
-            {
-                retVal.ResultStatus = Common.Constants.ResultType.Error;
-                retVal.ResultError = new RequestResultError()
-                {
-                    ResultMessage = "Invalid captcha token",
-                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-                };
-                return retVal;
-            }
-
             VaccineStatusQuery query = new ()
             {
                 PersonalHealthNumber = phn,
                 DateOfBirth = dob,
+                DateOfVaccine = dov,
             };
 
             string? accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest).AccessToken;
@@ -144,6 +143,7 @@ namespace HealthGateway.Immunization.Services
                 retVal.ResourcePayload = new VaccineStatus()
                 {
                     Birthdate = payload.Birthdate,
+                    VaccineDate = payload.VaccineDate,
                     PersonalHealthNumber = phn,
                     FirstName = payload.FirstName,
                     LastName = payload.LastName,
@@ -163,9 +163,10 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string token)
+        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string dateOfVaccine)
         {
-            RequestResult<VaccineStatus> requestResult = await this.GetVaccineStatus(phn, dateOfBirth, token).ConfigureAwait(true);
+            RequestResult<VaccineStatus> requestResult = await this.GetVaccineStatus(phn, dateOfBirth, dateOfVaccine).ConfigureAwait(true);
+
             if (requestResult.ResultStatus != ResultType.Success || requestResult.ResourcePayload == null)
             {
                 return new RequestResult<ReportModel>()
