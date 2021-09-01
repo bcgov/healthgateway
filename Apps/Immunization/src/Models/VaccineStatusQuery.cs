@@ -38,7 +38,7 @@ namespace HealthGateway.Immunization.Models
         /// <summary>
         /// Gets or sets one of the person's vaccine dates.
         /// </summary>
-        [JsonPropertyName("dateOfVaccine")]
+        [JsonPropertyName("dateOfVaccination")]
         public DateTime DateOfVaccine { get; set; }
     }
 }
