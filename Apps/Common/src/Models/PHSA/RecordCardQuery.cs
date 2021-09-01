@@ -39,6 +39,6 @@ namespace HealthGateway.Common.Models.PHSA
         /// Gets or sets the persons date of birth.
         /// </summary>
         [JsonPropertyName("immunizationDisease")]
-        public string ImmunizationDisease { get; set; }
+        public string ImmunizationDisease { get; set; } = string.Empty;
     }
 }
