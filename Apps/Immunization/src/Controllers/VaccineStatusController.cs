@@ -57,7 +57,8 @@ namespace HealthGateway.Immunization.Controllers
         /// Requests the vaccine status for the supplied PHN and Date of Birth.
         /// </summary>
         /// <param name="phn">The personal health number to query.</param>
-        /// <param name="dateOfBirth">The date of birth (yyyyMMdd) for the supplied PHN.</param>
+        /// <param name="dateOfBirth">The date of birth (yyyy-MM-dd) for the supplied PHN.</param>
+        /// <param name="dateOfVaccine">The date of one of the vaccine doess (yyyy-MM-dd) for the supplied PHN.</param>
         /// <returns>The wrapped vaccine status.</returns>
         /// <response code="200">Returns the Vaccine status.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -65,17 +66,18 @@ namespace HealthGateway.Immunization.Controllers
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
-        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus([FromHeader] string phn, [FromHeader] string dateOfBirth)
+        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string dateOfVaccine)
         {
-            this.logger.LogTrace($"Fetching Vaccine Status for PHN: {phn}, and DOB: {dateOfBirth}");
-            return await this.vaccineStatusService.GetVaccineStatus(phn, dateOfBirth).ConfigureAwait(true);
+            this.logger.LogTrace($"Fetching Vaccine Status for PHN: {phn}, DOB: {dateOfBirth}, and DOV: {dateOfVaccine}");
+            return await this.vaccineStatusService.GetVaccineStatus(phn, dateOfBirth, dateOfVaccine).ConfigureAwait(true);
         }
 
         /// <summary>
         /// Requests the vaccine status PDF for the supplied PHN and Date of Birth.
         /// </summary>
         /// <param name="phn">The personal health number to query.</param>
-        /// <param name="dateOfBirth">The date of birth (yyyyMMdd) for the supplied PHN.</param>
+        /// <param name="dateOfBirth">The date of birth (yyyy-MM-dd) for the supplied PHN.</param>
+        /// <param name="dateOfVaccine">The date of one of the vaccine doess (yyyy-MM-dd) for the supplied PHN.</param>
         /// <returns>The wrapped vaccine status.</returns>
         /// <response code="200">Returns the Vaccine status.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -83,10 +85,10 @@ namespace HealthGateway.Immunization.Controllers
         /// <response code="503">The service is unavailable for use.</response>
         [HttpPost]
         [Produces("application/json")]
-        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF([FromHeader] string phn, [FromHeader] string dateOfBirth)
+        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string dateOfVaccine)
         {
-            this.logger.LogTrace($"Fetching Vaccine Status PDF for PHN: {phn}, and DOB: {dateOfBirth}");
-            return await this.vaccineStatusService.GetVaccineStatusPDF(phn, dateOfBirth).ConfigureAwait(true);
+            this.logger.LogTrace($"Fetching Vaccine Status PDF for PHN: {phn}, DOB: {dateOfBirth}, and DOV: {dateOfVaccine}");
+            return await this.vaccineStatusService.GetVaccineStatusPDF(phn, dateOfBirth, dateOfVaccine).ConfigureAwait(true);
         }
     }
 }

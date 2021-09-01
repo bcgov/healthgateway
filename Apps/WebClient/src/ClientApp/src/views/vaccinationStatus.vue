@@ -40,6 +40,7 @@ export default class VaccinationStatusView extends Vue {
     retrieveVaccinationStatus!: (params: {
         phn: string;
         dateOfBirth: StringISODate;
+        dateOfVaccine: StringISODate;
     }) => Promise<void>;
 
     @Getter("vaccinationStatus", { namespace: "vaccinationStatus" })
@@ -61,6 +62,7 @@ export default class VaccinationStatusView extends Vue {
 
     private phn = "";
     private dateOfBirth = "";
+    private dateOfVaccine = "";
 
     private validations() {
         return {
@@ -69,6 +71,11 @@ export default class VaccinationStatusView extends Vue {
                 formatted: validPersonalHealthNumber,
             },
             dateOfBirth: {
+                required: required,
+                maxValue: (value: string) =>
+                    new DateWrapper(value).isBefore(new DateWrapper()),
+            },
+            dateOfVaccine: {
                 required: required,
                 maxValue: (value: string) =>
                     new DateWrapper(value).isBefore(new DateWrapper()),
@@ -93,6 +100,7 @@ export default class VaccinationStatusView extends Vue {
             this.retrieveVaccinationStatus({
                 phn: this.phn,
                 dateOfBirth: this.dateOfBirth,
+                dateOfVaccine: this.dateOfVaccine,
             })
                 .then(() => {
                     this.logger.debug("Vaccination status retrieved");
@@ -222,7 +230,42 @@ export default class VaccinationStatusView extends Vue {
                                     "
                                     force-show
                                 >
-                                    Date of birth must be before today.
+                                    Date of birth must be in the past.
+                                </b-form-invalid-feedback>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row no-gutters>
+                        <b-col cols="auto">
+                            <b-form-group
+                                label="Date of Vaccine (Dose 1 or Dose 2)"
+                                label-for="dateOfVaccine"
+                                :state="isValid($v.dateOfVaccine)"
+                            >
+                                <date-picker
+                                    id="dateOfVaccine"
+                                    v-model="dateOfVaccine"
+                                    data-testid="dateOfVaccineInput"
+                                    :state="isValid($v.dateOfVaccine)"
+                                    @blur="$v.dateOfVaccine.$touch()"
+                                />
+                                <b-form-invalid-feedback
+                                    v-if="
+                                        $v.dateOfVaccine.$dirty &&
+                                        !$v.dateOfVaccine.required
+                                    "
+                                    force-show
+                                >
+                                    A valid date of vaccine is required.
+                                </b-form-invalid-feedback>
+                                <b-form-invalid-feedback
+                                    v-else-if="
+                                        $v.dateOfVaccine.$dirty &&
+                                        !$v.dateOfVaccine.maxValue
+                                    "
+                                    force-show
+                                >
+                                    Date of vaccine must be in the past.
                                 </b-form-invalid-feedback>
                             </b-form-group>
                         </b-col>

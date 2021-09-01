@@ -12,7 +12,11 @@ import { VaccinationStatusActions } from "./types";
 export const actions: VaccinationStatusActions = {
     retrieve(
         context,
-        params: { phn: string; dateOfBirth: StringISODate }
+        params: {
+            phn: string;
+            dateOfBirth: StringISODate;
+            dateOfVaccine: StringISODate;
+        }
     ): Promise<void> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         const vaccinationStatusService: IVaccinationStatusService =
@@ -24,7 +28,11 @@ export const actions: VaccinationStatusActions = {
             logger.debug(`Retrieving Vaccination Status`);
             context.commit("setRequested");
             vaccinationStatusService
-                .getVaccinationStatus(params.phn, params.dateOfBirth)
+                .getVaccinationStatus(
+                    params.phn,
+                    params.dateOfBirth,
+                    params.dateOfVaccine
+                )
                 .then((result) => {
                     if (result.resultStatus === ResultType.Success) {
                         const payload = result.resourcePayload;
@@ -41,6 +49,7 @@ export const actions: VaccinationStatusActions = {
                                 context.dispatch("retrieve", {
                                     phn: params.phn,
                                     dateOfBirth: params.dateOfBirth,
+                                    dateOfVaccine: params.dateOfVaccine,
                                 });
                             }, payload.retryin);
                             resolve();
@@ -61,7 +70,11 @@ export const actions: VaccinationStatusActions = {
     },
     getReport(
         context,
-        params: { phn: string; dateOfBirth: StringISODate }
+        params: {
+            phn: string;
+            dateOfBirth: StringISODate;
+            dateOfVaccine: StringISODate;
+        }
     ): Promise<Report> {
         const vaccinationStatusService: IVaccinationStatusService =
             container.get<IVaccinationStatusService>(
@@ -70,7 +83,7 @@ export const actions: VaccinationStatusActions = {
 
         return new Promise((resolve, reject) => {
             vaccinationStatusService
-                .getReport(params.phn, params.dateOfBirth)
+                .getReport(params.phn, params.dateOfBirth, params.dateOfVaccine)
                 .then((result) => {
                     if (result.resultStatus === ResultType.Success) {
                         const payload = result.resourcePayload;

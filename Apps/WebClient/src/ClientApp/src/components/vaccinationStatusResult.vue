@@ -44,6 +44,7 @@ export default class VaccinationStatusResultView extends Vue {
     getReport!: (params: {
         phn: string;
         dateOfBirth: StringISODate;
+        dateOfVaccine: StringISODate;
     }) => Promise<Report>;
 
     @Ref("sensitivedocumentDownloadModal")
@@ -110,6 +111,9 @@ export default class VaccinationStatusResultView extends Vue {
             dateOfBirth: new DateWrapper(this.status?.birthdate || "").format(
                 "yyyy-MM-dd"
             ),
+            dateOfVaccine: new DateWrapper(
+                this.status?.vaccinedate || ""
+            ).format("yyyy-MM-dd"),
         })
             .then((documentResult) => {
                 if (documentResult) {

@@ -30,9 +30,15 @@ namespace HealthGateway.Immunization.Models
         public string PersonalHealthNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the persons date of birth.
+        /// Gets or sets the person's date of birth.
         /// </summary>
         [JsonPropertyName("dateOfBirth")]
         public DateTime DateOfBirth { get; set; }
+
+        /// <summary>
+        /// Gets or sets one of the person's vaccine dates.
+        /// </summary>
+        [JsonPropertyName("dateOfVaccine")]
+        public DateTime DateOfVaccine { get; set; }
     }
 }

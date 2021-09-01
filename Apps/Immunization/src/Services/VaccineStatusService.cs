@@ -80,12 +80,13 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth)
+        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth, string dateOfVaccine)
         {
             RequestResult<VaccineStatus> retVal = new ()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
             };
+
             DateTime dob;
             try
             {
@@ -97,6 +98,22 @@ namespace HealthGateway.Immunization.Services
                 retVal.ResultError = new RequestResultError()
                 {
                     ResultMessage = "Error parsing date of birth",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                };
+                return retVal;
+            }
+
+            DateTime dov;
+            try
+            {
+                dov = DateTime.ParseExact(dateOfVaccine, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            }
+            catch (Exception e) when (e is FormatException || e is ArgumentNullException)
+            {
+                retVal.ResultStatus = Common.Constants.ResultType.Error;
+                retVal.ResultError = new RequestResultError()
+                {
+                    ResultMessage = "Error parsing date of vaccine",
                     ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
                 };
                 return retVal;
@@ -117,6 +134,7 @@ namespace HealthGateway.Immunization.Services
             {
                 PersonalHealthNumber = phn,
                 DateOfBirth = dob,
+                DateOfVaccine = dov,
             };
 
             string? accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest).AccessToken;
@@ -136,6 +154,7 @@ namespace HealthGateway.Immunization.Services
                 retVal.ResourcePayload = new VaccineStatus()
                 {
                     Birthdate = payload.Birthdate,
+                    VaccineDate = payload.VaccineDate,
                     PersonalHealthNumber = phn,
                     FirstName = payload.FirstName,
                     LastName = payload.LastName,
@@ -155,9 +174,9 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth)
+        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string dateOfVaccine)
         {
-            RequestResult<VaccineStatus> requestResult = await this.GetVaccineStatus(phn, dateOfBirth).ConfigureAwait(true);
+            RequestResult<VaccineStatus> requestResult = await this.GetVaccineStatus(phn, dateOfBirth, dateOfVaccine).ConfigureAwait(true);
             IronPDFRequestModel pdfRequest = new ();
             pdfRequest.FileName = "BCVaccineCard";
             pdfRequest.Data.Add("bcLogoImageSrc", AssetReader.Read("HealthGateway.Immunization.Assets.Images.bcid-logo-rev-en.png", true));

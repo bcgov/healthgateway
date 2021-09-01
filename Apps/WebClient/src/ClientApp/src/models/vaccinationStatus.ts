@@ -10,6 +10,7 @@ export default interface VaccinationStatus {
     firstname: string | null;
     lastname: string | null;
     birthdate: StringISODate | null;
+    vaccinedate: StringISODate | null;
     doses: number;
     state: VaccinationState;
     qrCode: EncodedMedia;
