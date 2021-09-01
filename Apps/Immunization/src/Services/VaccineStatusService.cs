@@ -16,23 +16,19 @@
 namespace HealthGateway.Immunization.Services
 {
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
-    using System.IO;
-    using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.CDogs;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Utils;
-    using HealthGateway.Immunization.Constants;
     using HealthGateway.Immunization.Delegates;
-    using HealthGateway.Immunization.Models;
     using Microsoft.Extensions.Configuration;
 
     /// <summary>
@@ -42,14 +38,10 @@ namespace HealthGateway.Immunization.Services
     {
         private const string PHSAConfigSectionKey = "PHSA";
         private const string AuthConfigSectionName = "ClientAuthentication";
-        private const string BackgroundBlue = "#38598a";
-        private const string BackgroundGreen = "#2e8540";
-        private const string BorderDashed = "dashed";
-        private const string BorderSolid = "solid";
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
         private readonly IAuthenticationDelegate authDelegate;
         private readonly ICaptchaDelegate captchaDelegate;
-        private readonly IIronPDFDelegate ironPdfDelegate;
+        private readonly IReportDelegate reportDelegate;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly PHSAConfig phsaConfig;
         private readonly Uri tokenUri;
@@ -61,18 +53,18 @@ namespace HealthGateway.Immunization.Services
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="vaccineStatusDelegate">The injected vaccine status delegate.</param>
         /// <param name="captchaDelegate">The injected captcha delegate.</param>
-        /// <param name="ironPdfDelegate">The injected ironpdf delegate.</param>
+        /// <param name="reportDelegate">The injected report delegate.</param>
         public VaccineStatusService(
             IConfiguration configuration,
             IAuthenticationDelegate authDelegate,
             IVaccineStatusDelegate vaccineStatusDelegate,
             ICaptchaDelegate captchaDelegate,
-            IIronPDFDelegate ironPdfDelegate)
+            IReportDelegate reportDelegate)
         {
             this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.authDelegate = authDelegate;
             this.captchaDelegate = captchaDelegate;
-            this.ironPdfDelegate = ironPdfDelegate;
+            this.reportDelegate = reportDelegate;
 
             IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
             this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
@@ -145,7 +137,7 @@ namespace HealthGateway.Immunization.Services
             if (payload == null)
             {
                 retVal.ResourcePayload = new VaccineStatus();
-                retVal.ResourcePayload.State = Constants.VaccineState.NotFound;
+                retVal.ResourcePayload.State = VaccineState.NotFound;
             }
             else
             {
@@ -174,11 +166,6 @@ namespace HealthGateway.Immunization.Services
         public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string token)
         {
             RequestResult<VaccineStatus> requestResult = await this.GetVaccineStatus(phn, dateOfBirth, token).ConfigureAwait(true);
-            IronPDFRequestModel pdfRequest = new ();
-            pdfRequest.FileName = "BCVaccineCard";
-            pdfRequest.Data.Add("bcLogoImageSrc", AssetReader.Read("HealthGateway.Immunization.Assets.Images.bcid-logo-rev-en.png", true));
-            pdfRequest.HtmlTemplate = AssetReader.Read("HealthGateway.Immunization.Assets.Templates.VaccineStatusCard.html") !;
-
             if (requestResult.ResultStatus != ResultType.Success || requestResult.ResourcePayload == null)
             {
                 return new RequestResult<ReportModel>()
@@ -188,39 +175,7 @@ namespace HealthGateway.Immunization.Services
                 };
             }
 
-            pdfRequest.Data.Add("birthdate", requestResult.ResourcePayload.Birthdate!.Value.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpper(CultureInfo.InvariantCulture));
-            pdfRequest.Data.Add("name", $"{requestResult.ResourcePayload.FirstName} {requestResult.ResourcePayload.LastName}");
-            pdfRequest.Data.Add("qrCodeImageSrc", requestResult.ResourcePayload.QRCode.Data);
-            switch (requestResult.ResourcePayload.State)
-            {
-                case VaccineState.AllDosesReceived:
-                    pdfRequest.Data.Add("resultText", "Fully Vaccinated");
-                    pdfRequest.Data.Add("resultColor", BackgroundGreen);
-                    pdfRequest.Data.Add("resultBorder", BorderSolid);
-                    pdfRequest.Data.Add("resultImageSrc", AssetReader.Read("HealthGateway.Immunization.Assets.Images.fully-vaccinated.svg", true));
-                    break;
-                case VaccineState.PartialDosesReceived:
-                    pdfRequest.Data.Add("resultText", "Partially Vaccinated");
-                    pdfRequest.Data.Add("resultColor", BackgroundBlue);
-                    pdfRequest.Data.Add("resultBorder", BorderDashed);
-                    string dosesImage = requestResult.ResourcePayload.Doses > 1 ? "2" : "1";
-                    pdfRequest.Data.Add("resultImageSrc", AssetReader.Read($"HealthGateway.Immunization.Assets.Images.dose-{dosesImage}.svg", true));
-                    break;
-                case VaccineState.Exempt:
-                    pdfRequest.Data.Add("resultText", "Exempt");
-                    pdfRequest.Data.Add("resultColor", BackgroundBlue);
-                    pdfRequest.Data.Add("resultBorder", BorderDashed);
-                    pdfRequest.Data.Add("resultImageSrc", AssetReader.Read("HealthGateway.Immunization.Assets.Images.no-doses.svg", true));
-                    break;
-                default:
-                    pdfRequest.Data.Add("resultText", "No Records Found");
-                    pdfRequest.Data.Add("resultColor", BackgroundBlue);
-                    pdfRequest.Data.Add("resultBorder", BorderDashed);
-                    pdfRequest.Data.Add("resultImageSrc", AssetReader.Read("HealthGateway.Immunization.Assets.Images.no-doses.svg", true));
-                    break;
-            }
-
-            return this.ironPdfDelegate.GeneratePDF(pdfRequest);
+            return this.reportDelegate.GetVaccineStatusPDF(requestResult.ResourcePayload, null);
         }
     }
 }

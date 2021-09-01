@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Delegates
+namespace HealthGateway.Common.Delegates.PHSA
 {
     using System;
     using System.Diagnostics;
@@ -24,12 +24,11 @@ namespace HealthGateway.Immunization.Delegates
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
-    using HealthGateway.Immunization.Constants;
-    using HealthGateway.Immunization.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;

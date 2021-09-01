@@ -99,28 +99,6 @@
             GetImmunizations - HttpRequestException.
             </summary>
         </member>
-        <member name="T:HealthGateway.Immunization.Test.Delegates.VaccineStatusDelegateTests">
-            <summary>
-            VaccineStatusDelegate's Unit Tests.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.Immunization.Test.Delegates.VaccineStatusDelegateTests.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Test.Delegates.VaccineStatusDelegateTests"/> class.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.Immunization.Test.Delegates.VaccineStatusDelegateTests.GetVaccineStatus">
-            <summary>
-            GetVaccineStatus - Happy Path.
-            </summary>
-            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
-        </member>
-        <member name="M:HealthGateway.Immunization.Test.Delegates.VaccineStatusDelegateTests.GetVaccineStatusNoContent">
-            <summary>
-            GetVaccineStatus - No Content.
-            </summary>
-            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
-        </member>
         <member name="T:HealthGateway.Immunization.Test.Services.ImmunizationServiceTests">
             <summary>
             ImmunizationService's Unit Tests.

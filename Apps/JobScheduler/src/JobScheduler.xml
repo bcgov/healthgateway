@@ -171,7 +171,7 @@
         <member name="T:Healthgateway.JobScheduler.Jobs.NotificationSettingsJob">
             <inheritdoc />
         </member>
-        <member name="M:Healthgateway.JobScheduler.Jobs.NotificationSettingsJob.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Jobs.NotificationSettingsJob},HealthGateway.Common.Delegates.INotificationSettingsDelegate,HealthGateway.Common.AccessManagement.Authentication.IAuthenticationDelegate,HealthGateway.Database.Delegates.IEventLogDelegate)">
+        <member name="M:Healthgateway.JobScheduler.Jobs.NotificationSettingsJob.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Jobs.NotificationSettingsJob},HealthGateway.Common.Delegates.PHSA.INotificationSettingsDelegate,HealthGateway.Common.AccessManagement.Authentication.IAuthenticationDelegate,HealthGateway.Database.Delegates.IEventLogDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Jobs.NotificationSettingsJob"/> class.
             </summary>

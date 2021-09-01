@@ -13,21 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.CDogs
+namespace HealthGateway.Common.Delegates.PHSA
 {
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.PHSA;
+
     /// <summary>
-    /// Object that defines a report.
+    /// Interface that defines a delegate to retrieve vaccine status information.
     /// </summary>
-    public class ReportModel
+    public interface IVaccineStatusDelegate
     {
         /// <summary>
-        /// Gets or sets the report type.
+        /// Returns the vaccine status for the given patient.
         /// </summary>
-        public string FileName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the report data.
-        /// </summary>
-        public string Data { get; set; } = string.Empty;
+        /// <param name="query">The vaccine status query.</param>
+        /// <param name="accessToken">The connection access token.</param>
+        /// <returns>The vaccine status result for the given patient.</returns>
+        Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken);
     }
 }

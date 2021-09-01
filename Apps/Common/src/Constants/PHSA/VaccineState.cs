@@ -13,38 +13,31 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models
+namespace HealthGateway.Common.Constants.PHSA
 {
-    using System;
-
     /// <summary>
-    /// Provides configuration data for the Immunization Delegate.
+    /// Represents the state of the Vaccine as applied to a Patient.
     /// </summary>
-    public class PHSAConfig
+    public enum VaccineState
     {
         /// <summary>
-        /// Gets or sets the phsa base endpoint.
+        /// Indicates that we have insufficient information to determine vaccine status.
         /// </summary>
-        public Uri BaseUrl { get; set; } = null!;
+        NotFound,
 
         /// <summary>
-        /// Gets or sets the immunization endpoint.
+        /// Indicates the Patient is partially vaccinated.
         /// </summary>
-        public string ImmunizationEndpoint { get; set; } = string.Empty;
+        PartialDosesReceived,
 
         /// <summary>
-        /// Gets or sets the vaccine status endpoint.
+        /// Indicates the Patient is fully vaccinated.
         /// </summary>
-        public string VaccineStatusEndpoint { get; set; } = string.Empty;
+        AllDosesReceived,
 
         /// <summary>
-        /// Gets or sets the total number of records to retrieve in one call.
+        /// Indicates the Patient is exempt.
         /// </summary>
-        public string FetchSize { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the default time to wait for a new request.
-        /// </summary>
-        public int BackOffMilliseconds { get; set; }
+        Exempt,
     }
 }

@@ -15,13 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Controllers
 {
-    using System;
-    using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.CDogs;
-    using HealthGateway.Immunization.Models;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;

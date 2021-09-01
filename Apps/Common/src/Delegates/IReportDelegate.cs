@@ -13,33 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Services
+namespace HealthGateway.Common.Delegates
 {
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
-    /// The Vaccine Status data service.
+    /// The report delegate.
     /// </summary>
-    public interface IVaccineStatusService
+    public interface IReportDelegate
     {
         /// <summary>
-        /// Gets the vaccine status for the given patient info.
+        /// Gets the vaccine status pdf.
         /// </summary>
-        /// <param name="phn">The patient personal health number.</param>
-        /// <param name="dateOfBirth">The patient date of birth in yyyyMMdd format.</param>
-        /// <param name="token">The captcha token.</param>
-        /// <returns>Returns the vaccine status.</returns>
-        Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth, string token);
-
-        /// <summary>
-        /// Gets the vaccine status pdf for the given patient info.
-        /// </summary>
-        /// <param name="phn">The patient personal health number.</param>
-        /// <param name="dateOfBirth">The date of birth in yyyyMMdd format.</param>
-        /// <param name="token">The captcha token.</param>
+        /// <param name="vaccineStatus">The vaccine status information.</param>
+        /// <param name="address">The optional patient address information.</param>
         /// <returns>Returns the vaccine status pdf document.</returns>
-        Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string token);
+        RequestResult<ReportModel> GetVaccineStatusPDF(VaccineStatus vaccineStatus, Address? address);
     }
 }

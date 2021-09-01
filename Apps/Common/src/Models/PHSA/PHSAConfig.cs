@@ -13,26 +13,38 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models
+namespace HealthGateway.Common.Models.PHSA
 {
     using System;
-    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The Vaccine Status Query model.
+    /// Provides configuration data for the Immunization Delegate.
     /// </summary>
-    public class VaccineStatusQuery
+    public class PHSAConfig
     {
         /// <summary>
-        /// Gets or sets the Personal Health Number.
+        /// Gets or sets the phsa base endpoint.
         /// </summary>
-        [JsonPropertyName("phn")]
-        public string PersonalHealthNumber { get; set; } = string.Empty;
+        public Uri BaseUrl { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the persons date of birth.
+        /// Gets or sets the immunization endpoint.
         /// </summary>
-        [JsonPropertyName("dateOfBirth")]
-        public DateTime DateOfBirth { get; set; }
+        public string ImmunizationEndpoint { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the vaccine status endpoint.
+        /// </summary>
+        public string VaccineStatusEndpoint { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the total number of records to retrieve in one call.
+        /// </summary>
+        public string FetchSize { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the default time to wait for a new request.
+        /// </summary>
+        public int BackOffMilliseconds { get; set; }
     }
 }

@@ -23,11 +23,10 @@ namespace HealthGateway.Immunization.Test.Delegates
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants.PHSA;
+    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
-    using HealthGateway.Immunization.Constants;
-    using HealthGateway.Immunization.Delegates;
-    using HealthGateway.Immunization.Models;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Http;

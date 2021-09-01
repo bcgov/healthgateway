@@ -66,10 +66,8 @@
   <ItemGroup>
     <Folder Include="AspNetConfiguration\" />
     <Folder Include="Auditing\" />
-    <Folder Include="Delegates\" />
     <Folder Include="FileDownload\" />
     <Folder Include="Filters\" />
-    <Folder Include="Services\" />
     <Folder Include="resources\" />
     <Folder Include="ServiceReference\" />
     <Folder Include="Models\AcaPy\" />
@@ -80,5 +78,14 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Images\bcid-logo-rev-en.png" />
+    <EmbeddedResource Include="Assets\Images\bcid-logo-rev-en.svg" />
+    <EmbeddedResource Include="Assets\Images\dose-1.svg" />
+    <EmbeddedResource Include="Assets\Images\dose-2.svg" />
+    <EmbeddedResource Include="Assets\Images\fully-vaccinated.svg" />
+    <EmbeddedResource Include="Assets\Images\no-doses.svg" />
+    <EmbeddedResource Include="Assets\Templates\VaccineStatusCard.html" />
   </ItemGroup>
 </Project>

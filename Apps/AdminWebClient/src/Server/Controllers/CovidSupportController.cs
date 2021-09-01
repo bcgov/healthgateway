@@ -68,7 +68,7 @@ namespace HealthGateway.Admin.Controllers
         [Route("Patient/Document")]
         public IActionResult MailDocument([FromBody] MailDocumentRequest request)
         {
-            return new JsonResult(this.covidSupportService.MailDocument(request));
+            return new JsonResult(this.covidSupportService.MailDocumentAsync(request));
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace HealthGateway.Admin.Controllers
         [Route("Patient/Document")]
         public IActionResult RetrieveDocument([FromHeader] string phn)
         {
-            return new JsonResult(this.covidSupportService.RetrieveDocument(phn));
+            return new JsonResult(this.covidSupportService.RetrieveDocumentAsync(phn, null));
         }
     }
 }
