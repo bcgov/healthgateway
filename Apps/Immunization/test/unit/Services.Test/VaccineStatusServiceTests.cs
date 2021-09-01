@@ -38,6 +38,7 @@ namespace HealthGateway.Immunization.Test.Services
     {
         private readonly string phn = "9735353315";
         private readonly DateTime dob = new DateTime(1990, 01, 05);
+        private readonly DateTime dov = new DateTime(2021, 06, 05);
         private readonly string accessToken = "XXDDXX";
 
         private readonly IConfiguration configuration = GetIConfigurationRoot();
@@ -94,7 +95,9 @@ namespace HealthGateway.Immunization.Test.Services
                 mockDelegate.Object,
                 new Mock<IIronPDFDelegate>().Object);
 
-            var actualResult = Task.Run(async () => await service.GetVaccineStatus(this.phn, this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture)).ConfigureAwait(true)).Result;
+            string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+            string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+            var actualResult = Task.Run(async () => await service.GetVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
             Assert.True(expectedResult.IsDeepEqual(actualResult));
         }
 
@@ -110,7 +113,9 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<IVaccineStatusDelegate>().Object,
                 new Mock<IIronPDFDelegate>().Object);
 
-            var actualResult = Task.Run(async () => await service.GetVaccineStatus("123", this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture)).ConfigureAwait(true)).Result;
+            string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+            string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+            var actualResult = Task.Run(async () => await service.GetVaccineStatus("123", dobString, dovString).ConfigureAwait(true)).Result;
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
 
@@ -126,7 +131,25 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<IVaccineStatusDelegate>().Object,
                 new Mock<IIronPDFDelegate>().Object);
 
-            var actualResult = Task.Run(async () => await service.GetVaccineStatus(this.phn, "yyyyMMddx").ConfigureAwait(true)).Result;
+            string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+            var actualResult = Task.Run(async () => await service.GetVaccineStatus(this.phn, "yyyyMMddx", dovString).ConfigureAwait(true)).Result;
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+        }
+
+        /// <summary>
+        /// GetVaccineStatus - Invalid DOV.
+        /// </summary>
+        [Fact]
+        public void ShouldErrorOnDOV()
+        {
+            IVaccineStatusService service = new VaccineStatusService(
+                this.configuration,
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IVaccineStatusDelegate>().Object,
+                new Mock<IIronPDFDelegate>().Object);
+
+            string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+            var actualResult = Task.Run(async () => await service.GetVaccineStatus(this.phn, dobString, "yyyyMMddx").ConfigureAwait(true)).Result;
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
 
