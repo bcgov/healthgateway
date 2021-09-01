@@ -11,6 +11,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import PatientData from "@/models/patientData";
 import RequestResult from "@/models/requestResult";
+import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { IImmunizationService, ILogger } from "@/services/interfaces";
@@ -45,6 +46,9 @@ export default class ImmunizationCardComponent extends Vue {
 
     @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     @Getter("covidImmunizations", { namespace: "immunization" })
     covidImmunizations!: ImmunizationEvent[];
@@ -118,7 +122,7 @@ export default class ImmunizationCardComponent extends Vue {
 
     public showModal(): void {
         this.getPatientData();
-        this.retrieveImmunizations({ hdid: this.patientData.hdid });
+        this.retrieveImmunizations({ hdid: this.user.hdid });
         this.isVisible = true;
     }
 
@@ -149,7 +153,7 @@ export default class ImmunizationCardComponent extends Vue {
             );
 
         immunizationService
-            .getCovidVaccineRecord(this.patientData.hdid)
+            .getCovidVaccineRecord(this.user.hdid)
             .then((result: RequestResult<CovidVaccineRecord>) => {
                 const payload = result.resourcePayload;
                 if (!payload.loaded) {

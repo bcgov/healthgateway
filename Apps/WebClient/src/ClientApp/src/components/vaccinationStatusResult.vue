@@ -44,6 +44,7 @@ export default class VaccinationStatusResultView extends Vue {
     getReport!: (params: {
         phn: string;
         dateOfBirth: StringISODate;
+        dateOfVaccine: StringISODate;
     }) => Promise<Report>;
 
     @Ref("sensitivedocumentDownloadModal")
@@ -110,6 +111,9 @@ export default class VaccinationStatusResultView extends Vue {
             dateOfBirth: new DateWrapper(this.status?.birthdate || "").format(
                 "yyyy-MM-dd"
             ),
+            dateOfVaccine: new DateWrapper(
+                this.status?.vaccinedate || ""
+            ).format("yyyy-MM-dd"),
         })
             .then((documentResult) => {
                 if (documentResult) {
@@ -204,7 +208,8 @@ export default class VaccinationStatusResultView extends Vue {
                     <hg-icon
                         v-show="isFullyVaccinated"
                         icon="check-circle"
-                        class="mr-2 big-icon"
+                        size="extra-large"
+                        class="mr-2"
                     />
                     <span>Vaccinated</span>
                 </h2>
@@ -348,10 +353,6 @@ export default class VaccinationStatusResultView extends Vue {
 .vaccination-result {
     &.fully-vaccinated {
         background-color: $hg-state-success;
-
-        .hg-icon.big-icon {
-            font-size: 2rem;
-        }
     }
     &.partially-vaccinated {
         background-color: $hg-background-navigation;

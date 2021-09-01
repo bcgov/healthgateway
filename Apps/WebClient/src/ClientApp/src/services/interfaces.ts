@@ -68,14 +68,13 @@ export interface IVaccinationStatusService {
     getVaccinationStatus(
         phn: string,
         dateOfBirth: StringISODate,
-        token: string
+        dateOfVaccine: StringISODate
     ): Promise<RequestResult<VaccinationStatus>>;
     getReport(
         phn: string,
         dateOfBirth: StringISODate,
-        token: string
+        dateOfVaccine: StringISODate
     ): Promise<RequestResult<Report>>;
-    getCaptchaToken(): Promise<string>;
 }
 
 export interface IPatientService {
