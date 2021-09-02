@@ -13,25 +13,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Delegates
+namespace HealthGateway.Common.Models.PHSA
 {
-    using System;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Immunization.Models;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Interface that defines a delegate to retrieve vaccine status information.
+    /// An object representing encoded data.
     /// </summary>
-    public interface IVaccineStatusDelegate
+    public class EncodedMedia
     {
         /// <summary>
-        /// Returns the vaccine status for the given patient.
+        /// Gets or sets the media type of the data attribute.
         /// </summary>
-        /// <param name="query">The vaccine status query.</param>
-        /// <param name="accessToken">The connection access token.</param>
-        /// <returns>The vaccine status result for the given patient.</returns>
-        Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken);
+        [JsonPropertyName("mediaType")]
+        public string? Type { get; set; }
+
+        /// <summary>
+        /// Gets or sets the encoding of data attribute.
+        /// </summary>
+        [JsonPropertyName("encoding")]
+        public string? Encoding { get; set; }
+
+        /// <summary>
+        /// Gets or sets the raw data encoded and having a media type as specified.
+        /// </summary>
+        [JsonPropertyName("data")]
+        public string? Data { get; set; }
     }
 }

@@ -13,31 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models.PHSA
+namespace HealthGateway.Common.Models
 {
-    using System.Text.Json.Serialization;
-
     /// <summary>
-    /// An object representing encoded data.
+    /// Object that defines a report.
     /// </summary>
-    public class EncodedMedia
+    public class ReportModel
     {
         /// <summary>
-        /// Gets or sets the media type of the data attribute.
+        /// Gets or sets the report type.
         /// </summary>
-        [JsonPropertyName("mediaType")]
-        public string? Type { get; set; }
+        public string FileName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the encoding of data attribute.
+        /// Gets or sets the report data.
         /// </summary>
-        [JsonPropertyName("encoding")]
-        public string? Encoding { get; set; }
-
-        /// <summary>
-        /// Gets or sets the raw data encoded and having a media type as specified.
-        /// </summary>
-        [JsonPropertyName("data")]
-        public string? Data { get; set; }
+        public string Data { get; set; } = string.Empty;
     }
 }

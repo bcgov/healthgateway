@@ -33,21 +33,9 @@
     <AdditionalFiles Include="..\..\stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Assets\Images\bcid-logo-rev-en.png" />
-    <EmbeddedResource Include="Assets\Images\bcid-logo-rev-en.svg" />
-    <EmbeddedResource Include="Assets\Images\dose-1.svg" />
-    <EmbeddedResource Include="Assets\Images\dose-2.svg" />
-    <EmbeddedResource Include="Assets\Images\fully-vaccinated.svg" />
-    <EmbeddedResource Include="Assets\Images\no-doses.svg" />
-    <EmbeddedResource Include="Assets\Templates\VaccineStatusCard.html" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\..\.editorconfig" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="Microsoft.CodeAnalysis" Version="3.11.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Constants\" />
   </ItemGroup>
 </Project>

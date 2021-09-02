@@ -13,38 +13,31 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models
+namespace HealthGateway.Common.Models.PHSA
 {
-    using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Provides configuration data for the Immunization Delegate.
+    /// The Immunization Record Card model.
     /// </summary>
-    public class PHSAConfig
+    public class RecordCard
     {
         /// <summary>
-        /// Gets or sets the phsa base endpoint.
+        /// Gets or sets the wallet card encoded media.
         /// </summary>
-        public Uri BaseUrl { get; set; } = null!;
+        [JsonPropertyName("walletCard")]
+        public EncodedMedia WalletCard { get; set; } = new ();
 
         /// <summary>
-        /// Gets or sets the immunization endpoint.
+        /// Gets or sets the paper record encoded media.
         /// </summary>
-        public string ImmunizationEndpoint { get; set; } = string.Empty;
+        [JsonPropertyName("paperRecord")]
+        public EncodedMedia PaperRecord { get; set; } = new ();
 
         /// <summary>
-        /// Gets or sets the vaccine status endpoint.
+        /// Gets or sets the QR code encoded media.
         /// </summary>
-        public string VaccineStatusEndpoint { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the total number of records to retrieve in one call.
-        /// </summary>
-        public string FetchSize { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the default time to wait for a new request.
-        /// </summary>
-        public int BackOffMilliseconds { get; set; }
+        [JsonPropertyName("qrCode")]
+        public EncodedMedia QRCode { get; set; } = new ();
     }
 }

@@ -1,0 +1,152 @@
+<html>
+    <head>
+        <title>COVID-19 Vaccine Status</title>
+        <style>
+            html {
+                font-family: sans-serif;
+            }
+            table {
+                border-spacing: 0px;
+                width: 100%;
+                height: 100%;
+            }
+            h5 {
+                margin: 0px;
+            }
+            .content {
+                width: 100%;
+            }
+            .header-row {
+                height: 33%;
+            }
+            .header-col {
+                border-bottom: 2px black dashed;
+                padding-bottom: 180px;
+                text-align: center;
+            }
+            .body-row {
+                height: 33%;
+            }
+            .body-col {
+                padding-top: 20px;
+                padding-bottom: 20px;
+                border-bottom: 2px black dashed;
+            }
+            .body-table {
+                text-align: left;
+            }
+            .footer-row {
+                height: 33%;
+            }
+            .footer-col {
+                padding-top: 45px;
+                padding-bottom: 200px;
+                height: 100%;
+            }
+
+            .date {
+                float: left;
+            }
+            .name {
+                font-size: large;
+                text-align: left;
+                font-weight: bold;
+            }
+
+            .result-table {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .result-text {
+                padding: 5px;
+                border: black 1px solid;
+                text-align: center;
+                max-width: 200px;
+                width: auto;
+                margin: 0px;
+            }
+
+            .qrCode {
+                text-align: right;
+            }
+        </style>
+    </head>
+    <body lang="EN-CA">
+        <div class="content">
+            <table>
+                <tr class="header-row">
+                    <td class="header-col">
+                        <span class="date">{currentDate}</span>
+                    </td>
+                    <td class="header-col">
+                        <img width="76"
+                        height="72"
+                        src="data:image/png;base64, {bcTopLogoImageSrc}"
+                        align="middle"
+                        alt="BC Mark" />
+                    </td>
+                    <td class="header-col">
+                    </td>
+                </tr>
+                <tr class="body-row">
+                    <td class="body-col">
+                        <table class="body-table">
+                            <tr>
+                                <td>
+                                    <img width="199"
+                                         height="53"
+                                         src="data:image/png;base64, {bcLogoImageSrc}"
+                                         align="middle"
+                                         alt="BC Mark" />
+                                </td>
+                                <td>
+                                    <h4>BC Vaccine Card</h4>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="name"><h2>{name}</h2></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <table class="result-table">
+                                        <tr>
+                                            <td>
+                                                <img width="28"
+                                                     height="28"
+                                                     style="float: left; padding:6px; display: {resultImageDisplay}"
+                                                     src="{resultImageSrc}"
+                                                     alt="Check" />
+                                                <h2 class="result-text">
+                                                    {resultText}
+                                                </h2>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="body-col">
+                    </td>
+                    <td class="body-col qrCode">
+                        <img
+                            width="300"
+                            height="300"
+                            src="data:image/png;base64, {qrCodeImageSrc}"
+                            alt="QR Code"
+                        />
+                    </td>
+                </tr>
+                <tr class="footer-row">
+                    <td colspan="3" class="footer-col">
+                        {addressee} <br />
+                        {street} <br />
+                        {city} {provinceOrState} {code}<br />
+                        {country}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>

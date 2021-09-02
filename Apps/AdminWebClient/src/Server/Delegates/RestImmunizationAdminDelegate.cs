@@ -43,10 +43,10 @@ namespace HealthGateway.Admin.Server.Delegates
     /// <inheritdoc/>
     public class RestImmunizationAdminDelegate : IImmunizationAdminDelegate
     {
-        private const string ImmunizationConfigSectionKey = "Immunization";
+        private const string PHSAConfigSectionKey = "PHSA";
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly ImmunizationConfig immunizationConfig;
+        private readonly PHSAConfig phsaConfig;
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
@@ -65,8 +65,8 @@ namespace HealthGateway.Admin.Server.Delegates
             this.logger = logger;
             this.httpClientService = httpClientService;
             this.httpContextAccessor = httpContextAccessor;
-            this.immunizationConfig = new ImmunizationConfig();
-            configuration.Bind(ImmunizationConfigSectionKey, this.immunizationConfig);
+            this.phsaConfig = new PHSAConfig();
+            configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
         }
 
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestImmunizationAdminDelegate));
@@ -89,10 +89,10 @@ namespace HealthGateway.Admin.Server.Delegates
 
                 if (refreshInProgress)
                 {
-                    Thread.Sleep(this.immunizationConfig.RetryWait);
+                    Thread.Sleep(this.phsaConfig.BackOffMilliseconds);
                 }
             }
-            while (refreshInProgress && retryCount++ < this.immunizationConfig.MaximumRetries);
+            while (refreshInProgress && retryCount++ < this.phsaConfig.MaxRetries);
 
             if (immsResponse.ResultStatus == ResultType.Success && immsResponse.ResourcePayload != null)
             {
@@ -133,7 +133,7 @@ namespace HealthGateway.Admin.Server.Delegates
                     PersonalHealthNumber = patient.PersonalHealthNumber,
                     DateOfBirth = patient.Birthdate.ToString("yyyyMMdd", CultureInfo.InvariantCulture),
                 };
-                Uri endpoint = new (this.immunizationConfig.Endpoint);
+                Uri endpoint = new ($"{this.phsaConfig.BaseUrl}{this.phsaConfig.ImmunizationEndpoint}");
                 using StringContent httpContent = new (JsonSerializer.Serialize(requestContent), Encoding.UTF8, "application/json");
                 retVal = await this.CallEndpoint<IList<ImmunizationViewResponse>>(endpoint, httpContent).ConfigureAwait(true);
                 this.logger.LogDebug($"Finished getting Immunizations");
@@ -197,7 +197,7 @@ namespace HealthGateway.Admin.Server.Delegates
                                     retVal.ResultStatus = ResultType.Success;
                                     retVal.ResourcePayload = phsaResult;
                                     retVal.TotalResultCount = 1;
-                                    retVal.PageSize = int.Parse(this.immunizationConfig.FetchSize, CultureInfo.InvariantCulture);
+                                    retVal.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);
                                 }
                                 else
                                 {
@@ -209,7 +209,7 @@ namespace HealthGateway.Admin.Server.Delegates
                                 retVal.ResultStatus = ResultType.Success;
                                 retVal.ResourcePayload = new PHSAResult<T>();
                                 retVal.TotalResultCount = 0;
-                                retVal.PageSize = int.Parse(this.immunizationConfig.FetchSize, CultureInfo.InvariantCulture);
+                                retVal.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);
                                 break;
                             case HttpStatusCode.Forbidden:
                                 retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };

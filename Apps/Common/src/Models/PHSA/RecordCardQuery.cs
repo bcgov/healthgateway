@@ -13,31 +13,32 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Constants
+namespace HealthGateway.Common.Models.PHSA
 {
+    using System;
+    using System.Text.Json.Serialization;
+
     /// <summary>
-    /// Represents the state of the Vaccine as applied to a Patient.
+    /// The Record Card Query model.
     /// </summary>
-    public enum VaccineState
+    public class RecordCardQuery
     {
         /// <summary>
-        /// Indicates that we have insufficient information to determine vaccine status.
+        /// Gets or sets the Personal Health Number.
         /// </summary>
-        NotFound,
+        [JsonPropertyName("phn")]
+        public string PersonalHealthNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Indicates the Patient is partially vaccinated.
+        /// Gets or sets the persons date of birth.
         /// </summary>
-        PartialDosesReceived,
+        [JsonPropertyName("dateOfBirth")]
+        public DateTime DateOfBirth { get; set; }
 
         /// <summary>
-        /// Indicates the Patient is fully vaccinated.
+        /// Gets or sets the immunization target disease.
         /// </summary>
-        AllDosesReceived,
-
-        /// <summary>
-        /// Indicates the Patient is exempt.
-        /// </summary>
-        Exempt,
+        [JsonPropertyName("immunizationDisease")]
+        public string ImmunizationDisease { get; set; } = string.Empty;
     }
 }

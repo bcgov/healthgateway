@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Delegates
+namespace HealthGateway.Common.Delegates.PHSA
 {
     using System;
     using System.Diagnostics;

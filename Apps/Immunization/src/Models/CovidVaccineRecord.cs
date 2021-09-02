@@ -15,9 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Models
 {
-    using System;
     using System.Text.Json.Serialization;
-    using HealthGateway.Immunization.Models.PHSA;
+    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
     /// The Vaccination Record Result model.

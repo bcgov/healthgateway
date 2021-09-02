@@ -13,39 +13,31 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models
+namespace HealthGateway.Common.Constants.PHSA
 {
-    using System;
-    using System.Text.Json.Serialization;
-    using HealthGateway.Immunization.Constants;
-
     /// <summary>
-    /// The Vaccine Status Report Request model.
+    /// Represents the state of the Vaccine as applied to a Patient.
     /// </summary>
-    public class VaccineStatusReportRequest
+    public enum VaccineState
     {
         /// <summary>
-        /// Gets or sets the patient's first name.
+        /// Indicates that we have insufficient information to determine vaccine status.
         /// </summary>
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
+        NotFound,
 
         /// <summary>
-        /// Gets or sets the patient's date of birth.
+        /// Indicates the Patient is partially vaccinated.
         /// </summary>
-        [JsonPropertyName("birthdate")]
-        public string Birthdate { get; set; } = string.Empty;
+        PartialDosesReceived,
 
         /// <summary>
-        /// Gets or sets the patient's status.
+        /// Indicates the Patient is fully vaccinated.
         /// </summary>
-        [JsonPropertyName("status")]
-        public VaccineState Status { get; set; }
+        AllDosesReceived,
 
         /// <summary>
-        /// Gets or sets the patient's doses.
+        /// Indicates the Patient is exempt.
         /// </summary>
-        [JsonPropertyName("doses")]
-        public int Doses { get; set; }
+        Exempt,
     }
 }

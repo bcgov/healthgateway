@@ -21,7 +21,9 @@ namespace HealthGateway.Immunization.Test.Services
     using DeepEqual.Syntax;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Delegates;
@@ -79,7 +81,7 @@ namespace HealthGateway.Immunization.Test.Services
                     FirstName = "Bob",
                     LastName = "Test",
                     Birthdate = this.dob,
-                    State = Constants.VaccineState.Exempt,
+                    State = VaccineState.Exempt,
                 },
             };
 
@@ -93,7 +95,7 @@ namespace HealthGateway.Immunization.Test.Services
                 this.configuration,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                new Mock<IIronPDFDelegate>().Object);
+                new Mock<IReportDelegate>().Object);
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -111,7 +113,7 @@ namespace HealthGateway.Immunization.Test.Services
                 this.configuration,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<IIronPDFDelegate>().Object);
+                new Mock<IReportDelegate>().Object);
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -129,7 +131,7 @@ namespace HealthGateway.Immunization.Test.Services
                 this.configuration,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<IIronPDFDelegate>().Object);
+                new Mock<IReportDelegate>().Object);
 
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             var actualResult = Task.Run(async () => await service.GetVaccineStatus(this.phn, "yyyyMMddx", dovString).ConfigureAwait(true)).Result;
@@ -146,7 +148,7 @@ namespace HealthGateway.Immunization.Test.Services
                 this.configuration,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<IIronPDFDelegate>().Object);
+                new Mock<IReportDelegate>().Object);
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             var actualResult = Task.Run(async () => await service.GetVaccineStatus(this.phn, dobString, "yyyyMMddx").ConfigureAwait(true)).Result;

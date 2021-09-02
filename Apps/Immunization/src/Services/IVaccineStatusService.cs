@@ -15,11 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
-    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.CDogs;
-    using HealthGateway.Immunization.Models;
+    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
     /// The Vaccine Status data service.

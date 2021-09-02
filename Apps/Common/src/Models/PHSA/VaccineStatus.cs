@@ -13,12 +13,12 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models
+namespace HealthGateway.Common.Models.PHSA
 {
     using System;
     using System.Text.Json.Serialization;
-    using HealthGateway.Immunization.Constants;
-    using HealthGateway.Immunization.Models.PHSA;
+    using HealthGateway.Common.Constants.PHSA;
+    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
     /// The Vaccine Status model.

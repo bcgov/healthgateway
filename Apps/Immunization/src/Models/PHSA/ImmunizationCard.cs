@@ -16,6 +16,7 @@
 namespace HealthGateway.Immunization.Models.PHSA
 {
     using System.Text.Json.Serialization;
+    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
     /// Represents an Immunization Card.

@@ -22,6 +22,7 @@ namespace Healthgateway.JobScheduler.Jobs
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;

@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
+    using System.Threading.Tasks;
     using HealthGateway.Admin.Models.Support;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.CDogs;
 
     /// <summary>
     /// Service that provides Covid Support functionality.
@@ -29,20 +29,21 @@ namespace HealthGateway.Admin.Services
         /// </summary>
         /// <param name="phn">The personal health number that matches the person to retrieve.</param>
         /// <returns>The covid ionformation wrapped in a RequestResult.</returns>
-        RequestResult<CovidInformation> GetCovidInformation(string phn);
+        Task<RequestResult<CovidInformation>> GetCovidInformation(string phn);
 
         /// <summary>
         /// Gets all the emails in the system up to the pageSize.
         /// </summary>
         /// <param name="request">The request information to retrieve patient information.</param>
         /// <returns>A RequestResult with True if the request was sucessfull.</returns>
-        PrimitiveRequestResult<bool> MailDocument(MailDocumentRequest request);
+        Task<PrimitiveRequestResult<bool>> MailDocumentAsync(MailDocumentRequest request);
 
         /// <summary>
         /// Gets all the emails in the system up to the pageSize.
         /// </summary>
         /// <param name="phn">The personal health number that matches the person to retrieve.</param>
+        /// <param name="address">The optional patient address information.</param>
         /// <returns>The encoded document.</returns>
-        RequestResult<ReportModel> RetrieveDocument(string phn);
+        Task<RequestResult<ReportModel>> RetrieveDocumentAsync(string phn, Address? address);
     }
 }

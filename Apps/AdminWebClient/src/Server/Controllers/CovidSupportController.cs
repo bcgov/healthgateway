@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Controllers
 {
+    using System.Threading.Tasks;
     using HealthGateway.Admin.Models.Support;
     using HealthGateway.Admin.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -51,9 +52,9 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("Patient")]
-        public IActionResult GetPatient([FromHeader] string phn)
+        public async Task<IActionResult> GetPatient([FromHeader] string phn)
         {
-            return new JsonResult(this.covidSupportService.GetCovidInformation(phn));
+            return new JsonResult(await this.covidSupportService.GetCovidInformation(phn).ConfigureAwait(true));
         }
 
         /// <summary>
@@ -66,9 +67,9 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Route("Patient/Document")]
-        public IActionResult MailDocument([FromBody] MailDocumentRequest request)
+        public async Task<IActionResult> MailDocument([FromBody] MailDocumentRequest request)
         {
-            return new JsonResult(this.covidSupportService.MailDocument(request));
+            return new JsonResult(await this.covidSupportService.MailDocumentAsync(request).ConfigureAwait(true));
         }
 
         /// <summary>
@@ -81,9 +82,9 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("Patient/Document")]
-        public IActionResult RetrieveDocument([FromHeader] string phn)
+        public async Task<IActionResult> RetrieveDocument([FromHeader] string phn)
         {
-            return new JsonResult(this.covidSupportService.RetrieveDocument(phn));
+            return new JsonResult(await this.covidSupportService.RetrieveDocumentAsync(phn, null).ConfigureAwait(true));
         }
     }
 }

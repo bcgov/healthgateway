@@ -23,6 +23,7 @@ namespace HealthGateway.AdminWebClient
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Authentication.Cookies;
@@ -107,7 +108,9 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<IFeedbackTagDelegate, DBFeedbackTagDelegate>();
             services.AddTransient<IImmunizationAdminDelegate, RestImmunizationAdminDelegate>();
             services.AddTransient<IMailDelegate, SFTPMailDelegate>();
-            services.AddTransient<ICDogsDelegate, CDogsDelegate>();
+            services.AddTransient<IIronPDFDelegate, IronPDFDelegate>();
+            services.AddTransient<IReportDelegate, ReportDelegate>();
+            services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
 
             // Configure SPA
             services.AddControllersWithViews();
