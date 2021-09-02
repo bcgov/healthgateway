@@ -243,7 +243,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                     default:
                         retVal.ResultError = new RequestResultError()
                         {
-                            ResultMessage = $"Unable to connect to Immunizations/VaccineStatus Endpoint, HTTP Error {response.StatusCode}",
+                            ResultMessage = $"Unable to connect to record card Endpoint, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                         };
                         this.logger.LogError($"Unable to connect to endpoint {endpointString}, HTTP Error {response.StatusCode}\n{payload}");
@@ -254,11 +254,11 @@ namespace HealthGateway.Common.Delegates.PHSA
             catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
             {
-                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting vaccine status: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
-                this.logger.LogError($"Unexpected exception retrieving vaccine status {e}");
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting record card: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                this.logger.LogError($"Unexpected exception retrieving record card {e}");
             }
 
-            this.logger.LogDebug($"Finished getting vaccine status {query.PersonalHealthNumber.Substring(0, 5)} {query.DateOfBirth}");
+            this.logger.LogDebug($"Finished getting record card {query.PersonalHealthNumber.Substring(0, 5)} {query.DateOfBirth}");
             return retVal;
         }
     }

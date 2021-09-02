@@ -8,61 +8,67 @@
             table {
                 border-spacing: 0px;
                 width: 100%;
+                height: 100%;
             }
             h5 {
                 margin: 0px;
             }
-            img {
-                margin: 5px;
-            }
             .content {
-                width: 600px;
+                width: 100%;
             }
             .header-row {
-                background-color: #036;
-                color: white;
+                height: 33%;
             }
             .header-col {
-                padding: 15px;
+                border-bottom: 2px black dashed;
+                padding-bottom: 180px;
                 text-align: center;
-                border-bottom: 2px #fcba19 solid;
             }
             .body-row {
-                background-color: #036;
-                color: white;
+                height: 33%;
             }
             .body-col {
-                padding-bottom: 15px;
+                padding-top: 20px;
+                padding-bottom: 20px;
+                border-bottom: 2px black dashed;
+            }
+            .body-table {
+                text-align: left;
             }
             .footer-row {
-                background-color: {resultColor};
-                color: white;
+                height: 33%;
+            }
+            .footer-col {
+                padding-top: 45px;
+                padding-bottom: 200px;
+                height: 100%;
             }
 
-
-            .label {
-                font-size: small;
-                color: white;
-                padding: 15px;
+            .date {
+                float: left;
+            }
+            .name {
+                font-size: large;
+                text-align: left;
                 font-weight: bold;
             }
 
-            .value {
-                font-size: small;
-                padding: 15px;
-                color: white;
-            }
-
             .result-table {
-                border: white 5px {resultBorder};
-                width: 75px;
-                padding: 20px;
-                margin: 20px;
+                width: 100%;
+                margin-top: 10px;
             }
 
             .result-text {
-                color: white;
+                padding: 5px;
+                border: black 1px solid;
+                text-align: center;
+                max-width: 200px;
+                width: auto;
                 margin: 0px;
+            }
+
+            .qrCode {
+                text-align: right;
             }
         </style>
     </head>
@@ -71,62 +77,73 @@
             <table>
                 <tr class="header-row">
                     <td class="header-col">
-                        <img
-                            width="207"
-                            height="51"
-                            src="data:image/png;base64, {bcLogoImageSrc}"
-                            align="left"
-                            alt="BC Mark"
-                        />
-                        <h4>COVID-19 Vaccination Status</h4>
-                        <h5>Government of BC</h5>
+                        <span class="date">{currentDate}</span>
+                    </td>
+                    <td class="header-col">
+                        <img width="76"
+                        height="72"
+                        src="data:image/png;base64, {bcTopLogoImageSrc}"
+                        align="middle"
+                        alt="BC Mark" />
+                    </td>
+                    <td class="header-col">
                     </td>
                 </tr>
                 <tr class="body-row">
                     <td class="body-col">
-                        <table>
+                        <table class="body-table">
                             <tr>
-                                <td class="label">Name</td>
-                                <td class="value" style="width: 45%">{name}</td>
-                                <td class="label">Date Of Birth</td>
-                                <td class="value">{birthdate}</td>
-                            </tr>
-                            <tr>
-                                <td colspan="6" align="center">
-                                    <img
-                                        width="145"
-                                        height="45"
-                                        src="data:image/svg+xml;base64, {resultImageSrc}"
-                                        alt="Vaccination Status"
-                                    />
+                                <td>
+                                    <img width="199"
+                                         height="53"
+                                         src="data:image/png;base64, {bcLogoImageSrc}"
+                                         align="middle"
+                                         alt="BC Mark" />
+                                </td>
+                                <td>
+                                    <h4>BC Vaccine Card</h4>
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="6" align="center">
-                                    <img
-                                        width="300"
-                                        height="300"
-                                        src="data:image/png;base64, {qrCodeImageSrc}"
-                                        alt="QR Code"
-                                    />
+                                <td colspan="2" class="name"><h2>{name}</h2></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <table class="result-table">
+                                        <tr>
+                                            <td>
+                                                <img width="28"
+                                                     height="28"
+                                                     style="float: left; padding:6px; display: {resultImageDisplay}"
+                                                     src="{resultImageSrc}"
+                                                     alt="Check" />
+                                                <h2 class="result-text">
+                                                    {resultText}
+                                                </h2>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
                             </tr>
                         </table>
                     </td>
+                    <td class="body-col">
+                    </td>
+                    <td class="body-col qrCode">
+                        <img
+                            width="300"
+                            height="300"
+                            src="data:image/png;base64, {qrCodeImageSrc}"
+                            alt="QR Code"
+                        />
+                    </td>
                 </tr>
                 <tr class="footer-row">
-                    <td class="footer-col" align="center">
-                        <div>
-                            <table class="result-table">
-                                <tr>
-                                    <td align="center">
-                                        <h2 class="result-text">
-                                            {resultText}
-                                        </h2>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
+                    <td colspan="3" class="footer-col">
+                        {addressee} <br />
+                        {street} <br />
+                        {city} {provinceOrState} {code}<br />
+                        {country}
                     </td>
                 </tr>
             </table>

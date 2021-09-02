@@ -38,7 +38,7 @@ namespace HealthGateway.Common.Models.PHSA
         public string VaccineStatusEndpoint { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the vaccine status endpoint.
+        /// Gets or sets the record card endpoint.
         /// </summary>
         public string RecordCardEndpoint { get; set; } = string.Empty;
 

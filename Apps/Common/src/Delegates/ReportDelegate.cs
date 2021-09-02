@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Delegates
 {
+    using System;
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
@@ -28,8 +29,6 @@ namespace HealthGateway.Common.Delegates
     /// <inheritdoc/>
     public class ReportDelegate : IReportDelegate
     {
-        private const string BackgroundBlue = "#38598a";
-        private const string BackgroundGreen = "#2e8540";
         private const string BorderDashed = "dashed";
         private const string BorderSolid = "solid";
         private readonly IIronPDFDelegate ironPdfDelegate;
@@ -48,7 +47,9 @@ namespace HealthGateway.Common.Delegates
         {
             IronPDFRequestModel pdfRequest = new ();
             pdfRequest.FileName = "BCVaccineCard";
-            pdfRequest.Data.Add("bcLogoImageSrc", AssetReader.Read("HealthGateway.Common.Assets.Images.bcid-logo-rev-en.png", true));
+            pdfRequest.Data.Add("bcTopLogoImageSrc", AssetReader.Read("HealthGateway.Common.Assets.Images.BCID_V_rgb_pos.png", true));
+            pdfRequest.Data.Add("bcLogoImageSrc", AssetReader.Read("HealthGateway.Common.Assets.Images.BCID_H_rgb_pos.png", true));
+            pdfRequest.Data.Add("currentDate", DateTime.Now.ToLongDateString());
             pdfRequest.HtmlTemplate = AssetReader.Read("HealthGateway.Common.Assets.Templates.VaccineStatusCard.html") !;
 
             pdfRequest.Data.Add("birthdate", vaccineStatus.Birthdate!.Value.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpper(CultureInfo.InvariantCulture));
@@ -65,29 +66,29 @@ namespace HealthGateway.Common.Delegates
             switch (vaccineStatus.State)
             {
                 case VaccineState.AllDosesReceived:
-                    pdfRequest.Data.Add("resultText", "Fully Vaccinated");
-                    pdfRequest.Data.Add("resultColor", BackgroundGreen);
+                    pdfRequest.Data.Add("resultText", "Vaccinated");
                     pdfRequest.Data.Add("resultBorder", BorderSolid);
-                    pdfRequest.Data.Add("resultImageSrc", AssetReader.Read("HealthGateway.Common.Assets.Images.fully-vaccinated.svg", true));
+                    string? checkMarkBase64 = AssetReader.Read("HealthGateway.Common.Assets.Images.checkmark-black.svg", true);
+                    pdfRequest.Data.Add("resultImageSrc", $"data:image/svg+xml;base64, {checkMarkBase64}");
+                    pdfRequest.Data.Add("resultImageDisplay", "block");
                     break;
                 case VaccineState.PartialDosesReceived:
                     pdfRequest.Data.Add("resultText", "Partially Vaccinated");
-                    pdfRequest.Data.Add("resultColor", BackgroundBlue);
                     pdfRequest.Data.Add("resultBorder", BorderDashed);
-                    string dosesImage = vaccineStatus.Doses > 1 ? "2" : "1";
-                    pdfRequest.Data.Add("resultImageSrc", AssetReader.Read($"HealthGateway.Common.Assets.Images.dose-{dosesImage}.svg", true));
+                    pdfRequest.Data.Add("resultImageSrc", string.Empty);
+                    pdfRequest.Data.Add("resultImageDisplay", "none");
                     break;
                 case VaccineState.Exempt:
                     pdfRequest.Data.Add("resultText", "Exempt");
-                    pdfRequest.Data.Add("resultColor", BackgroundBlue);
                     pdfRequest.Data.Add("resultBorder", BorderDashed);
-                    pdfRequest.Data.Add("resultImageSrc", AssetReader.Read("HealthGateway.Common.Assets.Images.no-doses.svg", true));
+                    pdfRequest.Data.Add("resultImageSrc", string.Empty);
+                    pdfRequest.Data.Add("resultImageDisplay", "none");
                     break;
                 default:
                     pdfRequest.Data.Add("resultText", "No Records Found");
-                    pdfRequest.Data.Add("resultColor", BackgroundBlue);
                     pdfRequest.Data.Add("resultBorder", BorderDashed);
-                    pdfRequest.Data.Add("resultImageSrc", AssetReader.Read("HealthGateway.Common.Assets.Images.no-doses.svg", true));
+                    pdfRequest.Data.Add("resultImageSrc", string.Empty);
+                    pdfRequest.Data.Add("resultImageDisplay", "none");
                     break;
             }
 
