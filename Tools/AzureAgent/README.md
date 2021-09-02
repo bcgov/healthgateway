@@ -12,6 +12,12 @@ As Docker Hub has recently put in place pull limits, a pull secret needs to be d
 oc project 0bd5ad-tools
 oc create secret docker-registry docker-secret --docker-server=docker.io --docker-username=healthopenshift --docker-password=[ASK TEAM] --docker-email=stephen.s.laws@gov.bc.ca
 oc secrets link builder docker-secret --for=pull
+oc secrets link builder docker-secret
+```
+
+We previously had the following which is likely not required
+
+```console
 oc secrets link deployer docker-secret --for=pull
 ```
 
@@ -50,7 +56,7 @@ To review the parameters for the deployment execute:
 oc process -f ./openshift/AzureAgent.yaml --parameters
 ```
 
-run as 
+run as
 
 ```console
 oc process -f ./openshift/AzureAgent.yaml -p AZ_DEVOPS_ORG_URL=<URL> -p AZ_DEVOPS_TOKEN=<PAT> -p INSTALL_NAMESPACE=0bd5ad-tools | oc apply -f -
