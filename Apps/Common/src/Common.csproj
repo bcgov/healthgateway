@@ -7,6 +7,12 @@
     <Compile Remove="Authorization\**" />
     <EmbeddedResource Remove="Authorization\**" />
     <None Remove="Authorization\**" />
+    <None Remove="Assets\Images\bcid-logo-en.svg" />
+    <None Remove="Assets\Images\BCID_H_gry_pos3.svg" />
+    <None Remove="Assets\Images\BCID_H_rgb_pos.png" />
+    <None Remove="Assets\Images\BCID_V_gry_pos1.svg" />
+    <None Remove="Assets\Images\BCID_V_rgb_pos.png" />
+    <None Remove="Assets\Images\checkmark-black.svg" />
     <None Remove="ServiceReference\dotnet-svcutil.params.json" />
     <None Remove="Models\AcaPy\" />
     <None Remove="Models\PHSA\Recommendation\" />
