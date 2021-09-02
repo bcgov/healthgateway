@@ -3,17 +3,6 @@ services:
   - name: ImmunizationService-$kongNamespace
     url: http://immunization.$licensePlate-$environment.svc:8080
     plugins:
-      - name: rate-limiting
-        tags: [ns.$kongNamespace]
-        enabled: true
-        config:
-          fault_tolerant: true
-          hide_client_headers: false
-          limit_by: consumer
-          minute: 10
-        protocols:
-          - http
-          - https
       - name: cors
         tags: [ns.$kongNamespace]
         enabled: true
@@ -53,7 +42,18 @@ services:
               anonymous: null
               algorithm: RS256
               realm_roles: null
-              consumer_match_claim: azp
+              consumer_match_claim: azp     
+          - name: rate-limiting
+            tags: [ns.$kongNamespace]
+            enabled: true
+            config:
+              fault_tolerant: true
+              hide_client_headers: false
+              limit_by: consumer
+              minute: 10
+            protocols:
+              - http
+              - https
         tags:
           - OAS3_import
           - ns.$kongNamespace
@@ -101,7 +101,18 @@ services:
               anonymous: null
               algorithm: RS256
               realm_roles: null
-              consumer_match_claim: azp
+              consumer_match_claim: azp     
+          - name: rate-limiting
+            tags: [ns.$kongNamespace]
+            enabled: true
+            config:
+              fault_tolerant: true
+              hide_client_headers: false
+              limit_by: consumer
+              minute: 10
+            protocols:
+              - http
+              - https
         tags:
           - OAS3_import
           - ns.$kongNamespace
@@ -120,6 +131,29 @@ services:
         methods:
           - GET
           - POST
+        hosts:
+          - $kongNamespace.api.gov.bc.ca
+        paths:
+          - /v1/api/VaccineStatus
+        strip_path: false
+        plugins:
+          - name: rate-limiting
+            tags: [ns.$kongNamespace]
+            enabled: true
+            config:
+              fault_tolerant: true
+              hide_client_headers: false
+              limit_by: header
+              header_name: phn
+              minute: 10
+            protocols:
+              - http
+              - https
+        tags:
+          - OAS3_import
+          - ns.$kongNamespace
+      - name: OptionsVaccineStatus-$kongNamespace
+        methods:
           - OPTIONS
         hosts:
           - $kongNamespace.api.gov.bc.ca
@@ -162,6 +196,17 @@ services:
               algorithm: RS256
               realm_roles: null
               consumer_match_claim: azp
+          - name: rate-limiting
+            tags: [ns.$kongNamespace]
+            enabled: true
+            config:
+              fault_tolerant: true
+              hide_client_headers: false
+              limit_by: consumer
+              minute: 10
+            protocols:
+              - http
+              - https
         strip_path: false
         tags:
           - OAS3_import
