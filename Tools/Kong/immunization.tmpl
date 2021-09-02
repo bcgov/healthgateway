@@ -129,7 +129,7 @@ services:
         tags:
           - OAS3_import
           - ns.$kongNamespace
-      - name: GetVaccineRecord-kongNamespace
+      - name: GetVaccineRecord-$kongNamespace
         methods:
           - GET
         hosts:
@@ -166,7 +166,7 @@ services:
         tags:
           - OAS3_import
           - ns.$kongNamespace           
-      - name: OptionsVaccineRecord-kongNamespace
+      - name: OptionsVaccineRecord-$kongNamespace
         methods:
           - OPTIONS
         hosts:
