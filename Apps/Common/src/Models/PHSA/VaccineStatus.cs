@@ -110,6 +110,7 @@ namespace HealthGateway.Common.Models.PHSA
                 LastName = model.LastName,
                 Doses = model.DoseCount,
                 State = Enum.Parse<VaccineState>(model.StatusIndicator),
+                VaccineDate = model.VaccineDate,
                 QRCode = model.QRCode,
             };
         }

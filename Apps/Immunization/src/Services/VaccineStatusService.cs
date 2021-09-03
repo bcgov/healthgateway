@@ -144,17 +144,7 @@ namespace HealthGateway.Immunization.Services
             }
             else
             {
-                retVal.ResourcePayload = new VaccineStatus()
-                {
-                    Birthdate = payload.Birthdate,
-                    VaccineDate = payload.VaccineDate,
-                    PersonalHealthNumber = phn,
-                    FirstName = payload.FirstName,
-                    LastName = payload.LastName,
-                    Doses = payload.DoseCount,
-                    State = Enum.Parse<VaccineState>(payload.StatusIndicator),
-                    QRCode = payload.QRCode,
-                };
+                retVal.ResourcePayload = VaccineStatus.FromModel(payload, phn);
             }
 
             if (result.ResourcePayload != null)
