@@ -45,6 +45,8 @@ const RegistrationInfoView = () =>
     );
 const TimelineView = () =>
     import(/* webpackChunkName: "timeline" */ "@/views/timeline.vue");
+const Covid19View = () =>
+    import(/* webpackChunkName: "covid19" */ "@/views/covid19.vue");
 const ValidateEmailView = () =>
     import(/* webpackChunkName: "validateEmail" */ "@/views/validateEmail.vue");
 const TermsOfServiceView = () =>
@@ -185,6 +187,14 @@ const routes = [
         path: "/timeline",
         component: TimelineView,
         meta: { validStates: [UserState.registered] },
+    },
+    {
+        path: "/covid19",
+        component: Covid19View,
+        meta: {
+            validStates: [UserState.registered],
+            requiredModules: [ClientModule.VaccinationStatus],
+        },
     },
     {
         path: "/credentials",
