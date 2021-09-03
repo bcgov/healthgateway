@@ -11,6 +11,7 @@ import VueRouter from "vue-router";
 import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
+import type { WebClientConfiguration } from "@/models/configData";
 import { IdentityProviderConfiguration } from "@/models/configData";
 
 library.add(faAddressCard, faUser, faUserSecret); // icons listed in config
@@ -36,6 +37,9 @@ export default class LoginView extends Vue {
     @Getter("identityProviders", { namespace: "config" })
     identityProviders!: IdentityProviderConfiguration[];
 
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     private isLoading = true;
     private redirectPath = "";
     private routeHandler!: VueRouter;
@@ -43,6 +47,8 @@ export default class LoginView extends Vue {
     private mounted() {
         if (this.$route.query.redirect && this.$route.query.redirect !== "") {
             this.redirectPath = this.$route.query.redirect.toString();
+        } else if (this.config.modules["VaccinationStatus"]) {
+            this.redirectPath = "/covid19";
         } else {
             this.redirectPath = "/timeline";
         }
