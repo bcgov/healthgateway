@@ -4,6 +4,7 @@ import { faIdCard as farIdCard } from "@fortawesome/free-regular-svg-icons";
 import {
     faAngleDoubleLeft,
     faChartLine,
+    faCheckCircle,
     faClipboardList,
     faEdit,
     faStream,
@@ -25,6 +26,7 @@ import { ILogger } from "@/services/interfaces";
 library.add(
     faAngleDoubleLeft,
     faChartLine,
+    faCheckCircle,
     faClipboardList,
     faEdit,
     faStream,
@@ -195,8 +197,16 @@ export default class SidebarComponent extends Vue {
         return this.$route.path == "/timeline";
     }
 
+    private get isCovid19(): boolean {
+        return this.$route.path == "/covid19";
+    }
+
     private get isCredentialsEnabled(): boolean {
         return this.config.modules["Credential"];
+    }
+
+    private get isVaccinationStatusEnabled(): boolean {
+        return this.config.modules["VaccinationStatus"];
     }
 
     private get isCredentials(): boolean {
@@ -266,6 +276,32 @@ export default class SidebarComponent extends Vue {
                                 class="button-text"
                             >
                                 <span>Timeline</span>
+                            </b-col>
+                        </b-row>
+                    </hg-button>
+                    <!-- COVID-19 button -->
+                    <hg-button
+                        v-show="isVaccinationStatusEnabled && isActiveProfile"
+                        id="menuBtnCovid19"
+                        data-testid="menuBtnCovid19Link"
+                        to="/covid19"
+                        variant="nav"
+                        class="my-3"
+                        :class="{ selected: isCovid19 }"
+                    >
+                        <b-row class="align-items-center">
+                            <b-col
+                                title="COVID-19"
+                                :class="{ 'col-3': isOpen }"
+                            >
+                                <hg-icon icon="check-circle" size="large" />
+                            </b-col>
+                            <b-col
+                                v-show="isOpen"
+                                data-testid="covid19Label"
+                                class="button-text"
+                            >
+                                <span>COVID-19</span>
                             </b-col>
                         </b-row>
                     </hg-button>
