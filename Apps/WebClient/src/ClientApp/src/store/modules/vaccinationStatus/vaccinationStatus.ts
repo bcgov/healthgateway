@@ -6,10 +6,18 @@ import { mutations } from "./mutations";
 import { VaccinationStatusModule, VaccinationStatusState } from "./types";
 
 const state: VaccinationStatusState = {
-    vaccinationStatus: undefined,
-    error: undefined,
-    status: LoadStatus.NONE,
-    statusMessage: "",
+    public: {
+        vaccinationStatus: undefined,
+        error: undefined,
+        status: LoadStatus.NONE,
+        statusMessage: "",
+    },
+    authenticated: {
+        vaccinationStatus: undefined,
+        error: undefined,
+        status: LoadStatus.NONE,
+        statusMessage: "",
+    },
 };
 
 const namespaced = true;

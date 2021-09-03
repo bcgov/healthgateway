@@ -1,6 +1,6 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faIdCard, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faSearch } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -40,7 +40,7 @@ import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 
-library.add(faSearch, faIdCard);
+library.add(faSearch, faCheckCircle);
 
 @Component({
     components: {
@@ -447,11 +447,11 @@ export default class TimelineView extends Vue {
                             @click="showCard()"
                         >
                             <hg-icon
-                                icon="id-card"
+                                icon="check-circle"
                                 size="medium"
                                 class="mr-2"
                             />
-                            <span>COVID-19 Card</span>
+                            <span>BC Vaccine Card</span>
                         </hg-button>
                     </b-col>
                 </b-row>

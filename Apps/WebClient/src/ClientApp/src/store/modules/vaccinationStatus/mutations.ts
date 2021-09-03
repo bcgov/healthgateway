@@ -6,28 +6,69 @@ import { VaccinationStatusMutations, VaccinationStatusState } from "./types";
 
 export const mutations: VaccinationStatusMutations = {
     setRequested(state: VaccinationStatusState) {
-        state.error = undefined;
-        state.status =
-            state.status === LoadStatus.DEFERRED
-                ? LoadStatus.ASYNC_REQUESTED
-                : LoadStatus.REQUESTED;
-        state.statusMessage = "";
+        state.public.error = undefined;
+        state.public.status = LoadStatus.REQUESTED;
+        state.public.statusMessage = "";
     },
     setVaccinationStatus(
         state: VaccinationStatusState,
         vaccinationStatus: VaccinationStatus
     ) {
-        state.vaccinationStatus = vaccinationStatus;
-        state.status = LoadStatus.LOADED;
-        state.statusMessage = "";
+        state.public.vaccinationStatus = vaccinationStatus;
+        state.public.status = LoadStatus.LOADED;
+        state.public.statusMessage = "";
     },
     vaccinationStatusError(state: VaccinationStatusState, error: BannerError) {
-        state.vaccinationStatus = undefined;
-        state.error = error;
-        state.status = LoadStatus.ERROR;
-        state.statusMessage = "";
+        state.public.vaccinationStatus = undefined;
+        state.public.error = error;
+        state.public.status = LoadStatus.ERROR;
+        state.public.statusMessage = "";
+    },
+    setPdfRequested(state: VaccinationStatusState) {
+        state.public.error = undefined;
+        state.public.statusMessage = "";
+    },
+    pdfError(state: VaccinationStatusState, error: BannerError) {
+        state.public.error = error;
+        state.public.status = LoadStatus.ERROR;
     },
     setStatusMessage(state: VaccinationStatusState, statusMessage: string) {
-        state.statusMessage = statusMessage;
+        state.public.statusMessage = statusMessage;
+    },
+    setAuthenticatedRequested(state: VaccinationStatusState) {
+        state.authenticated.error = undefined;
+        state.authenticated.status = LoadStatus.REQUESTED;
+        state.authenticated.statusMessage = "";
+    },
+    setAuthenticatedVaccinationStatus(
+        state: VaccinationStatusState,
+        vaccinationStatus: VaccinationStatus
+    ) {
+        state.authenticated.vaccinationStatus = vaccinationStatus;
+        state.authenticated.status = LoadStatus.LOADED;
+        state.authenticated.statusMessage = "";
+    },
+    authenticatedVaccinationStatusError(
+        state: VaccinationStatusState,
+        error: BannerError
+    ) {
+        state.authenticated.vaccinationStatus = undefined;
+        state.authenticated.error = error;
+        state.authenticated.status = LoadStatus.ERROR;
+        state.authenticated.statusMessage = "";
+    },
+    setAuthenticatedPdfRequested(state: VaccinationStatusState) {
+        state.authenticated.error = undefined;
+        state.authenticated.statusMessage = "";
+    },
+    authenticatedPdfError(state: VaccinationStatusState, error: BannerError) {
+        state.authenticated.error = error;
+        state.authenticated.status = LoadStatus.ERROR;
+    },
+    setAuthenticatedStatusMessage(
+        state: VaccinationStatusState,
+        statusMessage: string
+    ) {
+        state.authenticated.statusMessage = statusMessage;
     },
 };

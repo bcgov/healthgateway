@@ -9,6 +9,7 @@ import LoadingComponent from "@/components/loading.vue";
 import EntryDetailsComponent from "@/components/timeline/entryCard/entryDetails.vue";
 import ImmunizationTimelineComponent from "@/components/timeline/entryCard/immunization.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
+import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
@@ -30,6 +31,17 @@ library.add(faCheckCircle);
     },
 })
 export default class Covid19View extends Vue {
+    @Action("getPatientData", { namespace: "user" })
+    getPatientData!: () => Promise<void>;
+
+    @Action("retrieve", { namespace: "immunization" })
+    retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
+
+    @Action("retrieveAuthenticatedVaccineStatus", {
+        namespace: "vaccinationStatus",
+    })
+    retrieveVaccineStatus!: (params: { hdid: string }) => Promise<void>;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -38,6 +50,12 @@ export default class Covid19View extends Vue {
 
     @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
+
+    @Getter("authenticatedError", { namespace: "vaccinationStatus" })
+    vaccineStatusError!: BannerError | undefined;
+
+    @Getter("authenticatedIsLoading", { namespace: "vaccinationStatus" })
+    isVaccinationStatusLoading!: boolean;
 
     @Getter("isLoading", { namespace: "user" })
     isPatientLoading!: boolean;
@@ -51,18 +69,13 @@ export default class Covid19View extends Vue {
     @Getter("covidImmunizations", { namespace: "immunization" })
     covidImmunizations!: ImmunizationEvent[];
 
-    @Action("getPatientData", { namespace: "user" })
-    getPatientData!: () => Promise<void>;
-
-    @Action("retrieve", { namespace: "immunization" })
-    retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
-
     private logger!: ILogger;
     private eventBus = EventBus;
     private autoOpenCard = true;
 
     private get isLoading(): boolean {
         return (
+            this.isVaccinationStatusLoading ||
             this.isPatientLoading ||
             this.isImmunizationLoading ||
             this.immunizationIsDeferred
@@ -91,11 +104,13 @@ export default class Covid19View extends Vue {
     private get covidCardDisabled(): boolean {
         return (
             this.isLoading ||
+            this.vaccineStatusError !== undefined ||
             this.patientData.hdid === undefined ||
             this.covidImmunizations.length === 0
         );
     }
 
+    @Watch("isVaccinationStatusLoading")
     @Watch("isPatientLoading")
     @Watch("isImmunizationLoading")
     @Watch("immunizationIsDeferred")
@@ -124,6 +139,7 @@ export default class Covid19View extends Vue {
         Promise.all([
             this.getPatientData(),
             this.retrieveImmunizations({ hdid: this.user.hdid }),
+            this.retrieveVaccineStatus({ hdid: this.user.hdid }),
         ]).catch((err) => {
             this.logger.error(`Error loading COVID-19 data: ${err}`);
         });
@@ -152,7 +168,10 @@ export default class Covid19View extends Vue {
                     <span>BC Vaccine Card</span>
                 </hg-button>
             </page-title>
-            <div v-if="timelineEntries.length > 0" class="mx-md-n2">
+            <div
+                v-if="!isLoading && timelineEntries.length > 0"
+                class="mx-md-n2"
+            >
                 <immunization-timeline
                     v-for="(entry, index) in timelineEntries"
                     :key="entry.type + '-' + entry.id"
@@ -162,7 +181,7 @@ export default class Covid19View extends Vue {
                     data-testid="timelineCard"
                 />
             </div>
-            <div v-else class="text-center">
+            <div v-else-if="!isLoading" class="text-center">
                 <b-row>
                     <b-col>
                         <img

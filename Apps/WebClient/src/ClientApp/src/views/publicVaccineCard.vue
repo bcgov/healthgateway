@@ -3,7 +3,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
-import { Component, Watch } from "vue-property-decorator";
+import { Component, Ref, Watch } from "vue-property-decorator";
 import { required } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
@@ -12,7 +12,9 @@ import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
 import DatePickerComponent from "@/components/datePicker.vue";
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
+import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
+import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import Report from "@/models/report";
@@ -34,16 +36,24 @@ const validPersonalHealthNumber = (value: string): boolean => {
         "vaccine-card": VaccineCardComponent,
         "date-picker": DatePickerComponent,
         "error-card": ErrorCardComponent,
-        LoadingComponent,
+        loading: LoadingComponent,
+        MessageModalComponent,
     },
 })
 export default class PublicVaccineCardView extends Vue {
-    @Action("retrieve", { namespace: "vaccinationStatus" })
-    retrieveVaccinationStatus!: (params: {
+    @Action("retrieveVaccineStatus", { namespace: "vaccinationStatus" })
+    retrieveVaccineStatus!: (params: {
         phn: string;
         dateOfBirth: StringISODate;
         dateOfVaccine: StringISODate;
     }) => Promise<void>;
+
+    @Action("retrieveVaccineStatusPdf", { namespace: "vaccinationStatus" })
+    retrieveVaccineStatusPdf!: (params: {
+        phn: string;
+        dateOfBirth: StringISODate;
+        dateOfVaccine: StringISODate;
+    }) => Promise<Report>;
 
     @Getter("vaccinationStatus", { namespace: "vaccinationStatus" })
     status!: VaccinationStatus | undefined;
@@ -57,12 +67,8 @@ export default class PublicVaccineCardView extends Vue {
     @Getter("statusMessage", { namespace: "vaccinationStatus" })
     statusMessage!: string;
 
-    @Action("getReport", { namespace: "vaccinationStatus" })
-    getReport!: (params: {
-        phn: string;
-        dateOfBirth: StringISODate;
-        dateOfVaccine: StringISODate;
-    }) => Promise<Report>;
+    @Ref("sensitivedocumentDownloadModal")
+    readonly sensitivedocumentDownloadModal!: MessageModalComponent;
 
     private bcsclogo: string = Image06;
 
@@ -73,6 +79,17 @@ export default class PublicVaccineCardView extends Vue {
     private phn = "";
     private dateOfBirth = "";
     private dateOfVaccine = "";
+
+    private get loadingStatusMessage(): string {
+        return this.isDownloading ? "Downloading PDF..." : this.statusMessage;
+    }
+
+    private get downloadButtonEnabled(): boolean {
+        return (
+            this.status?.state === VaccinationState.PartiallyVaccinated ||
+            this.status?.state === VaccinationState.FullyVaccinated
+        );
+    }
 
     private validations() {
         return {
@@ -107,25 +124,27 @@ export default class PublicVaccineCardView extends Vue {
     private handleSubmit() {
         this.$v.$touch();
         if (!this.$v.$invalid) {
-            this.retrieveVaccinationStatus({
+            this.retrieveVaccineStatus({
                 phn: this.phn,
                 dateOfBirth: this.dateOfBirth,
                 dateOfVaccine: this.dateOfVaccine,
             })
                 .then(() => {
-                    this.logger.debug("Vaccination status retrieved");
+                    this.logger.debug("Vaccine card retrieved");
                 })
                 .catch((err) => {
-                    this.logger.error(
-                        `Error retrieving vaccination status: ${err}`
-                    );
+                    this.logger.error(`Error retrieving vaccine card: ${err}`);
                 });
         }
     }
 
+    private showSensitiveDocumentDownloadModal() {
+        this.sensitivedocumentDownloadModal.showModal();
+    }
+
     private download() {
         this.isDownloading = true;
-        this.getReport({
+        this.retrieveVaccineStatusPdf({
             phn: this.status?.personalhealthnumber || "",
             dateOfBirth: new DateWrapper(this.status?.birthdate || "").format(
                 "yyyy-MM-dd"
@@ -145,9 +164,7 @@ export default class PublicVaccineCardView extends Vue {
                 }
             })
             .catch((err) => {
-                this.logger.error(
-                    `Error retrieving vaccination status pdf: ${err}`
-                );
+                this.logger.error(`Error retrieving vaccine card PDF: ${err}`);
             })
             .finally(() => {
                 this.isDownloading = false;
@@ -162,7 +179,10 @@ export default class PublicVaccineCardView extends Vue {
 
 <template>
     <div class="background flex-grow-1 d-flex flex-column">
-        <LoadingComponent :is-loading="isLoading" :text="statusMessage" />
+        <loading
+            :is-loading="isLoading || isDownloading"
+            :text="loadingStatusMessage"
+        />
         <div class="header">
             <img
                 class="img-fluid m-3"
@@ -171,14 +191,29 @@ export default class PublicVaccineCardView extends Vue {
                 alt="BC Mark"
             />
         </div>
-        <vaccine-card
+        <div
             v-if="displayResult"
-            :status="status"
-            :is-loading="isDownloading"
-            :error="error"
-            class="vaccine-card align-self-center w-100 p-3 rounded"
-            @download="download"
-        />
+            class="vaccine-card align-self-center w-100 m-3 bg-white rounded"
+        >
+            <vaccine-card :status="status" :error="error" />
+            <div class="actions p-3 d-flex justify-content-between">
+                <hg-button variant="secondary" to="/">Done</hg-button>
+                <hg-button
+                    v-if="downloadButtonEnabled"
+                    variant="primary"
+                    class="ml-3"
+                    @click="showSensitiveDocumentDownloadModal()"
+                >
+                    Save a Copy
+                </hg-button>
+            </div>
+            <MessageModalComponent
+                ref="sensitivedocumentDownloadModal"
+                title="Sensitive Document Download"
+                message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+                @submit="download"
+            />
+        </div>
         <div v-else class="flex-grow-1 d-flex flex-column">
             <div class="vaccine-card-banner p-3">
                 <div class="container d-flex align-items-center">
@@ -415,7 +450,12 @@ export default class PublicVaccineCardView extends Vue {
 }
 
 .vaccine-card {
-    max-width: 470px;
+    max-width: 438px;
+
+    .actions {
+        border-bottom-left-radius: 0.25rem;
+        border-bottom-right-radius: 0.25rem;
+    }
 }
 </style>
 

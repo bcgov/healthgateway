@@ -5,16 +5,18 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import VaccineCardComponent from "@/components/vaccineCard.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
+import BannerError from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import PatientData from "@/models/patientData";
-import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
+import VaccinationStatus from "@/models/vaccinationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
-import { IImmunizationService, ILogger } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 
 interface Dose {
@@ -28,7 +30,8 @@ interface Dose {
 @Component({
     components: {
         "message-modal": MessageModalComponent,
-        "hg-loading": LoadingComponent,
+        loading: LoadingComponent,
+        "vaccine-card": VaccineCardComponent,
     },
 })
 export default class VaccineCardModalComponent extends Vue {
@@ -37,6 +40,18 @@ export default class VaccineCardModalComponent extends Vue {
 
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
+
+    @Action("retrieveAuthenticatedVaccineStatus", {
+        namespace: "vaccinationStatus",
+    })
+    retrieveVaccineStatus!: (params: { hdid: string }) => Promise<void>;
+
+    @Action("retrieveAuthenticatedVaccineRecord", {
+        namespace: "vaccinationStatus",
+    })
+    retrieveVaccineRecord!: (params: {
+        hdid: string;
+    }) => Promise<CovidVaccineRecord>;
 
     @Getter("isLoading", { namespace: "user" })
     isPatientLoading!: boolean;
@@ -53,17 +68,35 @@ export default class VaccineCardModalComponent extends Vue {
     @Getter("covidImmunizations", { namespace: "immunization" })
     covidImmunizations!: ImmunizationEvent[];
 
+    @Getter("authenticatedVaccinationStatus", {
+        namespace: "vaccinationStatus",
+    })
+    status!: VaccinationStatus | undefined;
+
+    @Getter("authenticatedIsLoading", { namespace: "vaccinationStatus" })
+    isVaccinationStatusLoading!: boolean;
+
+    @Getter("authenticatedError", { namespace: "vaccinationStatus" })
+    error!: BannerError | undefined;
+
+    @Getter("authenticatedStatusMessage", { namespace: "vaccinationStatus" })
+    statusMessage!: string;
+
     private eventBus = EventBus;
 
     private logger!: ILogger;
     private readonly modalId: string = "covid-card-modal";
     private isVisible = false;
-    private isPreview = true;
+    private isDownloading = false;
 
     private doses: Dose[] = [];
 
     private get isLoading(): boolean {
-        return this.isPatientLoading || this.isImmunizationLoading;
+        return (
+            this.isPatientLoading ||
+            this.isImmunizationLoading ||
+            this.isVaccinationStatusLoading
+        );
     }
 
     @Ref("messageModal")
@@ -89,21 +122,6 @@ export default class VaccineCardModalComponent extends Vue {
                 provider: element.providerOrClinic,
             });
         }
-
-        const maxDoses = 2;
-
-        if (this.doses.length > maxDoses) {
-            this.doses.splice(maxDoses, this.doses.length);
-        } else if (this.doses.length < maxDoses) {
-            while (this.doses.length < maxDoses)
-                this.doses.push({
-                    product: "",
-                    date: "",
-                    agent: "",
-                    lot: "",
-                    provider: "",
-                });
-        }
     }
 
     private get userName(): string {
@@ -112,6 +130,10 @@ export default class VaccineCardModalComponent extends Vue {
 
     private get birthdate(): string {
         return this.formatDate(this.patientData.birthdate);
+    }
+
+    private get loadingStatusMessage(): string {
+        return this.isDownloading ? "Downloading PDF..." : this.statusMessage;
     }
 
     private created() {
@@ -123,6 +145,7 @@ export default class VaccineCardModalComponent extends Vue {
     public showModal(): void {
         this.getPatientData();
         this.retrieveImmunizations({ hdid: this.user.hdid });
+        this.retrieveVaccineStatus({ hdid: this.user.hdid });
         this.isVisible = true;
     }
 
@@ -140,47 +163,40 @@ export default class VaccineCardModalComponent extends Vue {
         this.messageModal.showModal();
     }
 
+    private close() {
+        this.$bvModal.hide("covidImmunizationCard");
+    }
+
     private downloadPdf() {
-        this.isPreview = false;
+        this.isDownloading = true;
         SnowPlow.trackEvent({
             action: "download_card",
             text: "COVID Card PDF",
         });
 
-        const immunizationService: IImmunizationService =
-            container.get<IImmunizationService>(
-                SERVICE_IDENTIFIER.ImmunizationService
-            );
-
-        immunizationService
-            .getCovidVaccineRecord(this.user.hdid)
-            .then((result: RequestResult<CovidVaccineRecord>) => {
-                const payload = result.resourcePayload;
+        this.retrieveVaccineRecord({ hdid: this.user.hdid })
+            .then((payload: CovidVaccineRecord) => {
                 if (!payload.loaded) {
                     this.logger.error(
-                        "COVID Card PDF could not be retrieved: " +
-                            result.resultError?.resultMessage
+                        "Vaccine record could not be retrieved at this time"
                     );
                 } else if (
                     payload.document.data === null ||
                     payload.document.data.length == 0
                 ) {
-                    this.logger.error("COVID Card PDF is empty");
+                    this.logger.error("Vaccine record is empty");
                 } else {
-                    const mimeType = result.resourcePayload.document.mediaType;
-                    const downloadLink = `data:${mimeType};base64,${result.resourcePayload.document.data}`;
+                    const mimeType = payload.document.mediaType;
+                    const downloadLink = `data:${mimeType};base64,${payload.document.data}`;
                     fetch(downloadLink).then((res) => {
                         res.blob().then((blob) => {
-                            saveAs(
-                                blob,
-                                "HealthGateway_ImmunizationHistory.pdf"
-                            );
+                            saveAs(blob, "BCVaccineRecord.pdf");
                         });
                     });
                 }
             })
             .finally(() => {
-                this.isPreview = true;
+                this.isDownloading = false;
             });
     }
 }
@@ -196,31 +212,22 @@ export default class VaccineCardModalComponent extends Vue {
         content-class="immunization-covid-card-modal-content"
         header-class="immunization-covid-card-modal-header"
         :no-close-on-backdrop="true"
-        hide-footer
+        scrollable
         centered
     >
-        <hg-loading :is-loading="isLoading" />
         <template #modal-header="{ close }">
             <b-row class="w-100 h-100">
                 <b-col class="image-container">
                     <img
-                        v-show="isPreview"
                         class="img-fluid"
                         src="@/assets/images/gov/bcid-logo-rev-en.svg"
                         width="190px"
-                        alt="BC Health Gateway" />
-                    <img
-                        v-show="!isPreview"
-                        class="img-fluid"
-                        src="@/assets/images/gov/bcid-logo-rev-en.png"
-                        width="181"
-                        height="44"
                         alt="BC Health Gateway"
-                /></b-col>
+                    />
+                </b-col>
                 <b-col cols="auto" class="align-self-center">
                     <!-- Emulate built in modal header close button action -->
                     <hg-button
-                        data-html2canvas-ignore="true"
                         class="close"
                         aria-label="Close"
                         variant="icon"
@@ -230,35 +237,84 @@ export default class VaccineCardModalComponent extends Vue {
                 </b-col>
             </b-row>
         </template>
-        <b-row>
-            <b-col>
-                <b-row class="pb-3 title d-flex">
-                    <b-col class="ml-1 label col-4 d-flex justify-content-end"
-                        >Name</b-col
-                    >
-                    <b-col class="value text-wrap text-break">{{
-                        userName
-                    }}</b-col>
+        <template #modal-footer>
+            <div v-if="error !== undefined" class="container">
+                <b-alert
+                    variant="danger"
+                    class="no-print my-3"
+                    :show="error !== undefined"
+                    dismissible
+                >
+                    <h4>{{ error.title }}</h4>
+                    <h6>{{ error.errorCode }}</h6>
+                    <div class="pl-4">
+                        <p data-testid="errorTextDescription">
+                            {{ error.description }}
+                        </p>
+                        <p data-testid="errorTextDetails">
+                            {{ error.detail }}
+                        </p>
+                        <p
+                            v-if="error.traceId"
+                            data-testid="errorSupportDetails"
+                        >
+                            If this issue persists, contact
+                            HealthGateway@gov.bc.ca and provide
+                            <span class="trace-id">{{ error.traceId }}</span>
+                        </p>
+                    </div>
+                </b-alert>
+            </div>
+            <div class="w-100 p-2 d-flex justify-content-between">
+                <hg-button variant="secondary" class="m-2" @click="close()">
+                    Done
+                </hg-button>
+                <hg-button
+                    data-testid="exportCardBtn"
+                    variant="primary"
+                    class="m-2"
+                    @click="showConfirmationModal()"
+                >
+                    Save a Copy
+                </hg-button>
+            </div>
+        </template>
+        <b-container fluid class="p-0">
+            <loading
+                :is-loading="isLoading || isDownloading"
+                :text="loadingStatusMessage"
+            />
+            <vaccine-card
+                :status="status"
+                class="vaccine-card align-self-center w-100 p-3 rounded"
+            />
+            <div class="mt-3">
+                <b-row class="mb-3 title">
+                    <b-col class="ml-1 label col-4 d-flex justify-content-end">
+                        Name
+                    </b-col>
+                    <b-col class="value text-wrap text-break">
+                        {{ userName }}
+                    </b-col>
                 </b-row>
-                <b-row class="pb-3 title d-flex">
-                    <b-col class="ml-1 label col-4 d-flex justify-content-end"
-                        >Date of Birth</b-col
-                    >
-                    <b-col class="value" data-testid="patientBirthdate">{{
-                        birthdate
-                    }}</b-col>
+                <b-row class="mb-3 title">
+                    <b-col class="ml-1 label col-4 d-flex justify-content-end">
+                        Date of Birth
+                    </b-col>
+                    <b-col class="value" data-testid="patientBirthdate">
+                        {{ birthdate }}
+                    </b-col>
                 </b-row>
-                <b-row class="pb-4 title">
-                    <b-col class="ml-1 label col-4 d-flex justify-content-end"
-                        >Immunization</b-col
-                    >
+                <b-row class="mb-3 title">
+                    <b-col class="ml-1 label col-4 d-flex justify-content-end">
+                        Immunization
+                    </b-col>
                     <b-col class="value">COVID-19</b-col>
                 </b-row>
                 <b-row
                     v-for="(dose, index) in doses"
                     :key="index"
-                    class="dose-wrapper"
-                    :class="{ 'mb-4': index === 0 }"
+                    class="dose-wrapper mt-4"
                 >
                     <b-col
                         class="
@@ -267,12 +323,11 @@ export default class VaccineCardModalComponent extends Vue {
                             justify-content-center
                             align-self-center
                         "
-                        ><span class="dose-label"
-                            >Dose {{ index + 1 }}</span
-                        ></b-col
                     >
-                    <b-col class="right-pane"
-                        ><b-row class="pb-2">
+                        <span class="dose-label">Dose {{ index + 1 }}</span>
+                    </b-col>
+                    <b-col class="right-pane">
+                        <b-row class="pb-2">
                             <b-col class="field">
                                 <b-row class="value" align-h="between">
                                     <b-col cols="6">{{ dose.product }}</b-col>
@@ -280,13 +335,13 @@ export default class VaccineCardModalComponent extends Vue {
                                         {{ dose.date }}
                                     </b-col>
                                 </b-row>
-                                <b-row class="text-muted" align-h="between"
-                                    ><b-col class="description" cols="6"
-                                        >Product</b-col
-                                    >
-                                    <b-col class="description" cols="4"
-                                        >Date</b-col
-                                    >
+                                <b-row class="text-muted" align-h="between">
+                                    <b-col class="description" cols="6">
+                                        Product
+                                    </b-col>
+                                    <b-col class="description" cols="4">
+                                        Date
+                                    </b-col>
                                 </b-row>
                             </b-col>
                         </b-row>
@@ -296,13 +351,13 @@ export default class VaccineCardModalComponent extends Vue {
                                     <b-col cols="6">{{ dose.agent }}</b-col>
                                     <b-col cols="4">{{ dose.lot }}</b-col>
                                 </b-row>
-                                <b-row class="text-muted" align-h="between"
-                                    ><b-col class="description" cols="6"
-                                        >Immunizing agent</b-col
-                                    >
-                                    <b-col class="description" cols="4"
-                                        >Lot Number</b-col
-                                    >
+                                <b-row class="text-muted" align-h="between">
+                                    <b-col class="description" cols="6">
+                                        Immunizing agent
+                                    </b-col>
+                                    <b-col class="description" cols="4">
+                                        Lot Number
+                                    </b-col>
                                 </b-row>
                             </b-col>
                         </b-row>
@@ -317,28 +372,17 @@ export default class VaccineCardModalComponent extends Vue {
                                     >
                                 </b-row>
                             </b-col>
-                        </b-row></b-col
-                    >
+                        </b-row>
+                    </b-col>
                 </b-row>
-            </b-col>
-        </b-row>
-        <b-row data-html2canvas-ignore="true" class="mt-2">
-            <b-col class="d-flex justify-content-center">
-                <hg-button
-                    data-testid="exportCardBtn"
-                    variant="secondary"
-                    @click="showConfirmationModal"
-                >
-                    Download PDF
-                </hg-button>
-            </b-col>
-        </b-row>
-        <message-modal
-            ref="messageModal"
-            title="Sensitive Document Download"
-            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-            @submit="downloadPdf"
-        />
+            </div>
+            <message-modal
+                ref="messageModal"
+                title="Sensitive Document Download"
+                message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+                @submit="downloadPdf"
+            />
+        </b-container>
     </b-modal>
 </template>
 
@@ -422,6 +466,15 @@ div[class*=" row"] {
     }
     .image-container {
         min-height: 50px;
+    }
+}
+.vld-overlay {
+    .vld-background {
+        opacity: 0.75;
+    }
+
+    .vld-icon {
+        text-align: center;
     }
 }
 </style>

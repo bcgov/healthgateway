@@ -5,10 +5,8 @@ import {
     faHandPointer,
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
+import { Component, Prop } from "vue-property-decorator";
 
-import LoadingComponent from "@/components/loading.vue";
-import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
@@ -16,21 +14,13 @@ import VaccinationStatus from "@/models/vaccinationStatus";
 
 library.add(faCheckCircle, faHandPointer);
 
-@Component({
-    components: {
-        LoadingComponent,
-        MessageModalComponent,
-    },
-})
+@Component
 export default class VaccineCardComponent extends Vue {
     @Prop({ required: true }) status!: VaccinationStatus | undefined;
     @Prop({ required: false, default: false }) isLoading!: boolean;
     @Prop({ required: false, default: undefined }) error!:
         | BannerError
         | undefined;
-
-    @Ref("sensitivedocumentDownloadModal")
-    readonly sensitivedocumentDownloadModal!: MessageModalComponent;
 
     private get vaccinationState(): VaccinationState | undefined {
         return this.status?.state;
@@ -78,14 +68,6 @@ export default class VaccineCardComponent extends Vue {
         return new DateWrapper(date).format(DateWrapper.defaultFormat);
     }
 
-    private showSensitiveDocumentDownloadModal() {
-        this.sensitivedocumentDownloadModal.showModal();
-    }
-
-    private download() {
-        this.$emit("download");
-    }
-
     private handleCloseQrModal() {
         this.$bvModal.hide("big-qr");
     }
@@ -94,7 +76,6 @@ export default class VaccineCardComponent extends Vue {
 
 <template>
     <div>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <div class="header text-white">
             <div class="container p-3 pt-0 pt-sm-3">
                 <h3 class="text-center">BC Vaccine Card</h3>
@@ -193,87 +174,65 @@ export default class VaccineCardComponent extends Vue {
                 </div>
             </div>
         </div>
-        <div class="bg-white">
-            <div
-                v-if="isPartiallyVaccinated || isVaccinationNotFound"
-                class="callout"
-            >
-                <p>You're fully vaccinated 7 days after dose 2.</p>
-                <ul class="m-0">
-                    <li>
-                        <a
-                            href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof#help"
-                            rel="noopener"
-                            target="_blank"
-                        >
-                            There's a mistake with my record
-                        </a>
-                    </li>
-                    <li v-if="isVaccinationNotFound">
-                        <a
-                            href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/register"
-                            rel="noopener"
-                            target="_blank"
-                        >
-                            I want to get vaccinated
-                        </a>
-                    </li>
-                    <li v-if="isPartiallyVaccinated">
-                        <a
-                            href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/register"
-                            rel="noopener"
-                            target="_blank"
-                        >
-                            Get dose 2
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <div v-if="error !== undefined" class="container">
-                <b-alert
-                    variant="danger"
-                    class="no-print my-3"
-                    :show="error !== undefined"
-                    dismissible
-                >
-                    <h4>{{ error.title }}</h4>
-                    <h6>{{ error.errorCode }}</h6>
-                    <div class="pl-4">
-                        <p data-testid="errorTextDescription">
-                            {{ error.description }}
-                        </p>
-                        <p data-testid="errorTextDetails">
-                            {{ error.detail }}
-                        </p>
-                        <p
-                            v-if="error.traceId"
-                            data-testid="errorSupportDetails"
-                        >
-                            If this issue persists, contact
-                            HealthGateway@gov.bc.ca and provide
-                            <span class="trace-id">{{ error.traceId }}</span>
-                        </p>
-                    </div>
-                </b-alert>
-            </div>
+        <div
+            v-if="isPartiallyVaccinated || isVaccinationNotFound"
+            class="callout"
+        >
+            <p>You're fully vaccinated 7 days after dose 2.</p>
+            <ul class="m-0">
+                <li>
+                    <a
+                        href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof#help"
+                        rel="noopener"
+                        target="_blank"
+                    >
+                        There's a mistake with my record
+                    </a>
+                </li>
+                <li v-if="isVaccinationNotFound">
+                    <a
+                        href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/register"
+                        rel="noopener"
+                        target="_blank"
+                    >
+                        I want to get vaccinated
+                    </a>
+                </li>
+                <li v-if="isPartiallyVaccinated">
+                    <a
+                        href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/register"
+                        rel="noopener"
+                        target="_blank"
+                    >
+                        Get dose 2
+                    </a>
+                </li>
+            </ul>
         </div>
-        <div class="actions p-3 d-flex justify-content-between bg-white">
-            <hg-button variant="secondary" to="/">Done</hg-button>
-            <hg-button
-                v-if="isPartiallyVaccinated || isFullyVaccinated"
-                variant="primary"
-                class="ml-3"
-                @click="showSensitiveDocumentDownloadModal()"
+        <div v-if="error !== undefined" class="container">
+            <b-alert
+                variant="danger"
+                class="no-print my-3"
+                :show="error !== undefined"
+                dismissible
             >
-                Save a Copy
-            </hg-button>
+                <h4>{{ error.title }}</h4>
+                <h6>{{ error.errorCode }}</h6>
+                <div class="pl-4">
+                    <p data-testid="errorTextDescription">
+                        {{ error.description }}
+                    </p>
+                    <p data-testid="errorTextDetails">
+                        {{ error.detail }}
+                    </p>
+                    <p v-if="error.traceId" data-testid="errorSupportDetails">
+                        If this issue persists, contact HealthGateway@gov.bc.ca
+                        and provide
+                        <span class="trace-id">{{ error.traceId }}</span>
+                    </p>
+                </div>
+            </b-alert>
         </div>
-        <MessageModalComponent
-            ref="sensitivedocumentDownloadModal"
-            title="Sensitive Document Download"
-            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-            @submit="download"
-        />
     </div>
 </template>
 
@@ -287,6 +246,8 @@ export default class VaccineCardComponent extends Vue {
 }
 
 .vaccination-result {
+    min-height: 335px;
+
     &.fully-vaccinated {
         background-color: $hg-state-success;
     }
@@ -295,7 +256,6 @@ export default class VaccineCardComponent extends Vue {
     }
     &.not-found {
         background-color: #6c757d;
-        min-height: 335px;
     }
 }
 
@@ -312,16 +272,10 @@ img.vaccination-stage {
 }
 
 .callout {
-    margin: 1rem;
     padding: 1rem;
     border-left: 0.25rem solid $hg-brand-secondary;
     border-radius: 0.25rem;
     background-color: $hg-background;
     color: $hg-text-primary;
-}
-
-.actions {
-    border-bottom-left-radius: 0.25rem;
-    border-bottom-right-radius: 0.25rem;
 }
 </style>

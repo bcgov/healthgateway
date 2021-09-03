@@ -98,9 +98,9 @@ namespace HealthGateway.Common.Models.PHSA
         /// Converts a VaccineStatusResult to a VaccineStatus model.
         /// </summary>
         /// <param name="model">The result model.</param>
-        /// <param name="personalHealthNumber">the patient personal health number.</param>
+        /// <param name="personalHealthNumber">the patient's personal health number.</param>
         /// <returns>The vaccine status model.</returns>
-        public static VaccineStatus FromModel(VaccineStatusResult model, string? personalHealthNumber)
+        public static VaccineStatus FromModel(VaccineStatusResult model, string? personalHealthNumber = null)
         {
             return new VaccineStatus()
             {

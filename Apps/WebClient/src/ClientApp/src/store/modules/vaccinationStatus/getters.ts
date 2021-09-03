@@ -8,15 +8,29 @@ export const getters: VaccinationStatusGetters = {
     vaccinationStatus(
         state: VaccinationStatusState
     ): VaccinationStatus | undefined {
-        return state.vaccinationStatus;
+        return state.public.vaccinationStatus;
     },
     isLoading(state: VaccinationStatusState): boolean {
-        return state.status === LoadStatus.REQUESTED;
+        return state.public.status === LoadStatus.REQUESTED;
     },
     error(state: VaccinationStatusState): BannerError | undefined {
-        return state.error;
+        return state.public.error;
     },
     statusMessage(state: VaccinationStatusState): string {
-        return state.statusMessage;
+        return state.public.statusMessage;
+    },
+    authenticatedVaccinationStatus(
+        state: VaccinationStatusState
+    ): VaccinationStatus | undefined {
+        return state.authenticated.vaccinationStatus;
+    },
+    authenticatedIsLoading(state: VaccinationStatusState): boolean {
+        return state.authenticated.status === LoadStatus.REQUESTED;
+    },
+    authenticatedError(state: VaccinationStatusState): BannerError | undefined {
+        return state.authenticated.error;
+    },
+    authenticatedStatusMessage(state: VaccinationStatusState): string {
+        return state.authenticated.statusMessage;
     },
 };
