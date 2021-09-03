@@ -90,7 +90,7 @@ const routes = [
     },
     {
         path: "/covidcard",
-        name: "COVID-19 Immunization Card",
+        name: "BC Vaccine Card",
         component: CovidCardView,
         meta: {
             requiresAuth: true,

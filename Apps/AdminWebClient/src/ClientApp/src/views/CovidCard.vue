@@ -277,7 +277,7 @@ export default class CovidCardView extends Vue {
                         type: ResultType.Success,
                         title: "Success",
                         message:
-                            "COVID-19 Immunization Card mailed successfully.",
+                            "BC Vaccine Card mailed successfully.",
                     };
                 } else {
                     this.showFeedback = true;
