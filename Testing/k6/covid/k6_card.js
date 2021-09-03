@@ -99,6 +99,8 @@ switch (testType)
 
 console.log("Test: " + testType);
 
+export let currentUser = 0;
+
 // not using SharedArray here will mean that the code in the function call (that is what loads and
 // parses the csv) will be executed per each VU which also means that there will be a complete copy
 // per each VU
@@ -116,10 +118,13 @@ export default function () {
     // Loop through all username/password pairs
     //for (var userData of csvData) {
         //console.log(JSON.stringify(userData));
+
     //}
 
     // Pick a random username/password pair
-    let randomUser = csvData[Math.floor(Math.random() * csvData.length)];
+    let randomUser = csvData[__VU % csvData.length];
+    //let randomUser = csvData[Math.floor(Math.random() * csvData.length)];
+
     console.log('Random user: ', JSON.stringify(randomUser));
 
     let res1 = http.get(entryPageUrl);

@@ -38,3 +38,4 @@ Thumbs.db
 .dropox.attr
 .dropbox.cache
 Testing/functional/e2e/debug.log
+Testing/k6/covid/data.csv
