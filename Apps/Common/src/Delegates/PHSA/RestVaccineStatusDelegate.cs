@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Delegates.PHSA
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net;
     using System.Net.Http;
@@ -30,6 +31,7 @@ namespace HealthGateway.Common.Delegates.PHSA
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -69,12 +71,14 @@ namespace HealthGateway.Common.Delegates.PHSA
 
         /// <inheritdoc/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
-        public async Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken)
+        public async Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
         {
             using Activity? activity = Source.StartActivity("GetVaccineStatus");
-            this.logger.LogDebug($"Getting vaccine status {query.PersonalHealthNumber.Substring(0, 5)} {query.DateOfBirth} {query.DateOfVaccine}...");
-            string endpointString = $"{this.phsaConfig.BaseUrl}{this.phsaConfig.VaccineStatusEndpoint}";
+            this.logger.LogDebug($"Getting vaccine status {query.HdId} {query.PersonalHealthNumber} {query.DateOfBirth} {query.DateOfVaccine}...");
 
+            HttpContent? content = null;
+            Uri endpoint = null!;
+            string endpointString = this.phsaConfig.BaseUrl.ToString();
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
 
@@ -94,14 +98,28 @@ namespace HealthGateway.Common.Delegates.PHSA
                 };
                 string json = JsonSerializer.Serialize(query, jsonOptions);
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-                using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
+                if (isPublicEndpoint)
+                {
+                    endpointString += this.phsaConfig.PublicVaccineStatusEndpoint;
+                    endpoint = new Uri(endpointString);
+                    content = new StringContent(json, null, MediaTypeNames.Application.Json);
+                }
+                else
+                {
+                    Dictionary<string, string?> queryDict = new ()
+                    {
+                        ["subjectHdid"] = query.HdId,
+                    };
+                    endpointString += this.phsaConfig.VaccineStatusEndpoint;
+                    endpoint = new Uri(QueryHelpers.AddQueryString(endpointString, queryDict));
+                }
 
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
                 client.DefaultRequestHeaders.Add("X-Forward-For", ipAddress);
 
-                HttpResponseMessage response = await client.PostAsync(new Uri(endpointString), content).ConfigureAwait(true);
+                HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 this.logger.LogTrace($"Response: {response}");
 
@@ -161,8 +179,12 @@ namespace HealthGateway.Common.Delegates.PHSA
                 retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting vaccine status: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                 this.logger.LogError($"Unexpected exception retrieving vaccine status {e}");
             }
+            finally
+            {
+                content?.Dispose();
+            }
 
-            this.logger.LogDebug($"Finished getting vaccine status {query.PersonalHealthNumber.Substring(0, 5)} {query.DateOfBirth}");
+            this.logger.LogDebug($"Finished getting vaccine status {query.HdId} {query.PersonalHealthNumber} {query.DateOfBirth}");
             return retVal;
         }
 

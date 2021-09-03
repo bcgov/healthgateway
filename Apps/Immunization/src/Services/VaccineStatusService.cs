@@ -132,7 +132,7 @@ namespace HealthGateway.Immunization.Services
 
             string? accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest).AccessToken;
             RequestResult<PHSAResult<VaccineStatusResult>> result =
-                await this.vaccineStatusDelegate.GetVaccineStatus(query, accessToken).ConfigureAwait(true);
+                await this.vaccineStatusDelegate.GetVaccineStatus(query, accessToken, true).ConfigureAwait(true);
             VaccineStatusResult? payload = result.ResourcePayload?.Result;
             retVal.ResultStatus = result.ResultStatus;
             retVal.ResultError = result.ResultError;
@@ -144,17 +144,7 @@ namespace HealthGateway.Immunization.Services
             }
             else
             {
-                retVal.ResourcePayload = new VaccineStatus()
-                {
-                    Birthdate = payload.Birthdate,
-                    VaccineDate = payload.VaccineDate,
-                    PersonalHealthNumber = phn,
-                    FirstName = payload.FirstName,
-                    LastName = payload.LastName,
-                    Doses = payload.DoseCount,
-                    State = Enum.Parse<VaccineState>(payload.StatusIndicator),
-                    QRCode = payload.QRCode,
-                };
+                retVal.ResourcePayload = VaccineStatus.FromModel(payload, phn);
             }
 
             if (result.ResourcePayload != null)

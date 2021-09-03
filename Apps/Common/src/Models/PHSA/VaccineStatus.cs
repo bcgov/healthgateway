@@ -93,5 +93,26 @@ namespace HealthGateway.Common.Models.PHSA
         /// </summary>
         [JsonPropertyName("qrCode")]
         public EncodedMedia QRCode { get; set; } = new ();
+
+        /// <summary>
+        /// Converts a VaccineStatusResult to a VaccineStatus model.
+        /// </summary>
+        /// <param name="model">The result model.</param>
+        /// <param name="personalHealthNumber">the patient personal health number.</param>
+        /// <returns>The vaccine status model.</returns>
+        public static VaccineStatus FromModel(VaccineStatusResult model, string? personalHealthNumber)
+        {
+            return new VaccineStatus()
+            {
+                Birthdate = model.Birthdate,
+                PersonalHealthNumber = personalHealthNumber,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Doses = model.DoseCount,
+                State = Enum.Parse<VaccineState>(model.StatusIndicator),
+                VaccineDate = model.VaccineDate,
+                QRCode = model.QRCode,
+            };
+        }
     }
 }

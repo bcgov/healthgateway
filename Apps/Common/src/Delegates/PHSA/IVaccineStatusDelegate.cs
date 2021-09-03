@@ -29,8 +29,9 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// </summary>
         /// <param name="query">The vaccine status query.</param>
         /// <param name="accessToken">The connection access token.</param>
+        /// <param name="isPublicEndpoint">Indicates whether it should use the public endpoint.</param>
         /// <returns>The vaccine status result for the given patient.</returns>
-        Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken);
+        Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint);
 
         /// <summary>
         /// Returns the record card for the given patient.

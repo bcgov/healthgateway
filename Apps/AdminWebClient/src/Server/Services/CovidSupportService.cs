@@ -192,7 +192,7 @@ namespace HealthGateway.Admin.Services
                 DateOfBirth = covidInfo.ResourcePayload!.Patient.Birthdate,
             };
             RequestResult<PHSAResult<VaccineStatusResult>> statusResult =
-                await this.vaccineStatusDelegate.GetVaccineStatus(statusQuery, bearerToken).ConfigureAwait(true);
+                await this.vaccineStatusDelegate.GetVaccineStatus(statusQuery, bearerToken, false).ConfigureAwait(true);
 
             if (statusResult.ResultStatus != ResultType.Success)
             {
@@ -246,16 +246,7 @@ namespace HealthGateway.Admin.Services
 
             string? base64RecordCard = recordCardResult.ResourcePayload?.Result?.PaperRecord.Data;
 
-            VaccineStatus vaccineStatus = new VaccineStatus()
-            {
-                Birthdate = payload.Birthdate,
-                PersonalHealthNumber = phn,
-                FirstName = payload.FirstName,
-                LastName = payload.LastName,
-                Doses = payload.DoseCount,
-                State = Enum.Parse<VaccineState>(payload.StatusIndicator),
-                QRCode = payload.QRCode,
-            };
+            VaccineStatus vaccineStatus = VaccineStatus.FromModel(payload, phn);
 
             return this.reportDelegate.GetVaccineStatusAndRecordPDF(vaccineStatus, address, base64RecordCard);
 

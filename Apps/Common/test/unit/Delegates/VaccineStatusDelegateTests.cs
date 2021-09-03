@@ -92,7 +92,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 PersonalHealthNumber = this.phn,
                 DateOfBirth = this.dob,
             };
-            var actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken).ConfigureAwait(true);
+            var actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -122,7 +122,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 PersonalHealthNumber = this.phn,
                 DateOfBirth = this.dob,
             };
-            var actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken).ConfigureAwait(true);
+            var actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
