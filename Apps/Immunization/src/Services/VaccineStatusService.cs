@@ -132,7 +132,7 @@ namespace HealthGateway.Immunization.Services
 
             string? accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest).AccessToken;
             RequestResult<PHSAResult<VaccineStatusResult>> result =
-                await this.vaccineStatusDelegate.GetVaccineStatus(query, accessToken).ConfigureAwait(true);
+                await this.vaccineStatusDelegate.GetVaccineStatus(query, accessToken, true).ConfigureAwait(true);
             VaccineStatusResult? payload = result.ResourcePayload?.Result;
             retVal.ResultStatus = result.ResultStatus;
             retVal.ResultError = result.ResultError;

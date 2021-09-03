@@ -33,6 +33,11 @@ namespace HealthGateway.Common.Models.PHSA
         public string ImmunizationEndpoint { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the public vaccine status endpoint.
+        /// </summary>
+        public string PublicVaccineStatusEndpoint { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the vaccine status endpoint.
         /// </summary>
         public string VaccineStatusEndpoint { get; set; } = string.Empty;

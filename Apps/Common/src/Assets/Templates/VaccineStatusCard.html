@@ -10,7 +10,7 @@
                 width: 100%;
                 height: 100%;
             }
-            h5 {
+            h5, h4 {
                 margin: 0px;
             }
             .content {
@@ -39,9 +39,9 @@
                 height: 33%;
             }
             .footer-col {
-                padding-top: 45px;
-                padding-bottom: 200px;
+                padding-top: 170px;
                 height: 100%;
+                font-size: 0.9em;
             }
 
             .date {
@@ -70,6 +70,10 @@
             .qrCode {
                 text-align: right;
             }
+
+            .timestamp {
+                padding-top: 25px;
+            }
         </style>
     </head>
     <body lang="EN-CA">
@@ -94,10 +98,9 @@
                         <table class="body-table">
                             <tr>
                                 <td>
-                                    <img width="199"
-                                         height="53"
+                                    <img width="125"
+                                         height="32"
                                          src="data:image/png;base64, {bcLogoImageSrc}"
-                                         align="middle"
                                          alt="BC Mark" />
                                 </td>
                                 <td>
@@ -124,6 +127,9 @@
                                         </tr>
                                     </table>
                                 </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="timestamp">Issued on {currentDateTime}</td>
                             </tr>
                         </table>
                     </td>

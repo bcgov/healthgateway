@@ -24,6 +24,12 @@ namespace HealthGateway.Common.Models.PHSA
     public class VaccineStatusQuery
     {
         /// <summary>
+        /// Gets or sets the patient hdid.
+        /// </summary>
+        [JsonIgnore]
+        public string HdId { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the Personal Health Number.
         /// </summary>
         [JsonPropertyName("phn")]
