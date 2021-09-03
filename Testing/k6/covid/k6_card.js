@@ -19,20 +19,85 @@ import { check, sleep } from 'k6';
 import { SharedArray } from 'k6/data';
 import PapaParse from "./papaparse.js";
 
-export let options = {
+export let testType = __ENV.TYPE;
+
+export let loadOptions = {
     stages: [
         { duration: "20s", target: 10 }, // below normal load
-        { duration: "1m", target: 10 },
-        { duration: "1m", target: 300 }, // spike to maximum expected users
-        { duration: "5m", target: 300 }, // stay there
-        { duration: "1m", target: 200 }, // scale down
+        { duration: "1m", target: 50 },
+        { duration: "1m", target: 400 }, // spike to maximum expected users
+        { duration: "3m", target: 400 }, // stay there
+        { duration: "1m", target: 250 }, // scale down
         { duration: "3m", target: 10 },
         { duration: "10s", target: 0 }, //
     ],
     thresholds: {
-        http_req_duration: ['p(99)<5000'], // 99% of requests must complete below 5s
+        http_req_duration: ['p(99)<8000'], // 99% of requests must complete below 8s
       },
 };
+
+export let soakOptions = {
+    stages: [
+        { duration: "1m", target: 10 }, // below normal load
+        { duration: "2m", target: 250 },
+        { duration: "3h56m", target: 250 }, // stay at high users for hours 'soaking' the system
+        { duration: "2m", target: 0 }, // drop back down
+    ],
+};
+
+export let spikeOptions = {
+    stages: [
+        { duration: "20s", target: 10 }, // below normal load
+        { duration: "1m", target: 10 },
+        { duration: "1m", target: 600 }, // spike to super high users
+        { duration: "3m", target: 600 }, // stay there
+        { duration: "1m", target: 200 }, // scale down
+        { duration: "3m", target: 10 },
+        { duration: "10s", target: 0 }, //
+    ],
+};
+
+export let stressOptions = {
+    stages: [
+        { duration: "2m", target: 50 }, // below normal load
+        { duration: "5m", target: 100 },
+        { duration: "2m", target: 200 }, // normal load
+        { duration: "5m", target: 200 },
+        { duration: "2m", target: 400 }, // around the breaking point
+        { duration: "4m", target: 400 },
+        { duration: "2m", target: 500 }, // beyond the breaking point
+        { duration: "5m", target: 550 },
+        { duration: "3m", target: 600 }, // limit
+        { duration: "5m", target: 0 }, // scale down. Recovery stage.
+    ],
+};
+
+export let options = {
+    vus: 3,
+    iterations: 5
+}
+
+switch (testType)
+{
+    case 'load':
+        options = loadOptions;
+        break;
+    case 'spike':
+        options = spikeOptions;
+        break;
+    case 'soak':
+        options = soakOptions;
+        break;
+    case 'stress':
+        options = stressOptions;
+        break;
+    case 'smoke':
+    default:
+        testType = 'smoke';
+        break;
+}
+
+console.log("Test: " + testType);
 
 // not using SharedArray here will mean that the code in the function call (that is what loads and
 // parses the csv) will be executed per each VU which also means that there will be a complete copy
@@ -42,16 +107,16 @@ const csvData = new SharedArray("another data name", function() {
     return PapaParse.parse(open('./data.csv'), { header: true }).data;
 });
 
-
 export default function () {
 
-    let cardUrl = "https://hg-test.api.gov.bc.ca/v1/api/VaccineStatus";
-    let entryPageUrl  = "https://dev.healthgateway.gov.bc.ca/vaccinecard"
+    //let cardUrl = "https://hg-test.api.gov.bc.ca/v1/api/VaccineStatus";
+    let cardUrl = "https://test.healthgateway.gov.bc.ca/api/immunizationservice/v1/api/VaccineStatus";
+    let entryPageUrl  = "https://test.healthgateway.gov.bc.ca/vaccinecard"
 
     // Loop through all username/password pairs
-    for (var userData of csvData) {
+    //for (var userData of csvData) {
         //console.log(JSON.stringify(userData));
-    }
+    //}
 
     // Pick a random username/password pair
     let randomUser = csvData[Math.floor(Math.random() * csvData.length)];
