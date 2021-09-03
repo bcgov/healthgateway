@@ -11,7 +11,9 @@
         <br />
     }
     <h2>Request Information</h2>
-    @:Client IP: @Context.Connection.RemoteIpAddress
+    @:Client IPV4: @Context.Connection.RemoteIpAddress?.MapToIPv4()
+    <br />
+    @:Client IPV6: @Context.Connection.RemoteIpAddress?.MapToIPv6()
     <br />
     @:Is HTTPs: @Context.Request.IsHttps
     <br />
