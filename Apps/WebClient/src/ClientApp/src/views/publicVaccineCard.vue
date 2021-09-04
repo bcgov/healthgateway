@@ -23,7 +23,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import PHNValidator from "@/utility/phnValidator";
-import SnowPlow from "@/utility/SnowPlow";
+import SnowPlow from "@/utility/snowPlow";
 
 library.add(faInfoCircle);
 
