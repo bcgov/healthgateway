@@ -266,11 +266,17 @@ export default class VaccineCardModalComponent extends Vue {
                 </b-alert>
             </div>
             <div class="w-100 p-2 d-flex justify-content-between">
-                <hg-button variant="secondary" class="m-2" @click="close()">
+                <hg-button
+                    variant="secondary"
+                    class="m-2"
+                    aria-label="Done"
+                    @click="close()"
+                >
                     Done
                 </hg-button>
                 <hg-button
                     data-testid="exportCardBtn"
+                    aria-label="Save a Copy"
                     variant="primary"
                     class="m-2"
                     @click="showConfirmationModal()"
