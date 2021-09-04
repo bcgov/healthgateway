@@ -2,7 +2,6 @@ import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
-import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { ServiceName } from "@/models/errorInterfaces";
 import ImmunizationResult from "@/models/immunizationResult";
 import RequestResult from "@/models/requestResult";
@@ -19,7 +18,6 @@ import ErrorTranslator from "@/utility/errorTranslator";
 export class RestImmunizationService implements IImmunizationService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly IMMS_BASE_URI: string = "v1/api/Immunization";
-    private readonly COVID_BASE_URI: string = "v1/api/CovidVaccineRecord";
     private baseUri = "";
     private http!: IHttpDelegate;
     private isEnabled = false;
@@ -64,31 +62,6 @@ export class RestImmunizationService implements IImmunizationService {
                         ErrorTranslator.internalNetworkError(
                             err,
                             ServiceName.Immunization
-                        )
-                    );
-                });
-        });
-    }
-
-    public getCovidVaccineRecord(
-        hdid: string
-    ): Promise<RequestResult<CovidVaccineRecord>> {
-        return new Promise((resolve, reject) => {
-            this.http
-                .get<RequestResult<CovidVaccineRecord>>(
-                    `${this.baseUri}${this.COVID_BASE_URI}?hdid=${hdid}`
-                )
-                .then((result) => {
-                    return resolve(result);
-                })
-                .catch((err) => {
-                    this.logger.error(
-                        `getCovidVaccineRecord Fetch error: ${err}`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceName.Report
                         )
                     );
                 });

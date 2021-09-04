@@ -7,6 +7,7 @@ import {
 } from "vuex";
 
 import BannerError from "@/models/bannerError";
+import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
 import Report from "@/models/report";
 import { ResultError } from "@/models/requestResult";
@@ -15,10 +16,18 @@ import VaccinationStatus from "@/models/vaccinationStatus";
 import { RootState } from "@/store/types";
 
 export interface VaccinationStatusState {
-    vaccinationStatus?: VaccinationStatus;
-    error?: BannerError;
-    status: LoadStatus;
-    statusMessage: string;
+    public: {
+        vaccinationStatus?: VaccinationStatus;
+        error?: BannerError;
+        status: LoadStatus;
+        statusMessage: string;
+    };
+    authenticated: {
+        vaccinationStatus?: VaccinationStatus;
+        error?: BannerError;
+        status: LoadStatus;
+        statusMessage: string;
+    };
 }
 
 export interface VaccinationStatusGetters
@@ -29,12 +38,18 @@ export interface VaccinationStatusGetters
     isLoading(state: VaccinationStatusState): boolean;
     error(state: VaccinationStatusState): BannerError | undefined;
     statusMessage(state: VaccinationStatusState): string;
+    authenticatedVaccinationStatus(
+        state: VaccinationStatusState
+    ): VaccinationStatus | undefined;
+    authenticatedIsLoading(state: VaccinationStatusState): boolean;
+    authenticatedError(state: VaccinationStatusState): BannerError | undefined;
+    authenticatedStatusMessage(state: VaccinationStatusState): string;
 }
 
 type StoreContext = ActionContext<VaccinationStatusState, RootState>;
 export interface VaccinationStatusActions
     extends ActionTree<VaccinationStatusState, RootState> {
-    retrieve(
+    retrieveVaccineStatus(
         context: StoreContext,
         params: {
             phn: string;
@@ -42,7 +57,7 @@ export interface VaccinationStatusActions
             dateOfVaccine: StringISODate;
         }
     ): Promise<void>;
-    getReport(
+    retrieveVaccineStatusPdf(
         context: StoreContext,
         params: {
             phn: string;
@@ -51,6 +66,19 @@ export interface VaccinationStatusActions
         }
     ): Promise<Report>;
     handleError(context: StoreContext, error: ResultError): void;
+    retrieveAuthenticatedVaccineStatus(
+        context: StoreContext,
+        params: {
+            hdid: string;
+        }
+    ): Promise<void>;
+    retrieveAuthenticatedVaccineRecord(
+        context: StoreContext,
+        params: {
+            hdid: string;
+        }
+    ): Promise<CovidVaccineRecord>;
+    handleAuthenticatedError(context: StoreContext, error: ResultError): void;
 }
 
 export interface VaccinationStatusMutations
@@ -64,7 +92,27 @@ export interface VaccinationStatusMutations
         state: VaccinationStatusState,
         error: BannerError
     ): void;
+    setPdfRequested(state: VaccinationStatusState): void;
+    pdfError(state: VaccinationStatusState, error: BannerError): void;
     setStatusMessage(
+        state: VaccinationStatusState,
+        statusMessage: string
+    ): void;
+    setAuthenticatedRequested(state: VaccinationStatusState): void;
+    setAuthenticatedVaccinationStatus(
+        state: VaccinationStatusState,
+        vaccinationStatus: VaccinationStatus
+    ): void;
+    authenticatedVaccinationStatusError(
+        state: VaccinationStatusState,
+        error: BannerError
+    ): void;
+    setAuthenticatedPdfRequested(state: VaccinationStatusState): void;
+    authenticatedPdfError(
+        state: VaccinationStatusState,
+        error: BannerError
+    ): void;
+    setAuthenticatedStatusMessage(
         state: VaccinationStatusState,
         statusMessage: string
     ): void;

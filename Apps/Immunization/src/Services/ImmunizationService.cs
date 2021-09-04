@@ -18,6 +18,7 @@ namespace HealthGateway.Immunization.Services
     using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models;
@@ -66,6 +67,42 @@ namespace HealthGateway.Immunization.Services
 
             this.phsaConfig = new PHSAConfig();
             configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<VaccineStatus>> GetCovidVaccineStatus(string hdid)
+        {
+            RequestResult<VaccineStatus> retVal = new()
+            {
+                ResultStatus = ResultType.Error,
+            };
+
+            // Gets the current user access token and pass it along to PHSA
+            string? bearerToken = await this.httpContextAccessor.HttpContext!.GetTokenAsync("access_token").ConfigureAwait(true);
+
+            RequestResult<PHSAResult<VaccineStatusResult>> result = await this.vaccineDelegate.GetVaccineStatus(new VaccineStatusQuery() { HdId = hdid }, bearerToken, false).ConfigureAwait(true);
+
+            VaccineStatusResult? payload = result.ResourcePayload?.Result;
+            retVal.ResultStatus = result.ResultStatus;
+            retVal.ResultError = result.ResultError;
+
+            if (payload == null)
+            {
+                retVal.ResourcePayload = new VaccineStatus();
+                retVal.ResourcePayload.State = VaccineState.NotFound;
+            }
+            else
+            {
+                retVal.ResourcePayload = VaccineStatus.FromModel(payload);
+            }
+
+            if (result.ResourcePayload != null)
+            {
+                retVal.ResourcePayload.Loaded = !result.ResourcePayload.LoadState.RefreshInProgress;
+                retVal.ResourcePayload.RetryIn = Math.Max(result.ResourcePayload.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds);
+            }
+
+            return retVal;
         }
 
         /// <inheritdoc/>

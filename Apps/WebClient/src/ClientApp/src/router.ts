@@ -15,9 +15,9 @@ const ProfileView = () =>
     import(/* webpackChunkName: "profile" */ "@/views/profile.vue");
 const LandingView = () =>
     import(/* webpackChunkName: "landing" */ "@/views/landing.vue");
-const VaccinationStatusView = () =>
+const PublicVaccineCardView = () =>
     import(
-        /* webpackChunkName: "vaccinationStatus" */ "@/views/vaccinationStatus.vue"
+        /* webpackChunkName: "vaccinationStatus" */ "@/views/publicVaccineCard.vue"
     );
 const NotFoundView = () =>
     import(/* webpackChunkName: "notFound" */ "@/views/errors/notFound.vue");
@@ -224,7 +224,7 @@ const routes = [
     },
     {
         path: "/vaccinecard",
-        component: VaccinationStatusView,
+        component: PublicVaccineCardView,
         meta: {
             validStates: [
                 UserState.unauthenticated,

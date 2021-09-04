@@ -1,0 +1,244 @@
+<script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+    faCheckCircle,
+    faHandPointer,
+} from "@fortawesome/free-solid-svg-icons";
+import Vue from "vue";
+import { Component, Prop } from "vue-property-decorator";
+
+import { VaccinationState } from "@/constants/vaccinationState";
+import BannerError from "@/models/bannerError";
+import { DateWrapper } from "@/models/dateWrapper";
+import VaccinationStatus from "@/models/vaccinationStatus";
+
+library.add(faCheckCircle, faHandPointer);
+
+@Component
+export default class VaccineCardComponent extends Vue {
+    @Prop({ required: true }) status!: VaccinationStatus | undefined;
+    @Prop({ required: false, default: false }) isLoading!: boolean;
+    @Prop({ required: false, default: undefined }) error!:
+        | BannerError
+        | undefined;
+
+    private get vaccinationState(): VaccinationState | undefined {
+        return this.status?.state;
+    }
+
+    private get isFullyVaccinated(): boolean {
+        return this.vaccinationState === VaccinationState.FullyVaccinated;
+    }
+
+    private get isPartiallyVaccinated(): boolean {
+        return this.vaccinationState === VaccinationState.PartiallyVaccinated;
+    }
+
+    private get isVaccinationNotFound(): boolean {
+        return this.vaccinationState === VaccinationState.NotFound;
+    }
+
+    private get name(): string {
+        return [this.status?.firstname ?? "", this.status?.lastname ?? ""]
+            .filter((name) => name?.length > 0)
+            .join(" ");
+    }
+
+    private get qrCodeUrl(): string | null {
+        const qrCode = this.status?.qrCode;
+        if (qrCode?.mediaType && qrCode?.encoding && qrCode?.data) {
+            return `data:${qrCode.mediaType};${qrCode.encoding},${qrCode.data}`;
+        } else {
+            return null;
+        }
+    }
+
+    private get issuedDate(): string | undefined {
+        if (this.status?.issueddate) {
+            return new DateWrapper(this.status?.issueddate).format(
+                "MMMM-dd-yyyy, HH:mm"
+            );
+        }
+        return undefined;
+    }
+
+    private handleCloseQrModal() {
+        this.$bvModal.hide("big-qr");
+    }
+}
+</script>
+
+<template>
+    <div>
+        <div class="header text-white">
+            <div class="container p-3 pt-0 pt-sm-3">
+                <h3 class="text-center">BC Vaccine Card</h3>
+                <hr style="border-top: 2px solid #fcba19" />
+                <p class="text-center">{{ name }}</p>
+            </div>
+        </div>
+        <div class="justify-content-between">
+            <div
+                class="
+                    vaccination-result
+                    p-3
+                    flex-grow-1
+                    d-flex
+                    align-items-center
+                    justify-content-center
+                    flex-column
+                    text-center text-white
+                "
+                :class="{
+                    'fully-vaccinated': isFullyVaccinated,
+                    'partially-vaccinated': isPartiallyVaccinated,
+                    'not-found': isVaccinationNotFound,
+                }"
+            >
+                <h2 v-if="isFullyVaccinated" class="d-flex align-items-center">
+                    <hg-icon
+                        v-show="isFullyVaccinated"
+                        icon="check-circle"
+                        size="extra-large"
+                        class="mr-2"
+                    />
+                    <span>Vaccinated</span>
+                </h2>
+                <h2 v-else-if="isPartiallyVaccinated">Partially Vaccinated</h2>
+                <h2 v-else-if="isVaccinationNotFound">Not Found</h2>
+                <small v-if="issuedDate !== undefined" class="mt-3">
+                    Issued on {{ issuedDate }}
+                </small>
+                <div
+                    v-if="qrCodeUrl !== null && !isVaccinationNotFound"
+                    class="text-center"
+                >
+                    <img
+                        v-b-modal.big-qr
+                        :src="qrCodeUrl"
+                        class="d-sm-none small-qr-code img-fluid m-2"
+                    />
+                    <img
+                        :src="qrCodeUrl"
+                        class="d-none d-sm-block small-qr-code img-fluid m-2"
+                    />
+                    <p v-b-modal.big-qr class="d-sm-none m-0">
+                        <hg-icon icon="hand-pointer" class="mr-2" />
+                        <span>Tap to zoom in</span>
+                    </p>
+                    <b-modal
+                        id="big-qr"
+                        centered
+                        title="Present for scanning"
+                        title-class="flex-grow-1 text-center"
+                        body-class="p-0"
+                        footer-class="justify-content-center"
+                    >
+                        <img :src="qrCodeUrl" class="big-qr-code img-fluid" />
+                        <template #modal-footer>
+                            <hg-button
+                                variant="secondary"
+                                @click="handleCloseQrModal()"
+                            >
+                                Close
+                            </hg-button>
+                        </template>
+                    </b-modal>
+                </div>
+            </div>
+        </div>
+        <div
+            v-if="isPartiallyVaccinated || isVaccinationNotFound"
+            class="callout"
+        >
+            <p>You're fully vaccinated 7 days after dose 2.</p>
+            <ul class="m-0">
+                <li>
+                    <a
+                        href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof#help"
+                        rel="noopener"
+                        target="_blank"
+                    >
+                        There's a mistake with my record
+                    </a>
+                </li>
+                <li v-if="isVaccinationNotFound">
+                    <a
+                        href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/register"
+                        rel="noopener"
+                        target="_blank"
+                    >
+                        I want to get vaccinated
+                    </a>
+                </li>
+                <li v-if="isPartiallyVaccinated">
+                    <a
+                        href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/register"
+                        rel="noopener"
+                        target="_blank"
+                    >
+                        Get dose 2
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div v-if="error !== undefined" class="container">
+            <b-alert
+                variant="danger"
+                class="no-print my-3 p-3"
+                :show="error !== undefined"
+                dismissible
+            >
+                <h4>Our Apologies</h4>
+                <div data-testid="errorTextDescription" class="pl-4">
+                    We've found an issue and the Health Gateway team is working
+                    hard to fix it.
+                </div>
+            </b-alert>
+        </div>
+    </div>
+</template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+
+.header {
+    background-color: $hg-brand-primary;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+
+.vaccination-result {
+    min-height: 356px;
+
+    &.fully-vaccinated {
+        background-color: $hg-state-success;
+    }
+    &.partially-vaccinated {
+        background-color: $hg-background-navigation;
+    }
+    &.not-found {
+        background-color: #6c757d;
+    }
+}
+
+img.vaccination-stage {
+    height: 3em;
+}
+
+.small-qr-code {
+    width: 230px;
+}
+
+.big-qr-code {
+    width: 100%;
+}
+
+.callout {
+    padding: 1rem;
+    border-left: 0.25rem solid $hg-brand-secondary;
+    border-radius: 0.25rem;
+    background-color: $hg-background;
+    color: $hg-text-primary;
+}
+</style>

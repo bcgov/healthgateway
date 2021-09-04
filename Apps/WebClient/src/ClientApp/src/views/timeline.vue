@@ -1,13 +1,13 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faIdCard, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faSearch } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
-import CovidModalComponent from "@/components/modal/covid.vue";
+import CovidTestModalComponent from "@/components/modal/covidTestModal.vue";
 import NoteEditComponent from "@/components/modal/noteEdit.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import ResourceCentreComponent from "@/components/resourceCentre.vue";
@@ -40,13 +40,13 @@ import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 
-library.add(faSearch, faIdCard);
+library.add(faSearch, faCheckCircle);
 
 @Component({
     components: {
         LoadingComponent,
         ProtectiveWordComponent,
-        CovidModalComponent,
+        CovidTestModalComponent,
         NoteEditComponent,
         EntryDetailsComponent,
         LinearTimeline: LinearTimelineComponent,
@@ -447,11 +447,11 @@ export default class TimelineView extends Vue {
                             @click="showCard()"
                         >
                             <hg-icon
-                                icon="id-card"
+                                icon="check-circle"
                                 size="medium"
                                 class="mr-2"
                             />
-                            <span>COVID-19 Card</span>
+                            <span>BC Vaccine Card</span>
                         </hg-button>
                     </b-col>
                 </b-row>
@@ -549,7 +549,7 @@ export default class TimelineView extends Vue {
             </b-col>
         </b-row>
         <resource-centre />
-        <CovidModalComponent :is-loading="isLoading" />
+        <CovidTestModalComponent :is-loading="isLoading" />
         <ProtectiveWordComponent :is-loading="isLoading" />
         <NoteEditComponent :is-loading="isLoading" />
         <EntryDetailsComponent :is-loading="isLoading" />

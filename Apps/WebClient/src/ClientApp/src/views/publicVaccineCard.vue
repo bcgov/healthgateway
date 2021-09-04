@@ -1,8 +1,9 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { saveAs } from "file-saver";
 import Vue from "vue";
-import { Component, Watch } from "vue-property-decorator";
+import { Component, Ref, Watch } from "vue-property-decorator";
 import { required } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
@@ -11,9 +12,12 @@ import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
 import DatePickerComponent from "@/components/datePicker.vue";
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
-import VaccinationStatusResultComponent from "@/components/vaccinationStatusResult.vue";
+import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import VaccineCardComponent from "@/components/vaccineCard.vue";
+import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import Report from "@/models/report";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
@@ -29,19 +33,27 @@ const validPersonalHealthNumber = (value: string): boolean => {
 
 @Component({
     components: {
-        "vaccination-status-result": VaccinationStatusResultComponent,
+        "vaccine-card": VaccineCardComponent,
         "date-picker": DatePickerComponent,
         "error-card": ErrorCardComponent,
-        LoadingComponent,
+        loading: LoadingComponent,
+        MessageModalComponent,
     },
 })
-export default class VaccinationStatusView extends Vue {
-    @Action("retrieve", { namespace: "vaccinationStatus" })
-    retrieveVaccinationStatus!: (params: {
+export default class PublicVaccineCardView extends Vue {
+    @Action("retrieveVaccineStatus", { namespace: "vaccinationStatus" })
+    retrieveVaccineStatus!: (params: {
         phn: string;
         dateOfBirth: StringISODate;
         dateOfVaccine: StringISODate;
     }) => Promise<void>;
+
+    @Action("retrieveVaccineStatusPdf", { namespace: "vaccinationStatus" })
+    retrieveVaccineStatusPdf!: (params: {
+        phn: string;
+        dateOfBirth: StringISODate;
+        dateOfVaccine: StringISODate;
+    }) => Promise<Report>;
 
     @Getter("vaccinationStatus", { namespace: "vaccinationStatus" })
     status!: VaccinationStatus | undefined;
@@ -55,14 +67,29 @@ export default class VaccinationStatusView extends Vue {
     @Getter("statusMessage", { namespace: "vaccinationStatus" })
     statusMessage!: string;
 
+    @Ref("sensitivedocumentDownloadModal")
+    readonly sensitivedocumentDownloadModal!: MessageModalComponent;
+
     private bcsclogo: string = Image06;
 
     private logger!: ILogger;
     private displayResult = false;
+    private isDownloading = false;
 
     private phn = "";
     private dateOfBirth = "";
     private dateOfVaccine = "";
+
+    private get loadingStatusMessage(): string {
+        return this.isDownloading ? "Downloading PDF..." : this.statusMessage;
+    }
+
+    private get downloadButtonEnabled(): boolean {
+        return (
+            this.status?.state === VaccinationState.PartiallyVaccinated ||
+            this.status?.state === VaccinationState.FullyVaccinated
+        );
+    }
 
     private validations() {
         return {
@@ -97,20 +124,51 @@ export default class VaccinationStatusView extends Vue {
     private handleSubmit() {
         this.$v.$touch();
         if (!this.$v.$invalid) {
-            this.retrieveVaccinationStatus({
+            this.retrieveVaccineStatus({
                 phn: this.phn,
                 dateOfBirth: this.dateOfBirth,
                 dateOfVaccine: this.dateOfVaccine,
             })
                 .then(() => {
-                    this.logger.debug("Vaccination status retrieved");
+                    this.logger.debug("Vaccine card retrieved");
                 })
                 .catch((err) => {
-                    this.logger.error(
-                        `Error retrieving vaccination status: ${err}`
-                    );
+                    this.logger.error(`Error retrieving vaccine card: ${err}`);
                 });
         }
+    }
+
+    private showSensitiveDocumentDownloadModal() {
+        this.sensitivedocumentDownloadModal.showModal();
+    }
+
+    private download() {
+        this.isDownloading = true;
+        this.retrieveVaccineStatusPdf({
+            phn: this.status?.personalhealthnumber || "",
+            dateOfBirth: new DateWrapper(this.status?.birthdate || "").format(
+                "yyyy-MM-dd"
+            ),
+            dateOfVaccine: new DateWrapper(
+                this.status?.vaccinedate || ""
+            ).format("yyyy-MM-dd"),
+        })
+            .then((documentResult) => {
+                if (documentResult) {
+                    const downloadLink = `data:application/pdf;base64,${documentResult.data}`;
+                    fetch(downloadLink).then((res) => {
+                        res.blob().then((blob) => {
+                            saveAs(blob, documentResult.fileName);
+                        });
+                    });
+                }
+            })
+            .catch((err) => {
+                this.logger.error(`Error retrieving vaccine card PDF: ${err}`);
+            })
+            .finally(() => {
+                this.isDownloading = false;
+            });
     }
 
     private created() {
@@ -121,7 +179,10 @@ export default class VaccinationStatusView extends Vue {
 
 <template>
     <div class="background flex-grow-1 d-flex flex-column">
-        <LoadingComponent :is-loading="isLoading" :text="statusMessage" />
+        <loading
+            :is-loading="isLoading || isDownloading"
+            :text="loadingStatusMessage"
+        />
         <div class="header">
             <img
                 class="img-fluid m-3"
@@ -130,7 +191,29 @@ export default class VaccinationStatusView extends Vue {
                 alt="BC Mark"
             />
         </div>
-        <vaccination-status-result v-if="displayResult" />
+        <div
+            v-if="displayResult"
+            class="vaccine-card align-self-center w-100 m-3 bg-white rounded"
+        >
+            <vaccine-card :status="status" :error="error" />
+            <div class="actions m-3 d-flex justify-content-between">
+                <hg-button variant="secondary" to="/">Done</hg-button>
+                <hg-button
+                    v-if="downloadButtonEnabled"
+                    variant="primary"
+                    class="ml-3"
+                    @click="showSensitiveDocumentDownloadModal()"
+                >
+                    Save a Copy
+                </hg-button>
+            </div>
+            <MessageModalComponent
+                ref="sensitivedocumentDownloadModal"
+                title="Sensitive Document Download"
+                message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+                @submit="download"
+            />
+        </div>
         <div v-else class="flex-grow-1 d-flex flex-column">
             <div class="vaccine-card-banner p-3">
                 <div class="container d-flex align-items-center">
@@ -147,29 +230,17 @@ export default class VaccinationStatusView extends Vue {
                     <div v-if="error !== undefined">
                         <b-alert
                             variant="danger"
-                            class="no-print mb-3"
+                            class="no-print mb-3 p-3"
                             :show="error !== undefined"
                             dismissible
                         >
-                            <h4>{{ error.title }}</h4>
-                            <h6>{{ error.errorCode }}</h6>
-                            <div class="pl-4">
-                                <p data-testid="errorTextDescription">
-                                    {{ error.description }}
-                                </p>
-                                <p data-testid="errorTextDetails">
-                                    {{ error.detail }}
-                                </p>
-                                <p
-                                    v-if="error.traceId"
-                                    data-testid="errorSupportDetails"
-                                >
-                                    If this issue persists, contact
-                                    HealthGateway@gov.bc.ca and provide
-                                    <span class="trace-id">{{
-                                        error.traceId
-                                    }}</span>
-                                </p>
+                            <h4>Our Apologies</h4>
+                            <div
+                                data-testid="errorTextDescription"
+                                class="pl-4"
+                            >
+                                We've found an issue and the Health Gateway team
+                                is working hard to fix it.
                             </div>
                         </b-alert>
                     </div>
@@ -310,7 +381,7 @@ export default class VaccinationStatusView extends Vue {
                             Enter
                         </hg-button>
                     </div>
-                    <div>
+                    <div class="my-5">
                         <h3 class="my-5">OR</h3>
                         <h4 class="my-3">Already a Health Gateway user?</h4>
                         <router-link to="/login">
@@ -329,6 +400,45 @@ export default class VaccinationStatusView extends Vue {
                                 <span>Log In with BC Services Card App</span>
                             </hg-button>
                         </router-link>
+                    </div>
+                    <hr />
+                    <div class="mt-4">
+                        <h3 class="mb-3">Help in other languages</h3>
+                        <p>
+                            <span>
+                                Talk to someone on the phone. Get support in
+                                140+ languages, including:
+                            </span>
+                            <br aria-hidden="true" />
+                            <br aria-hidden="true" />
+                            <span lang="zh">國粵語</span> |
+                            <span lang="pa">ਅਨੁਵਾਦ ਸਰਵਿਸਿਜ਼</span> |
+                            <span lang="ar">خدمات-ت-رج-م-ه؟</span> |
+                            <span lang="fr">Français</span> |
+                            <span lang="es">Español</span>
+                        </p>
+                        <p>
+                            <strong>
+                                Service is available every day: 7 am to 7 pm or
+                                9 am to 5 pm on holidays.
+                            </strong>
+                        </p>
+                        <div class="my-3">
+                            <hg-button
+                                variant="secondary"
+                                href="tel:+18338382323"
+                            >
+                                Call: 1-833-838-2323 (toll free)
+                            </hg-button>
+                        </div>
+                        <div class="my-3">
+                            <hg-button variant="secondary" href="tel:711">
+                                Telephone for the deaf: Dial 711
+                            </hg-button>
+                        </div>
+                        <p class="text-muted">
+                            Standard message and data rates may apply.
+                        </p>
                     </div>
                 </div>
             </form>
@@ -364,6 +474,15 @@ export default class VaccinationStatusView extends Vue {
 .login-button {
     background-color: #1a5a95 !important;
     border-color: #1a5a95 !important;
+}
+
+.vaccine-card {
+    max-width: 438px;
+
+    .actions {
+        border-bottom-left-radius: 0.25rem;
+        border-bottom-right-radius: 0.25rem;
+    }
 }
 </style>
 

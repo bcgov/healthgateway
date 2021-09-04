@@ -58,23 +58,26 @@ export interface IImmunizationService {
     getPatientImmunizations(
         hdid: string
     ): Promise<RequestResult<ImmunizationResult>>;
-    getCovidVaccineRecord(
-        hdid: string
-    ): Promise<RequestResult<CovidVaccineRecord>>;
 }
 
 export interface IVaccinationStatusService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getVaccinationStatus(
+    getPublicVaccineStatus(
         phn: string,
         dateOfBirth: StringISODate,
         dateOfVaccine: StringISODate
     ): Promise<RequestResult<VaccinationStatus>>;
-    getReport(
+    getPublicVaccineStatusPdf(
         phn: string,
         dateOfBirth: StringISODate,
         dateOfVaccine: StringISODate
     ): Promise<RequestResult<Report>>;
+    getAuthenticatedVaccineStatus(
+        hdid: string
+    ): Promise<RequestResult<VaccinationStatus>>;
+    getAuthenticatedVaccineRecord(
+        hdid: string
+    ): Promise<RequestResult<CovidVaccineRecord>>;
 }
 
 export interface IPatientService {

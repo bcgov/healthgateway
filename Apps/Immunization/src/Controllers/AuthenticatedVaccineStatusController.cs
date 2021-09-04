@@ -20,6 +20,7 @@ namespace HealthGateway.Immunization.Controllers
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -27,14 +28,14 @@ namespace HealthGateway.Immunization.Controllers
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// The COVID-19 Vaccine Record controller.
+    /// The authenticated vaccine status controller.
     /// </summary>
     [Authorize]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
     [TypeFilter(typeof(AvailabilityFilter))]
-    public class CovidVaccineRecordController : ControllerBase
+    public class AuthenticatedVaccineStatusController : ControllerBase
     {
         private readonly ILogger logger;
 
@@ -44,11 +45,11 @@ namespace HealthGateway.Immunization.Controllers
         private readonly IImmunizationService service;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CovidVaccineRecordController"/> class.
+        /// Initializes a new instance of the <see cref="AuthenticatedVaccineStatusController"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="svc">The immunization data service.</param>
-        public CovidVaccineRecordController(
+        public AuthenticatedVaccineStatusController(
             ILogger<ImmunizationController> logger,
             IImmunizationService svc)
         {
@@ -57,7 +58,28 @@ namespace HealthGateway.Immunization.Controllers
         }
 
         /// <summary>
-        /// Gets the COVID-19 vaccine record for the supplied HDID if the user is the owner or has delegated access.
+        /// Requests the vaccine status for the supplied HDID.
+        /// </summary>
+        /// <param name="hdid">The patient's HDID.</param>
+        /// <returns>The wrapped vaccine status.</returns>
+        /// <response code="200">Returns the Vaccine status.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="503">The service is unavailable for use.</response>
+        [HttpGet]
+        [Produces("application/json")]
+        [Authorize(Policy = ImmunizationPolicy.Read)]
+        public async Task<IActionResult> GetVaccineStatus([FromQuery] string hdid)
+        {
+            this.logger.LogDebug($"Getting vaccine status for HDID {hdid}");
+            RequestResult<VaccineStatus> result = await this.service.GetCovidVaccineStatus(hdid).ConfigureAwait(true);
+
+            this.logger.LogDebug($"Finished getting vaccine status for HDID {hdid}");
+            return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Requests the COVID-19 vaccine record for the supplied HDID if the user is the owner.
         /// </summary>
         /// <param name="hdid">The patient's HDID.</param>
         /// <returns>The PDF Vaccine Record.</returns>
@@ -67,8 +89,9 @@ namespace HealthGateway.Immunization.Controllers
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
+        [Route("pdf")]
         [Authorize(Policy = ImmunizationPolicy.Read)]
-        public async Task<IActionResult> Get([FromQuery] string hdid)
+        public async Task<IActionResult> GetVaccineRecordPdf([FromQuery] string hdid)
         {
             this.logger.LogDebug($"Getting vaccine record for HDID {hdid}");
             RequestResult<CovidVaccineRecord> result = await this.service.GetCovidVaccineRecord(hdid).ConfigureAwait(true);
