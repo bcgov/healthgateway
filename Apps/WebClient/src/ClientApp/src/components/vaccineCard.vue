@@ -9,7 +9,7 @@ import { Component, Prop } from "vue-property-decorator";
 
 import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
-import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import { DateWrapper } from "@/models/dateWrapper";
 import VaccinationStatus from "@/models/vaccinationStatus";
 
 library.add(faCheckCircle, faHandPointer);
@@ -44,10 +44,6 @@ export default class VaccineCardComponent extends Vue {
             .join(" ");
     }
 
-    private get dateOfBirth(): string {
-        return this.formatDate(this.status?.birthdate ?? null);
-    }
-
     private get qrCodeUrl(): string | null {
         const qrCode = this.status?.qrCode;
         if (qrCode?.mediaType && qrCode?.encoding && qrCode?.data) {
@@ -57,11 +53,13 @@ export default class VaccineCardComponent extends Vue {
         }
     }
 
-    private formatDate(date: StringISODate | null): string {
-        if (!date) {
-            return "";
+    private get issuedDate(): string | undefined {
+        if (this.status?.issueddate) {
+            return new DateWrapper(this.status?.issueddate).format(
+                "MMMM-dd-yyyy, HH:mm"
+            );
         }
-        return new DateWrapper(date).format(DateWrapper.defaultFormat);
+        return undefined;
     }
 
     private handleCloseQrModal() {
@@ -108,6 +106,9 @@ export default class VaccineCardComponent extends Vue {
                 </h2>
                 <h2 v-else-if="isPartiallyVaccinated">Partially Vaccinated</h2>
                 <h2 v-else-if="isVaccinationNotFound">Not Found</h2>
+                <small v-if="issuedDate !== undefined" class="mt-3">
+                    Issued on {{ issuedDate }}
+                </small>
                 <div
                     v-if="qrCodeUrl !== null && !isVaccinationNotFound"
                     class="text-center"
@@ -115,11 +116,11 @@ export default class VaccineCardComponent extends Vue {
                     <img
                         v-b-modal.big-qr
                         :src="qrCodeUrl"
-                        class="d-sm-none small-qr-code img-fluid m-3"
+                        class="d-sm-none small-qr-code img-fluid m-2"
                     />
                     <img
                         :src="qrCodeUrl"
-                        class="d-none d-sm-block small-qr-code img-fluid m-3"
+                        class="d-none d-sm-block small-qr-code img-fluid m-2"
                     />
                     <p v-b-modal.big-qr class="d-sm-none m-0">
                         <hg-icon icon="hand-pointer" class="mr-2" />
@@ -128,7 +129,7 @@ export default class VaccineCardComponent extends Vue {
                     <b-modal
                         id="big-qr"
                         centered
-                        title="Have it ready to scan"
+                        title="Present for scanning"
                         title-class="flex-grow-1 text-center"
                         body-class="p-0"
                         footer-class="justify-content-center"
@@ -218,7 +219,7 @@ export default class VaccineCardComponent extends Vue {
 }
 
 .vaccination-result {
-    min-height: 335px;
+    min-height: 356px;
 
     &.fully-vaccinated {
         background-color: $hg-state-success;

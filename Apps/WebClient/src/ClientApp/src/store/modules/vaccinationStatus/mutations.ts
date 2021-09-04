@@ -1,4 +1,5 @@
 import BannerError from "@/models/bannerError";
+import { DateWrapper } from "@/models/dateWrapper";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
 
@@ -14,7 +15,10 @@ export const mutations: VaccinationStatusMutations = {
         state: VaccinationStatusState,
         vaccinationStatus: VaccinationStatus
     ) {
-        state.public.vaccinationStatus = vaccinationStatus;
+        state.public.vaccinationStatus = {
+            ...vaccinationStatus,
+            issueddate: new DateWrapper().toISO(),
+        };
         state.public.status = LoadStatus.LOADED;
         state.public.statusMessage = "";
     },
@@ -44,7 +48,10 @@ export const mutations: VaccinationStatusMutations = {
         state: VaccinationStatusState,
         vaccinationStatus: VaccinationStatus
     ) {
-        state.authenticated.vaccinationStatus = vaccinationStatus;
+        state.authenticated.vaccinationStatus = {
+            ...vaccinationStatus,
+            issueddate: new DateWrapper().toISO(),
+        };
         state.authenticated.status = LoadStatus.LOADED;
         state.authenticated.statusMessage = "";
     },

@@ -14,4 +14,5 @@ export default interface VaccinationStatus {
     doses: number;
     state: VaccinationState;
     qrCode: EncodedMedia;
+    issueddate?: StringISODate;
 }
