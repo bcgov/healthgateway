@@ -26,7 +26,7 @@ export let loadOptions = {
         { duration: "20s", target: 10 }, // below normal load
         { duration: "1m", target: 50 },
         { duration: "1m", target: 400 }, // spike to maximum expected users
-        { duration: "3m", target: 400 }, // stay there
+        { duration: "5m", target: 400 }, // stay there
         { duration: "1m", target: 250 }, // scale down
         { duration: "3m", target: 10 },
         { duration: "10s", target: 0 }, //
@@ -51,7 +51,7 @@ export let spikeOptions = {
         { duration: "1m", target: 10 },
         { duration: "1m", target: 600 }, // spike to super high users
         { duration: "3m", target: 600 }, // stay there
-        { duration: "1m", target: 200 }, // scale down
+        { duration: "1m", target: 100 }, // scale down
         { duration: "3m", target: 10 },
         { duration: "10s", target: 0 }, //
     ],
@@ -125,7 +125,7 @@ export default function () {
     let randomUser = csvData[__VU % csvData.length];
     //let randomUser = csvData[Math.floor(Math.random() * csvData.length)];
 
-    console.log('Random user: ', JSON.stringify(randomUser));
+    //console.log('Random user: ', JSON.stringify(randomUser));
 
     let res1 = http.get(entryPageUrl);
     let success = check(res1, {
@@ -144,7 +144,15 @@ export default function () {
             'dateOfVaccine': randomUser.dateOfVaccine }
         }
         let res2 = http.get(cardUrl, params);
-        check(res2, {"API Status 200": (r) => r.status === 200});
+        //console.log(res2.body);
+
+        check(res2, {
+            'Webpage Status is 200': (r) => r.status === 200,
+            'Landed on API Form; Not Queue-IT': (r) => r.html('title').text() != 'B.C. vaccine registration',
+          });
+
+        //check(res2, {"API Status 200": (r) => r.status === 200});
+
     }
     else {
         console.log("Skipping API Call; in Waiting Room!")
