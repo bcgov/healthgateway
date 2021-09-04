@@ -203,10 +203,6 @@ img.vaccination-stage {
     height: 3em;
 }
 
-.small-qr-code {
-    width: 230px;
-}
-
 .big-qr-code {
     width: 100%;
 }

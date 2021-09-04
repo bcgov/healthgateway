@@ -202,19 +202,21 @@ export default class PublicVaccineCardView extends Vue {
         </div>
         <div
             v-if="displayResult"
-            class="vaccine-card align-self-center w-100 m-3 bg-white rounded"
+            class="vaccine-card align-self-center w-100 p-3"
         >
-            <vaccine-card :status="status" :error="error" />
-            <div class="actions m-3 d-flex justify-content-between">
-                <hg-button variant="secondary" to="/">Done</hg-button>
-                <hg-button
-                    v-if="downloadButtonEnabled"
-                    variant="primary"
-                    class="ml-3"
-                    @click="showSensitiveDocumentDownloadModal()"
-                >
-                    Save a Copy
-                </hg-button>
+            <div class="bg-white rounded">
+                <vaccine-card :status="status" :error="error" />
+                <div class="actions p-3 d-flex justify-content-between">
+                    <hg-button variant="secondary" to="/">Done</hg-button>
+                    <hg-button
+                        v-if="downloadButtonEnabled"
+                        variant="primary"
+                        class="ml-3"
+                        @click="showSensitiveDocumentDownloadModal()"
+                    >
+                        Save a Copy
+                    </hg-button>
+                </div>
             </div>
             <MessageModalComponent
                 ref="sensitivedocumentDownloadModal"
