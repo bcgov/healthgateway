@@ -72,7 +72,7 @@ namespace HealthGateway.Immunization.Services
         /// <inheritdoc/>
         public async Task<RequestResult<VaccineStatus>> GetCovidVaccineStatus(string hdid)
         {
-            RequestResult<VaccineStatus> retVal = new()
+            RequestResult<VaccineStatus> retVal = new ()
             {
                 ResultStatus = ResultType.Error,
             };
