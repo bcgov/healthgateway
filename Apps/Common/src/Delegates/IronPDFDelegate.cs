@@ -62,6 +62,7 @@ namespace HealthGateway.Common.Delegates
                 }
 
                 using HtmlToPdf renderer = new ();
+                renderer.PrintOptions.CssMediaType = PdfPrintOptions.PdfCssMediaType.Print;
                 renderer.PrintOptions.PaperSize = PdfPrintOptions.PdfPaperSize.Letter;
                 renderer.PrintOptions.MarginBottom = 0;
                 PdfDocument pdfDoc = renderer.RenderHtmlAsPdf(html);
