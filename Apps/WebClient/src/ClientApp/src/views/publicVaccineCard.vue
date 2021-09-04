@@ -196,7 +196,7 @@ export default class PublicVaccineCardView extends Vue {
             class="vaccine-card align-self-center w-100 m-3 bg-white rounded"
         >
             <vaccine-card :status="status" :error="error" />
-            <div class="actions p-3 d-flex justify-content-between">
+            <div class="actions m-3 d-flex justify-content-between">
                 <hg-button variant="secondary" to="/">Done</hg-button>
                 <hg-button
                     v-if="downloadButtonEnabled"
@@ -230,29 +230,17 @@ export default class PublicVaccineCardView extends Vue {
                     <div v-if="error !== undefined">
                         <b-alert
                             variant="danger"
-                            class="no-print mb-3"
+                            class="no-print mb-3 p-3"
                             :show="error !== undefined"
                             dismissible
                         >
-                            <h4>{{ error.title }}</h4>
-                            <h6>{{ error.errorCode }}</h6>
-                            <div class="pl-4">
-                                <p data-testid="errorTextDescription">
-                                    {{ error.description }}
-                                </p>
-                                <p data-testid="errorTextDetails">
-                                    {{ error.detail }}
-                                </p>
-                                <p
-                                    v-if="error.traceId"
-                                    data-testid="errorSupportDetails"
-                                >
-                                    If this issue persists, contact
-                                    HealthGateway@gov.bc.ca and provide
-                                    <span class="trace-id">{{
-                                        error.traceId
-                                    }}</span>
-                                </p>
+                            <h4>Our Apologies</h4>
+                            <div
+                                data-testid="errorTextDescription"
+                                class="pl-4"
+                            >
+                                We've found an issue and the Health Gateway team
+                                is working hard to fix it.
                             </div>
                         </b-alert>
                     </div>

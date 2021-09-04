@@ -185,24 +185,14 @@ export default class VaccineCardComponent extends Vue {
         <div v-if="error !== undefined" class="container">
             <b-alert
                 variant="danger"
-                class="no-print my-3"
+                class="no-print my-3 p-3"
                 :show="error !== undefined"
                 dismissible
             >
-                <h4>{{ error.title }}</h4>
-                <h6>{{ error.errorCode }}</h6>
-                <div class="pl-4">
-                    <p data-testid="errorTextDescription">
-                        {{ error.description }}
-                    </p>
-                    <p data-testid="errorTextDetails">
-                        {{ error.detail }}
-                    </p>
-                    <p v-if="error.traceId" data-testid="errorSupportDetails">
-                        If this issue persists, contact HealthGateway@gov.bc.ca
-                        and provide
-                        <span class="trace-id">{{ error.traceId }}</span>
-                    </p>
+                <h4>Our Apologies</h4>
+                <div data-testid="errorTextDescription" class="pl-4">
+                    We've found an issue and the Health Gateway team is working
+                    hard to fix it.
                 </div>
             </b-alert>
         </div>
