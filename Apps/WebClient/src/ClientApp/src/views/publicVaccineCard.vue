@@ -381,7 +381,7 @@ export default class PublicVaccineCardView extends Vue {
                             Enter
                         </hg-button>
                     </div>
-                    <div>
+                    <div class="my-5">
                         <h3 class="my-5">OR</h3>
                         <h4 class="my-3">Already a Health Gateway user?</h4>
                         <router-link to="/login">
@@ -400,6 +400,45 @@ export default class PublicVaccineCardView extends Vue {
                                 <span>Log In with BC Services Card App</span>
                             </hg-button>
                         </router-link>
+                    </div>
+                    <hr />
+                    <div class="mt-4">
+                        <h3 class="mb-3">Help in other languages</h3>
+                        <p>
+                            <span>
+                                Talk to someone on the phone. Get support in
+                                140+ languages, including:
+                            </span>
+                            <br aria-hidden="true" />
+                            <br aria-hidden="true" />
+                            <span lang="zh">國粵語</span> |
+                            <span lang="pa">ਅਨੁਵਾਦ ਸਰਵਿਸਿਜ਼</span> |
+                            <span lang="ar">خدمات-ت-رج-م-ه؟</span> |
+                            <span lang="fr">Français</span> |
+                            <span lang="es">Español</span>
+                        </p>
+                        <p>
+                            <strong>
+                                Service is available every day: 7 am to 7 pm or
+                                9 am to 5 pm on holidays.
+                            </strong>
+                        </p>
+                        <div class="my-3">
+                            <hg-button
+                                variant="secondary"
+                                href="tel:+18338382323"
+                            >
+                                Call: 1-833-838-2323 (toll free)
+                            </hg-button>
+                        </div>
+                        <div class="my-3">
+                            <hg-button variant="secondary" href="tel:711">
+                                Telephone for the deaf: Dial 711
+                            </hg-button>
+                        </div>
+                        <p class="text-muted">
+                            Standard message and data rates may apply.
+                        </p>
                     </div>
                 </div>
             </form>
