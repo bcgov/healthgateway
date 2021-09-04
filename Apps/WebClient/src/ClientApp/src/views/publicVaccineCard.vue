@@ -226,16 +226,6 @@ export default class PublicVaccineCardView extends Vue {
             />
         </div>
         <div v-else class="flex-grow-1 d-flex flex-column">
-            <div class="vaccine-card-banner p-3">
-                <div class="container d-flex align-items-center">
-                    <img
-                        src="@/assets/images/vaccine-card/vaccine-card-banner-image.svg"
-                        alt="Vaccine Card Logo"
-                        class="mr-2"
-                    />
-                    <h3 class="m-0">BC Vaccine Card</h3>
-                </div>
-            </div>
             <form class="bg-white flex-grow-1" @submit.prevent="handleSubmit">
                 <div class="container py-3">
                     <div v-if="error !== undefined">
