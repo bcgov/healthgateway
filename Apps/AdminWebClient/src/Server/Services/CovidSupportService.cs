@@ -223,7 +223,7 @@ namespace HealthGateway.Admin.Services
                     PageIndex = 0,
                     PageSize = 0,
                     ResultStatus = ResultType.Error,
-                    ResultError = statusResult.ResultError,
+                    ResultError = recordCardResult.ResultError,
                 };
             }
 

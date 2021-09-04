@@ -95,7 +95,11 @@ export default class VaccineCardComponent extends Vue {
                     'not-found': isVaccinationNotFound,
                 }"
             >
-                <h2 v-if="isFullyVaccinated" class="d-flex align-items-center">
+                <h2
+                    v-if="isFullyVaccinated"
+                    aria-label="Status Vaccinated"
+                    class="d-flex align-items-center"
+                >
                     <hg-icon
                         v-show="isFullyVaccinated"
                         icon="check-circle"
@@ -104,13 +108,24 @@ export default class VaccineCardComponent extends Vue {
                     />
                     <span>Vaccinated</span>
                 </h2>
-                <h2 v-else-if="isPartiallyVaccinated">Partially Vaccinated</h2>
-                <h2 v-else-if="isVaccinationNotFound">Not Found</h2>
+                <h2
+                    v-else-if="isPartiallyVaccinated"
+                    aria-label="Status Partially Vaccinated"
+                >
+                    Partially Vaccinated
+                </h2>
+                <h2
+                    v-else-if="isVaccinationNotFound"
+                    aria-label="Status Not Found"
+                >
+                    Not Found
+                </h2>
                 <small v-if="issuedDate !== undefined" class="mt-3">
                     Issued on {{ issuedDate }}
                 </small>
                 <div
                     v-if="qrCodeUrl !== null && !isVaccinationNotFound"
+                    aria-label="QR Code Image"
                     class="text-center"
                 >
                     <img
@@ -138,6 +153,7 @@ export default class VaccineCardComponent extends Vue {
                         <template #modal-footer>
                             <hg-button
                                 variant="secondary"
+                                aria-label="Close"
                                 @click="handleCloseQrModal()"
                             >
                                 Close

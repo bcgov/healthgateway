@@ -256,16 +256,20 @@ export default class PublicVaccineCardView extends Vue {
                                     id="phn"
                                     v-model="phn"
                                     data-testid="phnInput"
+                                    autofocus
+                                    aria-label="Personal Health Number"
                                     :state="isValid($v.phn)"
                                     @blur="$v.phn.$touch()"
                                 />
                                 <b-form-invalid-feedback
                                     v-if="!$v.phn.required"
+                                    aria-label="Invalid Personal Health Number"
                                 >
                                     Personal Health Number is required.
                                 </b-form-invalid-feedback>
                                 <b-form-invalid-feedback
                                     v-else-if="!$v.phn.formatted"
+                                    aria-label="Invalid Personal Health Number"
                                 >
                                     Personal Health Number must be valid.
                                 </b-form-invalid-feedback>
@@ -283,6 +287,7 @@ export default class PublicVaccineCardView extends Vue {
                                     id="dateOfBirth"
                                     v-model="dateOfBirth"
                                     data-testid="dateOfBirthInput"
+                                    aria-label="Date of Birth"
                                     :state="isValid($v.dateOfBirth)"
                                     @blur="$v.dateOfBirth.$touch()"
                                 />
@@ -291,6 +296,7 @@ export default class PublicVaccineCardView extends Vue {
                                         $v.dateOfBirth.$dirty &&
                                         !$v.dateOfBirth.required
                                     "
+                                    aria-label="Invalid Date of Birth"
                                     force-show
                                 >
                                     A valid date of birth is required.
@@ -300,6 +306,7 @@ export default class PublicVaccineCardView extends Vue {
                                         $v.dateOfBirth.$dirty &&
                                         !$v.dateOfBirth.maxValue
                                     "
+                                    aria-label="Invalid Date of Birth"
                                     force-show
                                 >
                                     Date of birth must be in the past.
@@ -318,6 +325,7 @@ export default class PublicVaccineCardView extends Vue {
                                     id="dateOfVaccine"
                                     v-model="dateOfVaccine"
                                     data-testid="dateOfVaccineInput"
+                                    aria-label="Date of Vaccine (Dose 1 or Dose 2)"
                                     :state="isValid($v.dateOfVaccine)"
                                     @blur="$v.dateOfVaccine.$touch()"
                                 />
@@ -326,6 +334,7 @@ export default class PublicVaccineCardView extends Vue {
                                         $v.dateOfVaccine.$dirty &&
                                         !$v.dateOfVaccine.required
                                     "
+                                    aria-label="Invalid Date of Vaccine"
                                     force-show
                                 >
                                     A valid date of vaccine is required.
@@ -335,6 +344,7 @@ export default class PublicVaccineCardView extends Vue {
                                         $v.dateOfVaccine.$dirty &&
                                         !$v.dateOfVaccine.maxValue
                                     "
+                                    aria-label="Invalid Date of Vaccine"
                                     force-show
                                 >
                                     Date of vaccine must be in the past.
@@ -344,6 +354,7 @@ export default class PublicVaccineCardView extends Vue {
                     </b-row>
                     <hg-button
                         id="privacy-statement"
+                        aria-label="Privacy Statement"
                         href="#"
                         tabindex="0"
                         variant="link"
@@ -370,11 +381,17 @@ export default class PublicVaccineCardView extends Vue {
                         collection.
                     </b-popover>
                     <div>
-                        <hg-button variant="secondary" class="mt-3 mr-2" to="/">
+                        <hg-button
+                            variant="secondary"
+                            aria-label="Cancel"
+                            class="mt-3 mr-2"
+                            to="/"
+                        >
                             Cancel
                         </hg-button>
                         <hg-button
                             variant="primary"
+                            aria-label="Enter"
                             type="submit"
                             :disabled="isLoading"
                             class="mt-3"
@@ -388,6 +405,7 @@ export default class PublicVaccineCardView extends Vue {
                         <router-link to="/login">
                             <hg-button
                                 id="btnLogin"
+                                aria-label="BC Services Card Login"
                                 data-testid="btnLogin"
                                 variant="primary"
                                 class="login-button"
