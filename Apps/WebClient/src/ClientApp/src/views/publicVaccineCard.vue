@@ -202,19 +202,21 @@ export default class PublicVaccineCardView extends Vue {
         </div>
         <div
             v-if="displayResult"
-            class="vaccine-card align-self-center w-100 m-3 bg-white rounded"
+            class="vaccine-card align-self-center w-100 p-3"
         >
-            <vaccine-card :status="status" :error="error" />
-            <div class="actions m-3 d-flex justify-content-between">
-                <hg-button variant="secondary" to="/">Done</hg-button>
-                <hg-button
-                    v-if="downloadButtonEnabled"
-                    variant="primary"
-                    class="ml-3"
-                    @click="showSensitiveDocumentDownloadModal()"
-                >
-                    Save a Copy
-                </hg-button>
+            <div class="bg-white rounded">
+                <vaccine-card :status="status" :error="error" />
+                <div class="actions p-3 d-flex justify-content-between">
+                    <hg-button variant="secondary" to="/">Done</hg-button>
+                    <hg-button
+                        v-if="downloadButtonEnabled"
+                        variant="primary"
+                        class="ml-3"
+                        @click="showSensitiveDocumentDownloadModal()"
+                    >
+                        Save a Copy
+                    </hg-button>
+                </div>
             </div>
             <MessageModalComponent
                 ref="sensitivedocumentDownloadModal"
@@ -224,16 +226,6 @@ export default class PublicVaccineCardView extends Vue {
             />
         </div>
         <div v-else class="flex-grow-1 d-flex flex-column">
-            <div class="vaccine-card-banner p-3">
-                <div class="container d-flex align-items-center">
-                    <img
-                        src="@/assets/images/vaccine-card/vaccine-card-banner-image.svg"
-                        alt="Vaccine Card Logo"
-                        class="mr-2"
-                    />
-                    <h3 class="m-0">BC Vaccine Card</h3>
-                </div>
-            </div>
             <form class="bg-white flex-grow-1" @submit.prevent="handleSubmit">
                 <div class="container py-3">
                     <div v-if="error !== undefined">

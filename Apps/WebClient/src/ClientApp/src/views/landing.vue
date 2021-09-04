@@ -173,29 +173,62 @@ export default class LandingView extends Vue {
     <div class="landing mx-2">
         <b-row
             v-if="isVaccinationStatusEnabled"
-            class="vaccine-card-banner mx-n2 p-2 justify-content-center"
+            no-gutters
+            class="
+                vaccine-card-banner
+                small-banner
+                d-flex d-lg-none
+                mx-n2
+                justify-content-center
+            "
         >
-            <b-col
-                cols="12"
-                sm="auto"
-                class="
-                    text-center
-                    d-flex
-                    align-items-center
-                    justify-content-center
-                "
-            >
+            <b-col cols="auto">
                 <img
-                    src="@/assets/images/vaccine-card/vaccine-card-banner-image.svg"
+                    src="@/assets/images/landing/vaccine-card-banner-icon-sm.svg"
                     alt="Vaccine Card Logo"
-                    class="m-2"
                 />
-                <h3 class="my-2">BC Vaccine Card</h3>
             </b-col>
-            <b-col cols="12" sm="auto" class="d-flex justify-content-center">
-                <hg-button variant="primary" to="/vaccinecard" class="m-2">
-                    Get Card
-                </hg-button>
+            <b-col cols="auto" class="text-center p-2 mb-4">
+                <h2 class="h4 mt-3">BC Vaccine Card</h2>
+                <div class="mb-3">
+                    <hg-button
+                        variant="primary"
+                        to="/vaccinecard"
+                        class="w-75 text-center"
+                    >
+                        Get Card
+                    </hg-button>
+                </div>
+            </b-col>
+        </b-row>
+        <b-row
+            v-if="isVaccinationStatusEnabled"
+            class="
+                vaccine-card-banner
+                large-banner
+                d-none d-lg-flex
+                justify-content-end
+                mx-n2
+            "
+        >
+            <b-col cols="auto">
+                <img
+                    src="@/assets/images/landing/vaccine-card-banner-icon-lg.svg"
+                    alt="Vaccine Card Logo"
+                />
+            </b-col>
+            <b-col cols="auto" class="text-center">
+                <h2 class="h1 mt-4">BC Vaccine Card</h2>
+                <div>Confidential access to your proof of vaccination</div>
+                <div>
+                    <hg-button
+                        variant="primary"
+                        to="/vaccinecard"
+                        class="w-50 my-4 text-center"
+                    >
+                        Get Card
+                    </hg-button>
+                </div>
             </b-col>
         </b-row>
         <h3 class="text-center font-weight-normal my-4 mx-1">
@@ -385,12 +418,25 @@ export default class LandingView extends Vue {
     }
 
     .vaccine-card-banner {
-        background: $hg-vaccine-card-header;
         color: #212529;
+        background-color: $hg-vaccine-card-header;
+        background-repeat: no-repeat;
+        background-position: right bottom;
 
-        img {
-            width: 2.5rem;
-            height: 2.5rem;
+        &.small-banner {
+            background-image: url("~@/assets/images/landing/vaccine-card-banner-bg-sm.svg");
+        }
+
+        &.large-banner {
+            background-image: url("~@/assets/images/landing/vaccine-card-banner-bg-lg.svg");
+            background-size: 731px;
+            height: 186px;
+            padding-right: 235px;
+
+            img {
+                width: 250px;
+                margin-right: 75px;
+            }
         }
     }
 
