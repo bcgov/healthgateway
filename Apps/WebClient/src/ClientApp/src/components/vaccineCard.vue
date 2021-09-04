@@ -151,36 +151,13 @@ export default class VaccineCardComponent extends Vue {
             v-if="isPartiallyVaccinated || isVaccinationNotFound"
             class="callout"
         >
-            <p>You're fully vaccinated 7 days after dose 2.</p>
-            <ul class="m-0">
-                <li>
-                    <a
-                        href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof#help"
-                        rel="noopener"
-                        target="_blank"
-                    >
-                        There's a mistake with my record
-                    </a>
-                </li>
-                <li v-if="isVaccinationNotFound">
-                    <a
-                        href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/register"
-                        rel="noopener"
-                        target="_blank"
-                    >
-                        I want to get vaccinated
-                    </a>
-                </li>
-                <li v-if="isPartiallyVaccinated">
-                    <a
-                        href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/register"
-                        rel="noopener"
-                        target="_blank"
-                    >
-                        Get dose 2
-                    </a>
-                </li>
-            </ul>
+            To learn more, visit
+            <a
+                href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof"
+                rel="noopener"
+                target="_blank"
+                >BC Proof of Vaccination</a
+            >.
         </div>
         <div v-if="error !== undefined" class="container">
             <b-alert
@@ -235,6 +212,7 @@ img.vaccination-stage {
 }
 
 .callout {
+    margin: 1rem;
     padding: 1rem;
     border-left: 0.25rem solid $hg-brand-secondary;
     border-radius: 0.25rem;
