@@ -128,18 +128,26 @@ export default function () {
     console.log('Random user: ', JSON.stringify(randomUser));
 
     let res1 = http.get(entryPageUrl);
-    check(res1, {"SPA Status 200": (r) => r.status === 200})
+    let success = check(res1, {
+        'Webpage Status is 200': (r) => r.status === 200,
+        'Landed on VaccineCard Form; Not Queue-IT': (r) => r.html('title').text() == 'Health Gateway',
+      });
 
-    sleep(5);  // the min time we think it would take someone to enter their information
+    if (success)
+    {
+        sleep(5);  // the min time we think it would take someone to enter their information
 
-    let params = {
-        headers:  { 'User-Agent': 'k6', 
-        'phn': randomUser.phn, 
-        'dateOfBirth': randomUser.dateOfBirth, 
-        'dateOfVaccine': randomUser.dateOfVaccine }
+        let params = {
+            headers:  { 'User-Agent': 'k6', 
+            'phn': randomUser.phn, 
+            'dateOfBirth': randomUser.dateOfBirth, 
+            'dateOfVaccine': randomUser.dateOfVaccine }
+        }
+        let res2 = http.get(cardUrl, params);
+        check(res2, {"API Status 200": (r) => r.status === 200});
     }
-    let res2 = http.get(cardUrl, params);
-    check(res2, {"API Status 200": (r) => r.status === 200})
-
+    else {
+        console.log("Skipping API Call; in Waiting Room!")
+    }
     sleep(1);
 }
