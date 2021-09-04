@@ -104,7 +104,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                     endpoint = new Uri(endpointString);
                     content = new StringContent(json, null, MediaTypeNames.Application.Json);
                 }
-                else
+                else if (!string.IsNullOrEmpty(query.HdId))
                 {
                     Dictionary<string, string?> queryDict = new ()
                     {
@@ -112,6 +112,12 @@ namespace HealthGateway.Common.Delegates.PHSA
                     };
                     endpointString += this.phsaConfig.VaccineStatusEndpoint;
                     endpoint = new Uri(QueryHelpers.AddQueryString(endpointString, queryDict));
+                }
+                else
+                {
+                    endpointString += this.phsaConfig.VaccineStatusEndpoint;
+                    endpoint = new Uri(endpointString);
+                    content = new StringContent(json, null, MediaTypeNames.Application.Json);
                 }
 
                 client.DefaultRequestHeaders.Accept.Clear();
