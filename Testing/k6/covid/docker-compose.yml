@@ -9,3 +9,4 @@ services:
       - ./data.csv:/data.csv
     environment: 
       - "TYPE=${TYPE}"
+      - "HG_ENV=${HG_ENV}"

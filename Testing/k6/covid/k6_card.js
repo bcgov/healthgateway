@@ -19,14 +19,23 @@ import { check, sleep } from 'k6';
 import { SharedArray } from 'k6/data';
 import PapaParse from "./papaparse.js";
 
-export let testType = __ENV.TYPE;
+export let testType = __ENV.TYPE  ? __ENV.TYPE : "load";
+export let environment = __ENV.HG_ENV  ? __ENV.HG_ENV : "test"; // default to test environment
+
+export let baseSiteUrl = "https://" + environment + ".healthgateway.gov.bc.ca";
+export let cardUrl = baseSiteUrl + "/api/immunizationservice/v1/api/VaccineStatus";
+export let entryPageUrl  = baseSiteUrl + "/vaccinecard";
+export let vendorChunkJsUrl = baseSiteUrl + "/js/chunk-vendors.c61f122d.js";
+export let siteChunkJsUrl = baseSiteUrl + "/js/app.8136e1c8.js";
+export let cssUrl = baseSiteUrl + "/css/app.c90e9393.css";
+export let cssVendorsUrl = baseSiteUrl + "/css/chunk-vendors.21f4bba7.css";
 
 export let loadOptions = {
     stages: [
         { duration: "20s", target: 10 }, // below normal load
-        { duration: "1m", target: 50 },
-        { duration: "1m", target: 400 }, // spike to maximum expected users
-        { duration: "5m", target: 400 }, // stay there
+        { duration: "1m", target: 100 },
+        { duration: "1m", target: 500 }, // spike to maximum expected users
+        { duration: "5m", target: 500 }, // stay there
         { duration: "1m", target: 250 }, // scale down
         { duration: "3m", target: 10 },
         { duration: "10s", target: 0 }, //
@@ -111,26 +120,26 @@ const csvData = new SharedArray("another data name", function() {
 
 export default function () {
 
-    //let cardUrl = "https://hg-test.api.gov.bc.ca/v1/api/VaccineStatus";
-    let cardUrl = "https://test.healthgateway.gov.bc.ca/api/immunizationservice/v1/api/VaccineStatus";
-    let entryPageUrl  = "https://test.healthgateway.gov.bc.ca/vaccinecard"
-
-    // Loop through all username/password pairs
-    //for (var userData of csvData) {
-        //console.log(JSON.stringify(userData));
-
-    //}
-
-    // Pick a random username/password pair
     let randomUser = csvData[__VU % csvData.length];
     //let randomUser = csvData[Math.floor(Math.random() * csvData.length)];
 
     //console.log('Random user: ', JSON.stringify(randomUser));
 
-    let res1 = http.get(entryPageUrl);
-    let success = check(res1, {
-        'Webpage Status is 200': (r) => r.status === 200,
-        'Landed on VaccineCard Form; Not Queue-IT': (r) => r.html('title').text() == 'Health Gateway',
+    //let res1 = http.get(entryPageUrl);
+
+    let responses = http.batch([
+        ['GET', entryPageUrl, null, { tags: { ctype: 'html' } }],
+        ['GET', cssUrl, null, { tags: { ctype: 'css' } }],
+        ['GET', cssVendorsUrl, null, { tags: { ctype: 'js' } }],
+        ['GET', vendorChunkJsUrl, null, { tags: { ctype: 'js' } }],
+        ['GET', siteChunkJsUrl, null, { tags: { ctype: 'js' } }],
+      ]);
+      check(responses[0], {
+        'Webpage status 200': (res) => res.status === 200,
+      });
+    let success = check(responses[0], {
+        'Reached VaccineCard Page; Not Queue-IT': (r) => r.headers['Set-Cookie'].search('Queue-it') === -1,
+        'VaccineCard Page Title Correct; Not Queue-IT': (r) => r.html('title').text() == 'Health Gateway',
       });
 
     if (success)
@@ -144,18 +153,21 @@ export default function () {
             'dateOfVaccine': randomUser.dateOfVaccine }
         }
         let res2 = http.get(cardUrl, params);
-        //console.log(res2.body);
 
+ /*       for (var p in res2.headers) {
+            if (res2.headers.hasOwnProperty(p)) {
+              console.log(p + ' : ' + res2.headers[p]);
+            }
+          } */
+
+        check(res2, {"API Status 200": (r) => r.status === 200})
         check(res2, {
-            'Webpage Status is 200': (r) => r.status === 200,
-            'Landed on API Form; Not Queue-IT': (r) => r.html('title').text() != 'B.C. vaccine registration',
-          });
-
-        //check(res2, {"API Status 200": (r) => r.status === 200});
-
+            'Reached API Endpoint; Not Queue-IT': (r) => r.headers['Set-Cookie'].search('Queue-it') === -1,
+            'API Response Content-Type is JSON': (r) => r.headers['Content-Type'].search('application/json') >= 0, 
+            });
     }
     else {
         console.log("Skipping API Call; in Waiting Room!")
     }
-    sleep(1);
+    sleep(2);
 }
