@@ -26,10 +26,6 @@ export default class VaccineCardComponent extends Vue {
         return this.status?.state;
     }
 
-    private get vaccinationDoses(): number | undefined {
-        return this.status?.doses;
-    }
-
     private get isFullyVaccinated(): boolean {
         return this.vaccinationState === VaccinationState.FullyVaccinated;
     }
@@ -81,30 +77,6 @@ export default class VaccineCardComponent extends Vue {
                 <h3 class="text-center">BC Vaccine Card</h3>
                 <hr style="border-top: 2px solid #fcba19" />
                 <p class="text-center">{{ name }}</p>
-                <div class="text-center">
-                    <img
-                        v-if="isFullyVaccinated"
-                        src="@/assets/images/vaccination-status/fully-vaccinated.svg"
-                        alt="Fully Vaccinated"
-                        class="vaccination-stage"
-                    />
-                    <img
-                        v-else-if="
-                            isPartiallyVaccinated && vaccinationDoses === 2
-                        "
-                        src="@/assets/images/vaccination-status/dose-2.svg"
-                        alt="Two Doses"
-                        class="vaccination-stage"
-                    />
-                    <img
-                        v-else-if="
-                            isPartiallyVaccinated && vaccinationDoses === 1
-                        "
-                        src="@/assets/images/vaccination-status/dose-1.svg"
-                        alt="One Dose"
-                        class="vaccination-stage"
-                    />
-                </div>
             </div>
         </div>
         <div class="justify-content-between">
