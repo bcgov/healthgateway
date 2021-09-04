@@ -23,6 +23,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import PHNValidator from "@/utility/phnValidator";
+import SnowPlow from "@/utility/SnowPlow";
 
 library.add(faInfoCircle);
 
@@ -124,6 +125,10 @@ export default class PublicVaccineCardView extends Vue {
     private handleSubmit() {
         this.$v.$touch();
         if (!this.$v.$invalid) {
+            SnowPlow.trackEvent({
+                action: "view_qr",
+                text: "vaxcard",
+            });
             this.retrieveVaccineStatus({
                 phn: this.phn,
                 dateOfBirth: this.dateOfBirth,
@@ -144,6 +149,10 @@ export default class PublicVaccineCardView extends Vue {
 
     private download() {
         this.isDownloading = true;
+        SnowPlow.trackEvent({
+            action: "save_qr",
+            text: "vaxcard",
+        });
         this.retrieveVaccineStatusPdf({
             phn: this.status?.personalhealthnumber || "",
             dateOfBirth: new DateWrapper(this.status?.birthdate || "").format(
