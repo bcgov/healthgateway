@@ -139,7 +139,7 @@ export default function () {
       });
     let success = check(responses[0], {
         'Reached VaccineCard Page; Not Queue-IT': (r) => r.headers['Set-Cookie'].search('Queue-it') === -1,
-        'VaccineCard Page Title Correct; Not Queue-IT': (r) => r.html('title').text() == 'Health Gateway',
+        'VaccineCard Page Title Correct': (r) => r.html('title').text() == 'Health Gateway',
       });
 
     if (success)
