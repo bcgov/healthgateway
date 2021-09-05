@@ -20,7 +20,7 @@
                 width: 100%;
             }
             .header-row {
-                height: 33%;
+                height: 25%;
             }
             .header-col {
                 border-bottom: 2px black dashed;
@@ -28,7 +28,7 @@
                 text-align: center;
             }
             .body-row {
-                height: 33%;
+                height: 35%;
             }
             .body-col {
                 padding-top: 20px;
@@ -39,13 +39,13 @@
                 text-align: left;
             }
             .footer-row {
-                height: 33%;
+                height: 40%;
             }
             .footer-col {
-                padding-top: 120px;
+                padding-top: 185px;
+                width: 100%;
                 font-size: 0.8em;
             }
-
             .date {
                 float: left;
                 white-space: nowrap;
@@ -149,9 +149,12 @@
                 </tr>
                 <tr class="footer-row">
                     <td colspan="3" class="footer-col">
-                        {addressee} <br />
-                        {street} <br />
-                        {city} {provinceOrState} {code} {country}
+                        <div class="address">
+                            {addressee} <br />
+                            {street} <br />
+                            {city} {provinceOrState}   {code}<br />
+                            {country}
+                        </div>
                     </td>
                 </tr>
             </table>
