@@ -13,7 +13,7 @@ import DatePickerComponent from "@/components/datePicker.vue";
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
-import HgDateDropdown from "@/components/shared/hgDateDropdown";
+import HgDropdownComponent from "@/components/shared/hgDateDropdown";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
@@ -40,7 +40,7 @@ const validPersonalHealthNumber = (value: string): boolean => {
         "error-card": ErrorCardComponent,
         loading: LoadingComponent,
         MessageModalComponent,
-        "date-dropdown": HgDateDropdown,
+        "date-dropdown": HgDropdownComponent,
     },
 })
 export default class PublicVaccineCardView extends Vue {
