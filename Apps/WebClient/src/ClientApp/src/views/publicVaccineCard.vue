@@ -13,7 +13,7 @@ import DatePickerComponent from "@/components/datePicker.vue";
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
-import HgDropdownComponent from "@/components/shared/hgDateDropdown";
+import HgDropdownComponent from "@/components/shared/hgDateDropdown.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
