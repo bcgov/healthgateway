@@ -13,6 +13,7 @@ import DatePickerComponent from "@/components/datePicker.vue";
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import HgDateDropdown from "@/components/shared/hgDateDropdown";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
@@ -39,6 +40,7 @@ const validPersonalHealthNumber = (value: string): boolean => {
         "error-card": ErrorCardComponent,
         loading: LoadingComponent,
         MessageModalComponent,
+        "date-dropdown": HgDateDropdown,
     },
 })
 export default class PublicVaccineCardView extends Vue {
@@ -301,14 +303,15 @@ export default class PublicVaccineCardView extends Vue {
                                 label-for="dateOfBirth"
                                 :state="isValid($v.dateOfBirth)"
                             >
-                                <date-picker
+                                <date-dropdown
                                     id="dateOfBirth"
                                     v-model="dateOfBirth"
+                                    :state="isValid($v.dateOfBirth)"
+                                    :allow-future="false"
                                     data-testid="dateOfBirthInput"
                                     aria-label="Date of Birth"
-                                    :state="isValid($v.dateOfBirth)"
                                     @blur="$v.dateOfBirth.$touch()"
-                                />
+                                ></date-dropdown>
                                 <b-form-invalid-feedback
                                     v-if="
                                         $v.dateOfBirth.$dirty &&
@@ -339,14 +342,16 @@ export default class PublicVaccineCardView extends Vue {
                                 label-for="dateOfVaccine"
                                 :state="isValid($v.dateOfVaccine)"
                             >
-                                <date-picker
+                                <date-dropdown
                                     id="dateOfVaccine"
                                     v-model="dateOfVaccine"
+                                    :state="isValid($v.dateOfVaccine)"
+                                    :allow-future="false"
+                                    :min-year="2020"
                                     data-testid="dateOfVaccineInput"
                                     aria-label="Date of Vaccine (Dose 1 or Dose 2)"
-                                    :state="isValid($v.dateOfVaccine)"
-                                    @blur="$v.dateOfVaccine.$touch()"
-                                />
+                                    @blur="$v.dateOfBirth.$touch()"
+                                ></date-dropdown>
                                 <b-form-invalid-feedback
                                     v-if="
                                         $v.dateOfVaccine.$dirty &&
