@@ -28,6 +28,21 @@ export default class ContactUsView extends Vue {}
                     <b-col>
                         <b-row>
                             <b-col>
+                                <h4>BC Vaccine Card</h4>
+                            </b-col>
+                        </b-row>
+                        <b-row class="pb-2">
+                            <b-col>
+                                If you have questions about the BC Vaccine Card,
+                                please contact
+                                <a href="tel:18338382323">1-833-838-2323</a>.
+                                Service is available every day: 7 am to 7 pm or
+                                9 am to 5 pm on holidays.
+                            </b-col>
+                        </b-row>
+                        <b-row class="pb-4"> </b-row>
+                        <b-row>
+                            <b-col>
                                 <h4>Health Gateway</h4>
                             </b-col>
                         </b-row>
@@ -38,14 +53,14 @@ export default class ContactUsView extends Vue {}
                                 contact us at the email below.
                             </b-col>
                         </b-row>
-                        <b-row class="pb-4"
-                            ><b-col
-                                ><strong>Email: </strong
+                        <b-row class="pb-4">
+                            <b-col>
+                                <strong>Email: </strong
                                 ><a href="mailto:healthgateway@gov.bc.ca"
                                     >healthgateway@gov.bc.ca</a
                                 >
-                            </b-col></b-row
-                        >
+                            </b-col>
+                        </b-row>
                         <b-row class="pb-2">
                             <b-col>
                                 <h4>Other Available Resources</h4>
