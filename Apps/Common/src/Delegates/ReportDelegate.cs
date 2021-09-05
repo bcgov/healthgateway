@@ -62,7 +62,7 @@ namespace HealthGateway.Common.Delegates
             pdfRequest.Data.Add("city", address?.City);
             pdfRequest.Data.Add("provinceOrState", address?.State);
             pdfRequest.Data.Add("code", address?.PostalCode);
-            pdfRequest.Data.Add("country", address?.Country);
+            pdfRequest.Data.Add("country", address?.Country == "CA" ? string.Empty : address?.Country);
 
             switch (vaccineStatus.State)
             {
