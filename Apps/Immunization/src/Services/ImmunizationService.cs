@@ -16,6 +16,7 @@
 namespace HealthGateway.Immunization.Services
 {
     using System;
+    using System.Net.Mime;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
@@ -134,6 +135,7 @@ namespace HealthGateway.Immunization.Services
                     {
                         Data = reportResult.ResourcePayload!.Data,
                         Encoding = "base64",
+                        Type = MediaTypeNames.Application.Pdf,
                     },
                     QRCode = recordCardPayload.QRCode,
                 };
