@@ -204,7 +204,7 @@ export default class PublicVaccineCardView extends Vue {
             v-if="displayResult"
             class="vaccine-card align-self-center w-100 p-3"
         >
-            <div class="bg-white rounded">
+            <div class="bg-white rounded shadow">
                 <vaccine-card :status="status" :error="error" />
                 <div class="actions p-3 d-flex justify-content-between">
                     <hg-button variant="secondary" to="/">Done</hg-button>
@@ -226,8 +226,21 @@ export default class PublicVaccineCardView extends Vue {
             />
         </div>
         <div v-else class="flex-grow-1 d-flex flex-column">
-            <form class="bg-white flex-grow-1" @submit.prevent="handleSubmit">
-                <div class="container py-3">
+            <form
+                class="
+                    vaccine-card-form
+                    flex-grow-1
+                    bg-white
+                    rounded
+                    shadow
+                    m-3
+                    py-3
+                    px-3 px-sm-5
+                    align-self-center
+                "
+                @submit.prevent="handleSubmit"
+            >
+                <div class="container my-3 my-sm-5 px-0 px-sm-5">
                     <div v-if="error !== undefined">
                         <b-alert
                             variant="danger"
@@ -235,7 +248,7 @@ export default class PublicVaccineCardView extends Vue {
                             :show="error !== undefined"
                             dismissible
                         >
-                            <h4>Our Apologies</h4>
+                            <h2 class="h4">Our Apologies</h2>
                             <div
                                 data-testid="errorTextDescription"
                                 class="pl-4"
@@ -245,9 +258,14 @@ export default class PublicVaccineCardView extends Vue {
                             </div>
                         </b-alert>
                     </div>
-                    <h4 class="mb-3">You must provide:</h4>
-                    <b-row no-gutters>
-                        <b-col cols="auto">
+                    <h2 class="vaccine-card-form-title text-center pb-3 mb-4">
+                        Access Your BC Vaccine Card
+                    </h2>
+                    <p class="mb-4">
+                        To access your BC Vaccine Card, please provide:
+                    </p>
+                    <b-row class="my-2">
+                        <b-col>
                             <b-form-group
                                 label="Personal Health Number"
                                 label-for="phn"
@@ -276,8 +294,8 @@ export default class PublicVaccineCardView extends Vue {
                             </b-form-group>
                         </b-col>
                     </b-row>
-                    <b-row no-gutters>
-                        <b-col cols="auto">
+                    <b-row class="my-2">
+                        <b-col>
                             <b-form-group
                                 label="Date of Birth"
                                 label-for="dateOfBirth"
@@ -314,8 +332,8 @@ export default class PublicVaccineCardView extends Vue {
                             </b-form-group>
                         </b-col>
                     </b-row>
-                    <b-row no-gutters>
-                        <b-col cols="auto">
+                    <b-row class="my-2">
+                        <b-col>
                             <b-form-group
                                 label="Date of Vaccine (Dose 1 or Dose 2)"
                                 label-for="dateOfVaccine"
@@ -358,7 +376,7 @@ export default class PublicVaccineCardView extends Vue {
                         href="#"
                         tabindex="0"
                         variant="link"
-                        class="shadow-none p-0"
+                        class="shadow-none p-0 my-2"
                     >
                         <hg-icon icon="info-circle" size="small" class="mr-1" />
                         <small>Privacy Statement</small>
@@ -380,28 +398,38 @@ export default class PublicVaccineCardView extends Vue {
                         or 778-698-5849 if you have any questions about this
                         collection.
                     </b-popover>
-                    <div>
-                        <hg-button
-                            variant="secondary"
-                            aria-label="Cancel"
-                            class="mt-3 mr-2"
-                            to="/"
-                        >
-                            Cancel
-                        </hg-button>
-                        <hg-button
-                            variant="primary"
-                            aria-label="Enter"
-                            type="submit"
-                            :disabled="isLoading"
-                            class="mt-3"
-                        >
-                            Enter
-                        </hg-button>
-                    </div>
-                    <div class="my-5">
-                        <h3 class="my-5">OR</h3>
-                        <h4 class="my-3">Already a Health Gateway user?</h4>
+                    <b-row class="mt-4 justify-content-between">
+                        <b-col cols="5" sm="4">
+                            <hg-button
+                                variant="secondary"
+                                aria-label="Cancel"
+                                class="w-100"
+                                to="/"
+                            >
+                                Cancel
+                            </hg-button>
+                        </b-col>
+                        <b-col cols="5" sm="4">
+                            <hg-button
+                                variant="primary"
+                                aria-label="Enter"
+                                type="submit"
+                                :disabled="isLoading"
+                                class="w-100"
+                            >
+                                Enter
+                            </hg-button>
+                        </b-col>
+                    </b-row>
+                    <div class="text-center">
+                        <b-row class="my-4 no-gutters align-items-center">
+                            <b-col><hr /></b-col>
+                            <b-col cols="auto">
+                                <h3 class="h5 m-0 px-3 text-muted">OR</h3>
+                            </b-col>
+                            <b-col><hr /></b-col>
+                        </b-row>
+                        <p>Already a Health Gateway user?</p>
                         <router-link to="/login">
                             <hg-button
                                 id="btnLogin"
@@ -420,47 +448,41 @@ export default class PublicVaccineCardView extends Vue {
                             </hg-button>
                         </router-link>
                     </div>
-                    <hr />
-                    <div class="mt-4">
-                        <h3 class="mb-3">Help in other languages</h3>
-                        <p>
-                            <span>
-                                Talk to someone on the phone. Get support in
-                                140+ languages, including:
-                            </span>
-                            <br aria-hidden="true" />
-                            <br aria-hidden="true" />
-                            <span lang="zh">國粵語</span> |
-                            <span lang="pa">ਅਨੁਵਾਦ ਸਰਵਿਸਿਜ਼</span> |
-                            <span lang="ar">خدمات-ت-رج-م-ه؟</span> |
-                            <span lang="fr">Français</span> |
-                            <span lang="es">Español</span>
-                        </p>
-                        <p>
-                            <strong>
-                                Service is available every day: 7 am to 7 pm or
-                                9 am to 5 pm on holidays.
-                            </strong>
-                        </p>
-                        <div class="my-3">
-                            <hg-button
-                                variant="secondary"
-                                href="tel:+18338382323"
-                            >
-                                Call: 1-833-838-2323 (toll free)
-                            </hg-button>
-                        </div>
-                        <div class="my-3">
-                            <hg-button variant="secondary" href="tel:711">
-                                Telephone for the deaf: Dial 711
-                            </hg-button>
-                        </div>
-                        <p class="text-muted">
-                            Standard message and data rates may apply.
-                        </p>
-                    </div>
                 </div>
             </form>
+            <div class="mt-4 px-3 px-sm-5 py-4 bg-white">
+                <h3 class="mb-3">Help in other languages</h3>
+                <p>
+                    Talk to someone on the phone. Get support in 140+ languages,
+                    including:
+                </p>
+                <p>
+                    <span lang="zh">國粵語</span> |
+                    <span lang="pa">ਅਨੁਵਾਦ ਸਰਵਿਸਿਜ਼</span> |
+                    <span lang="ar">خدمات-ت-رج-م-ه؟</span> |
+                    <span lang="fr">Français</span> |
+                    <span lang="es">Español</span>
+                </p>
+                <p>
+                    <strong>
+                        Service is available every day: 7 am to 7 pm or 9 am to
+                        5 pm on holidays.
+                    </strong>
+                </p>
+                <div class="my-3">
+                    <hg-button variant="secondary" href="tel:+18338382323">
+                        Call: 1-833-838-2323 (toll free)
+                    </hg-button>
+                </div>
+                <div class="my-3">
+                    <hg-button variant="secondary" href="tel:711">
+                        Telephone for the deaf: Dial 711
+                    </hg-button>
+                </div>
+                <div class="text-muted">
+                    Standard message and data rates may apply.
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -486,8 +508,18 @@ export default class PublicVaccineCardView extends Vue {
     }
 }
 
-.trace-id {
-    overflow-wrap: anywhere;
+.vaccine-card-form {
+    color: $hg-text-primary;
+    max-width: 600px;
+}
+
+.vaccine-card-form-title {
+    border-bottom: 3px solid $hg-brand-accent;
+    font-size: 1.25rem;
+
+    @media (min-width: 576px) {
+        font-size: 1.5rem;
+    }
 }
 
 .login-button {
