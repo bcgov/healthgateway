@@ -35,8 +35,8 @@ export let loadOptions = {
     stages: [
         { duration: "20s", target: 10 }, // below normal load
         { duration: "1m", target: 100 },
-        { duration: "1m", target: 150 }, // peak to maximum expected users
-        { duration: "5m", target: 150 }, // stay there
+        { duration: "1m", target: 200 }, // peak to maximum expected users
+        { duration: "5m", target: 200 }, // stay there
         { duration: "1m", target: 100 }, // scale down
         { duration: "3m", target: 10 },
         { duration: "10s", target: 0 }, //
@@ -59,8 +59,8 @@ export let spikeOptions = {
     stages: [
         { duration: "20s", target: 10 }, // below normal load
         { duration: "1m", target: 10 },
-        { duration: "1m", target: 600 }, // spike to super high users
-        { duration: "3m", target: 600 }, // stay there
+        { duration: "1m", target: 400 }, // spike to super high users
+        { duration: "3m", target: 400 }, // stay there
         { duration: "1m", target: 100 }, // scale down
         { duration: "3m", target: 10 },
         { duration: "10s", target: 0 }, //
