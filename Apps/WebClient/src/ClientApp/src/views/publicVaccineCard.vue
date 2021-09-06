@@ -198,7 +198,7 @@ export default class PublicVaccineCardView extends Vue {
             <img
                 class="img-fluid m-3"
                 src="@/assets/images/gov/bcid-logo-rev-en.svg"
-                width="181"
+                width="152"
                 alt="BC Mark"
             />
         </div>
@@ -242,7 +242,7 @@ export default class PublicVaccineCardView extends Vue {
                 "
                 @submit.prevent="handleSubmit"
             >
-                <div class="container my-3 my-sm-5 px-0 px-sm-5">
+                <div class="container my-2 my-sm-5 px-0 px-sm-5">
                     <div v-if="error !== undefined">
                         <b-alert
                             variant="danger"
@@ -266,7 +266,7 @@ export default class PublicVaccineCardView extends Vue {
                     <p class="mb-4">
                         To access your BC Vaccine Card, please provide:
                     </p>
-                    <b-row class="my-2">
+                    <b-row>
                         <b-col>
                             <b-form-group
                                 label="Personal Health Number"
@@ -296,7 +296,7 @@ export default class PublicVaccineCardView extends Vue {
                             </b-form-group>
                         </b-col>
                     </b-row>
-                    <b-row class="my-2">
+                    <b-row>
                         <b-col>
                             <b-form-group
                                 label="Date of Birth"
@@ -335,7 +335,7 @@ export default class PublicVaccineCardView extends Vue {
                             </b-form-group>
                         </b-col>
                     </b-row>
-                    <b-row class="my-2">
+                    <b-row>
                         <b-col>
                             <b-form-group
                                 label="Date of Vaccine (Dose 1 or Dose 2)"
@@ -381,7 +381,7 @@ export default class PublicVaccineCardView extends Vue {
                         href="#"
                         tabindex="0"
                         variant="link"
-                        class="shadow-none p-0 my-2"
+                        class="shadow-none p-0"
                     >
                         <hg-icon icon="info-circle" size="small" class="mr-1" />
                         <small>Privacy Statement</small>
@@ -403,8 +403,8 @@ export default class PublicVaccineCardView extends Vue {
                         or 778-698-5849 if you have any questions about this
                         collection.
                     </b-popover>
-                    <b-row class="mt-4 justify-content-between">
-                        <b-col cols="5" sm="4">
+                    <b-row class="mt-3 justify-content-between">
+                        <b-col cols="5">
                             <hg-button
                                 variant="secondary"
                                 aria-label="Cancel"
@@ -414,7 +414,7 @@ export default class PublicVaccineCardView extends Vue {
                                 Cancel
                             </hg-button>
                         </b-col>
-                        <b-col cols="5" sm="4">
+                        <b-col cols="5">
                             <hg-button
                                 variant="primary"
                                 aria-label="Enter"
@@ -427,7 +427,7 @@ export default class PublicVaccineCardView extends Vue {
                         </b-col>
                     </b-row>
                     <div class="text-center">
-                        <b-row class="my-4 no-gutters align-items-center">
+                        <b-row class="my-3 no-gutters align-items-center">
                             <b-col><hr /></b-col>
                             <b-col cols="auto">
                                 <h3 class="h5 m-0 px-3 text-muted">OR</h3>
