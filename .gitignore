@@ -40,5 +40,4 @@ Thumbs.db
 Testing/functional/e2e/debug.log
 
 # CSV files and Logs
-*.csv
 *.log
