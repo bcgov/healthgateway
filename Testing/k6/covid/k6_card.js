@@ -21,6 +21,7 @@ import PapaParse from "./papaparse.js";
 
 export let testType = __ENV.TYPE  ? __ENV.TYPE : "load";
 export let environment = __ENV.HG_ENV  ? __ENV.HG_ENV : "test"; // default to test environment
+export let specialHeaderKey = __ENV.HG_KEY ? __ENV.HG_KEY : "nokey"; // special key 
 
 export let baseSiteUrl = "https://" + environment + ".healthgateway.gov.bc.ca";
 export let cardUrl = baseSiteUrl + "/api/immunizationservice/v1/api/VaccineStatus";
@@ -34,9 +35,9 @@ export let loadOptions = {
     stages: [
         { duration: "20s", target: 10 }, // below normal load
         { duration: "1m", target: 100 },
-        { duration: "1m", target: 500 }, // spike to maximum expected users
-        { duration: "5m", target: 500 }, // stay there
-        { duration: "1m", target: 250 }, // scale down
+        { duration: "1m", target: 150 }, // peak to maximum expected users
+        { duration: "5m", target: 150 }, // stay there
+        { duration: "1m", target: 100 }, // scale down
         { duration: "3m", target: 10 },
         { duration: "10s", target: 0 }, //
     ],
@@ -127,18 +128,24 @@ export default function () {
 
     //let res1 = http.get(entryPageUrl);
 
+    let headers = {
+        'User-Agent': 'k6', 
+        'X-API-KEY' : specialHeaderKey,
+    }
+
     let responses = http.batch([
-        ['GET', entryPageUrl, null, { tags: { ctype: 'html' } }],
-        ['GET', cssUrl, null, { tags: { ctype: 'css' } }],
-        ['GET', cssVendorsUrl, null, { tags: { ctype: 'js' } }],
-        ['GET', vendorChunkJsUrl, null, { tags: { ctype: 'js' } }],
-        ['GET', siteChunkJsUrl, null, { tags: { ctype: 'js' } }],
-      ]);
+        ['GET', entryPageUrl, null, { headers: headers, tags: { ctype: 'html' } }],
+        ['GET', cssUrl, null, { headers: headers, tags: { ctype: 'css' } }],
+        ['GET', cssVendorsUrl, null, { headers: headers, tags: { ctype: 'js' } }],
+        ['GET', vendorChunkJsUrl, null, { headers: headers, tags: { ctype: 'js' } }],
+        ['GET', siteChunkJsUrl, null, { headers: headers, tags: { ctype: 'js' } }],
+      ] );
       check(responses[0], {
         'Webpage status 200': (res) => res.status === 200,
       });
+
     let success = check(responses[0], {
-        'Reached VaccineCard Page; Not Queue-IT': (r) => r.headers['Set-Cookie'].search('Queue-it') === -1,
+        'Reached VaccineCard Page; Not Queue-IT': (r) => r.body.search('queue-it.net') === -1,
         'VaccineCard Page Title Correct': (r) => r.html('title').text() == 'Health Gateway',
       });
 
@@ -148,6 +155,7 @@ export default function () {
 
         let params = {
             headers:  { 'User-Agent': 'k6', 
+            'X-API-KEY' : 'Brad-f6e4af129154482a9a78790a1cd70a77',
             'phn': randomUser.phn, 
             'dateOfBirth': randomUser.dateOfBirth, 
             'dateOfVaccine': randomUser.dateOfVaccine }
@@ -162,12 +170,12 @@ export default function () {
 
         check(res2, {"API Status 200": (r) => r.status === 200})
         check(res2, {
-            'Reached API Endpoint; Not Queue-IT': (r) => r.headers['Set-Cookie'].search('Queue-it') === -1,
+            'Reached API Endpoint; Not Queue-IT': (r) => r.body.search('queue-it.net') === -1,
             'API Response Content-Type is JSON': (r) => r.headers['Content-Type'].search('application/json') >= 0, 
             });
     }
     else {
         console.log("Skipping API Call; in Waiting Room!")
     }
-    sleep(2);
+    sleep(1);
 }
