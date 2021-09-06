@@ -13,7 +13,7 @@ import DatePickerComponent from "@/components/datePicker.vue";
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
-import HgDropdownComponent from "@/components/shared/hgDateDropdown.vue";
+import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
@@ -40,7 +40,7 @@ const validPersonalHealthNumber = (value: string): boolean => {
         "error-card": ErrorCardComponent,
         loading: LoadingComponent,
         MessageModalComponent,
-        "date-dropdown": HgDropdownComponent,
+        "hg-date-dropdown": HgDateDropdownComponent,
     },
 })
 export default class PublicVaccineCardView extends Vue {
@@ -235,7 +235,7 @@ export default class PublicVaccineCardView extends Vue {
                     bg-white
                     rounded
                     shadow
-                    m-3
+                    m-2 m-sm-3
                     py-3
                     px-3 px-sm-5
                     align-self-center
@@ -303,7 +303,7 @@ export default class PublicVaccineCardView extends Vue {
                                 label-for="dateOfBirth"
                                 :state="isValid($v.dateOfBirth)"
                             >
-                                <date-dropdown
+                                <hg-date-dropdown
                                     id="dateOfBirth"
                                     v-model="dateOfBirth"
                                     :state="isValid($v.dateOfBirth)"
@@ -311,7 +311,7 @@ export default class PublicVaccineCardView extends Vue {
                                     data-testid="dateOfBirthInput"
                                     aria-label="Date of Birth"
                                     @blur="$v.dateOfBirth.$touch()"
-                                ></date-dropdown>
+                                />
                                 <b-form-invalid-feedback
                                     v-if="
                                         $v.dateOfBirth.$dirty &&
@@ -342,7 +342,7 @@ export default class PublicVaccineCardView extends Vue {
                                 label-for="dateOfVaccine"
                                 :state="isValid($v.dateOfVaccine)"
                             >
-                                <date-dropdown
+                                <hg-date-dropdown
                                     id="dateOfVaccine"
                                     v-model="dateOfVaccine"
                                     :state="isValid($v.dateOfVaccine)"
@@ -351,7 +351,7 @@ export default class PublicVaccineCardView extends Vue {
                                     data-testid="dateOfVaccineInput"
                                     aria-label="Date of Vaccine (Dose 1 or Dose 2)"
                                     @blur="$v.dateOfBirth.$touch()"
-                                ></date-dropdown>
+                                />
                                 <b-form-invalid-feedback
                                     v-if="
                                         $v.dateOfVaccine.$dirty &&
