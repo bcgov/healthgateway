@@ -13,7 +13,7 @@ import DatePickerComponent from "@/components/datePicker.vue";
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
-import HgDropdownComponent from "@/components/shared/hgDateDropdown.vue";
+import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
@@ -40,7 +40,7 @@ const validPersonalHealthNumber = (value: string): boolean => {
         "error-card": ErrorCardComponent,
         loading: LoadingComponent,
         MessageModalComponent,
-        "date-dropdown": HgDropdownComponent,
+        "hg-date-dropdown": HgDateDropdownComponent,
     },
 })
 export default class PublicVaccineCardView extends Vue {
@@ -198,7 +198,7 @@ export default class PublicVaccineCardView extends Vue {
             <img
                 class="img-fluid m-3"
                 src="@/assets/images/gov/bcid-logo-rev-en.svg"
-                width="181"
+                width="152"
                 alt="BC Mark"
             />
         </div>
@@ -235,14 +235,14 @@ export default class PublicVaccineCardView extends Vue {
                     bg-white
                     rounded
                     shadow
-                    m-3
+                    m-2 m-sm-3
                     py-3
                     px-3 px-sm-5
                     align-self-center
                 "
                 @submit.prevent="handleSubmit"
             >
-                <div class="container my-3 my-sm-5 px-0 px-sm-5">
+                <div class="container my-2 my-sm-5 px-0 px-sm-5">
                     <div v-if="error !== undefined">
                         <b-alert
                             variant="danger"
@@ -266,7 +266,7 @@ export default class PublicVaccineCardView extends Vue {
                     <p class="mb-4">
                         To access your BC Vaccine Card, please provide:
                     </p>
-                    <b-row class="my-2">
+                    <b-row>
                         <b-col>
                             <b-form-group
                                 label="Personal Health Number"
@@ -296,14 +296,14 @@ export default class PublicVaccineCardView extends Vue {
                             </b-form-group>
                         </b-col>
                     </b-row>
-                    <b-row class="my-2">
+                    <b-row>
                         <b-col>
                             <b-form-group
                                 label="Date of Birth"
                                 label-for="dateOfBirth"
                                 :state="isValid($v.dateOfBirth)"
                             >
-                                <date-dropdown
+                                <hg-date-dropdown
                                     id="dateOfBirth"
                                     v-model="dateOfBirth"
                                     :state="isValid($v.dateOfBirth)"
@@ -311,7 +311,7 @@ export default class PublicVaccineCardView extends Vue {
                                     data-testid="dateOfBirthInput"
                                     aria-label="Date of Birth"
                                     @blur="$v.dateOfBirth.$touch()"
-                                ></date-dropdown>
+                                />
                                 <b-form-invalid-feedback
                                     v-if="
                                         $v.dateOfBirth.$dirty &&
@@ -335,14 +335,14 @@ export default class PublicVaccineCardView extends Vue {
                             </b-form-group>
                         </b-col>
                     </b-row>
-                    <b-row class="my-2">
+                    <b-row>
                         <b-col>
                             <b-form-group
                                 label="Date of Vaccine (Dose 1 or Dose 2)"
                                 label-for="dateOfVaccine"
                                 :state="isValid($v.dateOfVaccine)"
                             >
-                                <date-dropdown
+                                <hg-date-dropdown
                                     id="dateOfVaccine"
                                     v-model="dateOfVaccine"
                                     :state="isValid($v.dateOfVaccine)"
@@ -351,7 +351,7 @@ export default class PublicVaccineCardView extends Vue {
                                     data-testid="dateOfVaccineInput"
                                     aria-label="Date of Vaccine (Dose 1 or Dose 2)"
                                     @blur="$v.dateOfBirth.$touch()"
-                                ></date-dropdown>
+                                />
                                 <b-form-invalid-feedback
                                     v-if="
                                         $v.dateOfVaccine.$dirty &&
@@ -381,7 +381,7 @@ export default class PublicVaccineCardView extends Vue {
                         href="#"
                         tabindex="0"
                         variant="link"
-                        class="shadow-none p-0 my-2"
+                        class="shadow-none p-0"
                     >
                         <hg-icon icon="info-circle" size="small" class="mr-1" />
                         <small>Privacy Statement</small>
@@ -403,8 +403,8 @@ export default class PublicVaccineCardView extends Vue {
                         or 778-698-5849 if you have any questions about this
                         collection.
                     </b-popover>
-                    <b-row class="mt-4 justify-content-between">
-                        <b-col cols="5" sm="4">
+                    <b-row class="mt-3 justify-content-between">
+                        <b-col cols="5">
                             <hg-button
                                 variant="secondary"
                                 aria-label="Cancel"
@@ -414,7 +414,7 @@ export default class PublicVaccineCardView extends Vue {
                                 Cancel
                             </hg-button>
                         </b-col>
-                        <b-col cols="5" sm="4">
+                        <b-col cols="5">
                             <hg-button
                                 variant="primary"
                                 aria-label="Enter"
@@ -427,7 +427,7 @@ export default class PublicVaccineCardView extends Vue {
                         </b-col>
                     </b-row>
                     <div class="text-center">
-                        <b-row class="my-4 no-gutters align-items-center">
+                        <b-row class="my-3 no-gutters align-items-center">
                             <b-col><hr /></b-col>
                             <b-col cols="auto">
                                 <h3 class="h5 m-0 px-3 text-muted">OR</h3>

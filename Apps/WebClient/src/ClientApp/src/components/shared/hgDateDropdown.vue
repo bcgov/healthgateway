@@ -176,30 +176,36 @@ export default class HgDateDropdownComponent extends Vue {
 </script>
 
 <template>
-    <div class="d-flex">
-        <b-form-select
-            v-model="year"
-            :class="getClass(state)"
-            :options="getYears"
-            aria-label="Year"
-            @change="onChange"
-        ></b-form-select>
-        <b-form-select
-            v-model="month"
-            :class="getClass(state)"
-            :options="getMonths"
-            aria-label="Month"
-            @change="onChange"
-        ></b-form-select>
-        <b-form-select
-            v-model="day"
-            :class="getClass(state)"
-            :options="getDays"
-            aria-label="Day"
-            @change="onChange"
-            @blur="onBlur"
-        ></b-form-select>
-    </div>
+    <b-row no-gutters>
+        <b-col cols="auto">
+            <b-form-select
+                v-model="year"
+                :class="getClass(state)"
+                :options="getYears"
+                aria-label="Year"
+                @change="onChange"
+            />
+        </b-col>
+        <b-col class="px-2">
+            <b-form-select
+                v-model="month"
+                :class="getClass(state)"
+                :options="getMonths"
+                aria-label="Month"
+                @change="onChange"
+            />
+        </b-col>
+        <b-col cols="auto">
+            <b-form-select
+                v-model="day"
+                :class="getClass(state)"
+                :options="getDays"
+                aria-label="Day"
+                @change="onChange"
+                @blur="onBlur"
+            />
+        </b-col>
+    </b-row>
 </template>
 
 <style lang="scss" scoped>
