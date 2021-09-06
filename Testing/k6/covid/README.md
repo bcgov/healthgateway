@@ -3,7 +3,7 @@
 ## Running (macos or linux)
 
 ```bash
-TYPE=smoke docker compose up
+TYPE=smoke HG_ENV=test HG_KEY=key docker compose up
 ```
 
 ### Options
