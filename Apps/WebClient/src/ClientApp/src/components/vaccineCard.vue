@@ -55,9 +55,9 @@ export default class VaccineCardComponent extends Vue {
 
     private get issuedDate(): string | undefined {
         if (this.status?.issueddate) {
-            return new DateWrapper(this.status?.issueddate).format(
-                "MMMM-dd-yyyy, HH:mm"
-            );
+            return new DateWrapper(this.status?.issueddate, {
+                hasTime: true,
+            }).format("MMMM-dd-yyyy, HH:mm");
         }
         return undefined;
     }
