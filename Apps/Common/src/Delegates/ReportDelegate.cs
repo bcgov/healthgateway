@@ -31,6 +31,7 @@ namespace HealthGateway.Common.Delegates
     {
         private const string BorderDashed = "dashed";
         private const string BorderSolid = "solid";
+        private const string WindowsTimeZoneId = "Pacific Standard Time";
         private readonly IIronPDFDelegate ironPdfDelegate;
 
         /// <summary>
@@ -45,12 +46,14 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc/>
         public RequestResult<ReportModel> GetVaccineStatusPDF(VaccineStatus vaccineStatus, Address? address)
         {
+            DateTime currentPacificTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById(WindowsTimeZoneId));
+
             IronPDFRequestModel pdfRequest = new ();
             pdfRequest.FileName = "BCVaccineCard";
             pdfRequest.Data.Add("bcTopLogoImageSrc", AssetReader.Read("HealthGateway.Common.Assets.Images.BCID_V_rgb_pos.png", true));
             pdfRequest.Data.Add("bcLogoImageSrc", AssetReader.Read("HealthGateway.Common.Assets.Images.BCID_H_rgb_pos.png", true));
-            pdfRequest.Data.Add("currentDate", DateTime.Now.ToString("dd, MMMM yyyy", CultureInfo.InvariantCulture));
-            pdfRequest.Data.Add("currentDateTime", DateTime.Now.ToString("MMMM-dd-yyyy, HH:mm", CultureInfo.InvariantCulture));
+            pdfRequest.Data.Add("currentDate", currentPacificTime.ToString("dd, MMMM yyyy", CultureInfo.InvariantCulture));
+            pdfRequest.Data.Add("currentDateTime", currentPacificTime.ToString("MMMM-dd-yyyy, HH:mm", CultureInfo.InvariantCulture));
             pdfRequest.HtmlTemplate = AssetReader.Read("HealthGateway.Common.Assets.Templates.VaccineStatusCard.html") !;
 
             pdfRequest.Data.Add("birthdate", vaccineStatus.Birthdate!.Value.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpper(CultureInfo.InvariantCulture));
