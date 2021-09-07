@@ -155,7 +155,7 @@ export default function () {
 
         let params = {
             headers:  { 'User-Agent': 'k6', 
-            'X-API-KEY' : 'Brad-f6e4af129154482a9a78790a1cd70a77',
+            'X-API-KEY' : HG_KEY,
             'phn': randomUser.phn, 
             'dateOfBirth': randomUser.dateOfBirth, 
             'dateOfVaccine': randomUser.dateOfVaccine }
