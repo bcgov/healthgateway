@@ -166,7 +166,7 @@ export const actions: VaccinationStatusActions = {
                                         "Re-querying for vaccination status"
                                     );
                                     context.dispatch(
-                                        "getAuthenticatedVaccineStatus",
+                                        "retrieveAuthenticatedVaccineStatus",
                                         {
                                             hdid: params.hdid,
                                         }
