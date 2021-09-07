@@ -17,6 +17,7 @@ import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
+import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import Report from "@/models/report";
 import VaccinationStatus from "@/models/vaccinationStatus";
@@ -58,6 +59,9 @@ export default class PublicVaccineCardView extends Vue {
         dateOfVaccine: StringISODate;
     }) => Promise<Report>;
 
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     @Getter("vaccinationStatus", { namespace: "vaccinationStatus" })
     status!: VaccinationStatus | undefined;
 
@@ -87,10 +91,11 @@ export default class PublicVaccineCardView extends Vue {
         return this.isDownloading ? "Downloading PDF..." : this.statusMessage;
     }
 
-    private get downloadButtonEnabled(): boolean {
+    private get downloadButtonShown(): boolean {
         return (
-            this.status?.state === VaccinationState.PartiallyVaccinated ||
-            this.status?.state === VaccinationState.FullyVaccinated
+            this.config.modules["VaccinationStatusPdf"] &&
+            (this.status?.state === VaccinationState.PartiallyVaccinated ||
+                this.status?.state === VaccinationState.FullyVaccinated)
         );
     }
 
@@ -211,7 +216,7 @@ export default class PublicVaccineCardView extends Vue {
                 <div class="actions p-3 d-flex justify-content-between">
                     <hg-button variant="secondary" to="/">Done</hg-button>
                     <hg-button
-                        v-if="downloadButtonEnabled"
+                        v-if="downloadButtonShown"
                         variant="primary"
                         class="ml-3"
                         @click="showSensitiveDocumentDownloadModal()"

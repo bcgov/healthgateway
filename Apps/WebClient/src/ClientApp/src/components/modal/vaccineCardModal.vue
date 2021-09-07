@@ -8,6 +8,7 @@ import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import BannerError from "@/models/bannerError";
+import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent } from "@/models/immunizationModel";
@@ -53,6 +54,9 @@ export default class VaccineCardModalComponent extends Vue {
         hdid: string;
     }) => Promise<CovidVaccineRecord>;
 
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     @Getter("isLoading", { namespace: "user" })
     isPatientLoading!: boolean;
 
@@ -97,6 +101,10 @@ export default class VaccineCardModalComponent extends Vue {
             this.isImmunizationLoading ||
             this.isVaccinationStatusLoading
         );
+    }
+
+    private get downloadButtonShown(): boolean {
+        return this.config.modules["VaccinationStatusPdf"];
     }
 
     @Ref("messageModal")
@@ -275,6 +283,7 @@ export default class VaccineCardModalComponent extends Vue {
                     Done
                 </hg-button>
                 <hg-button
+                    v-if="downloadButtonShown"
                     data-testid="exportCardBtn"
                     aria-label="Save a Copy"
                     variant="primary"
