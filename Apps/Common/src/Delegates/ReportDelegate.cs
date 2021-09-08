@@ -17,10 +17,8 @@ namespace HealthGateway.Common.Delegates
 {
     using System;
     using System.Globalization;
-    using System.Linq;
-    using System.Threading.Tasks;
+    using System.Runtime.InteropServices;
     using HealthGateway.Common.Constants.PHSA;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Utils;
@@ -31,22 +29,26 @@ namespace HealthGateway.Common.Delegates
     {
         private const string BorderDashed = "dashed";
         private const string BorderSolid = "solid";
-        private const string WindowsTimeZoneId = "Pacific Standard Time";
+        private const string UnixTzKey = "TimeZone:UnixTimeZoneId";
+        private const string WindowsTzKey = "TimeZone:WindowsTimeZoneId";
         private readonly IIronPDFDelegate ironPdfDelegate;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReportDelegate"/> class.
         /// </summary>
         /// <param name="ironPdfDelegate">The injected iron pdf delegate.</param>
-        public ReportDelegate(IIronPDFDelegate ironPdfDelegate)
+        /// <param name="configuration">The injected configuration.</param>
+        public ReportDelegate(IIronPDFDelegate ironPdfDelegate, IConfiguration configuration)
         {
             this.ironPdfDelegate = ironPdfDelegate;
+            this.configuration = configuration;
         }
 
         /// <inheritdoc/>
         public RequestResult<ReportModel> GetVaccineStatusPDF(VaccineStatus vaccineStatus, Address? address)
         {
-            DateTime currentPacificTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById(WindowsTimeZoneId));
+            DateTime currentPacificTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, this.GetLocalTimeZone());
 
             IronPDFRequestModel pdfRequest = new ();
             pdfRequest.FileName = "BCVaccineCard";
@@ -104,6 +106,13 @@ namespace HealthGateway.Common.Delegates
         {
             RequestResult<ReportModel> vaccineStatusResult = this.GetVaccineStatusPDF(vaccineStatus, address);
             return this.ironPdfDelegate.Merge(vaccineStatusResult.ResourcePayload!.Data, base64RecordCard, vaccineStatusResult.ResourcePayload.FileName);
+        }
+
+        private TimeZoneInfo GetLocalTimeZone()
+        {
+            return TimeZoneInfo.FindSystemTimeZoneById(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+                    this.configuration.GetValue<string>(WindowsTzKey) :
+                    this.configuration.GetValue<string>(UnixTzKey));
         }
     }
 }
