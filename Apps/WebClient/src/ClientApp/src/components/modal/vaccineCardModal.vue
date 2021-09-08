@@ -222,6 +222,7 @@ export default class VaccineCardModalComponent extends Vue {
         :no-close-on-backdrop="true"
         scrollable
         centered
+        :hide-footer="!downloadButtonShown"
     >
         <template #modal-header="{ close }">
             <b-row class="w-100 h-100">
@@ -245,7 +246,7 @@ export default class VaccineCardModalComponent extends Vue {
                 </b-col>
             </b-row>
         </template>
-        <template #modal-footer>
+        <template v-if="downloadButtonShown" #modal-footer>
             <div v-if="error !== undefined" class="container">
                 <b-alert
                     variant="danger"
@@ -275,15 +276,6 @@ export default class VaccineCardModalComponent extends Vue {
             </div>
             <div class="w-100 p-2 d-flex justify-content-between">
                 <hg-button
-                    variant="secondary"
-                    class="m-2"
-                    aria-label="Done"
-                    @click="close()"
-                >
-                    Done
-                </hg-button>
-                <hg-button
-                    v-if="downloadButtonShown"
                     data-testid="exportCardBtn"
                     aria-label="Save a Copy"
                     variant="primary"

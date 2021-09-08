@@ -200,12 +200,14 @@ export default class PublicVaccineCardView extends Vue {
             :text="loadingStatusMessage"
         />
         <div class="header">
-            <img
-                class="img-fluid m-3"
-                src="@/assets/images/gov/bcid-logo-rev-en.svg"
-                width="152"
-                alt="BC Mark"
-            />
+            <router-link id="homeLink" to="/" aria-label="Return to home page">
+                <img
+                    class="img-fluid m-3"
+                    src="@/assets/images/gov/bcid-logo-rev-en.svg"
+                    width="152"
+                    alt="BC Mark"
+                />
+            </router-link>
         </div>
         <div
             v-if="displayResult"
@@ -213,10 +215,11 @@ export default class PublicVaccineCardView extends Vue {
         >
             <div class="bg-white rounded shadow">
                 <vaccine-card :status="status" :error="error" />
-                <div class="actions p-3 d-flex justify-content-between">
-                    <hg-button variant="secondary" to="/">Done</hg-button>
+                <div
+                    v-if="downloadButtonShown"
+                    class="actions p-3 d-flex justify-content-between"
+                >
                     <hg-button
-                        v-if="downloadButtonShown"
                         variant="primary"
                         class="ml-3"
                         @click="showSensitiveDocumentDownloadModal()"
