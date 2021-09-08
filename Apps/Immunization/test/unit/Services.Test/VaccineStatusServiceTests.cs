@@ -29,7 +29,10 @@ namespace HealthGateway.Immunization.Test.Services
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
+    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -93,9 +96,11 @@ namespace HealthGateway.Immunization.Test.Services
 
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
+                new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                new Mock<IReportDelegate>().Object);
+                new Mock<IReportDelegate>().Object,
+                GetMemoryCache());
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -111,9 +116,11 @@ namespace HealthGateway.Immunization.Test.Services
         {
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
+                new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<IReportDelegate>().Object);
+                new Mock<IReportDelegate>().Object,
+                GetMemoryCache());
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -129,9 +136,11 @@ namespace HealthGateway.Immunization.Test.Services
         {
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
+                new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<IReportDelegate>().Object);
+                new Mock<IReportDelegate>().Object,
+                GetMemoryCache());
 
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             var actualResult = Task.Run(async () => await service.GetVaccineStatus(this.phn, "yyyyMMddx", dovString).ConfigureAwait(true)).Result;
@@ -146,13 +155,24 @@ namespace HealthGateway.Immunization.Test.Services
         {
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
+                new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<IReportDelegate>().Object);
+                new Mock<IReportDelegate>().Object,
+                GetMemoryCache());
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             var actualResult = Task.Run(async () => await service.GetVaccineStatus(this.phn, dobString, "yyyyMMddx").ConfigureAwait(true)).Result;
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+        }
+
+        private static IMemoryCache? GetMemoryCache()
+        {
+            ServiceCollection services = new ServiceCollection();
+            services.AddMemoryCache();
+            ServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            return serviceProvider.GetService<IMemoryCache>();
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
