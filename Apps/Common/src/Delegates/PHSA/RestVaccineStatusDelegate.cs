@@ -23,6 +23,7 @@ namespace HealthGateway.Common.Delegates.PHSA
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
@@ -195,6 +196,53 @@ namespace HealthGateway.Common.Delegates.PHSA
         }
 
         /// <inheritdoc/>
+        public async Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatusWithRetries(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
+        {
+            using Activity? activity = Source.StartActivity("RetryGetVaccineStatus");
+            RequestResult<PHSAResult<VaccineStatusResult>> retVal = new ()
+            {
+                ResultStatus = ResultType.Error,
+                PageIndex = 0,
+            };
+
+            RequestResult<PHSAResult<VaccineStatusResult>> response;
+            int attemptCount = 0;
+            bool refreshInProgress;
+            do
+            {
+                response = await this.GetVaccineStatus(query, accessToken, isPublicEndpoint).ConfigureAwait(true);
+
+                refreshInProgress = response.ResultStatus == ResultType.Success &&
+                                    response.ResourcePayload != null &&
+                                    response.ResourcePayload.LoadState.RefreshInProgress;
+
+                attemptCount++;
+                if (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries)
+                {
+                    this.logger.LogDebug($"Refresh in progress, trying again....");
+                    Thread.Sleep(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds));
+                }
+            }
+            while (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries);
+
+            if (refreshInProgress)
+            {
+                this.logger.LogDebug($"Maximum retry attempts reached.");
+                retVal.ResultError = new RequestResultError() { ResultMessage = "Refresh in progress", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+            }
+            else if (response.ResultStatus == ResultType.Success)
+            {
+                retVal = response;
+            }
+            else
+            {
+                retVal.ResultError = response.ResultError;
+            }
+
+            return retVal;
+        }
+
+        /// <inheritdoc/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public async Task<RequestResult<PHSAResult<RecordCard>>> GetRecordCard(RecordCardQuery query, string accessToken)
         {
@@ -287,6 +335,53 @@ namespace HealthGateway.Common.Delegates.PHSA
             }
 
             this.logger.LogDebug($"Finished getting record card {query.PersonalHealthNumber.Substring(0, 5)} {query.DateOfBirth}");
+            return retVal;
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<PHSAResult<RecordCard>>> GetRecordCardWithRetries(RecordCardQuery query, string accessToken)
+        {
+            using Activity? activity = Source.StartActivity("RetryGetRecordCard");
+            RequestResult<PHSAResult<RecordCard>> retVal = new ()
+            {
+                ResultStatus = ResultType.Error,
+                PageIndex = 0,
+            };
+
+            RequestResult<PHSAResult<RecordCard>> response;
+            int attemptCount = 0;
+            bool refreshInProgress;
+            do
+            {
+                response = await this.GetRecordCard(query, accessToken).ConfigureAwait(true);
+
+                refreshInProgress = response.ResultStatus == ResultType.Success &&
+                                    response.ResourcePayload != null &&
+                                    response.ResourcePayload.LoadState.RefreshInProgress;
+
+                attemptCount++;
+                if (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries)
+                {
+                    this.logger.LogDebug($"Refresh in progress, trying again....");
+                    Thread.Sleep(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds));
+                }
+            }
+            while (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries);
+
+            if (refreshInProgress)
+            {
+                this.logger.LogDebug($"Maximum retry attempts reached.");
+                retVal.ResultError = new RequestResultError() { ResultMessage = "Refresh in progress", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+            }
+            else if (response.ResultStatus == ResultType.Success)
+            {
+                retVal = response;
+            }
+            else
+            {
+                retVal.ResultError = response.ResultError;
+            }
+
             return retVal;
         }
     }

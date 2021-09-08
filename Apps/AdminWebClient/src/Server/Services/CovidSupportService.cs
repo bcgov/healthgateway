@@ -155,17 +155,17 @@ namespace HealthGateway.Admin.Services
             this.logger.LogDebug($"Retrieving covid document");
             this.logger.LogTrace($"For PHN: {phn}");
 
-            RequestResult<CovidInformation> covidInfo = await this.GetCovidInformation(phn).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.PHN, true).ConfigureAwait(true);
 
-            if (covidInfo.ResultStatus != ResultType.Success)
+            if (patientResult.ResultStatus != ResultType.Success)
             {
-                this.logger.LogError($"Error retrieving covid information.");
+                this.logger.LogError($"Error retrieving patient information.");
                 return new RequestResult<ReportModel>()
                 {
                     PageIndex = 0,
                     PageSize = 0,
                     ResultStatus = ResultType.Error,
-                    ResultError = covidInfo.ResultError,
+                    ResultError = patientResult.ResultError,
                 };
             }
 
@@ -189,10 +189,10 @@ namespace HealthGateway.Admin.Services
             VaccineStatusQuery statusQuery = new ()
             {
                 PersonalHealthNumber = phn,
-                DateOfBirth = covidInfo.ResourcePayload!.Patient.Birthdate,
+                DateOfBirth = patientResult.ResourcePayload!.Birthdate,
             };
             RequestResult<PHSAResult<VaccineStatusResult>> statusResult =
-                await this.vaccineStatusDelegate.GetVaccineStatus(statusQuery, bearerToken, false).ConfigureAwait(true);
+                await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(statusQuery, bearerToken, false).ConfigureAwait(true);
 
             if (statusResult.ResultStatus != ResultType.Success)
             {
@@ -209,11 +209,11 @@ namespace HealthGateway.Admin.Services
             RecordCardQuery cardQuery = new ()
             {
                 PersonalHealthNumber = phn,
-                DateOfBirth = covidInfo.ResourcePayload!.Patient.Birthdate,
+                DateOfBirth = patientResult.ResourcePayload!.Birthdate,
                 ImmunizationDisease = "COVID19",
             };
             RequestResult<PHSAResult<RecordCard>> recordCardResult =
-                await this.vaccineStatusDelegate.GetRecordCard(cardQuery, bearerToken).ConfigureAwait(true);
+                await this.vaccineStatusDelegate.GetRecordCardWithRetries(cardQuery, bearerToken).ConfigureAwait(true);
 
             if (recordCardResult.ResultStatus != ResultType.Success)
             {

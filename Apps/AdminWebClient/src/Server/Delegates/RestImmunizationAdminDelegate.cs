@@ -89,7 +89,7 @@ namespace HealthGateway.Admin.Server.Delegates
 
                 if (refreshInProgress)
                 {
-                    Thread.Sleep(this.phsaConfig.BackOffMilliseconds);
+                    Thread.Sleep(Math.Max(immsResponse.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds));
                 }
             }
             while (refreshInProgress && retryCount++ < this.phsaConfig.MaxRetries);
