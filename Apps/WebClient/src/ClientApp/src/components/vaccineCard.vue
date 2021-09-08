@@ -163,17 +163,22 @@ export default class VaccineCardComponent extends Vue {
                 </div>
             </div>
         </div>
-        <div
-            v-if="isPartiallyVaccinated || isVaccinationNotFound"
-            class="callout"
-        >
-            To learn more, visit
-            <a
-                href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof"
-                rel="noopener"
-                target="_blank"
-                >BC Proof of Vaccination</a
-            >.
+        <div class="p-3">
+            <div
+                v-if="isPartiallyVaccinated || isVaccinationNotFound"
+                class="callout"
+            >
+                To learn more, visit
+                <a
+                    href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof"
+                    rel="noopener"
+                    target="_blank"
+                    >BC Proof of Vaccination</a
+                >.
+            </div>
+            <div v-else-if="isFullyVaccinated" class="callout">
+                Please save or print this page.
+            </div>
         </div>
         <div v-if="error !== undefined" class="container">
             <b-alert
@@ -224,7 +229,6 @@ img.vaccination-stage {
 }
 
 .callout {
-    margin: 1rem;
     padding: 1rem;
     border-left: 0.25rem solid $hg-brand-secondary;
     border-radius: 0.25rem;
