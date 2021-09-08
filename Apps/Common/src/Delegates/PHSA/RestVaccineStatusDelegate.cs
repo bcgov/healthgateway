@@ -220,7 +220,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 if (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries)
                 {
                     this.logger.LogDebug($"Refresh in progress, trying again....");
-                    Thread.Sleep(this.phsaConfig.BackOffMilliseconds);
+                    Thread.Sleep(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds));
                 }
             }
             while (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries);
@@ -363,7 +363,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 if (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries)
                 {
                     this.logger.LogDebug($"Refresh in progress, trying again....");
-                    Thread.Sleep(this.phsaConfig.BackOffMilliseconds);
+                    Thread.Sleep(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds));
                 }
             }
             while (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries);
