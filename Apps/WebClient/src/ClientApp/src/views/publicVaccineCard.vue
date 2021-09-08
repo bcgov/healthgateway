@@ -137,7 +137,7 @@ export default class PublicVaccineCardView extends Vue {
                 text: "vaxcard",
             });
             this.retrieveVaccineStatus({
-                phn: this.phn,
+                phn: this.phn.replace(/\D/g, ""),
                 dateOfBirth: this.dateOfBirth,
                 dateOfVaccine: this.dateOfVaccine,
             })
