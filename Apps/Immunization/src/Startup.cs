@@ -63,6 +63,7 @@ namespace HealthGateway.Immunization
             this.startupConfig.ConfigurePatientAccess(services);
 
             // Add Services
+            services.AddMemoryCache();
             services.AddTransient<IImmunizationService, ImmunizationService>();
             services.AddTransient<IVaccineStatusService, VaccineStatusService>();
 

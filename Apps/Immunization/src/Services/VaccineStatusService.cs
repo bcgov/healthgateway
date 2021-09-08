@@ -28,8 +28,9 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Utils;
-    using HealthGateway.Immunization.Delegates;
+    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The Vaccine Status data service.
@@ -38,25 +39,33 @@ namespace HealthGateway.Immunization.Services
     {
         private const string PHSAConfigSectionKey = "PHSA";
         private const string AuthConfigSectionName = "ClientAuthentication";
+        private const string TokenCacheKey = "TokenCacheKey";
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IReportDelegate reportDelegate;
+        private readonly IMemoryCache memoryCache;
+        private readonly ILogger<VaccineStatusService> logger;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly PHSAConfig phsaConfig;
         private readonly Uri tokenUri;
+        private readonly int tokenCacheMinutes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VaccineStatusService"/> class.
         /// </summary>
         /// <param name="configuration">The configuration to use.</param>
+        /// <param name="logger">The injected logger.</param>
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="vaccineStatusDelegate">The injected vaccine status delegate.</param>
         /// <param name="reportDelegate">The injected report delegate.</param>
+        /// <param name="memoryCache">The cache to use to reduce lookups.</param>
         public VaccineStatusService(
             IConfiguration configuration,
+            ILogger<VaccineStatusService> logger,
             IAuthenticationDelegate authDelegate,
             IVaccineStatusDelegate vaccineStatusDelegate,
-            IReportDelegate reportDelegate)
+            IReportDelegate reportDelegate,
+            IMemoryCache memoryCache)
         {
             this.authDelegate = authDelegate;
             this.reportDelegate = reportDelegate;
@@ -65,11 +74,14 @@ namespace HealthGateway.Immunization.Services
 
             IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
             this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
+            this.tokenCacheMinutes = configSection.GetValue<int>("TokenCacheExpireMinutes", 20);
             this.tokenRequest = new ClientCredentialsTokenRequest();
             configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
 
             this.phsaConfig = new PHSAConfig();
             configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
+            this.memoryCache = memoryCache;
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
@@ -130,7 +142,30 @@ namespace HealthGateway.Immunization.Services
                 DateOfVaccine = dov,
             };
 
-            string? accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest).AccessToken;
+            this.memoryCache.TryGetValue(TokenCacheKey, out string? accessToken);
+            if (accessToken == null)
+            {
+                this.logger.LogInformation("Access token not found in cache");
+                accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest).AccessToken;
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+                    this.logger.LogInformation("Attempting to store Access token in cache");
+                    MemoryCacheEntryOptions cacheEntryOptions = new ();
+                    cacheEntryOptions.AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddMinutes(this.tokenCacheMinutes));
+                    this.memoryCache.Set(TokenCacheKey, accessToken, cacheEntryOptions);
+                }
+                else
+                {
+                    this.logger.LogCritical("The auth token is null or empty - unable to cache or proceed");
+                    retVal.ResultError = new ()
+                    {
+                        ResultMessage = "Error authenticating with KeyCloak",
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    };
+                    return retVal;
+                }
+            }
+
             RequestResult<PHSAResult<VaccineStatusResult>> result =
                 await this.vaccineStatusDelegate.GetVaccineStatus(query, accessToken, true).ConfigureAwait(true);
             VaccineStatusResult? payload = result.ResourcePayload?.Result;
@@ -139,7 +174,7 @@ namespace HealthGateway.Immunization.Services
 
             if (payload == null)
             {
-                retVal.ResourcePayload = new VaccineStatus();
+                retVal.ResourcePayload = new ();
                 retVal.ResourcePayload.State = VaccineState.NotFound;
             }
             else
