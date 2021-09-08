@@ -31,6 +31,8 @@ export let siteChunkJsUrl = baseSiteUrl + "/js/app.8136e1c8.js";
 export let cssUrl = baseSiteUrl + "/css/app.c90e9393.css";
 export let cssVendorsUrl = baseSiteUrl + "/css/chunk-vendors.21f4bba7.css";
 
+console.log(baseSiteUrl);
+
 export let loadOptions = {
     stages: [
         { duration: "20s", target: 10 }, // below normal load
@@ -164,7 +166,7 @@ export default function () {
 
         let params = {
             headers:  { 'User-Agent': 'k6', 
-            'X-API-KEY' : HG_KEY,
+            'X-API-KEY' : specialHeaderKey,
             'phn': randomUser.phn, 
             'dateOfBirth': randomUser.dateOfBirth, 
             'dateOfVaccine': randomUser.dateOfVaccine }
