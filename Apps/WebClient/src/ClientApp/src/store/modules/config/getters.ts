@@ -33,9 +33,11 @@ export const getters: ConfigGetters = {
         const offlineConfig = webclientConfig.offlineMode;
 
         if (offlineConfig) {
-            const startTime = new DateWrapper(offlineConfig.startDateTime);
+            const startTime = new DateWrapper(offlineConfig.startDateTime, {
+                hasTime: true,
+            });
             const endTime = offlineConfig.endDateTime
-                ? new DateWrapper(offlineConfig.endDateTime)
+                ? new DateWrapper(offlineConfig.endDateTime, { hasTime: true })
                 : DateWrapper.fromNumerical(2050, 12, 31);
 
             const now = new DateWrapper();
