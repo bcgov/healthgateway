@@ -192,7 +192,7 @@ namespace HealthGateway.Admin.Services
                 DateOfBirth = patientResult.ResourcePayload!.Birthdate,
             };
             RequestResult<PHSAResult<VaccineStatusResult>> statusResult =
-                await this.vaccineStatusDelegate.GetVaccineStatus(statusQuery, bearerToken, false).ConfigureAwait(true);
+                await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(statusQuery, bearerToken, false).ConfigureAwait(true);
 
             if (statusResult.ResultStatus != ResultType.Success)
             {
@@ -213,7 +213,7 @@ namespace HealthGateway.Admin.Services
                 ImmunizationDisease = "COVID19",
             };
             RequestResult<PHSAResult<RecordCard>> recordCardResult =
-                await this.vaccineStatusDelegate.GetRecordCard(cardQuery, bearerToken).ConfigureAwait(true);
+                await this.vaccineStatusDelegate.GetRecordCardWithRetries(cardQuery, bearerToken).ConfigureAwait(true);
 
             if (recordCardResult.ResultStatus != ResultType.Success)
             {
