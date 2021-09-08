@@ -46,6 +46,12 @@ export let loadOptions = {
       },
 };
 
+export let load2Options = {
+    stages: [
+        { duration: "30m", target: 10 }, // well below normal load
+    ],
+};
+
 export let soakOptions = {
     stages: [
         { duration: "1m", target: 10 }, // below normal load
@@ -91,6 +97,9 @@ switch (testType)
 {
     case 'load':
         options = loadOptions;
+        break;
+    case 'load2':
+        options = load2Options;
         break;
     case 'spike':
         options = spikeOptions;
