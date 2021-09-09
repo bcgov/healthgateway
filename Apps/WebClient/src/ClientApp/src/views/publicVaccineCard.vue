@@ -31,7 +31,7 @@ import SnowPlow from "@/utility/snowPlow";
 library.add(faInfoCircle);
 
 const validPersonalHealthNumber = (value: string): boolean => {
-    var phn = value.replace(/\D/g, "");
+    var phn = value.replace(/ /g, "");
     return PHNValidator.IsValid(phn);
 };
 
@@ -138,7 +138,7 @@ export default class PublicVaccineCardView extends Vue {
                 text: "vaxcard",
             });
             this.retrieveVaccineStatus({
-                phn: this.phn.replace(/\D/g, ""),
+                phn: this.phn.replace(/ /g, ""),
                 dateOfBirth: this.dateOfBirth,
                 dateOfVaccine: this.dateOfVaccine,
             })
