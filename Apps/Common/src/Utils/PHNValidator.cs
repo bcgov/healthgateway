@@ -31,27 +31,22 @@ namespace HealthGateway.Common.Utils
         /// <summary>
         /// Validates the supplied value is a proper Personal Health Number.
         /// </summary>
-        /// <param name="value">The Personal Health Number to validate.</param>
+        /// <param name="phn">The Personal Health Number to validate.</param>
         /// <returns>True if valid.</returns>
-        public static bool IsValid(string? value)
+        public static bool IsValid(string? phn)
         {
             bool retVal = false;
-            if (!string.IsNullOrEmpty(value))
+            if (!string.IsNullOrEmpty(phn) && phn.Length == 10 && phn.All(c => char.IsDigit(c)) && phn[0] == '9')
             {
-                Regex regex = new (@"[^\d]");
-                string phn = regex.Replace(value.ToString(), string.Empty);
-                if (phn.Length == 10 && phn.All(c => char.IsDigit(c)) && phn[0] == '9')
+                int checksum = 0;
+                for (int i = 1; i < 9; i++)
                 {
-                    int checksum = 0;
-                    for (int i = 1; i < 9; i++)
-                    {
-                        int digit = Convert.ToInt16(phn[i].ToString(), CultureInfo.InvariantCulture);
-                        checksum += (digit * PHNsigDigits[i - 1]) % 11;
-                    }
-
-                    checksum = 11 - (checksum % 11);
-                    retVal = Convert.ToInt16(phn[9].ToString(), CultureInfo.InvariantCulture) == checksum;
+                    int digit = Convert.ToInt16(phn[i].ToString(), CultureInfo.InvariantCulture);
+                    checksum += (digit * PHNsigDigits[i - 1]) % 11;
                 }
+
+                checksum = 11 - (checksum % 11);
+                retVal = Convert.ToInt16(phn[9].ToString(), CultureInfo.InvariantCulture) == checksum;
             }
 
             return retVal;

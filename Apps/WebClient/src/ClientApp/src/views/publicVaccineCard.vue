@@ -24,13 +24,14 @@ import VaccinationStatus from "@/models/vaccinationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
+import { Mask, phnMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
 import SnowPlow from "@/utility/snowPlow";
 
 library.add(faInfoCircle);
 
 const validPersonalHealthNumber = (value: string): boolean => {
-    var phn = value.replace(/\D/g, "");
+    var phn = value.replace(/ /g, "");
     return PHNValidator.IsValid(phn);
 };
 
@@ -137,7 +138,7 @@ export default class PublicVaccineCardView extends Vue {
                 text: "vaxcard",
             });
             this.retrieveVaccineStatus({
-                phn: this.phn.replace(/\D/g, ""),
+                phn: this.phn.replace(/ /g, ""),
                 dateOfBirth: this.dateOfBirth,
                 dateOfVaccine: this.dateOfVaccine,
             })
@@ -189,6 +190,10 @@ export default class PublicVaccineCardView extends Vue {
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
+
+    private get phnMask(): Mask {
+        return phnMask;
     }
 }
 </script>
@@ -283,6 +288,7 @@ export default class PublicVaccineCardView extends Vue {
                                 <b-form-input
                                     id="phn"
                                     v-model="phn"
+                                    v-mask="phnMask"
                                     data-testid="phnInput"
                                     autofocus
                                     aria-label="Personal Health Number"
