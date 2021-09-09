@@ -151,17 +151,6 @@ namespace HealthGateway.Common.Delegates.PHSA
                         }
 
                         break;
-                    case HttpStatusCode.NoContent: // No vaccine status exists for this patient
-                        retVal.ResultStatus = ResultType.Success;
-                        retVal.ResourcePayload = new PHSAResult<VaccineStatusResult>()
-                        {
-                            Result = new VaccineStatusResult()
-                            {
-                                StatusIndicator = VaccineState.NotFound.ToString(),
-                            },
-                        };
-                        retVal.TotalResultCount = 0;
-                        break;
                     case HttpStatusCode.Forbidden:
                         retVal.ResultError = new RequestResultError()
                         {

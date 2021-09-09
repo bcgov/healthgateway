@@ -22,6 +22,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
@@ -95,6 +96,14 @@ namespace HealthGateway.Immunization.Services
             else
             {
                 retVal.ResourcePayload = VaccineStatus.FromModel(payload);
+                retVal.ResourcePayload.State = retVal.ResourcePayload.State switch
+                {
+                    var state when
+                        state == VaccineState.DataMismatch ||
+                        state == VaccineState.Threshold ||
+                        state == VaccineState.Blocked => VaccineState.NotFound,
+                    _ => retVal.ResourcePayload.State
+                };
             }
 
             if (result.ResourcePayload != null)
@@ -125,25 +134,33 @@ namespace HealthGateway.Immunization.Services
             if ((recordCardResult.ResultStatus == ResultType.Success && recordCardPayload != null) &&
                 (statusResult.ResultStatus == ResultType.Success && vaccineStatusResult != null))
             {
-                RequestResult<ReportModel> reportResult = this.reportDelegate.GetVaccineStatusAndRecordPDF(
-                    VaccineStatus.FromModel(vaccineStatusResult, null),
-                    null,
-                    recordCardPayload.PaperRecord.Data);
-                retVal.ResourcePayload = new ()
+                VaccineState state = Enum.Parse<VaccineState>(vaccineStatusResult.StatusIndicator);
+                if (state == VaccineState.NotFound || state == VaccineState.DataMismatch || state == VaccineState.Threshold || state == VaccineState.Blocked)
                 {
-                    Document = new EncodedMedia()
+                    retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine status not found", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA) };
+                    retVal.ResourcePayload = new CovidVaccineRecord();
+                }
+                else
+                {
+                    RequestResult<ReportModel> reportResult = this.reportDelegate.GetVaccineStatusAndRecordPDF(
+                        VaccineStatus.FromModel(vaccineStatusResult, null),
+                        null,
+                        recordCardPayload.PaperRecord.Data);
+                    retVal.ResourcePayload = new ()
                     {
-                        Data = reportResult.ResourcePayload!.Data,
-                        Encoding = "base64",
-                        Type = MediaTypeNames.Application.Pdf,
-                    },
-                    QRCode = recordCardPayload.QRCode,
-                };
-                retVal.ResultStatus = ResultType.Success;
+                        Document = new EncodedMedia()
+                        {
+                            Data = reportResult.ResourcePayload!.Data,
+                            Encoding = "base64",
+                            Type = MediaTypeNames.Application.Pdf,
+                        },
+                        QRCode = recordCardPayload.QRCode,
+                    };
+                    retVal.ResultStatus = ResultType.Success;
+                }
             }
             else
             {
-                retVal.ResultStatus = ResultType.Error;
                 retVal.ResultError = recordCardResult.ResultError ?? statusResult.ResultError;
                 retVal.ResourcePayload = new CovidVaccineRecord();
             }
