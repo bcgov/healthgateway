@@ -24,6 +24,7 @@ import VaccinationStatus from "@/models/vaccinationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
+import { Mask, phnMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
 import SnowPlow from "@/utility/snowPlow";
 
@@ -190,6 +191,10 @@ export default class PublicVaccineCardView extends Vue {
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
+
+    private get phnMask(): Mask {
+        return phnMask;
+    }
 }
 </script>
 
@@ -283,6 +288,7 @@ export default class PublicVaccineCardView extends Vue {
                                 <b-form-input
                                     id="phn"
                                     v-model="phn"
+                                    v-mask="phnMask"
                                     data-testid="phnInput"
                                     autofocus
                                     aria-label="Personal Health Number"

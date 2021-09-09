@@ -2,8 +2,7 @@ const PHNsigDigits: number[] = [2, 4, 8, 5, 10, 9, 7, 3];
 
 export default abstract class PHNValidator {
     public static IsValid(PHN: string): boolean {
-        const isNumeric: boolean = /^\d+$/.test(PHN);
-        if (PHN.length != 10 || !isNumeric) {
+        if (PHN.length != 10 || isNaN(PHN)) {
             return false;
         } else {
             let ok = false;

@@ -70,6 +70,24 @@ namespace HealthGateway.CommonTests.Utils
         }
 
         /// <summary>
+        /// Fail Format check.
+        /// </summary>
+        [Fact]
+        public void ShouldNotValidateFormat()
+        {
+            Assert.False(PHNValidator.IsValid("9735 361 219"));
+        }
+
+        /// <summary>
+        /// Fail Format No ending alpha.
+        /// </summary>
+        [Fact]
+        public void ShouldNotValidateAlpha()
+        {
+            Assert.False(PHNValidator.IsValid("973536121A"));
+        }
+
+        /// <summary>
         /// Happy Path, validate a couple of test PHNs.
         /// </summary>
         [Fact]
@@ -77,7 +95,6 @@ namespace HealthGateway.CommonTests.Utils
         {
             Assert.True(PHNValidator.IsValid("9735353315"));
             Assert.True(PHNValidator.IsValid("9735361219"));
-            Assert.True(PHNValidator.IsValid("9735 361 219"));
         }
     }
 }
