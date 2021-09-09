@@ -99,16 +99,29 @@ namespace HealthGateway.Immunization.Test.Delegates
         }
 
         /// <summary>
-        /// GetVaccineStatus - No Content.
+        /// GetVaccineStatus - Not Found.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task GetVaccineStatusNoContent()
         {
+            VaccineStatusResult expectedVaccineStatus = new VaccineStatusResult()
+            {
+                StatusIndicator = "NotFound",
+            };
+
+            PHSAResult<VaccineStatusResult> phsaResponse = new PHSAResult<VaccineStatusResult>()
+            {
+                Result = expectedVaccineStatus,
+            };
+
+            string json = JsonSerializer.Serialize(phsaResponse, null);
+
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
             {
-                StatusCode = HttpStatusCode.NoContent,
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(json),
             };
             IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
 

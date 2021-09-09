@@ -39,5 +39,20 @@ namespace HealthGateway.Common.Constants.PHSA
         /// Indicates the Patient is exempt.
         /// </summary>
         Exempt,
+
+        /// <summary>
+        /// Indicates the provided data did not match the requested record.
+        /// </summary>
+        DataMismatch,
+
+        /// <summary>
+        /// Indicates the requested record is unavailable due to too many requests.
+        /// </summary>
+        Threshold,
+
+        /// <summary>
+        /// Indicates the requested record has been protected from being accessed.
+        /// </summary>
+        Blocked,
     }
 }

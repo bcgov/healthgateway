@@ -120,7 +120,13 @@ export default class VaccineCardComponent extends Vue {
                 >
                     Not Found
                 </h2>
-                <small v-if="issuedDate !== undefined" class="mt-3">
+                <small
+                    v-if="
+                        issuedDate !== undefined &&
+                        (isFullyVaccinated || isPartiallyVaccinated)
+                    "
+                    class="mt-3"
+                >
                     Issued on {{ issuedDate }}
                 </small>
                 <div

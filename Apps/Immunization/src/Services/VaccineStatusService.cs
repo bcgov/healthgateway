@@ -180,6 +180,14 @@ namespace HealthGateway.Immunization.Services
             else
             {
                 retVal.ResourcePayload = VaccineStatus.FromModel(payload, phn);
+                retVal.ResourcePayload.State = retVal.ResourcePayload.State switch
+                {
+                    var state when
+                        state == VaccineState.DataMismatch ||
+                        state == VaccineState.Threshold ||
+                        state == VaccineState.Blocked => VaccineState.NotFound,
+                    _ => retVal.ResourcePayload.State
+                };
             }
 
             if (result.ResourcePayload != null)
