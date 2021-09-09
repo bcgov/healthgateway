@@ -74,7 +74,7 @@ export default class VaccineCardComponent extends Vue {
             <div class="container p-3 pt-0 pt-sm-3">
                 <h3 class="text-center">BC Vaccine Card</h3>
                 <hr style="border-top: 2px solid #fcba19" />
-                <p class="text-center">{{ name }}</p>
+                <div class="text-center">{{ name }}</div>
             </div>
         </div>
         <div class="justify-content-between">
@@ -98,7 +98,7 @@ export default class VaccineCardComponent extends Vue {
                 <h2
                     v-if="isFullyVaccinated"
                     aria-label="Status Vaccinated"
-                    class="d-flex align-items-center"
+                    class="d-flex align-items-center m-0"
                 >
                     <hg-icon
                         v-show="isFullyVaccinated"
@@ -111,12 +111,14 @@ export default class VaccineCardComponent extends Vue {
                 <h2
                     v-else-if="isPartiallyVaccinated"
                     aria-label="Status Partially Vaccinated"
+                    class="m-0"
                 >
                     Partially Vaccinated
                 </h2>
                 <h2
                     v-else-if="isVaccinationNotFound"
                     aria-label="Status Not Found"
+                    class="m-0"
                 >
                     Not Found
                 </h2>
@@ -143,7 +145,7 @@ export default class VaccineCardComponent extends Vue {
                         :src="qrCodeUrl"
                         class="d-none d-sm-block small-qr-code img-fluid m-2"
                     />
-                    <p v-b-modal.big-qr class="d-sm-none m-0">
+                    <p v-b-modal.big-qr class="d-sm-none d-print-none m-0">
                         <hg-icon icon="hand-pointer" class="mr-2" />
                         <span>Tap to zoom in</span>
                     </p>
@@ -169,8 +171,11 @@ export default class VaccineCardComponent extends Vue {
                 </div>
             </div>
         </div>
-        <div class="p-3">
-            <div v-if="isVaccinationNotFound" class="callout">
+        <div
+            v-if="isVaccinationNotFound || isPartiallyVaccinated"
+            class="p-3 d-print-none"
+        >
+            <div class="callout">
                 <p class="m-0">
                     To learn more, visit
                     <a
@@ -179,35 +184,10 @@ export default class VaccineCardComponent extends Vue {
                         target="_blank"
                         >BC Proof of Vaccination</a
                     >.
-                </p>
-            </div>
-            <div v-else-if="isPartiallyVaccinated" class="callout">
-                <p>
-                    Screenshot the card on your device - save to photo or
-                    downloads folder.
-                </p>
-                <p>On desktop, save a PDF copy for printing or emailing.</p>
-                <p class="m-0">
-                    To learn more, visit
-                    <a
-                        href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof"
-                        rel="noopener"
-                        target="_blank"
-                        >BC Proof of Vaccination</a
-                    >.
-                </p>
-            </div>
-            <div v-else-if="isFullyVaccinated" class="callout">
-                <p>
-                    Screenshot the card on your device - save to photo or
-                    downloads folder.
-                </p>
-                <p class="m-0">
-                    On desktop, save a PDF copy for printing or emailing.
                 </p>
             </div>
         </div>
-        <div v-if="error !== undefined" class="container">
+        <div v-if="error !== undefined" class="container d-print-none">
             <b-alert
                 variant="danger"
                 class="no-print my-3 p-3"
@@ -234,7 +214,7 @@ export default class VaccineCardComponent extends Vue {
 }
 
 .vaccination-result {
-    min-height: 356px;
+    min-height: 348px;
 
     &.fully-vaccinated {
         background-color: $hg-state-success;

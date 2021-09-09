@@ -2,6 +2,7 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
+import html2canvas from "html2canvas";
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { required } from "vuelidate/lib/validators";
@@ -19,7 +20,6 @@ import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
-import Report from "@/models/report";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
@@ -53,13 +53,6 @@ export default class PublicVaccineCardView extends Vue {
         dateOfVaccine: StringISODate;
     }) => Promise<void>;
 
-    @Action("retrieveVaccineStatusPdf", { namespace: "vaccinationStatus" })
-    retrieveVaccineStatusPdf!: (params: {
-        phn: string;
-        dateOfBirth: StringISODate;
-        dateOfVaccine: StringISODate;
-    }) => Promise<Report>;
-
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -89,7 +82,7 @@ export default class PublicVaccineCardView extends Vue {
     private dateOfVaccine = "";
 
     private get loadingStatusMessage(): string {
-        return this.isDownloading ? "Downloading PDF..." : this.statusMessage;
+        return this.isDownloading ? "Downloading...." : this.statusMessage;
     }
 
     private get downloadButtonShown(): boolean {
@@ -156,36 +149,34 @@ export default class PublicVaccineCardView extends Vue {
     }
 
     private download() {
-        this.isDownloading = true;
-        SnowPlow.trackEvent({
-            action: "save_qr",
-            text: "vaxcard",
-        });
-        this.retrieveVaccineStatusPdf({
-            phn: this.status?.personalhealthnumber || "",
-            dateOfBirth: new DateWrapper(this.status?.birthdate || "").format(
-                "yyyy-MM-dd"
-            ),
-            dateOfVaccine: new DateWrapper(
-                this.status?.vaccinedate || ""
-            ).format("yyyy-MM-dd"),
-        })
-            .then((documentResult) => {
-                if (documentResult) {
-                    const downloadLink = `data:application/pdf;base64,${documentResult.data}`;
-                    fetch(downloadLink).then((res) => {
+        const printingArea: HTMLElement | null =
+            document.querySelector(".vaccine-card");
+
+        if (printingArea !== null) {
+            this.isDownloading = true;
+
+            SnowPlow.trackEvent({
+                action: "save_qr",
+                text: "vaxcard",
+            });
+
+            html2canvas(printingArea, {
+                scale: 2,
+                ignoreElements: (element) =>
+                    element.classList.contains("d-print-none"),
+            })
+                .then((canvas) => {
+                    const dataUrl = canvas.toDataURL();
+                    fetch(dataUrl).then((res) => {
                         res.blob().then((blob) => {
-                            saveAs(blob, documentResult.fileName);
+                            saveAs(blob, "BCVaccineCard.png");
                         });
                     });
-                }
-            })
-            .catch((err) => {
-                this.logger.error(`Error retrieving vaccine card PDF: ${err}`);
-            })
-            .finally(() => {
-                this.isDownloading = false;
-            });
+                })
+                .finally(() => {
+                    this.isDownloading = false;
+                });
+        }
     }
 
     private created() {
@@ -222,7 +213,12 @@ export default class PublicVaccineCardView extends Vue {
                 <vaccine-card :status="status" :error="error" />
                 <div
                     v-if="downloadButtonShown"
-                    class="actions p-3 d-flex justify-content-between"
+                    class="
+                        actions
+                        p-3
+                        d-flex d-print-none
+                        justify-content-center
+                    "
                 >
                     <hg-button
                         variant="primary"

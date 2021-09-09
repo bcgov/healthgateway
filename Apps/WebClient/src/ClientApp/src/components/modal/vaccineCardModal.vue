@@ -1,4 +1,5 @@
 ﻿<script lang="ts">
+import html2canvas from "html2canvas";
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -7,9 +8,7 @@ import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
-import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
-import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import PatientData from "@/models/patientData";
@@ -47,13 +46,6 @@ export default class VaccineCardModalComponent extends Vue {
     })
     retrieveVaccineStatus!: (params: { hdid: string }) => Promise<void>;
 
-    @Action("retrieveAuthenticatedVaccineRecord", {
-        namespace: "vaccinationStatus",
-    })
-    retrieveVaccineRecord!: (params: {
-        hdid: string;
-    }) => Promise<CovidVaccineRecord>;
-
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -79,9 +71,6 @@ export default class VaccineCardModalComponent extends Vue {
 
     @Getter("authenticatedIsLoading", { namespace: "vaccinationStatus" })
     isVaccinationStatusLoading!: boolean;
-
-    @Getter("authenticatedError", { namespace: "vaccinationStatus" })
-    error!: BannerError | undefined;
 
     @Getter("authenticatedStatusMessage", { namespace: "vaccinationStatus" })
     statusMessage!: string;
@@ -141,7 +130,7 @@ export default class VaccineCardModalComponent extends Vue {
     }
 
     private get loadingStatusMessage(): string {
-        return this.isDownloading ? "Downloading PDF..." : this.statusMessage;
+        return this.isDownloading ? "Downloading...." : this.statusMessage;
     }
 
     private created() {
@@ -175,37 +164,35 @@ export default class VaccineCardModalComponent extends Vue {
         this.$bvModal.hide("covidImmunizationCard");
     }
 
-    private downloadPdf() {
-        this.isDownloading = true;
-        SnowPlow.trackEvent({
-            action: "download_card",
-            text: "COVID Card PDF",
-        });
+    private download() {
+        const printingArea: HTMLElement | null =
+            document.querySelector(".vaccine-card");
 
-        this.retrieveVaccineRecord({ hdid: this.user.hdid })
-            .then((payload: CovidVaccineRecord) => {
-                if (!payload.loaded) {
-                    this.logger.error(
-                        "Vaccine record could not be retrieved at this time"
-                    );
-                } else if (
-                    payload.document.data === null ||
-                    payload.document.data.length == 0
-                ) {
-                    this.logger.error("Vaccine record is empty");
-                } else {
-                    const mimeType = payload.document.mediaType;
-                    const downloadLink = `data:${mimeType};base64,${payload.document.data}`;
-                    fetch(downloadLink).then((res) => {
+        if (printingArea !== null) {
+            this.isDownloading = true;
+
+            SnowPlow.trackEvent({
+                action: "download_card",
+                text: "COVID Card PDF",
+            });
+
+            html2canvas(printingArea, {
+                scale: 2,
+                ignoreElements: (element) =>
+                    element.classList.contains("d-print-none"),
+            })
+                .then((canvas) => {
+                    const dataUrl = canvas.toDataURL();
+                    fetch(dataUrl).then((res) => {
                         res.blob().then((blob) => {
-                            saveAs(blob, "BCVaccineRecord.pdf");
+                            saveAs(blob, "BCVaccineCard.png");
                         });
                     });
-                }
-            })
-            .finally(() => {
-                this.isDownloading = false;
-            });
+                })
+                .finally(() => {
+                    this.isDownloading = false;
+                });
+        }
     }
 }
 </script>
@@ -219,6 +206,7 @@ export default class VaccineCardModalComponent extends Vue {
         header-text-variant="light"
         content-class="immunization-covid-card-modal-content"
         header-class="immunization-covid-card-modal-header"
+        body-class="p-0"
         :no-close-on-backdrop="true"
         scrollable
         centered
@@ -247,46 +235,18 @@ export default class VaccineCardModalComponent extends Vue {
             </b-row>
         </template>
         <template v-if="downloadButtonShown" #modal-footer>
-            <div v-if="error !== undefined" class="container">
-                <b-alert
-                    variant="danger"
-                    class="no-print my-3"
-                    :show="error !== undefined"
-                    dismissible
-                >
-                    <h4>{{ error.title }}</h4>
-                    <h6>{{ error.errorCode }}</h6>
-                    <div class="pl-4">
-                        <p data-testid="errorTextDescription">
-                            {{ error.description }}
-                        </p>
-                        <p data-testid="errorTextDetails">
-                            {{ error.detail }}
-                        </p>
-                        <p
-                            v-if="error.traceId"
-                            data-testid="errorSupportDetails"
-                        >
-                            If this issue persists, contact
-                            HealthGateway@gov.bc.ca and provide
-                            <span class="trace-id">{{ error.traceId }}</span>
-                        </p>
-                    </div>
-                </b-alert>
-            </div>
-            <div class="w-100 p-2 d-flex justify-content-between">
+            <div class="w-100 d-flex justify-content-center">
                 <hg-button
                     data-testid="exportCardBtn"
                     aria-label="Save a Copy"
                     variant="primary"
-                    class="m-2"
                     @click="showConfirmationModal()"
                 >
                     Save a Copy
                 </hg-button>
             </div>
         </template>
-        <b-container fluid class="p-0">
+        <b-container fluid class="d-flex flex-column p-0">
             <loading
                 :is-loading="isLoading || isDownloading"
                 :text="loadingStatusMessage"
@@ -295,7 +255,7 @@ export default class VaccineCardModalComponent extends Vue {
                 :status="status"
                 class="vaccine-card align-self-center w-100 p-3 rounded"
             />
-            <div class="mt-3">
+            <div class="p-3">
                 <b-row class="mb-3 title">
                     <b-col class="ml-1 label col-4 d-flex justify-content-end">
                         Name
@@ -387,7 +347,7 @@ export default class VaccineCardModalComponent extends Vue {
                 ref="messageModal"
                 title="Sensitive Document Download"
                 message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-                @submit="downloadPdf"
+                @submit="download"
             />
         </b-container>
     </b-modal>
@@ -397,6 +357,10 @@ export default class VaccineCardModalComponent extends Vue {
 @import "@/assets/scss/_variables.scss";
 
 $muted-color: #6c757d;
+
+.vaccine-card {
+    max-width: 438px;
+}
 
 div[class^="col"],
 div[class*=" col"] {
