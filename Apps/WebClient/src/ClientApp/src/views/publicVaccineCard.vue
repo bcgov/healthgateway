@@ -385,34 +385,6 @@ export default class PublicVaccineCardView extends Vue {
                             </b-form-group>
                         </b-col>
                     </b-row>
-                    <hg-button
-                        id="privacy-statement"
-                        aria-label="Privacy Statement"
-                        href="#"
-                        tabindex="0"
-                        variant="link"
-                        class="shadow-none p-0"
-                    >
-                        <hg-icon icon="info-circle" size="small" class="mr-1" />
-                        <small>Privacy Statement</small>
-                    </hg-button>
-                    <b-popover
-                        target="privacy-statement"
-                        triggers="hover focus"
-                        placement="topright"
-                    >
-                        Your information is being collected to provide you with
-                        your COVID-19 vaccination status under s. 26(c) of the
-                        <em
-                            >Freedom of Information and Protection of Privacy
-                            Act</em
-                        >. Contact the Ministry Privacy Officer at
-                        <a href="mailto:MOH.Privacy.Officer@gov.bc.ca"
-                            >MOH.Privacy.Officer@gov.bc.ca</a
-                        >
-                        or 778-698-5849 if you have any questions about this
-                        collection.
-                    </b-popover>
                     <b-row class="mt-3 justify-content-between">
                         <b-col cols="5">
                             <hg-button
@@ -436,6 +408,33 @@ export default class PublicVaccineCardView extends Vue {
                             </hg-button>
                         </b-col>
                     </b-row>
+                    <hg-button
+                        id="privacy-statement"
+                        aria-label="Privacy Statement"
+                        href="#"
+                        tabindex="0"
+                        variant="link"
+                        class="shadow-none p-0 mt-3"
+                    >
+                        <hg-icon icon="info-circle" size="small" class="mr-1" />
+                        <small>Privacy Statement</small>
+                    </hg-button>
+                    <b-popover
+                        target="privacy-statement"
+                        triggers="hover focus"
+                        placement="topright"
+                    >
+                        Your information is being collected to provide you with
+                        your COVID-19 vaccination status under s. 26(c) of the
+                        <em
+                            >Freedom of Information and Protection of Privacy
+                            Act</em
+                        >. Contact the Ministry Privacy Officer at
+                        <a href="mailto:MOH.Privacy.Officer@gov.bc.ca"
+                            >MOH.Privacy.Officer@gov.bc.ca</a
+                        >
+                        if you have any questions about this collection.
+                    </b-popover>
                     <div class="text-center">
                         <b-row class="my-3 no-gutters align-items-center">
                             <b-col><hr /></b-col>
