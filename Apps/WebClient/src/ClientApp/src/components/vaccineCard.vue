@@ -170,20 +170,41 @@ export default class VaccineCardComponent extends Vue {
             </div>
         </div>
         <div class="p-3">
-            <div
-                v-if="isPartiallyVaccinated || isVaccinationNotFound"
-                class="callout"
-            >
-                To learn more, visit
-                <a
-                    href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof"
-                    rel="noopener"
-                    target="_blank"
-                    >BC Proof of Vaccination</a
-                >.
+            <div v-if="isVaccinationNotFound" class="callout">
+                <p class="m-0">
+                    To learn more, visit
+                    <a
+                        href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof"
+                        rel="noopener"
+                        target="_blank"
+                        >BC Proof of Vaccination</a
+                    >.
+                </p>
+            </div>
+            <div v-else-if="isPartiallyVaccinated" class="callout">
+                <p>
+                    Screenshot the card on your device - save to photo or
+                    downloads folder.
+                </p>
+                <p>On desktop, save a PDF copy for printing or emailing.</p>
+                <p class="m-0">
+                    To learn more, visit
+                    <a
+                        href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof"
+                        rel="noopener"
+                        target="_blank"
+                        >BC Proof of Vaccination</a
+                    >.
+                </p>
             </div>
             <div v-else-if="isFullyVaccinated" class="callout">
-                Please save or print this page.
+                <p>
+                    Screenshot the card on your device - save to photo or
+                    downloads folder.
+                </p>
+                <p class="m-0">
+                    On desktop, save a PDF copy for printing or emailing.
+                </p>
             </div>
         </div>
         <div v-if="error !== undefined" class="container">
