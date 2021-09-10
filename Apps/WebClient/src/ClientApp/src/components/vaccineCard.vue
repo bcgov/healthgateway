@@ -17,6 +17,7 @@ library.add(faCheckCircle, faHandPointer);
 @Component
 export default class VaccineCardComponent extends Vue {
     @Prop({ required: true }) status!: VaccinationStatus | undefined;
+    @Prop({ required: true }) showGenericSaveInstructions!: boolean;
     @Prop({ required: false, default: false }) isLoading!: boolean;
     @Prop({ required: false, default: undefined }) error!:
         | BannerError
@@ -172,10 +173,14 @@ export default class VaccineCardComponent extends Vue {
             </div>
         </div>
         <div
-            v-if="isVaccinationNotFound || isPartiallyVaccinated"
+            v-if="
+                isVaccinationNotFound ||
+                isPartiallyVaccinated ||
+                showGenericSaveInstructions
+            "
             class="p-3 d-print-none"
         >
-            <div class="callout">
+            <div v-if="isVaccinationNotFound" class="callout">
                 <p class="m-0">
                     To learn more, visit
                     <a
@@ -184,6 +189,36 @@ export default class VaccineCardComponent extends Vue {
                         target="_blank"
                         >BC Proof of Vaccination</a
                     >.
+                </p>
+            </div>
+            <div v-else-if="isPartiallyVaccinated" class="callout">
+                <p v-if="showGenericSaveInstructions">
+                    Screenshot the card on your device - save to photo or
+                    downloads folder.
+                </p>
+                <p v-if="showGenericSaveInstructions">
+                    On desktop, save a PDF copy for printing or emailing.
+                </p>
+                <p class="m-0">
+                    To learn more, visit
+                    <a
+                        href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof"
+                        rel="noopener"
+                        target="_blank"
+                        >BC Proof of Vaccination</a
+                    >.
+                </p>
+            </div>
+            <div
+                v-else-if="isFullyVaccinated && showGenericSaveInstructions"
+                class="callout"
+            >
+                <p>
+                    Screenshot the card on your device - save to photo or
+                    downloads folder.
+                </p>
+                <p class="m-0">
+                    On desktop, save a PDF copy for printing or emailing.
                 </p>
             </div>
         </div>

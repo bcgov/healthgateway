@@ -210,7 +210,11 @@ export default class PublicVaccineCardView extends Vue {
             class="vaccine-card align-self-center w-100 p-3"
         >
             <div class="bg-white rounded shadow">
-                <vaccine-card :status="status" :error="error" />
+                <vaccine-card
+                    :status="status"
+                    :error="error"
+                    :show-generic-save-instructions="!downloadButtonShown"
+                />
                 <div
                     v-if="downloadButtonShown"
                     class="
