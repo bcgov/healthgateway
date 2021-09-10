@@ -254,6 +254,7 @@ export default class VaccineCardModalComponent extends Vue {
             />
             <vaccine-card
                 :status="status"
+                :show-generic-save-instructions="!downloadButtonShown"
                 class="vaccine-card align-self-center w-100 p-3 rounded"
             />
             <div class="d-print-none p-3">
