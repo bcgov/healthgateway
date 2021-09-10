@@ -195,7 +195,7 @@ export default class PublicVaccineCardView extends Vue {
             :is-loading="isLoading || isDownloading"
             :text="loadingStatusMessage"
         />
-        <div class="header">
+        <div class="header d-print-none">
             <router-link id="homeLink" to="/" aria-label="Return to home page">
                 <img
                     class="img-fluid m-3"
@@ -236,11 +236,13 @@ export default class PublicVaccineCardView extends Vue {
                 @submit="download"
             />
         </div>
-        <div v-else class="flex-grow-1 d-flex flex-column">
+        <div
+            v-else
+            class="flex-grow-1 d-flex flex-column justify-content-between"
+        >
             <form
                 class="
                     vaccine-card-form
-                    flex-grow-1
                     bg-white
                     rounded
                     shadow
@@ -251,11 +253,11 @@ export default class PublicVaccineCardView extends Vue {
                 "
                 @submit.prevent="handleSubmit"
             >
-                <div class="container my-2 my-sm-5 px-0 px-sm-5">
+                <div class="my-2 my-sm-5 px-0 px-sm-5">
                     <div v-if="error !== undefined">
                         <b-alert
                             variant="danger"
-                            class="no-print mb-3 p-3"
+                            class="mb-3 p-3"
                             :show="error !== undefined"
                             dismissible
                         >
@@ -524,6 +526,7 @@ export default class PublicVaccineCardView extends Vue {
 
 .vaccine-card-form {
     color: $hg-text-primary;
+    color-adjust: exact;
     max-width: 600px;
 }
 
@@ -543,6 +546,7 @@ export default class PublicVaccineCardView extends Vue {
 
 .vaccine-card {
     max-width: 438px;
+    color-adjust: exact;
 
     .actions {
         border-bottom-left-radius: 0.25rem;

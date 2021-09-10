@@ -164,16 +164,16 @@ export default class App extends Vue {
 
 <template>
     <div id="app-root" class="container-fluid-fill d-flex h-100 flex-column">
-        <div v-if="!isProduction" class="devBanner">
+        <div v-if="!isProduction" class="devBanner d-print-none">
             <div class="text-center bg-warning small">
                 Non-production environment:
                 <strong>{{ host }}</strong>
             </div>
         </div>
 
-        <NavHeader v-show="isHeaderVisible" />
+        <NavHeader v-show="isHeaderVisible" class="d-print-none" />
         <b-row>
-            <NavSidebar class="no-print sticky-top vh-100" />
+            <NavSidebar class="d-print-none sticky-top vh-100" />
             <main class="col fill-height d-flex flex-column">
                 <CommunicationComponent v-show="isCommunicationVisible" />
                 <ErrorCard
@@ -186,7 +186,7 @@ export default class App extends Vue {
             </main>
         </b-row>
 
-        <footer v-show="isFooterVisible" class="footer no-print">
+        <footer v-show="isFooterVisible" class="footer d-print-none">
             <NavFooter />
         </footer>
 
@@ -210,11 +210,6 @@ export default class App extends Vue {
 @media print {
     .navbar {
         display: flex !important;
-    }
-
-    .no-print,
-    .no-print * {
-        display: none !important;
     }
 }
 

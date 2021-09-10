@@ -160,7 +160,7 @@ export default class Covid19View extends Vue {
                 <hg-button
                     :disabled="covidCardDisabled"
                     data-testid="covidcard-btn"
-                    class="float-right"
+                    class="float-right d-print-none"
                     variant="primary"
                     @click="showCard()"
                 >
