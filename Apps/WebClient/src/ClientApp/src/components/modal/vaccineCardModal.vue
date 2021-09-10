@@ -205,7 +205,8 @@ export default class VaccineCardModalComponent extends Vue {
         data-testid="covidImmunizationCard"
         header-text-variant="light"
         content-class="immunization-covid-card-modal-content"
-        header-class="immunization-covid-card-modal-header"
+        header-class="immunization-covid-card-modal-header d-print-none"
+        footer-class="d-print-none"
         body-class="p-0"
         :no-close-on-backdrop="true"
         scrollable
@@ -255,7 +256,7 @@ export default class VaccineCardModalComponent extends Vue {
                 :status="status"
                 class="vaccine-card align-self-center w-100 p-3 rounded"
             />
-            <div class="p-3">
+            <div class="d-print-none p-3">
                 <b-row class="mb-3 title">
                     <b-col class="ml-1 label col-4 d-flex justify-content-end">
                         Name
@@ -360,6 +361,7 @@ $muted-color: #6c757d;
 
 .vaccine-card {
     max-width: 438px;
+    color-adjust: exact;
 }
 
 div[class^="col"],
@@ -437,6 +439,16 @@ div[class*=" row"] {
     }
     .image-container {
         min-height: 50px;
+    }
+}
+.immunization-covid-card-modal-content {
+    @media print {
+        border: none;
+    }
+}
+.modal-backdrop {
+    @media print {
+        display: none;
     }
 }
 .vld-overlay {

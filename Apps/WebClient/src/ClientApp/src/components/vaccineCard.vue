@@ -71,7 +71,7 @@ export default class VaccineCardComponent extends Vue {
 <template>
     <div>
         <div class="header text-white">
-            <div class="container p-3 pt-0 pt-sm-3">
+            <div class="p-3 pt-0 pt-sm-3">
                 <h3 class="text-center">BC Vaccine Card</h3>
                 <hr style="border-top: 2px solid #fcba19" />
                 <div class="text-center">{{ name }}</div>
