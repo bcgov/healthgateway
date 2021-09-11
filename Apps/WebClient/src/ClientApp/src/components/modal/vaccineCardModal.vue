@@ -347,8 +347,12 @@ export default class VaccineCardModalComponent extends Vue {
             </div>
             <message-modal
                 ref="messageModal"
-                title="Sensitive Document Download"
-                message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+                title="Vaccine Card Download"
+                message="Next, you'll see an image of your card.
+                                Depending on your browser, you may need to
+                                manually save the image to your files or photos.
+                                If you want to print, use the print function in
+                                your browser."
                 @submit="download"
             />
         </b-container>

@@ -71,6 +71,18 @@ export default class PublicVaccineCardView extends Vue {
     @Ref("sensitivedocumentDownloadModal")
     readonly sensitivedocumentDownloadModal!: MessageModalComponent;
 
+    private get vaccinationState(): VaccinationState | undefined {
+        return this.status?.state;
+    }
+
+    private get isPartiallyVaccinated(): boolean {
+        return this.vaccinationState === VaccinationState.PartiallyVaccinated;
+    }
+
+    private get isVaccinationNotFound(): boolean {
+        return this.vaccinationState === VaccinationState.NotFound;
+    }
+
     private bcsclogo: string = Image06;
 
     private logger!: ILogger;
@@ -232,11 +244,44 @@ export default class PublicVaccineCardView extends Vue {
                         Save a Copy
                     </hg-button>
                 </div>
+                <div
+                    v-if="isPartiallyVaccinated"
+                    class="pl-3 pr-3 pb-3 print-none"
+                >
+                    <div class="callout">
+                        <p class="m-0">
+                            To learn more, visit
+                            <a
+                                href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof"
+                                rel="noopener"
+                                target="_blank"
+                                >BC Proof of Vaccination</a
+                            >.
+                        </p>
+                    </div>
+                </div>
+                <div v-if="isVaccinationNotFound" class="p-3 print-none">
+                    <div class="callout">
+                        <p class="m-0">
+                            To learn more, visit
+                            <a
+                                href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof"
+                                rel="noopener"
+                                target="_blank"
+                                >BC Proof of Vaccination</a
+                            >.
+                        </p>
+                    </div>
+                </div>
             </div>
             <MessageModalComponent
                 ref="sensitivedocumentDownloadModal"
-                title="Sensitive Document Download"
-                message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+                title="Vaccine Card Download"
+                message="Next, you'll see an image of your card.
+                                Depending on your browser, you may need to
+                                manually save the image to your files or photos.
+                                If you want to print, use the print function in
+                                your browser."
                 @submit="download"
             />
         </div>
@@ -556,6 +601,14 @@ export default class PublicVaccineCardView extends Vue {
         border-bottom-left-radius: 0.25rem;
         border-bottom-right-radius: 0.25rem;
     }
+}
+
+.callout {
+    padding: 1rem;
+    border-left: 0.25rem solid $hg-brand-secondary;
+    border-radius: 0.25rem;
+    background-color: $hg-background;
+    color: $hg-text-primary;
 }
 </style>
 
