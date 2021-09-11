@@ -246,7 +246,7 @@ export default class PublicVaccineCardView extends Vue {
                 </div>
                 <div
                     v-if="isPartiallyVaccinated"
-                    class="pl-3 pr-3 pb-3 print-none"
+                    class="pl-3 pr-3 pb-3 print-none d-print-none"
                 >
                     <div class="callout">
                         <p class="m-0">
@@ -260,7 +260,10 @@ export default class PublicVaccineCardView extends Vue {
                         </p>
                     </div>
                 </div>
-                <div v-if="isVaccinationNotFound" class="p-3 print-none">
+                <div
+                    v-if="isVaccinationNotFound"
+                    class="p-3 print-none d-print-none"
+                >
                     <div class="callout">
                         <p class="m-0">
                             To learn more, visit
