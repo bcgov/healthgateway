@@ -245,24 +245,9 @@ export default class PublicVaccineCardView extends Vue {
                     </hg-button>
                 </div>
                 <div
-                    v-if="isPartiallyVaccinated"
-                    class="pl-3 pr-3 pb-3 print-none d-print-none"
-                >
-                    <div class="callout">
-                        <p class="m-0">
-                            To learn more, visit
-                            <a
-                                href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof"
-                                rel="noopener"
-                                target="_blank"
-                                >BC Proof of Vaccination</a
-                            >.
-                        </p>
-                    </div>
-                </div>
-                <div
-                    v-if="isVaccinationNotFound"
-                    class="p-3 print-none d-print-none"
+                    v-if="isPartiallyVaccinated || isVaccinationNotFound"
+                    class="d-print-none px-3 pb-3"
+                    :class="{ 'pt-3': !downloadButtonShown }"
                 >
                     <div class="callout">
                         <p class="m-0">
