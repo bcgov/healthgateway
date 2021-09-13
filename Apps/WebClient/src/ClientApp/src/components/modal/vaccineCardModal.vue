@@ -351,7 +351,7 @@ export default class VaccineCardModalComponent extends Vue {
                 message="Next, you'll see an image of your card.
                                 Depending on your browser, you may need to
                                 manually save the image to your files or photos.
-                                If you want to print, use the print function in
+                                If you want to print, we recommend you use the print function in
                                 your browser."
                 @submit="download"
             />
