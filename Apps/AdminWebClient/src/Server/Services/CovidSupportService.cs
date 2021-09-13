@@ -25,12 +25,10 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Admin.Models.Support;
     using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.CDogs;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authentication;
@@ -38,7 +36,7 @@ namespace HealthGateway.Admin.Services
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Service that provides functionality to admin emails.
+    /// Service that provides COVID-19 Support functionality.
     /// </summary>
     public class CovidSupportService : ICovidSupportService
     {
@@ -127,12 +125,44 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public async Task<PrimitiveRequestResult<bool>> MailDocumentAsync(MailDocumentRequest request)
+        public async Task<PrimitiveRequestResult<bool>> MailVaccineCardAsync(MailDocumentRequest request)
         {
             this.logger.LogDebug($"Mailing document");
             this.logger.LogTrace($"For PHN: {request.PersonalHealthNumber}");
 
-            RequestResult<ReportModel> statusReport = await this.RetrieveDocumentAsync(request.PersonalHealthNumber, request.MailAddress).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(request.PersonalHealthNumber, PatientIdentifierType.PHN, true).ConfigureAwait(true);
+
+            if (patientResult.ResultStatus != ResultType.Success)
+            {
+                this.logger.LogError($"Error retrieving patient information.");
+                return new PrimitiveRequestResult<bool>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResourcePayload = false,
+                    ResultError = patientResult.ResultError,
+                };
+            }
+
+            // Gets the current user (IDIR) access token and pass it along to PHSA
+            string? bearerToken = await this.httpContextAccessor.HttpContext!.GetTokenAsync("access_token").ConfigureAwait(true);
+
+            if (bearerToken == null)
+            {
+                this.logger.LogError($"Error getting access token.");
+                return new PrimitiveRequestResult<bool>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResourcePayload = false,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Error getting access token.",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Immunization),
+                    },
+                };
+            }
+
+            DateTime birthdate = patientResult.ResourcePayload!.Birthdate;
+            RequestResult<ReportModel> statusReport = await this.RetrieveVaccineCardAsync(request.PersonalHealthNumber, birthdate, bearerToken, request.MailAddress).ConfigureAwait(true);
 
             if (statusReport.ResultStatus != ResultType.Success || statusReport.ResourcePayload == null)
             {
@@ -150,9 +180,9 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<ReportModel>> RetrieveDocumentAsync(string phn, Address? address)
+        public async Task<RequestResult<ReportModel>> RetrieveVaccineRecordAsync(string phn)
         {
-            this.logger.LogDebug($"Retrieving covid document");
+            this.logger.LogDebug($"Retrieving vaccine record");
             this.logger.LogTrace($"For PHN: {phn}");
 
             RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.PHN, true).ConfigureAwait(true);
@@ -186,23 +216,19 @@ namespace HealthGateway.Admin.Services
                 };
             }
 
-            VaccineStatusQuery statusQuery = new ()
-            {
-                PersonalHealthNumber = phn,
-                DateOfBirth = patientResult.ResourcePayload!.Birthdate,
-            };
-            RequestResult<PHSAResult<VaccineStatusResult>> statusResult =
-                await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(statusQuery, bearerToken, false).ConfigureAwait(true);
+            DateTime birthdate = patientResult.ResourcePayload!.Birthdate;
+            RequestResult<ReportModel> statusReport = await this.RetrieveVaccineCardAsync(phn, birthdate, bearerToken, null).ConfigureAwait(true);
 
-            if (statusResult.ResultStatus != ResultType.Success)
+            if (statusReport.ResultStatus != ResultType.Success || statusReport.ResourcePayload?.Data == null)
             {
-                this.logger.LogError($"Error getting vaccine status.");
                 return new RequestResult<ReportModel>()
                 {
-                    PageIndex = 0,
-                    PageSize = 0,
                     ResultStatus = ResultType.Error,
-                    ResultError = statusResult.ResultError,
+                    ResultError = statusReport.ResultError ?? new RequestResultError()
+                    {
+                        ResultMessage = "Error retrieving vaccine card PDF.",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Immunization),
+                    },
                 };
             }
 
@@ -227,6 +253,34 @@ namespace HealthGateway.Admin.Services
                 };
             }
 
+            string? base64RecordCard = recordCardResult.ResourcePayload?.Result?.PaperRecord.Data;
+            return this.reportDelegate.MergePDFs(statusReport.ResourcePayload.Data, base64RecordCard, statusReport.ResourcePayload.FileName);
+        }
+
+        private async Task<RequestResult<ReportModel>> RetrieveVaccineCardAsync(string phn, DateTime birthdate, string bearerToken, Address? address)
+        {
+            this.logger.LogDebug($"Retrieving vaccine card document");
+            this.logger.LogTrace($"For PHN: {phn}");
+            VaccineStatusQuery statusQuery = new ()
+            {
+                PersonalHealthNumber = phn,
+                DateOfBirth = birthdate,
+            };
+            RequestResult<PHSAResult<VaccineStatusResult>> statusResult =
+                await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(statusQuery, bearerToken, false).ConfigureAwait(true);
+
+            if (statusResult.ResultStatus != ResultType.Success)
+            {
+                this.logger.LogError($"Error getting vaccine status.");
+                return new RequestResult<ReportModel>()
+                {
+                    PageIndex = 0,
+                    PageSize = 0,
+                    ResultStatus = ResultType.Error,
+                    ResultError = statusResult.ResultError,
+                };
+            }
+
             VaccineStatusResult? payload = statusResult.ResourcePayload?.Result;
             if (payload == null)
             {
@@ -244,13 +298,9 @@ namespace HealthGateway.Admin.Services
                 };
             }
 
-            string? base64RecordCard = recordCardResult.ResourcePayload?.Result?.PaperRecord.Data;
-
             VaccineStatus vaccineStatus = VaccineStatus.FromModel(payload, phn);
 
-            return this.reportDelegate.GetVaccineStatusAndRecordPDF(vaccineStatus, address, base64RecordCard);
-
-            // Merge PDF with PHSA
+            return this.reportDelegate.GetVaccineStatusPDF(vaccineStatus, address);
         }
     }
 }

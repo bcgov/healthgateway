@@ -40,5 +40,14 @@ namespace HealthGateway.Common.Delegates
         /// <param name="base64RecordCard">The base64 of the record card PDF.</param>
         /// <returns>Returns the report model containing the pdf document.</returns>
         RequestResult<ReportModel> GetVaccineStatusAndRecordPDF(VaccineStatus vaccineStatus, Address? address, string base64RecordCard);
+
+        /// <summary>
+        /// Merges two PDFs.
+        /// </summary>
+        /// <param name="base64Document1">The first document, encoded in base64.</param>
+        /// <param name="base64Document2">The second document, encoded in base64.</param>
+        /// <param name="fileName">The file name to assign to the merged document.</param>
+        /// <returns>Returns the report model containing the merged pdf document.</returns>
+        RequestResult<ReportModel> MergePDFs(string base64Document1, string base64Document2, string fileName);
     }
 }
