@@ -20,7 +20,7 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Common.Models;
 
     /// <summary>
-    /// Service that provides Covid Support functionality.
+    /// Service that provides COVID-19 Support functionality.
     /// </summary>
     public interface ICovidSupportService
     {
@@ -32,18 +32,17 @@ namespace HealthGateway.Admin.Services
         Task<RequestResult<CovidInformation>> GetCovidInformation(string phn);
 
         /// <summary>
-        /// Gets all the emails in the system up to the pageSize.
+        /// Mails a document that represents a patient's vaccine card.
         /// </summary>
         /// <param name="request">The request information to retrieve patient information.</param>
         /// <returns>A RequestResult with True if the request was sucessfull.</returns>
-        Task<PrimitiveRequestResult<bool>> MailDocumentAsync(MailDocumentRequest request);
+        Task<PrimitiveRequestResult<bool>> MailVaccineCardAsync(MailDocumentRequest request);
 
         /// <summary>
-        /// Gets all the emails in the system up to the pageSize.
+        /// Gets a document that represents a patient's vaccine card and vaccine history.
         /// </summary>
         /// <param name="phn">The personal health number that matches the person to retrieve.</param>
-        /// <param name="address">The optional patient address information.</param>
         /// <returns>The encoded document.</returns>
-        Task<RequestResult<ReportModel>> RetrieveDocumentAsync(string phn, Address? address);
+        Task<RequestResult<ReportModel>> RetrieveVaccineRecordAsync(string phn);
     }
 }

@@ -108,6 +108,12 @@ namespace HealthGateway.Common.Delegates
             return this.ironPdfDelegate.Merge(vaccineStatusResult.ResourcePayload!.Data, base64RecordCard, vaccineStatusResult.ResourcePayload.FileName);
         }
 
+        /// <inheritdoc/>
+        public RequestResult<ReportModel> MergePDFs(string base64Document1, string base64Document2, string fileName)
+        {
+            return this.ironPdfDelegate.Merge(base64Document1, base64Document2, fileName);
+        }
+
         private TimeZoneInfo GetLocalTimeZone()
         {
             return TimeZoneInfo.FindSystemTimeZoneById(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?

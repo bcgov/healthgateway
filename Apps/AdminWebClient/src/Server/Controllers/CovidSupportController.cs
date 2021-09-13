@@ -58,7 +58,7 @@ namespace HealthGateway.Admin.Controllers
         }
 
         /// <summary>
-        /// Provides an api to send immunization information though mail to a given land address.
+        /// Triggers the process to physically mail the Vaccine Card document.
         /// </summary>
         /// <returns>A wrapped result indicating the mail status.</returns>
         /// <param name="request">The mail document request.</param>
@@ -67,13 +67,13 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Route("Patient/Document")]
-        public async Task<IActionResult> MailDocument([FromBody] MailDocumentRequest request)
+        public async Task<IActionResult> MailVaccineCard([FromBody] MailDocumentRequest request)
         {
-            return new JsonResult(await this.covidSupportService.MailDocumentAsync(request).ConfigureAwait(true));
+            return new JsonResult(await this.covidSupportService.MailVaccineCardAsync(request).ConfigureAwait(true));
         }
 
         /// <summary>
-        /// Gets the covid immunization document.
+        /// Gets the COVID-19 Vaccine Record document that includes the Vaccine Card and Vaccination History.
         /// </summary>
         /// <returns>The encoded immunization document.</returns>
         /// <param name="phn">The personal health number that matches the document to retrieve.</param>
@@ -82,9 +82,9 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("Patient/Document")]
-        public async Task<IActionResult> RetrieveDocument([FromHeader] string phn)
+        public async Task<IActionResult> RetrieveVaccineRecord([FromHeader] string phn)
         {
-            return new JsonResult(await this.covidSupportService.RetrieveDocumentAsync(phn, null).ConfigureAwait(true));
+            return new JsonResult(await this.covidSupportService.RetrieveVaccineRecordAsync(phn).ConfigureAwait(true));
         }
     }
 }
