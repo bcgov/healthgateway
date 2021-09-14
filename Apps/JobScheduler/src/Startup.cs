@@ -168,8 +168,6 @@ namespace HealthGateway.JobScheduler
                 .RequireAuthorization("AdminUserPolicy");
             });
 
-            app.UseHangfireServer();
-
             // Schedule Health Gateway Jobs
             BackgroundJob.Enqueue<DBMigrationsJob>(j => j.Migrate());
             SchedulerHelper.ScheduleJob<ICommunicationJob>(this.configuration, "CreateCommEmailsForNewCommunications", j => j.CreateCommunicationEmailsForNewCommunications());
