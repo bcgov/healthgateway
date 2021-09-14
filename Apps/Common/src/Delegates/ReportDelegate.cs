@@ -58,7 +58,10 @@ namespace HealthGateway.Common.Delegates
             pdfRequest.Data.Add("currentDateTime", currentPacificTime.ToString("MMMM-dd-yyyy, HH:mm", CultureInfo.InvariantCulture));
             pdfRequest.HtmlTemplate = AssetReader.Read("HealthGateway.Common.Assets.Templates.VaccineStatusCard.html") !;
 
-            pdfRequest.Data.Add("birthdate", vaccineStatus.Birthdate!.Value.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpper(CultureInfo.InvariantCulture));
+            string birthdate = vaccineStatus.Birthdate.HasValue
+                ? vaccineStatus.Birthdate.Value.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpper(CultureInfo.InvariantCulture)
+                : string.Empty;
+            pdfRequest.Data.Add("birthdate", birthdate);
             pdfRequest.Data.Add("name", $"{vaccineStatus.FirstName} {vaccineStatus.LastName}");
             pdfRequest.Data.Add("qrCodeImageSrc", vaccineStatus.QRCode.Data);
 
