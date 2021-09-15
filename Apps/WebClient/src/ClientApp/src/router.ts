@@ -334,7 +334,13 @@ export const beforeEachGuard: NavigationGuard = (
         )}; to.fullPath: ${JSON.stringify(to.fullPath)}`
     );
 
-    if (to.meta.routeIsOidcCallback || to.meta.stateless) {
+    const meta = to.meta;
+    if (meta === undefined) {
+        next(Error("Route meta property is undefined"));
+        return;
+    }
+
+    if (meta.routeIsOidcCallback || meta.stateless) {
         next();
         return;
     }
@@ -345,11 +351,12 @@ export const beforeEachGuard: NavigationGuard = (
 
         const currentUserState = calculateUserState();
         logger.debug(`current state: ${currentUserState}`);
-        const isValidState = to.meta.validStates.includes(currentUserState);
+
+        const isValidState = meta.validStates.includes(currentUserState);
         const availableModules = getAvailableModules();
         const hasRequiredModules =
-            to.meta.requiredModules === undefined ||
-            to.meta.requiredModules.every((val: string) =>
+            meta.requiredModules === undefined ||
+            meta.requiredModules.every((val: string) =>
                 availableModules.includes(val)
             );
 
