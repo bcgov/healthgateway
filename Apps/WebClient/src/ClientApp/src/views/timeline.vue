@@ -557,6 +557,7 @@ export default class TimelineView extends Vue {
 </template>
 
 <style lang="scss" scoped>
+@use "sass:math";
 @import "@/assets/scss/_variables.scss";
 .row {
     margin: 0px;
@@ -600,7 +601,7 @@ hr {
 .has-filter {
     $icon-size: 1rem;
     $icon-size-padded: 2.375rem;
-    $icon-padding: ($icon-size-padded - $icon-size) / 2;
+    $icon-padding: math.div($icon-size-padded - $icon-size, 2);
 
     .form-control {
         padding-left: $icon-size-padded;
