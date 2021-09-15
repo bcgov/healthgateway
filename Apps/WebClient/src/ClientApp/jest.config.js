@@ -35,4 +35,5 @@ module.exports = {
     },
     setupFiles: ["jest-canvas-mock"],
     setupFilesAfterEnv: ["<rootDir>/test/vueSetup.ts"],
+    testEnvironment: "jsdom",
 };

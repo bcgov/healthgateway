@@ -2,6 +2,7 @@
 import container from "@/plugins/inversify.container";
 
 import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
+import "setimmediate";
 import { Route } from "vue-router";
 
 import { RegistrationStatus } from "@/constants/registrationStatus";
