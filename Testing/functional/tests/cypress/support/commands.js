@@ -135,7 +135,6 @@ Cypress.Commands.add(
             cy.get("#passcode").click({ force: true });
             cy.get("#passcode").type(password);
             cy.get("#btnSubmit").click();
-            cy.get("#btnSubmit").click();
         } else {
             cy.log(`Authenticating as KeyCloak user ${username} using the UI`);
             cy.visit(path);
@@ -244,10 +243,9 @@ Cypress.Commands.add("enableModules", (modules) => {
         .as("config")
         .then((config) => {
             Object.keys(config.webClient.modules).forEach((key) => {
-                if(isArrayOfModules) {
+                if (isArrayOfModules) {
                     config.webClient.modules[key] = modules.includes(key);
-                }
-                else {
+                } else {
                     config.webClient.modules[key] = modules === key;
                 }
             });
