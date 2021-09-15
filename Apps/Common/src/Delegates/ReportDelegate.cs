@@ -58,10 +58,6 @@ namespace HealthGateway.Common.Delegates
             pdfRequest.Data.Add("currentDateTime", currentPacificTime.ToString("MMMM-dd-yyyy, HH:mm", CultureInfo.InvariantCulture));
             pdfRequest.HtmlTemplate = AssetReader.Read("HealthGateway.Common.Assets.Templates.VaccineStatusCard.html") !;
 
-            string birthdate = vaccineStatus.Birthdate.HasValue
-                ? vaccineStatus.Birthdate.Value.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).ToUpper(CultureInfo.InvariantCulture)
-                : string.Empty;
-            pdfRequest.Data.Add("birthdate", birthdate);
             pdfRequest.Data.Add("name", $"{vaccineStatus.FirstName} {vaccineStatus.LastName}");
             pdfRequest.Data.Add("qrCodeImageSrc", vaccineStatus.QRCode.Data);
 
@@ -76,26 +72,22 @@ namespace HealthGateway.Common.Delegates
             {
                 case VaccineState.AllDosesReceived:
                     pdfRequest.Data.Add("resultText", "Vaccinated");
-                    pdfRequest.Data.Add("resultBorder", BorderSolid);
                     string? checkMarkBase64 = AssetReader.Read("HealthGateway.Common.Assets.Images.checkmark-black.svg", true);
                     pdfRequest.Data.Add("resultImageSrc", $"data:image/svg+xml;base64, {checkMarkBase64}");
                     pdfRequest.Data.Add("resultImageDisplay", "block");
                     break;
                 case VaccineState.PartialDosesReceived:
                     pdfRequest.Data.Add("resultText", "Partially Vaccinated");
-                    pdfRequest.Data.Add("resultBorder", BorderDashed);
                     pdfRequest.Data.Add("resultImageSrc", string.Empty);
                     pdfRequest.Data.Add("resultImageDisplay", "none");
                     break;
                 case VaccineState.Exempt:
                     pdfRequest.Data.Add("resultText", "Exempt");
-                    pdfRequest.Data.Add("resultBorder", BorderDashed);
                     pdfRequest.Data.Add("resultImageSrc", string.Empty);
                     pdfRequest.Data.Add("resultImageDisplay", "none");
                     break;
                 default:
                     pdfRequest.Data.Add("resultText", "No Records Found");
-                    pdfRequest.Data.Add("resultBorder", BorderDashed);
                     pdfRequest.Data.Add("resultImageSrc", string.Empty);
                     pdfRequest.Data.Add("resultImageDisplay", "none");
                     break;
