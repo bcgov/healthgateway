@@ -55,11 +55,11 @@ describe("Filters", () => {
         cy.get("[data-testid=filterStartDateInput] input")
             .clear()
             .focus()
-            .type("2020-OCT-01");
+            .type("2020-SEP-30");
         cy.get("[data-testid=filterEndDateInput] input")
             .clear()
             .focus()
-            .type("2020-OCT-02")
+            .type("2020-OCT-01")
             .focus();
         cy.get("[data-testid=btnFilterApply]").click();
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");

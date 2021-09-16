@@ -28,16 +28,16 @@ describe("Calendar View", () => {
         cy.get("#currentDate").click();
         cy.get("#currentDate").click();
         cy.get(".years-wrapper").children().should("be.visible");
-        cy.get("[data-testid=yearBtn2019]").click();
-        cy.get("[data-testid=monthBtnJan]").should("not.be.enabled");
+        cy.get("[data-testid=yearBtn2014]").click();
+        cy.get("[data-testid=monthBtnDec]").should("not.be.enabled");
         cy.get("[data-testid=monthBtnFeb]").click();
-        cy.get("#currentDate").should("have.text", " February 2019 ");
+        cy.get("#currentDate").should("have.text", " February 2014 ");
         cy.get("[data-testid=monthBtnFeb]").should("have.class", "selected");
 
         cy.get("#currentDate").click();
-        cy.get("[data-testid=monthBtnApr]").click();
-        cy.get("#currentDate").should("have.text", " April 2019 ");
-        cy.get("[data-testid=monthBtnApr]").should("have.class", "selected");
+        cy.get("[data-testid=monthBtnMar]").click();
+        cy.get("#currentDate").should("have.text", " March 2014 ");
+        cy.get("[data-testid=monthBtnMar]").should("have.class", "selected");
         cy.get("[data-testid=monthBtnFeb]").should(
             "not.have.class",
             "selected"
@@ -56,12 +56,12 @@ describe("Calendar View", () => {
         cy.get("[data-testid=yearBtn2019]").click();
         cy.get("[data-testid=monthBtnApr]").click();
         cy.get("#currentDate").should("have.text", " April 2019 ");
-        cy.get("[data-testid=event-monthday-10]").click();
+        cy.get("[data-testid=event-monthday-9]").click();
         cy.location("hash").should("eq", "#linear");
         cy.get("[data-testid=entryCardDetailsTitle]")
             .first()
             .should("have.text", "Methadone (Maintenance) 1mg/Ml");
-        cy.contains("[data-testid=entryCardDate]", "2019-Apr-10").should(
+        cy.contains("[data-testid=entryCardDate]", "2019-Aug-05").should(
             "be.visible"
         );
     });
