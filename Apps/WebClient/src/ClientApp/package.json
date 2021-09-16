@@ -5,7 +5,7 @@
     "scripts": {
         "serve": "vue-cli-service serve",
         "build": "vue-cli-service lint --max-warnings 0 --no-fix && vue-cli-service build",
-        "test": "vue-cli-service test:unit --no-cache",
+        "test": "vue-cli-service test:unit --no-cache --ci --maxWorkers=1",
         "lint": "vue-cli-service lint \"**/*.{ts,vue}\" --max-warnings 0",
         "lintfix": "vue-cli-service lint \"**/*.{ts,vue}\" --fix",
         "vue-help": "vue-cli-service help"
