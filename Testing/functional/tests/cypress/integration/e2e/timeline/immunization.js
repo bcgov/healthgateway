@@ -2,7 +2,11 @@ const { AuthMethod, localDevUri } = require("../../../support/constants");
 describe("Immunization", () => {
     before(() => {
         let isLoading = false;
-        cy.enableModules("Immunization");
+        cy.enableModules([
+            "Immunization",
+            "VaccinationStatus",
+            "VaccinationStatusPdf",
+        ]);
         cy.intercept("GET", "/v1/api/Immunization", (req) => {
             req.reply((res) => {
                 if (!isLoading) {
@@ -87,6 +91,7 @@ describe("Immunization", () => {
             .should("be.visible", "not.be.empty");
         cy.get("[data-testid=doseDate]")
             .last()
+            .scrollIntoView()
             .should("be.visible", "not.be.empty");
 
         cy.get("[data-testid=exportCardBtn]")
@@ -114,7 +119,6 @@ describe("Immunization", () => {
             .should("be.visible")
             .should("have.text", "Immunization");
     });
-
 
     it("Validate Disabled Header Covid Card", () => {
         cy.intercept("GET", "/v1/api/Immunization", (req) => {
