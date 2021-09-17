@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Mock.Controllers
 {
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.Utils;
     using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +24,7 @@ namespace HealthGateway.Mock.Controllers
     /// </summary>
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Mocked Controller methods.")]
     public class SalesforceController : ControllerBase
     {
         /// <summary>
