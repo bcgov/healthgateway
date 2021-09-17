@@ -64,6 +64,12 @@
             <param name="immunizationId">The immunization ID.</param>
             <returns>The mocked immunization json.</returns>
         </member>
+        <member name="M:HealthGateway.Mock.Controllers.PhsaController.VaccineStatus">
+            <summary>
+            Gets mock data for a particular vaccine status.
+            </summary>
+            <returns>The mocked vaccine status json.</returns>
+        </member>
         <member name="M:HealthGateway.Mock.Controllers.PhsaController.GetNotificationSettings">
             <summary>
             Gets mock data for notification settings.

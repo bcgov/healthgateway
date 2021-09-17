@@ -26,6 +26,7 @@ namespace HealthGateway.Mock.Controllers
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
     [SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Method signatures match mocked endpoints.")]
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Mocked Controller methods.")]
     public class PhsaController : ControllerBase
     {
         /// <summary>
@@ -82,6 +83,19 @@ namespace HealthGateway.Mock.Controllers
         public ContentResult Immunization(string immunizationId)
         {
             string? payload = AssetReader.Read("HealthGateway.Mock.Assets.Immunization.json");
+            return new ContentResult { Content = payload!, ContentType = "application/json" };
+        }
+
+        /// <summary>
+        /// Gets mock data for a particular vaccine status.
+        /// </summary>
+        /// <returns>The mocked vaccine status json.</returns>
+        [HttpPost]
+        [Route("vaccineStatus")]
+        [Produces("application/json")]
+        public ContentResult VaccineStatus()
+        {
+            string? payload = AssetReader.Read("HealthGateway.Mock.Assets.VaccineStatus.json");
             return new ContentResult { Content = payload!, ContentType = "application/json" };
         }
 
