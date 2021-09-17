@@ -295,16 +295,15 @@ export default class PublicVaccineCardView extends Vue {
                         <b-alert
                             variant="danger"
                             class="mb-3 p-3"
-                            :show="error !== undefined"
+                            show
                             dismissible
                         >
-                            <h2 class="h4">Our Apologies</h2>
+                            <h2 class="h4">{{ error.title }}</h2>
                             <div
                                 data-testid="errorTextDescription"
                                 class="pl-4"
                             >
-                                We've found an issue and the Health Gateway team
-                                is working hard to fix it.
+                                {{ error.description }}
                             </div>
                         </b-alert>
                     </div>

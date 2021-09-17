@@ -1,4 +1,6 @@
+import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
+import BannerError from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
 import Report from "@/models/report";
@@ -111,25 +113,34 @@ export const actions: VaccinationStatusActions = {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(error)}`);
-        context.commit(
-            "vaccinationStatusError",
-            ErrorTranslator.toBannerError(
-                "Error Retrieving Vaccine Card",
-                error
-            )
-        );
+        const bannerError: BannerError = {
+            title: "Our Apologies",
+            description:
+                "We've found an issue and the Health Gateway team is working hard to fix it.",
+            detail: "",
+            errorCode: "",
+        };
+
+        if (error.actionCode === ActionType.DataMismatch) {
+            bannerError.title = "Data Mismatch";
+            bannerError.description = error.resultMessage;
+        }
+
+        context.commit("vaccinationStatusError", bannerError);
     },
     handlePdfError(context, error: ResultError) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(error)}`);
-        context.commit(
-            "pdfError",
-            ErrorTranslator.toBannerError(
-                "Error Retrieving Vaccine Card PDF",
-                error
-            )
-        );
+        const bannerError: BannerError = {
+            title: "Our Apologies",
+            description:
+                "We've found an issue and the Health Gateway team is working hard to fix it.",
+            detail: "",
+            errorCode: "",
+        };
+
+        context.commit("pdfError", bannerError);
     },
     retrieveAuthenticatedVaccineStatus(
         context,

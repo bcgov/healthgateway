@@ -182,12 +182,15 @@ namespace HealthGateway.Immunization.Services
                 retVal.ResourcePayload = VaccineStatus.FromModel(payload, phn);
                 retVal.ResourcePayload.State = retVal.ResourcePayload.State switch
                 {
-                    var state when
-                        state == VaccineState.DataMismatch ||
-                        state == VaccineState.Threshold ||
-                        state == VaccineState.Blocked => VaccineState.NotFound,
+                    var state when state == VaccineState.Threshold || state == VaccineState.Blocked => VaccineState.NotFound,
                     _ => retVal.ResourcePayload.State
                 };
+
+                if (retVal.ResourcePayload.State == VaccineState.DataMismatch)
+                {
+                    retVal.ResultStatus = ResultType.ActionRequired;
+                    retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
+                }
             }
 
             if (result.ResourcePayload != null)
