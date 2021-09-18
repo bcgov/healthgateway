@@ -27,8 +27,6 @@ namespace HealthGateway.Common.Delegates
     /// <inheritdoc/>
     public class ReportDelegate : IReportDelegate
     {
-        private const string BorderDashed = "dashed";
-        private const string BorderSolid = "solid";
         private const string UnixTzKey = "TimeZone:UnixTimeZoneId";
         private const string WindowsTzKey = "TimeZone:WindowsTimeZoneId";
         private readonly IIronPDFDelegate ironPdfDelegate;
