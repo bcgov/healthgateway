@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
 
+import { ResultType } from "@/constants/resulttype";
 import { Dictionary } from "@/models/baseTypes";
 import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
@@ -201,17 +202,21 @@ export class RestUserProfileService implements IUserProfileService {
     }
 
     public validateSMS(hdid: string, digit: string): Promise<boolean> {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             this.http
-                .get(
+                .get<RequestResult<boolean>>(
                     `${this.USER_PROFILE_BASE_URI}/${hdid}/sms/validate/${digit}`
                 )
-                .then(() => {
-                    return resolve(true);
+                .then((requestResult) => {
+                    if (requestResult.resultStatus === ResultType.Success) {
+                        return resolve(requestResult.resourcePayload);
+                    } else {
+                        return reject(requestResult.resultError);
+                    }
                 })
                 .catch((err) => {
                     this.logger.error(`validateSMS error: ${err}`);
-                    return resolve(false);
+                    reject(err);
                 });
         });
     }

@@ -262,15 +262,13 @@ namespace HealthGateway.WebClient.Controllers
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
             {
-                if (this.userSMSService.ValidateSMS(hdid, validationCode))
-                {
-                    return new OkResult();
-                }
-                else
+                PrimitiveRequestResult<bool> result = this.userSMSService.ValidateSMS(hdid, validationCode);
+                if (!result.ResourcePayload)
                 {
                     System.Threading.Thread.Sleep(5000);
-                    return new NotFoundResult();
                 }
+
+                return new JsonResult(result);
             }
 
             return this.Unauthorized();

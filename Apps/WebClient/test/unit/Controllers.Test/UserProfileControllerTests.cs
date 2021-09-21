@@ -387,8 +387,14 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldValidateSms()
         {
+            PrimitiveRequestResult<bool> primitiveRequestResult = new PrimitiveRequestResult<bool>()
+            {
+                ResourcePayload = true,
+                ResultStatus = ResultType.Success,
+                ResultError = null,
+            };
             Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
-            smsServiceMock.Setup(s => s.ValidateSMS(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+            smsServiceMock.Setup(s => s.ValidateSMS(It.IsAny<string>(), It.IsAny<string>())).Returns(primitiveRequestResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             UserProfileController controller = new UserProfileController(
@@ -398,7 +404,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object);
             IActionResult actualResult = controller.ValidateSMS(this.hdid, "205 123 4567");
-            Assert.IsType<OkResult>(actualResult);
+
+            var result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
+            Assert.Equal(ResultType.Success, result?.ResultStatus);
+            Assert.Equal(true, result?.ResourcePayload);
         }
 
         /// <summary>
@@ -407,8 +416,14 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldValidateSmsNotFoundResult()
         {
+            PrimitiveRequestResult<bool> primitiveRequestResult = new PrimitiveRequestResult<bool>()
+            {
+                ResourcePayload = false,
+                ResultStatus = ResultType.Success,
+                ResultError = null,
+            };
             Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
-            smsServiceMock.Setup(s => s.ValidateSMS(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+            smsServiceMock.Setup(s => s.ValidateSMS(It.IsAny<string>(), It.IsAny<string>())).Returns(primitiveRequestResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             UserProfileController controller = new UserProfileController(
@@ -418,7 +433,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object);
             IActionResult actualResult = controller.ValidateSMS(this.hdid, "205 123 4567");
-            Assert.IsType<NotFoundResult>(actualResult);
+
+            var result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
+            Assert.Equal(ResultType.Success, result?.ResultStatus);
+            Assert.Equal(false, result?.ResourcePayload);
         }
 
         private static Mock<IHttpContextAccessor> CreateValidHttpContext(string token, string userId, string hdid)
