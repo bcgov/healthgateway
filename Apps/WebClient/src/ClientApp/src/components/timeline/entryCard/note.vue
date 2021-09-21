@@ -5,7 +5,6 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import DatePickerComponent from "@/components/datePicker.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import BannerError from "@/models/bannerError";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
@@ -19,7 +18,6 @@ library.add(faEdit, faEllipsisV);
 
 @Component({
     components: {
-        DatePickerComponent,
         EntryCard: EntrycardTimelineComponent,
     },
 })
