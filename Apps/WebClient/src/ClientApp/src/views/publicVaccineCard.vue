@@ -10,7 +10,6 @@ import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
 import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
-import DatePickerComponent from "@/components/datePicker.vue";
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
@@ -38,7 +37,6 @@ const validPersonalHealthNumber = (value: string): boolean => {
 @Component({
     components: {
         "vaccine-card": VaccineCardComponent,
-        "date-picker": DatePickerComponent,
         "error-card": ErrorCardComponent,
         loading: LoadingComponent,
         MessageModalComponent,
