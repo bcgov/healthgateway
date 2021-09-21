@@ -17,7 +17,7 @@
   <ItemGroup>
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.25" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.8.6" />
-    <PackageReference Include="IronPdf" Version="2021.3.1" />
+    <PackageReference Include="IronPdf" Version="2021.9.3737" />
     <PackageReference Include="Macross.Json.Extensions" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.10" />
