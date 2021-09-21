@@ -19,6 +19,7 @@ namespace HealthGateway.WebClient.Services
     using System.Globalization;
     using System.Security.Cryptography;
     using System.Text.RegularExpressions;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
@@ -63,10 +64,11 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public bool ValidateSMS(string hdid, string validationCode)
+        public PrimitiveRequestResult<bool> ValidateSMS(string hdid, string validationCode)
         {
             this.logger.LogTrace($"Validating sms... {validationCode}");
-            bool isValid = false;
+
+            PrimitiveRequestResult<bool> retVal = new () { ResourcePayload = false, ResultStatus = ResultType.Success };
             MessagingVerification? smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
 
             if (smsVerification != null &&
@@ -82,7 +84,7 @@ namespace HealthGateway.WebClient.Services
                 UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
                 userProfile.SMSNumber = smsVerification.SMSNumber; // Gets the user sms number from the message sent.
                 this.profileDelegate.Update(userProfile);
-                isValid = true;
+                retVal.ResourcePayload = true;
 
                 // Update the notification settings
                 this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SMSNumber));
@@ -98,8 +100,8 @@ namespace HealthGateway.WebClient.Services
                 }
             }
 
-            this.logger.LogDebug($"Finished validating sms: {JsonConvert.SerializeObject(isValid)}");
-            return isValid;
+            this.logger.LogDebug($"Finished validating sms: {JsonConvert.SerializeObject(retVal)}");
+            return retVal;
         }
 
         /// <inheritdoc />

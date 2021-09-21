@@ -48,7 +48,7 @@ export default class VerifySMSComponent extends Vue {
     private isVisible = false;
     private isLoading = false;
     private isValid = false;
-    public error = false;
+    private validationError = false;
 
     @Watch("smsResendDateTime")
     private onSMSResendDateTimeChanged() {
@@ -128,8 +128,8 @@ export default class VerifySMSComponent extends Vue {
         this.userProfileService
             .validateSMS(this.user.hdid, this.smsVerificationCode)
             .then((result) => {
-                this.error = !result;
-                if (!this.error) {
+                this.validationError = !result;
+                if (!this.validationError) {
                     this.handleSubmit();
                 }
             })
@@ -234,7 +234,7 @@ export default class VerifySMSComponent extends Vue {
                                 size="lg"
                                 :autofocus="true"
                                 class="text-center"
-                                :state="error ? false : undefined"
+                                :state="validationError ? false : undefined"
                                 max-length="6"
                                 :disabled="isLoading"
                                 required
@@ -242,7 +242,7 @@ export default class VerifySMSComponent extends Vue {
                             />
                         </b-col>
                     </b-row>
-                    <b-row v-if="error && !tooManyRetries">
+                    <b-row v-if="validationError && !tooManyRetries">
                         <b-col>
                             <span
                                 class="text-danger"
