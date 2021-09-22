@@ -351,7 +351,6 @@ describe("Authenticated User - Vaccine Card Page", () => {
 
         cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
         cy.get("[data-testid=statusPartiallyVaccinated]").should("be.visible");
-        //cy.get("[data-testid=dose-1]").should("be.visible");
     });
 
     it("Vaccination Card - Fully Vaccinated 2 Doses - unauthenticated user", () => {
@@ -383,8 +382,6 @@ describe("Authenticated User - Vaccine Card Page", () => {
 
         cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
         cy.get("[data-testid=statusVaccinated]").should("be.visible");
-        //cy.get("[data-testid=dose-1]").should("be.visible");
-        //cy.get("[data-testid=dose-2]").scrollIntoView().should("be.visible");
     });
 
     it("Vaccination Card - Fully Vaccinated 1 Dose - unauthenticated user", () => {
@@ -416,7 +413,6 @@ describe("Authenticated User - Vaccine Card Page", () => {
 
         cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
         cy.get("[data-testid=statusVaccinated]").should("be.visible");
-        //cy.get("[data-testid=dose-1]").should("be.visible");
     });
 
     it("Vaccination Card - Fully Vaccinated 3 Doses - unauthenticated user", () => {
@@ -448,9 +444,6 @@ describe("Authenticated User - Vaccine Card Page", () => {
 
         cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
         cy.get("[data-testid=statusVaccinated]").should("be.visible");
-        //cy.get("[data-testid=dose-1]").should("be.visible");
-        //cy.get("[data-testid=dose-2]").scrollIntoView().should("be.visible");
-        //cy.get("[data-testid=dose-3]").scrollIntoView().should("be.visible");
     });
 
     it("Vaccination Card - Fully Vaccinated 5 Doses - unauthenticated user", () => {
@@ -482,10 +475,5 @@ describe("Authenticated User - Vaccine Card Page", () => {
 
         cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
         cy.get("[data-testid=statusVaccinated]").should("be.visible");
-        //cy.get("[data-testid=dose-1]").should("be.visible");
-        //cy.get("[data-testid=dose-2]").scrollIntoView().should("be.visible");
-        //cy.get("[data-testid=dose-3]").scrollIntoView().should("be.visible");
-        //cy.get("[data-testid=dose-4]").scrollIntoView().should("be.visible");
-        //cy.get("[data-testid=dose-5]").scrollIntoView().should("be.visible");
     });
 });
