@@ -201,8 +201,12 @@ describe("Vaccine Card Page", () => {
         monthNumber = d.getMonth();
         month = monthNames[monthNumber === 11 ? 0 : monthNumber + 1];
 
-        selectNotExist(dobMonthSelector, month);
-        selectNotExist(dovMonthSelector, month);
+        if (month > 0) {
+            // Only execute if greater than 0. If 0, it means you've gone to January in new year.
+            selectNotExist(dobMonthSelector, month);
+            selectNotExist(dovMonthSelector, month);
+        }
+
         selectNotExist(dobDaySelector, d.getDate().toString());
         selectNotExist(dovDaySelector, d.getDate().toString());
     });
