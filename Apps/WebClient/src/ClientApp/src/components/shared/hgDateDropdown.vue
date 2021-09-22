@@ -22,7 +22,7 @@ export default class HgDateDropdownComponent extends Vue {
     private year: number | null = null;
     private value: string | null = "";
     private currentYear = new DateWrapper().year();
-    private currentMonth = new DateWrapper().month() + 1;
+    private currentMonth = new DateWrapper().month();
     private currentDay = new DateWrapper().day();
 
     private monthValues = [

@@ -1,5 +1,20 @@
 const { AuthMethod, localDevUri } = require("../../../support/constants");
 
+const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+];
+
 const dobYearSelector =
     "[data-testid=dateOfBirthInput] [data-testid=formSelectYear]";
 const dobMonthSelector =
@@ -31,6 +46,10 @@ function enterVaccineCardPHN(phn) {
 
 function select(selector, value) {
     cy.get(selector).should("be.visible", "be.enabled").select(value);
+}
+
+function selectNotExist(selector, value) {
+    cy.get(selector).contains(value).should("not.exist");
 }
 
 function clickVaccineCardEnterButton() {
@@ -150,6 +169,42 @@ describe("Vaccine Card Page", () => {
 
         cy.get(feedbackDobIsRequiredSelector).should("be.visible");
         cy.get(feedbackDovIsRequiredSelector).should("be.visible");
+    });
+
+    it("Vaccination Card - DOB and DOV cannot be future dated - unauthenticated user", () => {
+        const d = new Date();
+        const year = d.getFullYear();
+        let monthNumber = d.getMonth();
+        let month = monthNames[monthNumber];
+
+        cy.enableModules(vaccinationStatusModule);
+        cy.visit(vaccineCardUrl);
+
+        enterVaccineCardPHN(Cypress.env("phn"));
+
+        // Test Future Year
+        selectNotExist(dobYearSelector, (year + 1).toString());
+        selectNotExist(dovYearSelector, (year + 1).toString());
+
+        // Test Current Year
+        select(dobYearSelector, year.toString());
+        select(dovYearSelector, year.toString());
+
+        // Test Current Month and Day
+        select(dobMonthSelector, month);
+        select(dovMonthSelector, month);
+        select(dobDaySelector, d.getDate().toString());
+        select(dovDaySelector, d.getDate().toString());
+
+        // Test Future Date
+        d.setDate(d.getDate() + 1);
+        monthNumber = d.getMonth();
+        month = monthNames[monthNumber === 11 ? 0 : monthNumber + 1];
+
+        selectNotExist(dobMonthSelector, month);
+        selectNotExist(dovMonthSelector, month);
+        selectNotExist(dobDaySelector, d.getDate().toString());
+        selectNotExist(dovDaySelector, d.getDate().toString());
     });
 
     it("Vaccination Card - DOB Year and DOV not entered via Click Enter - unauthenticated user", () => {
