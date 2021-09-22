@@ -48,8 +48,16 @@ function select(selector, value) {
     cy.get(selector).should("be.visible", "be.enabled").select(value);
 }
 
+function selectExist(selector, value) {
+    cy.get(selector)
+        .children("[value=" + value + "]")
+        .should("exist");
+}
+
 function selectNotExist(selector, value) {
-    cy.get(selector).contains(value).should("not.exist");
+    cy.get(selector)
+        .children("[value=" + value + "]")
+        .should("not.exist");
 }
 
 function clickVaccineCardEnterButton() {
@@ -174,41 +182,51 @@ describe("Vaccine Card Page", () => {
     it("Vaccination Card - DOB and DOV cannot be future dated - unauthenticated user", () => {
         const d = new Date();
         const year = d.getFullYear();
-        let monthNumber = d.getMonth();
-        let month = monthNames[monthNumber];
+        const monthNumber = d.getMonth(); //Maps to monthNames constant array. Index starts at 0
+        const month = d.getMonth() + 1; //0 is January but UI index starts at 1 for January
+        const nextMonth = d.getMonth() === 11 ? 1 : month + 1; //When current month is December, next month will be January
+        const day = d.getDate();
 
         cy.enableModules(vaccinationStatusModule);
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(Cypress.env("phn"));
 
-        // Test Future Year
-        selectNotExist(dobYearSelector, (year + 1).toString());
-        selectNotExist(dovYearSelector, (year + 1).toString());
+        // Future Date
+        d.setDate(d.getDate() + 1);
+        const nextYear = d.getFullYear() === year ? year + 1 : d.getFullYear();
+        const nextDay = d.getDate();
+
+        // Test Future Year does not exist
+        selectNotExist(dobYearSelector, nextYear.toString());
+        selectNotExist(dovYearSelector, nextYear.toString());
 
         // Test Current Year
         select(dobYearSelector, year.toString());
         select(dovYearSelector, year.toString());
 
-        // Test Current Month and Day
-        select(dobMonthSelector, month);
-        select(dovMonthSelector, month);
-        select(dobDaySelector, d.getDate().toString());
-        select(dovDaySelector, d.getDate().toString());
-
-        // Test Future Date
-        d.setDate(d.getDate() + 1);
-        monthNumber = d.getMonth();
-        month = monthNames[monthNumber === 11 ? 0 : monthNumber + 1];
-
-        if (month > 0) {
-            // Only execute if greater than 0. If 0, it means you've gone to January in new year.
-            selectNotExist(dobMonthSelector, month);
-            selectNotExist(dovMonthSelector, month);
+        if (nextMonth > 1) {
+            // Current year has been set in dropdown, so if next month is 1 - January, it means
+            // current month is December.
+            // Test Future Month does not exist. Month can only be current or past month for current year.
+            selectNotExist(dobMonthSelector, nextMonth);
+            selectNotExist(dovMonthSelector, nextMonth);
         }
 
-        selectNotExist(dobDaySelector, d.getDate().toString());
-        selectNotExist(dovDaySelector, d.getDate().toString());
+        // Test and set Current Month
+        select(dobMonthSelector, monthNames[monthNumber]);
+        select(dovMonthSelector, monthNames[monthNumber]);
+
+        if (nextDay > 1) {
+            // Current Year and Month have been set. If next day is 1, it means previous.
+            // day was last day of current month. Next Day is associated with the current month.
+            // Test Future Day in current month does not exist.
+            selectNotExist(dobDaySelector, nextDay);
+            selectNotExist(dovDaySelector, nextDay);
+        }
+        //Test Current Day exists
+        selectExist(dobDaySelector, day);
+        selectExist(dovDaySelector, day);
     });
 
     it("Vaccination Card - DOB Year and DOV not entered via Click Enter - unauthenticated user", () => {
@@ -325,112 +343,52 @@ describe("Vaccine Card Page", () => {
         cy.get(feedbackDovIsRequiredSelector).should("be.visible");
     });
 
-    it("Vaccination Card - Not Found - unauthenticated user", () => {
-        const phn = "9735352528";
-        const dobYear = "1988";
-        const dobMonth = "December";
-        const dobDay = "20";
-        const dovYear = "2021";
-        const dovMonth = "February";
-        const dovDay = "11";
-
-        cy.enableModules([
-            "Immunization",
-            vaccinationStatusModule,
-            "VaccinationStatusPdf",
-        ]);
-        cy.visit(vaccineCardUrl);
-
-        enterVaccineCardPHN(phn);
-
-        select(dobYearSelector, dobYear);
-        select(dobMonthSelector, dobMonth);
-        select(dobDaySelector, dobDay);
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
-        select(dovDaySelector, dovDay);
-
-        clickVaccineCardEnterButton();
-
-        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
-        cy.get("[data-testid=statusNotFound]").should("be.visible");
-    });
-
     it("Vaccination Card - Partially Vaccinated 1 Dose - unauthenticated user", () => {
-        const phn = "9735361219";
-        const dobYear = "1994";
-        const dobMonth = "June";
-        const dobDay = "9";
-        const dovYear = "2021";
-        const dovMonth = "January";
-        const dovDay = "6";
-
-        cy.enableModules([
-            "Immunization",
-            vaccinationStatusModule,
-            "VaccinationStatusPdf",
-        ]);
-        cy.visit(vaccineCardUrl);
-
-        enterVaccineCardPHN(phn);
-
-        select(dobYearSelector, dobYear);
-        select(dobMonthSelector, dobMonth);
-        select(dobDaySelector, dobDay);
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
-        select(dovDaySelector, dovDay);
-
-        clickVaccineCardEnterButton();
-
-        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
-        cy.get("[data-testid=statusPartiallyVaccinated]").should("be.visible");
-        cy.get("[data-testid=dose-1]").should("be.visible");
-    });
-
-    it("Vaccination Card - Partially Vaccinated 2 Dose - unauthenticated user", () => {
-        const phn = "9735352503";
-        const dobYear = "1964";
-        const dobMonth = "June";
-        const dobDay = "9";
-        const dovYear = "2021";
-        const dovMonth = "January";
-        const dovDay = "20";
-
-        cy.enableModules([
-            "Immunization",
-            vaccinationStatusModule,
-            "VaccinationStatusPdf",
-        ]);
-        cy.visit(vaccineCardUrl);
-
-        enterVaccineCardPHN(phn);
-
-        select(dobYearSelector, dobYear);
-        select(dobMonthSelector, dobMonth);
-        select(dobDaySelector, dobDay);
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
-        select(dovDaySelector, dovDay);
-
-        clickVaccineCardEnterButton();
-
-        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
-        cy.get("[data-testid=statusPartiallyVaccinated]").should("be.visible");
-        cy.get("[data-testid=dose-1]").should("be.visible");
-        cy.get("[data-testid=dose-2]").scrollIntoView().should("be.visible");
-    });
-
-    it("Vaccination Card - Fully Vaccinated - unauthenticated user", () => {
         const phn = "9735353315";
         const dobYear = "1967";
         const dobMonth = "June";
         const dobDay = "2";
         const dovYear = "2021";
+        const dovMonth = "July";
+        const dovDay = "4";
+
+        cy.enableModules([
+            "Immunization",
+            vaccinationStatusModule,
+            "VaccinationStatusPdf",
+        ]);
+        cy.visit(vaccineCardUrl);
+
+        enterVaccineCardPHN(phn);
+
+        select(dobYearSelector, dobYear);
+        select(dobMonthSelector, dobMonth);
+        select(dobDaySelector, dobDay);
+        select(dovYearSelector, dovYear);
+        select(dovMonthSelector, dovMonth);
+        select(dovDaySelector, dovDay);
+
+        clickVaccineCardEnterButton();
+
+        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
+        cy.get("[data-testid=statusPartiallyVaccinated]").should("be.visible");
+        //cy.get("[data-testid=dose-1]").should("be.visible");
+    });
+
+    it("Vaccination Card - Fully Vaccinated 2 Doses - unauthenticated user", () => {
+        const phn = "9735361219 ";
+        const dobYear = "1994";
+        const dobMonth = "June";
+        const dobDay = "9";
+        const dovYear = "2021";
         const dovMonth = "January";
         const dovDay = "20";
 
-        cy.enableModules(vaccinationStatusModule);
+        cy.enableModules([
+            "Immunization",
+            vaccinationStatusModule,
+            "VaccinationStatusPdf",
+        ]);
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(phn);
@@ -446,6 +404,110 @@ describe("Vaccine Card Page", () => {
 
         cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
         cy.get("[data-testid=statusVaccinated]").should("be.visible");
+        //cy.get("[data-testid=dose-1]").should("be.visible");
+        //cy.get("[data-testid=dose-2]").scrollIntoView().should("be.visible");
+    });
+
+    it("Vaccination Card - Fully Vaccinated 1 Dose - unauthenticated user", () => {
+        const phn = "9000691107";
+        const dobYear = "1987";
+        const dobMonth = "March";
+        const dobDay = "23";
+        const dovYear = "2021";
+        const dovMonth = "May";
+        const dovDay = "15";
+
+        cy.enableModules([
+            "Immunization",
+            vaccinationStatusModule,
+            "VaccinationStatusPdf",
+        ]);
+        cy.visit(vaccineCardUrl);
+
+        enterVaccineCardPHN(phn);
+
+        select(dobYearSelector, dobYear);
+        select(dobMonthSelector, dobMonth);
+        select(dobDaySelector, dobDay);
+        select(dovYearSelector, dovYear);
+        select(dovMonthSelector, dovMonth);
+        select(dovDaySelector, dovDay);
+
+        clickVaccineCardEnterButton();
+
+        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
+        cy.get("[data-testid=statusVaccinated]").should("be.visible");
+        //cy.get("[data-testid=dose-1]").should("be.visible");
+    });
+
+    it("Vaccination Card - Fully Vaccinated 3 Doses - unauthenticated user", () => {
+        const phn = "9000691185";
+        const dobYear = "1990";
+        const dobMonth = "June";
+        const dobDay = "21";
+        const dovYear = "2021";
+        const dovMonth = "March";
+        const dovDay = "1";
+
+        cy.enableModules([
+            "Immunization",
+            vaccinationStatusModule,
+            "VaccinationStatusPdf",
+        ]);
+        cy.visit(vaccineCardUrl);
+
+        enterVaccineCardPHN(phn);
+
+        select(dobYearSelector, dobYear);
+        select(dobMonthSelector, dobMonth);
+        select(dobDaySelector, dobDay);
+        select(dovYearSelector, dovYear);
+        select(dovMonthSelector, dovMonth);
+        select(dovDaySelector, dovDay);
+
+        clickVaccineCardEnterButton();
+
+        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
+        cy.get("[data-testid=statusVaccinated]").should("be.visible");
+        //cy.get("[data-testid=dose-1]").should("be.visible");
+        //cy.get("[data-testid=dose-2]").scrollIntoView().should("be.visible");
+        //cy.get("[data-testid=dose-3]").scrollIntoView().should("be.visible");
+    });
+
+    it("Vaccination Card - Fully Vaccinated 5 Doses - unauthenticated user", () => {
+        const phn = "9876809694";
+        const dobYear = "1964";
+        const dobMonth = "June";
+        const dobDay = "9";
+        const dovYear = "2021";
+        const dovMonth = "February";
+        const dovDay = "1";
+
+        cy.enableModules([
+            "Immunization",
+            vaccinationStatusModule,
+            "VaccinationStatusPdf",
+        ]);
+        cy.visit(vaccineCardUrl);
+
+        enterVaccineCardPHN(phn);
+
+        select(dobYearSelector, dobYear);
+        select(dobMonthSelector, dobMonth);
+        select(dobDaySelector, dobDay);
+        select(dovYearSelector, dovYear);
+        select(dovMonthSelector, dovMonth);
+        select(dovDaySelector, dovDay);
+
+        clickVaccineCardEnterButton();
+
+        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
+        cy.get("[data-testid=statusVaccinated]").should("be.visible");
+        //cy.get("[data-testid=dose-1]").should("be.visible");
+        //cy.get("[data-testid=dose-2]").scrollIntoView().should("be.visible");
+        //cy.get("[data-testid=dose-3]").scrollIntoView().should("be.visible");
+        //cy.get("[data-testid=dose-4]").scrollIntoView().should("be.visible");
+        //cy.get("[data-testid=dose-5]").scrollIntoView().should("be.visible");
     });
 
     it("Landing Page - Vaccination Card - Registered Keycloak authenticated user", () => {
