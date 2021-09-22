@@ -194,6 +194,7 @@ export default class LandingView extends Vue {
                     <hg-button
                         variant="primary"
                         to="/vaccinecard"
+                        data-testid="btnVaccineCard"
                         class="w-75 text-center"
                     >
                         Get Card

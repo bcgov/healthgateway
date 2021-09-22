@@ -180,6 +180,7 @@ export default class HgDateDropdownComponent extends Vue {
         <b-col cols="auto">
             <b-form-select
                 v-model="year"
+                data-testid="formSelectYear"
                 :class="getClass(state)"
                 :options="getYears"
                 aria-label="Year"
@@ -189,6 +190,7 @@ export default class HgDateDropdownComponent extends Vue {
         <b-col class="px-2">
             <b-form-select
                 v-model="month"
+                data-testid="formSelectMonth"
                 :class="getClass(state)"
                 :options="getMonths"
                 aria-label="Month"
@@ -198,6 +200,7 @@ export default class HgDateDropdownComponent extends Vue {
         <b-col cols="auto">
             <b-form-select
                 v-model="day"
+                data-testid="formSelectDay"
                 :class="getClass(state)"
                 :options="getDays"
                 aria-label="Day"

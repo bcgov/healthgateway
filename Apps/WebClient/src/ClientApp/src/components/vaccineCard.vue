@@ -73,7 +73,9 @@ export default class VaccineCardComponent extends Vue {
     <div>
         <div class="header text-white">
             <div class="p-3 pt-0 pt-sm-3">
-                <h3 class="text-center">BC Vaccine Card</h3>
+                <h3 data-testid="formTitleVaccineCard" class="text-center">
+                    BC Vaccine Card
+                </h3>
                 <hr style="border-top: 2px solid #fcba19" />
                 <div class="text-center">{{ name }}</div>
             </div>
@@ -99,6 +101,7 @@ export default class VaccineCardComponent extends Vue {
                 <h2
                     v-if="isFullyVaccinated"
                     aria-label="Status Vaccinated"
+                    data-testid="statusVaccinated"
                     class="d-flex align-items-center m-0"
                 >
                     <hg-icon
@@ -112,6 +115,7 @@ export default class VaccineCardComponent extends Vue {
                 <h2
                     v-else-if="isPartiallyVaccinated"
                     aria-label="Status Partially Vaccinated"
+                    data-testid="statusPartiallyVaccinated"
                     class="m-0"
                 >
                     Partially Vaccinated
@@ -119,6 +123,7 @@ export default class VaccineCardComponent extends Vue {
                 <h2
                     v-else-if="isVaccinationNotFound"
                     aria-label="Status Not Found"
+                    data-testid="statusNotFound"
                     class="m-0"
                 >
                     Not Found

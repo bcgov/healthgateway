@@ -305,7 +305,10 @@ export default class PublicVaccineCardView extends Vue {
                             </div>
                         </b-alert>
                     </div>
-                    <h2 class="vaccine-card-form-title text-center pb-3 mb-4">
+                    <h2
+                        data-testid="vaccineCardFormTitle"
+                        class="vaccine-card-form-title text-center pb-3 mb-4"
+                    >
                         Access Your BC Vaccine Card
                     </h2>
                     <p class="mb-4">
@@ -330,12 +333,14 @@ export default class PublicVaccineCardView extends Vue {
                                 <b-form-invalid-feedback
                                     v-if="!$v.phn.required"
                                     aria-label="Invalid Personal Health Number"
+                                    data-testid="feedbackPhnIsRequired"
                                 >
                                     Personal Health Number is required.
                                 </b-form-invalid-feedback>
                                 <b-form-invalid-feedback
                                     v-else-if="!$v.phn.formatted"
                                     aria-label="Invalid Personal Health Number"
+                                    data-testid="feedbackPhnMustBeValid"
                                 >
                                     Personal Health Number must be valid.
                                 </b-form-invalid-feedback>
@@ -364,6 +369,7 @@ export default class PublicVaccineCardView extends Vue {
                                         !$v.dateOfBirth.required
                                     "
                                     aria-label="Invalid Date of Birth"
+                                    data-testid="feedbackDobIsRequired"
                                     force-show
                                 >
                                     A valid date of birth is required.
@@ -404,6 +410,7 @@ export default class PublicVaccineCardView extends Vue {
                                         !$v.dateOfVaccine.required
                                     "
                                     aria-label="Invalid Date of Vaccine"
+                                    data-testid="feedbackDovIsRequired"
                                     force-show
                                 >
                                     A valid date of vaccine is required.
@@ -426,6 +433,7 @@ export default class PublicVaccineCardView extends Vue {
                             <hg-button
                                 variant="secondary"
                                 aria-label="Cancel"
+                                data-testid="btnCancel"
                                 class="w-100"
                                 to="/"
                             >
@@ -438,6 +446,7 @@ export default class PublicVaccineCardView extends Vue {
                                 aria-label="Enter"
                                 type="submit"
                                 :disabled="isLoading"
+                                data-testid="btnEnter"
                                 class="w-100"
                             >
                                 Enter
@@ -450,6 +459,7 @@ export default class PublicVaccineCardView extends Vue {
                         href="#"
                         tabindex="0"
                         variant="link"
+                        data-testid="btnPrivacyStatement"
                         class="shadow-none p-0 mt-3"
                     >
                         <hg-icon icon="info-circle" size="small" class="mr-1" />
