@@ -49,6 +49,7 @@ export default class VerifySMSComponent extends Vue {
     private isLoading = false;
     private isValid = false;
     private validationError = false;
+    private error = false;
 
     @Watch("smsResendDateTime")
     private onSMSResendDateTimeChanged() {
@@ -133,6 +134,10 @@ export default class VerifySMSComponent extends Vue {
                     this.handleSubmit();
                 }
             })
+            .catch((err) => {
+                this.logger.error(err);
+                this.error = true;
+            })
             .finally(() => {
                 this.smsVerificationCode = "";
                 this.isLoading = false;
@@ -200,23 +205,27 @@ export default class VerifySMSComponent extends Vue {
         header-bg-variant="primary"
         header-text-variant="light"
         centered
+        ok-only
         @show="getTimeout"
     >
         <b-row>
             <b-col>
                 <form>
+                    <b-row v-if="error">
+                        <b-col class="text-center">
+                            An unexpected error has occurred. Please try
+                            refreshing your browser or try again later.
+                        </b-col>
+                    </b-row>
                     <b-row
-                        v-if="tooManyRetries"
+                        v-else-if="tooManyRetries"
                         data-testid="verifySMSModalErrorAttemptsText"
                     >
                         <b-col class="text-center">
                             Too many failed attempts.
                         </b-col>
                     </b-row>
-                    <b-row
-                        v-if="!tooManyRetries"
-                        data-testid="verifySMSModalText"
-                    >
+                    <b-row v-else data-testid="verifySMSModalText">
                         <b-col>
                             <label
                                 for="verificationCode-input"
@@ -242,7 +251,7 @@ export default class VerifySMSComponent extends Vue {
                             />
                         </b-col>
                     </b-row>
-                    <b-row v-if="validationError && !tooManyRetries">
+                    <b-row v-if="!error && !tooManyRetries && validationError">
                         <b-col>
                             <span
                                 class="text-danger"
@@ -254,7 +263,7 @@ export default class VerifySMSComponent extends Vue {
                 </form>
             </b-col>
         </b-row>
-        <template #modal-footer>
+        <template v-if="!error" #modal-footer>
             <b-row class="w-100">
                 <b-col v-if="!tooManyRetries && allowRetry">
                     Didn't receive a code?
