@@ -149,13 +149,17 @@ describe("Authenticated User - Vaccine Card Page", () => {
         const nextMonth = d.getMonth() === 11 ? 1 : month + 1; //When current month is December, next month will be January
         const day = d.getDate();
         cy.log(
-            "Month Number: " +
+            "Current Date: " +
+                d.toDateString() +
+                " - Year: " +
+                year +
+                " - Month Number: " +
                 monthNumber +
-                " - month: " +
+                " - Month: " +
                 month +
-                " - nextMonth: " +
+                " - Next Month: " +
                 nextMonth +
-                " - day: " +
+                " - Day: " +
                 day
         );
 
