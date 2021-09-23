@@ -38,6 +38,7 @@ namespace HealthGateway.Immunization.Parser
                 TargetedDisease = model.TargetedDisease,
                 ProviderOrClinic = model.ProviderOrClinic,
                 Status = model.Status,
+                Valid = model.Valid,
                 Immunization = new ImmunizationDefinition() { Name = model.Name, ImmunizationAgents = AgentParser.FromPHSAModelList(model.ImmunizationAgents) },
                 Forecast = model.ImmunizationForecast == null ? null : ForecastParser.FromPHSAModel(model.ImmunizationForecast),
             };
