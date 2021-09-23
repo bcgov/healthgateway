@@ -27,7 +27,8 @@
         "idir.username": "hgateway",
         "idir.password": "",
         "phoneNumber": "",
-        "emailAddress": "fakeemail@healthgateway.gov.bc.ca"
+        "emailAddress": "fakeemail@healthgateway.gov.bc.ca",
+        "phn": "9735353315"
     },
     "projectId": "ofnepc"
 }

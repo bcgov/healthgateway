@@ -293,7 +293,12 @@ export default class VaccineCardModalComponent extends Vue {
                             align-self-center
                         "
                     >
-                        <span class="dose-label">Dose {{ index + 1 }}</span>
+                        <span
+                            class="dose-label"
+                            :data-testid="'dose-' + (index + 1)"
+                        >
+                            Dose {{ index + 1 }}
+                        </span>
                     </b-col>
                     <b-col class="right-pane">
                         <b-row class="pb-2">
