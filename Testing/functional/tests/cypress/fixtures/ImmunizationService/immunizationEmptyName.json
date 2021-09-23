@@ -10,6 +10,7 @@
                 "name": "COVID-19",
                 "dateOfImmunization": "2013-09-20T00:00:00",
                 "status": "Completed",
+                "valid": true,
                 "targetedDisease": "Covid",
                 "providerOrClinic": "TEST LOCATION",
                 "immunization": {
