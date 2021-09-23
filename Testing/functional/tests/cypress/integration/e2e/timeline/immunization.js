@@ -72,9 +72,6 @@ describe("Immunization", () => {
             .contains("Covid-19");
         cy.get("[data-testid=forecastDueDate]").first().should("be.visible");
         cy.get("[data-testid=forecastStatus]").first().should("be.visible");
-        cy.get("[data-testid=forecastFollowDirections]")
-            .first()
-            .should("be.visible");
     });
 
     it("Validate Proof of Immunization Card & Download", () => {
