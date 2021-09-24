@@ -53,18 +53,4 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get("[data-testid=dose-1]").should("be.visible");
         cy.get("[data-testid=dose-2]").scrollIntoView().should("be.visible");
     });
-
-    it("Authenticated User - Vaccination Card - Unregistered Keycloak authenticated user", () => {
-        cy.enableModules(["Immunization", "VaccinationStatus"]);
-        cy.login(
-            Cypress.env("keycloak.unregistered.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/covid19"
-        );
-
-        cy.get("[data-testid=noCovidImmunizationsText]")
-            .should("be.visible")
-            .contains("No records found");
-    });
 });
