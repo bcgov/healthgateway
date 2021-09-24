@@ -194,10 +194,9 @@ namespace HealthGateway.Common.Delegates
 
         private static Address? MapAddress(AD? address)
         {
-            Address? retAddress = null;
-            if (address != null)
+            Address? retAddress = new ();
+            if (address != null && address.Items != null)
             {
-                retAddress = new Address();
                 foreach (ADXP item in address.Items)
                 {
                     switch (item)
