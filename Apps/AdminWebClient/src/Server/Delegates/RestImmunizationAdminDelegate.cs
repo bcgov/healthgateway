@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Server.Delegates
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
     using System.Net;
@@ -27,8 +26,8 @@ namespace HealthGateway.Admin.Server.Delegates
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Models.Immunization;
-    using HealthGateway.Admin.Models.Support.PHSA;
+    using HealthGateway.Admin.Models.CovidSupport;
+    using HealthGateway.Admin.Models.CovidSupport.PHSA;
     using HealthGateway.Admin.Parsers.Immunization;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
@@ -72,71 +71,77 @@ namespace HealthGateway.Admin.Server.Delegates
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestImmunizationAdminDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<ImmunizationResult>> GetImmunizationEvents(PatientModel patient, int pageIndex = 0)
+        public async Task<RequestResult<VaccineDetails>> GetVaccineDetailsWithRetries(PatientModel patient, bool refresh)
         {
-            using Activity? activity = Source.StartActivity("GetImmunizationEvents");
-            RequestResult<ImmunizationResult> retVal;
-            RequestResult<PHSAResult<IList<ImmunizationViewResponse>>> immsResponse;
+            using Activity? activity = Source.StartActivity("GetVaccineDetailsWithRetries");
+            RequestResult<VaccineDetails> retVal;
+            RequestResult<PHSAResult<VaccineDetailsResponse>> response;
             int retryCount = 0;
             bool refreshInProgress;
             do
             {
-                immsResponse = await this.GetImmunizations(patient, pageIndex).ConfigureAwait(true);
+                response = await this.GetVaccineDetailsResponse(patient, refresh).ConfigureAwait(true);
 
-                refreshInProgress = immsResponse.ResultStatus == ResultType.Success &&
-                                    immsResponse.ResourcePayload != null &&
-                                    immsResponse.ResourcePayload.LoadState.RefreshInProgress;
+                refreshInProgress = response.ResultStatus == ResultType.Success &&
+                                    response.ResourcePayload != null &&
+                                    response.ResourcePayload.LoadState.RefreshInProgress;
 
                 if (refreshInProgress)
                 {
-                    Thread.Sleep(Math.Max(immsResponse.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds));
+                    Thread.Sleep(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds));
                 }
             }
             while (refreshInProgress && retryCount++ < this.phsaConfig.MaxRetries);
 
-            if (immsResponse.ResultStatus == ResultType.Success && immsResponse.ResourcePayload != null)
+            if (response.ResultStatus == ResultType.Success && response.ResourcePayload != null)
             {
                 retVal = new ()
                 {
-                    ResultStatus = immsResponse.ResultStatus,
-                    ResultError = immsResponse.ResultError,
-                    PageIndex = immsResponse.PageIndex,
-                    PageSize = immsResponse.PageSize,
-                    TotalResultCount = immsResponse.ResourcePayload.Result?.Count ?? 0,
-                    ResourcePayload = new ImmunizationResult(
-                            LoadStateModel.FromPHSAModel(immsResponse.ResourcePayload.LoadState),
-                            EventParser.FromPHSAModelList(immsResponse.ResourcePayload.Result)),
+                    ResultStatus = response.ResultStatus,
+                    ResultError = response.ResultError,
+                    PageIndex = response.PageIndex,
+                    PageSize = response.PageSize,
+                    TotalResultCount = response.TotalResultCount,
+                    ResourcePayload = new VaccineDetails(
+                            VaccineDoseParser.FromPHSAModelList(response.ResourcePayload.Result?.Doses),
+                            response.ResourcePayload.Result?.VaccineStatusResult),
                 };
             }
             else
             {
                 retVal = new ()
                 {
-                    ResultStatus = immsResponse.ResultStatus,
-                    ResultError = immsResponse.ResultError,
+                    ResultStatus = response.ResultStatus,
+                    ResultError = response.ResultError,
                 };
             }
 
             return retVal;
         }
 
-        /// <inheritdoc/>
-        public async Task<RequestResult<PHSAResult<IList<ImmunizationViewResponse>>>> GetImmunizations(PatientModel patient, int pageIndex = 0)
+        /// <summary>
+        /// Gets the vaccine details response for the provided patient.
+        /// The patient must have the PHN and DOB provided.
+        /// </summary>
+        /// <param name="patient">The patient to query for vaccine details.</param>
+        /// <param name="refresh">Whether the call should force cached data to be refreshed.</param>
+        /// <returns>The wrapped vaccine details response.</returns>
+        private async Task<RequestResult<PHSAResult<VaccineDetailsResponse>>> GetVaccineDetailsResponse(PatientModel patient, bool refresh)
         {
-            using Activity? activity = Source.StartActivity("GetImmunizations");
-            this.logger.LogDebug($"Getting immunizations...");
-            RequestResult<PHSAResult<IList<ImmunizationViewResponse>>> retVal;
+            using Activity? activity = Source.StartActivity("GetVaccineDetails");
+            this.logger.LogDebug($"Getting vaccine details...");
+            RequestResult<PHSAResult<VaccineDetailsResponse>> retVal;
             if (!string.IsNullOrEmpty(patient.PersonalHealthNumber) && patient.Birthdate != DateTime.MinValue)
             {
                 CovidImmunizationsRequest requestContent = new CovidImmunizationsRequest()
                 {
                     PersonalHealthNumber = patient.PersonalHealthNumber,
-                    DateOfBirth = patient.Birthdate.ToString("yyyyMMdd", CultureInfo.InvariantCulture),
+                    IgnoreCache = refresh,
                 };
-                Uri endpoint = new ($"{this.phsaConfig.BaseUrl}{this.phsaConfig.ImmunizationEndpoint}");
+                Uri endpoint = new ($"{this.phsaConfig.BaseUrl}{this.phsaConfig.ImmunizationEndpoint}/VaccineValidationDetails");
                 using StringContent httpContent = new (JsonSerializer.Serialize(requestContent), Encoding.UTF8, "application/json");
-                retVal = await this.CallEndpoint<IList<ImmunizationViewResponse>>(endpoint, httpContent).ConfigureAwait(true);
-                this.logger.LogDebug($"Finished getting Immunizations");
+                retVal = await this.CallEndpoint<VaccineDetailsResponse>(endpoint, httpContent).ConfigureAwait(true);
+                this.logger.LogDebug($"Finished getting vaccine details");
             }
             else
             {

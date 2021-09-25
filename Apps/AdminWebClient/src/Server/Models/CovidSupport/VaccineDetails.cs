@@ -13,46 +13,49 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Models.Immunization
+namespace HealthGateway.Admin.Models.CovidSupport
 {
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
+    using HealthGateway.Admin.Models.Immunization;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Immunization;
+    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
-    /// Represents Immunization Result.
+    /// Represents the retrieved vaccination information.
     /// </summary>
-    public class ImmunizationResult
+    public class VaccineDetails
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImmunizationResult"/> class.
+        /// Initializes a new instance of the <see cref="VaccineDetails"/> class.
         /// </summary>
-        public ImmunizationResult()
+        public VaccineDetails()
         {
+            this.Doses = new List<VaccineDose>();
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImmunizationResult"/> class.
+        /// Initializes a new instance of the <see cref="VaccineDetails"/> class.
         /// </summary>
-        /// <param name="loadState">The load state model.</param>
-        /// <param name="immunizations">The list of immunizations.</param>
+        /// <param name="doses">The list of doses.</param>
+        /// <param name="vaccineStatusResult">The patient's vaccine status.</param>
         [JsonConstructor]
-        public ImmunizationResult(LoadStateModel loadState, IList<ImmunizationEvent> immunizations)
+        public VaccineDetails(IList<VaccineDose> doses, VaccineStatusResult vaccineStatusResult)
         {
-            this.LoadState = loadState;
-            this.Immunizations = immunizations;
+            this.Doses = doses;
+            this.VaccineStatusResult = vaccineStatusResult;
         }
 
         /// <summary>
-        /// Gets or sets the Load State.
+        /// Gets the retrieved doses. Empty if no valid COVID-19 doses were found.
         /// </summary>
-        [JsonPropertyName("loadState")]
-        public LoadStateModel LoadState { get; set; } = new LoadStateModel();
+        public IList<VaccineDose> Doses { get; }
 
         /// <summary>
-        /// Gets the list of Immunizations events.
+        /// Gets or sets the Vaccine Status Result.
         /// </summary>
-        [JsonPropertyName("immunizations")]
-        public IList<ImmunizationEvent> Immunizations { get; } = new List<ImmunizationEvent>();
+        [JsonPropertyName("vaccineStatus")]
+        public VaccineStatusResult? VaccineStatusResult { get; set; } = null;
     }
 }

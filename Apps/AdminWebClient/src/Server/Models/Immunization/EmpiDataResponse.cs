@@ -13,28 +13,32 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Parsers.Immunization
+namespace HealthGateway.Admin.Models.CovidSupport.PHSA
 {
-    using HealthGateway.Common.Models.Immunization;
-    using HealthGateway.Common.Models.PHSA.Recommendation;
+    using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Provides parsing methods for Immunization definitions.
+    /// The data model for EMPI information returned by PHSA.
     /// </summary>
-    public static class DefinitionParser
+    public class EmpiDataResponse
     {
         /// <summary>
-        /// Creates an ImmunizationDefinition object from a PHSA model.
+        /// Gets or sets the patient's first name.
         /// </summary>
-        /// <param name="model">The vaccine code object to convert.</param>
-        /// <returns>The newly created ImmunizationDefinition object.</returns>
-        public static ImmunizationDefinition FromPHSAModel(VaccineCode model)
-        {
-            return new ImmunizationDefinition()
-            {
-                Name = model.VaccineCodeText,
-                ImmunizationAgents = AgentParser.FromPHSACodesModel(model.VaccineCodes),
-            };
-        }
+        [JsonPropertyName("firstName")]
+        public string? FirstName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the patient's last name.
+        /// </summary>
+        [JsonPropertyName("lastName")]
+        public string? LastName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the patient's date of birth.
+        /// </summary>
+        [JsonPropertyName("dateOfBirth")]
+        public DateTime? Birthdate { get; set; }
     }
 }

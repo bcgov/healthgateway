@@ -16,7 +16,7 @@
 namespace HealthGateway.Admin.Services
 {
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Models.Support;
+    using HealthGateway.Admin.Models.CovidSupport;
     using HealthGateway.Common.Models;
 
     /// <summary>
@@ -28,8 +28,9 @@ namespace HealthGateway.Admin.Services
         /// Gets the patient and immunization information.
         /// </summary>
         /// <param name="phn">The personal health number that matches the person to retrieve.</param>
+        /// <param name="refresh">Whether the call should force cached data to be refreshed.</param>
         /// <returns>The covid ionformation wrapped in a RequestResult.</returns>
-        Task<RequestResult<CovidInformation>> GetCovidInformation(string phn);
+        Task<RequestResult<CovidInformation>> GetCovidInformation(string phn, bool refresh);
 
         /// <summary>
         /// Mails a document that represents a patient's vaccine card.

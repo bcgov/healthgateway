@@ -13,24 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Delegates
+namespace HealthGateway.Admin.Models.CovidSupport.PHSA
 {
-    using System.Threading.Tasks;
-    using HealthGateway.Admin.Models.CovidSupport;
-    using HealthGateway.Common.Models;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Provides access to Administrative Immunization data.
+    /// Represents a request to retrieve immunizationData.
     /// </summary>
-    public interface IImmunizationAdminDelegate
+    public class CovidImmunizationsRequest
     {
         /// <summary>
-        /// Gets the vaccine details for the provided patient, retrying multiple times if there is a refresh in progress.
-        /// The patient must have the PHN and DOB provided.
+        /// Gets or sets the personal health number.
         /// </summary>
-        /// <param name="patient">The patient to query for vaccine details.</param>
-        /// <param name="refresh">Whether the call should force cached data to be refreshed.</param>
-        /// <returns>The wrapped vaccine details.</returns>
-        Task<RequestResult<VaccineDetails>> GetVaccineDetailsWithRetries(PatientModel patient, bool refresh);
+        [JsonPropertyName("phn")]
+        public string PersonalHealthNumber { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the request should ignore the cached data.
+        /// </summary>
+        [JsonPropertyName("ignoreCache")]
+        public bool IgnoreCache { get; set; } = false;
     }
 }
