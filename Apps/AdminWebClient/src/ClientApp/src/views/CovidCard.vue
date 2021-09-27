@@ -211,16 +211,12 @@ export default class CovidCardView extends Vue {
                     this.searchResult?.patient?.physicalAddress
                 );
                 this.immunizations =
-                    this.searchResult.immunizations?.map((immz) => {
+                    this.searchResult.vaccineDetails?.doses?.map((dose) => {
                         return {
-                            date: immz.dateOfImmunization,
-                            clinic: immz.providerOrClinic,
-                            product:
-                                immz.immunization.immunizationAgents[0]
-                                    .productName,
-                            lotNumber:
-                                immz.immunization.immunizationAgents[0]
-                                    .lotNumber,
+                            date: dose.date,
+                            clinic: dose.location,
+                            product: dose.product,
+                            lotNumber: dose.lot,
                         };
                     }) ?? [];
             })

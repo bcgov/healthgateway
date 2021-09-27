@@ -13,25 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Models.Support
+namespace HealthGateway.Admin.Models.CovidSupport.PHSA
 {
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents the report patient.
+    /// Represents a request to retrieve immunizationData.
     /// </summary>
-    public class ReportPatient
+    public class CovidImmunizationsRequest
     {
         /// <summary>
-        /// Gets or sets the name of the patient.
+        /// Gets or sets the personal health number.
         /// </summary>
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
+        [JsonPropertyName("phn")]
+        public string PersonalHealthNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets patient date of birth.
+        /// Gets or sets a value indicating whether the request should ignore the cached data.
         /// </summary>
-        [JsonPropertyName("dateOfBirth")]
-        public string DateOfBirth { get; set; } = string.Empty;
+        [JsonPropertyName("ignoreCache")]
+        public bool IgnoreCache { get; set; } = false;
     }
 }

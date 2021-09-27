@@ -13,49 +13,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Models.Support
+namespace HealthGateway.Admin.Models.Immunization
 {
+    using System;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents a dose of the report.
+    /// Represents a vaccine dose.
     /// </summary>
-    public class ReportDose
+    public class VaccineDose
     {
         /// <summary>
-        /// Gets or sets the dose number.
-        /// </summary>
-        [JsonPropertyName("number")]
-        public string Number { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the dose product.
+        /// Gets or sets the name of the product.
         /// </summary>
         [JsonPropertyName("product")]
-        public string Product { get; set; } = string.Empty;
+        public string? Product { get; set; }
 
         /// <summary>
-        /// Gets or sets the dose immunizing agent.
+        /// Gets or sets the lot identifier of the immunization.
         /// </summary>
-        [JsonPropertyName("immunizingAgent")]
-        public string ImmunizingAgent { get; set; } = string.Empty;
+        [JsonPropertyName("lot")]
+        public string? Lot { get; set; }
 
         /// <summary>
-        /// Gets or sets the dose provider.
+        /// Gets or sets the location where the dose was administered.
         /// </summary>
-        [JsonPropertyName("provider")]
-        public string Provider { get; set; } = string.Empty;
+        [JsonPropertyName("location")]
+        public string? Location { get; set; }
 
         /// <summary>
-        /// Gets or sets the dose date.
+        /// Gets or sets the date the dose was administered.
         /// </summary>
         [JsonPropertyName("date")]
-        public string Date { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the dose lot number.
-        /// </summary>
-        [JsonPropertyName("lotNumber")]
-        public string LotNumber { get; set; } = string.Empty;
+        public DateTime? Date { get; set; }
     }
 }

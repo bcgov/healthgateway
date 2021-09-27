@@ -18,11 +18,8 @@ namespace HealthGateway.Admin.Services
 {
     using System;
     using System.Globalization;
-    using System.IO;
-    using System.Text.Json;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Models.Immunization;
-    using HealthGateway.Admin.Models.Support;
+    using HealthGateway.Admin.Models.CovidSupport;
     using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
@@ -77,7 +74,7 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<CovidInformation>> GetCovidInformation(string phn)
+        public async Task<RequestResult<CovidInformation>> GetCovidInformation(string phn, bool refresh)
         {
             this.logger.LogDebug($"Retrieving covid information");
             this.logger.LogTrace($"For PHN: {phn}");
@@ -87,27 +84,34 @@ namespace HealthGateway.Admin.Services
             if (patientResult.ResultStatus == ResultType.Success)
             {
                 this.logger.LogDebug($"Sucessfully retrieved patient.");
-                RequestResult<ImmunizationResult> immunizationResult = await this.immunizationDelegate.GetImmunizationEvents(patientResult.ResourcePayload).ConfigureAwait(true);
-                if (immunizationResult.ResultStatus == ResultType.Success)
+
+                RequestResult<VaccineDetails> vaccineDetailsResult =
+                    await this.immunizationDelegate.GetVaccineDetailsWithRetries(patientResult.ResourcePayload, refresh).ConfigureAwait(true);
+
+                if (vaccineDetailsResult.ResultStatus == ResultType.Success)
                 {
-                    this.logger.LogDebug($"Sucessfully retrieved immunization.");
+                    this.logger.LogDebug($"Sucessfully retrieved vaccine details.");
                     return new RequestResult<CovidInformation>()
                     {
                         PageIndex = 0,
                         PageSize = 1,
-                        ResourcePayload = new CovidInformation(patientResult.ResourcePayload, immunizationResult.ResourcePayload!.Immunizations),
+                        ResourcePayload = new CovidInformation()
+                        {
+                            Patient = patientResult.ResourcePayload,
+                            VaccineDetails = vaccineDetailsResult.ResourcePayload,
+                        },
                         ResultStatus = ResultType.Success,
                     };
                 }
                 else
                 {
-                    this.logger.LogError($"Error retrieving immunization information.");
+                    this.logger.LogError($"Error retrieving vaccine details.");
                     return new RequestResult<CovidInformation>()
                     {
                         PageIndex = 0,
                         PageSize = 0,
                         ResultStatus = ResultType.Error,
-                        ResultError = immunizationResult.ResultError,
+                        ResultError = vaccineDetailsResult.ResultError,
                     };
                 }
             }

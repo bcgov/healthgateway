@@ -16,7 +16,7 @@
 namespace HealthGateway.Admin.Controllers
 {
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Models.Support;
+    using HealthGateway.Admin.Models.CovidSupport;
     using HealthGateway.Admin.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -54,7 +54,7 @@ namespace HealthGateway.Admin.Controllers
         [Route("Patient")]
         public async Task<IActionResult> GetPatient([FromHeader] string phn)
         {
-            return new JsonResult(await this.covidSupportService.GetCovidInformation(phn).ConfigureAwait(true));
+            return new JsonResult(await this.covidSupportService.GetCovidInformation(phn, false).ConfigureAwait(true));
         }
 
         /// <summary>

@@ -13,25 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Models.Support.PHSA
+namespace HealthGateway.Admin.Models.CovidSupport
 {
-    using System.Text.Json.Serialization;
+    using HealthGateway.Common.Models;
 
     /// <summary>
-    /// Represents a request to retrieve immunizationData.
+    /// Represents the retrieved COVID-19 information for a patient.
     /// </summary>
-    public class CovidImmunizationsRequest
+    public class CovidInformation
     {
         /// <summary>
-        /// Gets or sets the personal health number.
+        /// Gets or sets the retrieved patient information.
         /// </summary>
-        [JsonPropertyName("phn")]
-        public string PersonalHealthNumber { get; set; } = string.Empty;
+        public PatientModel Patient { get; set; } = new PatientModel();
 
         /// <summary>
-        /// Gets or sets the patient's date of birth.
+        /// Gets or sets the Vaccine Details.
         /// </summary>
-        [JsonPropertyName("dateOfBirth")]
-        public string DateOfBirth { get; set; } = string.Empty;
+        public VaccineDetails? VaccineDetails { get; set; }
     }
 }
