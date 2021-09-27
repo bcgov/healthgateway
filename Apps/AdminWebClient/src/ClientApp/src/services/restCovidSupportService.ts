@@ -16,12 +16,15 @@ export class RestCovidSupportService implements ICovidSupportService {
         this.http = http;
     }
 
-    public getPatient(phn: string): Promise<CovidCardPatientResult> {
+    public getPatient(
+        phn: string,
+        refresh: boolean
+    ): Promise<CovidCardPatientResult> {
         return new Promise((resolve, reject) => {
             this.http
                 .get<RequestResult<CovidCardPatientResult>>(
                     `${this.BASE_URI}`,
-                    { phn: phn }
+                    { phn: phn, refresh: String(refresh) }
                 )
                 .then((requestResult) => {
                     return RequestResultUtil.handleResult(

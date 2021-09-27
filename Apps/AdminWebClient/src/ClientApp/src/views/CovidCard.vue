@@ -185,6 +185,13 @@ export default class CovidCardView extends Vue {
         }
     }
 
+    private handleRefresh() {
+        const personalHealthNumber =
+            this.searchResult.patient.personalhealthnumber;
+        this.clear(false);
+        this.search(personalHealthNumber, true);
+    }
+
     private handleSearch() {
         this.clear(false);
 
@@ -198,11 +205,14 @@ export default class CovidCardView extends Vue {
             };
             return;
         }
+        this.search(phnDigits, false);
+    }
 
+    private search(personalHealthNumber: string, refresh: boolean) {
         this.isLoading = true;
 
         this.covidSupportService
-            .getPatient(phnDigits)
+            .getPatient(personalHealthNumber, refresh)
             .then((result) => {
                 this.phn = "";
                 this.searchResult = result;
@@ -428,9 +438,21 @@ export default class CovidCardView extends Vue {
                             />
                         </v-col>
                     </v-row>
-                    <v-row>
-                        <v-col>
+                    <v-row align="center" dense>
+                        <v-col cols="auto">
                             <h2>COVID-19 Immunizations</h2>
+                        </v-col>
+                        <v-col class="text-right">
+                            <v-btn
+                                type="button"
+                                class="mt-2 secondary"
+                                @click="handleRefresh()"
+                            >
+                                <span>Refresh</span>
+                                <v-icon class="ml-2" size="sm"
+                                    >fas fa-sync</v-icon
+                                >
+                            </v-btn>
                         </v-col>
                     </v-row>
                     <v-row dense>
