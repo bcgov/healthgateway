@@ -75,6 +75,7 @@ class ImmunizationViewModel {
     public location: string;
     public name: string;
     public status: string;
+    public valid: boolean;
     public dateOfImmunization: DateWrapper;
     public providerOrClinic: string;
     public immunizationAgents: ImmunizationAgentViewModel[];
@@ -89,6 +90,7 @@ class ImmunizationViewModel {
         this.location = model.location;
         this.name = model.immunization.name;
         this.status = model.status;
+        this.valid = model.valid;
         this.dateOfImmunization = new DateWrapper(model.dateOfImmunization);
         this.providerOrClinic =
             model.providerOrClinic === "" ? "N/A" : model.providerOrClinic;

@@ -20,6 +20,7 @@ export interface ImmunizationEvent {
     location: string;
     immunization: Immunization;
     status: string;
+    valid: boolean;
     dateOfImmunization: StringISODate;
     providerOrClinic: string;
     targetedDisease: string;

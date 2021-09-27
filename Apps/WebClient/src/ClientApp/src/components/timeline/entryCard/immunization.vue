@@ -27,9 +27,12 @@ export default class ImmunizationTimelineComponent extends Vue {
     private eventBus = EventBus;
 
     private get isCovidImmunization(): boolean {
-        return this.entry.immunization.targetedDisease
-            ?.toLowerCase()
-            .includes("covid");
+        return (
+            this.entry.immunization.valid &&
+            this.entry.immunization.targetedDisease
+                ?.toLowerCase()
+                .includes("covid")
+        );
     }
 
     private showCard(): void {
