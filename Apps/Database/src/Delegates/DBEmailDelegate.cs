@@ -72,7 +72,7 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace($"Getting list of low priority emails from DB... {maxRows}");
             IList<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New &&
                                                    p.Priority < EmailPriority.Standard)
-                                        .OrderByDescending(s => s.Priority)
+                                        .OrderByDescending(o => o.Priority).ThenByDescending(o => o.CreatedDateTime)
                                         .Take(maxRows)
                                         .ToList();
             this.logger.LogDebug($"Finished getting list of low priority emails from DB. {JsonSerializer.Serialize(retVal)}");
