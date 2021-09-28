@@ -46,6 +46,7 @@ export default class CovidCardView extends Vue {
     private showFeedback = false;
 
     private phn = "";
+    private activePhn = "";
     private address: Address = { ...emptyAddress };
     private immunizations: ImmunizationRow[] = [];
     private searchResult: CovidCardPatientResult | null = null;
@@ -182,6 +183,14 @@ export default class CovidCardView extends Vue {
 
         if (emptySearchField) {
             this.phn = "";
+            this.activePhn = "";
+        }
+    }
+
+    private handleRefresh() {
+        if (this.activePhn) {
+            this.clear(false);
+            this.search(this.activePhn, true);
         }
     }
 
@@ -198,11 +207,15 @@ export default class CovidCardView extends Vue {
             };
             return;
         }
+        this.activePhn = phnDigits;
+        this.search(phnDigits, false);
+    }
 
+    private search(personalHealthNumber: string, refresh: boolean) {
         this.isLoading = true;
 
         this.covidSupportService
-            .getPatient(phnDigits)
+            .getPatient(personalHealthNumber, refresh)
             .then((result) => {
                 this.phn = "";
                 this.searchResult = result;
@@ -428,9 +441,21 @@ export default class CovidCardView extends Vue {
                             />
                         </v-col>
                     </v-row>
-                    <v-row>
-                        <v-col>
+                    <v-row align="center" dense>
+                        <v-col cols="auto">
                             <h2>COVID-19 Immunizations</h2>
+                        </v-col>
+                        <v-col class="text-right">
+                            <v-btn
+                                type="button"
+                                class="mt-2 secondary"
+                                @click="handleRefresh()"
+                            >
+                                <span>Refresh</span>
+                                <v-icon class="ml-2" size="sm"
+                                    >fas fa-sync</v-icon
+                                >
+                            </v-btn>
                         </v-col>
                     </v-row>
                     <v-row dense>

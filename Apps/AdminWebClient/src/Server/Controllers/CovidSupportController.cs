@@ -47,14 +47,15 @@ namespace HealthGateway.Admin.Controllers
         /// </summary>
         /// <returns>The covid information for the given phn identifier.</returns>
         /// <param name="phn">The personal health number that matches the person to retrieve.</param>
+        /// <param name="refresh">Whether the call should force cached data to be refreshed.</param>
         /// <response code="200">Returns the wrapped result of the request.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("Patient")]
-        public async Task<IActionResult> GetPatient([FromHeader] string phn)
+        public async Task<IActionResult> GetPatient([FromHeader] string phn, [FromHeader] bool refresh)
         {
-            return new JsonResult(await this.covidSupportService.GetCovidInformation(phn, false).ConfigureAwait(true));
+            return new JsonResult(await this.covidSupportService.GetCovidInformation(phn, refresh).ConfigureAwait(true));
         }
 
         /// <summary>

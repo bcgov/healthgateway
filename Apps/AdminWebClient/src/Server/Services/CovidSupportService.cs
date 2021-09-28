@@ -78,6 +78,7 @@ namespace HealthGateway.Admin.Services
         {
             this.logger.LogDebug($"Retrieving covid information");
             this.logger.LogTrace($"For PHN: {phn}");
+            this.logger.LogDebug($"For Refresh: {refresh}");
 
             RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.PHN, true).ConfigureAwait(true);
 
