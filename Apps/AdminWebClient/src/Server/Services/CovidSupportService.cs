@@ -89,18 +89,26 @@ namespace HealthGateway.Admin.Services
                 RequestResult<VaccineDetails> vaccineDetailsResult =
                     await this.immunizationDelegate.GetVaccineDetailsWithRetries(patientResult.ResourcePayload, refresh).ConfigureAwait(true);
 
-                if (vaccineDetailsResult.ResultStatus == ResultType.Success)
+                if (vaccineDetailsResult.ResultStatus == ResultType.Success && vaccineDetailsResult.ResourcePayload != null)
                 {
                     this.logger.LogDebug($"Sucessfully retrieved vaccine details.");
+
+                    CovidInformation covidInformation = new ()
+                    {
+                        Blocked = vaccineDetailsResult.ResourcePayload.Blocked,
+                    };
+
+                    if (!vaccineDetailsResult.ResourcePayload.Blocked)
+                    {
+                        covidInformation.Patient = patientResult.ResourcePayload;
+                        covidInformation.VaccineDetails = vaccineDetailsResult.ResourcePayload;
+                    }
+
                     return new RequestResult<CovidInformation>()
                     {
                         PageIndex = 0,
                         PageSize = 1,
-                        ResourcePayload = new CovidInformation()
-                        {
-                            Patient = patientResult.ResourcePayload,
-                            VaccineDetails = vaccineDetailsResult.ResourcePayload,
-                        },
+                        ResourcePayload = covidInformation,
                         ResultStatus = ResultType.Success,
                     };
                 }

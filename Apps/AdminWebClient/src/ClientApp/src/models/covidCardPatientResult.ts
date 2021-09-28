@@ -7,4 +7,7 @@ export default interface CovidCardPatientResult {
 
     // Gets or sets the patient's vaccine details.
     vaccineDetails: VaccineDetails;
+
+    // Gets or sets a value indicating whether the requested record has been protected from being accessed.
+    blocked: boolean;
 }
