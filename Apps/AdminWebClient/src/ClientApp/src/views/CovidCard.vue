@@ -213,7 +213,6 @@ export default class CovidCardView extends Vue {
 
     private search(personalHealthNumber: string, refresh: boolean) {
         this.isLoading = true;
-        console.log(personalHealthNumber);
 
         this.covidSupportService
             .getPatient(personalHealthNumber, refresh)
