@@ -46,6 +46,7 @@ export default class CovidCardView extends Vue {
     private showFeedback = false;
 
     private phn = "";
+    private searchPhn = "";
     private address: Address = { ...emptyAddress };
     private immunizations: ImmunizationRow[] = [];
     private searchResult: CovidCardPatientResult | null = null;
@@ -182,14 +183,15 @@ export default class CovidCardView extends Vue {
 
         if (emptySearchField) {
             this.phn = "";
+            this.searchPhn = "";
         }
     }
 
     private handleRefresh() {
-        const personalHealthNumber =
-            this.searchResult.patient.personalhealthnumber;
-        this.clear(false);
-        this.search(personalHealthNumber, true);
+        if (this.searchPhn) {
+            this.clear(false);
+            this.search(this.searchPhn, true);
+        }
     }
 
     private handleSearch() {
@@ -205,11 +207,13 @@ export default class CovidCardView extends Vue {
             };
             return;
         }
+        this.searchPhn = phnDigits;
         this.search(phnDigits, false);
     }
 
     private search(personalHealthNumber: string, refresh: boolean) {
         this.isLoading = true;
+        console.log(personalHealthNumber);
 
         this.covidSupportService
             .getPatient(personalHealthNumber, refresh)
