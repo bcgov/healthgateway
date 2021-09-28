@@ -31,5 +31,10 @@ namespace HealthGateway.Admin.Models.CovidSupport
         /// Gets or sets the Vaccine Details.
         /// </summary>
         public VaccineDetails? VaccineDetails { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the requested record has been protected from being accessed.
+        /// </summary>
+        public bool Blocked { get; set; }
     }
 }

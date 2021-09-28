@@ -95,6 +95,13 @@ namespace HealthGateway.Admin.Server.Delegates
 
             if (response.ResultStatus == ResultType.Success && response.ResourcePayload != null)
             {
+                VaccineDetails vaccineDetails = new (
+                    VaccineDoseParser.FromPHSAModelList(response.ResourcePayload.Result?.Doses),
+                    response.ResourcePayload.Result?.VaccineStatusResult)
+                {
+                    Blocked = response.ResourcePayload.Result?.Blocked ?? false,
+                };
+
                 retVal = new ()
                 {
                     ResultStatus = response.ResultStatus,
@@ -102,9 +109,7 @@ namespace HealthGateway.Admin.Server.Delegates
                     PageIndex = response.PageIndex,
                     PageSize = response.PageSize,
                     TotalResultCount = response.TotalResultCount,
-                    ResourcePayload = new VaccineDetails(
-                            VaccineDoseParser.FromPHSAModelList(response.ResourcePayload.Result?.Doses),
-                            response.ResourcePayload.Result?.VaccineStatusResult),
+                    ResourcePayload = vaccineDetails,
                 };
             }
             else

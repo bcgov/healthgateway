@@ -217,21 +217,32 @@ export default class CovidCardView extends Vue {
         this.covidSupportService
             .getPatient(personalHealthNumber, refresh)
             .then((result) => {
-                this.phn = "";
-                this.searchResult = result;
-                this.setAddress(
-                    this.searchResult?.patient?.postalAddress,
-                    this.searchResult?.patient?.physicalAddress
-                );
-                this.immunizations =
-                    this.searchResult.vaccineDetails?.doses?.map((dose) => {
-                        return {
-                            date: dose.date,
-                            clinic: dose.location,
-                            product: dose.product,
-                            lotNumber: dose.lot,
-                        };
-                    }) ?? [];
+                if (result.blocked) {
+                    this.searchResult = null;
+                    this.showFeedback = true;
+                    this.bannerFeedback = {
+                        type: ResultType.Error,
+                        title: "Search Error",
+                        message:
+                            "Unable to retrieve record for this individual",
+                    };
+                } else {
+                    this.phn = "";
+                    this.searchResult = result;
+                    this.setAddress(
+                        this.searchResult?.patient?.postalAddress,
+                        this.searchResult?.patient?.physicalAddress
+                    );
+                    this.immunizations =
+                        this.searchResult.vaccineDetails?.doses?.map((dose) => {
+                            return {
+                                date: dose.date,
+                                clinic: dose.location,
+                                product: dose.product,
+                                lotNumber: dose.lot,
+                            };
+                        }) ?? [];
+                }
             })
             .catch(() => {
                 this.searchResult = null;
