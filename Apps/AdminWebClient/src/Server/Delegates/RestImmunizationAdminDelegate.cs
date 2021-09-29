@@ -100,6 +100,7 @@ namespace HealthGateway.Admin.Server.Delegates
                     response.ResourcePayload.Result?.VaccineStatusResult)
                 {
                     Blocked = response.ResourcePayload.Result?.Blocked ?? false,
+                    ContainsInvalidDoses = response.ResourcePayload.Result?.ContainsInvalidDoses ?? false,
                 };
 
                 retVal = new ()

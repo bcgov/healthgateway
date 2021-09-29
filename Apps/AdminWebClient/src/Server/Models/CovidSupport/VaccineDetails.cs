@@ -53,6 +53,11 @@ namespace HealthGateway.Admin.Models.CovidSupport
         public bool Blocked { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the requested record contains any invalid doses.
+        /// </summary>
+        public bool ContainsInvalidDoses { get; set; }
+
+        /// <summary>
         /// Gets the retrieved doses. Empty if no valid COVID-19 doses were found.
         /// </summary>
         public IList<VaccineDose> Doses { get; }
