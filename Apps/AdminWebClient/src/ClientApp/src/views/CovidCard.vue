@@ -13,6 +13,7 @@ import Address from "@/models/address";
 import BannerFeedback from "@/models/bannerFeedback";
 import CovidCardPatientResult from "@/models/covidCardPatientResult";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import SelectItem from "@/models/selectItem";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ICovidSupportService } from "@/services/interfaces";
@@ -79,7 +80,7 @@ export default class CovidCardView extends Vue {
         },
     ];
 
-    private get internationalDestinations() {
+    private get internationalDestinations(): SelectItem[] {
         // sort destinations alphabetically except place Canada and US at the top
         const destinations = Object.keys(InternationalDestinations)
             .filter(
@@ -105,7 +106,7 @@ export default class CovidCardView extends Vue {
             : countryName.toLocaleUpperCase();
     }
 
-    private get patientName() {
+    private get patientName(): string {
         return `${this.searchResult?.patient?.firstname} ${this.searchResult?.patient?.lastname}`;
     }
 
@@ -113,7 +114,7 @@ export default class CovidCardView extends Vue {
         return this.searchResult?.vaccineDetails?.containsInvalidDoses === true;
     }
 
-    private get provinceStateList() {
+    private get provinceStateList(): SelectItem[] {
         if (this.isCanadaSelected) {
             return Object.keys(Provinces).map((provinceCode) => {
                 return {
@@ -133,11 +134,11 @@ export default class CovidCardView extends Vue {
         }
     }
 
-    private get isCanadaSelected() {
+    private get isCanadaSelected(): boolean {
         return this.selectedDestination === Countries.CA[0];
     }
 
-    private get isUnitedStatesSelected() {
+    private get isUnitedStatesSelected(): boolean {
         return this.selectedDestination === Countries.US[0];
     }
 
