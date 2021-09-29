@@ -62,6 +62,12 @@ namespace HealthGateway.Admin.Models.CovidSupport.PHSA
         public bool Blocked { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the requested record contains any invalid doses.
+        /// </summary>
+        [JsonPropertyName("containsInvalidDoses")]
+        public bool ContainsInvalidDoses { get; set; }
+
+        /// <summary>
         /// Gets the patient's dose dates from the Provincial Immunization Registry (Panorama).
         /// </summary>
         [JsonPropertyName("pirLookupDoseDates")]

@@ -109,6 +109,10 @@ export default class CovidCardView extends Vue {
         return `${this.searchResult?.patient?.firstname} ${this.searchResult?.patient?.lastname}`;
     }
 
+    private get containsInvalidDoses(): boolean {
+        return this.searchResult?.vaccineDetails?.containsInvalidDoses === true;
+    }
+
     private get provinceStateList() {
         if (this.isCanadaSelected) {
             return Object.keys(Provinces).map((provinceCode) => {
@@ -481,6 +485,15 @@ export default class CovidCardView extends Vue {
                                     <span>{{ formatDate(item.date) }}</span>
                                 </template>
                             </v-data-table>
+                            <v-alert
+                                v-if="containsInvalidDoses"
+                                dense
+                                color="orange"
+                                type="warning"
+                                class="mt-4"
+                            >
+                                This record has invalid doses.
+                            </v-alert>
                         </v-col>
                     </v-row>
                     <v-row justify="end">
