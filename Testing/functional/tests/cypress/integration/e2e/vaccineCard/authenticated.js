@@ -22,23 +22,17 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get("[data-testid=dose-2]").scrollIntoView().should("be.visible");
     });
 
-    it("Vaccination Card - Show only valid doses for Partially Vaccinated with 1 Valid Dose and 2 Invalid Doses - Registered BCSC user", () => {
-        if (Cypress.config().baseUrl != localDevUri) {
-            cy.login(
-                Cypress.env("bcsc.20.username"),
-                Cypress.env("bcsc.20.password"),
-                AuthMethod.BCSC,
-                "/covid19"
-            );
-            cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
-            cy.get("[data-testid=statusPartiallyVaccinated]").should(
-                "be.visible"
-            );
-            cy.get("[data-testid=dose-1]").should("be.visible");
-            cy.get("[data-testid=dose-2]").should("not.exist");
-            cy.get("[data-testid=dose-3]").should("not.exist");
-        } else {
-            cy.log("Cannot test via BCSC UI Login as running locally");
-        }
+    it("Vaccination Card - Show only valid doses for Partially Vaccinated with 1 Valid Dose and 2 Invalid Doses - Registered Keycloak user", () => {
+        cy.login(
+            Cypress.env("keycloak.invaliddoses.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/covid19"
+        );
+        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
+        cy.get("[data-testid=statusPartiallyVaccinated]").should("be.visible");
+        cy.get("[data-testid=dose-1]").should("be.visible");
+        cy.get("[data-testid=dose-2]").should("not.exist");
+        cy.get("[data-testid=dose-3]").should("not.exist");
     });
 });
