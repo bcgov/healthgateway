@@ -1,4 +1,5 @@
 import ImmunizationResult from "@/models/immunizationResult";
+import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 
 import { ImmunizationMutations, ImmunizationState } from "./types";
@@ -23,8 +24,9 @@ export const mutations: ImmunizationMutations = {
             state.status = LoadStatus.LOADED;
         }
     },
-    immunizationError(state: ImmunizationState, error: Error) {
-        state.statusMessage = error.message;
+    immunizationError(state: ImmunizationState, error: ResultError) {
+        state.error = error;
+        state.statusMessage = error.resultMessage;
         state.status = LoadStatus.ERROR;
     },
 };

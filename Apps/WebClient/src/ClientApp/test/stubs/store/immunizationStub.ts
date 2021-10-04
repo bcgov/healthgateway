@@ -1,6 +1,7 @@
 import { voidMethod, voidPromise } from "@test/stubs/util";
 
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
+import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import {
     ImmunizationActions,
@@ -26,6 +27,9 @@ const immunizationGetters: ImmunizationGetters = {
     },
     recomendations(): Recommendation[] {
         return [];
+    },
+    error(): ResultError | undefined {
+        return undefined;
     },
     immunizationCount(): number {
         return 0;
