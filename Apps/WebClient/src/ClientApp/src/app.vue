@@ -66,7 +66,6 @@ import { Action, Getter } from "vuex-class";
 import CommunicationComponent from "@/components/communication.vue";
 import ErrorCard from "@/components/errorCard.vue";
 import IdleComponent from "@/components/modal/idle.vue";
-import VaccineCardModalComponent from "@/components/modal/vaccineCardModal.vue";
 import FooterComponent from "@/components/navmenu/navFooter.vue";
 import HeaderComponent from "@/components/navmenu/navHeader.vue";
 import SidebarComponent from "@/components/navmenu/sidebar.vue";
@@ -86,7 +85,6 @@ const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         ErrorCard: ErrorCard,
         IdleComponent,
         CommunicationComponent,
-        "vaccine-card-modal": VaccineCardModalComponent,
     },
 })
 export default class App extends Vue {
@@ -189,8 +187,6 @@ export default class App extends Vue {
         <footer v-show="isFooterVisible" class="footer d-print-none">
             <NavFooter />
         </footer>
-
-        <vaccine-card-modal />
     </div>
 </template>
 

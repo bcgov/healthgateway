@@ -25,6 +25,7 @@ export interface ImmunizationGetters
     immunizations(state: ImmunizationState): ImmunizationEvent[];
     covidImmunizations(state: ImmunizationState): ImmunizationEvent[];
     recomendations(state: ImmunizationState): Recommendation[];
+    error(state: ImmunizationState): ResultError | undefined;
     immunizationCount(state: ImmunizationState): number;
     isDeferredLoad(state: ImmunizationState): boolean;
     isLoading(state: ImmunizationState): boolean;
@@ -43,7 +44,7 @@ export interface ImmunizationMutations extends MutationTree<ImmunizationState> {
         state: ImmunizationState,
         immunizationResult: ImmunizationResult
     ): void;
-    immunizationError(state: ImmunizationState, error: Error): void;
+    immunizationError(state: ImmunizationState, error: ResultError): void;
 }
 
 export interface ImmunizationModule

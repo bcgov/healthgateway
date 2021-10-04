@@ -44,6 +44,9 @@ export default class HgButtonComponent extends Vue {
             case "nav":
                 result.push("hg-button", "hg-nav", "btn-block");
                 break;
+            case "carousel":
+                result.push("hg-button", "hg-carousel");
+                break;
             case "danger":
                 result.push("hg-button", "hg-danger");
                 break;
@@ -91,6 +94,7 @@ export default class HgButtonComponent extends Vue {
 </template>
 
 <style lang="scss" scoped>
+@use "sass:color";
 @import "@/assets/scss/_variables.scss";
 
 .hg-button {
@@ -261,6 +265,20 @@ export default class HgButtonComponent extends Vue {
 
         &:hover:enabled {
             color: $hg-button-icon-input-light-hover-text;
+        }
+    }
+
+    &.hg-carousel {
+        background-color: transparent;
+        border: none;
+        border-radius: 0;
+
+        &:focus,
+        &:active,
+        &:focus:active {
+            box-shadow: none;
+            background-color: color.adjust($hg-brand-primary, $alpha: -0.7);
+            color: white;
         }
     }
 
