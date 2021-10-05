@@ -17,15 +17,14 @@ namespace HealthGateway.JobScheduler
 {
     using System;
     using System.Collections.Generic;
-
     using Hangfire;
     using Hangfire.Dashboard;
     using Hangfire.PostgreSql;
-
     using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Services;
@@ -34,7 +33,6 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.DrugMaintainer;
     using Healthgateway.JobScheduler.Jobs;
     using Healthgateway.JobScheduler.Utils;
-
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -169,8 +167,6 @@ namespace HealthGateway.JobScheduler
                 })
                 .RequireAuthorization("AdminUserPolicy");
             });
-
-            app.UseHangfireServer();
 
             // Schedule Health Gateway Jobs
             BackgroundJob.Enqueue<DBMigrationsJob>(j => j.Migrate());

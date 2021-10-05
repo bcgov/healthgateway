@@ -8,7 +8,7 @@ describe("Landing Page", () => {
     });
 
     it("Greeting", () => {
-        cy.contains("h1", "Health Gateway");
+        cy.contains("h2", "BC Vaccine Card");
     });
 
     it("Sign Up Button", () => {
@@ -19,11 +19,11 @@ describe("Landing Page", () => {
     });
 
     it("Login Button", () => {
-        cy.get("#btnLogin")
+        cy.get("[data-testid=btnLogin]")
             .should("be.visible")
-            .contains("Log In")
             .parent()
-            .should("have.attr", "href", "/login");
+            .should("have.attr", "href", "/login")
+            .contains("Log In");
     });
 
     it("Offline", () => {

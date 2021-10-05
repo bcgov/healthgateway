@@ -20,6 +20,7 @@ namespace HealthGateway.Immunization.Test.Controllers
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Controllers;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
@@ -33,8 +34,8 @@ namespace HealthGateway.Immunization.Test.Controllers
     public class VaccineStatusControllerTests
     {
         private readonly string phn = "1234567890";
-        private readonly string dob = "19900105";
-        private readonly string token = "XXXX";
+        private readonly string dob = "1990-01-05";
+        private readonly string dov = "2021-06-05";
 
         /// <summary>
         /// GetVaccineStatus - Happy Path.
@@ -52,19 +53,20 @@ namespace HealthGateway.Immunization.Test.Controllers
                     PersonalHealthNumber = this.phn,
                     FirstName = "Bob",
                     LastName = "Test",
-                    Birthdate = DateTime.ParseExact(this.dob, "yyyyMMdd", CultureInfo.InvariantCulture),
+                    Birthdate = DateTime.ParseExact(this.dob, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    VaccineDate = DateTime.ParseExact(this.dov, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                 },
             };
 
             Mock<IVaccineStatusService> svcMock = new Mock<IVaccineStatusService>();
-            svcMock.Setup(s => s.GetVaccineStatus(this.phn, this.dob, this.token)).ReturnsAsync(expectedRequestResult);
+            svcMock.Setup(s => s.GetVaccineStatus(this.phn, this.dob, this.dov)).ReturnsAsync(expectedRequestResult);
 
             VaccineStatusController controller = new VaccineStatusController(
                 new Mock<ILogger<VaccineStatusController>>().Object,
                 svcMock.Object);
 
             // Act
-            RequestResult<VaccineStatus> actual = await controller.GetVaccineStatus(this.phn, this.dob, this.token).ConfigureAwait(true);
+            RequestResult<VaccineStatus> actual = await controller.GetVaccineStatus(this.phn, this.dob, this.dov).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(Common.Constants.ResultType.Success, actual.ResultStatus);

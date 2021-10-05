@@ -15,7 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Controllers
 {
-    using HealthGateway.Admin.Models.Support;
+    using System.Threading.Tasks;
+    using HealthGateway.Admin.Models.CovidSupport;
     using HealthGateway.Admin.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -46,18 +47,19 @@ namespace HealthGateway.Admin.Controllers
         /// </summary>
         /// <returns>The covid information for the given phn identifier.</returns>
         /// <param name="phn">The personal health number that matches the person to retrieve.</param>
+        /// <param name="refresh">Whether the call should force cached data to be refreshed.</param>
         /// <response code="200">Returns the wrapped result of the request.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("Patient")]
-        public IActionResult GetPatient([FromHeader] string phn)
+        public async Task<IActionResult> GetPatient([FromHeader] string phn, [FromHeader] bool refresh)
         {
-            return new JsonResult(this.covidSupportService.GetCovidInformation(phn));
+            return new JsonResult(await this.covidSupportService.GetCovidInformation(phn, refresh).ConfigureAwait(true));
         }
 
         /// <summary>
-        /// Provides an api to send immunization information though mail to a given land address.
+        /// Triggers the process to physically mail the Vaccine Card document.
         /// </summary>
         /// <returns>A wrapped result indicating the mail status.</returns>
         /// <param name="request">The mail document request.</param>
@@ -66,13 +68,13 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Route("Patient/Document")]
-        public IActionResult MailDocument([FromBody] MailDocumentRequest request)
+        public async Task<IActionResult> MailVaccineCard([FromBody] MailDocumentRequest request)
         {
-            return new JsonResult(this.covidSupportService.MailDocument(request));
+            return new JsonResult(await this.covidSupportService.MailVaccineCardAsync(request).ConfigureAwait(true));
         }
 
         /// <summary>
-        /// Gets the covid immunization document.
+        /// Gets the COVID-19 Vaccine Record document that includes the Vaccine Card and Vaccination History.
         /// </summary>
         /// <returns>The encoded immunization document.</returns>
         /// <param name="phn">The personal health number that matches the document to retrieve.</param>
@@ -81,9 +83,9 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("Patient/Document")]
-        public IActionResult RetrieveDocument([FromHeader] string phn)
+        public async Task<IActionResult> RetrieveVaccineRecord([FromHeader] string phn)
         {
-            return new JsonResult(this.covidSupportService.RetrieveDocument(phn));
+            return new JsonResult(await this.covidSupportService.RetrieveVaccineRecordAsync(phn).ConfigureAwait(true));
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -23,12 +24,12 @@ namespace HealthGateway.WebClient.Services
     public interface IUserSMSService
     {
         /// <summary>
-        /// Validates the sms number that matches the given validation code.
+        /// Validates the SMS number that matches the given validation code.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
-        /// <param name="validationCode">The sms validation code.</param>
-        /// <returns>returns true if the sms verification was found and validated.</returns>
-        bool ValidateSMS(string hdid, string validationCode);
+        /// <param name="validationCode">The SMS validation code.</param>
+        /// <returns>Returns a request result containing true if the SMS verification was found and validated.</returns>
+        PrimitiveRequestResult<bool> ValidateSMS(string hdid, string validationCode);
 
         /// <summary>
         /// Create the user SMS number.

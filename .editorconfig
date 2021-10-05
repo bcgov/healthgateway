@@ -667,3 +667,6 @@ dotnet_diagnostic.CS8603.severity = error
 
 # S1135: Complete the task associated to this 'TODO' comment.
 dotnet_diagnostic.S1135.severity = warning
+
+# SA1000: Keywords should be spaced correctly
+dotnet_diagnostic.SA1000.severity = error

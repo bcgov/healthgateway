@@ -90,7 +90,7 @@ const routes = [
     },
     {
         path: "/covidcard",
-        name: "COVID-19 Immunization Card",
+        name: "BC Vaccine Card",
         component: CovidCardView,
         meta: {
             requiresAuth: true,
@@ -113,7 +113,13 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    if (to.meta.requiresAuth) {
+    const meta = to.meta;
+    if (meta === undefined) {
+        next(Error("Route meta property is undefined"));
+        return;
+    }
+
+    if (meta.requiresAuth) {
         const isAuthenticated = store.getters["auth/isAuthenticated"];
         if (!isAuthenticated) {
             next({ path: "/signin", query: { redirect: to.path } });
@@ -124,8 +130,7 @@ router.beforeEach(async (to, from, next) => {
                 !isAuthorized ||
                 !userRoles.some(
                     (userRole) =>
-                        !to.meta.validRoles ||
-                        to.meta.validRoles.includes(userRole)
+                        !meta.validRoles || meta.validRoles.includes(userRole)
                 )
             ) {
                 next({ path: "/unauthorized" });

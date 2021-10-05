@@ -17,22 +17,20 @@ namespace HealthGateway.Immunization.Services
 {
     using System;
     using System.Globalization;
-    using System.IO;
-    using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.CDogs;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Utils;
-    using HealthGateway.Immunization.Constants;
-    using HealthGateway.Immunization.Delegates;
-    using HealthGateway.Immunization.Models;
+    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The Vaccine Status data service.
@@ -41,50 +39,59 @@ namespace HealthGateway.Immunization.Services
     {
         private const string PHSAConfigSectionKey = "PHSA";
         private const string AuthConfigSectionName = "ClientAuthentication";
+        private const string TokenCacheKey = "TokenCacheKey";
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
         private readonly IAuthenticationDelegate authDelegate;
-        private readonly ICDogsDelegate cDogsDelegate;
-        private readonly ICaptchaDelegate captchaDelegate;
+        private readonly IReportDelegate reportDelegate;
+        private readonly IMemoryCache memoryCache;
+        private readonly ILogger<VaccineStatusService> logger;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly PHSAConfig phsaConfig;
         private readonly Uri tokenUri;
+        private readonly int tokenCacheMinutes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VaccineStatusService"/> class.
         /// </summary>
         /// <param name="configuration">The configuration to use.</param>
+        /// <param name="logger">The injected logger.</param>
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="vaccineStatusDelegate">The injected vaccine status delegate.</param>
-        /// <param name="cDogsDelegate">Delegate that provides document generation functionality.</param>
-        /// <param name="captchaDelegate">The injected captcha delegate.</param>
+        /// <param name="reportDelegate">The injected report delegate.</param>
+        /// <param name="memoryCache">The cache to use to reduce lookups.</param>
         public VaccineStatusService(
             IConfiguration configuration,
+            ILogger<VaccineStatusService> logger,
             IAuthenticationDelegate authDelegate,
             IVaccineStatusDelegate vaccineStatusDelegate,
-            ICDogsDelegate cDogsDelegate,
-            ICaptchaDelegate captchaDelegate)
+            IReportDelegate reportDelegate,
+            IMemoryCache memoryCache)
         {
-            this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.authDelegate = authDelegate;
-            this.cDogsDelegate = cDogsDelegate;
-            this.captchaDelegate = captchaDelegate;
+            this.reportDelegate = reportDelegate;
+
+            this.vaccineStatusDelegate = vaccineStatusDelegate;
 
             IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
             this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
+            this.tokenCacheMinutes = configSection.GetValue<int>("TokenCacheExpireMinutes", 20);
             this.tokenRequest = new ClientCredentialsTokenRequest();
             configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
 
             this.phsaConfig = new PHSAConfig();
             configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
+            this.memoryCache = memoryCache;
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth, string token)
+        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth, string dateOfVaccine)
         {
             RequestResult<VaccineStatus> retVal = new ()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
             };
+
             DateTime dob;
             try
             {
@@ -101,6 +108,22 @@ namespace HealthGateway.Immunization.Services
                 return retVal;
             }
 
+            DateTime dov;
+            try
+            {
+                dov = DateTime.ParseExact(dateOfVaccine, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            }
+            catch (Exception e) when (e is FormatException || e is ArgumentNullException)
+            {
+                retVal.ResultStatus = Common.Constants.ResultType.Error;
+                retVal.ResultError = new RequestResultError()
+                {
+                    ResultMessage = "Error parsing date of vaccine",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                };
+                return retVal;
+            }
+
             if (!PHNValidator.IsValid(phn))
             {
                 retVal.ResultStatus = Common.Constants.ResultType.Error;
@@ -112,41 +135,62 @@ namespace HealthGateway.Immunization.Services
                 return retVal;
             }
 
-            bool isTokenValid = await this.captchaDelegate.IsCaptchaValid(token).ConfigureAwait(true);
-            if (!isTokenValid)
+            VaccineStatusQuery query = new ()
             {
-                retVal.ResultStatus = Common.Constants.ResultType.Error;
-                retVal.ResultError = new RequestResultError()
+                PersonalHealthNumber = phn,
+                DateOfBirth = dob,
+                DateOfVaccine = dov,
+            };
+
+            this.memoryCache.TryGetValue(TokenCacheKey, out string? accessToken);
+            if (accessToken == null)
+            {
+                this.logger.LogInformation("Access token not found in cache");
+                accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest).AccessToken;
+                if (!string.IsNullOrEmpty(accessToken))
                 {
-                    ResultMessage = "Invalid captcha token",
-                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-                };
-                return retVal;
+                    this.logger.LogInformation("Attempting to store Access token in cache");
+                    MemoryCacheEntryOptions cacheEntryOptions = new ();
+                    cacheEntryOptions.AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddMinutes(this.tokenCacheMinutes));
+                    this.memoryCache.Set(TokenCacheKey, accessToken, cacheEntryOptions);
+                }
+                else
+                {
+                    this.logger.LogCritical("The auth token is null or empty - unable to cache or proceed");
+                    retVal.ResultError = new ()
+                    {
+                        ResultMessage = "Error authenticating with KeyCloak",
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    };
+                    return retVal;
+                }
             }
 
-            string? accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest).AccessToken;
             RequestResult<PHSAResult<VaccineStatusResult>> result =
-                await this.vaccineStatusDelegate.GetVaccineStatus(phn, dob, accessToken).ConfigureAwait(true);
+                await this.vaccineStatusDelegate.GetVaccineStatus(query, accessToken, true).ConfigureAwait(true);
             VaccineStatusResult? payload = result.ResourcePayload?.Result;
             retVal.ResultStatus = result.ResultStatus;
             retVal.ResultError = result.ResultError;
 
             if (payload == null)
             {
-                retVal.ResourcePayload = new VaccineStatus();
-                retVal.ResourcePayload.State = Constants.VaccineState.NotFound;
+                retVal.ResourcePayload = new ();
+                retVal.ResourcePayload.State = VaccineState.NotFound;
             }
             else
             {
-                retVal.ResourcePayload = new VaccineStatus()
+                retVal.ResourcePayload = VaccineStatus.FromModel(payload, phn);
+                retVal.ResourcePayload.State = retVal.ResourcePayload.State switch
                 {
-                    Birthdate = payload.Birthdate,
-                    PersonalHealthNumber = phn,
-                    FirstName = payload.FirstName,
-                    LastName = payload.LastName,
-                    Doses = payload.DoseCount,
-                    State = Enum.Parse<VaccineState>(payload.StatusIndicator),
+                    var state when state == VaccineState.Threshold || state == VaccineState.Blocked => VaccineState.NotFound,
+                    _ => retVal.ResourcePayload.State
                 };
+
+                if (retVal.ResourcePayload.State == VaccineState.DataMismatch)
+                {
+                    retVal.ResultStatus = ResultType.ActionRequired;
+                    retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
+                }
             }
 
             if (result.ResourcePayload != null)
@@ -159,91 +203,20 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string token)
+        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string dateOfVaccine)
         {
-            RequestResult<VaccineStatus> vaccineStatusResult = await this.GetVaccineStatus(phn, dateOfBirth, token).ConfigureAwait(true);
+            RequestResult<VaccineStatus> requestResult = await this.GetVaccineStatus(phn, dateOfBirth, dateOfVaccine).ConfigureAwait(true);
 
-            if (vaccineStatusResult.ResultStatus == ResultType.Success &&
-                vaccineStatusResult.ResourcePayload != null &&
-                vaccineStatusResult.ResourcePayload!.State != VaccineState.NotFound)
-            {
-                VaccineStatus vaccineStatus = vaccineStatusResult.ResourcePayload!;
-
-                // Compose CDogs request
-                CDogsRequestModel cdogsRequest = CreateCdogsRequest(new ()
-                {
-                    Name = $"{vaccineStatus.FirstName} {vaccineStatus.LastName}",
-                    Birthdate = vaccineStatus.Birthdate!.Value.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture),
-                    Status = vaccineStatus.State,
-                    Doses = vaccineStatus.Doses,
-                });
-
-                // Send CDogs request
-                return Task.Run(async () => await this.cDogsDelegate.GenerateReportAsync(cdogsRequest).ConfigureAwait(true)).Result;
-            }
-            else
+            if (requestResult.ResultStatus != ResultType.Success || requestResult.ResourcePayload == null)
             {
                 return new RequestResult<ReportModel>()
                 {
-                    PageIndex = 0,
-                    PageSize = 0,
-                    ResultStatus = ResultType.Error,
-                    ResultError = vaccineStatusResult.ResultError,
+                    ResultStatus = requestResult.ResultStatus,
+                    ResultError = requestResult.ResultError,
                 };
             }
-        }
 
-        private static CDogsRequestModel CreateCdogsRequest(VaccineStatusReportRequest vaccineStatus)
-        {
-            string reportName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture) + "-" + Guid.NewGuid().ToString("N");
-            string documentName = "VaccineStatusCard_FullyVaccinated";
-            if (vaccineStatus.Status == VaccineState.PartialDosesReceived)
-            {
-                if (vaccineStatus.Doses == 1)
-                {
-                    documentName = "VaccineStatusCard_Partial1Dose";
-                }
-                else
-                {
-                    documentName = "VaccineStatusCard_Partial2Doses";
-                }
-            }
-
-            string resourceName = $"HealthGateway.Immunization.Assets.Templates.{documentName}.docx";
-            return new ()
-            {
-                Data = JsonElementFromObject(vaccineStatus),
-                Options = new CDogsOptionsModel()
-                {
-                    Overwrite = true,
-                    ConvertTo = "pdf",
-                    ReportName = reportName,
-                },
-                Template = new CDogsTemplateModel()
-                {
-                    Content = ReadTemplate(resourceName),
-                    FileType = "docx",
-                },
-            };
-        }
-
-        private static string ReadTemplate(string resourceName)
-        {
-            string? assetFile = AssetReader.Read(resourceName, true);
-
-            if (assetFile == null)
-            {
-                throw new FileNotFoundException($"Template {resourceName} not found.");
-            }
-
-            return assetFile;
-        }
-
-        private static JsonElement JsonElementFromObject(VaccineStatusReportRequest value)
-        {
-            byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(value);
-            using JsonDocument doc = JsonDocument.Parse(bytes);
-            return doc.RootElement.Clone();
+            return this.reportDelegate.GetVaccineStatusPDF(requestResult.ResourcePayload, null);
         }
     }
 }

@@ -19,6 +19,7 @@ namespace HealthGateway.Immunization
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Builder;
@@ -59,8 +60,10 @@ namespace HealthGateway.Immunization
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureTracing(services);
             this.startupConfig.ConfigureAccessControl(services);
+            this.startupConfig.ConfigurePatientAccess(services);
 
             // Add Services
+            services.AddMemoryCache();
             services.AddTransient<IImmunizationService, ImmunizationService>();
             services.AddTransient<IVaccineStatusService, VaccineStatusService>();
 
@@ -68,8 +71,8 @@ namespace HealthGateway.Immunization
             services.AddTransient<Delegates.IImmunizationDelegate, Delegates.RestImmunizationDelegate>();
             services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<ICDogsDelegate, CDogsDelegate>();
-            services.AddTransient<ICaptchaDelegate, CaptchaDelegate>();
+            services.AddTransient<IIronPDFDelegate, IronPDFDelegate>();
+            services.AddTransient<IReportDelegate, ReportDelegate>();
         }
 
         /// <summary>

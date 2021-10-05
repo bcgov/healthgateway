@@ -15,12 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
-    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.CDogs;
-    using HealthGateway.Common.Models.Immunization;
-    using HealthGateway.Immunization.Models;
+    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
     /// The Vaccine Status data service.
@@ -31,18 +28,18 @@ namespace HealthGateway.Immunization.Services
         /// Gets the vaccine status for the given patient info.
         /// </summary>
         /// <param name="phn">The patient personal health number.</param>
-        /// <param name="dateOfBirth">The patient date of birth in yyyyMMdd format.</param>
-        /// <param name="token">The captcha token.</param>
+        /// <param name="dateOfBirth">The patient date of birth in yyyy-MM-dd format.</param>
+        /// <param name="dateOfVaccine">The date of one of the patient's vaccine doess in yyyy-MM-dd format.</param>
         /// <returns>Returns the vaccine status.</returns>
-        Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth, string token);
+        Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth, string dateOfVaccine);
 
         /// <summary>
         /// Gets the vaccine status pdf for the given patient info.
         /// </summary>
         /// <param name="phn">The patient personal health number.</param>
-        /// <param name="dateOfBirth">The date of birth in yyyyMMdd format.</param>
-        /// <param name="token">The captcha token.</param>
+        /// <param name="dateOfBirth">The date of birth in yyyy-MM-dd format.</param>
+        /// <param name="dateOfVaccine">The date of one of the patient's vaccine doess in yyyy-MM-dd format.</param>
         /// <returns>Returns the vaccine status pdf document.</returns>
-        Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string token);
+        Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string dateOfVaccine);
     }
 }

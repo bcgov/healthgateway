@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Test.Services
 {
     using System;
     using System.Linq;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -65,9 +66,9 @@ namespace HealthGateway.WebClient.Test.Services
                 userProfileDelegate.Object,
                 new Mock<INotificationSettingsService>().Object);
 
-            bool actualResult = service.ValidateSMS(HdIdMock, smsValidationCode);
+            PrimitiveRequestResult<bool> actualResult = service.ValidateSMS(HdIdMock, smsValidationCode);
 
-            Assert.True(actualResult);
+            Assert.True(actualResult?.ResourcePayload);
         }
 
         /// <summary>
@@ -103,9 +104,9 @@ namespace HealthGateway.WebClient.Test.Services
                 userProfileDelegate.Object,
                 new Mock<INotificationSettingsService>().Object);
 
-            bool actualResult = service.ValidateSMS(HdIdMock, smsValidationCode);
+            PrimitiveRequestResult<bool> actualResult = service.ValidateSMS(HdIdMock, smsValidationCode);
 
-            Assert.True(!actualResult);
+            Assert.False(actualResult?.ResourcePayload);
         }
 
         /// <summary>

@@ -1,6 +1,7 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
+    faClipboardCheck,
     faEdit,
     faExclamationTriangle,
     faFlask,
@@ -18,11 +19,11 @@ import Image03 from "@/assets/images/landing/003_reduced-3.jpeg";
 import Image04 from "@/assets/images/landing/004_reduced-living-room.jpeg";
 import Image05 from "@/assets/images/landing/005_reduced-family.jpeg";
 import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
-import VaccinationStatusBannerImage from "@/assets/images/landing/vaccination-status-banner-image.png";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
 
 library.add(
+    faClipboardCheck,
     faEdit,
     faExclamationTriangle,
     faFlask,
@@ -66,7 +67,6 @@ export default class LandingView extends Vue {
     private logo: string = Image00;
     private devices: string = Image02;
     private bcsclogo: string = Image06;
-    private vaccinationStatusBannerImage: string = VaccinationStatusBannerImage;
     private isOpenRegistration = false;
 
     private icons: Icon[] = [
@@ -98,6 +98,12 @@ export default class LandingView extends Vue {
             name: "Encounter",
             definition: "user-md",
             label: "Health Visits (Mar 2021)",
+            active: false,
+        },
+        {
+            name: "VaccinationStatus",
+            definition: "clipboard-check",
+            label: "BC Vaccine Card (Sep 2021)",
             active: false,
         },
         {
@@ -167,34 +173,63 @@ export default class LandingView extends Vue {
     <div class="landing mx-2">
         <b-row
             v-if="isVaccinationStatusEnabled"
-            class="
-                mx-n2
-                px-lg-4
-                bg-success
-                text-white
-                justify-content-center
-                align-items-center
-            "
             no-gutters
+            class="
+                vaccine-card-banner
+                small-banner
+                d-flex d-lg-none
+                mx-n2
+                justify-content-center
+            "
         >
-            <b-col cols="auto" class="d-none d-md-block">
+            <b-col cols="auto">
                 <img
-                    :src="vaccinationStatusBannerImage"
-                    alt="Vaccination Check Logo"
-                    class="vaccination-check-logo img-fluid m-2"
+                    src="@/assets/images/landing/vaccine-card-banner-icon-sm.svg"
+                    alt="Vaccine Card Logo"
                 />
             </b-col>
-            <b-col col md="7" lg="auto">
-                <h3 class="text-center m-3">Check Your COVID‑19 Vaccination</h3>
+            <b-col cols="auto" class="text-center p-2 mb-4">
+                <h2 class="h4 mt-3">BC Vaccine Card</h2>
+                <div class="mb-3">
+                    <hg-button
+                        variant="primary"
+                        to="/vaccinecard"
+                        data-testid="btnVaccineCard"
+                        class="w-75 text-center"
+                    >
+                        Get Card
+                    </hg-button>
+                </div>
             </b-col>
+        </b-row>
+        <b-row
+            v-if="isVaccinationStatusEnabled"
+            class="
+                vaccine-card-banner
+                large-banner
+                d-none d-lg-flex
+                justify-content-end
+                mx-n2
+            "
+        >
             <b-col cols="auto">
-                <hg-button
-                    variant="success"
-                    to="/vaccination-status"
-                    class="m-3"
-                >
-                    Start
-                </hg-button>
+                <img
+                    src="@/assets/images/landing/vaccine-card-banner-icon-lg.svg"
+                    alt="Vaccine Card Logo"
+                />
+            </b-col>
+            <b-col cols="auto" class="text-center">
+                <h2 class="h1 mt-4">BC Vaccine Card</h2>
+                <div>Confidential access to your proof of vaccination</div>
+                <div>
+                    <hg-button
+                        variant="primary"
+                        to="/vaccinecard"
+                        class="w-50 my-4 text-center"
+                    >
+                        Get Card
+                    </hg-button>
+                </div>
             </b-col>
         </b-row>
         <h3 class="text-center font-weight-normal my-4 mx-1">
@@ -230,7 +265,7 @@ export default class LandingView extends Vue {
                         <hg-icon
                             :icon="icon.definition"
                             size="large"
-                            fixed-width
+                            square
                             class="mr-2"
                         />
                     </b-col>
@@ -383,8 +418,27 @@ export default class LandingView extends Vue {
         }
     }
 
-    .vaccination-check-logo {
-        max-height: 3rem;
+    .vaccine-card-banner {
+        color: #212529;
+        background-color: $hg-vaccine-card-header;
+        background-repeat: no-repeat;
+        background-position: right bottom;
+
+        &.small-banner {
+            background-image: url("~@/assets/images/landing/vaccine-card-banner-bg-sm.svg");
+        }
+
+        &.large-banner {
+            background-image: url("~@/assets/images/landing/vaccine-card-banner-bg-lg.svg");
+            background-size: 731px;
+            height: 186px;
+            padding-right: 235px;
+
+            img {
+                width: 250px;
+                margin-right: 75px;
+            }
+        }
     }
 
     .tile-section {

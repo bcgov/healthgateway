@@ -223,6 +223,7 @@ function getImmunizations(): ImmunizationEvent[] {
             location: "TEST LOCATION 1",
             dateOfImmunization: "2013-09-20T00:00:00",
             status: "Completed",
+            valid: true,
             targetedDisease: "Covid",
             providerOrClinic: "TEST LOCATION 1",
             immunization: {
@@ -250,6 +251,7 @@ function getImmunizations(): ImmunizationEvent[] {
             location: "TEST LOCATION 2",
             dateOfImmunization: "2010-03-28T00:00:00",
             status: "Completed",
+            valid: true,
             providerOrClinic: "Provider A",
             targetedDisease: "Covid",
             immunization: {

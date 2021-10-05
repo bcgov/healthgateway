@@ -66,16 +66,15 @@ import { Action, Getter } from "vuex-class";
 import CommunicationComponent from "@/components/communication.vue";
 import ErrorCard from "@/components/errorCard.vue";
 import IdleComponent from "@/components/modal/idle.vue";
+import VaccineCardModalComponent from "@/components/modal/vaccineCardModal.vue";
 import FooterComponent from "@/components/navmenu/navFooter.vue";
 import HeaderComponent from "@/components/navmenu/navHeader.vue";
 import SidebarComponent from "@/components/navmenu/sidebar.vue";
 import Process, { EnvironmentType } from "@/constants/process";
+import ScreenWidth from "@/constants/screenWidth";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
-
-import ImmunizationCardComponent from "./components/modal/immunizationCard.vue";
-import ScreenWidth from "./constants/screenWidth";
-import container from "./plugins/inversify.container";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -87,7 +86,7 @@ const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         ErrorCard: ErrorCard,
         IdleComponent,
         CommunicationComponent,
-        "immunization-modal-card": ImmunizationCardComponent,
+        "vaccine-card-modal": VaccineCardModalComponent,
     },
 })
 export default class App extends Vue {
@@ -105,7 +104,7 @@ export default class App extends Vue {
             this.host.startsWith("WWW.HEALTHGATEWAY"));
 
     private windowWidth = 0;
-    private vaccinationStatusPath = "/vaccination-status";
+    private vaccineCardPath = "/vaccinecard";
 
     constructor() {
         super();
@@ -150,31 +149,31 @@ export default class App extends Vue {
     }
 
     private get isHeaderVisible(): boolean {
-        return this.$route.path !== this.vaccinationStatusPath;
+        return this.$route.path !== this.vaccineCardPath;
     }
 
     private get isFooterVisible(): boolean {
-        return this.$route.path !== this.vaccinationStatusPath;
+        return this.$route.path !== this.vaccineCardPath;
     }
 
     private get isCommunicationVisible(): boolean {
-        return this.$route.path !== this.vaccinationStatusPath;
+        return this.$route.path !== this.vaccineCardPath;
     }
 }
 </script>
 
 <template>
     <div id="app-root" class="container-fluid-fill d-flex h-100 flex-column">
-        <div v-if="!isProduction" class="devBanner">
+        <div v-if="!isProduction" class="devBanner d-print-none">
             <div class="text-center bg-warning small">
                 Non-production environment:
                 <strong>{{ host }}</strong>
             </div>
         </div>
 
-        <NavHeader v-show="isHeaderVisible" />
+        <NavHeader v-show="isHeaderVisible" class="d-print-none" />
         <b-row>
-            <NavSidebar class="no-print sticky-top vh-100" />
+            <NavSidebar class="d-print-none sticky-top vh-100" />
             <main class="col fill-height d-flex flex-column">
                 <CommunicationComponent v-show="isCommunicationVisible" />
                 <ErrorCard
@@ -187,11 +186,11 @@ export default class App extends Vue {
             </main>
         </b-row>
 
-        <footer v-show="isFooterVisible" class="footer no-print">
+        <footer v-show="isFooterVisible" class="footer d-print-none">
             <NavFooter />
         </footer>
 
-        <immunization-modal-card />
+        <vaccine-card-modal />
     </div>
 </template>
 
@@ -211,11 +210,6 @@ export default class App extends Vue {
 @media print {
     .navbar {
         display: flex !important;
-    }
-
-    .no-print,
-    .no-print * {
-        display: none !important;
     }
 }
 

@@ -233,14 +233,15 @@ namespace HealthGateway.WebClient.Services
                 Email = this.emailQueueService.ProcessTemplate(toEmail, EmailTemplateName.RegistrationTemplate, keyValues),
             };
 
-            this.messageVerificationDelegate.Insert(messageVerification);
-
             if (isVerified)
             {
+                messageVerification.Email.EmailStatusCode = EmailStatus.Processed;
+                this.messageVerificationDelegate.Insert(messageVerification);
                 this.ValidateEmail(hdid, inviteKey);
             }
             else
             {
+                this.messageVerificationDelegate.Insert(messageVerification);
                 this.emailQueueService.QueueNewEmail(messageVerification.Email);
             }
         }

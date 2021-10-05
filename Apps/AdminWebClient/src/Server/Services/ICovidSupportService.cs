@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,12 +15,12 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
-    using HealthGateway.Admin.Models.Support;
+    using System.Threading.Tasks;
+    using HealthGateway.Admin.Models.CovidSupport;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.CDogs;
 
     /// <summary>
-    /// Service that provides Covid Support functionality.
+    /// Service that provides COVID-19 Support functionality.
     /// </summary>
     public interface ICovidSupportService
     {
@@ -28,21 +28,22 @@ namespace HealthGateway.Admin.Services
         /// Gets the patient and immunization information.
         /// </summary>
         /// <param name="phn">The personal health number that matches the person to retrieve.</param>
+        /// <param name="refresh">Whether the call should force cached data to be refreshed.</param>
         /// <returns>The covid ionformation wrapped in a RequestResult.</returns>
-        RequestResult<CovidInformation> GetCovidInformation(string phn);
+        Task<RequestResult<CovidInformation>> GetCovidInformation(string phn, bool refresh);
 
         /// <summary>
-        /// Gets all the emails in the system up to the pageSize.
+        /// Mails a document that represents a patient's vaccine card.
         /// </summary>
         /// <param name="request">The request information to retrieve patient information.</param>
         /// <returns>A RequestResult with True if the request was sucessfull.</returns>
-        PrimitiveRequestResult<bool> MailDocument(MailDocumentRequest request);
+        Task<PrimitiveRequestResult<bool>> MailVaccineCardAsync(MailDocumentRequest request);
 
         /// <summary>
-        /// Gets all the emails in the system up to the pageSize.
+        /// Gets a document that represents a patient's vaccine card and vaccine history.
         /// </summary>
         /// <param name="phn">The personal health number that matches the person to retrieve.</param>
         /// <returns>The encoded document.</returns>
-        RequestResult<ReportModel> RetrieveDocument(string phn);
+        Task<RequestResult<ReportModel>> RetrieveVaccineRecordAsync(string phn);
     }
 }

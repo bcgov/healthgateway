@@ -15,9 +15,9 @@ const ProfileView = () =>
     import(/* webpackChunkName: "profile" */ "@/views/profile.vue");
 const LandingView = () =>
     import(/* webpackChunkName: "landing" */ "@/views/landing.vue");
-const VaccinationStatusView = () =>
+const PublicVaccineCardView = () =>
     import(
-        /* webpackChunkName: "vaccinationStatus" */ "@/views/vaccinationStatus.vue"
+        /* webpackChunkName: "vaccinationStatus" */ "@/views/publicVaccineCard.vue"
     );
 const NotFoundView = () =>
     import(/* webpackChunkName: "notFound" */ "@/views/errors/notFound.vue");
@@ -45,6 +45,8 @@ const RegistrationInfoView = () =>
     );
 const TimelineView = () =>
     import(/* webpackChunkName: "timeline" */ "@/views/timeline.vue");
+const Covid19View = () =>
+    import(/* webpackChunkName: "covid19" */ "@/views/covid19.vue");
 const ValidateEmailView = () =>
     import(/* webpackChunkName: "validateEmail" */ "@/views/validateEmail.vue");
 const TermsOfServiceView = () =>
@@ -113,6 +115,7 @@ export enum ClientModule {
     Note = "Note",
     Credential = "Credential",
     VaccinationStatus = "VaccinationStatus",
+    VaccinationStatusPdf = "VaccinationStatusPdf",
 }
 
 function getAvailableModules() {
@@ -187,6 +190,14 @@ const routes = [
         meta: { validStates: [UserState.registered] },
     },
     {
+        path: "/covid19",
+        component: Covid19View,
+        meta: {
+            validStates: [UserState.registered],
+            requiredModules: [ClientModule.VaccinationStatus],
+        },
+    },
+    {
         path: "/credentials",
         component: CredentialsView,
         meta: {
@@ -213,8 +224,8 @@ const routes = [
         },
     },
     {
-        path: "/vaccination-status",
-        component: VaccinationStatusView,
+        path: "/vaccinecard",
+        component: PublicVaccineCardView,
         meta: {
             validStates: [
                 UserState.unauthenticated,
@@ -323,7 +334,13 @@ export const beforeEachGuard: NavigationGuard = (
         )}; to.fullPath: ${JSON.stringify(to.fullPath)}`
     );
 
-    if (to.meta.routeIsOidcCallback || to.meta.stateless) {
+    const meta = to.meta;
+    if (meta === undefined) {
+        next(Error("Route meta property is undefined"));
+        return;
+    }
+
+    if (meta.routeIsOidcCallback || meta.stateless) {
         next();
         return;
     }
@@ -334,11 +351,12 @@ export const beforeEachGuard: NavigationGuard = (
 
         const currentUserState = calculateUserState();
         logger.debug(`current state: ${currentUserState}`);
-        const isValidState = to.meta.validStates.includes(currentUserState);
+
+        const isValidState = meta.validStates.includes(currentUserState);
         const availableModules = getAvailableModules();
         const hasRequiredModules =
-            to.meta.requiredModules === undefined ||
-            to.meta.requiredModules.every((val: string) =>
+            meta.requiredModules === undefined ||
+            meta.requiredModules.every((val: string) =>
                 availableModules.includes(val)
             );
 

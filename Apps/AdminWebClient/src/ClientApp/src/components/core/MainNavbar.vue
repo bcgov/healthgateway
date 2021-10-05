@@ -77,7 +77,7 @@ export default class MainNavbar extends Vue {
                 visible: this.isUserAdmin,
             },
             {
-                title: "COVID-19 Card",
+                title: "BC Vaccine Card",
                 icon: "fa-address-card",
                 to: "/covidcard",
                 visible: this.isUserSupportUser,

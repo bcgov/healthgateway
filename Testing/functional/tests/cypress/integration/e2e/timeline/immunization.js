@@ -2,7 +2,11 @@ const { AuthMethod, localDevUri } = require("../../../support/constants");
 describe("Immunization", () => {
     before(() => {
         let isLoading = false;
-        cy.enableModules("Immunization");
+        cy.enableModules([
+            "Immunization",
+            "VaccinationStatus",
+            "VaccinationStatusPdf",
+        ]);
         cy.intercept("GET", "/v1/api/Immunization", (req) => {
             req.reply((res) => {
                 if (!isLoading) {
@@ -32,7 +36,9 @@ describe("Immunization", () => {
     });
 
     it("Validate COVID-19 Immunization Attachment Icons", () => {
-        cy.log("All COVID-19 immunizations should have attachment icons.");
+        cy.log(
+            "All valid COVID-19 immunizations should have attachment icons."
+        );
         cy.get("[data-testid=cardBtn]")
             .closest("[data-testid=timelineCard]")
             .each((card) => {
@@ -42,7 +48,7 @@ describe("Immunization", () => {
             });
 
         cy.log(
-            "All cards with attachment icons should be COVID-19 immunizations."
+            "All cards with attachment icons should be valid COVID-19 immunizations."
         );
         cy.get("[data-testid=attachmentIcon]")
             .closest("[data-testid=timelineCard]")
@@ -68,9 +74,6 @@ describe("Immunization", () => {
             .contains("Covid-19");
         cy.get("[data-testid=forecastDueDate]").first().should("be.visible");
         cy.get("[data-testid=forecastStatus]").first().should("be.visible");
-        cy.get("[data-testid=forecastFollowDirections]")
-            .first()
-            .should("be.visible");
     });
 
     it("Validate Proof of Immunization Card & Download", () => {
@@ -87,6 +90,7 @@ describe("Immunization", () => {
             .should("be.visible", "not.be.empty");
         cy.get("[data-testid=doseDate]")
             .last()
+            .scrollIntoView()
             .should("be.visible", "not.be.empty");
 
         cy.get("[data-testid=exportCardBtn]")
@@ -114,7 +118,6 @@ describe("Immunization", () => {
             .should("be.visible")
             .should("have.text", "Immunization");
     });
-
 
     it("Validate Disabled Header Covid Card", () => {
         cy.intercept("GET", "/v1/api/Immunization", (req) => {

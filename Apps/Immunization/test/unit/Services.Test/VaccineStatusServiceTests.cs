@@ -21,13 +21,18 @@ namespace HealthGateway.Immunization.Test.Services
     using DeepEqual.Syntax;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
+    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -38,17 +43,16 @@ namespace HealthGateway.Immunization.Test.Services
     {
         private readonly string phn = "9735353315";
         private readonly DateTime dob = new DateTime(1990, 01, 05);
+        private readonly DateTime dov = new DateTime(2021, 06, 05);
         private readonly string accessToken = "XXDDXX";
-        private readonly string captchaToken = "CCCCTT";
 
         private readonly IConfiguration configuration = GetIConfigurationRoot();
 
         /// <summary>
         /// GetVaccineStatus - Happy Path.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetVaccineStatus()
+        public void ShouldGetVaccineStatus()
         {
             RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new RequestResult<PHSAResult<VaccineStatusResult>>()
             {
@@ -80,64 +84,95 @@ namespace HealthGateway.Immunization.Test.Services
                     FirstName = "Bob",
                     LastName = "Test",
                     Birthdate = this.dob,
-                    State = Constants.VaccineState.Exempt,
+                    State = VaccineState.Exempt,
                 },
             };
 
             Mock<IVaccineStatusDelegate> mockDelegate = new Mock<IVaccineStatusDelegate>();
-            mockDelegate.Setup(s => s.GetVaccineStatus(this.phn, this.dob, this.accessToken)).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, true)).Returns(Task.FromResult(delegateResult));
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new Mock<IAuthenticationDelegate>();
             mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>())).Returns(jwtModel);
 
-            Mock<ICaptchaDelegate> mockCaptchaDelegate = new Mock<ICaptchaDelegate>();
-            mockCaptchaDelegate.Setup(s => s.IsCaptchaValid(this.captchaToken)).ReturnsAsync(true);
-
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
+                new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                new Mock<ICDogsDelegate>().Object,
-                mockCaptchaDelegate.Object);
+                new Mock<IReportDelegate>().Object,
+                GetMemoryCache());
 
-            var actualResult = await service.GetVaccineStatus(this.phn, this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture), this.captchaToken).ConfigureAwait(true);
+            string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+            string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+            var actualResult = Task.Run(async () => await service.GetVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
             Assert.True(expectedResult.IsDeepEqual(actualResult));
         }
 
         /// <summary>
         /// GetVaccineStatus - Invalid PHN.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldErrorOnPHN()
+        public void ShouldErrorOnPHN()
         {
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
+                new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<ICDogsDelegate>().Object,
-                new Mock<ICaptchaDelegate>().Object);
+                new Mock<IReportDelegate>().Object,
+                GetMemoryCache());
 
-            var actualResult = await service.GetVaccineStatus("123", this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture), this.captchaToken).ConfigureAwait(true);
+            string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+            string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+            var actualResult = Task.Run(async () => await service.GetVaccineStatus("123", dobString, dovString).ConfigureAwait(true)).Result;
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
 
         /// <summary>
         /// GetVaccineStatus - Invalid DOB.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldErrorOnDOB()
+        public void ShouldErrorOnDOB()
         {
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
+                new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<ICDogsDelegate>().Object,
-                new Mock<ICaptchaDelegate>().Object);
+                new Mock<IReportDelegate>().Object,
+                GetMemoryCache());
 
-            var actualResult = await service.GetVaccineStatus(this.phn, "yyyyMMddx", this.captchaToken).ConfigureAwait(true);
+            string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+            var actualResult = Task.Run(async () => await service.GetVaccineStatus(this.phn, "yyyyMMddx", dovString).ConfigureAwait(true)).Result;
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+        }
+
+        /// <summary>
+        /// GetVaccineStatus - Invalid DOV.
+        /// </summary>
+        [Fact]
+        public void ShouldErrorOnDOV()
+        {
+            IVaccineStatusService service = new VaccineStatusService(
+                this.configuration,
+                new Mock<ILogger<VaccineStatusService>>().Object,
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IVaccineStatusDelegate>().Object,
+                new Mock<IReportDelegate>().Object,
+                GetMemoryCache());
+
+            string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+            var actualResult = Task.Run(async () => await service.GetVaccineStatus(this.phn, dobString, "yyyyMMddx").ConfigureAwait(true)).Result;
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+        }
+
+        private static IMemoryCache? GetMemoryCache()
+        {
+            ServiceCollection services = new ServiceCollection();
+            services.AddMemoryCache();
+            ServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            return serviceProvider.GetService<IMemoryCache>();
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

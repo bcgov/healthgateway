@@ -49,6 +49,12 @@ namespace HealthGateway.Common.Models.PHSA
         public string Status { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets a value indicating whether the Immunization is valid.
+        /// </summary>
+        [JsonPropertyName("valid")]
+        public bool Valid { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets the Provider or Clinic providing the Immunization.
         /// </summary>
         [JsonPropertyName("providerOrClinic")]

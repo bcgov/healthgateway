@@ -10,7 +10,11 @@ export const getters: ImmunizationGetters = {
     },
     covidImmunizations(state: ImmunizationState): ImmunizationEvent[] {
         return state.immunizations
-            .filter((x) => x.targetedDisease?.toLowerCase().includes("covid"))
+            .filter(
+                (x) =>
+                    x.targetedDisease?.toLowerCase().includes("covid") &&
+                    x.valid
+            )
             .sort((a, b) => {
                 const firstDate = new DateWrapper(a.dateOfImmunization);
                 const secondDate = new DateWrapper(b.dateOfImmunization);

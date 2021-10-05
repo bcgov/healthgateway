@@ -74,7 +74,7 @@ export interface ISupportService {
 
 export interface ICovidSupportService {
     initialize(http: IHttpDelegate): void;
-    getPatient(phn: string): Promise<CovidCardPatientResult>;
+    getPatient(phn: string, refresh: boolean): Promise<CovidCardPatientResult>;
     retrieveDocument(phn: string): Promise<CovidCardDocumentResult>;
     mailDocument(request: CovidCardMailRequest): Promise<boolean>;
 }

@@ -27,9 +27,12 @@ export default class ImmunizationTimelineComponent extends Vue {
     private eventBus = EventBus;
 
     private get isCovidImmunization(): boolean {
-        return this.entry.immunization.targetedDisease
-            ?.toLowerCase()
-            .includes("covid");
+        return (
+            this.entry.immunization.valid &&
+            this.entry.immunization.targetedDisease
+                ?.toLowerCase()
+                .includes("covid")
+        );
     }
 
     private showCard(): void {
@@ -124,28 +127,6 @@ export default class ImmunizationTimelineComponent extends Vue {
                                 </div>
                             </b-col>
                         </b-row>
-
-                        <div v-if="isCovidImmunization">
-                            <br />
-                            <p data-testid="forecastFollowDirections">
-                                <strong>Dose 2 Update</strong> - Invitations to
-                                book your second dose will be sent out following
-                                a schedule similar to first doses. Please do not
-                                be concerned if your Dose 2 forecast date has
-                                already passed. You will receive an invitation
-                                as soon as it is your turn. For more information
-                                go to
-                                <a
-                                    href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/dose-2"
-                                    target="blank_"
-                                    >https://www2.gov.bc.ca/gov/content/covid-19/vaccine/dose-2</a
-                                >. For information on recommended immunizations,
-                                please visit
-                                <a href="https://immunizebc.ca/" target="blank_"
-                                    >https://immunizebc.ca/</a
-                                >.
-                            </p>
-                        </div>
                     </b-col>
                 </b-row>
             </b-col>

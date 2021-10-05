@@ -12,6 +12,7 @@ import {
     ExternalConfiguration,
     OpenIdConnectConfiguration,
 } from "@/models/configData";
+import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
 import Encounter from "@/models/encounter";
@@ -61,17 +62,22 @@ export interface IImmunizationService {
 
 export interface IVaccinationStatusService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getVaccinationStatus(
+    getPublicVaccineStatus(
         phn: string,
         dateOfBirth: StringISODate,
-        token: string
+        dateOfVaccine: StringISODate
     ): Promise<RequestResult<VaccinationStatus>>;
-    getReport(
+    getPublicVaccineStatusPdf(
         phn: string,
         dateOfBirth: StringISODate,
-        token: string
+        dateOfVaccine: StringISODate
     ): Promise<RequestResult<Report>>;
-    getCaptchaToken(): Promise<string>;
+    getAuthenticatedVaccineStatus(
+        hdid: string
+    ): Promise<RequestResult<VaccinationStatus>>;
+    getAuthenticatedVaccineRecord(
+        hdid: string
+    ): Promise<RequestResult<CovidVaccineRecord>>;
 }
 
 export interface IPatientService {

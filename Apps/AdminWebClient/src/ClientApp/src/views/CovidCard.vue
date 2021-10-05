@@ -13,6 +13,7 @@ import Address from "@/models/address";
 import BannerFeedback from "@/models/bannerFeedback";
 import CovidCardPatientResult from "@/models/covidCardPatientResult";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import SelectItem from "@/models/selectItem";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ICovidSupportService } from "@/services/interfaces";
@@ -46,6 +47,7 @@ export default class CovidCardView extends Vue {
     private showFeedback = false;
 
     private phn = "";
+    private activePhn = "";
     private address: Address = { ...emptyAddress };
     private immunizations: ImmunizationRow[] = [];
     private searchResult: CovidCardPatientResult | null = null;
@@ -78,7 +80,7 @@ export default class CovidCardView extends Vue {
         },
     ];
 
-    private get internationalDestinations() {
+    private get internationalDestinations(): SelectItem[] {
         // sort destinations alphabetically except place Canada and US at the top
         const destinations = Object.keys(InternationalDestinations)
             .filter(
@@ -104,11 +106,15 @@ export default class CovidCardView extends Vue {
             : countryName.toLocaleUpperCase();
     }
 
-    private get patientName() {
+    private get patientName(): string {
         return `${this.searchResult?.patient?.firstname} ${this.searchResult?.patient?.lastname}`;
     }
 
-    private get provinceStateList() {
+    private get containsInvalidDoses(): boolean {
+        return this.searchResult?.vaccineDetails?.containsInvalidDoses === true;
+    }
+
+    private get provinceStateList(): SelectItem[] {
         if (this.isCanadaSelected) {
             return Object.keys(Provinces).map((provinceCode) => {
                 return {
@@ -128,11 +134,11 @@ export default class CovidCardView extends Vue {
         }
     }
 
-    private get isCanadaSelected() {
+    private get isCanadaSelected(): boolean {
         return this.selectedDestination === Countries.CA[0];
     }
 
-    private get isUnitedStatesSelected() {
+    private get isUnitedStatesSelected(): boolean {
         return this.selectedDestination === Countries.US[0];
     }
 
@@ -182,6 +188,14 @@ export default class CovidCardView extends Vue {
 
         if (emptySearchField) {
             this.phn = "";
+            this.activePhn = "";
+        }
+    }
+
+    private handleRefresh() {
+        if (this.activePhn) {
+            this.clear(false);
+            this.search(this.activePhn, true);
         }
     }
 
@@ -198,31 +212,42 @@ export default class CovidCardView extends Vue {
             };
             return;
         }
+        this.activePhn = phnDigits;
+        this.search(phnDigits, false);
+    }
 
+    private search(personalHealthNumber: string, refresh: boolean) {
         this.isLoading = true;
 
         this.covidSupportService
-            .getPatient(phnDigits)
+            .getPatient(personalHealthNumber, refresh)
             .then((result) => {
-                this.phn = "";
-                this.searchResult = result;
-                this.setAddress(
-                    this.searchResult?.patient?.postalAddress,
-                    this.searchResult?.patient?.physicalAddress
-                );
-                this.immunizations =
-                    this.searchResult.immunizations?.map((immz) => {
-                        return {
-                            date: immz.dateOfImmunization,
-                            clinic: immz.providerOrClinic,
-                            product:
-                                immz.immunization.immunizationAgents[0]
-                                    .productName,
-                            lotNumber:
-                                immz.immunization.immunizationAgents[0]
-                                    .lotNumber,
-                        };
-                    }) ?? [];
+                if (result.blocked) {
+                    this.searchResult = null;
+                    this.showFeedback = true;
+                    this.bannerFeedback = {
+                        type: ResultType.Error,
+                        title: "Search Error",
+                        message:
+                            "Unable to retrieve record for this individual",
+                    };
+                } else {
+                    this.phn = "";
+                    this.searchResult = result;
+                    this.setAddress(
+                        this.searchResult?.patient?.postalAddress,
+                        this.searchResult?.patient?.physicalAddress
+                    );
+                    this.immunizations =
+                        this.searchResult.vaccineDetails?.doses?.map((dose) => {
+                            return {
+                                date: dose.date,
+                                clinic: dose.location,
+                                product: dose.product,
+                                lotNumber: dose.lot,
+                            };
+                        }) ?? [];
+                }
             })
             .catch(() => {
                 this.searchResult = null;
@@ -276,8 +301,7 @@ export default class CovidCardView extends Vue {
                     this.bannerFeedback = {
                         type: ResultType.Success,
                         title: "Success",
-                        message:
-                            "COVID-19 Immunization Card mailed successfully.",
+                        message: "BC Vaccine Card mailed successfully.",
                     };
                 } else {
                     this.showFeedback = true;
@@ -433,9 +457,21 @@ export default class CovidCardView extends Vue {
                             />
                         </v-col>
                     </v-row>
-                    <v-row>
-                        <v-col>
+                    <v-row align="center" dense>
+                        <v-col cols="auto">
                             <h2>COVID-19 Immunizations</h2>
+                        </v-col>
+                        <v-col class="text-right">
+                            <v-btn
+                                type="button"
+                                class="mt-2 secondary"
+                                @click="handleRefresh()"
+                            >
+                                <span>Refresh</span>
+                                <v-icon class="ml-2" size="sm"
+                                    >fas fa-sync</v-icon
+                                >
+                            </v-btn>
                         </v-col>
                     </v-row>
                     <v-row dense>
@@ -450,6 +486,15 @@ export default class CovidCardView extends Vue {
                                     <span>{{ formatDate(item.date) }}</span>
                                 </template>
                             </v-data-table>
+                            <v-alert
+                                v-if="containsInvalidDoses"
+                                dense
+                                color="orange"
+                                type="warning"
+                                class="mt-4"
+                            >
+                                This record has invalid doses.
+                            </v-alert>
                         </v-col>
                     </v-row>
                     <v-row justify="end">

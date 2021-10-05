@@ -25,6 +25,7 @@ namespace HealthGateway.CommonTests.Delegates
     using DeepEqual.Syntax;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;

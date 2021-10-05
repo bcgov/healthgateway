@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
-import { load } from "recaptcha-v3";
 
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
+import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
 import { ServiceName } from "@/models/errorInterfaces";
 import Report from "@/models/report";
@@ -22,10 +22,11 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly VACCINATION_STATUS_BASE_URI: string =
         "v1/api/VaccineStatus";
+    private readonly AUTHENTICATED_VACCINATION_STATUS_BASE_URI: string =
+        "v1/api/AuthenticatedVaccineStatus";
     private baseUri = "";
     private http!: IHttpDelegate;
     private isEnabled = false;
-    private captchaSiteKey = "";
 
     public initialize(
         config: ExternalConfiguration,
@@ -34,13 +35,12 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
         this.baseUri = config.serviceEndpoints["Immunization"];
         this.http = http;
         this.isEnabled = config.webClient.modules["Immunization"];
-        this.captchaSiteKey = config.webClient.captchaSiteKey || "";
     }
 
-    public getVaccinationStatus(
+    public getPublicVaccineStatus(
         phn: string,
         dateOfBirth: StringISODate,
-        token: string
+        dateOfVaccine: StringISODate
     ): Promise<RequestResult<VaccinationStatus>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
@@ -51,7 +51,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
             const headers: Dictionary<string> = {};
             headers["phn"] = phn;
             headers["dateOfBirth"] = dateOfBirth;
-            headers["token"] = token;
+            headers["dateOfVaccine"] = dateOfVaccine;
 
             return this.http
                 .getWithCors<RequestResult<VaccinationStatus>>(
@@ -73,10 +73,10 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
         });
     }
 
-    public getReport(
+    public getPublicVaccineStatusPdf(
         phn: string,
         dateOfBirth: StringISODate,
-        token: string
+        dateOfVaccine: StringISODate
     ): Promise<RequestResult<Report>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
@@ -87,12 +87,11 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
             const headers: Dictionary<string> = {};
             headers["phn"] = phn;
             headers["dateOfBirth"] = dateOfBirth;
-            headers["token"] = token;
+            headers["dateOfVaccine"] = dateOfVaccine;
 
             return this.http
-                .post<RequestResult<Report>>(
-                    `${this.baseUri}${this.VACCINATION_STATUS_BASE_URI}`,
-                    null,
+                .getWithCors<RequestResult<Report>>(
+                    `${this.baseUri}${this.VACCINATION_STATUS_BASE_URI}/pdf`,
                     headers
                 )
                 .then((requestResult) => {
@@ -110,26 +109,58 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
         });
     }
 
-    getCaptchaToken(): Promise<string> {
+    public getAuthenticatedVaccineStatus(
+        hdid: string
+    ): Promise<RequestResult<VaccinationStatus>> {
         return new Promise((resolve, reject) => {
-            load(this.captchaSiteKey || "")
-                .then((recaptcha) => {
-                    recaptcha.showBadge();
-                    recaptcha
-                        .execute("vaccinationStatus")
-                        .then((token) => {
-                            resolve(token);
-                        })
-                        .catch((err) => {
-                            this.logger.error(
-                                `Error executing captcha action: ${err}`
-                            );
-                            reject(err);
-                        });
+            if (!this.isEnabled) {
+                reject();
+                return;
+            }
+
+            return this.http
+                .getWithCors<RequestResult<VaccinationStatus>>(
+                    `${this.baseUri}${this.AUTHENTICATED_VACCINATION_STATUS_BASE_URI}?hdid=${hdid}`
+                )
+                .then((requestResult) => {
+                    resolve(requestResult);
                 })
                 .catch((err) => {
-                    this.logger.error(`Error loading captcha: ${err}`);
-                    reject(err);
+                    this.logger.error(`Fetch vaccine status: ${err}`);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.Immunization
+                        )
+                    );
+                });
+        });
+    }
+
+    public getAuthenticatedVaccineRecord(
+        hdid: string
+    ): Promise<RequestResult<CovidVaccineRecord>> {
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                reject();
+                return;
+            }
+
+            return this.http
+                .getWithCors<RequestResult<CovidVaccineRecord>>(
+                    `${this.baseUri}${this.AUTHENTICATED_VACCINATION_STATUS_BASE_URI}/pdf?hdid=${hdid}`
+                )
+                .then((requestResult) => {
+                    resolve(requestResult);
+                })
+                .catch((err) => {
+                    this.logger.error(`Fetch vaccine record error: ${err}`);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.Immunization
+                        )
+                    );
                 });
         });
     }

@@ -16,6 +16,7 @@
 namespace HealthGateway.Mock.Controllers
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Reflection;
     using System.Text;
@@ -30,6 +31,7 @@ namespace HealthGateway.Mock.Controllers
     /// </summary>
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Mocked Controller methods.")]
     public class OdrController : ControllerBase
     {
         private const string ProtectiveWord = "KEYWORD";

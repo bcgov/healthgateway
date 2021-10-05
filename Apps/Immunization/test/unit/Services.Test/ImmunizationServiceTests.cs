@@ -21,14 +21,17 @@ namespace HealthGateway.Immunization.Test.Services
     using System.Linq;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
+    using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Models.PHSA.Recommendation;
-    using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Parser;
     using HealthGateway.Immunization.Services;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Configuration;
     using Moq;
     using Xunit;
 
@@ -49,7 +52,7 @@ namespace HealthGateway.Immunization.Test.Services
         [Fact]
         public void ShouldGetImmunizations()
         {
-            var mockDelegate = new Mock<IImmunizationDelegate>();
+            var mockDelegate = new Mock<Immunization.Delegates.IImmunizationDelegate>();
             RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = new RequestResult<PHSAResult<ImmunizationResponse>>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
@@ -85,8 +88,13 @@ namespace HealthGateway.Immunization.Test.Services
                 TotalResultCount = delegateResult.TotalResultCount,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
-            IImmunizationService service = new ImmunizationService(mockDelegate.Object);
+            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<int>())).ReturnsAsync(delegateResult);
+            IImmunizationService service = new ImmunizationService(
+                GetConfiguration(),
+                mockDelegate.Object,
+                new Mock<IReportDelegate>().Object,
+                new Mock<IVaccineStatusDelegate>().Object,
+                new Mock<IHttpContextAccessor>().Object);
 
             var actualResult = service.GetImmunizations(0);
             Assert.True(expectedResult.IsDeepEqual(actualResult.Result));
@@ -98,7 +106,7 @@ namespace HealthGateway.Immunization.Test.Services
         [Fact]
         public void ShouldGetImmunization()
         {
-            var mockDelegate = new Mock<IImmunizationDelegate>();
+            var mockDelegate = new Mock<Immunization.Delegates.IImmunizationDelegate>();
             RequestResult<PHSAResult<ImmunizationViewResponse>> delegateResult = new RequestResult<PHSAResult<ImmunizationViewResponse>>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
@@ -127,8 +135,12 @@ namespace HealthGateway.Immunization.Test.Services
             };
 
             mockDelegate.Setup(s => s.GetImmunization(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
-            IImmunizationService service = new ImmunizationService(mockDelegate.Object);
-
+            IImmunizationService service = new ImmunizationService(
+                GetConfiguration(),
+                mockDelegate.Object,
+                new Mock<IReportDelegate>().Object,
+                new Mock<IVaccineStatusDelegate>().Object,
+                new Mock<IHttpContextAccessor>().Object);
             var actualResult = service.GetImmunization("immz_id");
             Assert.True(expectedResult.IsDeepEqual(actualResult.Result));
         }
@@ -137,10 +149,11 @@ namespace HealthGateway.Immunization.Test.Services
         /// GetImmunizations - Happy Path (With Recommendations).
         /// </summary>
         [Fact]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public void ShouldGetRecomendation()
         {
             var immzRecommendationResponse = this.GetImmzRecommendationResponse();
-            var mockDelegate = new Mock<IImmunizationDelegate>();
+            var mockDelegate = new Mock<Immunization.Delegates.IImmunizationDelegate>();
             RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = GetPHSAResult(immzRecommendationResponse);
             RequestResult<ImmunizationResult> expectedResult = new RequestResult<ImmunizationResult>()
             {
@@ -155,7 +168,12 @@ namespace HealthGateway.Immunization.Test.Services
             };
 
             mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
-            IImmunizationService service = new ImmunizationService(mockDelegate.Object);
+            IImmunizationService service = new ImmunizationService(
+                GetConfiguration(),
+                mockDelegate.Object,
+                new Mock<IReportDelegate>().Object,
+                new Mock<IVaccineStatusDelegate>().Object,
+                new Mock<IHttpContextAccessor>().Object);
 
             var actualResult = service.GetImmunizations(0);
             Assert.True(expectedResult.IsDeepEqual(actualResult.Result));
@@ -183,7 +201,7 @@ namespace HealthGateway.Immunization.Test.Services
         [Fact]
         public void ValidateImmunizationError()
         {
-            var mockDelegate = new Mock<IImmunizationDelegate>();
+            var mockDelegate = new Mock<Immunization.Delegates.IImmunizationDelegate>();
             RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = new RequestResult<PHSAResult<ImmunizationResponse>>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
@@ -200,7 +218,12 @@ namespace HealthGateway.Immunization.Test.Services
             };
 
             mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
-            IImmunizationService service = new ImmunizationService(mockDelegate.Object);
+            IImmunizationService service = new ImmunizationService(
+                GetConfiguration(),
+                mockDelegate.Object,
+                new Mock<IReportDelegate>().Object,
+                new Mock<IVaccineStatusDelegate>().Object,
+                new Mock<IHttpContextAccessor>().Object);
 
             var actualResult = service.GetImmunizations(0);
             Assert.True(expectedResult.IsDeepEqual(actualResult.Result));
@@ -225,6 +248,15 @@ namespace HealthGateway.Immunization.Test.Services
                 PageSize = 5,
                 TotalResultCount = 1,
             };
+        }
+
+        private static IConfiguration GetConfiguration(Dictionary<string, string>? keyValuePairs = null)
+        {
+            keyValuePairs ??= new ();
+            IConfiguration configuration = new ConfigurationBuilder()
+                        .AddInMemoryCollection(keyValuePairs)
+                        .Build();
+            return configuration;
         }
 
         private ImmunizationRecommendationResponse GetImmzRecommendationResponse()

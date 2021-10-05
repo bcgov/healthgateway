@@ -7,34 +7,38 @@
     <Compile Remove="Authorization\**" />
     <EmbeddedResource Remove="Authorization\**" />
     <None Remove="Authorization\**" />
+    <None Remove="Assets\Images\BCID_H_rgb_pos.png" />
+    <None Remove="Assets\Images\BCID_V_rgb_pos.png" />
+    <None Remove="Assets\Images\checkmark-black.svg" />
     <None Remove="ServiceReference\dotnet-svcutil.params.json" />
     <None Remove="Models\AcaPy\" />
     <None Remove="Models\PHSA\Recommendation\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.24" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.25" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.8.6" />
+    <PackageReference Include="IronPdf" Version="2021.3.1" />
     <PackageReference Include="Macross.Json.Extensions" Version="2.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.18" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.19" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.10" />
     <PackageReference Include="Microsoft.OpenApi" Version="1.2.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.5" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="5.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="5.0.10" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
-    <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="1.0.1" />
-    <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.0.1" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc2" />
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc2" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc2" />
-    <PackageReference Include="OpenTelemetry.Api" Version="1.0.1" />
+    <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="1.1.0" />
+    <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.1.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc7" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc7" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc7" />
+    <PackageReference Include="OpenTelemetry.Api" Version="1.1.0" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="5.0.1" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -65,10 +69,8 @@
   <ItemGroup>
     <Folder Include="AspNetConfiguration\" />
     <Folder Include="Auditing\" />
-    <Folder Include="Delegates\" />
     <Folder Include="FileDownload\" />
     <Folder Include="Filters\" />
-    <Folder Include="Services\" />
     <Folder Include="resources\" />
     <Folder Include="ServiceReference\" />
     <Folder Include="Models\AcaPy\" />
@@ -79,5 +81,13 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Images\bcid-logo-rev-en.png" />
+    <EmbeddedResource Include="Assets\Images\bcid-logo-rev-en.svg" />
+    <EmbeddedResource Include="Assets\Images\BCID_H_rgb_pos.png" />
+    <EmbeddedResource Include="Assets\Images\BCID_V_rgb_pos.png" />
+    <EmbeddedResource Include="Assets\Images\checkmark-black.svg" />
+    <EmbeddedResource Include="Assets\Templates\VaccineStatusCard.html" />
   </ItemGroup>
 </Project>
