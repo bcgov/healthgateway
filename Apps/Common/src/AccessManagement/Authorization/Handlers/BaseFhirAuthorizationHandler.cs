@@ -109,12 +109,12 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             {
                 string scopeclaim = context.User.FindFirstValue(GatewayClaims.Scope);
                 string[] scopes = scopeclaim.Split(' ');
-                this.logger.LogInformation($"Performing system delegation validation for resource {resourceHDID}");
-                this.logger.LogInformation($"Caller has the following scopes: {scopeclaim}");
+                this.logger.LogDebug($"Performing system delegation validation for resource {resourceHDID}");
+                this.logger.LogDebug($"Caller has the following scopes: {scopeclaim}");
                 string[] systemDelegatedScopes = GetAcceptedScopes(System, requirement);
                 if (scopes.Intersect(systemDelegatedScopes).Any())
                 {
-                    this.logger.LogInformation($"Authorized caller as system to have {requirement.AccessType} access to resource {resourceHDID}");
+                    this.logger.LogDebug($"Authorized caller as system to have {requirement.AccessType} access to resource {resourceHDID}");
                     retVal = true;
                 }
             }
