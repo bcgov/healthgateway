@@ -86,8 +86,11 @@ export default class Covid19View extends Vue {
     @Getter("error", { namespace: "immunization" })
     immunizationError!: ResultError | undefined;
 
-    @Ref("messageModal")
-    readonly messageModal!: MessageModalComponent;
+    @Ref("vaccineCardMessageModal")
+    readonly vaccineCardMessageModal!: MessageModalComponent;
+
+    @Ref("sensitivedocumentDownloadModal")
+    readonly sensitivedocumentDownloadModal!: MessageModalComponent;
 
     private logger!: ILogger;
     private isDownloading = false;
@@ -132,6 +135,10 @@ export default class Covid19View extends Vue {
                 this.vaccinationStatus?.state ===
                     VaccinationState.FullyVaccinated)
         );
+    }
+
+    private get saveWalletShown(): boolean {
+        return this.config.modules["WalletExport"];
     }
 
     private get isVaccineCardLoading(): boolean {
@@ -226,8 +233,43 @@ export default class Covid19View extends Vue {
         }
     }
 
-    private showConfirmationModal() {
-        this.messageModal.showModal();
+    private downloadWallet() {
+        const printingArea: HTMLElement | null =
+            document.querySelector(".qr-code-container");
+        if (printingArea !== null) {
+            this.isDownloading = true;
+            SnowPlow.trackEvent({
+                action: "download_card",
+                text: "COVID Card Wallet",
+            });
+            html2canvas(printingArea, {
+                scale: 2,
+                ignoreElements: (element) =>
+                    element.classList.contains("d-print-none"),
+            })
+                .then((canvas) => {
+                    const mimeType =
+                        "application/vnd.gov.bc.ca.smart-health-card+png";
+                    let dataUrl = canvas.toDataURL();
+                    dataUrl = dataUrl.replace("image/png", mimeType);
+                    fetch(dataUrl).then((res) => {
+                        res.blob().then((blob) => {
+                            saveAs(blob, "BCVaccineCard-QRCODE.shc+png");
+                        });
+                    });
+                })
+                .finally(() => {
+                    this.isDownloading = false;
+                });
+        }
+    }
+
+    private showVaccineCardMessageModal() {
+        this.vaccineCardMessageModal.showModal();
+    }
+
+    private showSensitiveDocumentDownloadModal() {
+        this.sensitivedocumentDownloadModal.showModal();
     }
 
     private created() {
@@ -264,13 +306,24 @@ export default class Covid19View extends Vue {
                         justify-content-center
                     "
                 >
-                    <hg-button
+                    <hg-dropdown
+                        id="saveBtn"
+                        text="Save"
                         variant="primary"
-                        class="ml-3"
-                        @click="showConfirmationModal()"
+                        data-testid="saveBtn"
                     >
-                        Save a Copy
-                    </hg-button>
+                        <b-dropdown-item
+                            data-testid="imageDropDownItem"
+                            @click="showVaccineCardMessageModal()"
+                            >Save as image</b-dropdown-item
+                        >
+                        <b-dropdown-item
+                            v-if="saveWalletShown"
+                            data-testid="mimeDropDownItem"
+                            @click="showSensitiveDocumentDownloadModal()"
+                            >Save to BC Wallet App</b-dropdown-item
+                        >
+                    </hg-dropdown>
                 </div>
                 <div
                     v-if="isPartiallyVaccinated || isVaccinationNotFound"
@@ -291,7 +344,7 @@ export default class Covid19View extends Vue {
                 </div>
             </div>
             <message-modal
-                ref="messageModal"
+                ref="vaccineCardMessageModal"
                 title="Vaccine Card Download"
                 message="Next, you'll see an image of your card.
                                 Depending on your browser, you may need to
@@ -299,6 +352,12 @@ export default class Covid19View extends Vue {
                                 If you want to print, we recommend you use the print function in
                                 your browser."
                 @submit="download"
+            />
+            <message-modal
+                ref="sensitivedocumentDownloadModal"
+                title="Sensitive Document Download"
+                message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+                @submit="downloadWallet"
             />
         </div>
         <div
