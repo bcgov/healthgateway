@@ -55,12 +55,9 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         public Task HandleAsync(AuthorizationHandlerContext context)
         {
             string? resourceHDID = this.httpContextAccessor.HttpContext?.Request.RouteValues[RouteResourceIdentifier] as string;
-            foreach (UserRequirement requirement in context.PendingRequirements.OfType<UserRequirement>().ToList())
+            foreach (var requirement in context.PendingRequirements.OfType<UserRequirement>().Where(requirement => this.Authorize(context, resourceHDID, requirement)))
             {
-                if (this.Authorize(context, resourceHDID, requirement))
-                {
-                    context.Succeed(requirement);
-                }
+                context.Succeed(requirement);
             }
 
             return Task.CompletedTask;
