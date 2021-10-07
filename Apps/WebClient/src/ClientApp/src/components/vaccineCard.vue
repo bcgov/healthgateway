@@ -183,7 +183,7 @@ export default class VaccineCardComponent extends Vue {
                         <div
                             v-if="qrCodeUrl !== null && !isVaccinationNotFound"
                             aria-label="QR Code Image"
-                            class="text-center"
+                            class="qr-code-container text-center"
                         >
                             <img
                                 v-b-modal.big-qr
