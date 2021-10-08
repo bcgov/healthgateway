@@ -692,15 +692,12 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseContentSecurityPolicy(IApplicationBuilder app)
         {
-            IConfigurationSection cspSection = this.configuration.GetSection("ContentSecurityPolicy");
-            string connectSrc = cspSection.GetValue<string>("connect-src", string.Empty);
-            string frameSrc = cspSection.GetValue<string>("frame-src", string.Empty);
-            string scriptSrc = cspSection.GetValue<string>("script-src", string.Empty);
-            string styleSrc = cspSection.GetValue<string>("style-src", string.Empty);
-            string fontSrc = cspSection.GetValue<string>("font-src", string.Empty);
+            ContentSecurityPolicyConfig cspConfig = new ();
+            this.configuration.GetSection("ContentSecurityPolicy").Bind(cspConfig);
+            string csp = cspConfig.ContentSecurityPolicy();
             app.Use(async (context, next) =>
             {
-                context.Response.Headers.Add("Content-Security-Policy", $"default-src 'self'; script-src 'self' 'unsafe-eval' {scriptSrc}; connect-src 'self' {connectSrc} file: data: blob: filesystem:; img-src 'self' data:; style-src 'self' {styleSrc} 'unsafe-inline';base-uri 'self';form-action 'self'; font-src 'self' {fontSrc}; frame-src 'self' {frameSrc}");
+                context.Response.Headers.Add("Content-Security-Policy", csp);
                 await next().ConfigureAwait(true);
             });
         }
