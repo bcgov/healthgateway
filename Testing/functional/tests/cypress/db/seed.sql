@@ -65,6 +65,35 @@ VALUES (
 	null
 );
 
+/* Invaliddoses - Keycloak User */
+INSERT INTO gateway."UserProfile"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"AcceptedTermsOfService", 
+	"Email", 
+	"ClosedDateTime", 
+	"IdentityManagementId", 
+	"LastLoginDateTime", 
+	"EncryptionKey", 
+	"SMSNumber")
+VALUES (
+	'DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	true, 
+	null,
+	null,
+	null,
+	current_timestamp, 
+	'SnSf90IS+9I75+wXNuInLdod7s9bpiSjWW4vs94g7BY=',
+	null
+);
+
 /* Communication Banner */
 INSERT INTO gateway."Communication"(
 	"CommunicationId", 

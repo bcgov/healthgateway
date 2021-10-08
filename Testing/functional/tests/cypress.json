@@ -17,6 +17,7 @@
     "env": {
         "bcsc.username": "hthgtwy11",
         "bcsc.password": "",
+        "keycloak.invaliddoses.username": "Invaliddoses",
         "keycloak.hlthgw401.username": "hlthgw401",
         "keycloak.username": "healthgateway",
         "keycloak.password": "",

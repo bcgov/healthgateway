@@ -44,8 +44,7 @@ namespace Healthgateway.JobScheduler.Jobs
         {
             this.logger = logger;
             this.emailDelegate = emailDelegate!;
-            IConfigurationSection section = configuration!.GetSection("Smtp");
-            section = configuration.GetSection("DeleteEmailJob");
+            IConfigurationSection section = configuration.GetSection("DeleteEmailJob");
             this.deleteMaxRows = section.GetValue<int>("DeleteMaxRows", 1000);
             this.deleteAfterDays = section.GetValue<uint>("DeleteAfterDays", 30);
         }

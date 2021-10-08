@@ -57,7 +57,7 @@ namespace HealthGateway.Common.Auditing
             try
             {
                 this.writeEventDelegate.WriteAuditEvent(auditEvent);
-                this.logger.LogInformation(@"Saved AuditEvent");
+                this.logger.LogDebug(@"Saved AuditEvent");
             }
             catch (System.Exception ex)
             {
