@@ -40,7 +40,7 @@ export class RestAuthenticationService implements IAuthenticationService {
                         domain: null,
                         expires: null,
                         path: "/",
-                        secure: false,
+                        secure: true,
                         sameSite: "Strict",
                     }),
                     2000
