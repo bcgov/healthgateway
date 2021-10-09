@@ -60,8 +60,8 @@ function clickVaccineCardEnterButton() {
     cy.get("[data-testid=btnEnter]").should("be.enabled", "be.visible").click();
 }
 
-describe("Authenticated User - Vaccine Card Page", () => {
-    it("Vaccination Card - Cancel - unauthenticated user", () => {
+describe("Public User - Vaccine Card Page", () => {
+    it("Public Vaccination Card - Cancel", () => {
         cy.enableModules(vaccinationStatusModule);
         cy.visit(vaccineCardUrl);
 
@@ -70,7 +70,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get("[data-testid=btnVaccineCard]").should("exist");
     });
 
-    it("Vaccination Card - Login BC Services Card App - unauthenticated user", () => {
+    it("Public Vaccination Card - Login BC Services Card App", () => {
         cy.enableModules(vaccinationStatusModule);
         cy.visit(vaccineCardUrl);
 
@@ -81,7 +81,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get("[data-testid=vaccineCardFormTitle]").should("not.exist");
     });
 
-    it("Vaccination Card - Valid PHN via Select Year - unauthenticated user", () => {
+    it("Public Vaccination Card - Valid PHN via Select Year", () => {
         cy.enableModules(vaccinationStatusModule);
         cy.visit(vaccineCardUrl);
 
@@ -94,7 +94,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
             .and("have.class", "form-control is-valid");
     });
 
-    it("Vaccination Card - Invalid PHN via Select Year - unauthenticated user", () => {
+    it("Public Vaccination Card - Invalid PHN via Select Year", () => {
         cy.enableModules(vaccinationStatusModule);
         cy.visit(vaccineCardUrl);
 
@@ -105,7 +105,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get(feedbackPhnMustBeValidSelector).should("be.visible");
     });
 
-    it("Vaccination Card - PHN, DOB and DOV not entered via Click Enter - unauthenticated user", () => {
+    it("Public Vaccination Card - PHN, DOB and DOV not entered via Click Enter", () => {
         cy.enableModules(vaccinationStatusModule);
         cy.visit(vaccineCardUrl);
 
@@ -116,7 +116,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get(feedbackDovIsRequiredSelector).should("be.visible");
     });
 
-    it("Vaccination Card - DOB and DOV not entered with Invalid PHN via Click Enter - unauthenticated user", () => {
+    it("Public Vaccination Card - DOB and DOV not entered with Invalid PHN via Click Enter", () => {
         cy.enableModules(vaccinationStatusModule);
         cy.visit(vaccineCardUrl);
 
@@ -129,7 +129,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get(feedbackDovIsRequiredSelector).should("be.visible");
     });
 
-    it("Vaccination Card - DOB and DOV not entered via Click Enter - unauthenticated user", () => {
+    it("Public Vaccination Card - DOB and DOV not entered via Click Enter", () => {
         cy.enableModules(vaccinationStatusModule);
         cy.visit(vaccineCardUrl);
 
@@ -141,7 +141,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get(feedbackDovIsRequiredSelector).should("be.visible");
     });
 
-    it("Vaccination Card - DOB and DOV cannot be future dated - unauthenticated user", () => {
+    it("Public Vaccination Card - DOB and DOV cannot be future dated", () => {
         const d = new Date();
         const year = d.getFullYear();
         const monthNumber = d.getMonth(); //Maps to monthNames constant array. Index starts at 0
@@ -212,7 +212,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         selectExist(dovDaySelector, day);
     });
 
-    it("Vaccination Card - DOB Year and DOV not entered via Click Enter - unauthenticated user", () => {
+    it("Public Vaccination Card - DOB Year and DOV not entered via Click Enter", () => {
         const dobMonth = "June";
         const dobDay = "15";
 
@@ -231,7 +231,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get(feedbackDovIsRequiredSelector).should("be.visible");
     });
 
-    it("Vaccination Card - DOB Month and DOV not entered via Click Enter - unauthenticated user", () => {
+    it("Public Vaccination Card - DOB Month and DOV not entered via Click Enter", () => {
         const dobYear = "2021";
         const dobDay = "15";
 
@@ -250,7 +250,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get(feedbackDovIsRequiredSelector).should("be.visible");
     });
 
-    it("Vaccination Card - DOB Day and DOV not entered via Click Enter - unauthenticated user", () => {
+    it("Public Vaccination Card - DOB Day and DOV not entered via Click Enter", () => {
         const dobYear = "2021";
         const dobMonth = "June";
 
@@ -269,7 +269,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get(feedbackDovIsRequiredSelector).should("be.visible");
     });
 
-    it("Vaccination Card - DOV Year and DOB not entered via Click Enter - unauthenticated user", () => {
+    it("Public Vaccination Card - DOV Year and DOB not entered via Click Enter", () => {
         const dovMonth = "June";
         const dovDay = "15";
 
@@ -288,7 +288,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get(feedbackDovIsRequiredSelector).should("be.visible");
     });
 
-    it("Vaccination Card - DOV Month and DOB not entered via Click Enter - unauthenticated user", () => {
+    it("Public Vaccination Card - DOV Month and DOB not entered via Click Enter", () => {
         const dovYear = "2021";
         const dovDay = "15";
 
@@ -307,7 +307,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get(feedbackDovIsRequiredSelector).should("be.visible");
     });
 
-    it("Vaccination Card - DOV Day and DOB not entered via Click Enter - unauthenticated user", () => {
+    it("Public Vaccination Card - DOV Day and DOB not entered via Click Enter", () => {
         const dovYear = "2021";
         const dovMonth = "June";
 
@@ -326,7 +326,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get(feedbackDovIsRequiredSelector).should("be.visible");
     });
 
-    it("Vaccination Card - Partially Vaccinated 1 Dose - unauthenticated user", () => {
+    it("Public Vaccination Card - Partially Vaccinated 1 Dose", () => {
         const phn = "9735353315";
         const dobYear = "1967";
         const dobMonth = "June";
@@ -357,7 +357,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get("[data-testid=statusPartiallyVaccinated]").should("be.visible");
     });
 
-    it("Vaccination Card - Fully Vaccinated 2 Doses - unauthenticated user", () => {
+    it("Public Vaccination Card - Fully Vaccinated 2 Doses", () => {
         const phn = "9735361219 ";
         const dobYear = "1994";
         const dobMonth = "June";
@@ -388,7 +388,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get("[data-testid=statusVaccinated]").should("be.visible");
     });
 
-    it("Vaccination Card - Fully Vaccinated 1 Dose - unauthenticated user", () => {
+    it("Public Vaccination Card - Fully Vaccinated 1 Dose", () => {
         const phn = "9000691107";
         const dobYear = "1987";
         const dobMonth = "March";
@@ -419,44 +419,13 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get("[data-testid=statusVaccinated]").should("be.visible");
     });
 
-    it("Vaccination Card - Fully Vaccinated 3 Doses - unauthenticated user", () => {
+    it("Public Vaccination Card - Fully Vaccinated 3 Doses", () => {
         const phn = "9000691185";
         const dobYear = "1990";
         const dobMonth = "June";
         const dobDay = "21";
         const dovYear = "2021";
         const dovMonth = "March";
-        const dovDay = "1";
-
-        cy.enableModules([
-            "Immunization",
-            vaccinationStatusModule,
-            "VaccinationStatusPdf",
-        ]);
-        cy.visit(vaccineCardUrl);
-
-        enterVaccineCardPHN(phn);
-
-        select(dobYearSelector, dobYear);
-        select(dobMonthSelector, dobMonth);
-        select(dobDaySelector, dobDay);
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
-        select(dovDaySelector, dovDay);
-
-        clickVaccineCardEnterButton();
-
-        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
-        cy.get("[data-testid=statusVaccinated]").should("be.visible");
-    });
-
-    it("Vaccination Card - Fully Vaccinated 5 Doses - unauthenticated user", () => {
-        const phn = "9876809694";
-        const dobYear = "1964";
-        const dobMonth = "June";
-        const dobDay = "9";
-        const dovYear = "2021";
-        const dovMonth = "February";
         const dovDay = "1";
 
         cy.enableModules([

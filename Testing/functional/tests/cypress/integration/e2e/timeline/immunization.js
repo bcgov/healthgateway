@@ -1,4 +1,15 @@
 const { AuthMethod, localDevUri } = require("../../../support/constants");
+
+function sendImmunization() {
+    cy.intercept("GET", "/v1/api/Immunization", (req) => {
+        req.reply((res) => {
+            res.send({
+                fixture: "ImmunizationService/immunization.json",
+            });
+        });
+    });
+}
+
 describe("Immunization", () => {
     before(() => {
         let isLoading = false;
@@ -77,29 +88,32 @@ describe("Immunization", () => {
     });
 
     it("Validate Proof of Immunization Card & Download", () => {
-        cy.get("[data-testid=cardBtn").first().click();
-        cy.get("[data-testid=covidImmunizationCard] .modal-dialog").should(
-            "be.visible"
+        sendImmunization();
+        cy.enableModules([
+            "Immunization",
+            "VaccinationStatus",
+            "VaccinationStatusPdf",
+        ]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
         );
-        cy.get("[data-testid=patientBirthdate]").should(
-            "be.visible",
-            "not.be.empty"
-        );
-        cy.get("[data-testid=doseDate]")
-            .first()
-            .should("be.visible", "not.be.empty");
-        cy.get("[data-testid=doseDate]")
-            .last()
-            .scrollIntoView()
-            .should("be.visible", "not.be.empty");
+        cy.checkTimelineHasLoaded();
 
-        cy.get("[data-testid=exportCardBtn]")
+        cy.get("[data-testid=cardBtn]").first().click({ force: true });
+        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
+
+        cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle")
             .should("be.enabled", "be.visible")
             .click();
+
+        cy.get("[data-testid=save-as-image-dropdown-item]")
+            .should("be.visible")
+            .click();
+
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
-
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
-
         cy.get("[data-testid=genericMessageModal]").should("not.exist");
     });
 
@@ -141,14 +155,8 @@ describe("Immunization", () => {
     });
 
     it("Validate Header Covid Card", () => {
-        cy.intercept("GET", "/v1/api/Immunization", (req) => {
-            req.reply((res) => {
-                res.send({
-                    fixture: "ImmunizationService/immunization.json",
-                });
-            });
-        });
-        cy.enableModules("Immunization");
+        sendImmunization();
+        cy.enableModules(["Immunization", "VaccinationStatus"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -161,18 +169,6 @@ describe("Immunization", () => {
             .should("be.enabled")
             .click();
 
-        cy.get("[data-testid=covidImmunizationCard] .modal-dialog").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=patientBirthdate]").should(
-            "be.visible",
-            "not.be.empty"
-        );
-        cy.get("[data-testid=doseDate]")
-            .first()
-            .should("be.visible", "not.be.empty");
-        cy.get("[data-testid=doseDate]")
-            .last()
-            .should("be.visible", "not.be.empty");
+        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
     });
 });

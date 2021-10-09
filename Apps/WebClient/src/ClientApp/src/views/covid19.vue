@@ -307,19 +307,18 @@ export default class Covid19View extends Vue {
                     "
                 >
                     <hg-dropdown
-                        id="saveBtn"
                         text="Save"
                         variant="primary"
-                        data-testid="saveBtn"
+                        data-testid="save-dropdown-btn"
                     >
                         <b-dropdown-item
-                            data-testid="imageDropDownItem"
+                            data-testid="save-as-image-dropdown-item"
                             @click="showVaccineCardMessageModal()"
                             >Save as image</b-dropdown-item
                         >
                         <b-dropdown-item
                             v-if="saveWalletShown"
-                            data-testid="mimeDropDownItem"
+                            data-testid="save-to-wallet-dropdown-item"
                             @click="showSensitiveDocumentDownloadModal()"
                             >Save to BC Wallet App</b-dropdown-item
                         >
@@ -369,6 +368,7 @@ export default class Covid19View extends Vue {
                 <b-row no-gutters>
                     <b-col cols="auto" class="d-print-none">
                         <hg-button
+                            data-testid="vr-chevron-left-btn"
                             variant="carousel"
                             class="primary rounded-left h-100"
                             @click="showImmunizationHistory(false)"
@@ -458,6 +458,7 @@ export default class Covid19View extends Vue {
                     </b-col>
                     <b-col cols="auto" class="d-print-none">
                         <hg-button
+                            data-testid="vr-chevron-right-btn"
                             variant="carousel"
                             class="primary rounded-right h-100"
                             @click="showImmunizationHistory(false)"

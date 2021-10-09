@@ -35,7 +35,7 @@ describe("Resource Centre", () => {
                 });
             });
         });
-        cy.enableModules("Immunization");
+        cy.enableModules(["Immunization", "VaccinationStatus"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -46,12 +46,16 @@ describe("Resource Centre", () => {
 
         cy.get("[data-testid=hg-resource-centre-covid-card]")
             .should("be.visible")
-            .should("be.enabled")
             .click();
 
-        cy.get("[data-testid=covidImmunizationCard] .modal-dialog").should(
-            "be.visible"
-        );
+        // Vaccine Card
+        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
+
+        // Navigate Left
+        cy.get("[data-testid=vc-chevron-left-btn]")
+            .should("be.enabled", "be.visible")
+            .click();
+
         cy.get("[data-testid=patientBirthdate]").should(
             "be.visible",
             "not.be.empty"
