@@ -121,6 +121,7 @@ export default class VaccineCardComponent extends Vue {
                 class="d-print-none"
             >
                 <hg-button
+                    data-testid="vc-chevron-left-btn"
                     variant="carousel"
                     class="h-100"
                     @click="onClickNextButton"
@@ -234,6 +235,7 @@ export default class VaccineCardComponent extends Vue {
             </b-col>
             <b-col v-if="includeNextButton" cols="auto" class="d-print-none">
                 <hg-button
+                    data-testid="vc-chevron-right-btn"
                     variant="carousel"
                     class="h-100"
                     @click="onClickNextButton"

@@ -5,7 +5,7 @@ describe("Timeline - Immunization - Invalid Doses", () => {
         cy.enableModules("Immunization");
     });
 
-    it("Timeline - Show all doses for Partially Vaccinated with 1 Valid Dose and 2 Invalid Doses - Registered Keycloak user", () => {
+    it("Timeline - Partially Vaccinated 1 Valid Dose and 2 Invalid Doses - Keycloak user", () => {
         const validDoseDate1 = "Jul 14";
         const invalidDoseDate1 = "Apr 2";
         const invalidDoseDate2 = "Mar 30";
