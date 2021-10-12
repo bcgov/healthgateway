@@ -158,7 +158,7 @@ export default class Covid19View extends Vue {
         if (!data) {
             return undefined;
         }
-        return `bcwallet://healthgateway?data=${data}`;
+        return `bcwallet://healthgateway.gov.bc.ca?data=${data}`;
     }
 
     private get patientName(): string | undefined {
