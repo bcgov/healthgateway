@@ -2,8 +2,6 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 
-import EventBus, { EventMessageName } from "@/eventbus";
-
 library.add(faQuestion);
 
 import Vue from "vue";
@@ -16,12 +14,6 @@ import { ImmunizationEvent } from "@/models/immunizationModel";
 export default class ResourceCentreComponent extends Vue {
     @Getter("covidImmunizations", { namespace: "immunization" })
     covidImmunizations!: ImmunizationEvent[];
-
-    private eventBus = EventBus;
-
-    private showCovidCard(): void {
-        this.eventBus.$emit(EventMessageName.TimelineCovidCard);
-    }
 }
 </script>
 
@@ -48,15 +40,17 @@ export default class ResourceCentreComponent extends Vue {
             </template>
             <b-dropdown-text
                 text-class="hg-resource-centre-title font-weight-bold"
-                >Resource Centre</b-dropdown-text
             >
+                Resource Centre
+            </b-dropdown-text>
             <b-dropdown-divider />
-            <b-dropdown-item-button
+            <b-dropdown-item
                 :disabled="covidImmunizations.length === 0"
                 data-testid="hg-resource-centre-covid-card"
-                @click="showCovidCard()"
-                >BC Vaccine Card</b-dropdown-item-button
+                to="/covid19"
             >
+                BC Vaccine Card
+            </b-dropdown-item>
             <b-dropdown-item to="/faq">FAQ</b-dropdown-item>
             <b-dropdown-item to="/release-notes">Release Notes</b-dropdown-item>
         </b-dropdown>
