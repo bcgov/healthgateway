@@ -5,7 +5,7 @@ describe("Export Reports - Immunizations - Invalid Doses", () => {
         cy.enableModules("Immunization");
     });
 
-    it("Immunization Report - Show all doses for Partially Vaccinated with 1 Valid Dose and 2 Invalid Doses - Registered Keycloak user", () => {
+    it("Immunization Report - Partially Vaccinated 1 Valid Dose and 2 Invalid Doses - Keycloak user", () => {
         const validDoseDate1 = "2021-Jul-14";
         const invalidDoseDate1 = "2021-Mar-30";
         const invalidDoseDate2 = "2021-Apr-02";

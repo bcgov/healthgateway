@@ -4,12 +4,9 @@ import { faIdCard, faSyringe } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
-import EventBus, { EventMessageName } from "@/eventbus";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 
 library.add(faIdCard, faSyringe);
-
-import SnowPlow from "@/utility/snowPlow";
 
 import EntrycardTimelineComponent from "./entrycard.vue";
 
@@ -24,8 +21,6 @@ export default class ImmunizationTimelineComponent extends Vue {
     @Prop() datekey!: string;
     @Prop() isMobileDetails!: boolean;
 
-    private eventBus = EventBus;
-
     private get isCovidImmunization(): boolean {
         return (
             this.entry.immunization.valid &&
@@ -33,14 +28,6 @@ export default class ImmunizationTimelineComponent extends Vue {
                 ?.toLowerCase()
                 .includes("covid")
         );
-    }
-
-    private showCard(): void {
-        SnowPlow.trackEvent({
-            action: "view_card",
-            text: "COVID Card",
-        });
-        this.eventBus.$emit(EventMessageName.TimelineCovidCard);
     }
 }
 </script>
@@ -90,20 +77,21 @@ export default class ImmunizationTimelineComponent extends Vue {
                         cols="auto"
                         class="text-center pr-0"
                     >
-                        <b-btn
-                            data-testid="cardBtn"
-                            class="detailsButton"
-                            variant="link"
-                            @click="showCard()"
-                        >
-                            <hg-icon
-                                icon="id-card"
-                                size="large"
-                                fixed-width
-                                class="card-button"
-                            />
-                            <span>View Card</span>
-                        </b-btn>
+                        <router-link to="/covid19">
+                            <b-btn
+                                data-testid="cardBtn"
+                                class="detailsButton"
+                                variant="link"
+                            >
+                                <hg-icon
+                                    icon="id-card"
+                                    size="large"
+                                    fixed-width
+                                    class="card-button"
+                                />
+                                <span>View Card</span>
+                            </b-btn>
+                        </router-link>
                     </b-col>
                 </b-row>
                 <b-row v-if="entry.immunization.forecast" class="mt-3">

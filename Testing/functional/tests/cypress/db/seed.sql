@@ -94,6 +94,35 @@ VALUES (
 	null
 );
 
+/* Notfound - Keycloak User */
+INSERT INTO gateway."UserProfile"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"AcceptedTermsOfService", 
+	"Email", 
+	"ClosedDateTime", 
+	"IdentityManagementId", 
+	"LastLoginDateTime", 
+	"EncryptionKey", 
+	"SMSNumber")
+VALUES (
+	'R43YCT4ZY37EIJLW2O5LV2I77BZA3K3M25EUJGWAVGVJ7JKBDKCQ',
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	true, 
+	null,
+	null,
+	null,
+	current_timestamp, 
+	'KtBm7JYegayKpx5fjwM2RUGZf79JOnNC21NhUrIAzmg=',
+	null
+);
+
 /* Communication Banner */
 INSERT INTO gateway."Communication"(
 	"CommunicationId", 

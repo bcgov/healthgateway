@@ -28,6 +28,7 @@ import Vuelidate from "vuelidate";
 import { Store } from "vuex";
 
 import HgButtonComponent from "@/components/shared/hgButton.vue";
+import HgDropdownComponent from "@/components/shared/hgDropdown.vue";
 import HgIconComponent from "@/components/shared/hgIcon.vue";
 import PageTitleComponent from "@/components/shared/pageTitle.vue";
 import StatusLabelComponent from "@/components/shared/statusLabel.vue";
@@ -77,6 +78,7 @@ Vue.component("BDropdownText", BDropdownText);
 Vue.component("BFormTags", BFormTags);
 Vue.component("BFormTag", BFormTag);
 Vue.component("HgButton", HgButtonComponent);
+Vue.component("HgDropdown", HgDropdownComponent);
 Vue.component("HgIcon", HgIconComponent);
 Vue.component("PageTitle", PageTitleComponent);
 Vue.component("StatusLabel", StatusLabelComponent);

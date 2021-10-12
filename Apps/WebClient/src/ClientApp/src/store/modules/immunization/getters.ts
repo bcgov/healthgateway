@@ -1,5 +1,6 @@
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
+import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 
 import { ImmunizationGetters, ImmunizationState } from "./types";
@@ -31,6 +32,9 @@ export const getters: ImmunizationGetters = {
     },
     immunizationCount(state: ImmunizationState): number {
         return state.immunizations.length;
+    },
+    error(state: ImmunizationState): ResultError | undefined {
+        return state.error;
     },
     isDeferredLoad(state: ImmunizationState): boolean {
         return (

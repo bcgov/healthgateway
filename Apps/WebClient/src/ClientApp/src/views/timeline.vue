@@ -16,7 +16,6 @@ import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vu
 import EntryDetailsComponent from "@/components/timeline/entryCard/entryDetails.vue";
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
-import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
@@ -38,7 +37,6 @@ import UserNote from "@/models/userNote";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
-import SnowPlow from "@/utility/snowPlow";
 
 library.add(faSearch, faCheckCircle);
 
@@ -158,7 +156,6 @@ export default class TimelineView extends Vue {
     private readonly dismissImmunizationBannerSeconds = 5;
     private dismissImmunizationBannerCountdown = 0;
     private initialImmunizationCount = 0;
-    private eventBus = EventBus;
 
     @Watch("filterText")
     private onFilterTextChanged() {
@@ -329,14 +326,6 @@ export default class TimelineView extends Vue {
             a.date.isAfter(b.date) ? -1 : a.date.isBefore(b.date) ? 1 : 0
         );
     }
-
-    private showCard(): void {
-        SnowPlow.trackEvent({
-            action: "view_card",
-            text: "COVID Card",
-        });
-        this.eventBus.$emit(EventMessageName.TimelineCovidCard);
-    }
 }
 </script>
 
@@ -439,20 +428,21 @@ export default class TimelineView extends Vue {
                         <h1 id="subject" class="my-0">Timeline</h1>
                     </b-col>
                     <b-col cols="6" align-self="end" class="px-0">
-                        <hg-button
-                            :disabled="covidImmunizations.length === 0"
-                            data-testid="covidcard-btn"
-                            class="float-right"
-                            variant="primary"
-                            @click="showCard()"
-                        >
-                            <hg-icon
-                                icon="check-circle"
-                                size="medium"
-                                class="mr-2"
-                            />
-                            <span>BC Vaccine Card</span>
-                        </hg-button>
+                        <router-link to="/covid19">
+                            <hg-button
+                                :disabled="covidImmunizations.length === 0"
+                                data-testid="covidcard-btn"
+                                class="float-right"
+                                variant="primary"
+                            >
+                                <hg-icon
+                                    icon="check-circle"
+                                    size="medium"
+                                    class="mr-2"
+                                />
+                                <span>BC Vaccine Card</span>
+                            </hg-button>
+                        </router-link>
                     </b-col>
                 </b-row>
                 <hr class="mb-0 mx-2" />
