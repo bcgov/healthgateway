@@ -121,11 +121,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
             .should("be.enabled", "be.visible")
             .click();
         cy.get("[data-testid=save-to-wallet-dropdown-item]")
-            .should("be.visible")
-            .click();
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
-        cy.get("[data-testid=genericMessageModal]").should("not.exist");
+            .should("be.visible");
     });
 
     it("Vaccination Card - Save To Wallet Disabled - Keycloak user", () => {
