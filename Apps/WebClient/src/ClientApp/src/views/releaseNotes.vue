@@ -10,6 +10,113 @@
                         </div>
                     </b-col>
                 </b-row>
+                                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong>
+                                    October 13, 2021 - v1.4.13 - COVID Vaccine Page
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We updated the COVID Vaccine page to provide 
+                                        a separate view for the BC Vaccine Card and 
+                                        COVID vaccine details to make it easier to 
+                                        save and print. 
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>                
+                        <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong>
+                                    September 13, 2021 - v1.4.11 - Save a copy of BC Vaccine Card
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We added a feature to allow citizens 
+                                        to save a copy of their BC Vaccine Cards 
+                                        as images.
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>                
+                        <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong>
+                                    September 7, 2021 - v1.4.10 - BC Vaccine Card
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We launched the BC Vaccine Card which 
+                                        provides citizens with a proof of vaccination 
+                                        that they can present to businesses. The BC 
+                                        Vaccine Card shows an indication of the vaccination 
+                                        status of the individual and has a QR code that can 
+                                        be scanned to verify their card. 
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>                
+                        <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong>
+                                    August 13, 2021 - v1.4.8 - Call Centre Vaccine Record Access
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We added the ability for government call centre and 
+                                        Service BC agents to access and mail or print out 
+                                        COVID vaccine records to citizens. 
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>                
+                        <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong>
+                                    July 29, 2021 - v1.4.7 - COVID Card Button, Menu Update
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We added a button in the Timeline to launch the 
+                                        COVID Vaccine Card. 
+                                    </li>
+                                    <li>
+                                        We updated the menu selection and moved the 
+                                        "add note" button. 
+                                    </li>   
+                                </ul>
+                            </b-col>
+                        </b-row>
                 <b-row>
                     <b-col>
                         <b-row class="mb-2">
