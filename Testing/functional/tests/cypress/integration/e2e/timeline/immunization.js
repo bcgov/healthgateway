@@ -1,6 +1,6 @@
 const { AuthMethod, localDevUri } = require("../../../support/constants");
 
-function sendImmunization() {
+function useImmunizationFixture() {
     cy.intercept("GET", "/v1/api/Immunization", (req) => {
         req.reply((res) => {
             res.send({
@@ -88,7 +88,7 @@ describe("Immunization", () => {
     });
 
     it("Validate Proof of Immunization Card & Download", () => {
-        sendImmunization();
+        useImmunizationFixture();
         cy.enableModules([
             "Immunization",
             "VaccinationStatus",
@@ -97,7 +97,8 @@ describe("Immunization", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/timeline"
         );
         cy.checkTimelineHasLoaded();
 
@@ -155,7 +156,7 @@ describe("Immunization", () => {
     });
 
     it("Validate Header Covid Card", () => {
-        sendImmunization();
+        useImmunizationFixture();
         cy.enableModules(["Immunization", "VaccinationStatus"]);
         cy.login(
             Cypress.env("keycloak.username"),

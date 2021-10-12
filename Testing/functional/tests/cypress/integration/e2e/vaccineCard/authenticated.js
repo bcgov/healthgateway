@@ -6,6 +6,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
             "Immunization",
             "VaccinationStatus",
             "VaccinationStatusPdf",
+            "WalletExport",
         ]);
     });
     it("Vaccination Card - Partially Vaccinated 2 Valid Doses - Keycloak user", () => {
@@ -95,7 +96,20 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get("[data-testid=genericMessageModal]").should("not.exist");
     });
 
-    it("Vaccination Card - Save To Wallet - Keycloak user", () => {
+    it("Vaccination Card - Not Found - Save - Keycloak user", () => {
+        cy.login(
+            Cypress.env("keycloak.notfound.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/covid19"
+        );
+        cy.get("[data-testid=statusNotFound]").should("be.visible");
+        cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle").should(
+            "not.exist"
+        );
+    });
+
+    it("Vaccination Card - Save To Wallet Enabled - Keycloak user", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -114,15 +128,23 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get("[data-testid=genericMessageModal]").should("not.exist");
     });
 
-    it("Vaccination Card - Not Found - Save - Keycloak user", () => {
+    it("Vaccination Card - Save To Wallet Disabled - Keycloak user", () => {
+        cy.enableModules([
+            "Immunization",
+            "VaccinationStatus",
+            "VaccinationStatusPdf",
+        ]);
         cy.login(
-            Cypress.env("keycloak.notfound.username"),
+            Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
             "/covid19"
         );
-        cy.get("[data-testid=statusNotFound]").should("be.visible");
-        cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle").should(
+
+        cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle")
+            .should("be.enabled", "be.visible")
+            .click();
+        cy.get("[data-testid=save-to-wallet-dropdown-item]").should(
             "not.exist"
         );
     });
