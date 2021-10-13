@@ -105,14 +105,9 @@ describe("Immunization", () => {
         cy.get("[data-testid=cardBtn]").first().click({ force: true });
         cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
 
-        cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle")
-            .should("be.enabled", "be.visible")
+        cy.get("[data-testid=save-card-btn]")
+            .should("be.visible", "be.enabled")
             .click();
-
-        cy.get("[data-testid=save-as-image-dropdown-item]")
-            .should("be.visible")
-            .click();
-
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.get("[data-testid=genericMessageModal]").should("not.exist");

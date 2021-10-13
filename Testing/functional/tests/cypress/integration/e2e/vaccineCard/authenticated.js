@@ -1,15 +1,13 @@
 const { AuthMethod, localDevUri } = require("../../../support/constants");
 
 describe("Authenticated User - Vaccine Card Page", () => {
-    before(() => {
+    it("Vaccination Card - Partially Vaccinated 2 Valid Doses - Keycloak", () => {
         cy.enableModules([
             "Immunization",
             "VaccinationStatus",
             "VaccinationStatusPdf",
             "WalletExport",
         ]);
-    });
-    it("Vaccination Card - Partially Vaccinated 2 Valid Doses - Keycloak", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -58,6 +56,12 @@ describe("Authenticated User - Vaccine Card Page", () => {
     });
 
     it("Vaccination Card - Partially Vaccinated 1 Valid and 2 Invalid Doses - Keycloak", () => {
+        cy.enableModules([
+            "Immunization",
+            "VaccinationStatus",
+            "VaccinationStatusPdf",
+            "WalletExport",
+        ]);
         cy.login(
             Cypress.env("keycloak.invaliddoses.username"),
             Cypress.env("keycloak.password"),
@@ -78,6 +82,12 @@ describe("Authenticated User - Vaccine Card Page", () => {
     });
 
     it("Vaccination Card - Save Image - Wallet Export Enabled - Keycloak user", () => {
+        cy.enableModules([
+            "Immunization",
+            "VaccinationStatus",
+            "VaccinationStatusPdf",
+            "WalletExport",
+        ]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -97,6 +107,12 @@ describe("Authenticated User - Vaccine Card Page", () => {
     });
 
     it("Vaccination Card - Not Found - Save - Keycloak", () => {
+        cy.enableModules([
+            "Immunization",
+            "VaccinationStatus",
+            "VaccinationStatusPdf",
+            "WalletExport",
+        ]);
         cy.login(
             Cypress.env("keycloak.notfound.username"),
             Cypress.env("keycloak.password"),
@@ -110,6 +126,12 @@ describe("Authenticated User - Vaccine Card Page", () => {
     });
 
     it("Vaccination Card - Save To Wallet - Wallet Export Enabled - Keycloak", () => {
+        cy.enableModules([
+            "Immunization",
+            "VaccinationStatus",
+            "VaccinationStatusPdf",
+            "WalletExport",
+        ]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
