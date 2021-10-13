@@ -9,7 +9,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
             "WalletExport",
         ]);
     });
-    it("Vaccination Card - Partially Vaccinated 2 Valid Doses - Keycloak user", () => {
+    it("Vaccination Card - Partially Vaccinated 2 Valid Doses - Keycloak", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -57,7 +57,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get("[data-testid=statusPartiallyVaccinated]").should("be.visible");
     });
 
-    it("Vaccination Card - Partially Vaccinated 1 Valid and 2 Invalid Doses - Keycloak user", () => {
+    it("Vaccination Card - Partially Vaccinated 1 Valid and 2 Invalid Doses - Keycloak", () => {
         cy.login(
             Cypress.env("keycloak.invaliddoses.username"),
             Cypress.env("keycloak.password"),
@@ -77,7 +77,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get("[data-testid=dose-3]").should("not.exist");
     });
 
-    it("Vaccination Card - Save Image - Keycloak user", () => {
+    it("Vaccination Card - Save Image - Wallet Export Enabled - Keycloak user", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -96,7 +96,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get("[data-testid=genericMessageModal]").should("not.exist");
     });
 
-    it("Vaccination Card - Not Found - Save - Keycloak user", () => {
+    it("Vaccination Card - Not Found - Save - Keycloak", () => {
         cy.login(
             Cypress.env("keycloak.notfound.username"),
             Cypress.env("keycloak.password"),
@@ -109,7 +109,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         );
     });
 
-    it("Vaccination Card - Save To Wallet Enabled - Keycloak user", () => {
+    it("Vaccination Card - Save To Wallet - Wallet Export Enabled - Keycloak", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -120,11 +120,12 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle")
             .should("be.enabled", "be.visible")
             .click();
-        cy.get("[data-testid=save-to-wallet-dropdown-item]")
-            .should("be.visible");
+        cy.get("[data-testid=save-to-wallet-dropdown-item]").should(
+            "be.visible"
+        );
     });
 
-    it("Vaccination Card - Save To Wallet Disabled - Keycloak user", () => {
+    it("Vaccination Card - Save To Wallet - Wallet Export Disabled - Keycloak", () => {
         cy.enableModules([
             "Immunization",
             "VaccinationStatus",
@@ -137,11 +138,33 @@ describe("Authenticated User - Vaccine Card Page", () => {
             "/covid19"
         );
 
-        cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle")
-            .should("be.enabled", "be.visible")
-            .click();
+        cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle").should(
+            "not.exist"
+        );
         cy.get("[data-testid=save-to-wallet-dropdown-item]").should(
             "not.exist"
         );
+        cy.get("[data-testid=save-card-btn]").should("be.visible");
+    });
+
+    it("Vaccination Card - Save Image - Wallet Export Disabled - Keycloak", () => {
+        cy.enableModules([
+            "Immunization",
+            "VaccinationStatus",
+            "VaccinationStatusPdf",
+        ]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/covid19"
+        );
+
+        cy.get("[data-testid=save-card-btn]")
+            .should("be.visible", "be.enabled")
+            .click();
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=genericMessageModal]").should("not.exist");
     });
 });
