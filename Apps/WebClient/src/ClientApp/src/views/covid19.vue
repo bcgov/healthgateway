@@ -279,7 +279,17 @@ export default class Covid19View extends Vue {
                         justify-content-center
                     "
                 >
+                    <hg-button
+                        v-if="!saveWalletShown"
+                        data-testid="save-card-btn"
+                        aria-label="Save a Copy"
+                        variant="primary"
+                        @click="showVaccineCardMessageModal()"
+                    >
+                        Save a Copy
+                    </hg-button>
                     <hg-dropdown
+                        v-if="saveWalletShown"
                         text="Save"
                         variant="primary"
                         data-testid="save-dropdown-btn"
@@ -290,7 +300,6 @@ export default class Covid19View extends Vue {
                             >Save as image</b-dropdown-item
                         >
                         <b-dropdown-item
-                            v-if="saveWalletShown"
                             data-testid="save-to-wallet-dropdown-item"
                             :href="bcWalletAppLink"
                             >Save to BC Wallet App</b-dropdown-item
