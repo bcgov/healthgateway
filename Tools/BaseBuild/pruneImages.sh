@@ -36,7 +36,7 @@ for isName in "${imageStreams[@]}"; do
     declare -i count=0
     for build in "${oldBuilds[@]}"; do 
         count=$count+1
-        build="${build:1:-1}"
+        build="${build:1:-1}" #strip leading and trailing quotes
         echo "oc tag -d $isName:$build" >> $outfile
     done
     echo Found $count builds to cleanup and wrote to $outfile
