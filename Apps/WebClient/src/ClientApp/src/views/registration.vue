@@ -264,12 +264,18 @@ export default class RegistrationView extends Vue {
                 });
                 return;
             }
+
+            const defaultRoute = this.webClientConfig.modules[
+                "VaccinationStatus"
+            ]
+                ? "/dashboard"
+                : "/timeline";
+
             this.$router.push({
-                path: this.webClientConfig.modules["VaccinationStatus"]
-                    ? "/covid19"
-                    : this.smsNumber === "" && this.email === ""
-                    ? "/timeline"
-                    : "/profile",
+                path:
+                    this.smsNumber === "" && this.email === ""
+                        ? defaultRoute
+                        : "/profile",
                 query: {
                     toVerifyPhone: this.smsNumber === "" ? "false" : "true",
                     toVerifyEmail: this.email === "" ? "false" : "true",
