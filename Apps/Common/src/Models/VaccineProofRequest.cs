@@ -18,17 +18,17 @@ namespace HealthGateway.Common.Models
     using HealthGateway.Common.Constants;
 
     /// <summary>
-    /// Represents the data required to generate a Vacine Proof.
+    /// Represents the data required to generate a Vaccine Proof.
     /// </summary>
     public class VaccineProofRequest
     {
         /// <summary>
-        /// Gets or sets the Vaccine Status.
+        /// Gets or sets the Vaccination Status.
         /// </summary>
-        public VaccineStatus Status { get; set; }
+        public VaccinationStatus Status { get; set; }
 
         /// <summary>
-        /// Gets or sets the SmartHealthCard QR code as a base64 encoded image.
+        /// Gets or sets the SmartHealthCard QR code as a base64-encoded image.
         /// </summary>
         public string? SmartHealthCardQr { get; set; }
     }

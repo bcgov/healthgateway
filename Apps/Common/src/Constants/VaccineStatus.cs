@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,19 +19,19 @@ namespace HealthGateway.Common.Constants
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents the vaccine status.
+    /// Represents the vaccination status.
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumMemberConverter))]
-    public enum VaccineStatus
+    public enum VaccinationStatus
     {
         /// <summary>
-        /// The status code for a Fully Vaccinated individual.
+        /// The status code for a fully vaccinated individual.
         /// </summary>
         [EnumMember(Value = "Fully")]
         Fully,
 
         /// <summary>
-        /// The status code for Partially Vaccinated individual.
+        /// The status code for a partially vaccinated individual.
         /// </summary>
         [EnumMember(Value = "Partially")]
         Partially,

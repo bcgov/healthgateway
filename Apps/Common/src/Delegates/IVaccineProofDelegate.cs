@@ -19,39 +19,40 @@ namespace HealthGateway.Common.Delegates
     using HealthGateway.Common.Models;
 
     /// <summary>
-    /// A mechanism to generate a Vaccine Proof for Print or Mail.
+    /// A mechanism to generate or mail out Vaccine Proofs.
     /// </summary>
     public interface IVaccineProofDelegate
     {
         /// <summary>
-        /// Initiates the creation of the Vaccine Proof for the purpose of Printing.
+        /// Initiates the creation of a Vaccine Proof for later retrieval.
         /// </summary>
-        /// <param name="printTemplate">The template to be used for printing.</param>
-        /// <param name="request">The VaccineProof data to be used.</param>
-        /// <returns>.</returns>
-        public RequestResult<VaccineProofResponse> Print(VaccineProofTemplate printTemplate, VaccineProofRequest request);
+        /// <param name="vaccineProofTemplate">The template to be used for the Vaccine Proof.</param>
+        /// <param name="request">The vaccination data to be used for generating the Vaccine Proof.</param>
+        /// <returns>A response object that includes the status and identifier of the Vaccine Proof.</returns>
+        public RequestResult<VaccineProofResponse> Generate(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request);
 
         /// <summary>
-        /// Initiates the creation of the Vaccine Proof and requests the output be mailed.
+        /// Initiates the creation of a Vaccine Proof and requests the output be mailed.
         /// </summary>
-        /// <param name="mailTemplate">The template to be used for printing.</param>
-        /// <param name="request">The VaccineProof data to be used.</param>
-        /// <param name="address">The address to send the vaccine proof out to.</param>
-        /// <returns>.</returns>
-        public RequestResult<VaccineProofResponse> Mail(VaccineProofTemplate mailTemplate, VaccineProofRequest request, Address address);
+        /// <param name="vaccineProofTemplate">The template to be used for the Vaccine Proof.</param>
+        /// <param name="request">The vaccination data to be sent to populate the Vaccine Proof.</param>
+        /// <param name="address">The address where the Vaccine Proof should be mailed.</param>
+        /// <param name="addressee">The name of the person to which the Vaccine Proof should be addressed.</param>
+        /// <returns>A response object that includes the status and identifier of the Vaccine Proof.</returns>
+        public RequestResult<VaccineProofResponse> Mail(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, Address address, string addressee);
 
         /// <summary>
-        /// Determines if the Vaccine Proof has been generated and can be fetched.
+        /// Fetches the status of a Vaccine Proof to determine if it has been generated and can be retrieved.
         /// </summary>
         /// <param name="id">The id from the VaccineProofResponse object.</param>
-        /// <returns>.</returns>
-        public RequestResult<VaccineProofResponse> Status(string id);
+        /// <returns>A response object that includes the status and identifier of the Vaccine Proof.</returns>
+        public RequestResult<VaccineProofResponse> GetStatus(string id);
 
         /// <summary>
         /// Fetches the generated Vaccine Proof.
         /// </summary>
         /// <param name="id">The id from the VaccineProofResponse object.</param>
-        /// <returns>.</returns>
-        public RequestResult<object> GetAsset(string id);
+        /// <returns>A report model containing the generated Vaccine Proof document.</returns>
+        public RequestResult<ReportModel> GetAsset(string id);
     }
 }

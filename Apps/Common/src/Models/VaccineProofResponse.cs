@@ -28,7 +28,7 @@ namespace HealthGateway.Common.Models
         public string Id { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the status of te Vaccine Proof Request.
+        /// Gets or sets the status of the Vaccine Proof Request.
         /// </summary>
         public VaccineProofRequestStatus Status { get; set; } = VaccineProofRequestStatus.Unknown;
     }
