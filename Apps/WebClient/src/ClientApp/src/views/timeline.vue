@@ -17,7 +17,6 @@ import EntryDetailsComponent from "@/components/timeline/entryCard/entryDetails.
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
 import type { WebClientConfiguration } from "@/models/configData";
-import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import { ImmunizationEvent } from "@/models/immunizationModel";
@@ -151,7 +150,6 @@ export default class TimelineView extends Vue {
     @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
 
     private filterText = "";
-    private isPacificTime = false;
     private logger!: ILogger;
     private readonly dismissImmunizationBannerSeconds = 5;
     private dismissImmunizationBannerCountdown = 0;
@@ -244,18 +242,6 @@ export default class TimelineView extends Vue {
         return filteredEntries;
     }
 
-    private get unverifiedEmail(): boolean {
-        return !this.user.verifiedEmail && this.user.hasEmail;
-    }
-
-    private get unverifiedSMS(): boolean {
-        return !this.user.verifiedSMS && this.user.hasSMS;
-    }
-
-    private get hasNewTermsOfService(): boolean {
-        return this.user.hasTermsOfServiceUpdated;
-    }
-
     private get isLoading(): boolean {
         return (
             this.isMedicationRequestLoading ||
@@ -279,24 +265,6 @@ export default class TimelineView extends Vue {
 
     private mounted() {
         this.filterText = this.keyword;
-
-        if (new DateWrapper().isInDST()) {
-            !this.checkTimezone(true)
-                ? (this.isPacificTime = false)
-                : (this.isPacificTime = true);
-        } else {
-            !this.checkTimezone(false)
-                ? (this.isPacificTime = false)
-                : (this.isPacificTime = true);
-        }
-    }
-
-    private checkTimezone(isDST: boolean): boolean {
-        if (isDST) {
-            return new Date().getTimezoneOffset() / 60 === 7;
-        } else {
-            return new Date().getTimezoneOffset() / 60 === 8;
-        }
     }
 
     private fetchTimelineData() {
@@ -338,62 +306,6 @@ export default class TimelineView extends Vue {
         <b-row class="my-2 fluid">
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
                 <div class="px-2">
-                    <b-alert
-                        v-if="hasNewTermsOfService"
-                        show
-                        dismissible
-                        variant="info"
-                        class="no-print"
-                    >
-                        <h4>Updated Terms of Service</h4>
-                        <span>
-                            The Terms of Service have been updated since your
-                            last login. You can review them
-                            <router-link
-                                id="termsOfServiceLink"
-                                variant="primary"
-                                to="/termsOfService"
-                            >
-                                here</router-link
-                            >.
-                        </span>
-                    </b-alert>
-                    <b-alert
-                        v-if="unverifiedEmail || unverifiedSMS"
-                        id="incomplete-profile-banner"
-                        show
-                        dismissible
-                        variant="info"
-                        class="no-print"
-                    >
-                        <h4>Verify Contact Information</h4>
-                        <span>
-                            Your email or cell phone number has not been
-                            verified. You can use the Health Gateway without
-                            verified contact information, however, you will not
-                            receive notifications. Visit the
-                            <router-link
-                                id="profilePageLink"
-                                variant="primary"
-                                to="/profile"
-                                >Profile Page</router-link
-                            >
-                            to complete your verification.
-                        </span>
-                    </b-alert>
-                    <b-alert
-                        v-if="!isPacificTime"
-                        show
-                        dismissible
-                        variant="info"
-                        class="no-print"
-                    >
-                        <h4>Looks like you're in a different timezone.</h4>
-                        <span>
-                            Heads up: your health records are recorded and
-                            displayed in Pacific Time.
-                        </span>
-                    </b-alert>
                     <b-alert
                         :show="dismissImmunizationBannerCountdown"
                         dismissible

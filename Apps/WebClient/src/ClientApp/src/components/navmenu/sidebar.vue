@@ -7,6 +7,7 @@ import {
     faCheckCircle,
     faClipboardList,
     faEdit,
+    faHome,
     faStream,
     faUserFriends,
 } from "@fortawesome/free-solid-svg-icons";
@@ -29,6 +30,7 @@ library.add(
     faCheckCircle,
     faClipboardList,
     faEdit,
+    faHome,
     faStream,
     faUserFriends,
     farIdCard
@@ -193,6 +195,10 @@ export default class SidebarComponent extends Vue {
         return this.isOpen && this.isMobileWidth;
     }
 
+    private get isDashboard(): boolean {
+        return this.$route.path == "/dashboard";
+    }
+
     private get isTimeline(): boolean {
         return this.$route.path == "/timeline";
     }
@@ -253,6 +259,32 @@ export default class SidebarComponent extends Vue {
         <nav id="sidebar" data-testid="sidebar" :class="{ collapsed: !isOpen }">
             <b-row class="row-container">
                 <b-col>
+                    <!-- Dashboard button -->
+                    <hg-button
+                        v-show="isActiveProfile"
+                        id="menuBtnDashboard"
+                        data-testid="menuBtnDashboardLink"
+                        to="/dashboard"
+                        variant="nav"
+                        class="my-3"
+                        :class="{ selected: isDashboard }"
+                    >
+                        <b-row class="align-items-center">
+                            <b-col
+                                title="Dashboard"
+                                :class="{ 'col-3': isOpen }"
+                            >
+                                <hg-icon icon="home" size="large" />
+                            </b-col>
+                            <b-col
+                                v-show="isOpen"
+                                data-testid="dashboardLabel"
+                                class="button-text"
+                            >
+                                <span>Dashboard</span>
+                            </b-col>
+                        </b-row>
+                    </hg-button>
                     <!-- Timeline button -->
                     <hg-button
                         v-show="isActiveProfile"
