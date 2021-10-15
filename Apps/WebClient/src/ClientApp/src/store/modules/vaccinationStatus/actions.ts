@@ -1,3 +1,5 @@
+//import { loggers } from "winston";
+
 import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";
@@ -212,8 +214,7 @@ export const actions: VaccinationStatusActions = {
             hdid: string;
         }
     ): Promise<CovidVaccineRecord> {
-        context.commit("setAuthenticatedPdfRequested");
-
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         const vaccinationStatusService: IVaccinationStatusService =
             container.get<IVaccinationStatusService>(
                 SERVICE_IDENTIFIER.VaccinationStatusService
@@ -225,7 +226,31 @@ export const actions: VaccinationStatusActions = {
                 .then((result) => {
                     if (result.resultStatus === ResultType.Success) {
                         const payload = result.resourcePayload;
-                        resolve(payload);
+                        if (!payload.loaded && payload.retryin > 0) {
+                            logger.info("Vaccination Retrieve PDF not loaded");
+                            context.commit(
+                                "retrieveAuthenticatedVaccineRecord",
+                                "We're busy but will continue to try to download the Vaccine Card PDF...."
+                            );
+                            setTimeout(() => {
+                                logger.info(
+                                    "Re-querying for downloading the Vaccine Card PDF"
+                                );
+                                context.dispatch(
+                                    "retrieveAuthenticatedVaccineRecord",
+                                    {
+                                        hdid: params.hdid,
+                                    }
+                                );
+                            }, payload.retryin);
+                            resolve(payload);
+                        } else {
+                            context.commit(
+                                "setAuthenticatedVaccineRecord",
+                                payload
+                            );
+                            resolve(payload);
+                        }
                     } else {
                         context.dispatch(
                             "handleAuthenticatedPdfError",

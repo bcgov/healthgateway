@@ -1,4 +1,5 @@
 import BannerError from "@/models/bannerError";
+import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
@@ -77,5 +78,13 @@ export const mutations: VaccinationStatusMutations = {
         statusMessage: string
     ) {
         state.authenticated.statusMessage = statusMessage;
+    },
+    setAuthenticatedVaccineRecord(
+        state: VaccinationStatusState,
+        vaccineRecord: CovidVaccineRecord
+    ) {
+        state.authenticatedVaccineRecord.vaccinationRecord = vaccineRecord;
+        state.authenticatedVaccineRecord.status = LoadStatus.LOADED;
+        state.authenticatedVaccineRecord.statusMessage = "";
     },
 };

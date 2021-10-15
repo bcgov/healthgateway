@@ -28,6 +28,12 @@ export interface VaccinationStatusState {
         status: LoadStatus;
         statusMessage: string;
     };
+    authenticatedVaccineRecord: {
+        vaccinationRecord?: CovidVaccineRecord;
+        error?: BannerError;
+        status: LoadStatus;
+        statusMessage: string;
+    };
 }
 
 export interface VaccinationStatusGetters
@@ -44,6 +50,16 @@ export interface VaccinationStatusGetters
     authenticatedIsLoading(state: VaccinationStatusState): boolean;
     authenticatedError(state: VaccinationStatusState): BannerError | undefined;
     authenticatedStatusMessage(state: VaccinationStatusState): string;
+    authenticatedVaccineRecord(
+        state: VaccinationStatusState
+    ): CovidVaccineRecord | undefined;
+    authenticatedVaccineRecordIsLoading(state: VaccinationStatusState): boolean;
+    authenticatedVaccineRecordError(
+        state: VaccinationStatusState
+    ): BannerError | undefined;
+    authenticatedVaccineRecordStatusMessage(
+        state: VaccinationStatusState
+    ): string;
 }
 
 type StoreContext = ActionContext<VaccinationStatusState, RootState>;
@@ -115,6 +131,10 @@ export interface VaccinationStatusMutations
     setAuthenticatedStatusMessage(
         state: VaccinationStatusState,
         statusMessage: string
+    ): void;
+    setAuthenticatedVaccineRecord(
+        state: VaccinationStatusState,
+        vaccineRecord: CovidVaccineRecord
     ): void;
 }
 
