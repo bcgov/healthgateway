@@ -4,7 +4,7 @@ import { Component, Prop } from "vue-property-decorator";
 
 @Component
 export default class PageTitleComponent extends Vue {
-    @Prop() title!: string;
+    @Prop({ required: true }) title!: string;
 
     private get hasSlot() {
         return this.$slots.default !== undefined;
