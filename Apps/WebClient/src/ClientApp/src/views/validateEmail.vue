@@ -72,7 +72,7 @@ export default class ValidateEmailView extends Vue {
                 <div v-else-if="isVerified">
                     <hg-icon
                         icon="check-circle"
-                        size="large"
+                        size="extra-large"
                         aria-hidden="true"
                         class="text-success"
                     />
@@ -82,7 +82,7 @@ export default class ValidateEmailView extends Vue {
                     <hg-button
                         data-testid="continueButton"
                         variant="primary"
-                        @click="$router.push({ path: '/timeline' })"
+                        to="/dashboard"
                     >
                         Continue
                     </hg-button>
@@ -90,7 +90,7 @@ export default class ValidateEmailView extends Vue {
                 <div v-else-if="isAlreadyVerified">
                     <hg-icon
                         icon="check-circle"
-                        size="large"
+                        size="extra-large"
                         aria-hidden="true"
                         class="text-success"
                     />
@@ -100,7 +100,7 @@ export default class ValidateEmailView extends Vue {
                     <hg-button
                         data-testid="continueButton"
                         variant="primary"
-                        @click="$router.push({ path: '/timeline' })"
+                        to="/dashboard"
                     >
                         Continue
                     </hg-button>
