@@ -50,6 +50,7 @@ namespace HealthGateway.Common.Models
 
         /// <summary>
         /// Returns the Endpoint after resolving any variable references.
+        /// Endpoint should be something like https://{host}://{ENV}/auth={TOKEN}/JSON/ .
         /// </summary>
         /// <returns>A string representing the Base Endpoint for BCMail Plus.</returns>
         public string ResolvedEndpoint()
