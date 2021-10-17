@@ -83,6 +83,7 @@ export default class DashboardView extends Vue {
                 however, you will not receive notifications. Visit the
                 <router-link
                     id="profilePageLink"
+                    data-testid="profileLinkDashboard"
                     variant="primary"
                     to="/profile"
                     >Profile Page</router-link
@@ -107,7 +108,11 @@ export default class DashboardView extends Vue {
         <h2>What do you want to focus on today?</h2>
         <b-row>
             <b-col md="6" class="p-3">
-                <hg-card-button title="BC Vaccine Card" to="/covid19">
+                <hg-card-button
+                    title="BC Vaccine Card"
+                    to="/covid19"
+                    data-testid="bcVaccineCard"
+                >
                     <template #icon>
                         <hg-icon
                             class="checkmark"
@@ -124,7 +129,11 @@ export default class DashboardView extends Vue {
                 </hg-card-button>
             </b-col>
             <b-col md="6" class="p-3">
-                <hg-card-button title="Health Records" to="/timeline">
+                <hg-card-button
+                    title="Health Records"
+                    to="/timeline"
+                    data-testid="healthRecordsCard"
+                >
                     <template #icon>
                         <img
                             class="health-gateway-logo"

@@ -26,4 +26,15 @@ describe("Bookmark", () => {
         );
         cy.url().should("include", path);
     });
+
+    it("Redirect to Dashboard", () => {
+        let path = "/dashboard";
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            path
+        );
+        cy.url().should("include", path);
+    });
 });
