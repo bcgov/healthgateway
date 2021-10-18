@@ -81,7 +81,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
         cy.get("[data-testid=dose-3]").should("not.exist");
     });
 
-    it("Vaccination Card - Save Image - Wallet Export Enabled - Keycloak user", () => {
+    it("Vaccination Card - Save Image - Wallet Export Enabled - Keycloak", () => {
         cy.enableModules([
             "Immunization",
             "VaccinationStatus",
