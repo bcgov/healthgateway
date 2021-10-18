@@ -13,7 +13,7 @@ describe("Bookmark", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            path
+            profilePath
         );
         cy.url().should("include", profilePath);
     });
@@ -23,7 +23,7 @@ describe("Bookmark", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            path
+            healthInsightsPath
         );
         cy.url().should("include", healthInsightsPath);
     });
@@ -33,7 +33,7 @@ describe("Bookmark", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            path
+            dashboardPath
         );
         cy.url().should("include", dashboardPath);
     });
