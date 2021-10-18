@@ -14,13 +14,11 @@ describe("Authenticated User - Dashboard Page", () => {
         );
 
         cy.contains("h2", "What do you want to focus on today?");
-        cy.get("[data-testid=bcVaccineCard]").should("be.visible");
-        cy.get("[data-testid=healthRecordsCard]").should("be.visible");
+        cy.get("[data-testid=bc-vaccine-card-btn]").should("be.visible");
+        cy.get("[data-testid=health-records-card-btn]").should("be.visible");
 
         cy.contains("h4", "Verify Contact Information");
-        cy.get("[data-testid=profileLinkDashboard]")
-            .should("be.visible")
-            .click();
+        cy.get("[data-testid=profile-page-link]").should("be.visible").click();
 
         cy.url().should("include", profileUrl);
     });
@@ -33,7 +31,9 @@ describe("Authenticated User - Dashboard Page", () => {
             dashboardUrl
         );
 
-        cy.get("[data-testid=bcVaccineCard]").should("be.visible").click();
+        cy.get("[data-testid=bc-vaccine-card-btn]")
+            .should("be.visible")
+            .click();
 
         cy.url().should("include", covid19Url);
     });
@@ -46,7 +46,9 @@ describe("Authenticated User - Dashboard Page", () => {
             dashboardUrl
         );
 
-        cy.get("[data-testid=healthRecordsCard]").should("be.visible").click();
+        cy.get("[data-testid=health-records-card-btn]")
+            .should("be.visible")
+            .click();
 
         cy.url().should("include", timelineUrl);
     });
