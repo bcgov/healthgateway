@@ -52,6 +52,9 @@ export default class DashboardView extends Vue {
     private showSensitiveDocumentDownloadModal() {
         this.sensitivedocumentDownloadModal.showModal();
     }
+    private download() {
+        //TODO When the service is ready
+    }
 }
 </script>
 
@@ -184,6 +187,7 @@ export default class DashboardView extends Vue {
             ref="sensitivedocumentDownloadModal"
             title="Sensitive Document Download"
             message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+            @submit="download"
         />
     </div>
 </template>
