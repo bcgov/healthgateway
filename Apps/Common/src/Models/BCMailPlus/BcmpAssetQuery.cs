@@ -13,23 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Models
+namespace HealthGateway.Common.Models.BCMailPlus
 {
-    using HealthGateway.Common.Constants;
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents the data required to generate a Vaccine Proof.
+    /// The BC Mail Plus asset query model.
     /// </summary>
-    public class VaccineProofRequest
+    public class BcmpAssetQuery
     {
         /// <summary>
-        /// Gets or sets the Vaccination Status.
+        /// Gets or sets the ID of the job corresponding to the asset to retrieve.
         /// </summary>
-        public VaccinationStatus Status { get; set; }
+        [JsonPropertyName("job")]
+        public string JobId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the SmartHealthCard QR code as a base64-encoded image.
+        /// Gets or sets the asset type that should be retrieved.
         /// </summary>
-        public string SmartHealthCardQr { get; set; } = null!;
+        [JsonPropertyName("asset")]
+        public string AssetType { get; set; } = string.Empty;
     }
 }
