@@ -35,5 +35,17 @@ namespace HealthGateway.Common.Constants
         /// </summary>
         [EnumMember(Value = "Partially")]
         Partially,
+
+        /// <summary>
+        /// The status code for an exempt individual.
+        /// </summary>
+        [EnumMember(Value = "Exempt")]
+        Exempt,
+
+        /// <summary>
+        /// The status code that represents an unknown state.
+        /// </summary>
+        [EnumMember(Value = "Unknown")]
+        Unknown,
     }
 }
