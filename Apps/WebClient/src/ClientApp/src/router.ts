@@ -43,6 +43,8 @@ const RegistrationInfoView = () =>
     import(
         /* webpackChunkName: "registrationInfo" */ "@/views/registrationInfo.vue"
     );
+const DashboardView = () =>
+    import(/* webpackChunkName: "dashboard" */ "@/views/dashboard.vue");
 const TimelineView = () =>
     import(/* webpackChunkName: "timeline" */ "@/views/timeline.vue");
 const Covid19View = () =>
@@ -182,6 +184,13 @@ const routes = [
         component: ProfileView,
         meta: {
             validStates: [UserState.registered, UserState.pendingDeletion],
+        },
+    },
+    {
+        path: "/dashboard",
+        component: DashboardView,
+        meta: {
+            validStates: [UserState.registered],
         },
     },
     {
