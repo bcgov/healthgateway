@@ -221,20 +221,22 @@ export const actions: VaccinationStatusActions = {
             );
 
         return new Promise((resolve, reject) => {
+            logger.debug(`Retrieving Vaccination Record`);
+            context.commit("setAuthenticatedVaccineRecordRequested");
             vaccinationStatusService
                 .getAuthenticatedVaccineRecord(params.hdid)
                 .then((result) => {
                     if (result.resultStatus === ResultType.Success) {
                         const payload = result.resourcePayload;
                         if (!payload.loaded && payload.retryin > 0) {
-                            logger.info("Vaccination Retrieve PDF not loaded");
+                            logger.info("Vaccination Record not loaded");
                             context.commit(
-                                "retrieveAuthenticatedVaccineRecord",
-                                "We're busy but will continue to try to download the Vaccine Card PDF...."
+                                "setAuthenticatedVaccineRecordStatusMessage",
+                                "We're busy but will continue to try to download the Vaccine Record...."
                             );
                             setTimeout(() => {
                                 logger.info(
-                                    "Re-querying for downloading the Vaccine Card PDF"
+                                    "Re-querying for downloading the Vaccine Record"
                                 );
                                 context.dispatch(
                                     "retrieveAuthenticatedVaccineRecord",
@@ -287,7 +289,7 @@ export const actions: VaccinationStatusActions = {
 
         logger.error(`ERROR: ${JSON.stringify(error)}`);
         context.commit(
-            "authenticatedPdfError",
+            "setAuthenticatedVaccineRecordError",
             ErrorTranslator.toBannerError(
                 "Error Retrieving Vaccine Record",
                 error

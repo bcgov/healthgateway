@@ -123,18 +123,22 @@ export interface VaccinationStatusMutations
         state: VaccinationStatusState,
         error: BannerError
     ): void;
-    setAuthenticatedPdfRequested(state: VaccinationStatusState): void;
-    authenticatedPdfError(
-        state: VaccinationStatusState,
-        error: BannerError
-    ): void;
     setAuthenticatedStatusMessage(
+        state: VaccinationStatusState,
+        statusMessage: string
+    ): void;
+    setAuthenticatedVaccineRecordRequested(state: VaccinationStatusState): void;
+    setAuthenticatedVaccineRecordStatusMessage(
         state: VaccinationStatusState,
         statusMessage: string
     ): void;
     setAuthenticatedVaccineRecord(
         state: VaccinationStatusState,
         vaccineRecord: CovidVaccineRecord
+    ): void;
+    setAuthenticatedVaccineRecordError(
+        state: VaccinationStatusState,
+        error: BannerError
     ): void;
 }
 

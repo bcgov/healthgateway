@@ -97,6 +97,16 @@ export default class Covid19View extends Vue {
     @Getter("authenticatedVaccineRecord", { namespace: "vaccinationStatus" })
     vaccineRecord!: CovidVaccineRecord | undefined;
 
+    @Getter("authenticatedVaccineRecordIsLoading", {
+        namespace: "vaccinationStatus",
+    })
+    vaccineRecordIsLoading!: boolean;
+
+    @Getter("authenticatedVaccineRecordStatusMessage", {
+        namespace: "vaccinationStatus",
+    })
+    vaccineRecordStatusMessage!: string;
+
     @Ref("vaccineCardMessageModal")
     readonly vaccineCardMessageModal!: MessageModalComponent;
 
@@ -105,7 +115,6 @@ export default class Covid19View extends Vue {
 
     private logger!: ILogger;
     private isDownloading = false;
-    private isVaccineRecordLoading = false;
     private isImmunizationHistoryShown = false;
 
     private get doses(): Dose[] {
@@ -134,8 +143,10 @@ export default class Covid19View extends Vue {
     }
 
     private get loadingStatusMessage(): string {
-        return this.isDownloading || this.isVaccineRecordLoading
+        return this.isDownloading
             ? "Downloading...."
+            : this.vaccineRecordIsLoading
+            ? this.vaccineRecordStatusMessage
             : this.vaccinationStatusMessage;
     }
 
@@ -172,7 +183,7 @@ export default class Covid19View extends Vue {
         return (
             this.isVaccinationStatusLoading ||
             this.isHistoryLoading ||
-            this.isVaccineRecordLoading
+            this.vaccineRecordIsLoading
         );
     }
 
@@ -239,19 +250,14 @@ export default class Covid19View extends Vue {
             const mimeType = this.vaccineRecord.document.mediaType;
             const downloadLink = `data:${mimeType};base64,${this.vaccineRecord.document.data}`;
             fetch(downloadLink).then((res) => {
-                res.blob()
-                    .then((blob) => {
-                        saveAs(blob, "BCVaccineRecord.pdf");
-                    })
-                    .finally(() => {
-                        this.isVaccineRecordLoading = false;
-                    });
+                res.blob().then((blob) => {
+                    saveAs(blob, "BCVaccineRecord.pdf");
+                });
             });
         }
     }
 
     private retrieveVaccinePdf() {
-        this.isVaccineRecordLoading = true;
         this.retrieveAuthenticatedVaccineRecord({ hdid: this.user.hdid });
     }
 
@@ -301,9 +307,7 @@ export default class Covid19View extends Vue {
 <template>
     <div class="background flex-grow-1 d-flex flex-column">
         <loading
-            :is-loading="
-                isLoading || isDownloading || isVaccineRecordPDFLoading
-            "
+            :is-loading="isLoading || isDownloading || vaccineRecordIsLoading"
             :text="loadingStatusMessage"
         />
         <div
