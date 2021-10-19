@@ -287,13 +287,17 @@ export const actions: VaccinationStatusActions = {
     handleAuthenticatedPdfError(context, error: ResultError) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
+        const title = "Error Retrieving Vaccine Record";
+
         logger.error(`ERROR: ${JSON.stringify(error)}`);
         context.commit(
             "setAuthenticatedVaccineRecordError",
-            ErrorTranslator.toBannerError(
-                "Error Retrieving Vaccine Record",
-                error
-            )
+            ErrorTranslator.toBannerError(title, error)
+        );
+        context.dispatch(
+            "errorBanner/addResultError",
+            { message: title, error },
+            { root: true }
         );
     },
 };
