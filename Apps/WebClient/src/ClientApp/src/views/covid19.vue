@@ -183,7 +183,8 @@ export default class Covid19View extends Vue {
         return (
             this.isVaccinationStatusLoading ||
             this.isHistoryLoading ||
-            this.vaccineRecordIsLoading
+            this.vaccineRecordIsLoading ||
+            this.isDownloading
         );
     }
 
@@ -206,6 +207,13 @@ export default class Covid19View extends Vue {
         return this.formatDate(this.vaccinationStatus?.birthdate ?? undefined);
     }
 
+    private get saveDropdownShown(): boolean {
+        return this.saveWalletShown || this.saveExportPdfShown;
+    }
+
+    private get saveCopyButtonShown(): boolean {
+        return !this.saveExportPdfShown && !this.saveWalletShown;
+    }
     private formatDate(date: string | undefined): string {
         return date === undefined
             ? ""
@@ -310,10 +318,7 @@ export default class Covid19View extends Vue {
 
 <template>
     <div class="background flex-grow-1 d-flex flex-column">
-        <loading
-            :is-loading="isLoading || isDownloading || vaccineRecordIsLoading"
-            :text="loadingStatusMessage"
-        />
+        <loading :is-loading="isLoading" :text="loadingStatusMessage" />
         <div
             v-if="!isVaccineCardLoading && !vaccinationStatusError"
             v-show="!isImmunizationHistoryShown"
@@ -336,7 +341,7 @@ export default class Covid19View extends Vue {
                     "
                 >
                     <hg-button
-                        v-if="!saveExportPdfShown && !saveWalletShown"
+                        v-if="saveCopyButtonShown"
                         data-testid="save-card-btn"
                         aria-label="Save a Copy"
                         variant="primary"
@@ -345,7 +350,7 @@ export default class Covid19View extends Vue {
                         Save a Copy
                     </hg-button>
                     <hg-dropdown
-                        v-if="saveWalletShown || saveExportPdfShown"
+                        v-if="saveDropdownShown"
                         text="Save"
                         variant="primary"
                         data-testid="save-dropdown-btn"
