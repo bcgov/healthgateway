@@ -2,21 +2,29 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCheckCircle, faSearch } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Ref } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
+import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";
 
 library.add(faSearch, faCheckCircle);
 
-@Component
+@Component({
+    components: {
+        MessageModalComponent,
+    },
+})
 export default class DashboardView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
     @Getter("user", { namespace: "user" }) user!: User;
+
+    @Ref("sensitivedocumentDownloadModal")
+    readonly sensitivedocumentDownloadModal!: MessageModalComponent;
 
     private get unverifiedEmail(): boolean {
         return !this.user.verifiedEmail && this.user.hasEmail;
@@ -39,6 +47,10 @@ export default class DashboardView extends Vue {
         }
 
         return new Date().getTimezoneOffset() / 60 === timeZoneHourOffset;
+    }
+
+    private showSensitiveDocumentDownloadModal() {
+        this.sensitivedocumentDownloadModal.showModal();
     }
 }
 </script>
@@ -107,7 +119,7 @@ export default class DashboardView extends Vue {
         <page-title title="Dashboard" />
         <h2>What do you want to focus on today?</h2>
         <b-row>
-            <b-col md="6" class="p-3">
+            <b-col md="4" class="p-3">
                 <hg-card-button
                     title="BC Vaccine Card"
                     to="/covid19"
@@ -128,7 +140,7 @@ export default class DashboardView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-            <b-col md="6" class="p-3">
+            <b-col md="4" class="p-3">
                 <hg-card-button
                     title="Health Records"
                     to="/timeline"
@@ -148,7 +160,32 @@ export default class DashboardView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
+            <b-col md="4" class="p-3">
+                <hg-card-button
+                    title="Proof of Vaccination"
+                    data-testid="proof-vaccination-card-btn"
+                    @click="showSensitiveDocumentDownloadModal()"
+                >
+                    <template #icon>
+                        <img
+                            class="canada-government-logo"
+                            src="@/assets/images/gov/canada-gov-logo.svg"
+                            alt="Canada Government Logo"
+                        />
+                    </template>
+                    <div>
+                        Download and print your Federal Proof of Vacination
+                        Certificate (PVC) for domestic and international travel.
+                    </div>
+                </hg-card-button>
+            </b-col>
         </b-row>
+        <MessageModalComponent
+            ref="sensitivedocumentDownloadModal"
+            title="Sensitive Document Download"
+            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+            @submit="download"
+        />
     </div>
 </template>
 
@@ -159,6 +196,10 @@ export default class DashboardView extends Vue {
     .health-gateway-logo {
         height: 2em;
         width: 2em;
+    }
+
+    .canada-government-logo {
+        height: 2em;
     }
 
     .checkmark {
