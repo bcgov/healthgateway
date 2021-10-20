@@ -247,6 +247,10 @@ export default class Covid19View extends Vue {
     @Watch("vaccineRecord")
     private saveVaccinePdf() {
         if (this.vaccineRecord !== undefined) {
+            SnowPlow.trackEvent({
+                action: "download_card",
+                text: "COVID Card PDF",
+            });
             const mimeType = this.vaccineRecord.document.mediaType;
             const downloadLink = `data:${mimeType};base64,${this.vaccineRecord.document.data}`;
             fetch(downloadLink).then((res) => {
@@ -268,7 +272,7 @@ export default class Covid19View extends Vue {
             this.isDownloading = true;
             SnowPlow.trackEvent({
                 action: "download_card",
-                text: "COVID Card PDF",
+                text: "COVID Card Image",
             });
             html2canvas(printingArea, {
                 scale: 2,
