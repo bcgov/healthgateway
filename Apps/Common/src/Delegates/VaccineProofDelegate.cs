@@ -292,7 +292,7 @@ namespace HealthGateway.Common.Delegates
                 {
                     case HttpStatusCode.OK:
 
-                        if (payload.StartsWith("ERROR: "))
+                        if (payload.StartsWith("ERROR: ", StringComparison.InvariantCulture))
                         {
                             this.logger.LogError($"Error Details:{Environment.NewLine}{payload}");
                             retVal.ResultError = new RequestResultError() { ResultMessage = $"Error encountered from BC Mail Plus", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };

@@ -49,6 +49,16 @@ namespace HealthGateway.Common.Models
         public string Token { get; set; } = null!;
 
         /// <summary>
+        /// Gets or sets the default time to wait for a new request.
+        /// </summary>
+        public int BackOffMilliseconds { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum number of retries.
+        /// </summary>
+        public int MaxRetries { get; set; }
+
+        /// <summary>
         /// Gets or sets the Schema Version to use.
         /// </summary>
         public string SchemaVersion { get; set; } = null!;

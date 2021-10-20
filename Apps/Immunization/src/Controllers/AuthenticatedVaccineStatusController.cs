@@ -18,6 +18,7 @@ namespace HealthGateway.Immunization.Controllers
     using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
@@ -82,6 +83,7 @@ namespace HealthGateway.Immunization.Controllers
         /// Requests the COVID-19 vaccine record for the supplied HDID if the user is the owner.
         /// </summary>
         /// <param name="hdid">The patient's HDID.</param>
+        /// <param name="proofTemplate">The template to use for the generated vaccine proof.</param>
         /// <returns>The PDF Vaccine Record.</returns>
         /// <response code="200">Returns the vaccine record.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -91,10 +93,10 @@ namespace HealthGateway.Immunization.Controllers
         [Produces("application/json")]
         [Route("pdf")]
         [Authorize(Policy = ImmunizationPolicy.Read)]
-        public async Task<IActionResult> GetVaccineRecordPdf([FromQuery] string hdid)
+        public async Task<IActionResult> GetVaccineRecordPdf([FromQuery] string hdid, [FromQuery]VaccineProofTemplate proofTemplate)
         {
             this.logger.LogDebug($"Getting vaccine record for HDID {hdid}");
-            RequestResult<CovidVaccineRecord> result = await this.service.GetCovidVaccineRecord(hdid).ConfigureAwait(true);
+            RequestResult<CovidVaccineRecord> result = await this.service.GetCovidVaccineRecord(hdid, proofTemplate).ConfigureAwait(true);
 
             this.logger.LogDebug($"Finished getting vaccine record for HDID {hdid}");
             return new JsonResult(result);
