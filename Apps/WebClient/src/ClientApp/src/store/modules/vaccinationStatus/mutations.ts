@@ -1,4 +1,5 @@
 import BannerError from "@/models/bannerError";
+import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
@@ -64,18 +65,37 @@ export const mutations: VaccinationStatusMutations = {
         state.authenticated.status = LoadStatus.ERROR;
         state.authenticated.statusMessage = "";
     },
-    setAuthenticatedPdfRequested(state: VaccinationStatusState) {
-        state.authenticated.error = undefined;
-        state.authenticated.statusMessage = "";
-    },
-    authenticatedPdfError(state: VaccinationStatusState, error: BannerError) {
-        state.authenticated.error = error;
-        state.authenticated.status = LoadStatus.ERROR;
-    },
     setAuthenticatedStatusMessage(
         state: VaccinationStatusState,
         statusMessage: string
     ) {
         state.authenticated.statusMessage = statusMessage;
+    },
+    setAuthenticatedVaccineRecordRequested(state: VaccinationStatusState) {
+        state.authenticatedVaccineRecord.error = undefined;
+        state.authenticatedVaccineRecord.status = LoadStatus.REQUESTED;
+        state.authenticatedVaccineRecord.statusMessage = "";
+    },
+    setAuthenticatedVaccineRecordStatusMessage(
+        state: VaccinationStatusState,
+        statusMessage: string
+    ) {
+        state.authenticatedVaccineRecord.statusMessage = statusMessage;
+    },
+    setAuthenticatedVaccineRecord(
+        state: VaccinationStatusState,
+        vaccineRecord: CovidVaccineRecord
+    ) {
+        state.authenticatedVaccineRecord.vaccinationRecord = vaccineRecord;
+        state.authenticatedVaccineRecord.status = LoadStatus.LOADED;
+        state.authenticatedVaccineRecord.statusMessage = "";
+        state.authenticatedVaccineRecord.error = undefined;
+    },
+    setAuthenticatedVaccineRecordError(
+        state: VaccinationStatusState,
+        error: BannerError
+    ) {
+        state.authenticatedVaccineRecord.error = error;
+        state.authenticatedVaccineRecord.status = LoadStatus.ERROR;
     },
 };

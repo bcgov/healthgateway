@@ -212,20 +212,45 @@ export const actions: VaccinationStatusActions = {
             hdid: string;
         }
     ): Promise<CovidVaccineRecord> {
-        context.commit("setAuthenticatedPdfRequested");
-
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         const vaccinationStatusService: IVaccinationStatusService =
             container.get<IVaccinationStatusService>(
                 SERVICE_IDENTIFIER.VaccinationStatusService
             );
 
         return new Promise((resolve, reject) => {
+            logger.debug(`Retrieving Vaccination Record`);
+            context.commit("setAuthenticatedVaccineRecordRequested");
             vaccinationStatusService
                 .getAuthenticatedVaccineRecord(params.hdid)
                 .then((result) => {
                     if (result.resultStatus === ResultType.Success) {
                         const payload = result.resourcePayload;
-                        resolve(payload);
+                        if (!payload.loaded && payload.retryin > 0) {
+                            logger.info("Vaccination Record not loaded");
+                            context.commit(
+                                "setAuthenticatedVaccineRecordStatusMessage",
+                                "We're busy but will continue to try to download the Vaccine Record...."
+                            );
+                            setTimeout(() => {
+                                logger.info(
+                                    "Re-querying for downloading the Vaccine Record"
+                                );
+                                context.dispatch(
+                                    "retrieveAuthenticatedVaccineRecord",
+                                    {
+                                        hdid: params.hdid,
+                                    }
+                                );
+                            }, payload.retryin);
+                            resolve(payload);
+                        } else {
+                            context.commit(
+                                "setAuthenticatedVaccineRecord",
+                                payload
+                            );
+                            resolve(payload);
+                        }
                     } else {
                         context.dispatch(
                             "handleAuthenticatedPdfError",
@@ -260,13 +285,17 @@ export const actions: VaccinationStatusActions = {
     handleAuthenticatedPdfError(context, error: ResultError) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
+        const title = "Error Retrieving Vaccine Record";
+
         logger.error(`ERROR: ${JSON.stringify(error)}`);
         context.commit(
-            "authenticatedPdfError",
-            ErrorTranslator.toBannerError(
-                "Error Retrieving Vaccine Record",
-                error
-            )
+            "setAuthenticatedVaccineRecordError",
+            ErrorTranslator.toBannerError(title, error)
+        );
+        context.dispatch(
+            "errorBanner/addResultError",
+            { message: title, error },
+            { root: true }
         );
     },
 };
