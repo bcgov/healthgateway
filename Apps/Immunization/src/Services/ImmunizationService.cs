@@ -119,10 +119,7 @@ namespace HealthGateway.Immunization.Services
         /// <inheritdoc/>
         public async Task<RequestResult<CovidVaccineRecord>> GetCovidVaccineRecord(string hdid, VaccineProofTemplate proofTemplate)
         {
-            RequestResult<CovidVaccineRecord> retVal = new ()
-            {
-                ResultStatus = ResultType.Error,
-            };
+            RequestResult<CovidVaccineRecord> retVal;
 
             // Gets the current user access token and pass it along to PHSA
             string? bearerToken = await this.httpContextAccessor.HttpContext!.GetTokenAsync("access_token").ConfigureAwait(true);
@@ -131,10 +128,11 @@ namespace HealthGateway.Immunization.Services
             VaccineStatusResult? vaccineStatusResult = statusResult.ResourcePayload?.Result;
             if (statusResult.ResultStatus == ResultType.Success && vaccineStatusResult != null && loadState != null && !loadState.RefreshInProgress)
             {
-                this.GetVaccineProof(vaccineStatusResult, proofTemplate, retVal);
+                retVal = await this.GetVaccineProof(vaccineStatusResult, proofTemplate).ConfigureAwait(true);
             }
             else
             {
+                retVal = new ();
                 if (loadState != null)
                 {
                     retVal.ResourcePayload = new CovidVaccineRecord();
@@ -205,8 +203,12 @@ namespace HealthGateway.Immunization.Services
             }
         }
 
-        private void GetVaccineProof(VaccineStatusResult vaccineStatusResult, VaccineProofTemplate proofTemplate, RequestResult<CovidVaccineRecord> retVal)
+        private async Task<RequestResult<CovidVaccineRecord>> GetVaccineProof(VaccineStatusResult vaccineStatusResult, VaccineProofTemplate proofTemplate)
         {
+            RequestResult<CovidVaccineRecord> retVal = new ()
+            {
+                ResultStatus = ResultType.Error,
+            };
             VaccineState state = Enum.Parse<VaccineState>(vaccineStatusResult.StatusIndicator);
             if (state == VaccineState.NotFound || state == VaccineState.DataMismatch || state == VaccineState.Threshold || state == VaccineState.Blocked)
             {
@@ -227,10 +229,10 @@ namespace HealthGateway.Immunization.Services
                     VaccineProofRequest request = new ()
                     {
                         Status = requestState,
-                        SmartHealthCardQr = vaccineStatusResult.QRCode.Data,
+                        SmartHealthCardQr = vaccineStatusResult.QRCode.Data ?? string.Empty,
                     };
 
-                    RequestResult<VaccineProofResponse> proofResult = this.vpDelegate.Generate(proofTemplate, request);
+                    RequestResult<VaccineProofResponse> proofResult = await this.vpDelegate.GenerateAsync(proofTemplate, request).ConfigureAwait(true);
                     if (proofResult.ResultStatus == ResultType.Success && proofResult.ResourcePayload != null)
                     {
                         RequestResult<VaccineProofResponse> proofStatus;
@@ -238,11 +240,11 @@ namespace HealthGateway.Immunization.Services
                         int retryCount = 0;
                         do
                         {
-                            proofStatus = this.vpDelegate.GetStatus(proofResult.ResourcePayload.Id);
+                            proofStatus = await this.vpDelegate.GetStatusAsync(proofResult.ResourcePayload.Id).ConfigureAwait(true);
 
                             processing = proofStatus.ResultStatus == ResultType.Success &&
-                                                proofStatus.ResourcePayload != null &&
-                                                proofStatus.ResourcePayload.Status == VaccineProofRequestStatus.Started;
+                                         proofStatus.ResourcePayload != null &&
+                                         proofStatus.ResourcePayload.Status == VaccineProofRequestStatus.Started;
                             if (processing)
                             {
                                 Thread.Sleep(this.bcmpConfig.BackOffMilliseconds);
@@ -252,7 +254,7 @@ namespace HealthGateway.Immunization.Services
                         if (proofStatus.ResultStatus == ResultType.Success)
                         {
                             // Get the Asset
-                            RequestResult<ReportModel> assetResult = this.vpDelegate.GetAsset(proofResult.ResourcePayload.Id);
+                            RequestResult<ReportModel> assetResult = await this.vpDelegate.GetAssetAsync(proofResult.ResourcePayload.Id).ConfigureAwait(true);
                             if (assetResult.ResultStatus == ResultType.Success && assetResult.ResourcePayload != null)
                             {
                                 EncodedMedia document = new ()
@@ -271,24 +273,26 @@ namespace HealthGateway.Immunization.Services
                             }
                             else
                             {
-                                retVal.ResultError = new RequestResultError() { ResultMessage = "Error retrieving vaccine proof pdf", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMailPlus) };
+                                retVal.ResultError = new RequestResultError() { ResultMessage = "Error retrieving vaccine proof pdf", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
                             }
                         }
                         else
                         {
-                            retVal.ResultError = new RequestResultError() { ResultMessage = "Error retrieving vaccine proof pdf status", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMailPlus) };
+                            retVal.ResultError = new RequestResultError() { ResultMessage = "Error retrieving vaccine proof pdf status", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
                         }
                     }
                     else
                     {
-                        retVal.ResultError = new RequestResultError() { ResultMessage = "Unable to generate vaccine proof pdf", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMailPlus) };
+                        retVal.ResultError = new RequestResultError() { ResultMessage = "Unable to generate vaccine proof pdf", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
                     }
                 }
                 else
                 {
-                    retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine status is unknown", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMailPlus) };
+                    retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine status is unknown", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
                 }
             }
+
+            return retVal;
         }
     }
 }

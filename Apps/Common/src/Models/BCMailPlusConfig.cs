@@ -57,7 +57,7 @@ namespace HealthGateway.Common.Models
         /// Gets or sets the maximum number of retries.
         /// </summary>
         public int MaxRetries { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the Schema Version to use.
         /// </summary>
