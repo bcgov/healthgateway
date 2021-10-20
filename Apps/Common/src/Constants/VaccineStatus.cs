@@ -25,6 +25,12 @@ namespace HealthGateway.Common.Constants
     public enum VaccinationStatus
     {
         /// <summary>
+        /// The status code that represents an unknown state.
+        /// </summary>
+        [EnumMember(Value = "Unknown")]
+        Unknown,
+
+        /// <summary>
         /// The status code for a fully vaccinated individual.
         /// </summary>
         [EnumMember(Value = "Fully")]
@@ -41,11 +47,5 @@ namespace HealthGateway.Common.Constants
         /// </summary>
         [EnumMember(Value = "Exempt")]
         Exempt,
-
-        /// <summary>
-        /// The status code that represents an unknown state.
-        /// </summary>
-        [EnumMember(Value = "Unknown")]
-        Unknown,
     }
 }

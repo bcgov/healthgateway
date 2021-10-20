@@ -229,7 +229,7 @@ namespace HealthGateway.Immunization.Services
                     VaccineProofRequest request = new ()
                     {
                         Status = requestState,
-                        SmartHealthCardQr = vaccineStatusResult.QRCode.Data ?? string.Empty,
+                        SmartHealthCardQr = vaccineStatusResult.QRCode.Data!,
                     };
 
                     RequestResult<VaccineProofResponse> proofGenerate = await this.vpDelegate.GenerateAsync(proofTemplate, request).ConfigureAwait(true);
