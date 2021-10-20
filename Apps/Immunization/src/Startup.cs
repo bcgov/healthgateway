@@ -66,6 +66,7 @@ namespace HealthGateway.Immunization
             services.AddMemoryCache();
             services.AddTransient<IImmunizationService, ImmunizationService>();
             services.AddTransient<IVaccineStatusService, VaccineStatusService>();
+            services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
 
             // Add delegates
             services.AddTransient<Delegates.IImmunizationDelegate, Delegates.RestImmunizationDelegate>();
