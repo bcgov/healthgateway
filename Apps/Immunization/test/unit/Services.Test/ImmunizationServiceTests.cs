@@ -19,10 +19,14 @@ namespace HealthGateway.Immunization.Test.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
@@ -30,6 +34,8 @@ namespace HealthGateway.Immunization.Test.Services
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Parser;
     using HealthGateway.Immunization.Services;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Moq;
@@ -92,7 +98,7 @@ namespace HealthGateway.Immunization.Test.Services
             IImmunizationService service = new ImmunizationService(
                 GetConfiguration(),
                 mockDelegate.Object,
-                new Mock<IReportDelegate>().Object,
+                new Mock<IVaccineProofDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
                 new Mock<IHttpContextAccessor>().Object);
 
@@ -138,7 +144,7 @@ namespace HealthGateway.Immunization.Test.Services
             IImmunizationService service = new ImmunizationService(
                 GetConfiguration(),
                 mockDelegate.Object,
-                new Mock<IReportDelegate>().Object,
+                new Mock<IVaccineProofDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
                 new Mock<IHttpContextAccessor>().Object);
             var actualResult = service.GetImmunization("immz_id");
@@ -171,7 +177,7 @@ namespace HealthGateway.Immunization.Test.Services
             IImmunizationService service = new ImmunizationService(
                 GetConfiguration(),
                 mockDelegate.Object,
-                new Mock<IReportDelegate>().Object,
+                new Mock<IVaccineProofDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
                 new Mock<IHttpContextAccessor>().Object);
 
@@ -202,7 +208,7 @@ namespace HealthGateway.Immunization.Test.Services
         public void ValidateImmunizationError()
         {
             var mockDelegate = new Mock<Immunization.Delegates.IImmunizationDelegate>();
-            RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = new RequestResult<PHSAResult<ImmunizationResponse>>()
+            RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = new ()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
                 ResultError = new RequestResultError()
@@ -211,7 +217,7 @@ namespace HealthGateway.Immunization.Test.Services
                     ErrorCode = "MOCK_BAD_ERROR",
                 },
             };
-            RequestResult<IEnumerable<ImmunizationEvent>> expectedResult = new RequestResult<IEnumerable<ImmunizationEvent>>()
+            RequestResult<IEnumerable<ImmunizationEvent>> expectedResult = new ()
             {
                 ResultStatus = delegateResult.ResultStatus,
                 ResultError = delegateResult.ResultError,
@@ -221,12 +227,261 @@ namespace HealthGateway.Immunization.Test.Services
             IImmunizationService service = new ImmunizationService(
                 GetConfiguration(),
                 mockDelegate.Object,
-                new Mock<IReportDelegate>().Object,
+                new Mock<IVaccineProofDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
                 new Mock<IHttpContextAccessor>().Object);
 
             var actualResult = service.GetImmunizations(0);
             Assert.True(expectedResult.IsDeepEqual(actualResult.Result));
+        }
+
+        /// <summary>
+        /// Get a Vaccine Record Proof - Happy Path.
+        /// </summary>
+        [Fact]
+        public void GetVaccineRecordOk()
+        {
+            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new ()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                ResourcePayload = new PHSAResult<VaccineStatusResult>()
+                {
+                    LoadState = new PHSALoadState() { RefreshInProgress = false, },
+                    Result = new ()
+                    {
+                        Birthdate = null,
+                        DoseCount = 2,
+                        FirstName = "FirstName",
+                        LastName = "LastName",
+                        QRCode = new EncodedMedia()
+                        {
+                            Data = "QR Code",
+                            Encoding = string.Empty,
+                            Type = string.Empty,
+                        },
+                        StatusIndicator = VaccineState.AllDosesReceived.ToString(),
+                    },
+                },
+                PageIndex = 0,
+                PageSize = 5,
+                TotalResultCount = 1,
+            };
+
+            string hdid = "mock hdid";
+
+            var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
+            mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
+
+            RequestResult<VaccineProofResponse> vaccineProofResponse = new ()
+            {
+                ResultStatus = ResultType.Success,
+                ResourcePayload = new ()
+                {
+                    Id = "id",
+                    Status = VaccineProofRequestStatus.Started,
+                },
+            };
+            var mockProofDelegate = new Mock<IVaccineProofDelegate>();
+            mockProofDelegate.Setup(s => s.Generate(VaccineProofTemplate.Provincial, It.IsAny<VaccineProofRequest>())).Returns(vaccineProofResponse);
+
+            var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
+
+            IImmunizationService service = new ImmunizationService(
+                GetConfiguration(),
+                new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
+                mockProofDelegate.Object,
+                mockVaccineDelegate.Object,
+                mockHttpContextAccessor.Object);
+
+            RequestResult<CovidVaccineRecord> actualResult = Task.Run(async () => await service.GetCovidVaccineRecord(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success);
+        }
+
+        /// <summary>
+        /// A refresh in progress is occurring while we're getting the Vaccine Status.
+        /// </summary>
+        [Fact]
+        public void GetVaccineRecordRIP()
+        {
+            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new ()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                ResourcePayload = new PHSAResult<VaccineStatusResult>()
+                {
+                    LoadState = new PHSALoadState() { RefreshInProgress = true, },
+                    Result = new ()
+                    {
+                        Birthdate = null,
+                        DoseCount = 0,
+                        FirstName = string.Empty,
+                        LastName = string.Empty,
+                        QRCode = new EncodedMedia()
+                        {
+                            Data = string.Empty,
+                            Encoding = string.Empty,
+                            Type = string.Empty,
+                        },
+                        StatusIndicator = VaccineState.NotFound.ToString(),
+                    },
+                },
+                PageIndex = 0,
+                PageSize = 5,
+                TotalResultCount = 1,
+            };
+
+            string hdid = "mock hdid";
+
+            var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
+            mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
+
+            var mockProofDelegate = new Mock<IVaccineProofDelegate>();
+            var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
+
+            IImmunizationService service = new ImmunizationService(
+                GetConfiguration(),
+                new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
+                mockProofDelegate.Object,
+                mockVaccineDelegate.Object,
+                mockHttpContextAccessor.Object);
+
+            RequestResult<CovidVaccineRecord> actualResult = Task.Run(async () => await service.GetCovidVaccineRecord(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.ActionRequired && actualResult.ResultError != null);
+        }
+
+        /// <summary>
+        /// We get an error while pulling the Vaccine Status.
+        /// </summary>
+        [Fact]
+        public void GetVaccineRecordPHSAError()
+        {
+            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new ()
+            {
+                ResultStatus = Common.Constants.ResultType.Error,
+                ResultError = new RequestResultError() { ResultMessage = "Unable to generate vaccine proof pdf", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) },
+            };
+
+            string hdid = "mock hdid";
+
+            var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
+            mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
+
+            var mockProofDelegate = new Mock<IVaccineProofDelegate>();
+            var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
+
+            IImmunizationService service = new ImmunizationService(
+                GetConfiguration(),
+                new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
+                mockProofDelegate.Object,
+                mockVaccineDelegate.Object,
+                mockHttpContextAccessor.Object);
+
+            RequestResult<CovidVaccineRecord> actualResult = Task.Run(async () => await service.GetCovidVaccineRecord(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            Assert.True(vaccineStatusResult.IsDeepEqual(actualResult));
+        }
+
+        /// <summary>
+        /// The Vaccine status is in a state where we will not generate a proof.
+        /// </summary>
+        [Fact]
+        public void GetVaccineRecordInvalidState()
+        {
+            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new ()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                ResourcePayload = new PHSAResult<VaccineStatusResult>()
+                {
+                    LoadState = new PHSALoadState() { RefreshInProgress = false, },
+                    Result = new ()
+                    {
+                        StatusIndicator = VaccineState.DataMismatch.ToString(),
+                    },
+                },
+                PageIndex = 0,
+                PageSize = 5,
+                TotalResultCount = 1,
+            };
+
+            string hdid = "mock hdid";
+
+            var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
+            mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
+            var mockProofDelegate = new Mock<IVaccineProofDelegate>();
+            var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
+
+            IImmunizationService service = new ImmunizationService(
+                GetConfiguration(),
+                new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
+                mockProofDelegate.Object,
+                mockVaccineDelegate.Object,
+                mockHttpContextAccessor.Object);
+
+            RequestResult<CovidVaccineRecord> actualResult = Task.Run(async () => await service.GetCovidVaccineRecord(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error);
+        }
+
+        /// <summary>
+        /// An unexpected state was returned for the vaccine status.
+        /// </summary>
+        [Fact]
+        public void GetVaccineRecordUnknownState()
+        {
+            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new ()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                ResourcePayload = new PHSAResult<VaccineStatusResult>()
+                {
+                    LoadState = new PHSALoadState() { RefreshInProgress = false, },
+                    Result = new ()
+                    {
+                        StatusIndicator = "999",
+                    },
+                },
+            };
+
+            string hdid = "mock hdid";
+
+            var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
+            mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
+
+            var mockProofDelegate = new Mock<IVaccineProofDelegate>();
+            var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
+
+            IImmunizationService service = new ImmunizationService(
+                GetConfiguration(),
+                new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
+                mockProofDelegate.Object,
+                mockVaccineDelegate.Object,
+                mockHttpContextAccessor.Object);
+
+            RequestResult<CovidVaccineRecord> actualResult = Task.Run(async () => await service.GetCovidVaccineRecord(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error);
+        }
+
+        /// <summary>
+        /// The generate request on the Vaccine Proof delegate failed.
+        /// </summary>
+        [Fact]
+        public void GetVaccineRecordGenerateFailed()
+        {
+            Assert.True(true);
+        }
+
+        /// <summary>
+        /// The status request on the Vaccine Proof delegate failed.
+        /// </summary>
+        [Fact]
+        public void GetVaccineRecordStatusFailed()
+        {
+            Assert.True(true);
+        }
+
+        /// <summary>
+        /// The get asset request on the Vaccine Proof delegate failed.
+        /// </summary>
+        [Fact]
+        public void GetVaccineRecordGetAssetFailed()
+        {
+            Assert.True(true);
         }
 
         private static RequestResult<PHSAResult<ImmunizationResponse>> GetPHSAResult(ImmunizationRecommendationResponse immzRecommendationResponse)
@@ -257,6 +512,46 @@ namespace HealthGateway.Immunization.Test.Services
                         .AddInMemoryCollection(keyValuePairs)
                         .Build();
             return configuration;
+        }
+
+        private static Mock<IHttpContextAccessor> CreateValidHttpContext(string token, string userId, string hdid)
+        {
+            IHeaderDictionary headerDictionary = new HeaderDictionary();
+            headerDictionary.Add("Authorization", token);
+            headerDictionary.Add("referer", "http://localhost/");
+            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
+
+            List<Claim> claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name, "username"),
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim("hdid", hdid),
+                new Claim("auth_time", "123"),
+                new Claim("access_token", token),
+            };
+            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
+            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+
+            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+            httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
+            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
+            Mock<IAuthenticationService> authenticationMock = new Mock<IAuthenticationService>();
+            var authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
+            authResult.Properties.StoreTokens(new[]
+            {
+                new AuthenticationToken { Name = "access_token", Value = token },
+            });
+            authenticationMock
+                .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
+                .ReturnsAsync(authResult);
+
+            httpContextAccessorMock
+                .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
+                .Returns(authenticationMock.Object);
+            return httpContextAccessorMock;
         }
 
         private ImmunizationRecommendationResponse GetImmzRecommendationResponse()

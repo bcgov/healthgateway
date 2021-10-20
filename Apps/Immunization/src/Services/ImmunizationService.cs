@@ -40,7 +40,7 @@ namespace HealthGateway.Immunization.Services
         private const string BCMailPlusConfigSectionKey = "BCMailPlus";
         private const string PHSAConfigSectionKey = "PHSA";
         private readonly Delegates.IImmunizationDelegate immunizationDelegate;
-        private readonly IVaccineProofDelegate reportDelegate;
+        private readonly IVaccineProofDelegate vpDelegate;
         private readonly IVaccineStatusDelegate vaccineDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly PHSAConfig phsaConfig;
@@ -51,18 +51,18 @@ namespace HealthGateway.Immunization.Services
         /// </summary>
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="immunizationDelegate">The factory to create immunization delegates.</param>
-        /// <param name="reportDelegate">The injected delegate to get the vaccine proof.</param>
+        /// <param name="vaccineProofDelegate">The injected delegate to get the vaccine proof.</param>
         /// <param name="vaccineDelegate">The injected vaccine status delegate.</param>
         /// <param name="httpContextAccessor">The injected http context accessor.</param>
         public ImmunizationService(
             IConfiguration configuration,
             Delegates.IImmunizationDelegate immunizationDelegate,
-            IVaccineProofDelegate reportDelegate,
+            IVaccineProofDelegate vaccineProofDelegate,
             IVaccineStatusDelegate vaccineDelegate,
             IHttpContextAccessor httpContextAccessor)
         {
             this.immunizationDelegate = immunizationDelegate;
-            this.reportDelegate = reportDelegate;
+            this.vpDelegate = vaccineProofDelegate;
             this.vaccineDelegate = vaccineDelegate;
             this.httpContextAccessor = httpContextAccessor;
 
@@ -117,7 +117,7 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<CovidVaccineRecord>> GetCovidVaccineRecord(string hdid)
+        public async Task<RequestResult<CovidVaccineRecord>> GetCovidVaccineRecord(string hdid, VaccineProofTemplate proofTemplate)
         {
             RequestResult<CovidVaccineRecord> retVal = new ()
             {
@@ -131,16 +131,21 @@ namespace HealthGateway.Immunization.Services
             VaccineStatusResult? vaccineStatusResult = statusResult.ResourcePayload?.Result;
             if (statusResult.ResultStatus == ResultType.Success && vaccineStatusResult != null && loadState != null && !loadState.RefreshInProgress)
             {
-                this.GetVaccineProof(vaccineStatusResult, retVal);
+                this.GetVaccineProof(vaccineStatusResult, proofTemplate, retVal);
             }
             else
             {
-                retVal.ResultError = statusResult.ResultError;
-                retVal.ResourcePayload = new CovidVaccineRecord();
                 if (loadState != null)
                 {
+                    retVal.ResourcePayload = new CovidVaccineRecord();
+                    retVal.ResultStatus = ResultType.ActionRequired;
+                    retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine status refresh in progress", ActionType.Refresh);
                     retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
                     retVal.ResourcePayload.RetryIn = Math.Max(loadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds);
+                }
+                else
+                {
+                    retVal.ResultError = statusResult.ResultError;
                 }
             }
 
@@ -200,7 +205,7 @@ namespace HealthGateway.Immunization.Services
             }
         }
 
-        private void GetVaccineProof(VaccineStatusResult vaccineStatusResult, RequestResult<CovidVaccineRecord> retVal)
+        private void GetVaccineProof(VaccineStatusResult vaccineStatusResult, VaccineProofTemplate proofTemplate, RequestResult<CovidVaccineRecord> retVal)
         {
             VaccineState state = Enum.Parse<VaccineState>(vaccineStatusResult.StatusIndicator);
             if (state == VaccineState.NotFound || state == VaccineState.DataMismatch || state == VaccineState.Threshold || state == VaccineState.Blocked)
@@ -225,7 +230,7 @@ namespace HealthGateway.Immunization.Services
                         SmartHealthCardQr = vaccineStatusResult.QRCode.Data,
                     };
 
-                    RequestResult<VaccineProofResponse> proofResult = this.reportDelegate.Generate(VaccineProofTemplate.Provincial, request);
+                    RequestResult<VaccineProofResponse> proofResult = this.vpDelegate.Generate(proofTemplate, request);
                     if (proofResult.ResultStatus == ResultType.Success && proofResult.ResourcePayload != null)
                     {
                         RequestResult<VaccineProofResponse> proofStatus;
@@ -233,7 +238,7 @@ namespace HealthGateway.Immunization.Services
                         int retryCount = 0;
                         do
                         {
-                            proofStatus = this.reportDelegate.GetStatus(proofResult.ResourcePayload.Id);
+                            proofStatus = this.vpDelegate.GetStatus(proofResult.ResourcePayload.Id);
 
                             processing = proofStatus.ResultStatus == ResultType.Success &&
                                                 proofStatus.ResourcePayload != null &&
@@ -247,7 +252,7 @@ namespace HealthGateway.Immunization.Services
                         if (proofStatus.ResultStatus == ResultType.Success)
                         {
                             // Get the Asset
-                            RequestResult<ReportModel> assetResult = this.reportDelegate.GetAsset(proofResult.ResourcePayload.Id);
+                            RequestResult<ReportModel> assetResult = this.vpDelegate.GetAsset(proofResult.ResourcePayload.Id);
                             if (assetResult.ResultStatus == ResultType.Success && assetResult.ResourcePayload != null)
                             {
                                 EncodedMedia document = new ()
