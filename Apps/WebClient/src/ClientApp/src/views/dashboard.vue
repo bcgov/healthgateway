@@ -52,9 +52,6 @@ export default class DashboardView extends Vue {
     private showSensitiveDocumentDownloadModal() {
         this.sensitivedocumentDownloadModal.showModal();
     }
-    private download() {
-        //TODO When the service is ready
-    }
 }
 </script>
 
@@ -177,8 +174,8 @@ export default class DashboardView extends Vue {
                         />
                     </template>
                     <div>
-                        Download your Federal Proof of Vacination Certificate
-                        (PVC) for travel.
+                        Download and print your Federal Proof of Vacination
+                        Certificate (PVC) for domestic and international travel.
                     </div>
                 </hg-card-button>
             </b-col>
@@ -203,7 +200,6 @@ export default class DashboardView extends Vue {
 
     .canada-government-logo {
         height: 2em;
-        width: 5em;
     }
 
     .checkmark {
