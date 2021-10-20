@@ -7,16 +7,6 @@ const pathApi =
 const fixtureNotLoadedPath =
     "ImmunizationService/covidVaccineRecordNotLoaded.json";
 
-function useCovidVaccineRecordFixture() {
-    cy.intercept(method, pathApi, (req) => {
-        req.reply((res) => {
-            res.send({
-                fixture: fixtureNotLoadedPath,
-            });
-        });
-    });
-}
-
 describe("Vaccination Card - Save as PDF - VaccinationExportPdf is enabled & Loaded is false - KeyCloak", () => {
     before(() => {
        let isLoading = false;
@@ -66,5 +56,7 @@ describe("Vaccination Card - Save as PDF - VaccinationExportPdf is enabled & Loa
 
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
        
+        cy.wait(10000)
+        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
     });
 });
