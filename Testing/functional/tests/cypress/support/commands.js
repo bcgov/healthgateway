@@ -236,6 +236,10 @@ Cypress.Commands.add("checkTimelineHasLoaded", () => {
     cy.get("[data-testid=timelineLoading]").should("not.be.visible");
 });
 
+Cypress.Commands.add("checkVaccineRecordHasLoaded", () => {  
+    cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
+});
+
 Cypress.Commands.add("enableModules", (modules) => {
     const isArrayOfModules = Array.isArray(modules);
     return cy

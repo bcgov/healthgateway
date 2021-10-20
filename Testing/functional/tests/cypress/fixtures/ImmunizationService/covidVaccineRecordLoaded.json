@@ -1,7 +1,7 @@
 {
     "resourcePayload": {
       "loaded": true,
-      "retryin": 10000,
+      "retryin": 30000,
       "document": {
         "mediaType": "application/pdf",
         "encoding": "base64",

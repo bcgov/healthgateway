@@ -41,26 +41,18 @@ describe("Vaccination Card - Save as PDF - VaccinationExportPdf is enabled & Loa
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
             covid19Url
-        );       
+        );  
+        cy.checkVaccineRecordHasLoaded();
     });
 
     it("Vaccine Record Retry", () => {  
         cy.log("Load the fixture with loaded is false and retryin is 10000");
-        useCovidVaccineRecordFixture();      
-        
         cy.enableModules([
             "Immunization",
             "VaccinationStatus",
             "VaccinationStatusPdf",
             "VaccinationExportPdf",
         ]);
-
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            covid19Url
-        );
 
         cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle")
         .should("be.enabled", "be.visible")
@@ -71,7 +63,8 @@ describe("Vaccination Card - Save as PDF - VaccinationExportPdf is enabled & Loa
             .click();
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
-        cy.get("[data-testid=genericMessageModal]").should("not.exist");
-        cy.log("after 10000ms the vaccine record will be downloaded");
+
+        cy.get("[data-testid=loadingSpinner]").should("be.visible");
+       
     });
 });
