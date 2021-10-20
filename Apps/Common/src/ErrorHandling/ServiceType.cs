@@ -122,11 +122,11 @@ namespace HealthGateway.Common.ErrorHandling
         }
 
         /// <summary>
-        /// Gets the BC Mail Plus service code.
+        /// Gets the BCMP service code.
         /// </summary>
-        public static ServiceType BCMailPlus
+        public static ServiceType BCMP
         {
-            get { return new ServiceType("BCMailPlus"); }
+            get { return new ServiceType("BCMP"); }
         }
 
         /// <summary>

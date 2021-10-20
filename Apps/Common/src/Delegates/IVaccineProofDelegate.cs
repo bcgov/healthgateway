@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Delegates
 {
+    using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
 
@@ -24,14 +25,6 @@ namespace HealthGateway.Common.Delegates
     public interface IVaccineProofDelegate
     {
         /// <summary>
-        /// Initiates the creation of a Vaccine Proof for later retrieval.
-        /// </summary>
-        /// <param name="vaccineProofTemplate">The template to be used for the Vaccine Proof.</param>
-        /// <param name="request">The vaccination data to be used for generating the Vaccine Proof.</param>
-        /// <returns>A response object that includes the status and identifier of the Vaccine Proof.</returns>
-        public RequestResult<VaccineProofResponse> Generate(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request);
-
-        /// <summary>
         /// Initiates the creation of a Vaccine Proof and requests the output be mailed.
         /// </summary>
         /// <param name="vaccineProofTemplate">The template to be used for the Vaccine Proof.</param>
@@ -39,20 +32,28 @@ namespace HealthGateway.Common.Delegates
         /// <param name="address">The address where the Vaccine Proof should be mailed.</param>
         /// <param name="addressee">The name of the person to which the Vaccine Proof should be addressed.</param>
         /// <returns>A response object that includes the status and identifier of the Vaccine Proof.</returns>
-        public RequestResult<VaccineProofResponse> Mail(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, Address address, string addressee);
+        public Task<RequestResult<VaccineProofResponse>> MailAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, Address address, string addressee);
+
+        /// <summary>
+        /// Initiates the creation of a Vaccine Proof for later retrieval.
+        /// </summary>
+        /// <param name="vaccineProofTemplate">The template to be used for the Vaccine Proof.</param>
+        /// <param name="request">The vaccination data to be used for generating the Vaccine Proof.</param>
+        /// <returns>A response object that includes the status and identifier of the Vaccine Proof.</returns>
+        public Task<RequestResult<VaccineProofResponse>> GenerateAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request);
 
         /// <summary>
         /// Fetches the status of a Vaccine Proof to determine if it has been generated and can be retrieved.
         /// </summary>
         /// <param name="id">The id from the VaccineProofResponse object.</param>
         /// <returns>A response object that includes the status and identifier of the Vaccine Proof.</returns>
-        public RequestResult<VaccineProofResponse> GetStatus(string id);
+        public Task<RequestResult<VaccineProofResponse>> GetStatusAsync(string id);
 
         /// <summary>
         /// Fetches the generated Vaccine Proof.
         /// </summary>
         /// <param name="id">The id from the VaccineProofResponse object.</param>
         /// <returns>A report model containing the generated Vaccine Proof document.</returns>
-        public RequestResult<ReportModel> GetAsset(string id);
+        public Task<RequestResult<ReportModel>> GetAssetAsync(string id);
     }
 }

@@ -111,6 +111,7 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<IIronPDFDelegate, IronPDFDelegate>();
             services.AddTransient<IReportDelegate, ReportDelegate>();
             services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
+            services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
 
             // Configure SPA
             services.AddControllersWithViews();

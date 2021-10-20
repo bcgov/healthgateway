@@ -13,23 +13,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Models
+namespace HealthGateway.Common.Models.BCMailPlus
 {
+    using System.Text.Json.Serialization;
     using HealthGateway.Common.Constants;
 
     /// <summary>
-    /// Represents the data required to generate a Vaccine Proof.
+    /// The response from BC Mail Plus for a single job status.
     /// </summary>
-    public class VaccineProofRequest
+    public class BcmpJobStatusResult
     {
         /// <summary>
-        /// Gets or sets the Vaccination Status.
+        /// Gets or sets the unique Job ID associated with the Vaccine Proof.
         /// </summary>
-        public VaccinationStatus Status { get; set; }
+        [JsonPropertyName("jobId")]
+        public string JobId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the SmartHealthCard QR code as a base64-encoded image.
+        /// Gets or sets the status of the Vaccine Proof.
         /// </summary>
-        public string SmartHealthCardQr { get; set; } = null!;
+        [JsonPropertyName("jobStatus")]
+        public BcmpJobStatus JobStatus { get; set; } = BcmpJobStatus.Error;
+
+        /// <summary>
+        /// Gets or sets the errors associated with the Vaccine Proof.
+        /// </summary>
+        [JsonPropertyName("errors")]
+        public string Errors { get; set; } = string.Empty;
     }
 }

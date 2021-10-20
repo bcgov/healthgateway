@@ -57,20 +57,24 @@ namespace HealthGateway.Common.Models
         /// Gets or sets the maximum number of retries.
         /// </summary>
         public int MaxRetries { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the Schema Version to use.
+        /// </summary>
+        public string SchemaVersion { get; set; } = null!;
 
         /// <summary>
         /// Returns the Endpoint after resolving any variable references.
-        /// Endpoint should be something like https://{host}://{ENV}/auth={TOKEN}/JSON/ .
+        /// Endpoint should be something like https://${HOST}/${ENV}/auth=${TOKEN}/JSON/ .
         /// </summary>
         /// <returns>A string representing the Base Endpoint for BCMail Plus.</returns>
         public string ResolvedEndpoint()
         {
             Dictionary<string, string> keyValues = new ()
             {
-                { "host", this.Host },
-                { "env", this.JobEnvironment },
-                { "token", this.Token },
-                { "class", this.JobClass },
+                { "HOST", this.Host },
+                { "ENV", this.JobEnvironment },
+                { "TOKEN", this.Token },
             };
             return StringManipulator.Replace(this.Endpoint, keyValues) !;
         }
