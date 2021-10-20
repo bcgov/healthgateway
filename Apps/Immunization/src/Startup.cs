@@ -71,8 +71,6 @@ namespace HealthGateway.Immunization
             services.AddTransient<Delegates.IImmunizationDelegate, Delegates.RestImmunizationDelegate>();
             services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<IIronPDFDelegate, IronPDFDelegate>();
-            services.AddTransient<IReportDelegate, ReportDelegate>();
         }
 
         /// <summary>
