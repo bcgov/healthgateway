@@ -232,15 +232,15 @@ namespace HealthGateway.Immunization.Services
                         SmartHealthCardQr = vaccineStatusResult.QRCode.Data ?? string.Empty,
                     };
 
-                    RequestResult<VaccineProofResponse> proofResult = await this.vpDelegate.GenerateAsync(proofTemplate, request).ConfigureAwait(true);
-                    if (proofResult.ResultStatus == ResultType.Success && proofResult.ResourcePayload != null)
+                    RequestResult<VaccineProofResponse> proofGenerate = await this.vpDelegate.GenerateAsync(proofTemplate, request).ConfigureAwait(true);
+                    if (proofGenerate.ResultStatus == ResultType.Success && proofGenerate.ResourcePayload != null)
                     {
                         RequestResult<VaccineProofResponse> proofStatus;
                         bool processing;
                         int retryCount = 0;
                         do
                         {
-                            proofStatus = await this.vpDelegate.GetStatusAsync(proofResult.ResourcePayload.Id).ConfigureAwait(true);
+                            proofStatus = await this.vpDelegate.GetStatusAsync(proofGenerate.ResourcePayload.Id).ConfigureAwait(true);
 
                             processing = proofStatus.ResultStatus == ResultType.Success &&
                                          proofStatus.ResourcePayload != null &&
@@ -254,13 +254,13 @@ namespace HealthGateway.Immunization.Services
                         if (proofStatus.ResultStatus == ResultType.Success)
                         {
                             // Get the Asset
-                            RequestResult<ReportModel> assetResult = await this.vpDelegate.GetAssetAsync(proofResult.ResourcePayload.Id).ConfigureAwait(true);
+                            RequestResult<ReportModel> assetResult = await this.vpDelegate.GetAssetAsync(proofGenerate.ResourcePayload.Id).ConfigureAwait(true);
                             if (assetResult.ResultStatus == ResultType.Success && assetResult.ResourcePayload != null)
                             {
                                 EncodedMedia document = new ()
                                 {
                                     Data = assetResult.ResourcePayload.Data,
-                                    Encoding = "base64",
+                                    Encoding = string.Empty,
                                     Type = string.Empty,
                                 };
                                 retVal.ResourcePayload = new CovidVaccineRecord()
@@ -273,17 +273,17 @@ namespace HealthGateway.Immunization.Services
                             }
                             else
                             {
-                                retVal.ResultError = new RequestResultError() { ResultMessage = "Error retrieving vaccine proof pdf", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
+                                retVal.ResultError = assetResult.ResultError;
                             }
                         }
                         else
                         {
-                            retVal.ResultError = new RequestResultError() { ResultMessage = "Error retrieving vaccine proof pdf status", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
+                            retVal.ResultError = proofStatus.ResultError;
                         }
                     }
                     else
                     {
-                        retVal.ResultError = new RequestResultError() { ResultMessage = "Unable to generate vaccine proof pdf", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
+                        retVal.ResultError = proofGenerate.ResultError;
                     }
                 }
                 else
