@@ -25,15 +25,27 @@ namespace HealthGateway.Common.Constants
     public enum VaccineProofTemplate
     {
         /// <summary>
-        /// The status code for a Fully Vaccinated individual.
+        /// Indicates that the BC Provincial template should be used.
         /// </summary>
         [EnumMember(Value = "BCProvincial")]
         Provincial,
 
         /// <summary>
-        /// The status code for Partially Vaccinated individual.
+        /// Indicates that the Federal template should be used.
         /// </summary>
         [EnumMember(Value = "Federal")]
         Federal,
+
+        /// <summary>
+        /// Indicates that the Federal and BC Provincial template should be used.
+        /// </summary>
+        [EnumMember(Value = "Combined")]
+        Combined,
+
+        /// <summary>
+        /// Indicates that the Cover Page plus Federal and BC Provincial template should be used.
+        /// </summary>
+        [EnumMember(Value = "CombinedCover")]
+        CombinedCover,
     }
 }
