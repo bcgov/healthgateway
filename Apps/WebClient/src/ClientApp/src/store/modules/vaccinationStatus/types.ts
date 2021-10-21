@@ -6,6 +6,7 @@ import {
     MutationTree,
 } from "vuex";
 
+import { VaccineProofTemplate } from "@/constants/vaccineProofTemplate";
 import BannerError from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
@@ -28,6 +29,12 @@ export interface VaccinationStatusState {
         status: LoadStatus;
         statusMessage: string;
     };
+    authenticatedVaccineRecord: {
+        vaccinationRecord?: CovidVaccineRecord;
+        error?: BannerError;
+        status: LoadStatus;
+        statusMessage: string;
+    };
 }
 
 export interface VaccinationStatusGetters
@@ -44,6 +51,16 @@ export interface VaccinationStatusGetters
     authenticatedIsLoading(state: VaccinationStatusState): boolean;
     authenticatedError(state: VaccinationStatusState): BannerError | undefined;
     authenticatedStatusMessage(state: VaccinationStatusState): string;
+    authenticatedVaccineRecord(
+        state: VaccinationStatusState
+    ): CovidVaccineRecord | undefined;
+    authenticatedVaccineRecordIsLoading(state: VaccinationStatusState): boolean;
+    authenticatedVaccineRecordError(
+        state: VaccinationStatusState
+    ): BannerError | undefined;
+    authenticatedVaccineRecordStatusMessage(
+        state: VaccinationStatusState
+    ): string;
 }
 
 type StoreContext = ActionContext<VaccinationStatusState, RootState>;
@@ -76,6 +93,7 @@ export interface VaccinationStatusActions
         context: StoreContext,
         params: {
             hdid: string;
+            proofTemplate: VaccineProofTemplate;
         }
     ): Promise<CovidVaccineRecord>;
     handleAuthenticatedError(context: StoreContext, error: ResultError): void;
@@ -107,14 +125,22 @@ export interface VaccinationStatusMutations
         state: VaccinationStatusState,
         error: BannerError
     ): void;
-    setAuthenticatedPdfRequested(state: VaccinationStatusState): void;
-    authenticatedPdfError(
-        state: VaccinationStatusState,
-        error: BannerError
-    ): void;
     setAuthenticatedStatusMessage(
         state: VaccinationStatusState,
         statusMessage: string
+    ): void;
+    setAuthenticatedVaccineRecordRequested(state: VaccinationStatusState): void;
+    setAuthenticatedVaccineRecordStatusMessage(
+        state: VaccinationStatusState,
+        statusMessage: string
+    ): void;
+    setAuthenticatedVaccineRecord(
+        state: VaccinationStatusState,
+        vaccineRecord: CovidVaccineRecord
+    ): void;
+    setAuthenticatedVaccineRecordError(
+        state: VaccinationStatusState,
+        error: BannerError
     ): void;
 }
 

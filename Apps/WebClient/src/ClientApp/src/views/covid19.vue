@@ -8,15 +8,17 @@ import {
 import { saveAs } from "file-saver";
 import html2canvas from "html2canvas";
 import Vue from "vue";
-import { Component, Ref } from "vue-property-decorator";
+import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
+import { VaccineProofTemplate } from "@/constants/vaccineProofTemplate";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
+import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import { ResultError } from "@/models/requestResult";
@@ -54,6 +56,14 @@ export default class Covid19View extends Vue {
     })
     retrieveVaccineStatus!: (params: { hdid: string }) => Promise<void>;
 
+    @Action("retrieveAuthenticatedVaccineRecord", {
+        namespace: "vaccinationStatus",
+    })
+    retrieveAuthenticatedVaccineRecord!: (params: {
+        hdid: string;
+        proofTemplate: VaccineProofTemplate;
+    }) => Promise<CovidVaccineRecord>;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -86,8 +96,24 @@ export default class Covid19View extends Vue {
     @Getter("error", { namespace: "immunization" })
     immunizationError!: ResultError | undefined;
 
+    @Getter("authenticatedVaccineRecord", { namespace: "vaccinationStatus" })
+    vaccineRecord!: CovidVaccineRecord | undefined;
+
+    @Getter("authenticatedVaccineRecordIsLoading", {
+        namespace: "vaccinationStatus",
+    })
+    vaccineRecordIsLoading!: boolean;
+
+    @Getter("authenticatedVaccineRecordStatusMessage", {
+        namespace: "vaccinationStatus",
+    })
+    vaccineRecordStatusMessage!: string;
+
     @Ref("vaccineCardMessageModal")
     readonly vaccineCardMessageModal!: MessageModalComponent;
+
+    @Ref("messageModal")
+    readonly messageModal!: MessageModalComponent;
 
     private logger!: ILogger;
     private isDownloading = false;
@@ -121,6 +147,8 @@ export default class Covid19View extends Vue {
     private get loadingStatusMessage(): string {
         return this.isDownloading
             ? "Downloading...."
+            : this.vaccineRecordIsLoading
+            ? this.vaccineRecordStatusMessage
             : this.vaccinationStatusMessage;
     }
 
@@ -141,6 +169,10 @@ export default class Covid19View extends Vue {
         );
     }
 
+    private get saveExportPdfShown(): boolean {
+        return this.config.modules["VaccinationExportPdf"];
+    }
+
     private get isVaccineCardLoading(): boolean {
         return this.isVaccinationStatusLoading;
     }
@@ -150,7 +182,12 @@ export default class Covid19View extends Vue {
     }
 
     private get isLoading(): boolean {
-        return this.isVaccinationStatusLoading || this.isHistoryLoading;
+        return (
+            this.isVaccinationStatusLoading ||
+            this.isHistoryLoading ||
+            this.vaccineRecordIsLoading ||
+            this.isDownloading
+        );
     }
 
     private get bcWalletAppLink(): string | undefined {
@@ -172,6 +209,13 @@ export default class Covid19View extends Vue {
         return this.formatDate(this.vaccinationStatus?.birthdate ?? undefined);
     }
 
+    private get saveDropdownShown(): boolean {
+        return this.saveWalletShown || this.saveExportPdfShown;
+    }
+
+    private get saveCopyButtonShown(): boolean {
+        return !this.saveExportPdfShown && !this.saveWalletShown;
+    }
     private formatDate(date: string | undefined): string {
         return date === undefined
             ? ""
@@ -210,18 +254,39 @@ export default class Covid19View extends Vue {
         });
     }
 
+    @Watch("vaccineRecord")
+    private saveVaccinePdf() {
+        if (this.vaccineRecord !== undefined) {
+            const mimeType = this.vaccineRecord.document.mediaType;
+            const downloadLink = `data:${mimeType};base64,${this.vaccineRecord.document.data}`;
+            fetch(downloadLink).then((res) => {
+                SnowPlow.trackEvent({
+                    action: "download_card",
+                    text: "COVID Card PDF",
+                });
+                res.blob().then((blob) => {
+                    saveAs(blob, "BCVaccineRecord.pdf");
+                });
+            });
+        }
+    }
+
+    private retrieveVaccinePdf() {
+        this.retrieveAuthenticatedVaccineRecord({
+            hdid: this.user.hdid,
+            proofTemplate: VaccineProofTemplate.Provincial,
+        });
+    }
+
     private download() {
         const printingArea: HTMLElement | null =
             document.querySelector(".vaccine-card");
-
         if (printingArea !== null) {
             this.isDownloading = true;
-
             SnowPlow.trackEvent({
                 action: "download_card",
-                text: "COVID Card PDF",
+                text: "COVID Card Image",
             });
-
             html2canvas(printingArea, {
                 scale: 2,
                 ignoreElements: (element) =>
@@ -245,6 +310,10 @@ export default class Covid19View extends Vue {
         this.vaccineCardMessageModal.showModal();
     }
 
+    private showConfirmationModal() {
+        this.messageModal.showModal();
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.fetchVaccineCardData();
@@ -254,10 +323,7 @@ export default class Covid19View extends Vue {
 
 <template>
     <div class="background flex-grow-1 d-flex flex-column">
-        <loading
-            :is-loading="isLoading || isDownloading"
-            :text="loadingStatusMessage"
-        />
+        <loading :is-loading="isLoading" :text="loadingStatusMessage" />
         <div
             v-if="!isVaccineCardLoading && !vaccinationStatusError"
             v-show="!isImmunizationHistoryShown"
@@ -280,7 +346,7 @@ export default class Covid19View extends Vue {
                     "
                 >
                     <hg-button
-                        v-if="!saveWalletShown"
+                        v-if="saveCopyButtonShown"
                         data-testid="save-card-btn"
                         aria-label="Save a Copy"
                         variant="primary"
@@ -289,7 +355,7 @@ export default class Covid19View extends Vue {
                         Save a Copy
                     </hg-button>
                     <hg-dropdown
-                        v-if="saveWalletShown"
+                        v-if="saveDropdownShown"
                         text="Save"
                         variant="primary"
                         data-testid="save-dropdown-btn"
@@ -300,6 +366,13 @@ export default class Covid19View extends Vue {
                             >Save as image</b-dropdown-item
                         >
                         <b-dropdown-item
+                            v-if="saveExportPdfShown"
+                            data-testid="save-as-pdf-dropdown-item"
+                            @click="showConfirmationModal()"
+                            >Save as PDF</b-dropdown-item
+                        >
+                        <b-dropdown-item
+                            v-if="saveWalletShown"
                             data-testid="save-to-wallet-dropdown-item"
                             :href="bcWalletAppLink"
                             >Save to BC Wallet App</b-dropdown-item
@@ -333,6 +406,12 @@ export default class Covid19View extends Vue {
                                 If you want to print, we recommend you use the print function in
                                 your browser."
                 @submit="download"
+            />
+            <message-modal
+                ref="messageModal"
+                title="Sensitive Document Download"
+                message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+                @submit="retrieveVaccinePdf"
             />
         </div>
         <div
