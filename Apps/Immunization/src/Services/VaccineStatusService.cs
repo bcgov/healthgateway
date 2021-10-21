@@ -42,7 +42,6 @@ namespace HealthGateway.Immunization.Services
         private const string TokenCacheKey = "TokenCacheKey";
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
         private readonly IAuthenticationDelegate authDelegate;
-        private readonly IReportDelegate reportDelegate;
         private readonly IMemoryCache memoryCache;
         private readonly ILogger<VaccineStatusService> logger;
         private readonly ClientCredentialsTokenRequest tokenRequest;
@@ -57,19 +56,15 @@ namespace HealthGateway.Immunization.Services
         /// <param name="logger">The injected logger.</param>
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="vaccineStatusDelegate">The injected vaccine status delegate.</param>
-        /// <param name="reportDelegate">The injected report delegate.</param>
         /// <param name="memoryCache">The cache to use to reduce lookups.</param>
         public VaccineStatusService(
             IConfiguration configuration,
             ILogger<VaccineStatusService> logger,
             IAuthenticationDelegate authDelegate,
             IVaccineStatusDelegate vaccineStatusDelegate,
-            IReportDelegate reportDelegate,
             IMemoryCache memoryCache)
         {
             this.authDelegate = authDelegate;
-            this.reportDelegate = reportDelegate;
-
             this.vaccineStatusDelegate = vaccineStatusDelegate;
 
             IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
@@ -203,20 +198,9 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string dateOfVaccine)
+        public Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string dateOfVaccine)
         {
-            RequestResult<VaccineStatus> requestResult = await this.GetVaccineStatus(phn, dateOfBirth, dateOfVaccine).ConfigureAwait(true);
-
-            if (requestResult.ResultStatus != ResultType.Success || requestResult.ResourcePayload == null)
-            {
-                return new RequestResult<ReportModel>()
-                {
-                    ResultStatus = requestResult.ResultStatus,
-                    ResultError = requestResult.ResultError,
-                };
-            }
-
-            return this.reportDelegate.GetVaccineStatusPDF(requestResult.ResourcePayload, null);
+            throw new NotImplementedException();
         }
     }
 }

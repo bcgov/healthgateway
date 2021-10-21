@@ -13,30 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Delegates
+namespace HealthGateway.Common.Models.BCMailPlus
 {
-    using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.CDogs;
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The IronPDF delegate.
+    /// The BC Mail Plus asset query model.
     /// </summary>
-    public interface IIronPDFDelegate
+    public class BcmpAssetQuery
     {
         /// <summary>
-        /// Generates a pdf based on the request model provided.
+        /// Gets or sets the ID of the job corresponding to the asset to retrieve.
         /// </summary>
-        /// <param name="request">The ironpdf request model.</param>
-        /// <returns>The report model.</returns>
-        RequestResult<ReportModel> Generate(IronPDFRequestModel request);
+        [JsonPropertyName("job")]
+        public string JobId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Merges two pdf documents.
+        /// Gets or sets the asset type that should be retrieved.
         /// </summary>
-        /// <param name="report1">The base64 string of the first pdf document.</param>
-        /// <param name="report2">The base64 string of the second pdf document.</param>
-        /// <param name="fileName">The file name.</param>
-        /// <returns>The report model of the merged pdf.</returns>
-        RequestResult<ReportModel> Merge(string report1, string report2, string fileName);
+        [JsonPropertyName("asset")]
+        public string AssetType { get; set; } = string.Empty;
     }
 }

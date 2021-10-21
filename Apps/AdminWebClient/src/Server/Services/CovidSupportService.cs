@@ -17,11 +17,12 @@
 namespace HealthGateway.Admin.Services
 {
     using System;
-    using System.Globalization;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models.CovidSupport;
     using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.ErrorHandling;
@@ -30,6 +31,7 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -37,13 +39,17 @@ namespace HealthGateway.Admin.Services
     /// </summary>
     public class CovidSupportService : ICovidSupportService
     {
+        private const string BCMailPlusConfigSectionKey = "BCMailPlus";
+        private const string VaccineCardConfigSectionKey = "VaccineCard";
         private readonly ILogger<CovidSupportService> logger;
         private readonly IPatientService patientService;
         private readonly IImmunizationAdminDelegate immunizationDelegate;
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
         private readonly IMailDelegate mailDelegate;
-        private readonly IReportDelegate reportDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IVaccineProofDelegate vaccineProofDelegate;
+        private readonly BCMailPlusConfig bcmpConfig;
+        private readonly VaccineCardConfig vaccineCardConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CovidSupportService"/> class.
@@ -53,24 +59,32 @@ namespace HealthGateway.Admin.Services
         /// <param name="immunizationDelegate">Delegate that provides immunization information.</param>
         /// <param name="vaccineStatusDelegate">The injected delegate that provides vaccine status information.</param>
         /// <param name="mailDelegate">Delegate that provides mailing functionality.</param>
-        /// <param name="reportDelegate">Delegate that provides report generation functionality.</param>
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
+        /// <param name="configuration">The configuration to use.</param>
+        /// <param name="vaccineProofDelegate">The injected delegate to get the vaccine proof.</param>
         public CovidSupportService(
             ILogger<CovidSupportService> logger,
             IPatientService patientService,
             IImmunizationAdminDelegate immunizationDelegate,
             IVaccineStatusDelegate vaccineStatusDelegate,
             IMailDelegate mailDelegate,
-            IReportDelegate reportDelegate,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration,
+            IVaccineProofDelegate vaccineProofDelegate)
         {
             this.logger = logger;
             this.patientService = patientService;
             this.immunizationDelegate = immunizationDelegate;
             this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.mailDelegate = mailDelegate;
-            this.reportDelegate = reportDelegate;
             this.httpContextAccessor = httpContextAccessor;
+            this.vaccineProofDelegate = vaccineProofDelegate;
+
+            this.bcmpConfig = new ();
+            configuration.Bind(BCMailPlusConfigSectionKey, this.bcmpConfig);
+
+            this.vaccineCardConfig = new ();
+            configuration.Bind(VaccineCardConfigSectionKey, this.vaccineCardConfig);
         }
 
         /// <inheritdoc />
@@ -175,21 +189,86 @@ namespace HealthGateway.Admin.Services
             }
 
             DateTime birthdate = patientResult.ResourcePayload!.Birthdate;
-            RequestResult<ReportModel> statusReport = await this.RetrieveVaccineCardAsync(request.PersonalHealthNumber, birthdate, bearerToken, request.MailAddress).ConfigureAwait(true);
 
-            if (statusReport.ResultStatus != ResultType.Success || statusReport.ResourcePayload == null)
+            VaccineStatusQuery statusQuery = new ()
             {
-                return new PrimitiveRequestResult<bool>()
+                PersonalHealthNumber = request.PersonalHealthNumber,
+                DateOfBirth = birthdate,
+            };
+            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult =
+                await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(statusQuery, bearerToken, false).ConfigureAwait(true);
+
+            PrimitiveRequestResult<bool> retVal = new ();
+
+            if (vaccineStatusResult.ResultStatus == ResultType.Success && vaccineStatusResult.ResourcePayload != null)
+            {
+                this.logger.LogDebug($"Vaccination Status Indicator: {vaccineStatusResult.ResourcePayload.Result!.StatusIndicator}");
+
+                VaccineState state = Enum.Parse<VaccineState>(vaccineStatusResult.ResourcePayload.Result!.StatusIndicator);
+                if (state == VaccineState.NotFound || state == VaccineState.DataMismatch || state == VaccineState.Threshold || state == VaccineState.Blocked)
                 {
-                    ResultStatus = ResultType.Error,
-                    ResourcePayload = false,
-                    ResultError = statusReport.ResultError,
-                };
+                    return new PrimitiveRequestResult<bool>()
+                    {
+                        ResultStatus = ResultType.Error,
+                        ResourcePayload = false,
+                        ResultError = new RequestResultError()
+                        {
+                            ResultMessage = "Vaccine status not found",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA),
+                        },
+                    };
+                }
+                else
+                {
+                    VaccinationStatus requestState = state switch
+                    {
+                        VaccineState.AllDosesReceived => VaccinationStatus.Fully,
+                        VaccineState.PartialDosesReceived => VaccinationStatus.Partially,
+                        VaccineState.Exempt => VaccinationStatus.Exempt,
+                        _ => VaccinationStatus.Unknown,
+                    };
+
+                    if (requestState != VaccinationStatus.Unknown)
+                    {
+                        this.logger.LogDebug($"Vaccine Status: {requestState}");
+                        VaccineProofRequest vaccineProofRequest = new ()
+                        {
+                            Status = requestState,
+                            SmartHealthCardQr = vaccineStatusResult.ResourcePayload.Result.QRCode.Data!,
+                        };
+
+                        string addressee = $"{vaccineStatusResult.ResourcePayload.Result.FirstName} {vaccineStatusResult.ResourcePayload.Result.LastName}";
+
+                        RequestResult<VaccineProofResponse> vaccineProofResponse =
+                            await this.vaccineProofDelegate.MailAsync(this.vaccineCardConfig.MailTemplate, vaccineProofRequest, request.MailAddress, addressee).ConfigureAwait(true);
+
+                        if (vaccineProofResponse.ResultStatus == ResultType.Success)
+                        {
+                            retVal.ResourcePayload = true;
+                            retVal.ResultStatus = ResultType.Success;
+                        }
+                        else
+                        {
+                            retVal.ResourcePayload = false;
+                            retVal.ResultStatus = ResultType.Error;
+                            retVal.ResultError = vaccineProofResponse.ResultError;
+                            this.logger.LogError($"Error mailing via BCMailPlus {vaccineProofResponse.ResultError}");
+                        }
+                    }
+                    else
+                    {
+                        retVal.ResultError = vaccineStatusResult.ResultError;
+                    }
+                }
+            }
+            else
+            {
+                retVal.ResultStatus = ResultType.Error;
+                retVal.ResourcePayload = false;
+                retVal.ResultError = vaccineStatusResult.ResultError;
             }
 
-            ReportModel report = statusReport.ResourcePayload;
-            report.FileName = $"HLTCVD.{Guid.NewGuid()}.{DateTime.Now.ToString("MMM.dd.yyyy", CultureInfo.InvariantCulture)}.pdf";
-            return this.mailDelegate.SendDocument(report);
+            return retVal;
         }
 
         /// <inheritdoc />
@@ -230,47 +309,13 @@ namespace HealthGateway.Admin.Services
             }
 
             DateTime birthdate = patientResult.ResourcePayload!.Birthdate;
-            RequestResult<ReportModel> statusReport = await this.RetrieveVaccineCardAsync(phn, birthdate, bearerToken, null).ConfigureAwait(true);
 
-            if (statusReport.ResultStatus != ResultType.Success || statusReport.ResourcePayload?.Data == null)
-            {
-                return new RequestResult<ReportModel>()
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = statusReport.ResultError ?? new RequestResultError()
-                    {
-                        ResultMessage = "Error retrieving vaccine card PDF.",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Immunization),
-                    },
-                };
-            }
+            RequestResult<ReportModel> statusReport = await this.RetrieveVaccineCardAsync(phn, birthdate, bearerToken).ConfigureAwait(true);
 
-            RecordCardQuery cardQuery = new ()
-            {
-                PersonalHealthNumber = phn,
-                DateOfBirth = patientResult.ResourcePayload!.Birthdate,
-                ImmunizationDisease = "COVID19",
-            };
-            RequestResult<PHSAResult<RecordCard>> recordCardResult =
-                await this.vaccineStatusDelegate.GetRecordCardWithRetries(cardQuery, bearerToken).ConfigureAwait(true);
-
-            if (recordCardResult.ResultStatus != ResultType.Success)
-            {
-                this.logger.LogError($"Error getting record card.");
-                return new RequestResult<ReportModel>()
-                {
-                    PageIndex = 0,
-                    PageSize = 0,
-                    ResultStatus = ResultType.Error,
-                    ResultError = recordCardResult.ResultError,
-                };
-            }
-
-            string? base64RecordCard = recordCardResult.ResourcePayload?.Result?.PaperRecord.Data;
-            return this.reportDelegate.MergePDFs(statusReport.ResourcePayload.Data, base64RecordCard, statusReport.ResourcePayload.FileName);
+            return statusReport;
         }
 
-        private async Task<RequestResult<ReportModel>> RetrieveVaccineCardAsync(string phn, DateTime birthdate, string bearerToken, Address? address)
+        private async Task<RequestResult<ReportModel>> RetrieveVaccineCardAsync(string phn, DateTime birthdate, string bearerToken)
         {
             this.logger.LogDebug($"Retrieving vaccine card document");
             this.logger.LogTrace($"For PHN: {phn}");
@@ -294,8 +339,8 @@ namespace HealthGateway.Admin.Services
                 };
             }
 
-            VaccineStatusResult? payload = statusResult.ResourcePayload?.Result;
-            if (payload == null)
+            VaccineStatusResult? vaccineStatusResult = statusResult.ResourcePayload?.Result;
+            if (vaccineStatusResult == null)
             {
                 this.logger.LogError($"Error retrieving vaccine status information.");
                 return new RequestResult<ReportModel>()
@@ -311,9 +356,93 @@ namespace HealthGateway.Admin.Services
                 };
             }
 
-            VaccineStatus vaccineStatus = VaccineStatus.FromModel(payload, phn);
+            return await this.GetVaccineProof(vaccineStatusResult).ConfigureAwait(true);
+        }
 
-            return this.reportDelegate.GetVaccineStatusPDF(vaccineStatus, address);
+        private async Task<RequestResult<ReportModel>> GetVaccineProof(VaccineStatusResult vaccineStatusResult)
+        {
+            RequestResult<ReportModel> retVal = new ()
+            {
+                ResultStatus = ResultType.Error,
+            };
+
+            VaccineState state = Enum.Parse<VaccineState>(vaccineStatusResult.StatusIndicator);
+            if (state == VaccineState.NotFound || state == VaccineState.DataMismatch || state == VaccineState.Threshold || state == VaccineState.Blocked)
+            {
+                retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine status not found", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA) };
+            }
+            else
+            {
+                VaccinationStatus requestState = state switch
+                {
+                    VaccineState.AllDosesReceived => VaccinationStatus.Fully,
+                    VaccineState.PartialDosesReceived => VaccinationStatus.Partially,
+                    VaccineState.Exempt => VaccinationStatus.Exempt,
+                    _ => VaccinationStatus.Unknown,
+                };
+
+                if (requestState != VaccinationStatus.Unknown)
+                {
+                    VaccineProofRequest request = new ()
+                    {
+                        Status = requestState,
+                        SmartHealthCardQr = vaccineStatusResult.QRCode.Data!,
+                    };
+
+                    RequestResult<VaccineProofResponse> proofGenerate = await this.vaccineProofDelegate.GenerateAsync(this.vaccineCardConfig.PrintTemplate, request).ConfigureAwait(true);
+                    if (proofGenerate.ResultStatus == ResultType.Success && proofGenerate.ResourcePayload != null)
+                    {
+                        RequestResult<VaccineProofResponse> proofStatus;
+                        bool processing;
+                        int retryCount = 0;
+                        do
+                        {
+                            proofStatus = await this.vaccineProofDelegate.GetStatusAsync(proofGenerate.ResourcePayload.Id).ConfigureAwait(true);
+
+                            processing = proofStatus.ResultStatus == ResultType.Success &&
+                                         proofStatus.ResourcePayload != null &&
+                                         proofStatus.ResourcePayload.Status == VaccineProofRequestStatus.Started;
+                            if (processing)
+                            {
+                                Thread.Sleep(this.bcmpConfig.BackOffMilliseconds);
+                            }
+                        }
+                        while (processing && retryCount++ < this.bcmpConfig.MaxRetries);
+                        if (proofStatus.ResultStatus == ResultType.Success && proofStatus.ResourcePayload?.Status == VaccineProofRequestStatus.Completed)
+                        {
+                            // Get the Asset
+                            RequestResult<ReportModel> assetResult = await this.vaccineProofDelegate.GetAssetAsync(proofGenerate.ResourcePayload.Id).ConfigureAwait(true);
+                            if (assetResult.ResultStatus == ResultType.Success && assetResult.ResourcePayload != null)
+                            {
+                                retVal.ResourcePayload = new ReportModel()
+                                {
+                                    Data = assetResult.ResourcePayload.Data,
+                                    FileName = "BCVaccineCard",
+                                };
+                                retVal.ResultStatus = ResultType.Success;
+                            }
+                            else
+                            {
+                                retVal.ResultError = assetResult.ResultError;
+                            }
+                        }
+                        else
+                        {
+                            retVal.ResultError = proofStatus.ResultStatus == ResultType.Error ? proofStatus.ResultError : new RequestResultError() { ResultMessage = "Unable to obtain PDF from BC Mail Plus", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
+                        }
+                    }
+                    else
+                    {
+                        retVal.ResultError = proofGenerate.ResultError;
+                    }
+                }
+                else
+                {
+                    retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine status is unknown", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
+                }
+            }
+
+            return retVal;
         }
     }
 }

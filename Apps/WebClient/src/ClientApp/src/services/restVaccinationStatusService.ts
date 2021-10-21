@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
 
+import { VaccineProofTemplate } from "@/constants/vaccineProofTemplate";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
@@ -138,7 +139,8 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
     }
 
     public getAuthenticatedVaccineRecord(
-        hdid: string
+        hdid: string,
+        proofTemplate: VaccineProofTemplate
     ): Promise<RequestResult<CovidVaccineRecord>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
@@ -148,7 +150,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
 
             return this.http
                 .getWithCors<RequestResult<CovidVaccineRecord>>(
-                    `${this.baseUri}${this.AUTHENTICATED_VACCINATION_STATUS_BASE_URI}/pdf?hdid=${hdid}`
+                    `${this.baseUri}${this.AUTHENTICATED_VACCINATION_STATUS_BASE_URI}/pdf?hdid=${hdid}&proofTemplate=${proofTemplate}`
                 )
                 .then((requestResult) => {
                     resolve(requestResult);

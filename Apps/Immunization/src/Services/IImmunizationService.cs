@@ -16,6 +16,7 @@
 namespace HealthGateway.Immunization.Services
 {
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
@@ -51,7 +52,8 @@ namespace HealthGateway.Immunization.Services
         /// Gets the COVID-19 vaccine record for the supplied hdid.
         /// </summary>
         /// <param name="hdid">The identifier to fetch the covid card for.</param>
+        /// <param name="proofTemplate">The template to use for the generated proof.</param>
         /// <returns>The base64 encoded PDF in a RequestResult.</returns>
-        Task<RequestResult<CovidVaccineRecord>> GetCovidVaccineRecord(string hdid);
+        Task<RequestResult<CovidVaccineRecord>> GetCovidVaccineRecord(string hdid, VaccineProofTemplate proofTemplate);
     }
 }

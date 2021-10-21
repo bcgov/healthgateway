@@ -118,6 +118,7 @@ export enum ClientModule {
     Credential = "Credential",
     VaccinationStatus = "VaccinationStatus",
     VaccinationStatusPdf = "VaccinationStatusPdf",
+    VaccinationExportPdf = "VaccinationExportPdf",
 }
 
 function getAvailableModules() {
