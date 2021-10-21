@@ -122,6 +122,14 @@ namespace HealthGateway.Common.ErrorHandling
         }
 
         /// <summary>
+        /// Gets the BCMP service code.
+        /// </summary>
+        public static ServiceType BCMP
+        {
+            get { return new ServiceType("BCMP"); }
+        }
+
+        /// <summary>
         /// Gets or sets the Value that holds the internal representation of the ServiceType.
         /// </summary>
         public string Value { get; set; }

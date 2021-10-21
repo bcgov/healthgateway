@@ -24,7 +24,7 @@ namespace HealthGateway.Common.Utils
     public static class StringManipulator
     {
         /// <summary>
-        /// Replaces any occurences of {$key} in the string with the value.
+        /// Replaces any occurences of ${key} in the string with the value.
         /// </summary>
         /// <param name="inStr">The string to scan.</param>
         /// <param name="key">The key to replace, should be key and not ${key}.</param>

@@ -7,9 +7,6 @@
     <Compile Remove="Authorization\**" />
     <EmbeddedResource Remove="Authorization\**" />
     <None Remove="Authorization\**" />
-    <None Remove="Assets\Images\BCID_H_rgb_pos.png" />
-    <None Remove="Assets\Images\BCID_V_rgb_pos.png" />
-    <None Remove="Assets\Images\checkmark-black.svg" />
     <None Remove="ServiceReference\dotnet-svcutil.params.json" />
     <None Remove="Models\AcaPy\" />
     <None Remove="Models\PHSA\Recommendation\" />
@@ -81,13 +78,5 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Assets\Images\bcid-logo-rev-en.png" />
-    <EmbeddedResource Include="Assets\Images\bcid-logo-rev-en.svg" />
-    <EmbeddedResource Include="Assets\Images\BCID_H_rgb_pos.png" />
-    <EmbeddedResource Include="Assets\Images\BCID_V_rgb_pos.png" />
-    <EmbeddedResource Include="Assets\Images\checkmark-black.svg" />
-    <EmbeddedResource Include="Assets\Templates\VaccineStatusCard.html" />
   </ItemGroup>
 </Project>
