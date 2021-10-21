@@ -251,7 +251,7 @@ namespace HealthGateway.Immunization.Services
                             }
                         }
                         while (processing && retryCount++ < this.bcmpConfig.MaxRetries);
-                        if (proofStatus.ResultStatus == ResultType.Success)
+                        if (proofStatus.ResultStatus == ResultType.Success && proofStatus.ResourcePayload?.Status == VaccineProofRequestStatus.Completed)
                         {
                             // Get the Asset
                             RequestResult<ReportModel> assetResult = await this.vpDelegate.GetAssetAsync(proofGenerate.ResourcePayload.Id).ConfigureAwait(true);
@@ -278,7 +278,7 @@ namespace HealthGateway.Immunization.Services
                         }
                         else
                         {
-                            retVal.ResultError = proofStatus.ResultError;
+                            retVal.ResultError = proofStatus.ResultError ?? new RequestResultError() { ResultMessage = "Unable to obtain Vaccine Proof PDF", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
                         }
                     }
                     else
