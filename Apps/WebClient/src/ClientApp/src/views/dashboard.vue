@@ -200,6 +200,7 @@ export default class DashboardView extends Vue {
 
     .canada-government-logo {
         height: 2em;
+        background: transparent;
     }
 
     .checkmark {
