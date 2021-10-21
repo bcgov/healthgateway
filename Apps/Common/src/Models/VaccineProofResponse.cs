@@ -15,28 +15,21 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Models
 {
-    using System.Collections.Generic;
-    using System.Text.Json;
-    using System.Text.Json.Serialization;
+    using HealthGateway.Common.Constants;
 
     /// <summary>
-    /// Object that defines the ironpdf request for creating a pdf.
+    /// The response from a Vaccine Proof request.
     /// </summary>
-    public class IronPDFRequestModel
+    public class VaccineProofResponse
     {
         /// <summary>
-        /// Gets the variable data.
+        /// Gets or sets the unique Id of the Vaccine Proof Request.
         /// </summary>
-        public Dictionary<string, string> Data { get; } = new Dictionary<string, string>();
+        public string Id { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the html template.
+        /// Gets or sets the status of the Vaccine Proof Request.
         /// </summary>
-        public string HtmlTemplate { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the file name.
-        /// </summary>
-        public string FileName { get; set; } = string.Empty;
+        public VaccineProofRequestStatus Status { get; set; } = VaccineProofRequestStatus.Unknown;
     }
 }

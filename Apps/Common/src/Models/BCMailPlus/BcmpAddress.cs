@@ -13,46 +13,49 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Models
+namespace HealthGateway.Common.Models.BCMailPlus
 {
+    using System.Text.Json.Serialization;
+
     /// <summary>
-    /// Defines the Iron PDF Configuration model.
+    /// Represents an address to be sent to BC Mail Plus.
     /// </summary>
-    public class IronPDFConfig
+    public class BcmpAddress
     {
         /// <summary>
-        /// Gets or sets a value indicating whether user annotations are allowed.
+        /// Gets or sets the first address line.
         /// </summary>
-        public bool AllowUserAnnotations { get; set; }
+        [JsonPropertyName("addr1")]
+        public string AddressLine1 { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the pdf can be edited.
+        /// Gets or sets the second address line.
         /// </summary>
-        public bool AllowUserEdits { get; set; }
+        [JsonPropertyName("addr2")]
+        public string AddressLine2 { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the producer for the PDF.
+        /// Gets or sets the city name.
         /// </summary>
-        public string Producer { get; set; } = string.Empty;
+        [JsonPropertyName("city")]
+        public string City { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the author for the PDF.
+        /// Gets or sets the state/province.
         /// </summary>
-        public string Author { get; set; } = string.Empty;
+        [JsonPropertyName("province")]
+        public string Province { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets subject of the PDF.
+        /// Gets or sets the postal code.
         /// </summary>
-        public string Subject { get; set; } = string.Empty;
+        [JsonPropertyName("postalCode")]
+        public string PostalCode { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the title of the PDF.
+        /// Gets or sets the country.
         /// </summary>
-        public string Title { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Iron PDF License key.
-        /// </summary>
-        public string LicenseKey { get; set; } = string.Empty;
+        [JsonPropertyName("country")]
+        public string Country { get; set; } = string.Empty;
     }
 }
