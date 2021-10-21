@@ -1,5 +1,6 @@
 import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
+import { VaccineProofTemplate } from "@/constants/VaccineProofTemplate";
 import BannerError from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
@@ -210,6 +211,7 @@ export const actions: VaccinationStatusActions = {
         context,
         params: {
             hdid: string;
+            proofTemplate: VaccineProofTemplate;
         }
     ): Promise<CovidVaccineRecord> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
@@ -222,7 +224,10 @@ export const actions: VaccinationStatusActions = {
             logger.debug(`Retrieving Vaccination Record`);
             context.commit("setAuthenticatedVaccineRecordRequested");
             vaccinationStatusService
-                .getAuthenticatedVaccineRecord(params.hdid)
+                .getAuthenticatedVaccineRecord(
+                    params.hdid,
+                    params.proofTemplate
+                )
                 .then((result) => {
                     if (result.resultStatus === ResultType.Success) {
                         const payload = result.resourcePayload;
