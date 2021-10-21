@@ -1,6 +1,6 @@
 import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
-import { VaccineProofTemplate } from "@/constants/VaccineProofTemplate";
+import { VaccineProofTemplate } from "@/constants/vaccineProofTemplate";
 import BannerError from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
