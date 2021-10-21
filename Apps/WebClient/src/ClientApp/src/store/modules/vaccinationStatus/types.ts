@@ -6,6 +6,7 @@ import {
     MutationTree,
 } from "vuex";
 
+import { VaccineProofTemplate } from "@/constants/VaccineProofTemplate";
 import BannerError from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
@@ -92,6 +93,7 @@ export interface VaccinationStatusActions
         context: StoreContext,
         params: {
             hdid: string;
+            proofTemplate: VaccineProofTemplate;
         }
     ): Promise<CovidVaccineRecord>;
     handleAuthenticatedError(context: StoreContext, error: ResultError): void;
