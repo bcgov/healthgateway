@@ -173,12 +173,9 @@ export default class PublicVaccineCardView extends Vue {
     }
 
     private get saveExportPdfShown(): boolean {
-        return this.config.modules["VaccinationExportPdf"];
+        return this.config.modules["PublicVaccineDownloadPdf"];
     }
 
-    private get saveCopyButtonShown(): boolean {
-        return !this.saveExportPdfShown;
-    }
     private download() {
         const printingArea: HTMLElement | null =
             document.querySelector(".vaccine-card");
@@ -330,7 +327,7 @@ export default class PublicVaccineCardView extends Vue {
                     "
                 >
                     <hg-button
-                        v-if="saveCopyButtonShown"
+                        v-if="!saveExportPdfShown"
                         variant="primary"
                         class="ml-3"
                         @click="showSensitiveDocumentDownloadModal()"
@@ -338,7 +335,7 @@ export default class PublicVaccineCardView extends Vue {
                         Save a Copy
                     </hg-button>
                     <hg-dropdown
-                        v-if="!saveCopyButtonShown"
+                        v-if="saveExportPdfShown"
                         text="Save"
                         variant="primary"
                         data-testid="save-dropdown-btn"
@@ -349,6 +346,7 @@ export default class PublicVaccineCardView extends Vue {
                             >Save as image</b-dropdown-item
                         >
                         <b-dropdown-item
+                            v-if="saveExportPdfShown"
                             data-testid="save-as-pdf-dropdown-item"
                             @click="showConfirmationModal()"
                             >Save as PDF</b-dropdown-item
