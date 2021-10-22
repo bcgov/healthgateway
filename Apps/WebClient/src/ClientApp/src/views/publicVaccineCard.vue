@@ -16,9 +16,11 @@ import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
+import { VaccineProofTemplate } from "@/constants/vaccineProofTemplate";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import Report from "@/models/report";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
@@ -39,7 +41,7 @@ const validPersonalHealthNumber = (value: string): boolean => {
         "vaccine-card": VaccineCardComponent,
         "error-card": ErrorCardComponent,
         loading: LoadingComponent,
-        MessageModalComponent,
+        "message-modal": MessageModalComponent,
         "hg-date-dropdown": HgDateDropdownComponent,
     },
 })
@@ -51,11 +53,24 @@ export default class PublicVaccineCardView extends Vue {
         dateOfVaccine: StringISODate;
     }) => Promise<void>;
 
+    @Action("retrieveVaccineStatusPdf", {
+        namespace: "vaccinationStatus",
+    })
+    retrieveVaccineStatusPdf!: (params: {
+        phn: string;
+        dateOfBirth: StringISODate;
+        dateOfVaccine: StringISODate;
+        proofTemplate: VaccineProofTemplate;
+    }) => Promise<Report>;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
     @Getter("vaccinationStatus", { namespace: "vaccinationStatus" })
     status!: VaccinationStatus | undefined;
+
+    @Getter("vaccineStatusPdf", { namespace: "vaccinationStatus" })
+    vaccineStatusPdf!: Report | undefined;
 
     @Getter("isLoading", { namespace: "vaccinationStatus" })
     isLoading!: boolean;
@@ -196,6 +211,31 @@ export default class PublicVaccineCardView extends Vue {
     private get phnMask(): Mask {
         return phnMask;
     }
+
+    @Watch("vaccineRecord")
+    private savePublicVaccinePdf() {
+        if (this.vaccineStatusPdf !== undefined) {
+            const mimeType = this.vaccineStatusPdf.data;
+            const downloadLink = `data:${mimeType};base64,${this.publicVaccineRecord.data}`;
+            fetch(downloadLink).then((res) => {
+                SnowPlow.trackEvent({
+                    action: "public_download_card",
+                    text: "Public COVID Card PDF",
+                });
+                res.blob().then((blob) => {
+                    saveAs(blob, "BCVaccineRecord.pdf");
+                });
+            });
+        }
+    }
+    private retrieveVaccinePdf() {
+        this.retrieveVaccineStatusPdf({
+            phn: this.phn.replace(/ /g, ""),
+            dateOfBirth: this.dateOfBirth,
+            dateOfVaccine: this.dateOfVaccine,
+            proofTemplate: VaccineProofTemplate.Provincial,
+        });
+    }
 }
 </script>
 
@@ -260,7 +300,7 @@ export default class PublicVaccineCardView extends Vue {
                     </div>
                 </div>
             </div>
-            <MessageModalComponent
+            <message-modal
                 ref="sensitivedocumentDownloadModal"
                 title="Vaccine Card Download"
                 message="Next, you'll see an image of your card.
@@ -269,6 +309,12 @@ export default class PublicVaccineCardView extends Vue {
                                 If you want to print, we recommend you use the print function in
                                 your browser."
                 @submit="download"
+            />
+            <message-modal
+                ref="messageModal"
+                title="Sensitive Document Download"
+                message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+                @submit="retrieveVaccinePdf"
             />
         </div>
         <div
