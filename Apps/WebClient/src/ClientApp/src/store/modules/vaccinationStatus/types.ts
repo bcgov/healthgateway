@@ -80,6 +80,7 @@ export interface VaccinationStatusActions
             phn: string;
             dateOfBirth: StringISODate;
             dateOfVaccine: StringISODate;
+            proofTemplate: VaccineProofTemplate;
         }
     ): Promise<Report>;
     handleError(context: StoreContext, error: ResultError): void;

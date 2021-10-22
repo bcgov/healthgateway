@@ -16,6 +16,7 @@
 namespace HealthGateway.Immunization.Services
 {
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
 
@@ -39,7 +40,8 @@ namespace HealthGateway.Immunization.Services
         /// <param name="phn">The patient personal health number.</param>
         /// <param name="dateOfBirth">The date of birth in yyyy-MM-dd format.</param>
         /// <param name="dateOfVaccine">The date of one of the patient's vaccine doess in yyyy-MM-dd format.</param>
+        /// <param name="proofTemplate">The template to request from the Vaccine Proof delegate.</param>
         /// <returns>Returns the vaccine status pdf document.</returns>
-        Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string dateOfVaccine);
+        Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string dateOfVaccine, VaccineProofTemplate proofTemplate);
     }
 }
