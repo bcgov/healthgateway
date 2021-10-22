@@ -144,8 +144,7 @@ export default class DashboardView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-            <b-col md-4 class="p-3"                
-            >
+            <b-col md-4 class="p-3">
                 <hg-card-button
                     title="Health Records"
                     to="/timeline"
