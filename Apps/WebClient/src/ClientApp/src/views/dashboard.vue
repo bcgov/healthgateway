@@ -1,14 +1,18 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCheckCircle, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { saveAs } from "file-saver";
 import Vue from "vue";
-import { Component, Ref } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Component, Ref, Watch } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
 
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import { VaccineProofTemplate } from "@/constants/vaccineProofTemplate";
 import type { WebClientConfiguration } from "@/models/configData";
+import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";
+import SnowPlow from "@/utility/snowPlow";
 
 library.add(faSearch, faCheckCircle);
 
@@ -18,10 +22,21 @@ library.add(faSearch, faCheckCircle);
     },
 })
 export default class DashboardView extends Vue {
+    @Action("retrieveAuthenticatedVaccineRecord", {
+        namespace: "vaccinationStatus",
+    })
+    retrieveAuthenticatedVaccineRecord!: (params: {
+        hdid: string;
+        proofTemplate: VaccineProofTemplate;
+    }) => Promise<CovidVaccineRecord>;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
     @Getter("user", { namespace: "user" }) user!: User;
+
+    @Getter("authenticatedVaccineRecord", { namespace: "vaccinationStatus" })
+    vaccineRecord!: CovidVaccineRecord | undefined;
 
     @Ref("sensitivedocumentDownloadModal")
     readonly sensitivedocumentDownloadModal!: MessageModalComponent;
@@ -51,6 +66,30 @@ export default class DashboardView extends Vue {
 
     private showSensitiveDocumentDownloadModal() {
         this.sensitivedocumentDownloadModal.showModal();
+    }
+
+    @Watch("vaccineRecord")
+    private saveVaccinePdf() {
+        if (this.vaccineRecord !== undefined) {
+            const mimeType = this.vaccineRecord.document.mediaType;
+            const downloadLink = `data:${mimeType};base64,${this.vaccineRecord.document.data}`;
+            fetch(downloadLink).then((res) => {
+                SnowPlow.trackEvent({
+                    action: "download_card",
+                    text: "Federal Covid Card PDF",
+                });
+                res.blob().then((blob) => {
+                    saveAs(blob, "FederalVaccineRecord.pdf");
+                });
+            });
+        }
+    }
+
+    private retrieveVaccinePdf() {
+        this.retrieveAuthenticatedVaccineRecord({
+            hdid: this.user.hdid,
+            proofTemplate: VaccineProofTemplate.Federal,
+        });
     }
 }
 </script>
@@ -184,7 +223,7 @@ export default class DashboardView extends Vue {
             ref="sensitivedocumentDownloadModal"
             title="Sensitive Document Download"
             message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-            @submit="download"
+            @submit="retrieveVaccinePdf"
         />
     </div>
 </template>
