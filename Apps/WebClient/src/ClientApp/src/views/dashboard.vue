@@ -6,6 +6,7 @@ import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import { VaccineProofTemplate } from "@/constants/vaccineProofTemplate";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -18,6 +19,7 @@ library.add(faSearch, faCheckCircle);
 
 @Component({
     components: {
+        LoadingComponent,
         MessageModalComponent,
     },
 })
@@ -30,6 +32,11 @@ export default class DashboardView extends Vue {
         proofTemplate: VaccineProofTemplate;
     }) => Promise<CovidVaccineRecord>;
 
+    @Getter("authenticatedVaccineRecordIsLoading", {
+        namespace: "vaccinationStatus",
+    })
+    isLoading!: boolean;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -40,6 +47,10 @@ export default class DashboardView extends Vue {
 
     @Ref("sensitivedocumentDownloadModal")
     readonly sensitivedocumentDownloadModal!: MessageModalComponent;
+
+    private get isLoadingDocument(): boolean {
+        return this.isLoading;
+    }
 
     private get unverifiedEmail(): boolean {
         return !this.user.verifiedEmail && this.user.hasEmail;
@@ -103,6 +114,7 @@ export default class DashboardView extends Vue {
         no-gutters
         class="hg-dashboard m-3 m-md-4 flex-grow-1 d-flex flex-column"
     >
+        <LoadingComponent :is-loading="isLoadingDocument"></LoadingComponent>
         <b-alert
             v-if="hasNewTermsOfService"
             show
