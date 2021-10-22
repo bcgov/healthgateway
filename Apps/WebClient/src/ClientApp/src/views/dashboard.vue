@@ -1,22 +1,56 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCheckCircle, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { saveAs } from "file-saver";
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Component, Ref, Watch } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
 
+import LoadingComponent from "@/components/loading.vue";
+import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import { VaccineProofTemplate } from "@/constants/vaccineProofTemplate";
 import type { WebClientConfiguration } from "@/models/configData";
+import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";
+import SnowPlow from "@/utility/snowPlow";
 
 library.add(faSearch, faCheckCircle);
 
-@Component
+@Component({
+    components: {
+        LoadingComponent,
+        MessageModalComponent,
+    },
+})
 export default class DashboardView extends Vue {
+    @Action("retrieveAuthenticatedVaccineRecord", {
+        namespace: "vaccinationStatus",
+    })
+    retrieveAuthenticatedVaccineRecord!: (params: {
+        hdid: string;
+        proofTemplate: VaccineProofTemplate;
+    }) => Promise<CovidVaccineRecord>;
+
+    @Getter("authenticatedVaccineRecordIsLoading", {
+        namespace: "vaccinationStatus",
+    })
+    isLoading!: boolean;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
     @Getter("user", { namespace: "user" }) user!: User;
+
+    @Getter("authenticatedVaccineRecord", { namespace: "vaccinationStatus" })
+    vaccineRecord!: CovidVaccineRecord | undefined;
+
+    @Ref("sensitivedocumentDownloadModal")
+    readonly sensitivedocumentDownloadModal!: MessageModalComponent;
+
+    private get isLoadingDocument(): boolean {
+        return this.isLoading;
+    }
 
     private get unverifiedEmail(): boolean {
         return !this.user.verifiedEmail && this.user.hasEmail;
@@ -40,6 +74,38 @@ export default class DashboardView extends Vue {
 
         return new Date().getTimezoneOffset() / 60 === timeZoneHourOffset;
     }
+
+    private retrieveVaccinePdf() {
+        this.retrieveAuthenticatedVaccineRecord({
+            hdid: this.user.hdid,
+            proofTemplate: VaccineProofTemplate.Federal,
+        });
+    }
+
+    @Watch("vaccineRecord")
+    private saveVaccinePdf() {
+        if (this.vaccineRecord !== undefined) {
+            const mimeType = this.vaccineRecord.document.mediaType;
+            const downloadLink = `data:${mimeType};base64,${this.vaccineRecord.document.data}`;
+            fetch(downloadLink).then((res) => {
+                SnowPlow.trackEvent({
+                    action: "click_button",
+                    text: "FederalPVC",
+                });
+                res.blob().then((blob) => {
+                    saveAs(blob, "FederalVaccineRecord.pdf");
+                });
+            });
+        }
+    }
+
+    private showSensitiveDocumentDownloadModal() {
+        this.sensitivedocumentDownloadModal.showModal();
+    }
+
+    private get showFederalCardButton(): boolean {
+        return this.config.modules["FederalCardButton"];
+    }
 }
 </script>
 
@@ -48,6 +114,7 @@ export default class DashboardView extends Vue {
         no-gutters
         class="hg-dashboard m-3 m-md-4 flex-grow-1 d-flex flex-column"
     >
+        <LoadingComponent :is-loading="isLoadingDocument"></LoadingComponent>
         <b-alert
             v-if="hasNewTermsOfService"
             show
@@ -107,7 +174,13 @@ export default class DashboardView extends Vue {
         <page-title title="Dashboard" />
         <h2>What do you want to focus on today?</h2>
         <b-row>
-            <b-col md="6" class="p-3">
+            <b-col
+                class="p-3"
+                :class="{
+                    'md-6 lg-4': showFederalCardButton,
+                    'md-4': !showFederalCardButton,
+                }"
+            >
                 <hg-card-button
                     title="BC Vaccine Card"
                     to="/covid19"
@@ -128,7 +201,13 @@ export default class DashboardView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-            <b-col md="6" class="p-3">
+            <b-col
+                class="p-3"
+                :class="{
+                    'md-6 lg-4': showFederalCardButton,
+                    'md-4': !showFederalCardButton,
+                }"
+            >
                 <hg-card-button
                     title="Health Records"
                     to="/timeline"
@@ -148,7 +227,32 @@ export default class DashboardView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
+            <b-col v-if="showFederalCardButton" md="6" lg="4" class="p-3">
+                <hg-card-button
+                    title="Proof of Vaccination"
+                    data-testid="proof-vaccination-card-btn"
+                    @click="showSensitiveDocumentDownloadModal()"
+                >
+                    <template #icon>
+                        <img
+                            class="canada-government-logo"
+                            src="@/assets/images/gov/canada-gov-logo.svg"
+                            alt="Canada Government Logo"
+                        />
+                    </template>
+                    <div>
+                        Download and print your Federal Proof of Vacination
+                        Certificate (PVC) for domestic and international travel.
+                    </div>
+                </hg-card-button>
+            </b-col>
         </b-row>
+        <MessageModalComponent
+            ref="sensitivedocumentDownloadModal"
+            title="Sensitive Document Download"
+            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+            @submit="retrieveVaccinePdf"
+        />
     </div>
 </template>
 
@@ -159,6 +263,11 @@ export default class DashboardView extends Vue {
     .health-gateway-logo {
         height: 2em;
         width: 2em;
+    }
+
+    .canada-government-logo {
+        height: 2em;
+        width: 6em;
     }
 
     .checkmark {
