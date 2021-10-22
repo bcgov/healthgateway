@@ -13,5 +13,6 @@ declare namespace Cypress {
         setupDownloads(): void;
         restoreAuthCookies(): void;
         checkVaccineRecordHasLoaded(): void;
+        checkFederalCardButtonLoaded(): void;
     }
 }

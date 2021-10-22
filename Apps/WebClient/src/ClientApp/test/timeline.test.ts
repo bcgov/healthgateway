@@ -7,7 +7,6 @@ import VueRouter from "vue-router";
 import Vuex, { Store } from "vuex";
 
 import { LoadStatus } from "@/models/storeOperations";
-import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
@@ -51,7 +50,6 @@ describe("Timeline view", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     logger.initialize("info");
 
-    const bannerId = "#incomplete-profile-banner";
     const linearTimelineTag = "lineartimeline-stub";
 
     test("is a Vue instance", () => {

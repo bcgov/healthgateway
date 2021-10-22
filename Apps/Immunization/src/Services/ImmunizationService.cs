@@ -260,8 +260,8 @@ namespace HealthGateway.Immunization.Services
                                 EncodedMedia document = new ()
                                 {
                                     Data = assetResult.ResourcePayload.Data,
-                                    Encoding = string.Empty,
-                                    Type = string.Empty,
+                                    Encoding = "base64",
+                                    Type = "application/pdf",
                                 };
                                 retVal.ResourcePayload = new CovidVaccineRecord()
                                 {
