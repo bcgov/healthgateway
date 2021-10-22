@@ -176,7 +176,7 @@ export default class DashboardView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-            <b-col v-show="showFederalCardButton" md="6" lg="4" class="p-3">
+            <b-col v-if="showFederalCardButton" md="6" lg="4" class="p-3">
                 <hg-card-button
                     title="Proof of Vaccination"
                     data-testid="proof-vaccination-card-btn"
