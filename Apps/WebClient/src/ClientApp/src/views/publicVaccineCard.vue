@@ -15,16 +15,17 @@ import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
+import { ResultType } from "@/constants/resulttype";
 import { VaccinationState } from "@/constants/vaccinationState";
 import { VaccineProofTemplate } from "@/constants/vaccineProofTemplate";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
-import Report from "@/models/report";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
-import { ILogger } from "@/services/interfaces";
+import { ILogger, IVaccinationStatusService } from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
 import { Mask, phnMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
 import SnowPlow from "@/utility/snowPlow";
@@ -46,6 +47,8 @@ const validPersonalHealthNumber = (value: string): boolean => {
     },
 })
 export default class PublicVaccineCardView extends Vue {
+    private vaccinationStatusService!: IVaccinationStatusService;
+
     @Action("retrieveVaccineStatus", { namespace: "vaccinationStatus" })
     retrieveVaccineStatus!: (params: {
         phn: string;
@@ -53,24 +56,14 @@ export default class PublicVaccineCardView extends Vue {
         dateOfVaccine: StringISODate;
     }) => Promise<void>;
 
-    @Action("retrieveVaccineStatusPdf", {
-        namespace: "vaccinationStatus",
-    })
-    retrieveVaccineStatusPdf!: (params: {
-        phn: string;
-        dateOfBirth: StringISODate;
-        dateOfVaccine: StringISODate;
-        proofTemplate: VaccineProofTemplate;
-    }) => Promise<Report>;
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (error: BannerError) => void;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
     @Getter("vaccinationStatus", { namespace: "vaccinationStatus" })
     status!: VaccinationStatus | undefined;
-
-    @Getter("vaccineStatusPdf", { namespace: "vaccinationStatus" })
-    vaccineStatusPdf!: Report | undefined;
 
     @Getter("isLoading", { namespace: "vaccinationStatus" })
     isLoading!: boolean;
@@ -108,6 +101,8 @@ export default class PublicVaccineCardView extends Vue {
     private phn = "";
     private dateOfBirth = "";
     private dateOfVaccine = "";
+
+    private isDownloadingProvincialPdf = false;
 
     private get loadingStatusMessage(): string {
         return this.isDownloading ? "Downloading...." : this.statusMessage;
@@ -216,35 +211,14 @@ export default class PublicVaccineCardView extends Vue {
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.vaccinationStatusService =
+            container.get<IVaccinationStatusService>(
+                SERVICE_IDENTIFIER.VaccinationStatusService
+            );
     }
 
     private get phnMask(): Mask {
         return phnMask;
-    }
-
-    @Watch("vaccineStatusPdf")
-    private savePublicVaccinePdf() {
-        if (this.vaccineStatusPdf !== undefined) {
-            const mimeType = this.vaccineStatusPdf.data;
-            const downloadLink = `data:${mimeType};base64,${this.vaccineStatusPdf.data}`;
-            fetch(downloadLink).then((res) => {
-                SnowPlow.trackEvent({
-                    action: "public_download_card",
-                    text: "Public COVID Card PDF",
-                });
-                res.blob().then((blob) => {
-                    saveAs(blob, "BCVaccineRecord.pdf");
-                });
-            });
-        }
-    }
-    private retrieveVaccinePdf() {
-        this.retrieveVaccineStatusPdf({
-            phn: this.phn.replace(/ /g, ""),
-            dateOfBirth: this.dateOfBirth,
-            dateOfVaccine: this.dateOfVaccine,
-            proofTemplate: VaccineProofTemplate.Provincial,
-        });
     }
 
     private showConfirmationModal() {
@@ -253,6 +227,51 @@ export default class PublicVaccineCardView extends Vue {
 
     private showVaccineCardMessageModal() {
         this.sensitivedocumentDownloadModal.showModal();
+    }
+
+    private downloadProvincialVaccinePdf() {
+        this.isDownloadingProvincialPdf = true;
+        this.vaccinationStatusService
+            .getPublicVaccineStatusPdf(
+                this.phn.replace(/ /g, ""),
+                this.dateOfBirth,
+                this.dateOfVaccine,
+                VaccineProofTemplate.Provincial
+            )
+            .then((result) => {
+                if (result.resultStatus == ResultType.Success) {
+                    SnowPlow.trackEvent({
+                        action: "public_download_card",
+                        text: "Public COVID Card PDF",
+                    });
+                    const downloadLink = result.resourcePayload.data;
+                    fetch(downloadLink).then((res) => {
+                        res.blob().then((blob) => {
+                            saveAs(blob, result.resourcePayload.fileName);
+                        });
+                    });
+                } else {
+                    this.logger.error(
+                        "Error returned when retrieving provincial vaccine PDF: " +
+                            JSON.stringify(result.resultError)
+                    );
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "Retrieve PDF Error",
+                            result.resultError
+                        )
+                    );
+                }
+            })
+            .catch((err) => {
+                this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError("Retrieve PDF Error", err)
+                );
+            })
+            .finally(() => {
+                this.isDownloadingProvincialPdf = false;
+            });
     }
 }
 </script>
@@ -350,7 +369,7 @@ export default class PublicVaccineCardView extends Vue {
                 ref="messageModal"
                 title="Sensitive Document Download"
                 message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-                @submit="retrieveVaccinePdf"
+                @submit="downloadProvincialVaccinePdf"
             />
         </div>
         <div
