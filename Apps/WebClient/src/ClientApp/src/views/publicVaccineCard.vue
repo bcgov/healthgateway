@@ -56,9 +56,6 @@ export default class PublicVaccineCardView extends Vue {
         dateOfVaccine: StringISODate;
     }) => Promise<void>;
 
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (error: BannerError) => void;
-
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
