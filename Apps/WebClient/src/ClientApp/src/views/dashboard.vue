@@ -126,8 +126,8 @@ export default class DashboardView extends Vue {
             <b-col
                 class="p-3"
                 :class="{
-                    'md-6': showFederalCardButton,
-                    'md-4': !showFederalCardButton,
+                    'md-6': !showFederalCardButton,
+                    'md-4': showFederalCardButton,
                 }"
             >
                 <hg-card-button
@@ -153,8 +153,8 @@ export default class DashboardView extends Vue {
             <b-col
                 class="p-3"
                 :class="{
-                    'md-6': showFederalCardButton,
-                    'md-4': !showFederalCardButton,
+                    'md-6': !showFederalCardButton,
+                    'md-4': showFederalCardButton,
                 }"
             >
                 <hg-card-button
