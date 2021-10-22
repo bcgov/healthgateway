@@ -102,7 +102,7 @@ export default class PublicVaccineCardView extends Vue {
     private dateOfBirth = "";
     private dateOfVaccine = "";
 
-    private isDownloadingProvincialPdf = false;
+    private isDownloadingPdf = false;
     private downloadError: BannerError | null = null;
 
     private get loadingStatusMessage(): string {
@@ -228,15 +228,15 @@ export default class PublicVaccineCardView extends Vue {
         this.sensitivedocumentDownloadModal.showModal();
     }
 
-    private downloadProvincialVaccinePdf() {
+    private downloadVaccinePdf() {
         this.downloadError = null;
-        this.isDownloadingProvincialPdf = true;
+        this.isDownloadingPdf = true;
         this.vaccinationStatusService
             .getPublicVaccineStatusPdf(
                 this.phn.replace(/ /g, ""),
                 this.dateOfBirth,
                 this.dateOfVaccine,
-                VaccineProofTemplate.Provincial
+                VaccineProofTemplate.CombinedCover
             )
             .then((result) => {
                 if (result.resultStatus == ResultType.Success) {
@@ -252,7 +252,7 @@ export default class PublicVaccineCardView extends Vue {
                     });
                 } else {
                     this.logger.error(
-                        "Error returned when retrieving provincial vaccine PDF: " +
+                        "Error returned when retrieving vaccine PDF: " +
                             JSON.stringify(result.resultError)
                     );
                     this.downloadError = ErrorTranslator.toBannerError(
@@ -269,7 +269,7 @@ export default class PublicVaccineCardView extends Vue {
                 );
             })
             .finally(() => {
-                this.isDownloadingProvincialPdf = false;
+                this.isDownloadingPdf = false;
             });
     }
 }
@@ -278,9 +278,7 @@ export default class PublicVaccineCardView extends Vue {
 <template>
     <div class="background flex-grow-1 d-flex flex-column">
         <loading
-            :is-loading="
-                isLoading || isDownloading || isDownloadingProvincialPdf
-            "
+            :is-loading="isLoading || isDownloading || isDownloadingPdf"
             :text="loadingStatusMessage"
         />
         <div class="header d-print-none">
@@ -385,7 +383,7 @@ export default class PublicVaccineCardView extends Vue {
                 ref="messageModal"
                 title="Sensitive Document Download"
                 message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-                @submit="downloadProvincialVaccinePdf"
+                @submit="downloadVaccinePdf"
             />
         </div>
         <div
