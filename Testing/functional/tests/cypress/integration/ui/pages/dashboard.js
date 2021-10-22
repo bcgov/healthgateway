@@ -17,6 +17,24 @@ describe("Authenticated User - Dashboard Page", () => {
      
     });
 
+    it("Dashboard - Federal Card button enabled", () => {
+        cy.enableModules([          
+            "FederalCardButton",
+        ]);
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            dashboardUrl
+        );
+
+        cy.get("[data-testid=bc-vaccine-card-btn]").should("be.visible");
+        cy.get("[data-testid=health-records-card-btn]").should("be.visible");
+        cy.get("[data-testid=proof-vaccination-card-btn]").should("be.visible");    
+
+    });
+
     it("Dashboard - Link to Covid19 page", () => {
         cy.login(
             Cypress.env("keycloak.username"),
@@ -46,4 +64,22 @@ describe("Authenticated User - Dashboard Page", () => {
 
         cy.url().should("include", timelineUrl);
     });
+    
+});
+
+describe("Authenticated User - Dashboard Federal Card button disable", () => {
+    before(() => {
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            dashboardUrl
+        );
+        cy.checkFederalCardButtonLoaded();
+    });
+    it("Dashboard - Federal Card button disabled", () => {
+        cy.get("[data-testid=bc-vaccine-card-btn]").should("be.visible");
+        cy.get("[data-testid=health-records-card-btn]").should("be.visible");  
+    });
+
 });
