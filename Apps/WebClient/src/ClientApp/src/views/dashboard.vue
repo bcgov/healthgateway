@@ -64,8 +64,11 @@ export default class DashboardView extends Vue {
         return new Date().getTimezoneOffset() / 60 === timeZoneHourOffset;
     }
 
-    private showSensitiveDocumentDownloadModal() {
-        this.sensitivedocumentDownloadModal.showModal();
+    private retrieveVaccinePdf() {
+        this.retrieveAuthenticatedVaccineRecord({
+            hdid: this.user.hdid,
+            proofTemplate: VaccineProofTemplate.Federal,
+        });
     }
 
     @Watch("vaccineRecord")
@@ -85,11 +88,8 @@ export default class DashboardView extends Vue {
         }
     }
 
-    private retrieveVaccinePdf() {
-        this.retrieveAuthenticatedVaccineRecord({
-            hdid: this.user.hdid,
-            proofTemplate: VaccineProofTemplate.Federal,
-        });
+    private showSensitiveDocumentDownloadModal() {
+        this.sensitivedocumentDownloadModal.showModal();
     }
 }
 </script>
