@@ -103,6 +103,7 @@ export default class PublicVaccineCardView extends Vue {
     private dateOfVaccine = "";
 
     private isDownloadingProvincialPdf = false;
+    private downloadError: BannerError | null = null;
 
     private get loadingStatusMessage(): string {
         return this.isDownloading ? "Downloading...." : this.statusMessage;
@@ -183,6 +184,7 @@ export default class PublicVaccineCardView extends Vue {
             document.querySelector(".vaccine-card");
 
         if (printingArea !== null) {
+            this.downloadError = null;
             this.isDownloading = true;
 
             SnowPlow.trackEvent({
@@ -230,6 +232,7 @@ export default class PublicVaccineCardView extends Vue {
     }
 
     private downloadProvincialVaccinePdf() {
+        this.downloadError = null;
         this.isDownloadingProvincialPdf = true;
         this.vaccinationStatusService
             .getPublicVaccineStatusPdf(
@@ -255,18 +258,17 @@ export default class PublicVaccineCardView extends Vue {
                         "Error returned when retrieving provincial vaccine PDF: " +
                             JSON.stringify(result.resultError)
                     );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Retrieve PDF Error",
-                            result.resultError
-                        )
+                    this.downloadError = ErrorTranslator.toBannerError(
+                        "Retrieve PDF Error",
+                        result.resultError
                     );
                 }
             })
             .catch((err) => {
                 this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError("Retrieve PDF Error", err)
+                this.downloadError = ErrorTranslator.toBannerError(
+                    "Retrieve PDF Error",
+                    err
                 );
             })
             .finally(() => {
@@ -279,7 +281,9 @@ export default class PublicVaccineCardView extends Vue {
 <template>
     <div class="background flex-grow-1 d-flex flex-column">
         <loading
-            :is-loading="isLoading || isDownloading"
+            :is-loading="
+                isLoading || isDownloading || isDownloadingProvincialPdf
+            "
             :text="loadingStatusMessage"
         />
         <div class="header d-print-none">
@@ -291,6 +295,20 @@ export default class PublicVaccineCardView extends Vue {
                     alt="BC Mark"
                 />
             </router-link>
+        </div>
+        <div v-if="downloadError !== null" class="container d-print-none">
+            <b-alert
+                variant="danger"
+                class="no-print my-3 p-3"
+                :show="downloadError !== null"
+                dismissible
+            >
+                <h4>Our Apologies</h4>
+                <div data-testid="errorTextDescription" class="pl-4">
+                    We've found an issue and the Health Gateway team is working
+                    hard to fix it.
+                </div>
+            </b-alert>
         </div>
         <div
             v-if="displayResult"
