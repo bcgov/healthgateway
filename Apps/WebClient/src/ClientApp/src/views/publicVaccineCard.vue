@@ -81,6 +81,9 @@ export default class PublicVaccineCardView extends Vue {
     @Getter("statusMessage", { namespace: "vaccinationStatus" })
     statusMessage!: string;
 
+    @Ref("messageModal")
+    readonly messageModal!: MessageModalComponent;
+
     @Ref("sensitivedocumentDownloadModal")
     readonly sensitivedocumentDownloadModal!: MessageModalComponent;
 
@@ -173,6 +176,13 @@ export default class PublicVaccineCardView extends Vue {
         this.sensitivedocumentDownloadModal.showModal();
     }
 
+    private get saveExportPdfShown(): boolean {
+        return this.config.modules["VaccinationExportPdf"];
+    }
+
+    private get saveCopyButtonShown(): boolean {
+        return !this.saveExportPdfShown;
+    }
     private download() {
         const printingArea: HTMLElement | null =
             document.querySelector(".vaccine-card");
@@ -212,11 +222,11 @@ export default class PublicVaccineCardView extends Vue {
         return phnMask;
     }
 
-    @Watch("vaccineRecord")
+    @Watch("vaccineStatusPdf")
     private savePublicVaccinePdf() {
         if (this.vaccineStatusPdf !== undefined) {
             const mimeType = this.vaccineStatusPdf.data;
-            const downloadLink = `data:${mimeType};base64,${this.publicVaccineRecord.data}`;
+            const downloadLink = `data:${mimeType};base64,${this.vaccineStatusPdf.data}`;
             fetch(downloadLink).then((res) => {
                 SnowPlow.trackEvent({
                     action: "public_download_card",
@@ -235,6 +245,14 @@ export default class PublicVaccineCardView extends Vue {
             dateOfVaccine: this.dateOfVaccine,
             proofTemplate: VaccineProofTemplate.Provincial,
         });
+    }
+
+    private showConfirmationModal() {
+        this.messageModal.showModal();
+    }
+
+    private showVaccineCardMessageModal() {
+        this.sensitivedocumentDownloadModal.showModal();
     }
 }
 </script>
@@ -275,12 +293,30 @@ export default class PublicVaccineCardView extends Vue {
                     "
                 >
                     <hg-button
+                        v-if="saveCopyButtonShown"
                         variant="primary"
                         class="ml-3"
                         @click="showSensitiveDocumentDownloadModal()"
                     >
                         Save a Copy
                     </hg-button>
+                    <hg-dropdown
+                        v-if="!saveCopyButtonShown"
+                        text="Save"
+                        variant="primary"
+                        data-testid="save-dropdown-btn"
+                    >
+                        <b-dropdown-item
+                            data-testid="save-as-image-dropdown-item"
+                            @click="showVaccineCardMessageModal()"
+                            >Save as image</b-dropdown-item
+                        >
+                        <b-dropdown-item
+                            data-testid="save-as-pdf-dropdown-item"
+                            @click="showConfirmationModal()"
+                            >Save as PDF</b-dropdown-item
+                        >
+                    </hg-dropdown>
                 </div>
                 <div
                     v-if="isPartiallyVaccinated || isVaccinationNotFound"
