@@ -240,6 +240,10 @@ Cypress.Commands.add("checkVaccineRecordHasLoaded", () => {
     cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
 });
 
+Cypress.Commands.add("checkFederalCardButtonLoaded", () => {  
+    cy.get("[data-testid=proof-vaccination-card-btn]").should("not.be.visible");
+});
+
 Cypress.Commands.add("enableModules", (modules) => {
     const isArrayOfModules = Array.isArray(modules);
     return cy

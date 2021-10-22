@@ -91,6 +91,10 @@ export default class DashboardView extends Vue {
     private showSensitiveDocumentDownloadModal() {
         this.sensitivedocumentDownloadModal.showModal();
     }
+
+    private get showFederalCardButton(): boolean {
+        return this.config.modules["FederalCardButton"];
+    }
 }
 </script>
 
@@ -158,7 +162,13 @@ export default class DashboardView extends Vue {
         <page-title title="Dashboard" />
         <h2>What do you want to focus on today?</h2>
         <b-row>
-            <b-col md="4" class="p-3">
+            <b-col
+                class="p-3"
+                :class="{
+                    'md-6 lg-4': showFederalCardButton,
+                    'md-4': !showFederalCardButton,
+                }"
+            >
                 <hg-card-button
                     title="BC Vaccine Card"
                     to="/covid19"
@@ -179,7 +189,13 @@ export default class DashboardView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-            <b-col md="4" class="p-3">
+            <b-col
+                class="p-3"
+                :class="{
+                    'md-6 lg-4': showFederalCardButton,
+                    'md-4': !showFederalCardButton,
+                }"
+            >
                 <hg-card-button
                     title="Health Records"
                     to="/timeline"
@@ -199,7 +215,7 @@ export default class DashboardView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-            <b-col md="4" class="p-3">
+            <b-col v-if="showFederalCardButton" md="6" lg="4" class="p-3">
                 <hg-card-button
                     title="Proof of Vaccination"
                     data-testid="proof-vaccination-card-btn"
