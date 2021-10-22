@@ -64,22 +64,17 @@ describe("Authenticated User - Dashboard Page", () => {
 
         cy.url().should("include", timelineUrl);
     });
-    
-});
 
-describe("Authenticated User - Dashboard Federal Card button disable", () => {
-    before(() => {
+    it("Dashboard - Federal Card button disabled", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
             dashboardUrl
         );
-        cy.checkFederalCardButtonLoaded();
-    });
-    it("Dashboard - Federal Card button disabled", () => {
         cy.get("[data-testid=bc-vaccine-card-btn]").should("be.visible");
         cy.get("[data-testid=health-records-card-btn]").should("be.visible");  
+        cy.get("[data-testid=proof-vaccination-card-btn]").should("not.be.visible");
     });
-
+    
 });
