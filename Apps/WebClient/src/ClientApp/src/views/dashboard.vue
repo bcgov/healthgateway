@@ -78,8 +78,8 @@ export default class DashboardView extends Vue {
             const downloadLink = `data:${mimeType};base64,${this.vaccineRecord.document.data}`;
             fetch(downloadLink).then((res) => {
                 SnowPlow.trackEvent({
-                    action: "download_card",
-                    text: "Federal Covid Card PDF",
+                    action: "click_button",
+                    text: "FederalPVC",
                 });
                 res.blob().then((blob) => {
                     saveAs(blob, "FederalVaccineRecord.pdf");
