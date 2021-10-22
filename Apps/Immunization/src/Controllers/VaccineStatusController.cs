@@ -85,7 +85,7 @@ namespace HealthGateway.Immunization.Controllers
         [HttpGet]
         [Route("pdf")]
         [Produces("application/json")]
-        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string dateOfVaccine, [FromQuery] VaccineProofTemplate proofTemplate)
+        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string dateOfVaccine, [FromHeader] VaccineProofTemplate proofTemplate)
         {
             this.logger.LogTrace($"Fetching Vaccine Status PDF for PHN: {phn}, DOB: {dateOfBirth}, and DOV: {dateOfVaccine}");
             return await this.vaccineStatusService.GetVaccineStatusPDF(phn, dateOfBirth, dateOfVaccine, proofTemplate).ConfigureAwait(true);

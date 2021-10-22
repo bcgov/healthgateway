@@ -71,7 +71,8 @@ export interface IVaccinationStatusService {
     getPublicVaccineStatusPdf(
         phn: string,
         dateOfBirth: StringISODate,
-        dateOfVaccine: StringISODate
+        dateOfVaccine: StringISODate,
+        proofTemplate: VaccineProofTemplate
     ): Promise<RequestResult<Report>>;
     getAuthenticatedVaccineStatus(
         hdid: string

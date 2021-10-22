@@ -42,6 +42,7 @@ export interface VaccinationStatusGetters
     vaccinationStatus(
         state: VaccinationStatusState
     ): VaccinationStatus | undefined;
+    vaccineStatusPdf(state: VaccinationStatusState): Report | undefined;
     isLoading(state: VaccinationStatusState): boolean;
     error(state: VaccinationStatusState): BannerError | undefined;
     statusMessage(state: VaccinationStatusState): string;
@@ -80,6 +81,7 @@ export interface VaccinationStatusActions
             phn: string;
             dateOfBirth: StringISODate;
             dateOfVaccine: StringISODate;
+            proofTemplate: VaccineProofTemplate;
         }
     ): Promise<Report>;
     handleError(context: StoreContext, error: ResultError): void;

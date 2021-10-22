@@ -77,7 +77,8 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
     public getPublicVaccineStatusPdf(
         phn: string,
         dateOfBirth: StringISODate,
-        dateOfVaccine: StringISODate
+        dateOfVaccine: StringISODate,
+        proofTemplate: VaccineProofTemplate
     ): Promise<RequestResult<Report>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
@@ -89,7 +90,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
             headers["phn"] = phn;
             headers["dateOfBirth"] = dateOfBirth;
             headers["dateOfVaccine"] = dateOfVaccine;
-
+            headers["proofTemplate"] = proofTemplate;
             return this.http
                 .getWithCors<RequestResult<Report>>(
                     `${this.baseUri}${this.VACCINATION_STATUS_BASE_URI}/pdf`,

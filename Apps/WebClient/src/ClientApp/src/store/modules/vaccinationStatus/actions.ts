@@ -79,6 +79,7 @@ export const actions: VaccinationStatusActions = {
             phn: string;
             dateOfBirth: StringISODate;
             dateOfVaccine: StringISODate;
+            proofTemplate: VaccineProofTemplate;
         }
     ): Promise<Report> {
         context.commit("setPdfRequested");
@@ -93,7 +94,8 @@ export const actions: VaccinationStatusActions = {
                 .getPublicVaccineStatusPdf(
                     params.phn,
                     params.dateOfBirth,
-                    params.dateOfVaccine
+                    params.dateOfVaccine,
+                    params.proofTemplate
                 )
                 .then((result) => {
                     if (result.resultStatus === ResultType.Success) {
