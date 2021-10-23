@@ -8,6 +8,8 @@
 // You can read more here:
 // https://on.cypress.io/plugins-guide
 // ***********************************************************
+const { rmdir } = require("fs");
+const { isFileExist } = require("cy-verify-downloads");
 
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
@@ -18,4 +20,22 @@
 module.exports = (on, config) => {
     // `on` is used to hook into various events Cypress emits
     // `config` is the resolved Cypress config
+    on("task", {
+        isFileExist,
+
+        deleteFolder(folderName) {
+            return new Promise((resolve, reject) => {
+                rmdir(
+                    folderName,
+                    { maxRetries: 10, recursive: true },
+                    (err) => {
+                        if (err) {
+                            return reject(err);
+                        }
+                        resolve(null);
+                    }
+                );
+            });
+        },
+    });
 };

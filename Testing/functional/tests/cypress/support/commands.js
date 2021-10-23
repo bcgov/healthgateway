@@ -9,6 +9,7 @@
 // ***********************************************
 const { AuthMethod } = require("./constants");
 const { globalStorage } = require("./globalStorage");
+require("cy-verify-downloads").addCustomCommand();
 
 function storeAuthCookies() {
     cy.getCookies().then((cookies) => {
@@ -236,11 +237,11 @@ Cypress.Commands.add("checkTimelineHasLoaded", () => {
     cy.get("[data-testid=timelineLoading]").should("not.be.visible");
 });
 
-Cypress.Commands.add("checkVaccineRecordHasLoaded", () => {  
+Cypress.Commands.add("checkVaccineRecordHasLoaded", () => {
     cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
 });
 
-Cypress.Commands.add("checkFederalCardButtonLoaded", () => {  
+Cypress.Commands.add("checkFederalCardButtonLoaded", () => {
     cy.get("[data-testid=proof-vaccination-card-btn]").should("not.be.visible");
 });
 
