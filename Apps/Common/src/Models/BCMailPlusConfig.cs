@@ -70,13 +70,13 @@ namespace HealthGateway.Common.Models
         /// <returns>A string representing the Base Endpoint for BCMail Plus.</returns>
         public string ResolvedEndpoint()
         {
-            Dictionary<string, string> keyValues = new ()
+            Dictionary<string, string> keyValues = new()
             {
                 { "HOST", this.Host },
                 { "ENV", this.JobEnvironment },
                 { "TOKEN", this.Token },
             };
-            return StringManipulator.Replace(this.Endpoint, keyValues) !;
+            return StringManipulator.Replace(this.Endpoint, keyValues)!;
         }
     }
 }

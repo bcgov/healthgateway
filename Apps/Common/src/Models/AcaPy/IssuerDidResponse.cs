@@ -27,6 +27,6 @@ namespace HealthGateway.Common.Models.AcaPy
         /// Gets or sets the result.
         /// </summary>
         [JsonPropertyName("result")]
-        public IssuerDidResult Result { get; set; } = new ();
+        public IssuerDidResult Result { get; set; } = new();
     }
 }

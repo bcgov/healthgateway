@@ -127,7 +127,7 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            DBResult<IList<UserFeedbackAdmin>> result = new ();
+            DBResult<IList<UserFeedbackAdmin>> result = new();
             result.Payload = feedback;
             result.Status = feedback != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             this.logger.LogDebug($"Finished getting user feedback from DB... {JsonSerializer.Serialize(result)}");

@@ -92,7 +92,7 @@ namespace HealthGateway.Common.Models.PHSA
         /// Gets or sets the QR code.
         /// </summary>
         [JsonPropertyName("qrCode")]
-        public EncodedMedia QRCode { get; set; } = new ();
+        public EncodedMedia QRCode { get; set; } = new();
 
         /// <summary>
         /// Converts a VaccineStatusResult to a VaccineStatus model.

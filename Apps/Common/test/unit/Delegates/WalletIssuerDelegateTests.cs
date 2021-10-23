@@ -43,7 +43,7 @@ namespace HealthGateway.CommonTests.Delegates
     {
         private const string AcapyConfigSectionKey = "AcaPy";
 
-        private readonly JsonSerializerOptions jsonOptions = new ()
+        private readonly JsonSerializerOptions jsonOptions = new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             IgnoreNullValues = true,
@@ -69,7 +69,7 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void CreateConnection200()
         {
-            RequestResult<ConnectionResponse> expectedRequestResult = new ()
+            RequestResult<ConnectionResponse> expectedRequestResult = new()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = new ConnectionResponse()
@@ -92,7 +92,7 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void CreateConnection500()
         {
-            RequestResult<ConnectionResponse> expectedRequestResult = new ();
+            RequestResult<ConnectionResponse> expectedRequestResult = new();
 
             Tuple<RequestResult<ConnectionResponse>, RequestResult<ConnectionResponse>> response = this.CreateConnection(HttpStatusCode.ServiceUnavailable, expectedRequestResult);
             var actualResult = response.Item1;
@@ -105,7 +105,7 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void CreateConnectionBadPayload()
         {
-            RequestResult<ConnectionResponse> expectedRequestResult = new ();
+            RequestResult<ConnectionResponse> expectedRequestResult = new();
 
             Tuple<RequestResult<ConnectionResponse>, RequestResult<ConnectionResponse>> response = this.CreateConnection(HttpStatusCode.OK, expectedRequestResult, true);
             var actualResult = response.Item1;
@@ -118,7 +118,7 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void CreateConnectionException()
         {
-            RequestResult<ConnectionResponse> expectedRequestResult = new ();
+            RequestResult<ConnectionResponse> expectedRequestResult = new();
 
             Tuple<RequestResult<ConnectionResponse>, RequestResult<ConnectionResponse>> response = this.CreateConnection(HttpStatusCode.OK, expectedRequestResult, false, true);
             var actualResult = response.Item1;
@@ -133,42 +133,42 @@ namespace HealthGateway.CommonTests.Delegates
         public void CreateCredential()
         {
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<HttpMessageHandler> handlerMock = new ();
+            Mock<HttpMessageHandler> handlerMock = new();
 
             // Setup IssuerDID
             string issuerDID = "fakeDID";
-            IssuerDidResponse didResponseData = new ()
+            IssuerDidResponse didResponseData = new()
             {
                 Result = new IssuerDidResult()
                 {
                     Did = issuerDID,
                 },
             };
-            this.MessageHandlerMockSetup(handlerMock, didResponseData, new ($"{this.walletIssuerConfig.AgentApiUrl}wallet/did/public"));
+            this.MessageHandlerMockSetup(handlerMock, didResponseData, new($"{this.walletIssuerConfig.AgentApiUrl}wallet/did/public"));
 
             // Setup Schema ID
             string schemaId = "schemaId";
-            SchemaIdResponse schemaResponseData = new ();
+            SchemaIdResponse schemaResponseData = new();
             schemaResponseData.SchemaIds.Add(schemaId);
-            this.MessageHandlerMockSetup(handlerMock, schemaResponseData, new ($"{this.walletIssuerConfig.AgentApiUrl}schemas/created?schema_version={this.walletIssuerConfig.SchemaVersion}&schema_issuer_did={issuerDID}&schema_name={this.walletIssuerConfig.SchemaName}"));
+            this.MessageHandlerMockSetup(handlerMock, schemaResponseData, new($"{this.walletIssuerConfig.AgentApiUrl}schemas/created?schema_version={this.walletIssuerConfig.SchemaVersion}&schema_issuer_did={issuerDID}&schema_name={this.walletIssuerConfig.SchemaName}"));
 
             // Setup credentialDefinitionIdResponse
-            CredentialDefinitionIdResponse credentialDefinitionIdData = new ();
+            CredentialDefinitionIdResponse credentialDefinitionIdData = new();
             credentialDefinitionIdData.CredentialDefinitionIds.Add("credentialDefinitionId");
-            this.MessageHandlerMockSetup(handlerMock, credentialDefinitionIdData, new ($"{this.walletIssuerConfig.AgentApiUrl}credential-definitions/created?schema_id={schemaId}"));
+            this.MessageHandlerMockSetup(handlerMock, credentialDefinitionIdData, new($"{this.walletIssuerConfig.AgentApiUrl}credential-definitions/created?schema_id={schemaId}"));
 
             // Setup CredentialResponse
             Guid exchangeId = System.Guid.NewGuid();
-            CredentialResponse credentialResponseData = new ()
+            CredentialResponse credentialResponseData = new()
             {
                 ExchangeId = exchangeId,
             };
-            this.MessageHandlerMockSetup(handlerMock, credentialResponseData, new ($"{this.walletIssuerConfig.AgentApiUrl}issue-credential/send"));
+            this.MessageHandlerMockSetup(handlerMock, credentialResponseData, new($"{this.walletIssuerConfig.AgentApiUrl}issue-credential/send"));
 
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
-            WalletConnection connection = new ()
+            WalletConnection connection = new()
             {
                 AgentId = Guid.NewGuid(),
             };
@@ -180,7 +180,7 @@ namespace HealthGateway.CommonTests.Delegates
             };
             string comment = "Immunization Credential";
 
-            RequestResult<CredentialResponse> expectedResult = new ()
+            RequestResult<CredentialResponse> expectedResult = new()
             {
                 ResourcePayload = credentialResponseData,
                 ResultStatus = ResultType.Success,
@@ -198,27 +198,27 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public async Task RevokeCredential()
         {
-            WalletConnection connection = new ()
+            WalletConnection connection = new()
             {
                 AgentId = Guid.NewGuid(),
             };
-            WalletCredential credential = new ()
+            WalletCredential credential = new()
             {
                 WalletConnection = connection,
                 RevocationId = "1234",
                 RevocationRegistryId = "4321",
             };
 
-            RequestResult<CredentialResponse> expectedResult = new ()
+            RequestResult<CredentialResponse> expectedResult = new()
             {
                 ResourcePayload = null,
                 ResultStatus = ResultType.Success,
             };
 
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<HttpMessageHandler> handlerMock = new ();
-            this.MessageHandlerMockSetup(handlerMock, string.Empty, new ($"{this.walletIssuerConfig.AgentApiUrl}revocation/revoke"));
-            this.MessageHandlerMockSetup(handlerMock, string.Empty, new ($"{this.walletIssuerConfig.AgentApiUrl}connections/{connection.AgentId}/send-message"));
+            Mock<HttpMessageHandler> handlerMock = new();
+            this.MessageHandlerMockSetup(handlerMock, string.Empty, new($"{this.walletIssuerConfig.AgentApiUrl}revocation/revoke"));
+            this.MessageHandlerMockSetup(handlerMock, string.Empty, new($"{this.walletIssuerConfig.AgentApiUrl}connections/{connection.AgentId}/send-message"));
 
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
@@ -238,20 +238,20 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public async Task DisconnectConnection()
         {
-            WalletConnection connection = new ()
+            WalletConnection connection = new()
             {
                 AgentId = Guid.NewGuid(),
             };
 
-            RequestResult<CredentialResponse> expectedResult = new ()
+            RequestResult<CredentialResponse> expectedResult = new()
             {
                 ResourcePayload = null,
                 ResultStatus = ResultType.Success,
             };
 
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<HttpMessageHandler> handlerMock = new ();
-            this.MessageHandlerMockSetup(handlerMock, string.Empty, new ($"{this.walletIssuerConfig.AgentApiUrl}connections/{connection.AgentId}"));
+            Mock<HttpMessageHandler> handlerMock = new();
+            this.MessageHandlerMockSetup(handlerMock, string.Empty, new($"{this.walletIssuerConfig.AgentApiUrl}connections/{connection.AgentId}"));
 
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
@@ -271,12 +271,12 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public async Task CreateSchema()
         {
-            SchemaRequest schemaRequest = new ()
+            SchemaRequest schemaRequest = new()
             {
                 SchemaName = "Test",
             };
 
-            RequestResult<SchemaResponse> expectedResult = new ()
+            RequestResult<SchemaResponse> expectedResult = new()
             {
                 ResourcePayload = new SchemaResponse() { SchemaId = "123" },
                 ResultStatus = ResultType.Success,
@@ -284,8 +284,8 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<HttpMessageHandler> handlerMock = new ();
-            this.MessageHandlerMockSetup(handlerMock, expectedResult.ResourcePayload, new ($"{this.walletIssuerConfig.AgentApiUrl}schemas"));
+            Mock<HttpMessageHandler> handlerMock = new();
+            this.MessageHandlerMockSetup(handlerMock, expectedResult.ResourcePayload, new($"{this.walletIssuerConfig.AgentApiUrl}schemas"));
 
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
@@ -306,7 +306,7 @@ namespace HealthGateway.CommonTests.Delegates
         public async Task CreateCredentialDefinition()
         {
             string schemaId = "123";
-            RequestResult<CredentialDefinitionResponse> expectedResult = new ()
+            RequestResult<CredentialDefinitionResponse> expectedResult = new()
             {
                 ResourcePayload = new CredentialDefinitionResponse() { CredentialDefinitionId = "321" },
                 ResultStatus = ResultType.Success,
@@ -314,8 +314,8 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<HttpMessageHandler> handlerMock = new ();
-            this.MessageHandlerMockSetup(handlerMock, expectedResult.ResourcePayload, new ($"{this.walletIssuerConfig.AgentApiUrl}credential-definitions"));
+            Mock<HttpMessageHandler> handlerMock = new();
+            this.MessageHandlerMockSetup(handlerMock, expectedResult.ResourcePayload, new($"{this.walletIssuerConfig.AgentApiUrl}credential-definitions"));
 
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
@@ -382,7 +382,7 @@ namespace HealthGateway.CommonTests.Delegates
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Unit Test")]
         private void MessageHandlerMockSetup(Mock<HttpMessageHandler> handlerMock, object responseObject, Uri endpoint, HttpStatusCode httpStatusCode = HttpStatusCode.OK)
         {
-            HttpResponseMessage response = new ()
+            HttpResponseMessage response = new()
             {
                 StatusCode = httpStatusCode,
                 Content = new StringContent(JsonSerializer.Serialize(responseObject, this.jsonOptions)),
@@ -416,7 +416,7 @@ namespace HealthGateway.CommonTests.Delegates
             Guid guid = Guid.Parse("6b0ed0250bf946a1bca33744e9f3acf1");
 
             expectedRequestResult.ResourcePayload = JsonSerializer.Deserialize<ConnectionResponse>(json, this.jsonOptions);
-            using HttpResponseMessage httpResponseMessage = new ()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = expectedResponseStatusCode,
                 Content = badContent ? null : new StringContent(json),

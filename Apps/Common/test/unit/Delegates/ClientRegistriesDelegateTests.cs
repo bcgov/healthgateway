@@ -47,7 +47,7 @@ namespace HealthGateway.CommonTests.Delegates
             string expectedFirstName = "Jane";
             string expectedLastName = "Doe";
             string expectedGender = "Female";
-            Address expectedPhysicalAddr = new ()
+            Address expectedPhysicalAddr = new()
             {
                 StreetLines = { "Line 1", "Line 2", "Physical", },
                 City = "city",
@@ -55,7 +55,7 @@ namespace HealthGateway.CommonTests.Delegates
                 PostalCode = "N0N0N0",
                 State = "BC",
             };
-            Address expectedPostalAddr = new ()
+            Address expectedPostalAddr = new()
             {
                 StreetLines = { "Line 1", "Line 2", "Postal", },
                 City = "city",
@@ -78,7 +78,7 @@ namespace HealthGateway.CommonTests.Delegates
                         },
                     addr = new AD[]
                     {
-                        new ()
+                        new()
                         {
                             use = new cs_PostalAddressUse[]
                             {
@@ -125,7 +125,7 @@ namespace HealthGateway.CommonTests.Delegates
                                 },
                             },
                         },
-                        new ()
+                        new()
                         {
                             use = new cs_PostalAddressUse[]
                             {

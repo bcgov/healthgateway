@@ -87,7 +87,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 httpClientService,
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
-            VaccineStatusQuery query = new ()
+            VaccineStatusQuery query = new()
             {
                 PersonalHealthNumber = this.phn,
                 DateOfBirth = this.dob,
@@ -130,7 +130,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 httpClientService,
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
-            VaccineStatusQuery query = new ()
+            VaccineStatusQuery query = new()
             {
                 PersonalHealthNumber = this.phn,
                 DateOfBirth = this.dob,
@@ -176,11 +176,11 @@ namespace HealthGateway.Immunization.Test.Delegates
 
         private static ClaimsPrincipal GetClaimsPrincipal()
         {
-            List<Claim> claims = new ()
+            List<Claim> claims = new()
             {
                 new Claim(ClaimTypes.Name, "username"),
             };
-            ClaimsIdentity identity = new (claims, "TestAuth");
+            ClaimsIdentity identity = new(claims, "TestAuth");
             return new ClaimsPrincipal(identity);
         }
 

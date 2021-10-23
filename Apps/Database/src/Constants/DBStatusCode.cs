@@ -57,7 +57,7 @@ namespace HealthGateway.Database.Constants
         Deferred = 70,
 
         /// <summary>
-        /// Represents that an error occurred
+        /// Represents that an error occurred.
         /// </summary>
         Error = 0,
     }
