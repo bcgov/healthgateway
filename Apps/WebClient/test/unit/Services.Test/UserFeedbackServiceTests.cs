@@ -54,8 +54,8 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IRatingDelegate> ratingDelegateMock = new Mock<IRatingDelegate>();
             ratingDelegateMock.Setup(s => s.InsertRating(It.Is<Rating>(r => r.RatingValue == expectedRating.RatingValue && r.Skip == expectedRating.Skip))).Returns(insertResult);
 
-            Mock<IBackgroundJobClient> mockJobclient = new ();
-            Mock<IUserProfileDelegate> mockProfileDelegate = new ();
+            Mock<IBackgroundJobClient> mockJobclient = new();
+            Mock<IUserProfileDelegate> mockProfileDelegate = new();
 
             IUserFeedbackService service = new UserFeedbackService(
                 new Mock<ILogger<UserFeedbackService>>().Object,
@@ -91,8 +91,8 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IRatingDelegate> ratingDelegateMock = new Mock<IRatingDelegate>();
             ratingDelegateMock.Setup(s => s.InsertRating(It.Is<Rating>(r => r.RatingValue == expectedRating.RatingValue && r.Skip == expectedRating.Skip))).Returns(insertResult);
 
-            Mock<IBackgroundJobClient> mockJobclient = new ();
-            Mock<IUserProfileDelegate> mockProfileDelegate = new ();
+            Mock<IBackgroundJobClient> mockJobclient = new();
+            Mock<IUserProfileDelegate> mockProfileDelegate = new();
 
             IUserFeedbackService service = new UserFeedbackService(
                 new Mock<ILogger<UserFeedbackService>>().Object,
@@ -127,12 +127,12 @@ namespace HealthGateway.WebClient.Test.Services
                 Status = DBStatusCode.Created,
             };
 
-            UserProfile profile = new ()
+            UserProfile profile = new()
             {
                 Email = "mock@email.com",
             };
 
-            DBResult<UserProfile> profileResult = new ()
+            DBResult<UserProfile> profileResult = new()
             {
                 Payload = profile,
                 Status = DBStatusCode.Read,
@@ -141,8 +141,8 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IFeedbackDelegate> userFeedbackDelegateMock = new Mock<IFeedbackDelegate>();
             userFeedbackDelegateMock.Setup(s => s.InsertUserFeedback(It.Is<UserFeedback>(r => r.Comment == expectedUserFeedback.Comment && r.Id == expectedUserFeedback.Id && r.UserProfileId == expectedUserFeedback.UserProfileId && r.IsSatisfied == expectedUserFeedback.IsSatisfied && r.IsReviewed == expectedUserFeedback.IsReviewed))).Returns(insertResult);
 
-            Mock<IBackgroundJobClient> mockJobclient = new ();
-            Mock<IUserProfileDelegate> mockProfileDelegate = new ();
+            Mock<IBackgroundJobClient> mockJobclient = new();
+            Mock<IUserProfileDelegate> mockProfileDelegate = new();
             mockProfileDelegate.Setup(s => s.GetUserProfile(It.Is<string>(hdid => hdid == expectedUserFeedback.UserProfileId))).Returns(profileResult);
 
             IUserFeedbackService service = new UserFeedbackService(
