@@ -299,10 +299,18 @@ export const actions: VaccinationStatusActions = {
             "setAuthenticatedVaccineRecordError",
             ErrorTranslator.toBannerError(title, error)
         );
-        context.dispatch(
-            "errorBanner/addResultError",
-            { message: title, error },
-            { root: true }
-        );
+
+        if (error.actionCode === ActionType.Invalid) {
+            context.commit(
+                "setAuthenticatedVaccineRecordResultMessage",
+                "Proof of Vaccination Certificate is not available."
+            );
+        } else {
+            context.dispatch(
+                "errorBanner/addResultError",
+                { message: title, error },
+                { root: true }
+            );
+        }
     },
 };

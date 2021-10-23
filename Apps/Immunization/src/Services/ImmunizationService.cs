@@ -209,12 +209,9 @@ namespace HealthGateway.Immunization.Services
             {
                 ResultStatus = ResultType.Error,
             };
+
             VaccineState state = Enum.Parse<VaccineState>(vaccineStatusResult.StatusIndicator);
-            if (state == VaccineState.NotFound || state == VaccineState.DataMismatch || state == VaccineState.Threshold || state == VaccineState.Blocked)
-            {
-                retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine status not found", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA) };
-            }
-            else
+            if (state == VaccineState.AllDosesReceived  || state == VaccineState.PartialDosesReceived)
             {
                 VaccinationStatus requestState = state switch
                 {
@@ -290,6 +287,11 @@ namespace HealthGateway.Immunization.Services
                 {
                     retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine status is unknown", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
                 }
+            }
+            else 
+            {
+                retVal.ResultStatus = ResultType.ActionRequired;
+                retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine state is invalid to obtain vaccine proof.", ActionType.Invalid);
             }
 
             return retVal;

@@ -45,8 +45,16 @@ export default class DashboardView extends Vue {
     @Getter("authenticatedVaccineRecord", { namespace: "vaccinationStatus" })
     vaccineRecord!: CovidVaccineRecord | undefined;
 
+    @Getter("authenticatedVaccineRecordResultMessage", {
+        namespace: "vaccinationStatus",
+    })
+    vaccineRecordResultMessage!: string;
+
     @Ref("sensitivedocumentDownloadModal")
     readonly sensitivedocumentDownloadModal!: MessageModalComponent;
+
+    @Ref("vaccineRecordResultModal")
+    readonly vaccineRecordResultModal!: MessageModalComponent;
 
     private get isLoadingDocument(): boolean {
         return this.isLoading;
@@ -80,6 +88,13 @@ export default class DashboardView extends Vue {
             hdid: this.user.hdid,
             proofTemplate: VaccineProofTemplate.Federal,
         });
+    }
+
+    @Watch("vaccineRecordResultMessage")
+    private vaccineRecordErrorChanged() {
+        if (this.vaccineRecordResultMessage.length > 0) {
+            this.vaccineRecordResultModal.showModal();
+        }
     }
 
     @Watch("vaccineRecord")
@@ -252,6 +267,12 @@ export default class DashboardView extends Vue {
             title="Sensitive Document Download"
             message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
             @submit="retrieveVaccinePdf"
+        />
+        <MessageModalComponent
+            ref="vaccineRecordResultModal"
+            ok-only
+            title="Alert"
+            :message="vaccineRecordResultMessage"
         />
     </div>
 </template>
