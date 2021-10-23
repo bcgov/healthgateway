@@ -80,10 +80,10 @@ namespace HealthGateway.Admin.Services
             this.httpContextAccessor = httpContextAccessor;
             this.vaccineProofDelegate = vaccineProofDelegate;
 
-            this.bcmpConfig = new ();
+            this.bcmpConfig = new();
             configuration.Bind(BCMailPlusConfigSectionKey, this.bcmpConfig);
 
-            this.vaccineCardConfig = new ();
+            this.vaccineCardConfig = new();
             configuration.Bind(VaccineCardConfigSectionKey, this.vaccineCardConfig);
         }
 
@@ -107,7 +107,7 @@ namespace HealthGateway.Admin.Services
                 {
                     this.logger.LogDebug($"Sucessfully retrieved vaccine details.");
 
-                    CovidInformation covidInformation = new ()
+                    CovidInformation covidInformation = new()
                     {
                         Blocked = vaccineDetailsResult.ResourcePayload.Blocked,
                     };
@@ -190,7 +190,7 @@ namespace HealthGateway.Admin.Services
 
             DateTime birthdate = patientResult.ResourcePayload!.Birthdate;
 
-            VaccineStatusQuery statusQuery = new ()
+            VaccineStatusQuery statusQuery = new()
             {
                 PersonalHealthNumber = request.PersonalHealthNumber,
                 DateOfBirth = birthdate,
@@ -198,7 +198,7 @@ namespace HealthGateway.Admin.Services
             RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult =
                 await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(statusQuery, bearerToken, false).ConfigureAwait(true);
 
-            PrimitiveRequestResult<bool> retVal = new ();
+            PrimitiveRequestResult<bool> retVal = new();
 
             if (vaccineStatusResult.ResultStatus == ResultType.Success && vaccineStatusResult.ResourcePayload != null)
             {
@@ -231,7 +231,7 @@ namespace HealthGateway.Admin.Services
                     if (requestState != VaccinationStatus.Unknown)
                     {
                         this.logger.LogDebug($"Vaccine Status: {requestState}");
-                        VaccineProofRequest vaccineProofRequest = new ()
+                        VaccineProofRequest vaccineProofRequest = new()
                         {
                             Status = requestState,
                             SmartHealthCardQr = vaccineStatusResult.ResourcePayload.Result.QRCode.Data!,
@@ -319,7 +319,7 @@ namespace HealthGateway.Admin.Services
         {
             this.logger.LogDebug($"Retrieving vaccine card document");
             this.logger.LogTrace($"For PHN: {phn}");
-            VaccineStatusQuery statusQuery = new ()
+            VaccineStatusQuery statusQuery = new()
             {
                 PersonalHealthNumber = phn,
                 DateOfBirth = birthdate,
@@ -361,7 +361,7 @@ namespace HealthGateway.Admin.Services
 
         private async Task<RequestResult<ReportModel>> GetVaccineProof(VaccineStatusResult vaccineStatusResult)
         {
-            RequestResult<ReportModel> retVal = new ()
+            RequestResult<ReportModel> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -383,7 +383,7 @@ namespace HealthGateway.Admin.Services
 
                 if (requestState != VaccinationStatus.Unknown)
                 {
-                    VaccineProofRequest request = new ()
+                    VaccineProofRequest request = new()
                     {
                         Status = requestState,
                         SmartHealthCardQr = vaccineStatusResult.QRCode.Data!,

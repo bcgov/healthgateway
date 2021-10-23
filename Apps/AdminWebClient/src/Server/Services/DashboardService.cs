@@ -62,7 +62,7 @@ namespace HealthGateway.Admin.Services
         public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(int timeOffset)
         {
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new (0, timeOffset, 0);
+            TimeSpan ts = new(0, timeOffset, 0);
             return this.userProfileDelegate.GetDailyRegisteredUsersCount(ts);
         }
 
@@ -70,7 +70,7 @@ namespace HealthGateway.Admin.Services
         public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(int timeOffset)
         {
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new (0, timeOffset, 0);
+            TimeSpan ts = new(0, timeOffset, 0);
             return this.userProfileDelegate.GetDailyLoggedInUsersCount(ts);
         }
 
@@ -78,7 +78,7 @@ namespace HealthGateway.Admin.Services
         public IDictionary<DateTime, int> GetDailyDependentCount(int timeOffset)
         {
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new (0, timeOffset, 0);
+            TimeSpan ts = new(0, timeOffset, 0);
             return this.dependentDelegate.GetDailyDependentCount(ts);
         }
 
@@ -86,7 +86,7 @@ namespace HealthGateway.Admin.Services
         public int GetRecurrentUserCount(int dayCount, string startPeriod, string endPeriod, int timeOffset)
         {
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new (0, timeOffset, 0);
+            TimeSpan ts = new(0, timeOffset, 0);
             DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date;
             DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date;
             return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate, ts);
@@ -95,7 +95,7 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc />
         public RequestResult<IEnumerable<Database.Models.MessagingVerification>> GetMessageVerifications(UserQueryType queryType, string queryString)
         {
-            RequestResult<IEnumerable<Database.Models.MessagingVerification>> retVal = new ()
+            RequestResult<IEnumerable<Database.Models.MessagingVerification>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 ResourcePayload = new List<Database.Models.MessagingVerification>(),
@@ -141,7 +141,7 @@ namespace HealthGateway.Admin.Services
         public IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset)
         {
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new (0, timeOffset, 0);
+            TimeSpan ts = new(0, timeOffset, 0);
             DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date;
             DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date;
             return this.ratingDelegate.GetSummary(startDate, endDate, ts);

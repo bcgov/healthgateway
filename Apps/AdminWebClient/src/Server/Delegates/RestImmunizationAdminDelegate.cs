@@ -95,7 +95,7 @@ namespace HealthGateway.Admin.Server.Delegates
 
             if (response.ResultStatus == ResultType.Success && response.ResourcePayload != null)
             {
-                VaccineDetails vaccineDetails = new (
+                VaccineDetails vaccineDetails = new(
                     VaccineDoseParser.FromPHSAModelList(response.ResourcePayload.Result?.Doses),
                     response.ResourcePayload.Result?.VaccineStatusResult)
                 {
@@ -103,7 +103,7 @@ namespace HealthGateway.Admin.Server.Delegates
                     ContainsInvalidDoses = response.ResourcePayload.Result?.ContainsInvalidDoses ?? false,
                 };
 
-                retVal = new ()
+                retVal = new()
                 {
                     ResultStatus = response.ResultStatus,
                     ResultError = response.ResultError,
@@ -115,7 +115,7 @@ namespace HealthGateway.Admin.Server.Delegates
             }
             else
             {
-                retVal = new ()
+                retVal = new()
                 {
                     ResultStatus = response.ResultStatus,
                     ResultError = response.ResultError,
@@ -144,14 +144,14 @@ namespace HealthGateway.Admin.Server.Delegates
                     PersonalHealthNumber = patient.PersonalHealthNumber,
                     IgnoreCache = refresh,
                 };
-                Uri endpoint = new ($"{this.phsaConfig.BaseUrl}{this.phsaConfig.ImmunizationEndpoint}/VaccineValidationDetails");
-                using StringContent httpContent = new (JsonSerializer.Serialize(requestContent), Encoding.UTF8, "application/json");
+                Uri endpoint = new($"{this.phsaConfig.BaseUrl}{this.phsaConfig.ImmunizationEndpoint}/VaccineValidationDetails");
+                using StringContent httpContent = new(JsonSerializer.Serialize(requestContent), Encoding.UTF8, "application/json");
                 retVal = await this.CallEndpoint<VaccineDetailsResponse>(endpoint, httpContent).ConfigureAwait(true);
                 this.logger.LogDebug($"Finished getting vaccine details");
             }
             else
             {
-                retVal = new ()
+                retVal = new()
                 {
                     ResultStatus = ResultType.Error,
                     ResultError = new RequestResultError()
@@ -174,7 +174,7 @@ namespace HealthGateway.Admin.Server.Delegates
                 string? bearerToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
                 if (bearerToken != null)
                 {
-                    RequestResult<PHSAResult<T>> retVal = new ()
+                    RequestResult<PHSAResult<T>> retVal = new()
                     {
                         ResultStatus = ResultType.Error,
                         PageIndex = 0,
@@ -244,7 +244,7 @@ namespace HealthGateway.Admin.Server.Delegates
             return new RequestResult<PHSAResult<T>>()
             {
                 ResultStatus = ResultType.Error,
-                ResultError = new ()
+                ResultError = new()
                 {
                     ResultMessage = "Error retrieving bearer token",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Immunization),
