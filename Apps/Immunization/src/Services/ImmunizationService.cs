@@ -211,17 +211,16 @@ namespace HealthGateway.Immunization.Services
             };
 
             VaccineState state = Enum.Parse<VaccineState>(vaccineStatusResult.StatusIndicator);
-            if (state == VaccineState.AllDosesReceived  || state == VaccineState.PartialDosesReceived)
+            if (state == VaccineState.AllDosesReceived || state == VaccineState.PartialDosesReceived)
             {
                 VaccinationStatus requestState = state switch
                 {
                     VaccineState.AllDosesReceived => VaccinationStatus.Fully,
                     VaccineState.PartialDosesReceived => VaccinationStatus.Partially,
-                    VaccineState.Exempt => VaccinationStatus.Exempt,
                     _ => VaccinationStatus.Unknown,
                 };
 
-                if (requestState != VaccinationStatus.Unknown)
+                if (requestState != VaccinationStatus.Unknown && state.ToString() != nameof(VaccinationStatus.Exempt))
                 {
                     VaccineProofRequest request = new ()
                     {
@@ -288,7 +287,7 @@ namespace HealthGateway.Immunization.Services
                     retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine status is unknown", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
                 }
             }
-            else 
+            else
             {
                 retVal.ResultStatus = ResultType.ActionRequired;
                 retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine state is invalid to obtain vaccine proof.", ActionType.Invalid);
