@@ -156,7 +156,7 @@ namespace HealthGateway.Encounter.Test.Delegates
         [Fact]
         public void ShouldErrorGetMSPVisits()
         {
-            using HttpResponseMessage httpRequestMessage = new ()
+            using HttpResponseMessage httpRequestMessage = new()
             {
                 StatusCode = HttpStatusCode.Unauthorized,
                 Content = new StringContent(string.Empty),

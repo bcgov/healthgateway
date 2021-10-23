@@ -370,13 +370,13 @@ namespace HealthGateway.Immunization.Test.Delegates
 
         private ClaimsPrincipal GetClaimsPrincipal()
         {
-            List<Claim> claims = new ()
+            List<Claim> claims = new()
             {
                 new Claim(ClaimTypes.Name, "username"),
                 new Claim(ClaimTypes.NameIdentifier, this.userId),
                 new Claim("hdid", this.hdid),
             };
-            ClaimsIdentity identity = new (claims, "TestAuth");
+            ClaimsIdentity identity = new(claims, "TestAuth");
             return new ClaimsPrincipal(identity);
         }
     }

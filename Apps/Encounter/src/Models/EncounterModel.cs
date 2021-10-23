@@ -68,7 +68,7 @@ namespace HealthGateway.Encounter.Models
             using var md5CryptoService = MD5.Create();
 #pragma warning restore SCS0006 // Weak hashing function
 #pragma warning restore CA5351 // Do Not Use Broken Cryptographic Algorithms
-            StringBuilder sourceId = new ();
+            StringBuilder sourceId = new();
             sourceId.Append($"{model.ServiceDate:yyyyMMdd}");
             sourceId.Append($"{model.SpecialtyDesc}");
             sourceId.Append($"{model.PractitionerName}");
@@ -100,8 +100,8 @@ namespace HealthGateway.Encounter.Models
         /// <returns>A list of Encounter objects.</returns>
         public static IEnumerable<EncounterModel> FromODRClaimModelList(IEnumerable<Claim> models)
         {
-            List<EncounterModel> objects = new ();
-            HashSet<string> encounterIds = new ();
+            List<EncounterModel> objects = new();
+            HashSet<string> encounterIds = new();
             foreach (Claim claimModel in models)
             {
                 var encounter = FromODRClaimModel(claimModel);

@@ -42,12 +42,12 @@ namespace HealthGateway.Immunization.Models
         /// Gets or sets the rendered document.
         /// </summary>
         [JsonPropertyName("document")]
-        public EncodedMedia Document { get; set; } = new ();
+        public EncodedMedia Document { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the associated QR code.
         /// </summary>
         [JsonPropertyName("qrCode")]
-        public EncodedMedia QRCode { get; set; } = new ();
+        public EncodedMedia QRCode { get; set; } = new();
     }
 }

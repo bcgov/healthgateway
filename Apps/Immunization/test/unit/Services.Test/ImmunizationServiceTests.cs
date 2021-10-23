@@ -208,7 +208,7 @@ namespace HealthGateway.Immunization.Test.Services
         public void ValidateImmunizationError()
         {
             var mockDelegate = new Mock<Immunization.Delegates.IImmunizationDelegate>();
-            RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = new ()
+            RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = new()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
                 ResultError = new RequestResultError()
@@ -217,7 +217,7 @@ namespace HealthGateway.Immunization.Test.Services
                     ErrorCode = "MOCK_BAD_ERROR",
                 },
             };
-            RequestResult<IEnumerable<ImmunizationEvent>> expectedResult = new ()
+            RequestResult<IEnumerable<ImmunizationEvent>> expectedResult = new()
             {
                 ResultStatus = delegateResult.ResultStatus,
                 ResultError = delegateResult.ResultError,
@@ -252,13 +252,13 @@ namespace HealthGateway.Immunization.Test.Services
                 { "BCMailPlus:MaxRetries", "2" },
             };
 
-            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new ()
+            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = new PHSAResult<VaccineStatusResult>()
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = false, },
-                    Result = new ()
+                    Result = new()
                     {
                         Birthdate = null,
                         DoseCount = 2,
@@ -284,10 +284,10 @@ namespace HealthGateway.Immunization.Test.Services
             mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
 
             string id = "id";
-            RequestResult<VaccineProofResponse> vaccineProofResponseStarted = new ()
+            RequestResult<VaccineProofResponse> vaccineProofResponseStarted = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new ()
+                ResourcePayload = new()
                 {
                     Id = id,
                     Status = VaccineProofRequestStatus.Started,
@@ -296,10 +296,10 @@ namespace HealthGateway.Immunization.Test.Services
             var mockProofDelegate = new Mock<IVaccineProofDelegate>();
             mockProofDelegate.Setup(s => s.GenerateAsync(VaccineProofTemplate.Provincial, It.IsAny<VaccineProofRequest>())).Returns(Task.FromResult(vaccineProofResponseStarted));
 
-            RequestResult<VaccineProofResponse> vaccineProofResponseCompleted = new ()
+            RequestResult<VaccineProofResponse> vaccineProofResponseCompleted = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new ()
+                ResourcePayload = new()
                 {
                     Id = id,
                     Status = VaccineProofRequestStatus.Completed,
@@ -309,10 +309,10 @@ namespace HealthGateway.Immunization.Test.Services
                     .Returns(Task.FromResult(vaccineProofResponseStarted))
                     .Returns(Task.FromResult(vaccineProofResponseCompleted));
 
-            RequestResult<ReportModel> vaccineProofAsset = new ()
+            RequestResult<ReportModel> vaccineProofAsset = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new ()
+                ResourcePayload = new()
                 {
                     Data = "Base64 Encoded PDF",
                     FileName = "Filename.pdf",
@@ -342,13 +342,13 @@ namespace HealthGateway.Immunization.Test.Services
         [Fact]
         public void GetVaccineRecordRIP()
         {
-            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new ()
+            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = new PHSAResult<VaccineStatusResult>()
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = true, },
-                    Result = new ()
+                    Result = new()
                     {
                         Birthdate = null,
                         DoseCount = 0,
@@ -393,7 +393,7 @@ namespace HealthGateway.Immunization.Test.Services
         [Fact]
         public void GetVaccineRecordPHSAError()
         {
-            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new ()
+            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = "Unable to generate vaccine proof pdf", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) },
@@ -424,13 +424,13 @@ namespace HealthGateway.Immunization.Test.Services
         [Fact]
         public void GetVaccineRecordInvalidState()
         {
-            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new ()
+            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = new PHSAResult<VaccineStatusResult>()
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = false, },
-                    Result = new ()
+                    Result = new()
                     {
                         StatusIndicator = VaccineState.DataMismatch.ToString(),
                     },
@@ -464,13 +464,13 @@ namespace HealthGateway.Immunization.Test.Services
         [Fact]
         public void GetVaccineRecordUnknownState()
         {
-            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new ()
+            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = new PHSAResult<VaccineStatusResult>()
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = false, },
-                    Result = new ()
+                    Result = new()
                     {
                         StatusIndicator = "999",
                     },
@@ -502,13 +502,13 @@ namespace HealthGateway.Immunization.Test.Services
         [Fact]
         public void GetVaccineRecordGenerateFailed()
         {
-            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new ()
+            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = new PHSAResult<VaccineStatusResult>()
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = false, },
-                    Result = new ()
+                    Result = new()
                     {
                         Birthdate = null,
                         DoseCount = 2,
@@ -533,7 +533,7 @@ namespace HealthGateway.Immunization.Test.Services
             var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
             mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
 
-            RequestResult<VaccineProofResponse> vaccineProofResponseError = new ()
+            RequestResult<VaccineProofResponse> vaccineProofResponseError = new()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -570,13 +570,13 @@ namespace HealthGateway.Immunization.Test.Services
                 { "BCMailPlus:MaxRetries", "2" },
             };
 
-            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new ()
+            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = new PHSAResult<VaccineStatusResult>()
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = false, },
-                    Result = new ()
+                    Result = new()
                     {
                         Birthdate = null,
                         DoseCount = 2,
@@ -602,10 +602,10 @@ namespace HealthGateway.Immunization.Test.Services
             mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
 
             string id = "id";
-            RequestResult<VaccineProofResponse> vaccineProofResponseStarted = new ()
+            RequestResult<VaccineProofResponse> vaccineProofResponseStarted = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new ()
+                ResourcePayload = new()
                 {
                     Id = id,
                     Status = VaccineProofRequestStatus.Started,
@@ -614,7 +614,7 @@ namespace HealthGateway.Immunization.Test.Services
             var mockProofDelegate = new Mock<IVaccineProofDelegate>();
             mockProofDelegate.Setup(s => s.GenerateAsync(VaccineProofTemplate.Provincial, It.IsAny<VaccineProofRequest>())).Returns(Task.FromResult(vaccineProofResponseStarted));
 
-            RequestResult<VaccineProofResponse> vaccineProofResponseError = new ()
+            RequestResult<VaccineProofResponse> vaccineProofResponseError = new()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -650,13 +650,13 @@ namespace HealthGateway.Immunization.Test.Services
                 { "BCMailPlus:MaxRetries", "2" },
             };
 
-            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new ()
+            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = new PHSAResult<VaccineStatusResult>()
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = false, },
-                    Result = new ()
+                    Result = new()
                     {
                         Birthdate = null,
                         DoseCount = 2,
@@ -682,10 +682,10 @@ namespace HealthGateway.Immunization.Test.Services
             mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
 
             string id = "id";
-            RequestResult<VaccineProofResponse> vaccineProofResponseCompleted = new ()
+            RequestResult<VaccineProofResponse> vaccineProofResponseCompleted = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new ()
+                ResourcePayload = new()
                 {
                     Id = id,
                     Status = VaccineProofRequestStatus.Completed,
@@ -695,7 +695,7 @@ namespace HealthGateway.Immunization.Test.Services
             mockProofDelegate.Setup(s => s.GenerateAsync(VaccineProofTemplate.Provincial, It.IsAny<VaccineProofRequest>())).Returns(Task.FromResult(vaccineProofResponseCompleted));
             mockProofDelegate.Setup(s => s.GetStatusAsync(id)).Returns(Task.FromResult(vaccineProofResponseCompleted));
 
-            RequestResult<ReportModel> vaccineProofAsset = new ()
+            RequestResult<ReportModel> vaccineProofAsset = new()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -721,8 +721,8 @@ namespace HealthGateway.Immunization.Test.Services
                 ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = new PHSAResult<ImmunizationResponse>()
                 {
-                    LoadState = new () { RefreshInProgress = false, },
-                    Result = new (
+                    LoadState = new() { RefreshInProgress = false, },
+                    Result = new(
                         new List<ImmunizationViewResponse>(),
                         new List<ImmunizationRecommendationResponse>()
                         {
@@ -737,7 +737,7 @@ namespace HealthGateway.Immunization.Test.Services
 
         private static IConfiguration GetConfiguration(Dictionary<string, string>? keyValuePairs = null)
         {
-            keyValuePairs ??= new ();
+            keyValuePairs ??= new();
             IConfiguration configuration = new ConfigurationBuilder()
                         .AddInMemoryCollection(keyValuePairs)
                         .Build();
