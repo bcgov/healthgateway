@@ -46,7 +46,7 @@ namespace HealthGateway.Admin.Models
         /// <returns>A converted list or null if inbound is null.</returns>
         public static IList<AdminTagView> FromDbModelCollection(IEnumerable<AdminTag> adminTags)
         {
-            List<AdminTagView> retList = new ();
+            List<AdminTagView> retList = new();
             foreach (AdminTag tag in adminTags)
             {
                 retList.Add(FromDbModel(tag));

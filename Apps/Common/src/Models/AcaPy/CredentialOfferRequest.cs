@@ -87,6 +87,6 @@ namespace HealthGateway.Common.Models.AcaPy
         /// Gets or sets the credential proposal.
         /// </summary>
         [JsonPropertyName("credential_proposal")]
-        public CredentialProposal CredentialProposal { get; set; } = new ();
+        public CredentialProposal CredentialProposal { get; set; } = new();
     }
 }

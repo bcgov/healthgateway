@@ -48,7 +48,7 @@ namespace HealthGateway.Immunization.Parser
         /// <returns>A list of ImmunizationAgent objects.</returns>
         public static IEnumerable<ImmunizationAgent> FromPHSAModelList(IEnumerable<ImmunizationAgentResponse>? immunizationAgentResponse)
         {
-            List<ImmunizationAgent> immunizationAgents = new ();
+            List<ImmunizationAgent> immunizationAgents = new();
             if (immunizationAgentResponse != null)
             {
                 foreach (ImmunizationAgentResponse immunizationAgentModel in immunizationAgentResponse)
@@ -67,7 +67,7 @@ namespace HealthGateway.Immunization.Parser
         /// <returns>A list of ImmunizationAgent objects.</returns>
         public static IEnumerable<ImmunizationAgent> FromPHSACodesModel(IEnumerable<SystemCode>? vaccineCodes)
         {
-            List<ImmunizationAgent> immunizationAgents = new ();
+            List<ImmunizationAgent> immunizationAgents = new();
             foreach (SystemCode systemCode in vaccineCodes!)
             {
                 immunizationAgents.Add(

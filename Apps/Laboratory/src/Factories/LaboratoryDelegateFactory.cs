@@ -47,7 +47,7 @@ namespace HealthGateway.Laboratory.Factories
         public ILaboratoryDelegate CreateInstance()
         {
             string typeStr = this.configuration.GetValue<string>("LaboratoryDelegate", DefaultInstance);
-            Type type = Type.GetType(typeStr) !;
+            Type type = Type.GetType(typeStr)!;
             ILaboratoryDelegate instance = (ILaboratoryDelegate)ActivatorUtilities.CreateInstance(this.serviceProvider, type);
             return instance;
         }

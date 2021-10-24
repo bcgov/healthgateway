@@ -95,7 +95,7 @@ namespace HealthGateway.Admin.Models
         /// <returns>A new UserFeedbackView.</returns>
         public static UserFeedbackView CreateFromDbModel(UserFeedbackAdmin model)
         {
-            UserFeedbackView userFeedbackView = new ()
+            UserFeedbackView userFeedbackView = new()
             {
                 Id = model.Id,
                 UserProfileId = model.UserProfileId,

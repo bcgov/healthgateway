@@ -61,7 +61,7 @@ namespace HealthGateway.WebClient.Services
             if (cacheEntry == null)
             {
                 this.logger.LogInformation("Active Communication not found in cache, getting from DB...");
-                cacheEntry = new ();
+                cacheEntry = new();
                 DBResult<Communication> dbResult = this.communicationDelegate.GetActiveBanner(communicationType);
                 if (dbResult.Status == DBStatusCode.Read || dbResult.Status == DBStatusCode.NotFound)
                 {
@@ -74,7 +74,7 @@ namespace HealthGateway.WebClient.Services
                 {
                     this.logger.LogInformation($"Error getting Communication from DB {dbResult.Message}");
                     cacheEntry.ResultStatus = ResultType.Error;
-                    cacheEntry.ResultError = new ()
+                    cacheEntry.ResultError = new()
                     {
                         ResultMessage = dbResult.Message,
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
@@ -107,7 +107,7 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public void AddBannerCache(RequestResult<Communication> cacheEntry, CommunicationType cacheType)
         {
-            MemoryCacheEntryOptions cacheEntryOptions = new ();
+            MemoryCacheEntryOptions cacheEntryOptions = new();
             if (cacheEntry.ResultStatus == ResultType.Success &&
                 cacheEntry.ResourcePayload != null)
             {

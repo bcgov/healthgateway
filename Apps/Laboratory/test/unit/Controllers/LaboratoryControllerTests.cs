@@ -47,7 +47,8 @@ namespace HealthGateway.LaboratoryTests
                 new Claim(ClaimTypes.Name, "username"),
                 new Claim(ClaimTypes.NameIdentifier, UserId),
                 new Claim("hdid", Hdid),
-            }, "TestAuth"));
+            },
+            "TestAuth"));
 
         /// <summary>
         /// Test for GetLabOrders.

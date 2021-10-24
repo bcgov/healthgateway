@@ -54,7 +54,7 @@ namespace HealthGateway.Database.Delegates
                 throw new ArgumentNullException(nameof(userProfileId), "userProfileId cannot be null unless bypassed");
             }
 
-            DBResult<WalletConnection> result = new ()
+            DBResult<WalletConnection> result = new()
             {
                 Status = DBStatusCode.NotFound,
             };
@@ -86,7 +86,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public DBResult<WalletConnection> GetCurrentConnection(string userProfileId)
         {
-            DBResult<WalletConnection> result = new ()
+            DBResult<WalletConnection> result = new()
             {
                 Status = DBStatusCode.NotFound,
             };
@@ -110,7 +110,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public DBResult<WalletCredential> GetCredentialById(Guid credentialId, string userProfileId)
         {
-            DBResult<WalletCredential> result = new ()
+            DBResult<WalletCredential> result = new()
             {
                 Status = DBStatusCode.NotFound,
             };
@@ -131,7 +131,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public DBResult<WalletCredential> GetCredentialByExchangeId(Guid exchangeId)
         {
-            DBResult<WalletCredential> result = new ()
+            DBResult<WalletCredential> result = new()
             {
                 Status = DBStatusCode.NotFound,
             };
@@ -151,7 +151,7 @@ namespace HealthGateway.Database.Delegates
         public DBResult<WalletConnection> InsertConnection(WalletConnection connection, bool commit = true)
         {
             this.logger.LogTrace($"Inserting Wallet Connection to DB... {JsonSerializer.Serialize(connection)}");
-            DBResult<WalletConnection> result = new ()
+            DBResult<WalletConnection> result = new()
             {
                 Payload = connection,
                 Status = DBStatusCode.Error,
@@ -207,7 +207,7 @@ namespace HealthGateway.Database.Delegates
         public DBResult<WalletCredential> InsertCredential(WalletCredential credential, bool commit = true)
         {
             this.logger.LogTrace($"Inserting Wallet Credential to DB... {JsonSerializer.Serialize(credential)}");
-            DBResult<WalletCredential> result = new ()
+            DBResult<WalletCredential> result = new()
             {
                 Payload = credential,
                 Status = DBStatusCode.Error,

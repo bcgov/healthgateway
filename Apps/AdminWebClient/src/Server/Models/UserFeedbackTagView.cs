@@ -46,7 +46,7 @@ namespace HealthGateway.Admin.Models
         /// <returns>A converted list or null if inbound is null.</returns>
         public static IList<UserFeedbackTagView> FromDbModelCollection(ICollection<UserFeedbackTag> adminTags)
         {
-            List<UserFeedbackTagView> retList = new ();
+            List<UserFeedbackTagView> retList = new();
             foreach (UserFeedbackTag tag in adminTags)
             {
                 retList.Add(FromDbModel(tag));
@@ -62,7 +62,7 @@ namespace HealthGateway.Admin.Models
         /// <returns>A new UserFeedbackTagView.</returns>
         public static UserFeedbackTagView FromDbModel(UserFeedbackTag model)
         {
-            UserFeedbackTagView newDBModel = new ()
+            UserFeedbackTagView newDBModel = new()
             {
                 Id = model.UserFeedbackTagId,
                 Version = model.Version,

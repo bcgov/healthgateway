@@ -103,7 +103,7 @@ namespace Healthgateway.JobScheduler.Jobs
                                         this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
                         if (retVal.ResultStatus == HealthGateway.Common.Constants.ResultType.ActionRequired)
                         {
-                            EventLog eventLog = new ()
+                            EventLog eventLog = new()
                             {
                                 EventSource = this.notificationSettingsDelegate.GetType().Name,
                                 EventName = "SMS Rejected",

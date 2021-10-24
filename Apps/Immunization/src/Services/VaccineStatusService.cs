@@ -81,10 +81,10 @@ namespace HealthGateway.Immunization.Services
             this.tokenRequest = new ClientCredentialsTokenRequest();
             configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
 
-            this.phsaConfig = new ();
+            this.phsaConfig = new();
             configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
 
-            this.bcmpConfig = new ();
+            this.bcmpConfig = new();
             configuration.Bind(BCMailPlusConfigSectionKey, this.bcmpConfig);
 
             this.memoryCache = memoryCache;
@@ -94,7 +94,7 @@ namespace HealthGateway.Immunization.Services
         /// <inheritdoc/>
         public async Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth, string dateOfVaccine)
         {
-            RequestResult<VaccineStatus> retVal = new ()
+            RequestResult<VaccineStatus> retVal = new()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
             };
@@ -142,7 +142,7 @@ namespace HealthGateway.Immunization.Services
                 return retVal;
             }
 
-            VaccineStatusQuery query = new ()
+            VaccineStatusQuery query = new()
             {
                 PersonalHealthNumber = phn,
                 DateOfBirth = dob,
@@ -157,14 +157,14 @@ namespace HealthGateway.Immunization.Services
                 if (!string.IsNullOrEmpty(accessToken))
                 {
                     this.logger.LogInformation("Attempting to store Access token in cache");
-                    MemoryCacheEntryOptions cacheEntryOptions = new ();
+                    MemoryCacheEntryOptions cacheEntryOptions = new();
                     cacheEntryOptions.AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddMinutes(this.tokenCacheMinutes));
                     this.memoryCache.Set(TokenCacheKey, accessToken, cacheEntryOptions);
                 }
                 else
                 {
                     this.logger.LogCritical("The auth token is null or empty - unable to cache or proceed");
-                    retVal.ResultError = new ()
+                    retVal.ResultError = new()
                     {
                         ResultMessage = "Error authenticating with KeyCloak",
                         ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
@@ -181,7 +181,7 @@ namespace HealthGateway.Immunization.Services
 
             if (payload == null)
             {
-                retVal.ResourcePayload = new ();
+                retVal.ResourcePayload = new();
                 retVal.ResourcePayload.State = VaccineState.NotFound;
             }
             else
@@ -190,7 +190,7 @@ namespace HealthGateway.Immunization.Services
                 retVal.ResourcePayload.State = retVal.ResourcePayload.State switch
                 {
                     var state when state == VaccineState.Threshold || state == VaccineState.Blocked => VaccineState.NotFound,
-                    _ => retVal.ResourcePayload.State
+                    _ => retVal.ResourcePayload.State,
                 };
 
                 if (retVal.ResourcePayload.State == VaccineState.DataMismatch)
@@ -220,7 +220,7 @@ namespace HealthGateway.Immunization.Services
             }
             else
             {
-                retVal = new ()
+                retVal = new()
                 {
                     ResultStatus = vsResult.ResultStatus,
                     ResultError = vsResult.ResultError,
@@ -232,7 +232,7 @@ namespace HealthGateway.Immunization.Services
 
         private async Task<RequestResult<ReportModel>> GetVaccineProof(VaccineStatus vaccineStatus, VaccineProofTemplate proofTemplate)
         {
-            RequestResult<ReportModel> retVal = new ()
+            RequestResult<ReportModel> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -253,7 +253,7 @@ namespace HealthGateway.Immunization.Services
 
                 if (requestState != VaccinationStatus.Unknown)
                 {
-                    VaccineProofRequest request = new ()
+                    VaccineProofRequest request = new()
                     {
                         Status = requestState,
                         SmartHealthCardQr = vaccineStatus.QRCode.Data!,

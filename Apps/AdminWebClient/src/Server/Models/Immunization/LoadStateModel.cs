@@ -36,7 +36,7 @@ namespace HealthGateway.Admin.Models.Immunization
         /// <returns>A LoadStateModel object.</returns>
         public static LoadStateModel FromPHSAModel(PHSALoadState model)
         {
-            LoadStateModel returnValue = new ();
+            LoadStateModel returnValue = new();
             returnValue.RefreshInProgress = model.RefreshInProgress;
             return returnValue;
         }

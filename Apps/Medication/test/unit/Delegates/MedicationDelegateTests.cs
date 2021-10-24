@@ -56,7 +56,7 @@ namespace HealthGateway.Medication.Delegates.Test
         private readonly Uri baseURI;
         private readonly Uri patientProfileEndpoint;
         private readonly Uri protectiveWordEndpoint;
-        private readonly ODRHistoryQuery query = new ()
+        private readonly ODRHistoryQuery query = new()
         {
             StartDate = DateTime.Parse("1990/01/01", CultureInfo.CurrentCulture),
             EndDate = DateTime.Now,
@@ -102,7 +102,7 @@ namespace HealthGateway.Medication.Delegates.Test
                             DispenseDate = DateTime.Now,
                             DispensingPharmacy = new Pharmacy()
                             {
-                                Address = new ()
+                                Address = new()
                                 {
                                     City = "City",
                                     Country = "Country",
@@ -367,7 +367,7 @@ namespace HealthGateway.Medication.Delegates.Test
         [Fact]
         public void ValidateGetProtectiveWordHttpError()
         {
-            using HttpResponseMessage protectiveWordResponseMessage = new ()
+            using HttpResponseMessage protectiveWordResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.BadRequest,
                 Content = new StringContent("Mock Bad Request"),
@@ -563,7 +563,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
         private string GetProtectiveWordJson(string value = "")
         {
-            ProtectiveWord protectiveWord = new ()
+            ProtectiveWord protectiveWord = new()
             {
                 Id = Guid.Parse("ed428f08-1c07-4439-b2a3-acbb16b8fb65"),
                 RequestorHDID = this.hdid,
