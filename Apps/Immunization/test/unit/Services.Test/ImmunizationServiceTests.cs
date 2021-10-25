@@ -38,12 +38,14 @@ namespace HealthGateway.Immunization.Test.Services
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
     /// <summary>
     /// ImmunizationService's Unit Tests.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1506:Avoid excessive class coupling", Justification = "Unit Test")]
     public class ImmunizationServiceTests
     {
         private readonly string recomendationSetId = "set-recomendation-id";
@@ -97,6 +99,7 @@ namespace HealthGateway.Immunization.Test.Services
             mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<int>())).ReturnsAsync(delegateResult);
             IImmunizationService service = new ImmunizationService(
                 GetConfiguration(),
+                new Mock<ILogger<ImmunizationService>>().Object,
                 mockDelegate.Object,
                 new Mock<IVaccineProofDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
@@ -143,6 +146,7 @@ namespace HealthGateway.Immunization.Test.Services
             mockDelegate.Setup(s => s.GetImmunization(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
             IImmunizationService service = new ImmunizationService(
                 GetConfiguration(),
+                new Mock<ILogger<ImmunizationService>>().Object,
                 mockDelegate.Object,
                 new Mock<IVaccineProofDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
@@ -176,6 +180,7 @@ namespace HealthGateway.Immunization.Test.Services
             mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
             IImmunizationService service = new ImmunizationService(
                 GetConfiguration(),
+                new Mock<ILogger<ImmunizationService>>().Object,
                 mockDelegate.Object,
                 new Mock<IVaccineProofDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
@@ -226,6 +231,7 @@ namespace HealthGateway.Immunization.Test.Services
             mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
             IImmunizationService service = new ImmunizationService(
                 GetConfiguration(),
+                new Mock<ILogger<ImmunizationService>>().Object,
                 mockDelegate.Object,
                 new Mock<IVaccineProofDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
@@ -324,6 +330,7 @@ namespace HealthGateway.Immunization.Test.Services
 
             IImmunizationService service = new ImmunizationService(
                 GetConfiguration(myConfiguration),
+                new Mock<ILogger<ImmunizationService>>().Object,
                 new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
                 mockProofDelegate.Object,
                 mockVaccineDelegate.Object,
@@ -378,6 +385,7 @@ namespace HealthGateway.Immunization.Test.Services
 
             IImmunizationService service = new ImmunizationService(
                 GetConfiguration(),
+                new Mock<ILogger<ImmunizationService>>().Object,
                 new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
                 mockProofDelegate.Object,
                 mockVaccineDelegate.Object,
@@ -409,6 +417,7 @@ namespace HealthGateway.Immunization.Test.Services
 
             IImmunizationService service = new ImmunizationService(
                 GetConfiguration(),
+                new Mock<ILogger<ImmunizationService>>().Object,
                 new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
                 mockProofDelegate.Object,
                 mockVaccineDelegate.Object,
@@ -449,6 +458,7 @@ namespace HealthGateway.Immunization.Test.Services
 
             IImmunizationService service = new ImmunizationService(
                 GetConfiguration(),
+                new Mock<ILogger<ImmunizationService>>().Object,
                 new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
                 mockProofDelegate.Object,
                 mockVaccineDelegate.Object,
@@ -487,6 +497,7 @@ namespace HealthGateway.Immunization.Test.Services
 
             IImmunizationService service = new ImmunizationService(
                 GetConfiguration(),
+                new Mock<ILogger<ImmunizationService>>().Object,
                 new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
                 mockProofDelegate.Object,
                 mockVaccineDelegate.Object,
@@ -544,6 +555,7 @@ namespace HealthGateway.Immunization.Test.Services
 
             IImmunizationService service = new ImmunizationService(
                 GetConfiguration(),
+                new Mock<ILogger<ImmunizationService>>().Object,
                 new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
                 mockProofDelegate.Object,
                 mockVaccineDelegate.Object,
@@ -624,6 +636,7 @@ namespace HealthGateway.Immunization.Test.Services
 
             IImmunizationService service = new ImmunizationService(
                 GetConfiguration(myConfiguration),
+                new Mock<ILogger<ImmunizationService>>().Object,
                 new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
                 mockProofDelegate.Object,
                 mockVaccineDelegate.Object,
@@ -705,6 +718,7 @@ namespace HealthGateway.Immunization.Test.Services
 
             IImmunizationService service = new ImmunizationService(
                 GetConfiguration(myConfiguration),
+                new Mock<ILogger<ImmunizationService>>().Object,
                 new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
                 mockProofDelegate.Object,
                 mockVaccineDelegate.Object,

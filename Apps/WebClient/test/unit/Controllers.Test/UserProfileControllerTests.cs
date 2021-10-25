@@ -403,7 +403,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object);
-            IActionResult actualResult = controller.ValidateSMS(this.hdid, "205 123 4567");
+            IActionResult actualResult = Task.Run(async () => await controller.ValidateSMS(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
 
             var result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
             Assert.Equal(ResultType.Success, result?.ResultStatus);
@@ -432,7 +432,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object);
-            IActionResult actualResult = controller.ValidateSMS(this.hdid, "205 123 4567");
+            IActionResult actualResult = Task.Run(async () => await controller.ValidateSMS(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
 
             var result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
             Assert.Equal(ResultType.Success, result?.ResultStatus);

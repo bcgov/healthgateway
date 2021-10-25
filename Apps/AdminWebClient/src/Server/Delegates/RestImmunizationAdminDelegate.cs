@@ -88,7 +88,8 @@ namespace HealthGateway.Admin.Server.Delegates
 
                 if (refreshInProgress)
                 {
-                    Thread.Sleep(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds));
+                    this.logger.LogInformation("Waiting before we retry getting Vaccine Details");
+                    await Task.Delay(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds)).ConfigureAwait(true);
                 }
             }
             while (refreshInProgress && retryCount++ < this.phsaConfig.MaxRetries);
