@@ -421,10 +421,11 @@ export default class PublicVaccineCardView extends Vue {
                         data-testid="vaccineCardFormTitle"
                         class="vaccine-card-form-title text-center pb-3 mb-4"
                     >
-                        Access Your BC Vaccine Card
+                        Get your proof of vaccination
                     </h2>
                     <p class="mb-4">
-                        To access your BC Vaccine Card, please provide:
+                        To get your BC Vaccine Card and Federal Proof of
+                        Vaccination Certification, please provide:
                     </p>
                     <b-row>
                         <b-col>
