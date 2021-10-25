@@ -61,7 +61,7 @@ namespace HealthGateway.Common.Delegates
             this.logger = logger;
             this.httpClientService = httpClientService;
 
-            BCMailPlusConfig bcMailPlusConfig = new ();
+            BCMailPlusConfig bcMailPlusConfig = new();
             configuration.GetSection(BcMailPlusSectionKey).Bind(bcMailPlusConfig);
 
             this.bcMailPlusEndpoint = bcMailPlusConfig.ResolvedEndpoint();
@@ -72,7 +72,7 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc/>
         public async Task<RequestResult<VaccineProofResponse>> MailAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, Address address, string addressee)
         {
-            RequestResult<VaccineProofResponse> retVal = new ()
+            RequestResult<VaccineProofResponse> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
@@ -81,14 +81,14 @@ namespace HealthGateway.Common.Delegates
             this.logger.LogTrace($"Sending request to BC Mail Plus to generate and mail a vaccine proof...");
             string endpointString = string.Format(CultureInfo.InvariantCulture, "{0}{1}{2}", this.bcMailPlusEndpoint, "create:", this.bcMailPlusJobClass);
 
-            List<string> templates = new () { VaccineProofTemplate.Provincial.ToString() };
-            BcmpVaccineProofQuery vaccineProofQuery = new (templates)
+            List<string> templates = new() { VaccineProofTemplate.Provincial.ToString() };
+            BcmpVaccineProofQuery vaccineProofQuery = new(templates)
             {
                 SchemaVersion = this.bcMailPlusSchemaVersion,
                 Operation = "Mail",
                 VaccineStatus = request.Status,
                 SmartHealthCard = new BcmpSmartHealthCard() { QrCode = request.SmartHealthCardQr },
-                Address = new ()
+                Address = new()
                 {
                     AddressLine1 = addressee,
                     AddressLine2 = string.Join(Environment.NewLine, address.StreetLines),
@@ -99,7 +99,7 @@ namespace HealthGateway.Common.Delegates
                 },
             };
 
-            using StringContent httpContent = new (JsonSerializer.Serialize(vaccineProofQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
+            using StringContent httpContent = new(JsonSerializer.Serialize(vaccineProofQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
 
             RequestResult<BcmpJobStatusResult> requestResult = await this.PostAsync<BcmpJobStatusResult>(endpointString, httpContent).ConfigureAwait(true);
             BcmpJobStatusResult? jobStatusResult = requestResult.ResourcePayload;
@@ -112,7 +112,7 @@ namespace HealthGateway.Common.Delegates
                     {
                         BcmpJobStatus.Started => VaccineProofRequestStatus.Started,
                         BcmpJobStatus.Completed => VaccineProofRequestStatus.Completed,
-                        _ => VaccineProofRequestStatus.Unknown
+                        _ => VaccineProofRequestStatus.Unknown,
                     },
                 };
                 retVal.ResultStatus = ResultType.Success;
@@ -130,7 +130,7 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc/>
         public async Task<RequestResult<VaccineProofResponse>> GenerateAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request)
         {
-            RequestResult<VaccineProofResponse> retVal = new ()
+            RequestResult<VaccineProofResponse> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
@@ -139,8 +139,8 @@ namespace HealthGateway.Common.Delegates
             this.logger.LogTrace($"Sending request to BC Mail Plus to generate a vaccine proof...");
             string endpointString = string.Format(CultureInfo.InvariantCulture, "{0}{1}{2}", this.bcMailPlusEndpoint, "create:", this.bcMailPlusJobClass);
 
-            List<string> templates = new () { VaccineProofTemplate.Provincial.ToString() };
-            BcmpVaccineProofQuery vaccineProofQuery = new (templates)
+            List<string> templates = new() { VaccineProofTemplate.Provincial.ToString() };
+            BcmpVaccineProofQuery vaccineProofQuery = new(templates)
             {
                 SchemaVersion = this.bcMailPlusSchemaVersion,
                 Operation = "Generate",
@@ -148,7 +148,7 @@ namespace HealthGateway.Common.Delegates
                 SmartHealthCard = new BcmpSmartHealthCard() { QrCode = request.SmartHealthCardQr },
             };
 
-            using StringContent httpContent = new (JsonSerializer.Serialize(vaccineProofQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
+            using StringContent httpContent = new(JsonSerializer.Serialize(vaccineProofQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
 
             RequestResult<BcmpJobStatusResult> requestResult = await this.PostAsync<BcmpJobStatusResult>(endpointString, httpContent).ConfigureAwait(true);
             BcmpJobStatusResult? jobStatusResult = requestResult.ResourcePayload;
@@ -161,7 +161,7 @@ namespace HealthGateway.Common.Delegates
                     {
                         BcmpJobStatus.Started => VaccineProofRequestStatus.Started,
                         BcmpJobStatus.Completed => VaccineProofRequestStatus.Completed,
-                        _ => VaccineProofRequestStatus.Unknown
+                        _ => VaccineProofRequestStatus.Unknown,
                     },
                 };
                 retVal.ResultStatus = ResultType.Success;
@@ -180,7 +180,7 @@ namespace HealthGateway.Common.Delegates
         public async Task<RequestResult<VaccineProofResponse>> GetStatusAsync(string id)
         {
             this.logger.LogTrace($"Retrieving status of job {id} from BC Mail Plus...");
-            RequestResult<VaccineProofResponse> retVal = new ()
+            RequestResult<VaccineProofResponse> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
@@ -188,8 +188,8 @@ namespace HealthGateway.Common.Delegates
 
             string endpointString = string.Format(CultureInfo.InvariantCulture, "{0}{1}", this.bcMailPlusEndpoint, "status");
 
-            BcmpJobStatusesQuery statusQuery = new (new List<string>() { id });
-            using StringContent httpContent = new (JsonSerializer.Serialize(statusQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
+            BcmpJobStatusesQuery statusQuery = new(new List<string>() { id });
+            using StringContent httpContent = new(JsonSerializer.Serialize(statusQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
 
             RequestResult<BcmpJobStatusesResult> requestResult = await this.PostAsync<BcmpJobStatusesResult>(endpointString, httpContent).ConfigureAwait(true);
             BcmpJobStatusResult? jobStatusResult = requestResult.ResourcePayload?.StatusResults.SingleOrDefault(r => r.JobId == id);
@@ -202,7 +202,7 @@ namespace HealthGateway.Common.Delegates
                     {
                         BcmpJobStatus.Started => VaccineProofRequestStatus.Started,
                         BcmpJobStatus.Completed => VaccineProofRequestStatus.Completed,
-                        _ => VaccineProofRequestStatus.Unknown
+                        _ => VaccineProofRequestStatus.Unknown,
                     },
                 };
                 retVal.ResultStatus = ResultType.Success;
@@ -220,7 +220,7 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc/>
         public async Task<RequestResult<ReportModel>> GetAssetAsync(string id)
         {
-            RequestResult<ReportModel> retVal = new ()
+            RequestResult<ReportModel> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
@@ -229,13 +229,13 @@ namespace HealthGateway.Common.Delegates
             this.logger.LogTrace($"Retrieving document associated with job {id} from BC Mail Plus...");
             string endpointString = string.Format(CultureInfo.InvariantCulture, "{0}{1}", this.bcMailPlusEndpoint, "asset");
 
-            BcmpAssetQuery assetQuery = new () { JobId = id, AssetType = "RECORD_PDF" };
-            using StringContent httpContent = new (JsonSerializer.Serialize(assetQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
+            BcmpAssetQuery assetQuery = new() { JobId = id, AssetType = "RECORD_PDF" };
+            using StringContent httpContent = new(JsonSerializer.Serialize(assetQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
 
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-            Uri endpoint = new (endpointString);
+            Uri endpoint = new(endpointString);
 
             try
             {
@@ -250,7 +250,7 @@ namespace HealthGateway.Common.Delegates
                 }
                 else
                 {
-                    retVal.ResourcePayload = new ()
+                    retVal.ResourcePayload = new()
                     {
                         Data = Convert.ToBase64String(payload),
                         FileName = "VaccineProof.pdf",
@@ -273,7 +273,7 @@ namespace HealthGateway.Common.Delegates
         private async Task<RequestResult<T>> PostAsync<T>(string endpointString, StringContent httpContent)
             where T : class
         {
-            RequestResult<T> retVal = new ()
+            RequestResult<T> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
@@ -282,7 +282,7 @@ namespace HealthGateway.Common.Delegates
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-            Uri endpoint = new (endpointString);
+            Uri endpoint = new(endpointString);
             try
             {
                 HttpResponseMessage response = await client.PostAsync(endpoint, httpContent).ConfigureAwait(true);

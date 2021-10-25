@@ -56,14 +56,14 @@ namespace HealthGateway.Common.Swagger
                     OpenApiSecurityScheme securityScheme;
                     if (controllerApiAuth || methodApiAuth)
                     {
-                        securityScheme = new ()
+                        securityScheme = new()
                         {
                             Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "apikey" },
                         };
                     }
                     else
                     {
-                        securityScheme = new ()
+                        securityScheme = new()
                         {
                             Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "bearer" },
                         };

@@ -322,7 +322,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
             var jwt = JsonSerializer.Deserialize<JWTModel>(json, options);
 
-            return jwt ?? new ();
+            return jwt ?? new();
         }
 
         private static Mock<IHttpClientService> CreateHttpClient(HttpResponseMessage stubResponse, string expectedPHN, string authorizationToken)

@@ -69,7 +69,7 @@ namespace HealthGateway.Immunization.Delegates
             this.logger = logger;
             this.httpClientService = httpClientService;
             this.httpContextAccessor = httpContextAccessor;
-            this.phsaConfig = new ();
+            this.phsaConfig = new();
             configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
         }
 
@@ -94,7 +94,7 @@ namespace HealthGateway.Immunization.Delegates
             using Activity? activity = Source.StartActivity("GetImmunizations");
             this.logger.LogDebug($"Getting immunizations...");
 
-            Dictionary<string, string?> query = new ()
+            Dictionary<string, string?> query = new()
             {
                 ["limit"] = this.phsaConfig.FetchSize,
             };
@@ -112,7 +112,7 @@ namespace HealthGateway.Immunization.Delegates
             using Activity? activity = Source.StartActivity("GetVaccineHistory");
             this.logger.LogDebug($"Getting vaccine history...");
 
-            Dictionary<string, string?> query = new ()
+            Dictionary<string, string?> query = new()
             {
                 ["limit"] = this.phsaConfig.FetchSize,
             };
@@ -132,7 +132,7 @@ namespace HealthGateway.Immunization.Delegates
                 string? bearerToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
                 if (bearerToken != null)
                 {
-                    RequestResult<PHSAResult<T>> retVal = new ()
+                    RequestResult<PHSAResult<T>> retVal = new()
                     {
                         ResultStatus = ResultType.Error,
                         PageIndex = 0,

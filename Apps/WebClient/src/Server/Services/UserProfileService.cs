@@ -198,7 +198,7 @@ namespace HealthGateway.WebClient.Services
             }
 
             // Create profile
-            UserProfile newProfile = new ()
+            UserProfile newProfile = new()
             {
                 HdId = hdid,
                 IdentityManagementId = createProfileRequest.Profile.IdentityManagementId,
@@ -218,7 +218,7 @@ namespace HealthGateway.WebClient.Services
                 string? requestedSMSNumber = createProfileRequest.Profile.SMSNumber;
                 string? requestedEmail = createProfileRequest.Profile.Email;
 
-                NotificationSettingsRequest notificationRequest = new (createdProfile, requestedEmail, requestedSMSNumber);
+                NotificationSettingsRequest notificationRequest = new(createdProfile, requestedEmail, requestedSMSNumber);
 
                 // Add email verification
                 if (!string.IsNullOrWhiteSpace(requestedEmail))
@@ -471,7 +471,7 @@ namespace HealthGateway.WebClient.Services
                                              .GetLeftPart(UriPartial.Authority);
             string hostUrl = activationHost.ToString();
 
-            Dictionary<string, string> keyValues = new () { [EmailTemplateVariable.Host] = hostUrl };
+            Dictionary<string, string> keyValues = new() { [EmailTemplateVariable.Host] = hostUrl };
             this.emailQueueService.QueueNewEmail(toEmail, templateName, keyValues);
         }
     }

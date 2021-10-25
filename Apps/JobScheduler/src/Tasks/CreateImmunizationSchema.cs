@@ -49,7 +49,7 @@ namespace Healthgateway.JobScheduler.Tasks
         /// </summary>
         public void Run()
         {
-            SchemaRequest schema = new ()
+            SchemaRequest schema = new()
             {
                 SchemaName = this.walletIssuerDelegate.WalletIssuerConfig.SchemaName,
                 SchemaVersion = this.walletIssuerDelegate.WalletIssuerConfig.SchemaVersion,

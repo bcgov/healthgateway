@@ -135,7 +135,7 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc/>
         public async Task<RequestResult<WalletCredentialModel>> CreateCredentialAsync(string hdId, string targetId)
         {
-            List<string> targetIds = new ()
+            List<string> targetIds = new()
             {
                 targetId,
             };
@@ -414,7 +414,7 @@ namespace HealthGateway.WebClient.Services
             else
             {
                 this.logger.LogDebug($"Error getting wallet credential from database. {JsonSerializer.Serialize(dbResult)}");
-                retVal = new ()
+                retVal = new()
                 {
                     ResultStatus = ResultType.Error,
                     ResultError = new RequestResultError()
@@ -430,7 +430,7 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc/>
         public async Task<RequestResult<WalletCredentialModel>> RevokeCredential(WalletCredential credential)
         {
-            RequestResult<WalletCredentialModel> retVal = new ()
+            RequestResult<WalletCredentialModel> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -463,7 +463,7 @@ namespace HealthGateway.WebClient.Services
             }
             else
             {
-                result.ResultError = new ()
+                result.ResultError = new()
                 {
                     ResultMessage = dbUpdate.Message,
                 };

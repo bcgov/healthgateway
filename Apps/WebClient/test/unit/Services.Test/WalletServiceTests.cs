@@ -160,13 +160,15 @@ namespace HealthGateway.WebClient.Test.Services
                 .InsertConnection(
                     It.Is<WalletConnection>(c =>
                         c.Status == WalletConnectionStatus.Pending &&
-                        c.UserProfileId == HdId), true))
+                        c.UserProfileId == HdId),
+                    true))
                 .Returns(insertDbResultWalletConnection);
             walletDelegateMock.Setup(s =>
                 s.UpdateConnection(
                     It.Is<WalletConnection>(c =>
                         c.AgentId == requestResultConnectionResponse.ResourcePayload.AgentId &&
-                        c.Id == walletConnectionId), true))
+                        c.Id == walletConnectionId),
+                    true))
                 .Returns(updateDbResultWalletConnection);
             walletDelegateMock
                 .Setup(s => s.GetCurrentConnection(HdId))
@@ -175,7 +177,8 @@ namespace HealthGateway.WebClient.Test.Services
                 .Setup(s =>
                     s.InsertCredential(
                         It.Is<WalletCredential>(wc =>
-                            wc.ExchangeId == exchangeId && wc.WalletConnectionId == walletConnectionId), true))
+                            wc.ExchangeId == exchangeId && wc.WalletConnectionId == walletConnectionId),
+                        true))
                 .Returns(insertDbResultWalletCredential);
 
             // ******* Assertion

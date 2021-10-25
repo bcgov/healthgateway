@@ -69,7 +69,7 @@ namespace HealthGateway.Common.Delegates
                     { "servicePort", servicePort! },
                 };
 
-                this.serviceEndpoint = new Uri(StringManipulator.Replace(this.cdogsConfig.BaseEndpoint, replacementData) !);
+                this.serviceEndpoint = new Uri(StringManipulator.Replace(this.cdogsConfig.BaseEndpoint, replacementData)!);
             }
             else
             {
@@ -86,7 +86,7 @@ namespace HealthGateway.Common.Delegates
         {
             using (Source.StartActivity("GenerateReportAsync"))
             {
-                RequestResult<ReportModel> retVal = new ()
+                RequestResult<ReportModel> retVal = new()
                 {
                     ResultStatus = ResultType.Error,
                 };

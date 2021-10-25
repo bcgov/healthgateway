@@ -42,15 +42,15 @@ namespace HealthGateway.Immunization.Test.Controllers
         [Fact]
         public async Task ShouldGetImmunizations()
         {
-            RequestResult<ImmunizationResult> expectedRequestResult = new ()
+            RequestResult<ImmunizationResult> expectedRequestResult = new()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
                 TotalResultCount = 2,
-                ResourcePayload = new (
+                ResourcePayload = new(
                 new LoadStateModel() { RefreshInProgress = false },
                 new List<ImmunizationEvent>()
                 {
-                    new ()
+                    new()
                     {
                         DateOfImmunization = DateTime.Today,
                         ProviderOrClinic = "Mocked Clinic",
@@ -59,7 +59,7 @@ namespace HealthGateway.Immunization.Test.Controllers
                             Name = "Mocked Name",
                             ImmunizationAgents = new List<ImmunizationAgent>()
                             {
-                                new ()
+                                new()
                                 {
                                     Name = "mocked agent",
                                     Code = "mocked code",
@@ -71,7 +71,7 @@ namespace HealthGateway.Immunization.Test.Controllers
                     },
 
                     // Add a blank agent
-                    new ()
+                    new()
                     {
                         DateOfImmunization = DateTime.Today,
                         Immunization = new ImmunizationDefinition()
@@ -118,11 +118,11 @@ namespace HealthGateway.Immunization.Test.Controllers
         [Fact]
         public async Task ShouldGetSingleImmunization()
         {
-            RequestResult<ImmunizationEvent> expectedRequestResult = new ()
+            RequestResult<ImmunizationEvent> expectedRequestResult = new()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
                 TotalResultCount = 2,
-                ResourcePayload = new ()
+                ResourcePayload = new()
                 {
                     DateOfImmunization = DateTime.Today,
                     ProviderOrClinic = "Mocked Clinic",
@@ -131,7 +131,7 @@ namespace HealthGateway.Immunization.Test.Controllers
                         Name = "Mocked Name",
                         ImmunizationAgents = new List<ImmunizationAgent>()
                                 {
-                                    new ()
+                                    new()
                                     {
                                         Name = "mocked agent",
                                         Code = "mocked code",

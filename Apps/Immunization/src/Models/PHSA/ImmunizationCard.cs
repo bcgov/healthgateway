@@ -27,18 +27,18 @@ namespace HealthGateway.Immunization.Models.PHSA
         /// Gets or sets the wallet card media.
         /// </summary>
         [JsonPropertyName("walletCard")]
-        public EncodedMedia WalletCard { get; set; } = new ();
+        public EncodedMedia WalletCard { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the paper media.
         /// </summary>
         [JsonPropertyName("paperRecord")]
-        public EncodedMedia PaperRecord { get; set; } = new ();
+        public EncodedMedia PaperRecord { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the QR code associated.
         /// </summary>
         [JsonPropertyName("qrCode")]
-        public EncodedMedia QRCode { get; set; } = new ();
+        public EncodedMedia QRCode { get; set; } = new();
     }
 }

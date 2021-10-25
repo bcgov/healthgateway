@@ -44,11 +44,11 @@ namespace HealthGateway.Immunization.Test.Controllers
         [Fact]
         public async Task ShouldGetVaccineStatus()
         {
-            RequestResult<VaccineStatus> expectedRequestResult = new ()
+            RequestResult<VaccineStatus> expectedRequestResult = new()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
                 TotalResultCount = 2,
-                ResourcePayload = new ()
+                ResourcePayload = new()
                 {
                     PersonalHealthNumber = this.phn,
                     FirstName = "Bob",

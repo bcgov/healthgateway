@@ -176,7 +176,7 @@ namespace HealthGateway.WebClient.Controllers
         {
             // Retrieve the user identity id from the claims
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext!.User;
-            Guid userId = new Guid(user.FindFirst(ClaimTypes.NameIdentifier) !.Value);
+            Guid userId = new Guid(user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
             RequestResult<UserProfileModel> result = this.userProfileService.CloseUserProfile(hdid, userId);
             return new JsonResult(result);

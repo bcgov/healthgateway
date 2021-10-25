@@ -63,7 +63,7 @@ namespace HealthGateway.Common.Models.BCMailPlus
         /// Gets or sets the Smart Health Card data for the patient.
         /// </summary>
         [JsonPropertyName("shc")]
-        public BcmpSmartHealthCard SmartHealthCard { get; set; } = new ();
+        public BcmpSmartHealthCard SmartHealthCard { get; set; } = new();
 
         /// <summary>
         /// Gets the templates that will be used to generate the document.
@@ -75,6 +75,6 @@ namespace HealthGateway.Common.Models.BCMailPlus
         /// Gets or sets the address where the document should be mailed.
         /// </summary>
         [JsonPropertyName("address")]
-        public BcmpAddress Address { get; set; } = new ();
+        public BcmpAddress Address { get; set; } = new();
     }
 }

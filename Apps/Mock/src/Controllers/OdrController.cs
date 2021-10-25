@@ -46,7 +46,7 @@ namespace HealthGateway.Mock.Controllers
         [Produces("application/json")]
         public ContentResult Encounter([FromBody] OdrRequest request)
         {
-            Dictionary<string, string> variables = new ()
+            Dictionary<string, string> variables = new()
             {
                 { "${uuid}", request.Id },
                 { "${hdid}", request.HdId },
@@ -66,7 +66,7 @@ namespace HealthGateway.Mock.Controllers
         [Produces("application/json")]
         public ContentResult Medication([FromBody] OdrRequest request)
         {
-            Dictionary<string, string> variables = new ()
+            Dictionary<string, string> variables = new()
             {
                 { "${uuid}", request.Id },
                 { "${hdid}", request.HdId },
@@ -86,7 +86,7 @@ namespace HealthGateway.Mock.Controllers
         [Produces("application/json")]
         public ContentResult MaintainProtectiveWord([FromBody] OdrRequest request)
         {
-            Dictionary<string, string> variables = new ()
+            Dictionary<string, string> variables = new()
             {
                 { "${uuid}", request.Id },
                 { "${hdid}", request.HdId },

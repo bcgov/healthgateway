@@ -61,11 +61,11 @@ namespace HealthGateway.Patient.Controllers
         public async Task<IActionResult> GetPatient(string hdid)
         {
             RequestResult<Common.Models.PatientModel> patientResult = await this.service.GetPatient(hdid).ConfigureAwait(true);
-            RequestResult<Models.PatientModel> result = new ()
+            RequestResult<Models.PatientModel> result = new()
             {
                 PageIndex = patientResult.PageIndex,
                 PageSize = patientResult.PageSize,
-                ResourcePayload = new (patientResult.ResourcePayload),
+                ResourcePayload = new(patientResult.ResourcePayload),
                 ResultError = patientResult.ResultError,
                 ResultStatus = patientResult.ResultStatus,
                 TotalResultCount = patientResult.TotalResultCount,

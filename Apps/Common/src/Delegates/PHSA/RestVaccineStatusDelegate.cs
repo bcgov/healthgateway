@@ -83,7 +83,7 @@ namespace HealthGateway.Common.Delegates.PHSA
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
 
-            RequestResult<PHSAResult<VaccineStatusResult>> retVal = new ()
+            RequestResult<PHSAResult<VaccineStatusResult>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
@@ -107,7 +107,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 }
                 else if (!string.IsNullOrEmpty(query.HdId))
                 {
-                    Dictionary<string, string?> queryDict = new ()
+                    Dictionary<string, string?> queryDict = new()
                     {
                         ["subjectHdid"] = query.HdId,
                     };
@@ -188,7 +188,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         public async Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatusWithRetries(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
         {
             using Activity? activity = Source.StartActivity("RetryGetVaccineStatus");
-            RequestResult<PHSAResult<VaccineStatusResult>> retVal = new ()
+            RequestResult<PHSAResult<VaccineStatusResult>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
@@ -242,7 +242,7 @@ namespace HealthGateway.Common.Delegates.PHSA
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
 
-            RequestResult<PHSAResult<RecordCard>> retVal = new ()
+            RequestResult<PHSAResult<RecordCard>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
@@ -331,7 +331,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         public async Task<RequestResult<PHSAResult<RecordCard>>> GetRecordCardWithRetries(RecordCardQuery query, string accessToken)
         {
             using Activity? activity = Source.StartActivity("RetryGetRecordCard");
-            RequestResult<PHSAResult<RecordCard>> retVal = new ()
+            RequestResult<PHSAResult<RecordCard>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
