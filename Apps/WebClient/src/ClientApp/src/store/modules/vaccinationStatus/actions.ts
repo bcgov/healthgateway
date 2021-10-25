@@ -303,7 +303,7 @@ export const actions: VaccinationStatusActions = {
         if (error.actionCode === ActionType.Invalid) {
             context.commit(
                 "setAuthenticatedVaccineRecordResultMessage",
-                "Proof of Vaccination Certificate is not available."
+                "No records found"
             );
         } else {
             context.dispatch(
