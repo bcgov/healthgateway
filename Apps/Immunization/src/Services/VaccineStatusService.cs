@@ -17,7 +17,6 @@ namespace HealthGateway.Immunization.Services
 {
     using System;
     using System.Globalization;
-    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
@@ -274,7 +273,8 @@ namespace HealthGateway.Immunization.Services
                                          proofStatus.ResourcePayload.Status == VaccineProofRequestStatus.Started;
                             if (processing)
                             {
-                                Thread.Sleep(this.bcmpConfig.BackOffMilliseconds);
+                                this.logger.LogInformation("Waiting to poll Vaccine Proof Status again");
+                                await Task.Delay(this.bcmpConfig.BackOffMilliseconds).ConfigureAwait(true);
                             }
                         }
                         while (processing && retryCount++ < this.bcmpConfig.MaxRetries);
