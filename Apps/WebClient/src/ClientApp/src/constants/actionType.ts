@@ -3,4 +3,5 @@ export const enum ActionType {
     NoHdId = "NOHDID",
     DataMismatch = "MISMATCH",
     Invalid = "INVALID",
+    Refresh = "REFRESH",
 }

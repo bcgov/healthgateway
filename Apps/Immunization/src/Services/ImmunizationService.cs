@@ -16,7 +16,6 @@
 namespace HealthGateway.Immunization.Services
 {
     using System;
-    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
@@ -31,6 +30,7 @@ namespace HealthGateway.Immunization.Services
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The Immunization data service.
@@ -39,6 +39,7 @@ namespace HealthGateway.Immunization.Services
     {
         private const string BCMailPlusConfigSectionKey = "BCMailPlus";
         private const string PHSAConfigSectionKey = "PHSA";
+        private readonly ILogger<ImmunizationService> logger;
         private readonly Delegates.IImmunizationDelegate immunizationDelegate;
         private readonly IVaccineProofDelegate vpDelegate;
         private readonly IVaccineStatusDelegate vaccineDelegate;
@@ -50,17 +51,20 @@ namespace HealthGateway.Immunization.Services
         /// Initializes a new instance of the <see cref="ImmunizationService"/> class.
         /// </summary>
         /// <param name="configuration">The configuration to use.</param>
+        /// <param name="logger">The injected logger to use.</param>
         /// <param name="immunizationDelegate">The factory to create immunization delegates.</param>
         /// <param name="vaccineProofDelegate">The injected delegate to get the vaccine proof.</param>
         /// <param name="vaccineDelegate">The injected vaccine status delegate.</param>
         /// <param name="httpContextAccessor">The injected http context accessor.</param>
         public ImmunizationService(
             IConfiguration configuration,
+            ILogger<ImmunizationService> logger,
             Delegates.IImmunizationDelegate immunizationDelegate,
             IVaccineProofDelegate vaccineProofDelegate,
             IVaccineStatusDelegate vaccineDelegate,
             IHttpContextAccessor httpContextAccessor)
         {
+            this.logger = logger;
             this.immunizationDelegate = immunizationDelegate;
             this.vpDelegate = vaccineProofDelegate;
             this.vaccineDelegate = vaccineDelegate;
@@ -253,7 +257,8 @@ namespace HealthGateway.Immunization.Services
                                          proofStatus.ResourcePayload.Status == VaccineProofRequestStatus.Started;
                             if (processing)
                             {
-                                Thread.Sleep(this.bcmpConfig.BackOffMilliseconds);
+                                this.logger.LogInformation("Waiting to poll Vaccine Proof Status again");
+                                await Task.Delay(this.bcmpConfig.BackOffMilliseconds).ConfigureAwait(true);
                             }
                         }
                         while (processing && retryCount++ < this.bcmpConfig.MaxRetries);

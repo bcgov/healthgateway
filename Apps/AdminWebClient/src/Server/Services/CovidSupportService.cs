@@ -404,7 +404,8 @@ namespace HealthGateway.Admin.Services
                                          proofStatus.ResourcePayload.Status == VaccineProofRequestStatus.Started;
                             if (processing)
                             {
-                                Thread.Sleep(this.bcmpConfig.BackOffMilliseconds);
+                                this.logger.LogInformation("Waiting to poll Vaccine Proof Status again");
+                                await Task.Delay(this.bcmpConfig.BackOffMilliseconds).ConfigureAwait(true);
                             }
                         }
                         while (processing && retryCount++ < this.bcmpConfig.MaxRetries);
