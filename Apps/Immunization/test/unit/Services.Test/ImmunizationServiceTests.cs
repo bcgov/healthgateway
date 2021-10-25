@@ -455,7 +455,7 @@ namespace HealthGateway.Immunization.Test.Services
                 mockHttpContextAccessor.Object);
 
             RequestResult<CovidVaccineRecord> actualResult = Task.Run(async () => await service.GetCovidVaccineRecord(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.ActionRequired);
+            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error);
         }
 
         /// <summary>
@@ -493,7 +493,7 @@ namespace HealthGateway.Immunization.Test.Services
                 mockHttpContextAccessor.Object);
 
             RequestResult<CovidVaccineRecord> actualResult = Task.Run(async () => await service.GetCovidVaccineRecord(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.ActionRequired);
+            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error);
         }
 
         /// <summary>
