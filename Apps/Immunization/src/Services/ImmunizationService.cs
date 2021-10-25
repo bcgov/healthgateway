@@ -211,16 +211,26 @@ namespace HealthGateway.Immunization.Services
             };
 
             VaccineState state = Enum.Parse<VaccineState>(vaccineStatusResult.StatusIndicator);
-            if (state == VaccineState.AllDosesReceived || state == VaccineState.PartialDosesReceived)
+            if (state == VaccineState.DataMismatch || state == VaccineState.Threshold || state == VaccineState.Blocked)
+            {
+                retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine status is invalid", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA) };
+            }
+            else if (state == VaccineState.NotFound)
+            {
+                retVal.ResultStatus = ResultType.ActionRequired;
+                retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine state is invalid to obtain vaccine proof.", ActionType.Invalid);
+            }
+            else
             {
                 VaccinationStatus requestState = state switch
                 {
                     VaccineState.AllDosesReceived => VaccinationStatus.Fully,
                     VaccineState.PartialDosesReceived => VaccinationStatus.Partially,
+                    VaccineState.Exempt => VaccinationStatus.Exempt,
                     _ => VaccinationStatus.Unknown,
                 };
 
-                if (requestState != VaccinationStatus.Unknown && state.ToString() != nameof(VaccinationStatus.Exempt))
+                if (requestState != VaccinationStatus.Unknown)
                 {
                     VaccineProofRequest request = new()
                     {
@@ -286,11 +296,6 @@ namespace HealthGateway.Immunization.Services
                 {
                     retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine status is unknown", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
                 }
-            }
-            else
-            {
-                retVal.ResultStatus = ResultType.ActionRequired;
-                retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine state is invalid to obtain vaccine proof.", ActionType.Invalid);
             }
 
             return retVal;
