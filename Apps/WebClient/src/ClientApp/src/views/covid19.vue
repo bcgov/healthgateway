@@ -356,20 +356,20 @@ export default class Covid19View extends Vue {
                     </hg-button>
                     <hg-dropdown
                         v-if="saveDropdownShown"
-                        text="Save"
+                        text="Save as"
                         variant="primary"
                         data-testid="save-dropdown-btn"
                     >
                         <b-dropdown-item
                             data-testid="save-as-image-dropdown-item"
                             @click="showVaccineCardMessageModal()"
-                            >Save as image</b-dropdown-item
+                            >Image (BC proof only)</b-dropdown-item
                         >
                         <b-dropdown-item
                             v-if="saveExportPdfShown"
                             data-testid="save-as-pdf-dropdown-item"
                             @click="showConfirmationModal()"
-                            >Save as PDF</b-dropdown-item
+                            >PDF (Federal and BC)</b-dropdown-item
                         >
                         <b-dropdown-item
                             v-if="saveWalletShown"
