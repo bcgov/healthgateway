@@ -74,21 +74,4 @@ describe("Authenticated User - Dashboard Page", () => {
         cy.get("[data-testid=health-records-card-btn]").should("be.visible");
         cy.get("[data-testid=proof-vaccination-card-btn]").should("not.exist");
     });
-
-    it("Dashboard - Federal Card button - Spinner displayed", () => {
-        cy.enableModules(["Immunization", "FederalCardButton"]);
-
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            dashboardUrl
-        );
-        cy.get("[data-testid=proof-vaccination-card-btn]")
-            .should("be.visible", "be.enabled")
-            .click();
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
-        cy.get("[data-testid=loadingSpinner]").should("be.visible");
-    });
 });
