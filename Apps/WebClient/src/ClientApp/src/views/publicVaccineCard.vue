@@ -241,7 +241,9 @@ export default class PublicVaccineCardView extends Vue {
                         action: "public_download_card",
                         text: "Public COVID Card PDF",
                     });
-                    const downloadLink = result.resourcePayload.data;
+                    const mimeType = "application/pdf";
+                    const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
+
                     fetch(downloadLink).then((res) => {
                         res.blob().then((blob) => {
                             saveAs(blob, result.resourcePayload.fileName);
