@@ -35,7 +35,12 @@ export default class DashboardView extends Vue {
     @Getter("authenticatedVaccineRecordIsLoading", {
         namespace: "vaccinationStatus",
     })
-    isLoading!: boolean;
+    isLoadingVaccineRecord!: boolean;
+
+    @Getter("authenticatedVaccineRecordStatusMessage", {
+        namespace: "vaccinationStatus",
+    })
+    vaccineRecordStatusMessage!: string;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
@@ -48,8 +53,8 @@ export default class DashboardView extends Vue {
     @Ref("sensitivedocumentDownloadModal")
     readonly sensitivedocumentDownloadModal!: MessageModalComponent;
 
-    private get isLoadingDocument(): boolean {
-        return this.isLoading;
+    private get isLoading(): boolean {
+        return this.isLoadingVaccineRecord;
     }
 
     private get unverifiedEmail(): boolean {
@@ -106,6 +111,10 @@ export default class DashboardView extends Vue {
     private get showFederalCardButton(): boolean {
         return this.config.modules["FederalCardButton"];
     }
+
+    private get loadingStatusMessage(): string {
+        return this.vaccineRecordStatusMessage;
+    }
 }
 </script>
 
@@ -114,7 +123,10 @@ export default class DashboardView extends Vue {
         no-gutters
         class="hg-dashboard m-3 m-md-4 flex-grow-1 d-flex flex-column"
     >
-        <LoadingComponent :is-loading="isLoadingDocument"></LoadingComponent>
+        <LoadingComponent
+            :is-loading="isLoading"
+            :text="loadingStatusMessage"
+        ></LoadingComponent>
         <b-alert
             v-if="hasNewTermsOfService"
             show
@@ -272,6 +284,19 @@ export default class DashboardView extends Vue {
 
     .checkmark {
         color: $hg-state-success;
+    }
+}
+</style>
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+
+.vld-overlay {
+    .vld-background {
+        opacity: 0.75;
+    }
+
+    .vld-icon {
+        text-align: center;
     }
 }
 </style>

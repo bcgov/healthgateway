@@ -231,33 +231,35 @@ export const actions: VaccinationStatusActions = {
                     params.proofTemplate
                 )
                 .then((result) => {
+                    const payload = result.resourcePayload;
                     if (result.resultStatus === ResultType.Success) {
-                        const payload = result.resourcePayload;
-                        if (!payload.loaded && payload.retryin > 0) {
-                            logger.info("Vaccination Record not loaded");
-                            context.commit(
-                                "setAuthenticatedVaccineRecordStatusMessage",
-                                "We're busy but will continue to try to download the Vaccine Record...."
+                        context.commit(
+                            "setAuthenticatedVaccineRecord",
+                            payload
+                        );
+                        resolve(payload);
+                    } else if (
+                        result.resultError?.actionCode === ActionType.Refresh &&
+                        !payload.loaded &&
+                        payload.retryin > 0
+                    ) {
+                        logger.info("Vaccination Record not loaded");
+                        context.commit(
+                            "setAuthenticatedVaccineRecordStatusMessage",
+                            "We're busy but will continue to try to download the Vaccine Record...."
+                        );
+                        setTimeout(() => {
+                            logger.info(
+                                "Re-querying for downloading the Vaccine Record"
                             );
-                            setTimeout(() => {
-                                logger.info(
-                                    "Re-querying for downloading the Vaccine Record"
-                                );
-                                context.dispatch(
-                                    "retrieveAuthenticatedVaccineRecord",
-                                    {
-                                        hdid: params.hdid,
-                                    }
-                                );
-                            }, payload.retryin);
-                            resolve(payload);
-                        } else {
-                            context.commit(
-                                "setAuthenticatedVaccineRecord",
-                                payload
+                            context.dispatch(
+                                "retrieveAuthenticatedVaccineRecord",
+                                {
+                                    hdid: params.hdid,
+                                }
                             );
-                            resolve(payload);
-                        }
+                        }, payload.retryin);
+                        resolve(payload);
                     } else {
                         context.dispatch(
                             "handleAuthenticatedPdfError",
