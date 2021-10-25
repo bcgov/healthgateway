@@ -218,7 +218,7 @@ namespace HealthGateway.Immunization.Services
             else if (state == VaccineState.NotFound)
             {
                 retVal.ResultStatus = ResultType.ActionRequired;
-                retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine state is invalid to obtain vaccine proof.", ActionType.Invalid);
+                retVal.ResultError = ErrorTranslator.ActionRequired("No records found", ActionType.Invalid);
             }
             else
             {
