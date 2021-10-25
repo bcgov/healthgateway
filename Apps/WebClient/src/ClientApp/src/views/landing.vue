@@ -73,37 +73,37 @@ export default class LandingView extends Vue {
         {
             name: "Medication",
             definition: "pills",
-            label: "Prescription Medications",
+            label: "Prescription Medications (Dec 2019)",
             active: false,
         },
         {
             name: "Note",
             definition: "edit",
-            label: "Add Notes to Records",
+            label: "Add Notes to Records (Mar 2020)",
             active: false,
         },
         {
             name: "Laboratory",
             definition: "exclamation-triangle",
-            label: "COVID-19 Test Results",
+            label: "COVID-19 Test Results (Sep 2020)",
             active: true,
         },
         {
             name: "Immunization",
             definition: "syringe",
-            label: "Immunization Records",
+            label: "Immunization Records (Dec 2020)",
             active: false,
         },
         {
             name: "Encounter",
             definition: "user-md",
-            label: "Health Visits",
+            label: "Health Visits (Mar 2021)",
             active: false,
         },
         {
             name: "VaccinationStatus",
             definition: "clipboard-check",
-            label: "BC Vaccine Card",
+            label: "BC Vaccine Card (Sep 2021)",
             active: false,
         },
         {
@@ -233,7 +233,7 @@ export default class LandingView extends Vue {
             </b-col>
         </b-row>
         <h3 class="text-center font-weight-normal my-4 mx-1">
-            BC residents can access all their health records in a single place
+            A single place for BC residents to access their health records
         </h3>
         <b-row
             v-if="!isOffline"
