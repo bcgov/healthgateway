@@ -578,33 +578,13 @@ namespace HealthGateway.Immunization.Test.Services
             var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
             mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
 
-            string id = "id";
-            RequestResult<VaccineProofResponse> vaccineProofResponseCompleted = new()
-            {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = new()
-                {
-                    Id = id,
-                    Status = VaccineProofRequestStatus.Completed,
-                },
-            };
-            var mockProofDelegate = new Mock<IVaccineProofDelegate>();
-            mockProofDelegate.Setup(s => s.GenerateAsync(VaccineProofTemplate.Provincial, It.IsAny<VaccineProofRequest>())).Returns(Task.FromResult(vaccineProofResponseCompleted));
-            mockProofDelegate.Setup(s => s.GetStatusAsync(id)).Returns(Task.FromResult(vaccineProofResponseCompleted));
-
-            RequestResult<ReportModel> vaccineProofAsset = new()
-            {
-                ResultStatus = ResultType.Error,
-            };
-            mockProofDelegate.Setup(s => s.GetAssetAsync(id)).Returns(Task.FromResult(vaccineProofAsset));
-
             var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
 
             IImmunizationService service = new ImmunizationService(
               GetConfiguration(myConfiguration),
               new Mock<ILogger<ImmunizationService>>().Object,
               new Mock<Immunization.Delegates.IImmunizationDelegate>().Object,
-              mockProofDelegate.Object,
+              new Mock<IVaccineProofService>().Object,
               mockVaccineDelegate.Object,
               mockHttpContextAccessor.Object);
 
