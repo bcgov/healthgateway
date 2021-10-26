@@ -102,6 +102,8 @@ export default class PublicVaccineCardView extends Vue {
     private isDownloadingPdf = false;
     private downloadError: BannerError | null = null;
 
+    private vaccineRecordPdfType!: VaccineProofTemplate;
+
     private get loadingStatusMessage(): string {
         return this.isDownloading ? "Downloading...." : this.statusMessage;
     }
@@ -217,7 +219,12 @@ export default class PublicVaccineCardView extends Vue {
         return phnMask;
     }
 
-    private showConfirmationModal() {
+    private showConfirmationModal(pdfType: string) {
+        if (pdfType === VaccineProofTemplate.Federal) {
+            this.vaccineRecordPdfType = VaccineProofTemplate.Federal;
+        } else {
+            this.vaccineRecordPdfType = VaccineProofTemplate.Provincial;
+        }
         this.messageModal.showModal();
     }
 
@@ -233,7 +240,7 @@ export default class PublicVaccineCardView extends Vue {
                 this.phn.replace(/ /g, ""),
                 this.dateOfBirth,
                 this.dateOfVaccine,
-                VaccineProofTemplate.CombinedCover
+                this.vaccineRecordPdfType
             )
             .then((result) => {
                 if (result.resultStatus == ResultType.Success) {
@@ -339,15 +346,22 @@ export default class PublicVaccineCardView extends Vue {
                         data-testid="save-dropdown-btn"
                     >
                         <b-dropdown-item
-                            data-testid="save-as-image-dropdown-item"
-                            @click="showVaccineCardMessageModal()"
-                            >Image (BC proof only)</b-dropdown-item
+                            v-if="saveExportPdfShown"
+                            data-testid="save-as-federalPdf-dropdown-item"
+                            @click="showConfirmationModal('Federal')"
+                            >PDF (Federal proof only)</b-dropdown-item
                         >
                         <b-dropdown-item
                             v-if="saveExportPdfShown"
-                            data-testid="save-as-pdf-dropdown-item"
-                            @click="showConfirmationModal()"
-                            >PDF (Federal and BC)</b-dropdown-item
+                            data-testid="save-as-provincialPdf-dropdown-item"
+                            @click="showConfirmationModal('Provincial')"
+                            >PDF (BC only)</b-dropdown-item
+                        >
+
+                        <b-dropdown-item
+                            data-testid="save-as-image-dropdown-item"
+                            @click="showVaccineCardMessageModal()"
+                            >Image (BC proof only)</b-dropdown-item
                         >
                     </hg-dropdown>
                 </div>
