@@ -64,6 +64,11 @@ namespace HealthGateway.Common.Models
         public string SchemaVersion { get; set; } = null!;
 
         /// <summary>
+        /// Gets or sets the number of minutes to cache asset information.
+        /// </summary>
+        public int CacheTtl { get; set; }
+
+        /// <summary>
         /// Returns the Endpoint after resolving any variable references.
         /// Endpoint should be something like https://${HOST}/${ENV}/auth=${TOKEN}/JSON/ .
         /// </summary>
