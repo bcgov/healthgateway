@@ -15,10 +15,9 @@
 //-------------------------------------------------------------------------
 
 import http from "k6/http";
-import { check, sleep } from 'k6';
+import { check, sleep, group } from 'k6';
 import { SharedArray } from 'k6/data';
 import PapaParse from "./papaparse.js";
-import { group } from "console";
 
 export let testType = __ENV.HG_TYPE  ? __ENV.HG_TYPE : "smoke";
 export let environment = __ENV.HG_ENV  ? __ENV.HG_ENV : "test"; // default to test environment
@@ -229,7 +228,7 @@ export default function () {
         let res3 = http.get(pdfUrl, requestParams);
 
         check(res3, {"VaccineStatus/pdf API Status 200": (r) => r.status === 200});
-        check(res2, {
+        check(res3, {
             'Reached VaccineStatus/pdf API Endpoint; Not Queue-IT': (r) => r.body.search('queue-it.net') === -1,
             'API VaccineStatus/pdf Response Content-Type is application/pdf': (r) => r.headers['Content-Type'].search('application/pdf') >= 0, 
         });
