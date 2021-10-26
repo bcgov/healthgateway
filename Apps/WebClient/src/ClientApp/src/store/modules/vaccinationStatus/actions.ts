@@ -301,10 +301,18 @@ export const actions: VaccinationStatusActions = {
             "setAuthenticatedVaccineRecordError",
             ErrorTranslator.toBannerError(title, error)
         );
-        context.dispatch(
-            "errorBanner/addResultError",
-            { message: title, error },
-            { root: true }
-        );
+
+        if (error.actionCode === ActionType.Invalid) {
+            context.commit(
+                "setAuthenticatedVaccineRecordResultMessage",
+                "No records found"
+            );
+        } else {
+            context.dispatch(
+                "errorBanner/addResultError",
+                { message: title, error },
+                { root: true }
+            );
+        }
     },
 };

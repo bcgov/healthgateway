@@ -75,6 +75,7 @@ export const mutations: VaccinationStatusMutations = {
         state.authenticatedVaccineRecord.error = undefined;
         state.authenticatedVaccineRecord.status = LoadStatus.REQUESTED;
         state.authenticatedVaccineRecord.statusMessage = "";
+        state.authenticatedVaccineRecord.resultMessage = "";
     },
     setAuthenticatedVaccineRecordStatusMessage(
         state: VaccinationStatusState,
@@ -97,5 +98,11 @@ export const mutations: VaccinationStatusMutations = {
     ) {
         state.authenticatedVaccineRecord.error = error;
         state.authenticatedVaccineRecord.status = LoadStatus.ERROR;
+    },
+    setAuthenticatedVaccineRecordResultMessage(
+        state: VaccinationStatusState,
+        resultMessage: string
+    ) {
+        state.authenticatedVaccineRecord.resultMessage = resultMessage;
     },
 };

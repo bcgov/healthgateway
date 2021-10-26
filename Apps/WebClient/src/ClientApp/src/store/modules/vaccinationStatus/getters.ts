@@ -54,4 +54,9 @@ export const getters: VaccinationStatusGetters = {
     ): string {
         return state.authenticatedVaccineRecord.statusMessage;
     },
+    authenticatedVaccineRecordResultMessage(
+        state: VaccinationStatusState
+    ): string {
+        return state.authenticatedVaccineRecord.resultMessage;
+    },
 };
