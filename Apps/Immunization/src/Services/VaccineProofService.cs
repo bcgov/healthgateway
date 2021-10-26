@@ -63,7 +63,7 @@ namespace HealthGateway.Immunization.Services
                 int retryCount = 0;
                 RequestResult<VaccineProofResponse> proofStatus = proofGenerate;
                 bool processing = proofGenerate.ResourcePayload.Status == VaccineProofRequestStatus.Started;
-                while (processing && retryCount++ < this.bcmpConfig.MaxRetries)
+                while (processing && retryCount++ <= this.bcmpConfig.MaxRetries)
                 {
                     this.logger.LogInformation("Waiting to poll Vaccine Proof Status...");
                     await Task.Delay(this.bcmpConfig.BackOffMilliseconds).ConfigureAwait(true);
