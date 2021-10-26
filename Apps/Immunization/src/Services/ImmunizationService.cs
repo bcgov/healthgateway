@@ -24,6 +24,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Parser;
     using Microsoft.AspNetCore.Authentication;

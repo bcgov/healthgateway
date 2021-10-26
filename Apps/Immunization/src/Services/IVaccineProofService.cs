@@ -16,8 +16,8 @@
 namespace HealthGateway.Immunization.Services
 {
     using System.Threading.Tasks;
-    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// Mechanism to pull the Vaccine Proof.

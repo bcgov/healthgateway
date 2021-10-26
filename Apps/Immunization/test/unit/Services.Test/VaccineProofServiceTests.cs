@@ -20,6 +20,7 @@ namespace HealthGateway.Immunization.Test.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Immunization.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -109,7 +110,7 @@ namespace HealthGateway.Immunization.Test.Services
                 mockVaccineProofDelegate.Object);
 
             RequestResult<ReportModel> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, request, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success);
+            Assert.True(actualResult.ResultStatus == ResultType.Success);
             Assert.True(actualResult.ResourcePayload != null &&
                         actualResult.ResourcePayload.Data == assetResult.ResourcePayload.Data);
         }

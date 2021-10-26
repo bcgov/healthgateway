@@ -16,9 +16,9 @@
 namespace HealthGateway.Immunization.Services
 {
     using System.Threading.Tasks;
-    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// The Vaccine Status data service.

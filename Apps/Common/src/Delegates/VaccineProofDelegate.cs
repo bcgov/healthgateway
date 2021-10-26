@@ -31,6 +31,7 @@ namespace HealthGateway.Common.Delegates
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.BCMailPlus;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Constants;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -81,8 +82,7 @@ namespace HealthGateway.Common.Delegates
             this.logger.LogTrace($"Sending request to BC Mail Plus to generate and mail a vaccine proof...");
             string endpointString = string.Format(CultureInfo.InvariantCulture, "{0}{1}{2}", this.bcMailPlusEndpoint, "create:", this.bcMailPlusJobClass);
 
-            List<string> templates = new() { VaccineProofTemplate.Provincial.ToString() };
-            BcmpVaccineProofQuery vaccineProofQuery = new(templates)
+            BcmpVaccineProofQuery vaccineProofQuery = new()
             {
                 SchemaVersion = this.bcMailPlusSchemaVersion,
                 Operation = "Mail",
@@ -98,6 +98,7 @@ namespace HealthGateway.Common.Delegates
                     Country = address.Country,
                 },
             };
+            vaccineProofQuery.Templates.Add(vaccineProofTemplate);
 
             using StringContent httpContent = new(JsonSerializer.Serialize(vaccineProofQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
 
@@ -139,16 +140,17 @@ namespace HealthGateway.Common.Delegates
             this.logger.LogTrace($"Sending request to BC Mail Plus to generate a vaccine proof...");
             string endpointString = string.Format(CultureInfo.InvariantCulture, "{0}{1}{2}", this.bcMailPlusEndpoint, "create:", this.bcMailPlusJobClass);
 
-            List<string> templates = new() { VaccineProofTemplate.Provincial.ToString() };
-            BcmpVaccineProofQuery vaccineProofQuery = new(templates)
+            BcmpVaccineProofQuery vaccineProofQuery = new()
             {
                 SchemaVersion = this.bcMailPlusSchemaVersion,
                 Operation = "Generate",
                 VaccineStatus = request.Status,
                 SmartHealthCard = new BcmpSmartHealthCard() { QrCode = request.SmartHealthCardQr },
             };
+            vaccineProofQuery.Templates.Add(vaccineProofTemplate);
 
-            using StringContent httpContent = new(JsonSerializer.Serialize(vaccineProofQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
+            string payload = JsonSerializer.Serialize(vaccineProofQuery);
+            using StringContent httpContent = new(payload, Encoding.UTF8, MediaTypeNames.Application.Json);
 
             RequestResult<BcmpJobStatusResult> requestResult = await this.PostAsync<BcmpJobStatusResult>(endpointString, httpContent).ConfigureAwait(true);
             BcmpJobStatusResult? jobStatusResult = requestResult.ResourcePayload;

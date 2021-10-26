@@ -18,6 +18,7 @@ namespace HealthGateway.Common.Models.BCMailPlus
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// The BC Mail Plus Vaccine Proof query model.
@@ -36,7 +37,7 @@ namespace HealthGateway.Common.Models.BCMailPlus
         /// </summary>
         /// <param name="templates">The list of templates.</param>
         [JsonConstructor]
-        public BcmpVaccineProofQuery(IList<string> templates)
+        public BcmpVaccineProofQuery(IList<VaccineProofTemplate> templates)
         {
             this.Templates = templates;
         }
@@ -69,7 +70,7 @@ namespace HealthGateway.Common.Models.BCMailPlus
         /// Gets the templates that will be used to generate the document.
         /// </summary>
         [JsonPropertyName("templates")]
-        public IList<string> Templates { get; } = new List<string>();
+        public IList<VaccineProofTemplate> Templates { get; } = new List<VaccineProofTemplate>();
 
         /// <summary>
         /// Gets or sets the address where the document should be mailed.
