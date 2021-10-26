@@ -23,6 +23,7 @@ const state: VaccinationStatusState = {
         error: undefined,
         status: LoadStatus.NONE,
         statusMessage: "",
+        resultMessage: "",
     },
 };
 

@@ -50,8 +50,16 @@ export default class DashboardView extends Vue {
     @Getter("authenticatedVaccineRecord", { namespace: "vaccinationStatus" })
     vaccineRecord!: CovidVaccineRecord | undefined;
 
+    @Getter("authenticatedVaccineRecordResultMessage", {
+        namespace: "vaccinationStatus",
+    })
+    vaccineRecordResultMessage!: string;
+
     @Ref("sensitivedocumentDownloadModal")
     readonly sensitivedocumentDownloadModal!: MessageModalComponent;
+
+    @Ref("vaccineRecordResultModal")
+    readonly vaccineRecordResultModal!: MessageModalComponent;
 
     private get isLoading(): boolean {
         return this.isLoadingVaccineRecord;
@@ -87,6 +95,13 @@ export default class DashboardView extends Vue {
         });
     }
 
+    @Watch("vaccineRecordResultMessage")
+    private vaccineRecordErrorChanged() {
+        if (this.vaccineRecordResultMessage.length > 0) {
+            this.vaccineRecordResultModal.showModal();
+        }
+    }
+
     @Watch("vaccineRecord")
     private saveVaccinePdf() {
         if (this.vaccineRecord !== undefined) {
@@ -110,6 +125,10 @@ export default class DashboardView extends Vue {
 
     private get showFederalCardButton(): boolean {
         return this.config.modules["FederalCardButton"];
+    }
+
+    private get cardColumnSize(): number {
+        return this.showFederalCardButton ? 4 : 6;
     }
 
     private get loadingStatusMessage(): string {
@@ -186,13 +205,7 @@ export default class DashboardView extends Vue {
         <page-title title="Dashboard" />
         <h2>What do you want to focus on today?</h2>
         <b-row>
-            <b-col
-                class="p-3"
-                :class="{
-                    'md-6 lg-4': showFederalCardButton,
-                    'md-4': !showFederalCardButton,
-                }"
-            >
+            <b-col cols="12" :lg="cardColumnSize" class="p-3">
                 <hg-card-button
                     title="BC Vaccine Card"
                     to="/covid19"
@@ -213,13 +226,7 @@ export default class DashboardView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-            <b-col
-                class="p-3"
-                :class="{
-                    'md-6 lg-4': showFederalCardButton,
-                    'md-4': !showFederalCardButton,
-                }"
-            >
+            <b-col cols="12" :lg="cardColumnSize" class="p-3">
                 <hg-card-button
                     title="Health Records"
                     to="/timeline"
@@ -239,7 +246,12 @@ export default class DashboardView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-            <b-col v-if="showFederalCardButton" md="6" lg="4" class="p-3">
+            <b-col
+                v-if="showFederalCardButton"
+                cols="12"
+                :lg="cardColumnSize"
+                class="p-3"
+            >
                 <hg-card-button
                     title="Proof of Vaccination"
                     data-testid="proof-vaccination-card-btn"
@@ -265,6 +277,12 @@ export default class DashboardView extends Vue {
             message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
             @submit="retrieveVaccinePdf"
         />
+        <MessageModalComponent
+            ref="vaccineRecordResultModal"
+            ok-only
+            title="Alert"
+            :message="vaccineRecordResultMessage"
+        />
     </div>
 </template>
 
@@ -278,8 +296,7 @@ export default class DashboardView extends Vue {
     }
 
     .canada-government-logo {
-        height: 2em;
-        width: 6em;
+        height: 1.5em;
     }
 
     .checkmark {

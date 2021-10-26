@@ -9,6 +9,8 @@ export default class MessageModalComponent extends Vue {
 
     @Prop({ default: "Info" }) private title!: string;
     @Prop({ default: "Message" }) private message!: string;
+    @Prop({ default: false }) private okOnly!: boolean;
+
     private isVisible = false;
 
     public showModal(): void {
@@ -84,7 +86,17 @@ export default class MessageModalComponent extends Vue {
             <b-row>
                 <b-col>
                     <b-row>
-                        <b-col>
+                        <b-col v-if="okOnly">
+                            <hg-button
+                                data-testid="genericMessageOkBtn"
+                                class="mr-2"
+                                variant="primary"
+                                @click="handleCancel($event)"
+                            >
+                                OK
+                            </hg-button>
+                        </b-col>
+                        <b-col v-else>
                             <hg-button
                                 data-testid="genericMessageSubmitBtn"
                                 class="mr-2"

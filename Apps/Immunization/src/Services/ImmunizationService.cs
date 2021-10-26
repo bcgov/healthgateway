@@ -207,10 +207,16 @@ namespace HealthGateway.Immunization.Services
             {
                 ResultStatus = ResultType.Error,
             };
+
             VaccineState state = Enum.Parse<VaccineState>(vaccineStatusResult.StatusIndicator);
-            if (state == VaccineState.NotFound || state == VaccineState.DataMismatch || state == VaccineState.Threshold || state == VaccineState.Blocked)
+            if (state == VaccineState.DataMismatch || state == VaccineState.Threshold || state == VaccineState.Blocked)
             {
-                retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine status not found", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA) };
+                retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine status is invalid", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA) };
+            }
+            else if (state == VaccineState.NotFound)
+            {
+                retVal.ResultStatus = ResultType.ActionRequired;
+                retVal.ResultError = ErrorTranslator.ActionRequired("No records found", ActionType.Invalid);
             }
             else
             {

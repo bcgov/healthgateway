@@ -34,6 +34,7 @@ export interface VaccinationStatusState {
         error?: BannerError;
         status: LoadStatus;
         statusMessage: string;
+        resultMessage: string;
     };
 }
 
@@ -59,6 +60,9 @@ export interface VaccinationStatusGetters
         state: VaccinationStatusState
     ): BannerError | undefined;
     authenticatedVaccineRecordStatusMessage(
+        state: VaccinationStatusState
+    ): string;
+    authenticatedVaccineRecordResultMessage(
         state: VaccinationStatusState
     ): string;
 }
@@ -142,6 +146,10 @@ export interface VaccinationStatusMutations
     setAuthenticatedVaccineRecordError(
         state: VaccinationStatusState,
         error: BannerError
+    ): void;
+    setAuthenticatedVaccineRecordResultMessage(
+        state: VaccinationStatusState,
+        resultMessage: string
     ): void;
 }
 
