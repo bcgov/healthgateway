@@ -60,23 +60,19 @@ namespace HealthGateway.Immunization.Services
             RequestResult<VaccineProofResponse> proofGenerate = await this.vpDelegate.GenerateAsync(proofTemplate, vaccineProofRequest).ConfigureAwait(true);
             if (proofGenerate.ResultStatus == ResultType.Success && proofGenerate.ResourcePayload != null)
             {
-                RequestResult<VaccineProofResponse> proofStatus;
-                bool processing;
                 int retryCount = 0;
-                do
+                RequestResult<VaccineProofResponse> proofStatus = proofGenerate;
+                bool processing = proofGenerate.ResourcePayload.Status == VaccineProofRequestStatus.Started;
+                while (processing && retryCount++ < this.bcmpConfig.MaxRetries)
                 {
+                    this.logger.LogInformation("Waiting to poll Vaccine Proof Status...");
+                    await Task.Delay(this.bcmpConfig.BackOffMilliseconds).ConfigureAwait(true);
                     proofStatus = await this.vpDelegate.GetStatusAsync(proofGenerate.ResourcePayload.Id).ConfigureAwait(true);
-
                     processing = proofStatus.ResultStatus == ResultType.Success &&
                                  proofStatus.ResourcePayload != null &&
                                  proofStatus.ResourcePayload.Status == VaccineProofRequestStatus.Started;
-                    if (processing)
-                    {
-                        this.logger.LogInformation("Waiting to poll Vaccine Proof Status again");
-                        await Task.Delay(this.bcmpConfig.BackOffMilliseconds).ConfigureAwait(true);
-                    }
                 }
-                while (processing && retryCount++ < this.bcmpConfig.MaxRetries);
+
                 if (proofStatus.ResultStatus == ResultType.Success && proofStatus.ResourcePayload?.Status == VaccineProofRequestStatus.Completed)
                 {
                     // Get the Asset
