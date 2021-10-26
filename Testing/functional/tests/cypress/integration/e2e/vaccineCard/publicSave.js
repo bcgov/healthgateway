@@ -41,68 +41,7 @@ describe("Public User - Vaccine Card Page - Save", () => {
         deleteDownloadsFolder();
     });
 
-    it("Save Dropdown List - Disabled", () => {
-        const phn = "9735361219 ";
-        const dobYear = "1994";
-        const dobMonth = "June";
-        const dobDay = "9";
-        const dovYear = "2021";
-        const dovMonth = "January";
-        const dovDay = "20";
-
-        cy.enableModules([
-            "Immunization",
-            vaccinationStatusModule,
-            "VaccinationStatusPdf",
-        ]);
-        cy.visit(vaccineCardUrl);
-
-        enterVaccineCardPHN(phn);
-
-        select(dobYearSelector, dobYear);
-        select(dobMonthSelector, dobMonth);
-        select(dobDaySelector, dobDay);
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
-        select(dovDaySelector, dovDay);
-
-        clickVaccineCardEnterButton();
-
-        cy.get("[data-testid=save-dropdown-btn]").should("not.exist");
-    });
-
-    it("Save Dropdown List - Enabled", () => {
-        const phn = "9735361219 ";
-        const dobYear = "1994";
-        const dobMonth = "June";
-        const dobDay = "9";
-        const dovYear = "2021";
-        const dovMonth = "January";
-        const dovDay = "20";
-
-        cy.enableModules([
-            "Immunization",
-            vaccinationStatusModule,
-            "VaccinationStatusPdf",
-            "PublicVaccineDownloadPdf",
-        ]);
-        cy.visit(vaccineCardUrl);
-
-        enterVaccineCardPHN(phn);
-
-        select(dobYearSelector, dobYear);
-        select(dobMonthSelector, dobMonth);
-        select(dobDaySelector, dobDay);
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
-        select(dovDaySelector, dovDay);
-
-        clickVaccineCardEnterButton();
-
-        cy.get("[data-testid=save-dropdown-btn]").should("be.visible");
-    });
-
-    it("Save Copy - Spinner displayed", () => {
+    it("Save Copy - Spinner and download confirmed", () => {
         const phn = "9735361219 ";
         const dobYear = "1994";
         const dobMonth = "June";
@@ -136,45 +75,10 @@ describe("Public User - Vaccine Card Page - Save", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
-    });
-
-    it("Save Copy - Download confirmed", () => {
-        const phn = "9735361219 ";
-        const dobYear = "1994";
-        const dobMonth = "June";
-        const dobDay = "9";
-        const dovYear = "2021";
-        const dovMonth = "January";
-        const dovDay = "20";
-
-        cy.enableModules([
-            "Immunization",
-            vaccinationStatusModule,
-            "VaccinationStatusPdf",
-        ]);
-        cy.visit(vaccineCardUrl);
-
-        enterVaccineCardPHN(phn);
-
-        select(dobYearSelector, dobYear);
-        select(dobMonthSelector, dobMonth);
-        select(dobDaySelector, dobDay);
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
-        select(dovDaySelector, dovDay);
-
-        clickVaccineCardEnterButton();
-
-        cy.get("[data-testid=save-a-copy-btn]")
-            .should("be.visible", "be.enabled")
-            .click();
-
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.verifyDownload("BCVaccineCard.png");
     });
 
-    it("Save Dropdown List - Save Image - Spinner displayed", () => {
+    it("Save Dropdown List - Save Image - Spinner and Download confirmed", () => {
         const phn = "9735361219 ";
         const dobYear = "1994";
         const dobMonth = "June";
@@ -213,46 +117,6 @@ describe("Public User - Vaccine Card Page - Save", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
-    });
-
-    it("Save Dropdown List - Save Image - Download confirmed", () => {
-        const phn = "9735361219 ";
-        const dobYear = "1994";
-        const dobMonth = "June";
-        const dobDay = "9";
-        const dovYear = "2021";
-        const dovMonth = "January";
-        const dovDay = "20";
-
-        cy.enableModules([
-            "Immunization",
-            vaccinationStatusModule,
-            "VaccinationStatusPdf",
-            "PublicVaccineDownloadPdf",
-        ]);
-        cy.visit(vaccineCardUrl);
-
-        enterVaccineCardPHN(phn);
-
-        select(dobYearSelector, dobYear);
-        select(dobMonthSelector, dobMonth);
-        select(dobDaySelector, dobDay);
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
-        select(dovDaySelector, dovDay);
-
-        clickVaccineCardEnterButton();
-
-        cy.get("[data-testid=save-dropdown-btn]")
-            .should("be.visible", "be.enabled")
-            .click();
-
-        cy.get("[data-testid=save-as-image-dropdown-item]")
-            .should("be.visible")
-            .click();
-
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.verifyDownload("BCVaccineCard.png");
     });
 
