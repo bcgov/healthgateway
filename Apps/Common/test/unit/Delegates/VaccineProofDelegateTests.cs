@@ -29,6 +29,7 @@ namespace HealthGateway.CommonTests.Delegates
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.BCMailPlus;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Constants;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
