@@ -253,16 +253,7 @@ namespace HealthGateway.Immunization.Services
                         SmartHealthCardQr = vaccineStatus.QRCode.Data!,
                     };
 
-                    RequestResult<ReportModel> assetResult = await this.vpService.GetVaccineProof(phn, request, proofTemplate).ConfigureAwait(true);
-                    if (assetResult.ResultStatus == ResultType.Success && assetResult.ResourcePayload != null)
-                    {
-                        retVal.ResourcePayload = assetResult.ResourcePayload;
-                        retVal.ResultStatus = ResultType.Success;
-                    }
-                    else
-                    {
-                        retVal.ResultError = assetResult.ResultError;
-                    }
+                    retVal = await this.vpService.GetVaccineProof(phn, request, proofTemplate).ConfigureAwait(true);
                 }
                 else
                 {
