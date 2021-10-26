@@ -189,8 +189,8 @@ export default class DashboardView extends Vue {
             <b-col
                 class="p-3"
                 :class="{
-                    'sm-4 md-4 lg-4': showFederalCardButton,
-                    'md-6': !showFederalCardButton,
+                    'md-6 lg-4': showFederalCardButton,
+                    'md-4': !showFederalCardButton,
                 }"
             >
                 <hg-card-button
@@ -216,8 +216,8 @@ export default class DashboardView extends Vue {
             <b-col
                 class="p-3"
                 :class="{
-                    'sm-4 md-4 lg-4': showFederalCardButton,
-                    'md-6': !showFederalCardButton,
+                    'md-6 lg-4': showFederalCardButton,
+                    'md-4': !showFederalCardButton,
                 }"
             >
                 <hg-card-button
@@ -239,13 +239,7 @@ export default class DashboardView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-            <b-col
-                v-if="showFederalCardButton"
-                sm="4"
-                md="4"
-                lg="4"
-                class="p-3"
-            >
+            <b-col v-if="showFederalCardButton" md="6" lg="4" class="p-3">
                 <hg-card-button
                     title="Proof of Vaccination"
                     data-testid="proof-vaccination-card-btn"
