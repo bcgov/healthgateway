@@ -13,24 +13,13 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
-namespace HealthGateway.Common.Models
+using System;
+namespace HealthGateway.Database.Models
 {
-    using HealthGateway.Database.Constants;
-
-    /// <summary>
-    /// Defines the Vaccine Card template Configuration model.
-    /// </summary>
-    public class VaccineCardConfig
+    public class VaccineProofRequestCache
     {
-        /// <summary>
-        /// Gets or sets the name of the print template.
-        /// </summary>
-        public VaccineProofTemplate PrintTemplate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the mail template.
-        /// </summary>
-        public VaccineProofTemplate MailTemplate { get; set; }
+        public VaccineProofRequestCache()
+        {
+        }
     }
 }

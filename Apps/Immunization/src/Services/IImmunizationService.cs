@@ -16,10 +16,10 @@
 namespace HealthGateway.Immunization.Services
 {
     using System.Threading.Tasks;
-    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Immunization.Models;
 
     /// <summary>

@@ -16,8 +16,8 @@
 namespace HealthGateway.Common.Delegates
 {
     using System.Threading.Tasks;
-    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// A mechanism to generate or mail out Vaccine Proofs.

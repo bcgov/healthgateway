@@ -16,10 +16,10 @@
 namespace HealthGateway.Immunization.Controllers
 {
     using System.Threading.Tasks;
-    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
