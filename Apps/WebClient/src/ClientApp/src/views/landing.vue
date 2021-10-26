@@ -197,7 +197,7 @@ export default class LandingView extends Vue {
                         data-testid="btnVaccineCard"
                         class="w-75 text-center"
                     >
-                        Get Card
+                        Get Proof
                     </hg-button>
                 </div>
             </b-col>
@@ -230,7 +230,7 @@ export default class LandingView extends Vue {
                         to="/vaccinecard"
                         class="w-50 my-4 text-center"
                     >
-                        Get Card
+                        Get Proof
                     </hg-button>
                 </div>
             </b-col>
