@@ -8,6 +8,6 @@ services:
       - ./papaparse.js:/papaparse.js
       - ./data.csv:/data.csv
     environment: 
-      - "TYPE=${TYPE}"
+      - "HG_TYPE=${HG_TYPE}"
       - "HG_ENV=${HG_ENV}"
       - "HG_KEY=${HG_KEY}"

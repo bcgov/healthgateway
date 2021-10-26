@@ -20,7 +20,7 @@ import { SharedArray } from 'k6/data';
 import PapaParse from "./papaparse.js";
 import { group } from "console";
 
-export let testType = __ENV.TYPE  ? __ENV.TYPE : "load";
+export let testType = __ENV.HG_TYPE  ? __ENV.HG_TYPE : "smoke";
 export let environment = __ENV.HG_ENV  ? __ENV.HG_ENV : "test"; // default to test environment
 export let specialHeaderKey = __ENV.HG_KEY ? __ENV.HG_KEY : "nokey"; // special key 
 
