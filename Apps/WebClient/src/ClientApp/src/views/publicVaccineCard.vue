@@ -325,6 +325,7 @@ export default class PublicVaccineCardView extends Vue {
                 >
                     <hg-button
                         v-if="!saveExportPdfShown"
+                        data-testid="save-a-copy-btn"
                         variant="primary"
                         class="ml-3"
                         @click="showSensitiveDocumentDownloadModal()"
