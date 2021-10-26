@@ -34,25 +34,19 @@ export let cssVendorsUrl = baseSiteUrl + "/css/chunk-vendors.21f4bba7.css";
 
 console.log(baseSiteUrl);
 
-export let tpsRateOptions = {
+export let rpsRampingOptions = {
     discardResponseBodies: true,
     scenarios: {
         contacts: {
             executor: 'ramping-arrival-rate',
-            startRate: 50,
+            startRate: 60,
             duration:'1m',
             preAllocatedVUs: 100,
             maxVUs: 200,
             stages: [
-                { target: 100, duration: '30s'},
-                { target: 200, duration: '30s'},
-                { target: 300, duration: '30s'},
-                { target: 500, duration: '1m'},
-                { target: 600, duration: '1m'},
-                { target: 800, duration: '2m'},
-                { target: 1000, duration: '2m'},
-                { target: 1200, duration: '5m'}, // exceeds Akamai Queue-IT
-                { target: 600, duration: '1m'},
+                { target: 120, duration: '30s'},
+                { target: 240, duration: '1m'},
+                { target: 0, duration: '1m'}
             ],
         },
     },
@@ -139,6 +133,9 @@ switch (testType)
         break;
     case 'stress':
         options = stressOptions;
+        break;
+    case 'rps':
+        options = rpsRampingOptions;
         break;
     case 'smoke':
     default:
@@ -230,7 +227,8 @@ export default function () {
         check(res3, {"VaccineStatus/pdf API Status 200": (r) => r.status === 200});
         check(res3, {
             'Reached VaccineStatus/pdf API Endpoint; Not Queue-IT': (r) => r.body.search('queue-it.net') === -1,
-            'API VaccineStatus/pdf Response Content-Type is application/pdf': (r) => r.headers['Content-Type'].search('application/pdf') >= 0, 
+            'Response Content-Type is application/json': (r) => r.headers['Content-Type'].search('application/json') >= 0,
+            'Response contains the Base64 PDF': (r) => r.body.includes("resourcePayload") && r.body.includes("VaccineProof.pdf") && r.body.includes("data")
         });
 
     });
