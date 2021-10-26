@@ -194,7 +194,7 @@ namespace HealthGateway.Common.Delegates
             using StringContent httpContent = new(JsonSerializer.Serialize(statusQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
 
             RequestResult<BcmpJobStatusesResult> requestResult = await this.PostAsync<BcmpJobStatusesResult>(endpointString, httpContent).ConfigureAwait(true);
-            BcmpJobStatusResult? jobStatusResult = requestResult.ResourcePayload?.StatusResults.SingleOrDefault(r => r.JobId == id);
+            BcmpJobStatusResult? jobStatusResult = requestResult.ResourcePayload?.StatusResults?.SingleOrDefault(r => r.JobId == id);
             if (jobStatusResult != null)
             {
                 retVal.ResourcePayload = new VaccineProofResponse()
@@ -245,10 +245,16 @@ namespace HealthGateway.Common.Delegates
                 byte[] payload = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(true);
                 this.logger.LogTrace($"Response: {response}");
 
+                byte[] errorMessagePrefix = Encoding.UTF8.GetBytes("ERROR: ");
                 if (payload.Length == 0)
                 {
                     retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine Proof document is empty", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
                     this.logger.LogWarning("Vaccine Proof document is empty");
+                }
+                else if (payload.Length > errorMessagePrefix.Length && payload.Take(errorMessagePrefix.Length).SequenceEqual(errorMessagePrefix))
+                {
+                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Error encountered from BC Mail Plus", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
+                    this.logger.LogWarning($"Error Details:{Environment.NewLine}{Encoding.UTF8.GetString(payload)}");
                 }
                 else
                 {
@@ -296,8 +302,8 @@ namespace HealthGateway.Common.Delegates
 
                         if (payload.StartsWith("ERROR: ", StringComparison.InvariantCulture))
                         {
-                            this.logger.LogError($"Error Details:{Environment.NewLine}{payload}");
                             retVal.ResultError = new RequestResultError() { ResultMessage = $"Error encountered from BC Mail Plus", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
+                            this.logger.LogWarning($"Error Details:{Environment.NewLine}{payload}");
                         }
                         else
                         {
