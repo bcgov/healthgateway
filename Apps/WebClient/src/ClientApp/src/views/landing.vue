@@ -189,7 +189,7 @@ export default class LandingView extends Vue {
                 />
             </b-col>
             <b-col cols="auto" class="text-center p-2 mb-4">
-                <h2 class="h4 mt-3">BC Vaccine Card</h2>
+                <h2 class="h4 mt-3">Proof of Vaccination</h2>
                 <div class="mb-3">
                     <hg-button
                         variant="primary"
@@ -219,7 +219,7 @@ export default class LandingView extends Vue {
                 />
             </b-col>
             <b-col cols="auto" class="text-center">
-                <h2 class="h1 mt-4">BC Vaccine Card</h2>
+                <h2 class="h1 mt-4">Proof of Vaccination</h2>
                 <div>
                     Confidential access to your BC and Canada proof of
                     vaccination
