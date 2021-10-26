@@ -361,15 +361,15 @@ export default class Covid19View extends Vue {
                         data-testid="save-dropdown-btn"
                     >
                         <b-dropdown-item
-                            data-testid="save-as-image-dropdown-item"
-                            @click="showVaccineCardMessageModal()"
-                            >Image (BC proof only)</b-dropdown-item
-                        >
-                        <b-dropdown-item
                             v-if="saveExportPdfShown"
                             data-testid="save-as-pdf-dropdown-item"
                             @click="showConfirmationModal()"
-                            >PDF (Federal and BC)</b-dropdown-item
+                            >PDF</b-dropdown-item
+                        >
+                        <b-dropdown-item
+                            data-testid="save-as-image-dropdown-item"
+                            @click="showVaccineCardMessageModal()"
+                            >Image</b-dropdown-item
                         >
                         <b-dropdown-item
                             v-if="saveWalletShown"
