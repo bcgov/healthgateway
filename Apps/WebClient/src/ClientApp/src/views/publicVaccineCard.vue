@@ -238,7 +238,7 @@ export default class PublicVaccineCardView extends Vue {
             .then((result) => {
                 if (result.resultStatus == ResultType.Success) {
                     SnowPlow.trackEvent({
-                        action: "public_download_card",
+                        action: "download_card",
                         text: "Public COVID Card PDF",
                     });
                     const mimeType = "application/pdf";
@@ -334,20 +334,20 @@ export default class PublicVaccineCardView extends Vue {
                     </hg-button>
                     <hg-dropdown
                         v-if="saveExportPdfShown"
-                        text="Save"
+                        text="Save as"
                         variant="primary"
                         data-testid="save-dropdown-btn"
                     >
                         <b-dropdown-item
                             data-testid="save-as-image-dropdown-item"
                             @click="showVaccineCardMessageModal()"
-                            >Save as image</b-dropdown-item
+                            >Image (BC proof only)</b-dropdown-item
                         >
                         <b-dropdown-item
                             v-if="saveExportPdfShown"
                             data-testid="save-as-pdf-dropdown-item"
                             @click="showConfirmationModal()"
-                            >Save as PDF</b-dropdown-item
+                            >PDF (Federal and BC)</b-dropdown-item
                         >
                     </hg-dropdown>
                 </div>
@@ -424,10 +424,11 @@ export default class PublicVaccineCardView extends Vue {
                         data-testid="vaccineCardFormTitle"
                         class="vaccine-card-form-title text-center pb-3 mb-4"
                     >
-                        Access Your BC Vaccine Card
+                        Get your proof of vaccination
                     </h2>
                     <p class="mb-4">
-                        To access your BC Vaccine Card, please provide:
+                        To get your BC Vaccine Card and Federal Proof of
+                        Vaccination Certification, please provide:
                     </p>
                     <b-row>
                         <b-col>
