@@ -305,6 +305,158 @@ namespace HealthGateway.CommonTests.Delegates
         }
 
         /// <summary>
+        /// GetStatusAsync - Happy Path - Job Started.
+        /// </summary>
+        [Fact]
+        public void ValidateGetStatusAsyncSuccessJobStarted()
+        {
+            RequestResult<VaccineProofResponse> expectedRequestResult = new()
+            {
+                PageIndex = 0,
+                PageSize = null,
+                ResourcePayload = new VaccineProofResponse()
+                {
+                    Id = this.jobId,
+                    Status = VaccineProofRequestStatus.Started,
+                },
+                ResultError = null,
+                ResultStatus = ResultType.Success,
+                TotalResultCount = 1,
+            };
+
+            BcmpJobStatusResult jobStatusResult = new()
+            {
+                Errors = string.Empty,
+                JobId = this.jobId,
+                JobStatus = BcmpJobStatus.Started,
+            };
+            BcmpJobStatusesResult response = new(new List<BcmpJobStatusResult>() { jobStatusResult });
+
+            using HttpResponseMessage httpResponseMessage = new()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(response)),
+            };
+
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+
+            IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
+                loggerFactory.CreateLogger<VaccineProofDelegate>(),
+                GetHttpClientServiceMock(httpResponseMessage).Object,
+                this.configuration);
+
+            Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.GetStatusAsync(this.jobId);
+            RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
+            Assert.Equal(expectedRequestResult.ResultStatus, actualResult.ResultStatus);
+            Assert.Equal(expectedRequestResult.ResultError, actualResult.ResultError);
+            Assert.Equal(expectedRequestResult.ResourcePayload.Id, actualResult.ResourcePayload?.Id);
+            Assert.Equal(expectedRequestResult.ResourcePayload.Status, actualResult.ResourcePayload?.Status);
+        }
+
+        /// <summary>
+        /// GetStatusAsync - Happy Path - Job Completed.
+        /// </summary>
+        [Fact]
+        public void ValidateGetStatusAsyncSuccessJobCompleted()
+        {
+            RequestResult<VaccineProofResponse> expectedRequestResult = new()
+            {
+                PageIndex = 0,
+                PageSize = null,
+                ResourcePayload = new VaccineProofResponse()
+                {
+                    Id = this.jobId,
+                    Status = VaccineProofRequestStatus.Completed,
+                },
+                ResultError = null,
+                ResultStatus = ResultType.Success,
+                TotalResultCount = 1,
+            };
+
+            BcmpJobStatusResult jobStatusResult = new()
+            {
+                Errors = string.Empty,
+                JobId = this.jobId,
+                JobStatus = BcmpJobStatus.Completed,
+            };
+            BcmpJobStatusesResult response = new(new List<BcmpJobStatusResult>() { jobStatusResult });
+
+            using HttpResponseMessage httpResponseMessage = new()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(response)),
+            };
+
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+
+            IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
+                loggerFactory.CreateLogger<VaccineProofDelegate>(),
+                GetHttpClientServiceMock(httpResponseMessage).Object,
+                this.configuration);
+
+            Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.GetStatusAsync(this.jobId);
+            RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
+            Assert.Equal(expectedRequestResult.ResultStatus, actualResult.ResultStatus);
+            Assert.Equal(expectedRequestResult.ResultError, actualResult.ResultError);
+            Assert.Equal(expectedRequestResult.ResourcePayload.Id, actualResult.ResourcePayload?.Id);
+            Assert.Equal(expectedRequestResult.ResourcePayload.Status, actualResult.ResourcePayload?.Status);
+        }
+
+        /// <summary>
+        /// GetStatusAsync - Error Specified in Payload.
+        /// </summary>
+        [Fact]
+        public void ValidateGetStatusAsyncPayloadError()
+        {
+            string response = "ERROR: Undefined execution. \"handleCall_JSON\" exited unsuccessfully. Please alert the system administrator if this recurs.";
+
+            using HttpResponseMessage httpResponseMessage = new()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(response),
+            };
+
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+
+            IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
+                loggerFactory.CreateLogger<VaccineProofDelegate>(),
+                GetHttpClientServiceMock(httpResponseMessage).Object,
+                this.configuration);
+
+            Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.GetStatusAsync(this.jobId);
+            RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResultError);
+            Assert.Null(actualResult.ResourcePayload);
+        }
+
+        /// <summary>
+        /// GetStatusAsync - HTTP Error.
+        /// </summary>
+        [Fact]
+        public void ValidateGetStatusAsyncHttpError()
+        {
+            using HttpResponseMessage httpResponseMessage = new()
+            {
+                StatusCode = HttpStatusCode.InternalServerError,
+                Content = null,
+            };
+
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+
+            IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
+                loggerFactory.CreateLogger<VaccineProofDelegate>(),
+                GetHttpClientServiceMock(httpResponseMessage).Object,
+                this.configuration);
+
+            Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.GetStatusAsync(this.jobId);
+            RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResultError);
+            Assert.Null(actualResult.ResourcePayload);
+        }
+
+        /// <summary>
         /// GetAssetAsync - Happy Path.
         /// </summary>
         [Fact]
