@@ -192,7 +192,7 @@ namespace HealthGateway.Common.Delegates
             using StringContent httpContent = new(JsonSerializer.Serialize(statusQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
 
             RequestResult<BcmpJobStatusesResult> requestResult = await this.PostAsync<BcmpJobStatusesResult>(endpointString, httpContent).ConfigureAwait(true);
-            BcmpJobStatusResult? jobStatusResult = requestResult.ResourcePayload?.StatusResults.SingleOrDefault(r => r.JobId == id);
+            BcmpJobStatusResult? jobStatusResult = requestResult.ResourcePayload?.StatusResults?.SingleOrDefault(r => r.JobId == id);
             if (jobStatusResult != null)
             {
                 retVal.ResourcePayload = new VaccineProofResponse()
