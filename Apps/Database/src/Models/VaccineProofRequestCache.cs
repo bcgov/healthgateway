@@ -13,13 +13,53 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-using System;
 namespace HealthGateway.Database.Models
 {
-    public class VaccineProofRequestCache
+    using System;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Database.Constants;
+
+    /// <summary>
+    /// A model object storing VaccineProof Requests.
+    /// </summary>
+    public class VaccineProofRequestCache : AuditableEntity
     {
-        public VaccineProofRequestCache()
-        {
-        }
+        /// <summary>
+        /// Gets or sets the unique id for this entry.
+        /// </summary>
+        [Column("VaccineProofRequestCacheId")]
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets a unique identifier for the person of this entry.
+        /// </summary>
+        [Required]
+        [MaxLength(54)]
+        public string? PersonIdentifier { get; set; }
+
+        /// <summary>
+        /// Gets or sets the base6 encoded md5 hash of the SHC Image.
+        /// </summary>
+        [Required]
+        public string? ShcImageHash { get; set; }
+
+        /// <summary>
+        /// Gets or sets the VaccineProofTemplate used for the entry.
+        /// </summary>
+        [Required]
+        public VaccineProofTemplate ProofTemplate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date and time when this entry expires.
+        /// </summary>
+        [Required]
+        public DateTime? ExpiryDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the associated response id from the Vaccine Proof Request.
+        /// </summary>
+        [Required]
+        public string? VaccineProofResponseId { get; set; }
     }
 }
