@@ -19,6 +19,7 @@ import container from "@/plugins/inversify.config";
 import { ICovidSupportService } from "@/services/interfaces";
 import { Mask, phnMask, postalCodeMask, zipCodeMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
+import SnowPlow from "@/utility/snowPlow";
 
 interface ImmunizationRow {
     date: string;
@@ -287,6 +288,11 @@ export default class CovidCardView extends Vue {
     }
 
     private handleSubmit() {
+        SnowPlow.trackEvent({
+            action: "click_button",
+            text: "mail proof",
+        });
+
         this.isLoading = true;
         this.covidSupportService
             .mailDocument({
@@ -327,6 +333,10 @@ export default class CovidCardView extends Vue {
     }
 
     private handlePrint() {
+        SnowPlow.trackEvent({
+            action: "click_button",
+            text: "print proof",
+        });
         this.isLoading = true;
         this.covidSupportService
             .retrieveDocument(
