@@ -61,16 +61,16 @@ export let tpsRateOptions = {
 
 export let loadOptions = {
     stages: [
-        { duration: "20s", target: 50 }, // below normal load
-        { duration: "30s", target: 200 },
-        { duration: "30s", target: 300 },
-        { duration: "30s", target: 500 },
-        { duration: "1m", target: 700 },
-        { duration: "1m", target: 900 },
-        { duration: "1m", target: 1100 }, // peak to maximum expected users
-        { duration: "5m", target: 1100 }, // stay there
-        { duration: "1m", target: 500 }, // scale down
-        { duration: "1m", target: 50 },
+        { duration: "20s", target: 20 }, // below normal load
+        { duration: "30s", target: 50 },
+        { duration: "30s", target: 100 },
+        { duration: "1m", target: 150 },
+        { duration: "2m", target: 200 },
+        { duration: "2m", target: 300 },
+        { duration: "5m", target: 400 }, // peak to maximum expected users
+        { duration: "2m", target: 300 }, // stay there
+        { duration: "1m", target: 100 }, // scale down
+        { duration: "30s", target: 50 },
         { duration: "10s", target: 0 }, //
     ],
     thresholds: {
@@ -109,12 +109,11 @@ export let stressOptions = {
     stages: [
         { duration: "2m", target: 50 }, // below normal load
         { duration: "5m", target: 100 },
-        { duration: "2m", target: 200 }, // normal load
-        { duration: "5m", target: 200 },
-        { duration: "2m", target: 400 }, // around the breaking point
-        { duration: "4m", target: 400 },
+        { duration: "2m", target: 150 }, // normal load
+        { duration: "3m", target: 300 },
+        { duration: "5m", target: 400 }, // around the breaking point
         { duration: "2m", target: 500 }, // beyond the breaking point
-        { duration: "5m", target: 550 },
+        { duration: "1m", target: 560 },
         { duration: "3m", target: 600 }, // limit
         { duration: "5m", target: 0 }, // scale down. Recovery stage.
     ],
