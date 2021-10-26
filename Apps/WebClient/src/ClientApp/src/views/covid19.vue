@@ -364,12 +364,12 @@ export default class Covid19View extends Vue {
                             v-if="saveExportPdfShown"
                             data-testid="save-as-pdf-dropdown-item"
                             @click="showConfirmationModal()"
-                            >PDF (BC proof only)</b-dropdown-item
+                            >PDF</b-dropdown-item
                         >
                         <b-dropdown-item
                             data-testid="save-as-image-dropdown-item"
                             @click="showVaccineCardMessageModal()"
-                            >Image (BC)</b-dropdown-item
+                            >Image</b-dropdown-item
                         >
                         <b-dropdown-item
                             v-if="saveWalletShown"
