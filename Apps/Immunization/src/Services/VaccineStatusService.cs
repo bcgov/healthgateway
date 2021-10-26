@@ -40,16 +40,14 @@ namespace HealthGateway.Immunization.Services
         private const string PHSAConfigSectionKey = "PHSA";
         private const string AuthConfigSectionName = "ClientAuthentication";
         private const string TokenCacheKey = "TokenCacheKey";
-        private const string BCMailPlusConfigSectionKey = "BCMailPlus";
 
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
-        private readonly IVaccineProofDelegate vaccineProofDelegate;
+        private readonly IVaccineProofService vpService;
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IMemoryCache memoryCache;
         private readonly ILogger<VaccineStatusService> logger;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly PHSAConfig phsaConfig;
-        private readonly BCMailPlusConfig bcmpConfig;
         private readonly Uri tokenUri;
         private readonly int tokenCacheMinutes;
 
@@ -60,19 +58,19 @@ namespace HealthGateway.Immunization.Services
         /// <param name="logger">The injected logger.</param>
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="vaccineStatusDelegate">The injected vaccine status delegate.</param>
-        /// <param name="vaccineProofDelegate">The injected vaccine proof delegate.</param>
+        /// <param name="vaccineProofService">The injected vaccine proof service.</param>
         /// <param name="memoryCache">The cache to use to reduce lookups.</param>
         public VaccineStatusService(
             IConfiguration configuration,
             ILogger<VaccineStatusService> logger,
             IAuthenticationDelegate authDelegate,
             IVaccineStatusDelegate vaccineStatusDelegate,
-            IVaccineProofDelegate vaccineProofDelegate,
+            IVaccineProofService vaccineProofService,
             IMemoryCache memoryCache)
         {
             this.authDelegate = authDelegate;
             this.vaccineStatusDelegate = vaccineStatusDelegate;
-            this.vaccineProofDelegate = vaccineProofDelegate;
+            this.vpService = vaccineProofService;
 
             IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
             this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
@@ -82,9 +80,6 @@ namespace HealthGateway.Immunization.Services
 
             this.phsaConfig = new();
             configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
-
-            this.bcmpConfig = new();
-            configuration.Bind(BCMailPlusConfigSectionKey, this.bcmpConfig);
 
             this.memoryCache = memoryCache;
             this.logger = logger;
@@ -215,7 +210,7 @@ namespace HealthGateway.Immunization.Services
             RequestResult<VaccineStatus> vsResult = await this.GetVaccineStatus(phn, dateOfBirth, dateOfVaccine).ConfigureAwait(true);
             if (vsResult.ResultStatus == ResultType.Success && vsResult.ResourcePayload != null && vsResult.ResourcePayload.Loaded)
             {
-                retVal = await this.GetVaccineProof(vsResult.ResourcePayload, proofTemplate).ConfigureAwait(true);
+                retVal = await this.GetVaccineProof(phn, vsResult.ResourcePayload, proofTemplate).ConfigureAwait(true);
             }
             else
             {
@@ -229,7 +224,7 @@ namespace HealthGateway.Immunization.Services
             return retVal;
         }
 
-        private async Task<RequestResult<ReportModel>> GetVaccineProof(VaccineStatus vaccineStatus, VaccineProofTemplate proofTemplate)
+        private async Task<RequestResult<ReportModel>> GetVaccineProof(string phn, VaccineStatus vaccineStatus, VaccineProofTemplate proofTemplate)
         {
             RequestResult<ReportModel> retVal = new()
             {
@@ -258,48 +253,15 @@ namespace HealthGateway.Immunization.Services
                         SmartHealthCardQr = vaccineStatus.QRCode.Data!,
                     };
 
-                    RequestResult<VaccineProofResponse> proofGenerate = await this.vaccineProofDelegate.GenerateAsync(proofTemplate, request).ConfigureAwait(true);
-                    if (proofGenerate.ResultStatus == ResultType.Success && proofGenerate.ResourcePayload != null)
+                    RequestResult<ReportModel> assetResult = await this.vpService.GetVaccineProof(phn, request, proofTemplate).ConfigureAwait(true);
+                    if (assetResult.ResultStatus == ResultType.Success && assetResult.ResourcePayload != null)
                     {
-                        RequestResult<VaccineProofResponse> proofStatus;
-                        bool processing;
-                        int retryCount = 0;
-                        do
-                        {
-                            proofStatus = await this.vaccineProofDelegate.GetStatusAsync(proofGenerate.ResourcePayload.Id).ConfigureAwait(true);
-
-                            processing = proofStatus.ResultStatus == ResultType.Success &&
-                                         proofStatus.ResourcePayload != null &&
-                                         proofStatus.ResourcePayload.Status == VaccineProofRequestStatus.Started;
-                            if (processing)
-                            {
-                                this.logger.LogInformation("Waiting to poll Vaccine Proof Status again");
-                                await Task.Delay(this.bcmpConfig.BackOffMilliseconds).ConfigureAwait(true);
-                            }
-                        }
-                        while (processing && retryCount++ < this.bcmpConfig.MaxRetries);
-                        if (proofStatus.ResultStatus == ResultType.Success && proofStatus.ResourcePayload?.Status == VaccineProofRequestStatus.Completed)
-                        {
-                            // Get the Asset
-                            RequestResult<ReportModel> assetResult = await this.vaccineProofDelegate.GetAssetAsync(proofGenerate.ResourcePayload.Id).ConfigureAwait(true);
-                            if (assetResult.ResultStatus == ResultType.Success && assetResult.ResourcePayload != null)
-                            {
-                                retVal.ResourcePayload = assetResult.ResourcePayload;
-                                retVal.ResultStatus = ResultType.Success;
-                            }
-                            else
-                            {
-                                retVal.ResultError = assetResult.ResultError;
-                            }
-                        }
-                        else
-                        {
-                            retVal.ResultError = proofStatus.ResultError ?? new RequestResultError() { ResultMessage = "Unable to obtain Vaccine Proof PDF", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
-                        }
+                        retVal.ResourcePayload = assetResult.ResourcePayload;
+                        retVal.ResultStatus = ResultType.Success;
                     }
                     else
                     {
-                        retVal.ResultError = proofGenerate.ResultError;
+                        retVal.ResultError = assetResult.ResultError;
                     }
                 }
                 else

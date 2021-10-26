@@ -97,7 +97,7 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                new Mock<IVaccineProofDelegate>().Object,
+                new Mock<IVaccineProofService>().Object,
                 GetMemoryCache());
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -117,7 +117,7 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<IVaccineProofDelegate>().Object,
+                new Mock<IVaccineProofService>().Object,
                 GetMemoryCache());
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -137,7 +137,7 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<IVaccineProofDelegate>().Object,
+                new Mock<IVaccineProofService>().Object,
                 GetMemoryCache());
 
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -156,7 +156,7 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<IVaccineProofDelegate>().Object,
+                new Mock<IVaccineProofService>().Object,
                 GetMemoryCache());
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
