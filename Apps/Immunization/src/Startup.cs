@@ -66,12 +66,13 @@ namespace HealthGateway.Immunization
             services.AddMemoryCache();
             services.AddTransient<IImmunizationService, ImmunizationService>();
             services.AddTransient<IVaccineStatusService, VaccineStatusService>();
-            services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
+            services.AddTransient<IVaccineProofService, VaccineProofService>();
 
             // Add delegates
             services.AddTransient<Delegates.IImmunizationDelegate, Delegates.RestImmunizationDelegate>();
             services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+            services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
         }
 
         /// <summary>
