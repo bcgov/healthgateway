@@ -238,7 +238,7 @@ export default class PublicVaccineCardView extends Vue {
             .then((result) => {
                 if (result.resultStatus == ResultType.Success) {
                     SnowPlow.trackEvent({
-                        action: "public_download_card",
+                        action: "download_card",
                         text: "Public COVID Card PDF",
                     });
                     const downloadLink = result.resourcePayload.data;
