@@ -35,9 +35,9 @@ export let cssVendorsUrl = baseSiteUrl + "/css/chunk-vendors.21f4bba7.css";
 console.log(baseSiteUrl);
 
 export let rpsRampingOptions = {
-    discardResponseBodies: true,
+    discardResponseBodies: false,
     scenarios: {
-        contacts: {
+        ramping: {
             executor: 'ramping-arrival-rate',
             startRate: 60,
             timeUnit:'1m',
@@ -45,23 +45,36 @@ export let rpsRampingOptions = {
             maxVUs: 200,
             stages: [
                 { target: 120, duration: '30s'},
-                { target: 240, duration: '1m'},
                 { target: 0, duration: '1m'}
             ],
         },
     },
 };
 
+export let onceOptions = {
+    discardResponseBodies: false,
+    scenarios: {
+        constant: {
+            executor: 'constant-arrival-rate',
+            rate: 1,
+            timeUnit:'1s',
+            duration: '10s',
+            preAllocatedVUs: 10,
+            maxVUs: 100
+        },
+    },
+};
+
 export let loadOptions = {
     stages: [
-        { duration: "20s", target: 20 }, // below normal load
+        { duration: "10s", target: 20 }, // below normal load
         { duration: "30s", target: 50 },
         { duration: "30s", target: 100 },
         { duration: "1m", target: 150 },
         { duration: "2m", target: 200 },
         { duration: "2m", target: 300 },
-        { duration: "5m", target: 400 }, // peak to maximum expected users
-        { duration: "2m", target: 300 }, // stay there
+        { duration: "2m", target: 400 }, // peak to maximum expected users
+        { duration: "3m", target: 400 }, // stay there
         { duration: "1m", target: 100 }, // scale down
         { duration: "30s", target: 50 },
         { duration: "10s", target: 0 }, //
@@ -136,6 +149,9 @@ switch (testType)
         break;
     case 'rps':
         options = rpsRampingOptions;
+        break;
+    case 'once':
+        options = onceOptions;
         break;
     case 'smoke':
     default:
