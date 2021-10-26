@@ -112,6 +112,10 @@ export default class DashboardView extends Vue {
         return this.config.modules["FederalCardButton"];
     }
 
+    private get cardColumnSize(): number {
+        return this.showFederalCardButton ? 4 : 6;
+    }
+
     private get loadingStatusMessage(): string {
         return this.vaccineRecordStatusMessage;
     }
@@ -186,13 +190,7 @@ export default class DashboardView extends Vue {
         <page-title title="Dashboard" />
         <h2>What do you want to focus on today?</h2>
         <b-row>
-            <b-col
-                class="p-3"
-                :class="{
-                    'md-6 lg-4': showFederalCardButton,
-                    'md-4': !showFederalCardButton,
-                }"
-            >
+            <b-col cols="12" :lg="cardColumnSize" class="p-3">
                 <hg-card-button
                     title="BC Vaccine Card"
                     to="/covid19"
@@ -213,13 +211,7 @@ export default class DashboardView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-            <b-col
-                class="p-3"
-                :class="{
-                    'md-6 lg-4': showFederalCardButton,
-                    'md-4': !showFederalCardButton,
-                }"
-            >
+            <b-col cols="12" :lg="cardColumnSize" class="p-3">
                 <hg-card-button
                     title="Health Records"
                     to="/timeline"
@@ -239,7 +231,12 @@ export default class DashboardView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-            <b-col v-if="showFederalCardButton" md="6" lg="4" class="p-3">
+            <b-col
+                v-if="showFederalCardButton"
+                cols="12"
+                :lg="cardColumnSize"
+                class="p-3"
+            >
                 <hg-card-button
                     title="Proof of Vaccination"
                     data-testid="proof-vaccination-card-btn"
@@ -278,8 +275,7 @@ export default class DashboardView extends Vue {
     }
 
     .canada-government-logo {
-        height: 2em;
-        width: 6em;
+        height: 1.5em;
     }
 
     .checkmark {
