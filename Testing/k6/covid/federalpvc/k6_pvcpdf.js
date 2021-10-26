@@ -40,7 +40,7 @@ export let rpsRampingOptions = {
         contacts: {
             executor: 'ramping-arrival-rate',
             startRate: 60,
-            duration:'1m',
+            timeUnit:'1m',
             preAllocatedVUs: 100,
             maxVUs: 200,
             stages: [
