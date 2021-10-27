@@ -118,6 +118,7 @@ namespace HealthGateway.Common.Delegates
                 };
                 retVal.ResultStatus = ResultType.Success;
                 retVal.TotalResultCount = 1;
+                this.logger.LogTrace($"The BC Mail Plus job {jobStatusResult.JobId} has a status of {jobStatusResult.JobStatus}");
             }
             else
             {
@@ -168,6 +169,7 @@ namespace HealthGateway.Common.Delegates
                 };
                 retVal.ResultStatus = ResultType.Success;
                 retVal.TotalResultCount = 1;
+                this.logger.LogTrace($"The BC Mail Plus job {jobStatusResult.JobId} has a status of {jobStatusResult.JobStatus}");
             }
             else
             {
@@ -209,6 +211,7 @@ namespace HealthGateway.Common.Delegates
                 };
                 retVal.ResultStatus = ResultType.Success;
                 retVal.TotalResultCount = 1;
+                this.logger.LogTrace($"The BC Mail Plus job {jobStatusResult.JobId} has a status of {jobStatusResult.JobStatus}");
             }
             else
             {
