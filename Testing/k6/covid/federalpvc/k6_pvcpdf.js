@@ -77,10 +77,10 @@ export let loadOptions = {
         { duration: "30s", target: 50 },
         { duration: "30s", target: 100 },
         { duration: "1m", target: 150 },
-        { duration: "2m", target: 200 },
-        { duration: "2m", target: 300 },
-        { duration: "2m", target: 400 }, // peak to maximum expected users
-        { duration: "3m", target: 400 }, // stay there
+        //{ duration: "2m", target: 200 },
+        //{ duration: "2m", target: 300 },
+        //{ duration: "2m", target: 400 }, // peak to maximum expected users
+        //{ duration: "3m", target: 400 }, // stay there
         { duration: "1m", target: 100 }, // scale down
         { duration: "30s", target: 50 },
         { duration: "10s", target: 0 }, //
