@@ -17,6 +17,7 @@ import navbarStub from "./navbarStub";
 import noteStub from "./noteStub";
 import timelineStub from "./timelineStub";
 import userStub from "./userStub";
+import vaccinationStatusStub from "./vaccinationStatusStub";
 
 @injectable()
 export default class StoreOptionsStub implements GatewayStoreOptions {
@@ -44,5 +45,6 @@ export default class StoreOptionsStub implements GatewayStoreOptions {
         errorBanner: errorBannerStub,
         timeline: timelineStub,
         credential: credentialStub,
+        vaccinationStatus: vaccinationStatusStub,
     };
 }
