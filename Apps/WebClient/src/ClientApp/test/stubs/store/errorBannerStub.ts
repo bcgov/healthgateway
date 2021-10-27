@@ -32,7 +32,7 @@ const errorBannerActions: ErrorBannerActions = {
 };
 
 const errorBannerMutations: ErrorBannerMutations = {
-    dissmiss: voidMethod,
+    dismiss: voidMethod,
     show: voidMethod,
     setError: voidMethod,
     addError: voidMethod,
