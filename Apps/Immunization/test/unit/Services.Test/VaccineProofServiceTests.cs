@@ -21,6 +21,7 @@ namespace HealthGateway.Immunization.Test.Services
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
+    using HealthGateway.Database.Delegates;
     using HealthGateway.Immunization.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -107,7 +108,8 @@ namespace HealthGateway.Immunization.Test.Services
             IVaccineProofService service = new VaccineProofService(
                 GetConfiguration(myConfiguration),
                 new Mock<ILogger<VaccineProofService>>().Object,
-                mockVaccineProofDelegate.Object);
+                mockVaccineProofDelegate.Object,
+                new Mock<IVaccineProofRequestCacheDelegate>().Object);
 
             RequestResult<ReportModel> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, request, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
             Assert.True(actualResult.ResultStatus == ResultType.Success);
@@ -151,7 +153,8 @@ namespace HealthGateway.Immunization.Test.Services
             IVaccineProofService service = new VaccineProofService(
                 GetConfiguration(myConfiguration),
                 new Mock<ILogger<VaccineProofService>>().Object,
-                mockVaccineProofDelegate.Object);
+                mockVaccineProofDelegate.Object,
+                new Mock<IVaccineProofRequestCacheDelegate>().Object);
 
             RequestResult<ReportModel> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, request, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
             Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error);
@@ -205,7 +208,8 @@ namespace HealthGateway.Immunization.Test.Services
             IVaccineProofService service = new VaccineProofService(
                 GetConfiguration(myConfiguration),
                 new Mock<ILogger<VaccineProofService>>().Object,
-                mockVaccineProofDelegate.Object);
+                mockVaccineProofDelegate.Object,
+                new Mock<IVaccineProofRequestCacheDelegate>().Object);
 
             RequestResult<ReportModel> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, request, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
             Assert.True(actualResult.ResultStatus == ResultType.Error);
@@ -270,7 +274,8 @@ namespace HealthGateway.Immunization.Test.Services
             IVaccineProofService service = new VaccineProofService(
                 GetConfiguration(myConfiguration),
                 new Mock<ILogger<VaccineProofService>>().Object,
-                mockVaccineProofDelegate.Object);
+                mockVaccineProofDelegate.Object,
+                new Mock<IVaccineProofRequestCacheDelegate>().Object);
 
             RequestResult<ReportModel> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, request, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
             Assert.True(actualResult.ResultStatus == ResultType.Error);

@@ -16,12 +16,15 @@
 namespace HealthGateway.Immunization.Services
 {
     using System;
+    using System.Security.Cryptography;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -31,7 +34,9 @@ namespace HealthGateway.Immunization.Services
         private const string BCMailPlusConfigSectionKey = "BCMailPlus";
         private readonly ILogger<VaccineProofService> logger;
         private readonly IVaccineProofDelegate vpDelegate;
+        private readonly IVaccineProofRequestCacheDelegate cacheDelegate;
         private readonly BCMailPlusConfig bcmpConfig;
+        private readonly bool cacheEnabled;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VaccineProofService"/> class.
@@ -39,15 +44,19 @@ namespace HealthGateway.Immunization.Services
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="logger">The injected logger.</param>
         /// <param name="vaccineProofDelegate">The injected vaccine proof delegate.</param>
+        /// <param name="cacheDelegate">The cache provider for vaccine proof requests.</param>
         public VaccineProofService(
                 IConfiguration configuration,
                 ILogger<VaccineProofService> logger,
-                IVaccineProofDelegate vaccineProofDelegate)
+                IVaccineProofDelegate vaccineProofDelegate,
+                IVaccineProofRequestCacheDelegate cacheDelegate)
         {
             this.logger = logger;
             this.vpDelegate = vaccineProofDelegate;
+            this.cacheDelegate = cacheDelegate;
             this.bcmpConfig = new();
             configuration.Bind(BCMailPlusConfigSectionKey, this.bcmpConfig);
+            this.cacheEnabled = this.bcmpConfig.CacheTtl > 0;
         }
 
         /// <inheritdoc/>
@@ -58,16 +67,21 @@ namespace HealthGateway.Immunization.Services
                 ResultStatus = ResultType.Error,
             };
 
-            RequestResult<VaccineProofResponse> proofGenerate = await this.vpDelegate.GenerateAsync(proofTemplate, vaccineProofRequest).ConfigureAwait(true);
+            (RequestResult<VaccineProofResponse> proofGenerate, bool fromCache) = await this.CheckCache(userIdentifier, vaccineProofRequest, proofTemplate).ConfigureAwait(true);
             if (proofGenerate.ResultStatus == ResultType.Success && proofGenerate.ResourcePayload != null)
             {
                 int retryCount = 0;
                 RequestResult<VaccineProofResponse> proofStatus = proofGenerate;
-                bool processing = proofGenerate.ResourcePayload.Status == VaccineProofRequestStatus.Started;
+                bool processing = proofGenerate.ResourcePayload.Status == VaccineProofRequestStatus.Started ||
+                                  proofGenerate.ResourcePayload.Status == VaccineProofRequestStatus.Unknown;
                 while (processing && retryCount++ <= this.bcmpConfig.MaxRetries)
                 {
-                    this.logger.LogInformation("Waiting to poll Vaccine Proof Status...");
-                    await Task.Delay(this.bcmpConfig.BackOffMilliseconds).ConfigureAwait(true);
+                    if (fromCache && retryCount > 1)
+                    {
+                        this.logger.LogInformation("Waiting to poll Vaccine Proof Status...");
+                        await Task.Delay(this.bcmpConfig.BackOffMilliseconds).ConfigureAwait(true);
+                    }
+
                     proofStatus = await this.vpDelegate.GetStatusAsync(proofGenerate.ResourcePayload.Id).ConfigureAwait(true);
                     processing = proofStatus.ResultStatus == ResultType.Success &&
                                  proofStatus.ResourcePayload != null &&
@@ -99,6 +113,61 @@ namespace HealthGateway.Immunization.Services
             }
 
             return retVal;
+        }
+
+        /// <summary>
+        /// Hashes a base64 string.
+        /// </summary>
+        /// <param name="base64String">The base64 string to hash.</param>
+        /// <returns>A base64 encoded SHA512 Hash.</returns>
+        private static string HashShcImage(string base64String)
+        {
+            using SHA512 shaM = new SHA512Managed();
+            byte[] hash = shaM.ComputeHash(Convert.FromBase64String(base64String));
+            string encodedHash = Convert.ToBase64String(hash);
+            return encodedHash;
+        }
+
+        private async Task<(RequestResult<VaccineProofResponse> ProofResponse, bool FromCache)> CheckCache(string userIdentifier, VaccineProofRequest vaccineProofRequest, VaccineProofTemplate proofTemplate)
+        {
+            bool foundInCache = false;
+            RequestResult<VaccineProofResponse> retVal = new();
+            if (this.cacheEnabled)
+            {
+                string hashShc = HashShcImage(vaccineProofRequest.SmartHealthCardQr);
+                VaccineProofRequestCache? cacheItem = this.cacheDelegate.GetCacheItem(userIdentifier, proofTemplate, hashShc);
+                if (cacheItem != null)
+                {
+                    VaccineProofResponse proofResponse = new()
+                    {
+                        Id = cacheItem.VaccineProofResponseId!,
+                        Status = VaccineProofRequestStatus.Unknown,
+                    };
+                    retVal.ResultStatus = ResultType.Success;
+                    retVal.ResourcePayload = proofResponse;
+                    foundInCache = true;
+                }
+            }
+
+            if (!foundInCache)
+            {
+                retVal = await this.vpDelegate.GenerateAsync(proofTemplate, vaccineProofRequest).ConfigureAwait(true);
+                if (this.cacheEnabled && retVal.ResultStatus == ResultType.Success && retVal.ResourcePayload != null)
+                {
+                    VaccineProofRequestCache cacheItem = new()
+                    {
+                        PersonIdentifier = userIdentifier,
+                        ProofTemplate = proofTemplate,
+                        ShcImageHash = HashShcImage(vaccineProofRequest.SmartHealthCardQr),
+                        ExpiryDateTime = DateTime.UtcNow.AddMinutes(this.bcmpConfig.CacheTtl),
+                        VaccineProofResponseId = retVal.ResourcePayload.Id,
+                    };
+
+                    this.cacheDelegate.AddCacheItem(cacheItem);
+                }
+            }
+
+            return (retVal, foundInCache);
         }
     }
 }
