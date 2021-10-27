@@ -35,7 +35,7 @@ export interface ErrorBannerActions
 }
 
 export interface ErrorBannerMutations extends MutationTree<ErrorBannerState> {
-    dissmiss(state: ErrorBannerState): void;
+    dismiss(state: ErrorBannerState): void;
     show(state: ErrorBannerState): void;
     setError(state: ErrorBannerState, bannerError: BannerError): void;
     addError(state: ErrorBannerState, bannerError: BannerError): void;
