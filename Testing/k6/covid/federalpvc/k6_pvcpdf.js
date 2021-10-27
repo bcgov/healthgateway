@@ -75,8 +75,8 @@ export let loadOptions = {
     stages: [
         { duration: "10s", target: 20 }, // below normal load
         { duration: "30s", target: 50 },
-        { duration: "30s", target: 100 },
-        { duration: "1m", target: 150 },
+        { duration: "1m", target: 100 },
+        { duration: "3m", target: 150 },
         //{ duration: "2m", target: 200 },
         //{ duration: "2m", target: 300 },
         //{ duration: "2m", target: 400 }, // peak to maximum expected users
