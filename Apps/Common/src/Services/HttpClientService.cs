@@ -50,6 +50,21 @@ namespace HealthGateway.Common.Services
             return this.SetTimeout(retVal);
         }
 
+        /// <inheritdoc />
+        public HttpClient CreateRelaxedHttpClient()
+        {
+            using var handler = new HttpClientHandler()
+            {
+#pragma warning disable S4830 // Server certificates should be verified during SSL/TLS connections
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+#pragma warning restore S4830 // Server certificates should be verified during SSL/TLS connections
+            };
+
+            var http = new HttpClient(handler);
+
+            return this.SetTimeout(http);
+        }
+
         /// <summary>
         /// Initalizes the request timeout for the <see cref="HttpClientService"/> class.
         /// </summary>

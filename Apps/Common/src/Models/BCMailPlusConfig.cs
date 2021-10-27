@@ -69,6 +69,11 @@ namespace HealthGateway.Common.Models
         public int CacheTtl { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether endpoint needs to have a signed certificate.
+        /// </summary>
+        public bool AcceptUnsignedCertificate { get; set; }
+
+        /// <summary>
         /// Returns the Endpoint after resolving any variable references.
         /// Endpoint should be something like https://${HOST}/${ENV}/auth=${TOKEN}/JSON/ .
         /// </summary>

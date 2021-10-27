@@ -44,6 +44,7 @@ namespace HealthGateway.Common.Delegates
         private readonly string bcMailPlusEndpoint;
         private readonly string bcMailPlusJobClass;
         private readonly string bcMailPlusSchemaVersion;
+        private readonly bool acceptUnsignedCertificate;
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
@@ -68,6 +69,7 @@ namespace HealthGateway.Common.Delegates
             this.bcMailPlusEndpoint = bcMailPlusConfig.ResolvedEndpoint();
             this.bcMailPlusJobClass = bcMailPlusConfig.JobClass;
             this.bcMailPlusSchemaVersion = bcMailPlusConfig.SchemaVersion;
+            this.acceptUnsignedCertificate = bcMailPlusConfig.AcceptUnsignedCertificate;
         }
 
         /// <inheritdoc/>
@@ -237,7 +239,7 @@ namespace HealthGateway.Common.Delegates
             BcmpAssetQuery assetQuery = new() { JobId = id, AssetType = "RECORD_PDF" };
             using StringContent httpContent = new(JsonSerializer.Serialize(assetQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
 
-            using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+            using HttpClient client = this.GetHttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
             Uri endpoint = new(endpointString);
@@ -290,7 +292,7 @@ namespace HealthGateway.Common.Delegates
                 PageIndex = 0,
             };
 
-            using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+            using HttpClient client = this.GetHttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
             Uri endpoint = new(endpointString);
@@ -346,6 +348,16 @@ namespace HealthGateway.Common.Delegates
             }
 
             return retVal;
+        }
+
+        private HttpClient GetHttpClient()
+        {
+            if (this.acceptUnsignedCertificate)
+            {
+                return this.httpClientService.CreateRelaxedHttpClient();
+            }
+
+            return this.httpClientService.CreateDefaultHttpClient();
         }
     }
 }

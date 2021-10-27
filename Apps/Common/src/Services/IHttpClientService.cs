@@ -28,5 +28,11 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <returns>The HttpClient.</returns>
         HttpClient CreateDefaultHttpClient();
+
+        /// <summary>
+        /// Creates a new TBD instance of HttpClient.
+        /// </summary>
+        /// <returns>The HttpClient.</returns>
+        HttpClient CreateRelaxedHttpClient();
     }
 }
