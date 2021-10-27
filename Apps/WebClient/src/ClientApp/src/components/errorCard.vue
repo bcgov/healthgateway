@@ -3,7 +3,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
 import BannerError from "@/models/bannerError";
 
@@ -11,6 +11,11 @@ library.add(faChevronDown, faChevronUp);
 
 @Component
 export default class ErrorCardComponent extends Vue {
+    @Action("dismiss", {
+        namespace: "errorBanner",
+    })
+    dismissBanner!: () => void;
+
     @Getter("isShowing", { namespace: "errorBanner" })
     isShowing!: boolean;
 
@@ -26,6 +31,7 @@ export default class ErrorCardComponent extends Vue {
         dismissible
         class="no-print mt-3 mx-2"
         :show="isShowing"
+        @dismissed="dismissBanner"
     >
         <h4>Whoops, something went wrong... Try refreshing the page</h4>
         <hg-button
