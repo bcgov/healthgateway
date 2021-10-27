@@ -45,7 +45,13 @@ export let rpsRampingOptions = {
             maxVUs: 200,
             stages: [
                 { target: 120, duration: '30s'},
-                { target: 0, duration: '1m'}
+                { target: 240, duration: '1m'},
+                { target: 480, duration: '2m'},
+                { target: 960, duration: '30s'},
+                { target: 1100, duration: '3m'},
+                { target: 960, duration: '1m'},
+                { target: 240, duration: '1m'},
+                { target: 0, duration: '30s'}
             ],
         },
     },
