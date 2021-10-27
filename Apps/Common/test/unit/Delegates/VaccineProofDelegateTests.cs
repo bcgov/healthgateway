@@ -55,8 +55,6 @@ namespace HealthGateway.CommonTests.Delegates
             State = "BC",
         };
 
-        private readonly string addressee = "BONNET PROTERVITY";
-
         /// <summary>
         /// Initializes a new instance of the <see cref="VaccineProofDelegateTests"/> class.
         /// </summary>
@@ -111,7 +109,7 @@ namespace HealthGateway.CommonTests.Delegates
                 GetHttpClientServiceMock(httpResponseMessage).Object,
                 this.configuration);
 
-            Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address, this.addressee);
+            Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address);
             RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
             Assert.Equal(expectedRequestResult.ResultStatus, actualResult.ResultStatus);
             Assert.Equal(expectedRequestResult.ResultError, actualResult.ResultError);
@@ -146,7 +144,7 @@ namespace HealthGateway.CommonTests.Delegates
                 GetHttpClientServiceMock(httpResponseMessage).Object,
                 this.configuration);
 
-            Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address, this.addressee);
+            Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address);
             RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -178,7 +176,7 @@ namespace HealthGateway.CommonTests.Delegates
                 GetHttpClientServiceMock(httpResponseMessage).Object,
                 this.configuration);
 
-            Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address, this.addressee);
+            Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address);
             RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
