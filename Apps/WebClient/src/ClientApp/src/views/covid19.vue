@@ -265,7 +265,7 @@ export default class Covid19View extends Vue {
                     text: "COVID Card PDF",
                 });
                 res.blob().then((blob) => {
-                    saveAs(blob, "BCVaccineRecord.pdf");
+                    saveAs(blob, "ProvincialVaccineProof.pdf");
                 });
             });
         }
@@ -296,7 +296,7 @@ export default class Covid19View extends Vue {
                     const dataUrl = canvas.toDataURL();
                     fetch(dataUrl).then((res) => {
                         res.blob().then((blob) => {
-                            saveAs(blob, "BCVaccineCard.png");
+                            saveAs(blob, "ProvincialVaccineProof.png");
                         });
                     });
                 })

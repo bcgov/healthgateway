@@ -195,7 +195,7 @@ export default class PublicVaccineCardView extends Vue {
                     const dataUrl = canvas.toDataURL();
                     fetch(dataUrl).then((res) => {
                         res.blob().then((blob) => {
-                            saveAs(blob, "BCVaccineCard.png");
+                            saveAs(blob, "ProvincialVaccineProof.png");
                         });
                     });
                 })
