@@ -75,7 +75,7 @@ describe("Public User - Vaccine Card Page - Save", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
-        cy.verifyDownload("BCVaccineCard.png");
+        cy.verifyDownload("ProvincialVaccineProof.png");
     });
 
     it("Save Dropdown List - Save Image - Spinner and Download confirmed", () => {
@@ -117,7 +117,7 @@ describe("Public User - Vaccine Card Page - Save", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
-        cy.verifyDownload("BCVaccineCard.png");
+        cy.verifyDownload("ProvincialVaccineProof.png");
     });
 
     it("Save Dropdown List - Save PDF - Spinner displayed", () => {

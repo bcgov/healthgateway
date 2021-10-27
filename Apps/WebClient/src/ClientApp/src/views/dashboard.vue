@@ -113,7 +113,7 @@ export default class DashboardView extends Vue {
                     text: "FederalPVC",
                 });
                 res.blob().then((blob) => {
-                    saveAs(blob, "FederalVaccineRecord.pdf");
+                    saveAs(blob, "FederalVaccineProof.pdf");
                 });
             });
         }

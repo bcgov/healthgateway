@@ -416,7 +416,7 @@ namespace HealthGateway.Admin.Services
                                 retVal.ResourcePayload = new ReportModel()
                                 {
                                     Data = assetResult.ResourcePayload.Data,
-                                    FileName = "BCVaccineCard",
+                                    FileName = "VaccineProof.pdf",
                                 };
                                 retVal.ResultStatus = ResultType.Success;
                             }
