@@ -8,7 +8,7 @@ describe("Landing Page", () => {
     });
 
     it("Greeting", () => {
-        cy.contains("h2", "BC Vaccine Card");
+        cy.contains("h2", "Proof of Vaccination");
     });
 
     it("Sign Up Button", () => {
