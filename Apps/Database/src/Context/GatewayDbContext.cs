@@ -384,7 +384,7 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.TemplateCode)
                 .HasConversion(vaccineProofTemplateConvertor);
 
-            // Create Composite Key for User Notes
+            // Create Composite Key for Vaccine Proof Request Cache
             modelBuilder.Entity<VaccineProofRequestCache>().HasAlternateKey(k => new { k.PersonIdentifier, k.ProofTemplate, k.ShcImageHash });
 
             // Initial seed data

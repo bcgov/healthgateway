@@ -54,7 +54,8 @@ namespace HealthGateway.Database.Delegates
                 cacheItem = this.dbContext.VaccineProofRequestCache
                                           .Where(p => p.PersonIdentifier == personalIdentifier &&
                                                       p.ProofTemplate == proofTemplate &&
-                                                      p.ShcImageHash == shcImageHash)
+                                                      p.ShcImageHash == shcImageHash &&
+                                                      DateTime.UtcNow < p.ExpiryDateTime)
                                           .OrderByDescending(o => o.CreatedBy)
                                           .FirstOrDefault();
             }
