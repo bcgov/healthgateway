@@ -30,9 +30,8 @@ namespace HealthGateway.Common.Delegates
         /// <param name="vaccineProofTemplate">The template to be used for the Vaccine Proof.</param>
         /// <param name="request">The vaccination data to be sent to populate the Vaccine Proof.</param>
         /// <param name="address">The address where the Vaccine Proof should be mailed.</param>
-        /// <param name="addressee">The name of the person to which the Vaccine Proof should be addressed.</param>
         /// <returns>A response object that includes the status and identifier of the Vaccine Proof.</returns>
-        public Task<RequestResult<VaccineProofResponse>> MailAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, Address address, string addressee);
+        public Task<RequestResult<VaccineProofResponse>> MailAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, Address address);
 
         /// <summary>
         /// Initiates the creation of a Vaccine Proof for later retrieval.

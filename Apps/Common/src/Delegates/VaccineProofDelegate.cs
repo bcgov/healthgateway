@@ -71,7 +71,7 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<VaccineProofResponse>> MailAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, Address address, string addressee)
+        public async Task<RequestResult<VaccineProofResponse>> MailAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, Address address)
         {
             RequestResult<VaccineProofResponse> retVal = new()
             {
@@ -90,8 +90,8 @@ namespace HealthGateway.Common.Delegates
                 SmartHealthCard = new BcmpSmartHealthCard() { QrCode = request.SmartHealthCardQr },
                 Address = new()
                 {
-                    AddressLine1 = addressee,
-                    AddressLine2 = string.Join(Environment.NewLine, address.StreetLines),
+                    AddressLine1 = address.StreetLines.FirstOrDefault() ?? string.Empty,
+                    AddressLine2 = string.Join(Environment.NewLine, address.StreetLines.Skip(1)),
                     City = address.City,
                     Province = address.State,
                     PostalCode = address.PostalCode,

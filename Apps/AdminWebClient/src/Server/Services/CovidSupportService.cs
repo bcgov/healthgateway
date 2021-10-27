@@ -237,10 +237,8 @@ namespace HealthGateway.Admin.Services
                             SmartHealthCardQr = vaccineStatusResult.ResourcePayload.Result.QRCode.Data!,
                         };
 
-                        string addressee = $"{vaccineStatusResult.ResourcePayload.Result.FirstName} {vaccineStatusResult.ResourcePayload.Result.LastName}";
-
                         RequestResult<VaccineProofResponse> vaccineProofResponse =
-                            await this.vaccineProofDelegate.MailAsync(this.vaccineCardConfig.MailTemplate, vaccineProofRequest, request.MailAddress, addressee).ConfigureAwait(true);
+                            await this.vaccineProofDelegate.MailAsync(this.vaccineCardConfig.MailTemplate, vaccineProofRequest, request.MailAddress).ConfigureAwait(true);
 
                         if (vaccineProofResponse.ResultStatus == ResultType.Success)
                         {
