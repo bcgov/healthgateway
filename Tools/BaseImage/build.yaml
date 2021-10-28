@@ -42,9 +42,8 @@ objects:
       strategy:
         dockerStrategy:
           from:
-            kind: ImageStreamTag
+            kind: DockerImage
             name: "mcr.microsoft.com/dotnet/aspnet:5.0"
-            namespace: openshift
         type: Docker
       successfulBuildsHistoryLimit: 2
       failedBuildsHistoryLimit: 2
@@ -71,4 +70,4 @@ parameters:
     value: Tools/BaseImage/docker
   - name: SOURCE_REPOSITORY_REF
     required: true
-    value: tasks/11598
+    value: dev

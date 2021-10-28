@@ -32,8 +32,8 @@ objects:
       strategy:
         dockerStrategy:
           from:
-            kind: DockerImage
-            name: ${BASE_IMAGE}
+            kind: ImageStreamTag
+            name: "${BASE_IMAGE}:latest"
         type: Docker
       successfulBuildsHistoryLimit: 5
 
@@ -46,4 +46,4 @@ parameters:
     displayName: BASE_IMAGE
     name: BASE_IMAGE
     required: true
-    value: mcr.microsoft.com/dotnet/aspnet:5.0
+    value: hg-base
