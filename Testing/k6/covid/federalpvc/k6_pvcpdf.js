@@ -73,17 +73,15 @@ export let onceOptions = {
 
 export let loadOptions = {
     stages: [
-        { duration: "10s", target: 20 }, // below normal load
         { duration: "30s", target: 50 },
-        { duration: "1m", target: 100 },
-        { duration: "3m", target: 150 },
-        //{ duration: "2m", target: 200 },
-        //{ duration: "2m", target: 300 },
-        //{ duration: "2m", target: 400 }, // peak to maximum expected users
-        //{ duration: "3m", target: 400 }, // stay there
-        { duration: "1m", target: 100 }, // scale down
-        { duration: "30s", target: 50 },
-        { duration: "10s", target: 0 }, //
+        { duration: "30s", target: 75 },
+        { duration: "1m", target: 150 },
+        { duration: "2m", target: 200 },
+        { duration: "2m", target: 300 },
+        { duration: "3m", target: 400 }, 
+        { duration: "30s", target: 100 },
+        { duration: "20s", target: 50 },
+        { duration: "10s", target: 1 },
     ],
     thresholds: {
         http_req_duration: ['p(99)<8000'], // 99% of requests must complete below 8s
