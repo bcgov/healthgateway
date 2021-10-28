@@ -62,13 +62,26 @@ namespace Healthgateway.JobScheduler.Jobs
             this.logger.LogInformation("CleanCacheJob Starting");
             List<GenericCache> oldIds = this.dbContext.GenericCache
                     .Where(cache => cache.ExpiryDateTime < DateTime.UtcNow)
-                    .Select(cache => new GenericCache { Id = cache.Id, Version = cache.Version })
+                    .Select(cache => new GenericCache { Id = cache.Id, Version = cache.Version, ExpiryDateTime = cache.ExpiryDateTime })
+                    .OrderBy(o => o.ExpiryDateTime)
                     .Take(this.deleteMaxRows)
                     .ToList();
             if (oldIds.Count > 0)
             {
-                this.logger.LogInformation($"Deleting {oldIds.Count} Cache entries out of a maximum of {this.deleteMaxRows}");
+                this.logger.LogInformation($"Deleting {oldIds.Count} Generic cache entries out of a maximum of {this.deleteMaxRows}");
                 this.dbContext.RemoveRange(oldIds);
+                this.dbContext.SaveChanges();
+            }
+
+            List<VaccineProofRequestCache> oldVaccineRequests = this.dbContext.VaccineProofRequestCache
+                    .Where(cache => cache.ExpiryDateTime < DateTime.UtcNow)
+                    .Take(this.deleteMaxRows)
+                    .OrderBy(o => o.ExpiryDateTime)
+                    .ToList();
+            if (oldVaccineRequests.Count > 0)
+            {
+                this.logger.LogInformation($"Deleting {oldVaccineRequests.Count} Vaccine Proof Request cache entries out of a maximum of {this.deleteMaxRows}");
+                this.dbContext.RemoveRange(oldVaccineRequests);
                 this.dbContext.SaveChanges();
             }
 
