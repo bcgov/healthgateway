@@ -134,6 +134,7 @@ namespace HealthGateway.Immunization.Services
                     {
                         Id = cacheItem.VaccineProofResponseId!,
                         Status = VaccineProofRequestStatus.Unknown,
+                        AssetUri = new Uri(cacheItem.AssetEndpoint),
                     };
                     retVal.ResultStatus = ResultType.Success;
                     retVal.ResourcePayload = proofResponse;
@@ -144,7 +145,7 @@ namespace HealthGateway.Immunization.Services
             if (!foundInCache)
             {
                 retVal = await this.vpDelegate.GenerateAsync(proofTemplate, vaccineProofRequest).ConfigureAwait(true);
-                if (this.cacheEnabled && retVal.ResultStatus == ResultType.Success && retVal.ResourcePayload != null)
+                if (this.cacheEnabled && retVal.ResultStatus == ResultType.Success && retVal.ResourcePayload != null && retVal.ResourcePayload.AssetUri != null)
                 {
                     VaccineProofRequestCache cacheItem = new()
                     {
@@ -153,6 +154,7 @@ namespace HealthGateway.Immunization.Services
                         ShcImageHash = HashShcImage(vaccineProofRequest.SmartHealthCardQr),
                         ExpiryDateTime = DateTime.UtcNow.AddMinutes(this.bcmpConfig.CacheTtl),
                         VaccineProofResponseId = retVal.ResourcePayload.Id,
+                        AssetEndpoint = retVal.ResourcePayload.AssetUri.ToString(),
                     };
 
                     this.cacheDelegate.AddCacheItem(cacheItem);

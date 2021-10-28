@@ -61,5 +61,11 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         public string? VaccineProofResponseId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the asset endpoint as a string from the Vaccine Proof Request.
+        /// </summary>
+        [Required]
+        public string? AssetEndpoint { get; set; }
     }
 }
