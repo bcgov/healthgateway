@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Models
 {
+    using System;
     using HealthGateway.Common.Constants;
 
     /// <summary>
@@ -31,5 +32,10 @@ namespace HealthGateway.Common.Models
         /// Gets or sets the status of the Vaccine Proof Request.
         /// </summary>
         public VaccineProofRequestStatus Status { get; set; } = VaccineProofRequestStatus.Unknown;
+
+        /// <summary>
+        /// Gets or sets the Uri to retrieve the asset.
+        /// </summary>
+        public Uri? AssetUri { get; set; }
     }
 }

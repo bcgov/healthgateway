@@ -15,36 +15,24 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Models.BCMailPlus
 {
+    using System;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Constants;
 
     /// <summary>
-    /// The response from BC Mail Plus for a single job status.
+    /// Additional Job properties.
     /// </summary>
-    public class BcmpJobStatusResult
+    public class BcmpProperties
     {
         /// <summary>
         /// Gets or sets the unique Job ID associated with the Vaccine Proof.
         /// </summary>
-        [JsonPropertyName("jobId")]
-        public string JobId { get; set; } = string.Empty;
+        [JsonPropertyName("JOB_ID")]
+        public long JobId { get; set; }
 
         /// <summary>
-        /// Gets or sets the status of the Vaccine Proof.
+        /// Gets or sets the asset uri.
         /// </summary>
-        [JsonPropertyName("jobStatus")]
-        public BcmpJobStatus JobStatus { get; set; } = BcmpJobStatus.Error;
-
-        /// <summary>
-        /// Gets or sets the additional job properties.
-        /// </summary>
-        [JsonPropertyName("jobProperties")]
-        public BcmpProperties JobProperties { get; set; } = new();
-
-        /// <summary>
-        /// Gets or sets the errors associated with the Vaccine Proof.
-        /// </summary>
-        [JsonPropertyName("errors")]
-        public string Errors { get; set; } = string.Empty;
+        [JsonPropertyName("PDF_URL")]
+        public Uri? AssetUri { get; set; }
     }
 }

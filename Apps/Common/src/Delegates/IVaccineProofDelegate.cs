@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Delegates
 {
+    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
@@ -54,5 +55,12 @@ namespace HealthGateway.Common.Delegates
         /// <param name="id">The id from the VaccineProofResponse object.</param>
         /// <returns>A report model containing the generated Vaccine Proof document.</returns>
         public Task<RequestResult<ReportModel>> GetAssetAsync(string id);
+
+        /// <summary>
+        /// Fetches the generated Vaccine Proof directly.
+        /// </summary>
+        /// <param name="assetUri">The uri to fetch the asset.</param>
+        /// <returns>A report model containing the generated Vaccine Proof document.</returns>
+        public Task<RequestResult<ReportModel>> GetAssetAsync(Uri assetUri);
     }
 }

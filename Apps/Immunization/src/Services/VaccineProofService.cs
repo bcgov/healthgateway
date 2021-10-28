@@ -71,41 +71,32 @@ namespace HealthGateway.Immunization.Services
             if (proofGenerate.ResultStatus == ResultType.Success && proofGenerate.ResourcePayload != null)
             {
                 int retryCount = 0;
-                RequestResult<VaccineProofResponse> proofStatus = proofGenerate;
-                bool processing = proofGenerate.ResourcePayload.Status == VaccineProofRequestStatus.Started ||
-                                  proofGenerate.ResourcePayload.Status == VaccineProofRequestStatus.Unknown;
+                RequestResult<ReportModel> assetResult = new()
+                {
+                    ResultStatus = ResultType.Error,
+                };
+                bool processing = true;
                 while (processing && retryCount++ <= this.bcmpConfig.MaxRetries)
                 {
                     // Skip delay on the first iteration if we fetched from cache.
                     if (!fromCache || (fromCache && retryCount > 1))
                     {
-                        this.logger.LogInformation("Waiting to poll Vaccine Proof Status...");
+                        this.logger.LogInformation("Waiting to fetch Vaccine Proof Asset...");
                         await Task.Delay(this.bcmpConfig.BackOffMilliseconds).ConfigureAwait(true);
                     }
 
-                    proofStatus = await this.vpDelegate.GetStatusAsync(proofGenerate.ResourcePayload.Id).ConfigureAwait(true);
-                    processing = proofStatus.ResultStatus == ResultType.Success &&
-                                 proofStatus.ResourcePayload != null &&
-                                 proofStatus.ResourcePayload.Status == VaccineProofRequestStatus.Started;
+                    assetResult = await this.vpDelegate.GetAssetAsync(proofGenerate.ResourcePayload.AssetUri).ConfigureAwait(true);
+                    processing = assetResult.ResultStatus == ResultType.ActionRequired;
                 }
 
-                if (proofStatus.ResultStatus == ResultType.Success && proofStatus.ResourcePayload?.Status == VaccineProofRequestStatus.Completed)
+                if (assetResult.ResultStatus == ResultType.Success && assetResult.ResourcePayload != null)
                 {
-                    // Get the Asset
-                    RequestResult<ReportModel> assetResult = await this.vpDelegate.GetAssetAsync(proofGenerate.ResourcePayload.Id).ConfigureAwait(true);
-                    if (assetResult.ResultStatus == ResultType.Success && assetResult.ResourcePayload != null)
-                    {
-                        retVal.ResourcePayload = assetResult.ResourcePayload;
-                        retVal.ResultStatus = ResultType.Success;
-                    }
-                    else
-                    {
-                        retVal.ResultError = assetResult.ResultError;
-                    }
+                    retVal.ResourcePayload = assetResult.ResourcePayload;
+                    retVal.ResultStatus = ResultType.Success;
                 }
                 else
                 {
-                    retVal.ResultError = proofStatus.ResultError ?? new RequestResultError() { ResultMessage = "Unable to obtain Vaccine Proof PDF", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
+                    retVal.ResultError = assetResult.ResultError ?? new RequestResultError() { ResultMessage = "Unable to obtain Vaccine Proof PDF", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
                 }
             }
             else
