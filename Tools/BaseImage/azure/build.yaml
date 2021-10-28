@@ -9,7 +9,8 @@ schedules:
   - cron: "0 0 * * *"
     displayName: "Daily Base Image Build"
     branches:
-      include: dev
+      include: 
+        - dev
     always: true
 
 pr: none
