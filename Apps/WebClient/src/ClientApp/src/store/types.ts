@@ -14,6 +14,7 @@ import { NavbarModule } from "./modules/navbar/types";
 import { NoteModule } from "./modules/note/types";
 import { TimelineModule } from "./modules/timeline/types";
 import { UserModule } from "./modules/user/types";
+import { VaccinationStatusModule } from "./modules/vaccinationStatus/types";
 
 export interface RootState {
     version: string;
@@ -48,5 +49,6 @@ export interface GatewayStoreOptions extends StoreOptions<RootState> {
         errorBanner: ErrorBannerModule;
         timeline: TimelineModule;
         credential: CredentialModule;
+        vaccinationStatus: VaccinationStatusModule;
     };
 }

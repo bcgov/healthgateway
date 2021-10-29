@@ -3,7 +3,6 @@ import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
-import Report from "@/models/report";
 import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -38,29 +37,29 @@ export const actions: VaccinationStatusActions = {
                     params.dateOfVaccine
                 )
                 .then((result) => {
+                    const payload = result.resourcePayload;
                     if (result.resultStatus === ResultType.Success) {
-                        const payload = result.resourcePayload;
-                        if (!payload.loaded && payload.retryin > 0) {
-                            logger.info("VaccinationStatus not loaded");
-                            context.commit(
-                                "setStatusMessage",
-                                "We're busy but will continue to try to fetch your record...."
-                            );
-                            setTimeout(() => {
-                                logger.info(
-                                    "Re-querying for vaccination status"
-                                );
-                                context.dispatch("retrieveVaccineStatus", {
-                                    phn: params.phn,
-                                    dateOfBirth: params.dateOfBirth,
-                                    dateOfVaccine: params.dateOfVaccine,
-                                });
-                            }, payload.retryin);
-                            resolve();
-                        } else {
-                            context.commit("setVaccinationStatus", payload);
-                            resolve();
-                        }
+                        context.commit("setVaccinationStatus", payload);
+                        resolve();
+                    } else if (
+                        result.resultError?.actionCode === ActionType.Refresh &&
+                        !payload.loaded &&
+                        payload.retryin > 0
+                    ) {
+                        logger.info("VaccinationStatus not loaded");
+                        context.commit(
+                            "setStatusMessage",
+                            "We're busy but will continue to try to fetch your record...."
+                        );
+                        setTimeout(() => {
+                            logger.info("Re-querying for vaccination status");
+                            context.dispatch("retrieveVaccineStatus", {
+                                phn: params.phn,
+                                dateOfBirth: params.dateOfBirth,
+                                dateOfVaccine: params.dateOfVaccine,
+                            });
+                        }, payload.retryin);
+                        resolve();
                     } else {
                         context.dispatch("handleError", result.resultError);
                         reject(result.resultError);
@@ -79,7 +78,7 @@ export const actions: VaccinationStatusActions = {
             dateOfBirth: StringISODate;
             dateOfVaccine: StringISODate;
         }
-    ): Promise<Report> {
+    ): Promise<CovidVaccineRecord> {
         context.commit("setPdfRequested");
 
         const vaccinationStatusService: IVaccinationStatusService =
@@ -164,33 +163,36 @@ export const actions: VaccinationStatusActions = {
                 vaccinationStatusService
                     .getAuthenticatedVaccineStatus(params.hdid)
                     .then((result) => {
+                        const payload = result.resourcePayload;
                         if (result.resultStatus === ResultType.Success) {
-                            const payload = result.resourcePayload;
-                            if (!payload.loaded && payload.retryin > 0) {
-                                logger.info("VaccinationStatus not loaded");
-                                context.commit(
-                                    "setAuthenticatedStatusMessage",
-                                    "We're busy but will continue to try to fetch your record...."
+                            context.commit(
+                                "setAuthenticatedVaccinationStatus",
+                                payload
+                            );
+                            resolve();
+                        } else if (
+                            result.resultError?.actionCode ===
+                                ActionType.Refresh &&
+                            !payload.loaded &&
+                            payload.retryin > 0
+                        ) {
+                            logger.info("VaccinationStatus not loaded");
+                            context.commit(
+                                "setAuthenticatedStatusMessage",
+                                "We're busy but will continue to try to fetch your record...."
+                            );
+                            setTimeout(() => {
+                                logger.info(
+                                    "Re-querying for vaccination status"
                                 );
-                                setTimeout(() => {
-                                    logger.info(
-                                        "Re-querying for vaccination status"
-                                    );
-                                    context.dispatch(
-                                        "retrieveAuthenticatedVaccineStatus",
-                                        {
-                                            hdid: params.hdid,
-                                        }
-                                    );
-                                }, payload.retryin);
-                                resolve();
-                            } else {
-                                context.commit(
-                                    "setAuthenticatedVaccinationStatus",
-                                    payload
+                                context.dispatch(
+                                    "retrieveAuthenticatedVaccineStatus",
+                                    {
+                                        hdid: params.hdid,
+                                    }
                                 );
-                                resolve();
-                            }
+                            }, payload.retryin);
+                            resolve();
                         } else {
                             context.dispatch(
                                 "handleAuthenticatedError",
@@ -212,19 +214,46 @@ export const actions: VaccinationStatusActions = {
             hdid: string;
         }
     ): Promise<CovidVaccineRecord> {
-        context.commit("setAuthenticatedPdfRequested");
-
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         const vaccinationStatusService: IVaccinationStatusService =
             container.get<IVaccinationStatusService>(
                 SERVICE_IDENTIFIER.VaccinationStatusService
             );
 
         return new Promise((resolve, reject) => {
+            logger.debug(`Retrieving Vaccination Record`);
+            context.commit("setAuthenticatedVaccineRecordRequested");
             vaccinationStatusService
                 .getAuthenticatedVaccineRecord(params.hdid)
                 .then((result) => {
+                    const payload = result.resourcePayload;
                     if (result.resultStatus === ResultType.Success) {
-                        const payload = result.resourcePayload;
+                        context.commit(
+                            "setAuthenticatedVaccineRecord",
+                            payload
+                        );
+                        resolve(payload);
+                    } else if (
+                        result.resultError?.actionCode === ActionType.Refresh &&
+                        !payload.loaded &&
+                        payload.retryin > 0
+                    ) {
+                        logger.info("Vaccination Record not loaded");
+                        context.commit(
+                            "setAuthenticatedVaccineRecordStatusMessage",
+                            "We're busy but will continue to try to download the Vaccine Record...."
+                        );
+                        setTimeout(() => {
+                            logger.info(
+                                "Re-querying for downloading the Vaccine Record"
+                            );
+                            context.dispatch(
+                                "retrieveAuthenticatedVaccineRecord",
+                                {
+                                    hdid: params.hdid,
+                                }
+                            );
+                        }, payload.retryin);
                         resolve(payload);
                     } else {
                         context.dispatch(
@@ -260,13 +289,25 @@ export const actions: VaccinationStatusActions = {
     handleAuthenticatedPdfError(context, error: ResultError) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
+        const title = "Error Retrieving Vaccine Record";
+
         logger.error(`ERROR: ${JSON.stringify(error)}`);
         context.commit(
-            "authenticatedPdfError",
-            ErrorTranslator.toBannerError(
-                "Error Retrieving Vaccine Record",
-                error
-            )
+            "setAuthenticatedVaccineRecordError",
+            ErrorTranslator.toBannerError(title, error)
         );
+
+        if (error.actionCode === ActionType.Invalid) {
+            context.commit(
+                "setAuthenticatedVaccineRecordResultMessage",
+                "No records found"
+            );
+        } else {
+            context.dispatch(
+                "errorBanner/addResultError",
+                { message: title, error },
+                { root: true }
+            );
+        }
     },
 };

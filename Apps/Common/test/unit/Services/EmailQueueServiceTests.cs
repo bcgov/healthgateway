@@ -84,7 +84,8 @@ namespace HealthGateway.CommonTests.Services
                 It.Is<Email>(email =>
                     email.To == expectedEmail &&
                     email.Subject == emailTemplate.Subject &&
-                    email.Body == expectedBody), true));
+                    email.Body == expectedBody),
+                true));
         }
 
         /// <summary>
@@ -128,7 +129,8 @@ namespace HealthGateway.CommonTests.Services
                     email.Id == expectedEmailId &&
                     email.To == expectedEmail &&
                     email.Subject == emailTemplate.Subject &&
-                    email.Body == emailTemplate.Body), true));
+                    email.Body == emailTemplate.Body),
+                true));
         }
 
         /// <summary>
@@ -227,7 +229,8 @@ namespace HealthGateway.CommonTests.Services
                     email.From == expectedEmail.From &&
                     email.To == expectedEmail.To &&
                     email.Subject == expectedEmail.Subject &&
-                    email.Body == expectedEmail.Body), true));
+                    email.Body == expectedEmail.Body),
+                true));
         }
 
         /// <summary>

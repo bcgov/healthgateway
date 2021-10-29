@@ -197,7 +197,7 @@ namespace HealthGateway.Common.Delegates
             Address? retAddress = null;
             if (address?.Items != null)
             {
-                retAddress = new ();
+                retAddress = new();
                 foreach (ADXP item in address.Items)
                 {
                     switch (item)

@@ -15,6 +15,7 @@ import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
+import { ResultType } from "@/constants/resulttype";
 import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -22,7 +23,8 @@ import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
-import { ILogger } from "@/services/interfaces";
+import { ILogger, IVaccinationStatusService } from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
 import { Mask, phnMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
 import SnowPlow from "@/utility/snowPlow";
@@ -39,11 +41,13 @@ const validPersonalHealthNumber = (value: string): boolean => {
         "vaccine-card": VaccineCardComponent,
         "error-card": ErrorCardComponent,
         loading: LoadingComponent,
-        MessageModalComponent,
+        "message-modal": MessageModalComponent,
         "hg-date-dropdown": HgDateDropdownComponent,
     },
 })
 export default class PublicVaccineCardView extends Vue {
+    private vaccinationStatusService!: IVaccinationStatusService;
+
     @Action("retrieveVaccineStatus", { namespace: "vaccinationStatus" })
     retrieveVaccineStatus!: (params: {
         phn: string;
@@ -65,6 +69,9 @@ export default class PublicVaccineCardView extends Vue {
 
     @Getter("statusMessage", { namespace: "vaccinationStatus" })
     statusMessage!: string;
+
+    @Ref("messageModal")
+    readonly messageModal!: MessageModalComponent;
 
     @Ref("sensitivedocumentDownloadModal")
     readonly sensitivedocumentDownloadModal!: MessageModalComponent;
@@ -90,6 +97,9 @@ export default class PublicVaccineCardView extends Vue {
     private phn = "";
     private dateOfBirth = "";
     private dateOfVaccine = "";
+
+    private isDownloadingPdf = false;
+    private downloadError: BannerError | null = null;
 
     private get loadingStatusMessage(): string {
         return this.isDownloading ? "Downloading...." : this.statusMessage;
@@ -158,11 +168,16 @@ export default class PublicVaccineCardView extends Vue {
         this.sensitivedocumentDownloadModal.showModal();
     }
 
+    private get saveExportPdfShown(): boolean {
+        return this.config.modules["PublicVaccineDownloadPdf"];
+    }
+
     private download() {
         const printingArea: HTMLElement | null =
             document.querySelector(".vaccine-card");
 
         if (printingArea !== null) {
+            this.downloadError = null;
             this.isDownloading = true;
 
             SnowPlow.trackEvent({
@@ -179,7 +194,7 @@ export default class PublicVaccineCardView extends Vue {
                     const dataUrl = canvas.toDataURL();
                     fetch(dataUrl).then((res) => {
                         res.blob().then((blob) => {
-                            saveAs(blob, "BCVaccineCard.png");
+                            saveAs(blob, "ProvincialVaccineProof.png");
                         });
                     });
                 })
@@ -191,10 +206,68 @@ export default class PublicVaccineCardView extends Vue {
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.vaccinationStatusService =
+            container.get<IVaccinationStatusService>(
+                SERVICE_IDENTIFIER.VaccinationStatusService
+            );
     }
 
     private get phnMask(): Mask {
         return phnMask;
+    }
+
+    private showConfirmationModal() {
+        this.messageModal.showModal();
+    }
+
+    private showVaccineCardMessageModal() {
+        this.sensitivedocumentDownloadModal.showModal();
+    }
+
+    private downloadVaccinePdf() {
+        this.downloadError = null;
+        this.isDownloadingPdf = true;
+        this.vaccinationStatusService
+            .getPublicVaccineStatusPdf(
+                this.phn.replace(/ /g, ""),
+                this.dateOfBirth,
+                this.dateOfVaccine
+            )
+            .then((result) => {
+                if (result.resultStatus == ResultType.Success) {
+                    SnowPlow.trackEvent({
+                        action: "download_card",
+                        text: "Public COVID Card PDF",
+                    });
+                    const mimeType = result.resourcePayload.document.mediaType;
+                    const downloadLink = `data:${mimeType};base64,${result.resourcePayload.document.data}`;
+
+                    fetch(downloadLink).then((res) => {
+                        res.blob().then((blob) => {
+                            saveAs(blob, "VaccineProof.pdf");
+                        });
+                    });
+                } else {
+                    this.logger.error(
+                        "Error returned when retrieving vaccine proof PDF: " +
+                            JSON.stringify(result.resultError)
+                    );
+                    this.downloadError = ErrorTranslator.toBannerError(
+                        "Retrieve PDF Error",
+                        result.resultError
+                    );
+                }
+            })
+            .catch((err) => {
+                this.logger.error(err);
+                this.downloadError = ErrorTranslator.toBannerError(
+                    "Retrieve PDF Error",
+                    err
+                );
+            })
+            .finally(() => {
+                this.isDownloadingPdf = false;
+            });
     }
 }
 </script>
@@ -202,7 +275,7 @@ export default class PublicVaccineCardView extends Vue {
 <template>
     <div class="background flex-grow-1 d-flex flex-column">
         <loading
-            :is-loading="isLoading || isDownloading"
+            :is-loading="isLoading || isDownloading || isDownloadingPdf"
             :text="loadingStatusMessage"
         />
         <div class="header d-print-none">
@@ -214,6 +287,20 @@ export default class PublicVaccineCardView extends Vue {
                     alt="BC Mark"
                 />
             </router-link>
+        </div>
+        <div v-if="downloadError !== null" class="container d-print-none">
+            <b-alert
+                variant="danger"
+                class="no-print my-3 p-3"
+                :show="downloadError !== null"
+                dismissible
+            >
+                <h4>Our Apologies</h4>
+                <div data-testid="errorTextDescription" class="pl-4">
+                    We've found an issue and the Health Gateway team is working
+                    hard to fix it.
+                </div>
+            </b-alert>
         </div>
         <div
             v-if="displayResult"
@@ -235,12 +322,32 @@ export default class PublicVaccineCardView extends Vue {
                     "
                 >
                     <hg-button
+                        v-if="!saveExportPdfShown"
+                        data-testid="save-a-copy-btn"
                         variant="primary"
                         class="ml-3"
                         @click="showSensitiveDocumentDownloadModal()"
                     >
                         Save a Copy
                     </hg-button>
+                    <hg-dropdown
+                        v-if="saveExportPdfShown"
+                        text="Save as"
+                        variant="primary"
+                        data-testid="save-dropdown-btn"
+                    >
+                        <b-dropdown-item
+                            data-testid="save-as-image-dropdown-item"
+                            @click="showVaccineCardMessageModal()"
+                            >Image (BC proof)</b-dropdown-item
+                        >
+                        <b-dropdown-item
+                            v-if="saveExportPdfShown"
+                            data-testid="save-as-pdf-dropdown-item"
+                            @click="showConfirmationModal()"
+                            >PDF (Federal proof)</b-dropdown-item
+                        >
+                    </hg-dropdown>
                 </div>
                 <div
                     v-if="isPartiallyVaccinated || isVaccinationNotFound"
@@ -260,7 +367,7 @@ export default class PublicVaccineCardView extends Vue {
                     </div>
                 </div>
             </div>
-            <MessageModalComponent
+            <message-modal
                 ref="sensitivedocumentDownloadModal"
                 title="Vaccine Card Download"
                 message="Next, you'll see an image of your card.
@@ -269,6 +376,12 @@ export default class PublicVaccineCardView extends Vue {
                                 If you want to print, we recommend you use the print function in
                                 your browser."
                 @submit="download"
+            />
+            <message-modal
+                ref="messageModal"
+                title="Sensitive Document Download"
+                message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+                @submit="downloadVaccinePdf"
             />
         </div>
         <div
@@ -309,10 +422,11 @@ export default class PublicVaccineCardView extends Vue {
                         data-testid="vaccineCardFormTitle"
                         class="vaccine-card-form-title text-center pb-3 mb-4"
                     >
-                        Access Your BC Vaccine Card
+                        Get your proof of vaccination
                     </h2>
                     <p class="mb-4">
-                        To access your BC Vaccine Card, please provide:
+                        To get your BC Vaccine Card and Federal Proof of
+                        Vaccination, please provide:
                     </p>
                     <b-row>
                         <b-col>

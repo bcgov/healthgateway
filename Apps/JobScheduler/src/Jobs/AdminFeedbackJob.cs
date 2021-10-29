@@ -74,7 +74,7 @@ namespace Healthgateway.JobScheduler.Jobs
             {
                 UserFeedback feedback = dbResult.Payload;
                 this.logger.LogDebug($"Sending Email...");
-                using SmtpClient smtpClient = new ();
+                using SmtpClient smtpClient = new();
                 smtpClient.Connect(this.host, this.port, SecureSocketOptions.None);
                 smtpClient.Send(this.PrepareMessage(clientFeedback.Email, feedback));
                 smtpClient.Disconnect(true);
@@ -96,14 +96,14 @@ namespace Healthgateway.JobScheduler.Jobs
                 throw new InvalidOperationException($"Email template {FeedbackTemplateName} is null");
             }
 
-            Dictionary<string, string> keyValues = new ()
+            Dictionary<string, string> keyValues = new()
             {
                 { "hdid", feedback.UserProfileId },
                 { "feedback", feedback.Comment },
             };
 
             Email email = this.emailService.ProcessTemplate(this.adminEmail, template, keyValues);
-            MimeMessage msg = new ();
+            MimeMessage msg = new();
             msg.From.Add(new MailboxAddress("HG Feedback", email.From));
             msg.ReplyTo.Add(MailboxAddress.Parse(userEmail));
             msg.To.Add(MailboxAddress.Parse(email.To));

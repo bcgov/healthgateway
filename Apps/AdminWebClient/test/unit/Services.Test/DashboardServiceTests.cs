@@ -38,8 +38,8 @@ namespace HealthGateway.Admin.Test.Services
             Dictionary<DateTime, int> expected = new Dictionary<DateTime, int>() { { default(DateTime), 10 } };
             Mock<IResourceDelegateDelegate> dependentDelegateMock = new Mock<IResourceDelegateDelegate>();
             dependentDelegateMock.Setup(s => s.GetDailyDependentCount(It.IsAny<TimeSpan>())).Returns(expected);
-            Mock<IMessagingVerificationDelegate> mockMessagingVerificationDelegate = new ();
-            Mock<IPatientService> mockPatientService = new ();
+            Mock<IMessagingVerificationDelegate> mockMessagingVerificationDelegate = new();
+            Mock<IPatientService> mockPatientService = new();
 
             // Set up service
             IDashboardService service = new DashboardService(

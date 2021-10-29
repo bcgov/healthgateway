@@ -68,7 +68,7 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger.LogTrace($"Validating sms... {validationCode}");
 
-            PrimitiveRequestResult<bool> retVal = new () { ResourcePayload = false, ResultStatus = ResultType.Success };
+            PrimitiveRequestResult<bool> retVal = new() { ResourcePayload = false, ResultStatus = ResultType.Success };
             MessagingVerification? smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
 
             if (smsVerification != null &&
@@ -131,7 +131,7 @@ namespace HealthGateway.WebClient.Services
                 this.messageVerificationDelegate.Expire(lastSMSVerification, isDeleted);
             }
 
-            NotificationSettingsRequest notificationRequest = new (userProfile, userProfile.Email, sanitizedSms);
+            NotificationSettingsRequest notificationRequest = new(userProfile, userProfile.Email, sanitizedSms);
             if (!isDeleted)
             {
                 this.logger.LogInformation($"Adding new sms verification for user ${hdid}");
@@ -170,7 +170,7 @@ namespace HealthGateway.WebClient.Services
         private MessagingVerification AddVerificationSMS(string hdid, string sms)
         {
             this.logger.LogInformation($"Sending new sms verification for user ${hdid}");
-            MessagingVerification messagingVerification = new ()
+            MessagingVerification messagingVerification = new()
             {
                 UserProfileId = hdid,
                 SMSNumber = sms,

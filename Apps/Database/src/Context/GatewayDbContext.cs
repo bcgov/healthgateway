@@ -80,6 +80,7 @@ namespace HealthGateway.Database.Context
         public DbSet<UserFeedbackTag> UserFeedbackTag { get; set; } = null!;
         public DbSet<WalletConnection> WalletConnection { get; set; } = null!;
         public DbSet<WalletCredential> WalletCredential { get; set; } = null!;
+        public DbSet<VaccineProofRequestCache> VaccineProofRequestCache { get; set; } = null!;
 
 #pragma warning restore CS1591, SA1600
 
@@ -364,6 +365,28 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.StatusCode)
                 .HasConversion(walletCredentialStatusConverter);
 
+            // Create Foreign keys for VaccineProofRequestCache code tables.
+            modelBuilder.Entity<VaccineProofRequestCache>()
+                  .HasOne<VaccineProofTemplateCode>()
+                  .WithMany()
+                  .HasPrincipalKey(k => k.TemplateCode)
+                  .HasForeignKey(k => k.ProofTemplate);
+
+            var vaccineProofTemplateConvertor = new ValueConverter<VaccineProofTemplate, string>(
+                v => EnumUtility.ToEnumString<VaccineProofTemplate>(v, true),
+                v => EnumUtility.ToEnum<VaccineProofTemplate>(v, true));
+
+            modelBuilder.Entity<VaccineProofRequestCache>()
+                .Property(e => e.ProofTemplate)
+                .HasConversion(vaccineProofTemplateConvertor);
+
+            modelBuilder.Entity<VaccineProofTemplateCode>()
+                .Property(e => e.TemplateCode)
+                .HasConversion(vaccineProofTemplateConvertor);
+
+            // Create Composite Key for Vaccine Proof Request Cache
+            modelBuilder.Entity<VaccineProofRequestCache>().HasAlternateKey(k => new { k.PersonIdentifier, k.ProofTemplate, k.ShcImageHash });
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
@@ -375,6 +398,7 @@ namespace HealthGateway.Database.Context
             this.SeedResourceDelegateReason(modelBuilder);
             this.SeedCommentEntryTypeCode(modelBuilder);
             this.SeedWalletCodes(modelBuilder);
+            this.SeedVaccineProofTemplateCodes(modelBuilder);
         }
 
         /// <summary>
@@ -1048,6 +1072,51 @@ namespace HealthGateway.Database.Context
                 {
                     StatusCode = WalletCredentialStatus.Revoked,
                     Description = "Credential has been revoked",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                });
+        }
+
+        /// <summary>
+        /// Seeds the Vaccine Proof Template codes.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedVaccineProofTemplateCodes(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<VaccineProofTemplateCode>().HasData(
+                new VaccineProofTemplateCode
+                {
+                    TemplateCode = VaccineProofTemplate.Provincial,
+                    Description = "The Provincial template (single page)",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new VaccineProofTemplateCode
+                {
+                    TemplateCode = VaccineProofTemplate.Federal,
+                    Description = "The Federal template (single page)",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new VaccineProofTemplateCode
+                {
+                    TemplateCode = VaccineProofTemplate.Combined,
+                    Description = "The Combined Federal and Provincial template",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new VaccineProofTemplateCode
+                {
+                    TemplateCode = VaccineProofTemplate.CombinedCover,
+                    Description = "The Combined Federal and Provincial template with a cover page",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,

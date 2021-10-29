@@ -73,37 +73,37 @@ export default class LandingView extends Vue {
         {
             name: "Medication",
             definition: "pills",
-            label: "Prescription Medications (Dec 2019)",
+            label: "Prescription Medications",
             active: false,
         },
         {
             name: "Note",
             definition: "edit",
-            label: "Add Notes to Records (Mar 2020)",
+            label: "Add Notes to Records",
             active: false,
         },
         {
             name: "Laboratory",
             definition: "exclamation-triangle",
-            label: "COVID-19 Test Results (Sep 2020)",
+            label: "COVID-19 Test Results",
             active: true,
         },
         {
             name: "Immunization",
             definition: "syringe",
-            label: "Immunization Records (Dec 2020)",
+            label: "Immunization Records",
             active: false,
         },
         {
             name: "Encounter",
             definition: "user-md",
-            label: "Health Visits (Mar 2021)",
+            label: "Health Visits",
             active: false,
         },
         {
             name: "VaccinationStatus",
             definition: "clipboard-check",
-            label: "BC Vaccine Card (Sep 2021)",
+            label: "BC Vaccine Card",
             active: false,
         },
         {
@@ -189,7 +189,7 @@ export default class LandingView extends Vue {
                 />
             </b-col>
             <b-col cols="auto" class="text-center p-2 mb-4">
-                <h2 class="h4 mt-3">BC Vaccine Card</h2>
+                <h2 class="h4 mt-3">Proof of Vaccination</h2>
                 <div class="mb-3">
                     <hg-button
                         variant="primary"
@@ -197,7 +197,7 @@ export default class LandingView extends Vue {
                         data-testid="btnVaccineCard"
                         class="w-75 text-center"
                     >
-                        Get Card
+                        Get Proof
                     </hg-button>
                 </div>
             </b-col>
@@ -219,21 +219,24 @@ export default class LandingView extends Vue {
                 />
             </b-col>
             <b-col cols="auto" class="text-center">
-                <h2 class="h1 mt-4">BC Vaccine Card</h2>
-                <div>Confidential access to your proof of vaccination</div>
+                <h2 class="h1 mt-4">Proof of Vaccination</h2>
+                <div>
+                    Confidential access to your BC and Canada proof of
+                    vaccination
+                </div>
                 <div>
                     <hg-button
                         variant="primary"
                         to="/vaccinecard"
                         class="w-50 my-4 text-center"
                     >
-                        Get Card
+                        Get Proof
                     </hg-button>
                 </div>
             </b-col>
         </b-row>
         <h3 class="text-center font-weight-normal my-4 mx-1">
-            A single place for BC residents to access their health records
+            BC residents can access all their health records in a single place
         </h3>
         <b-row
             v-if="!isOffline"
@@ -432,11 +435,11 @@ export default class LandingView extends Vue {
             background-image: url("~@/assets/images/landing/vaccine-card-banner-bg-lg.svg");
             background-size: 731px;
             height: 186px;
-            padding-right: 235px;
+            padding-right: 180px;
 
             img {
                 width: 250px;
-                margin-right: 75px;
+                margin-right: 20px;
             }
         }
     }

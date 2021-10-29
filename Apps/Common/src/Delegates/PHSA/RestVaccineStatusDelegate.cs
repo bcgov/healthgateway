@@ -54,7 +54,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="httpContextAccessor">The Http Context accessor.</param>
+        /// <param name="httpContextAccessor">The HTTP Context accessor.</param>
         public RestVaccineStatusDelegate(
             ILogger<RestVaccineStatusDelegate> logger,
             IHttpClientService httpClientService,
@@ -75,7 +75,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         public async Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
         {
             using Activity? activity = Source.StartActivity("GetVaccineStatus");
-            this.logger.LogDebug($"Getting vaccine status {query.HdId} {query.PersonalHealthNumber} {query.DateOfBirth} {query.DateOfVaccine}...");
+            this.logger.LogDebug($"Getting vaccine status {query.HdId} {query.PersonalHealthNumber} {query.DateOfBirth} {query.DateOfVaccine} {query.IncludeFederalVaccineProof}...");
 
             HttpContent? content = null;
             Uri endpoint = null!;
@@ -83,7 +83,7 @@ namespace HealthGateway.Common.Delegates.PHSA
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
 
-            RequestResult<PHSAResult<VaccineStatusResult>> retVal = new ()
+            RequestResult<PHSAResult<VaccineStatusResult>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
@@ -107,9 +107,10 @@ namespace HealthGateway.Common.Delegates.PHSA
                 }
                 else if (!string.IsNullOrEmpty(query.HdId))
                 {
-                    Dictionary<string, string?> queryDict = new ()
+                    Dictionary<string, string?> queryDict = new()
                     {
                         ["subjectHdid"] = query.HdId,
+                        ["federalPvc"] = query.IncludeFederalVaccineProof.ToString(),
                     };
                     endpointString += this.phsaConfig.VaccineStatusEndpoint;
                     endpoint = new Uri(QueryHelpers.AddQueryString(endpointString, queryDict));
@@ -188,7 +189,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         public async Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatusWithRetries(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
         {
             using Activity? activity = Source.StartActivity("RetryGetVaccineStatus");
-            RequestResult<PHSAResult<VaccineStatusResult>> retVal = new ()
+            RequestResult<PHSAResult<VaccineStatusResult>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
@@ -209,7 +210,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 if (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries)
                 {
                     this.logger.LogDebug($"Refresh in progress, trying again....");
-                    Thread.Sleep(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds));
+                    await Task.Delay(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds)).ConfigureAwait(true);
                 }
             }
             while (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries);
@@ -242,7 +243,7 @@ namespace HealthGateway.Common.Delegates.PHSA
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
 
-            RequestResult<PHSAResult<RecordCard>> retVal = new ()
+            RequestResult<PHSAResult<RecordCard>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
@@ -331,7 +332,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         public async Task<RequestResult<PHSAResult<RecordCard>>> GetRecordCardWithRetries(RecordCardQuery query, string accessToken)
         {
             using Activity? activity = Source.StartActivity("RetryGetRecordCard");
-            RequestResult<PHSAResult<RecordCard>> retVal = new ()
+            RequestResult<PHSAResult<RecordCard>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
@@ -352,7 +353,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 if (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries)
                 {
                     this.logger.LogDebug($"Refresh in progress, trying again....");
-                    Thread.Sleep(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds));
+                    await Task.Delay(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds)).ConfigureAwait(true);
                 }
             }
             while (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries);

@@ -15,12 +15,12 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Controllers
 {
-    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -38,23 +38,19 @@ namespace HealthGateway.Immunization.Controllers
     public class AuthenticatedVaccineStatusController : ControllerBase
     {
         private readonly ILogger logger;
-
-        /// <summary>
-        /// Gets or sets the immunization data service.
-        /// </summary>
-        private readonly IImmunizationService service;
+        private readonly IVaccineStatusService vaccineStatusService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticatedVaccineStatusController"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="svc">The immunization data service.</param>
+        /// <param name="vaccineStatusService">The injected vaccine status service.</param>
         public AuthenticatedVaccineStatusController(
             ILogger<ImmunizationController> logger,
-            IImmunizationService svc)
+            IVaccineStatusService vaccineStatusService)
         {
             this.logger = logger;
-            this.service = svc;
+            this.vaccineStatusService = vaccineStatusService;
         }
 
         /// <summary>
@@ -62,7 +58,7 @@ namespace HealthGateway.Immunization.Controllers
         /// </summary>
         /// <param name="hdid">The patient's HDID.</param>
         /// <returns>The wrapped vaccine status.</returns>
-        /// <response code="200">Returns the Vaccine status.</response>
+        /// <response code="200">Returns the Vaccine Status.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
@@ -72,18 +68,18 @@ namespace HealthGateway.Immunization.Controllers
         public async Task<IActionResult> GetVaccineStatus([FromQuery] string hdid)
         {
             this.logger.LogDebug($"Getting vaccine status for HDID {hdid}");
-            RequestResult<VaccineStatus> result = await this.service.GetCovidVaccineStatus(hdid).ConfigureAwait(true);
-
+            RequestResult<VaccineStatus> result = await this.vaccineStatusService.GetAuthenticatedVaccineStatus(hdid).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting vaccine status for HDID {hdid}");
+
             return new JsonResult(result);
         }
 
         /// <summary>
-        /// Requests the COVID-19 vaccine record for the supplied HDID if the user is the owner.
+        /// Requests the COVID-19 Vaccine Proof for the supplied HDID if the user is the owner.
         /// </summary>
         /// <param name="hdid">The patient's HDID.</param>
-        /// <returns>The PDF Vaccine Record.</returns>
-        /// <response code="200">Returns the vaccine record.</response>
+        /// <returns>The PDF Vaccine Proof.</returns>
+        /// <response code="200">Returns the Vaccine Proof.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
@@ -91,12 +87,12 @@ namespace HealthGateway.Immunization.Controllers
         [Produces("application/json")]
         [Route("pdf")]
         [Authorize(Policy = ImmunizationPolicy.Read)]
-        public async Task<IActionResult> GetVaccineRecordPdf([FromQuery] string hdid)
+        public async Task<IActionResult> GetVaccineProof([FromQuery] string hdid)
         {
-            this.logger.LogDebug($"Getting vaccine record for HDID {hdid}");
-            RequestResult<CovidVaccineRecord> result = await this.service.GetCovidVaccineRecord(hdid).ConfigureAwait(true);
+            this.logger.LogDebug($"Getting  Vaccine Proof for HDID {hdid}");
+            RequestResult<VaccineProofDocument> result = await this.vaccineStatusService.GetAuthenticatedVaccineProof(hdid).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished getting Vaccine Proof for HDID {hdid}");
 
-            this.logger.LogDebug($"Finished getting vaccine record for HDID {hdid}");
             return new JsonResult(result);
         }
     }

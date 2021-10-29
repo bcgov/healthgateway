@@ -1,4 +1,5 @@
 import BannerError from "@/models/bannerError";
+import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
 
@@ -32,5 +33,30 @@ export const getters: VaccinationStatusGetters = {
     },
     authenticatedStatusMessage(state: VaccinationStatusState): string {
         return state.authenticated.statusMessage;
+    },
+    authenticatedVaccineRecord(
+        state: VaccinationStatusState
+    ): CovidVaccineRecord | undefined {
+        return state.authenticatedVaccineRecord.vaccinationRecord;
+    },
+    authenticatedVaccineRecordIsLoading(
+        state: VaccinationStatusState
+    ): boolean {
+        return state.authenticatedVaccineRecord.status === LoadStatus.REQUESTED;
+    },
+    authenticatedVaccineRecordError(
+        state: VaccinationStatusState
+    ): BannerError | undefined {
+        return state.authenticatedVaccineRecord.error;
+    },
+    authenticatedVaccineRecordStatusMessage(
+        state: VaccinationStatusState
+    ): string {
+        return state.authenticatedVaccineRecord.statusMessage;
+    },
+    authenticatedVaccineRecordResultMessage(
+        state: VaccinationStatusState
+    ): string {
+        return state.authenticatedVaccineRecord.resultMessage;
     },
 };

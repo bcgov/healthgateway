@@ -41,7 +41,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         public void AuthSuccess()
         {
             var requirements = new[] { new ApiKeyRequirement(GetIConfigurationRoot(ApiKey)) };
-            Mock<ClaimsPrincipal> mockClaimsPrincipal = new ();
+            Mock<ClaimsPrincipal> mockClaimsPrincipal = new();
             AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, mockClaimsPrincipal.Object, null);
             ApiKeyAuthorizationHandler authHandler = GetAuthorizationHandler(ApiKey);
             authHandler.HandleAsync(context);
@@ -55,7 +55,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         public void AuthFailHeaderKeyWrong()
         {
             var requirements = new[] { new ApiKeyRequirement(GetIConfigurationRoot(ApiKey)) };
-            Mock<ClaimsPrincipal> mockClaimsPrincipal = new ();
+            Mock<ClaimsPrincipal> mockClaimsPrincipal = new();
             AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, mockClaimsPrincipal.Object, null);
             ApiKeyAuthorizationHandler authHandler = GetAuthorizationHandler(InvalidApiKey);
             authHandler.HandleAsync(context);
@@ -70,7 +70,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         public void AuthFailRequirementKeyBad()
         {
             var requirements = new[] { new ApiKeyRequirement(GetIConfigurationRoot(string.Empty)) };
-            Mock<ClaimsPrincipal> mockClaimsPrincipal = new ();
+            Mock<ClaimsPrincipal> mockClaimsPrincipal = new();
             AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, mockClaimsPrincipal.Object, null);
             ApiKeyAuthorizationHandler authHandler = GetAuthorizationHandler(InvalidApiKey);
             authHandler.HandleAsync(context);
@@ -85,7 +85,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         public void AuthFailHeaderNotFound()
         {
             var requirements = new[] { new ApiKeyRequirement(GetIConfigurationRoot(ApiKey, "fakekey")) };
-            Mock<ClaimsPrincipal> mockClaimsPrincipal = new ();
+            Mock<ClaimsPrincipal> mockClaimsPrincipal = new();
             AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, mockClaimsPrincipal.Object, null);
             ApiKeyAuthorizationHandler authHandler = GetAuthorizationHandler(InvalidApiKey);
             authHandler.HandleAsync(context);

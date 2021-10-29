@@ -74,6 +74,14 @@ namespace HealthGateway.Common.ErrorHandling
         }
 
         /// <summary>
+        /// Gets the general data validation error.
+        /// </summary>
+        public static ActionType Refresh
+        {
+            get { return new ActionType("REFRESH"); }
+        }
+
+        /// <summary>
         /// Gets or sets the value that holds the internal representation of the ActionType.
         /// </summary>
         public string Value { get; set; }

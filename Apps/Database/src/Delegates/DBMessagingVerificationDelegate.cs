@@ -156,7 +156,7 @@ namespace HealthGateway.Database.Delegates
             IList<MessagingVerification> verifications = query.Include(mv => mv.Email)
                                                               .OrderByDescending(mv => mv.CreatedDateTime)
                                                               .AsNoTracking().ToList();
-            DBResult<IEnumerable<MessagingVerification>> result = new ()
+            DBResult<IEnumerable<MessagingVerification>> result = new()
             {
                 Payload = verifications,
                 Status = DBStatusCode.Read,

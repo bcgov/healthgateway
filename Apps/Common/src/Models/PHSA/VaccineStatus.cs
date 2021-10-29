@@ -18,7 +18,6 @@ namespace HealthGateway.Common.Models.PHSA
     using System;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Constants.PHSA;
-    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
     /// The Vaccine Status model.
@@ -92,7 +91,13 @@ namespace HealthGateway.Common.Models.PHSA
         /// Gets or sets the QR code.
         /// </summary>
         [JsonPropertyName("qrCode")]
-        public EncodedMedia QRCode { get; set; } = new ();
+        public EncodedMedia QRCode { get; set; } = new();
+
+        /// <summary>
+        /// Gets or sets the Federal Proof of Vaccination document.
+        /// </summary>
+        [JsonPropertyName("federalVaccineProof")]
+        public EncodedMedia? FederalVaccineProof { get; set; } = new();
 
         /// <summary>
         /// Converts a VaccineStatusResult to a VaccineStatus model.
@@ -112,6 +117,7 @@ namespace HealthGateway.Common.Models.PHSA
                 State = Enum.Parse<VaccineState>(model.StatusIndicator),
                 VaccineDate = model.VaccineDate,
                 QRCode = model.QRCode,
+                FederalVaccineProof = model.FederalVaccineProof,
             };
         }
     }

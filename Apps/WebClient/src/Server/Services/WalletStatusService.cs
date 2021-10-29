@@ -49,7 +49,7 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public RequestResult<WalletConnection> UpdateWalletConnectionStatus(Guid connectionId, WalletConnectionStatus state)
         {
-            RequestResult<WalletConnection> result = new ()
+            RequestResult<WalletConnection> result = new()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
             };
@@ -93,7 +93,7 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public async Task<RequestResult<WalletCredential>> UpdateIssuedCredential(WebhookData agentData)
         {
-            RequestResult<WalletCredential> retVal = new ()
+            RequestResult<WalletCredential> retVal = new()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
             };

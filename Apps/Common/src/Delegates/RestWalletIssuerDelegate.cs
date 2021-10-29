@@ -69,15 +69,15 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc/>
         public async Task<RequestResult<ConnectionResponse>> CreateConnectionAsync(Guid walletConnectionId)
         {
-            RequestResult<ConnectionResponse> retVal = new ()
+            RequestResult<ConnectionResponse> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
 
             this.logger.LogInformation("Create connection invitation");
 
-            List<KeyValuePair<string?, string?>> values = new ();
-            FormUrlEncodedContent httpContent = new (values);
+            List<KeyValuePair<string?, string?>> values = new();
+            FormUrlEncodedContent httpContent = new(values);
 
             HttpResponseMessage? response;
             try
@@ -126,7 +126,7 @@ namespace HealthGateway.Common.Delegates
         public async Task<RequestResult<CredentialResponse>> CreateCredentialAsync<T>(WalletConnection connection, T payload, string comment)
             where T : CredentialPayload
         {
-            RequestResult<CredentialResponse> retVal = new ()
+            RequestResult<CredentialResponse> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -145,7 +145,7 @@ namespace HealthGateway.Common.Delegates
                     if (credentialDefinitionIdResponse.ResultStatus == ResultType.Success)
                     {
                         string credentialDefinitionId = credentialDefinitionIdResponse.ResourcePayload!.CredentialDefinitionIds.Last();
-                        CredentialProposal credentialProposal = new ();
+                        CredentialProposal credentialProposal = new();
                         foreach (PropertyInfo property in payload.GetType().GetProperties())
                         {
                             if (property != null)
@@ -204,7 +204,7 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc/>
         public async Task<RequestResult<WalletConnection>> DisconnectConnectionAsync(WalletConnection connection)
         {
-            RequestResult<WalletConnection> retVal = new ()
+            RequestResult<WalletConnection> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -241,7 +241,7 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc/>
         public async Task<RequestResult<WalletCredential>> RevokeCredentialAsync(WalletCredential credential, string revocationMessage)
         {
-            RequestResult<WalletCredential> retVal = new ()
+            RequestResult<WalletCredential> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -254,7 +254,7 @@ namespace HealthGateway.Common.Delegates
                     RevocationRegistryId = credential.RevocationRegistryId,
                 };
 
-                StringContent httpContent = new (JsonSerializer.Serialize(revokeCredentialRequest), Encoding.UTF8, "application/json");
+                StringContent httpContent = new(JsonSerializer.Serialize(revokeCredentialRequest), Encoding.UTF8, "application/json");
 
                 this.logger.LogInformation("Revoking Credential");
 
@@ -299,19 +299,19 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc/>
         public async Task<RequestResult<SchemaResponse>> CreateSchemaAsync(SchemaRequest schema)
         {
-            RequestResult<SchemaResponse> retVal = new ()
+            RequestResult<SchemaResponse> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
 
             this.logger.LogDebug("Creating Schema");
 
-            StringContent httpContent = new (JsonSerializer.Serialize(schema), Encoding.UTF8, "application/json");
+            StringContent httpContent = new(JsonSerializer.Serialize(schema), Encoding.UTF8, "application/json");
 
             HttpResponseMessage? response;
             try
             {
-                Uri endpoint = new ($"{this.WalletIssuerConfig.AgentApiUrl}schemas");
+                Uri endpoint = new($"{this.WalletIssuerConfig.AgentApiUrl}schemas");
                 response = await this.client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
 
@@ -327,19 +327,19 @@ namespace HealthGateway.Common.Delegates
                     else
                     {
                         this.logger.LogWarning($"Create schema response parse error {payload}");
-                        retVal.ResultError = new () { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                        retVal.ResultError = new() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                     }
                 }
                 else
                 {
-                    retVal.ResultError = new () { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                    retVal.ResultError = new() { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                     this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                 }
             }
 #pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
             {
-                retVal.ResultError = new () { ResultMessage = $"Exception creating schema: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                retVal.ResultError = new() { ResultMessage = $"Exception creating schema: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                 this.logger.LogError($"Unexpected exception in CreateSchemaAsync {e}");
             }
 #pragma warning restore CA1031 // Do not catch general exception types
@@ -354,26 +354,26 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc/>
         public async Task<RequestResult<CredentialDefinitionResponse>> CreateCredentialDefinitionAsync(string schemaId)
         {
-            RequestResult<CredentialDefinitionResponse> retVal = new ()
+            RequestResult<CredentialDefinitionResponse> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
 
             this.logger.LogInformation("Create credential definition.");
 
-            CredentialDefinitionRequest credentialDefinition = new ()
+            CredentialDefinitionRequest credentialDefinition = new()
             {
                 SchemaId = schemaId,
                 SupportRevocation = true,
                 Tag = "health_gateway_bc",
             };
 
-            StringContent httpContent = new (JsonSerializer.Serialize(credentialDefinition), Encoding.UTF8, "application/json");
+            StringContent httpContent = new(JsonSerializer.Serialize(credentialDefinition), Encoding.UTF8, "application/json");
 
             HttpResponseMessage? response;
             try
             {
-                Uri endpoint = new ($"{this.WalletIssuerConfig.AgentApiUrl}credential-definitions");
+                Uri endpoint = new($"{this.WalletIssuerConfig.AgentApiUrl}credential-definitions");
                 response = await this.client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
 
@@ -427,7 +427,7 @@ namespace HealthGateway.Common.Delegates
 
         private async Task<RequestResult<IssuerDidResponse>> GetIssuerDidAsync()
         {
-            RequestResult<IssuerDidResponse> retVal = new ()
+            RequestResult<IssuerDidResponse> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -437,7 +437,7 @@ namespace HealthGateway.Common.Delegates
             HttpResponseMessage? response;
             try
             {
-                Uri endpoint = new ($"{this.WalletIssuerConfig.AgentApiUrl}wallet/did/public");
+                Uri endpoint = new($"{this.WalletIssuerConfig.AgentApiUrl}wallet/did/public");
                 response = await this.client.GetAsync(endpoint).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
 
@@ -453,19 +453,19 @@ namespace HealthGateway.Common.Delegates
                     else
                     {
                         this.logger.LogWarning($"Get issuer did response parse error {payload}");
-                        retVal.ResultError = new () { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                        retVal.ResultError = new() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                     }
                 }
                 else
                 {
-                    retVal.ResultError = new () { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                    retVal.ResultError = new() { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                     this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                 }
             }
 #pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
             {
-                retVal.ResultError = new () { ResultMessage = $"Exception getting issuer did: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                retVal.ResultError = new() { ResultMessage = $"Exception getting issuer did: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                 this.logger.LogError($"Unexpected exception in GetIssuerDidAsync {e}");
             }
 #pragma warning restore CA1031 // Do not catch general exception types
@@ -475,7 +475,7 @@ namespace HealthGateway.Common.Delegates
 
         private async Task<RequestResult<string>> GetSchemaIdAsync(string did)
         {
-            RequestResult<string> retVal = new ()
+            RequestResult<string> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -485,7 +485,7 @@ namespace HealthGateway.Common.Delegates
             HttpResponseMessage? response = null;
             try
             {
-                Uri endpoint = new ($"{this.WalletIssuerConfig.AgentApiUrl}schemas/created?schema_version={this.WalletIssuerConfig.SchemaVersion}&schema_issuer_did={did}&schema_name={this.WalletIssuerConfig.SchemaName}");
+                Uri endpoint = new($"{this.WalletIssuerConfig.AgentApiUrl}schemas/created?schema_version={this.WalletIssuerConfig.SchemaVersion}&schema_issuer_did={did}&schema_name={this.WalletIssuerConfig.SchemaName}");
                 response = await this.client.GetAsync(endpoint).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
 
@@ -501,19 +501,19 @@ namespace HealthGateway.Common.Delegates
                     else
                     {
                         this.logger.LogWarning($"Get schema id response parse error {payload}");
-                        retVal.ResultError = new () { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                        retVal.ResultError = new() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                     }
                 }
                 else
                 {
-                    retVal.ResultError = new () { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                    retVal.ResultError = new() { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                     this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                 }
             }
 #pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
             {
-                retVal.ResultError = new () { ResultMessage = $"Exception getting schema id: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                retVal.ResultError = new() { ResultMessage = $"Exception getting schema id: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                 this.logger.LogError($"Unexpected exception in GetSchemaIdAsync {e}");
             }
 #pragma warning restore CA1031 // Do not catch general exception types
@@ -523,7 +523,7 @@ namespace HealthGateway.Common.Delegates
 
         private async Task<RequestResult<CredentialDefinitionIdResponse>> GetCredentialDefinitionIdsAsync(string schemaId)
         {
-            RequestResult<CredentialDefinitionIdResponse> retVal = new ()
+            RequestResult<CredentialDefinitionIdResponse> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -533,7 +533,7 @@ namespace HealthGateway.Common.Delegates
             HttpResponseMessage? response;
             try
             {
-                Uri endpoint = new ($"{this.WalletIssuerConfig.AgentApiUrl}credential-definitions/created?schema_id={schemaId}");
+                Uri endpoint = new($"{this.WalletIssuerConfig.AgentApiUrl}credential-definitions/created?schema_id={schemaId}");
                 response = await this.client.GetAsync(endpoint).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
 
@@ -549,19 +549,19 @@ namespace HealthGateway.Common.Delegates
                     else
                     {
                         this.logger.LogWarning($"Get credential definition id response parse error {payload}");
-                        retVal.ResultError = new () { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                        retVal.ResultError = new() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                     }
                 }
                 else
                 {
-                    retVal.ResultError = new () { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                    retVal.ResultError = new() { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                     this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                 }
             }
 #pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
             {
-                retVal.ResultError = new () { ResultMessage = $"Exception getting credential definition id: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                retVal.ResultError = new() { ResultMessage = $"Exception getting credential definition id: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                 this.logger.LogError($"Unexpected exception in GetCredentialDefinitionIdAsync {e}");
             }
 #pragma warning restore CA1031 // Do not catch general exception types
@@ -570,19 +570,19 @@ namespace HealthGateway.Common.Delegates
 
         private async Task<RequestResult<CredentialResponse>> IssueCredentialAsync(CredentialOfferRequest credentialOffer)
         {
-            RequestResult<CredentialResponse> retVal = new ()
+            RequestResult<CredentialResponse> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
 
             this.logger.LogDebug("Issuing Credential");
 
-            StringContent httpContent = new (JsonSerializer.Serialize(credentialOffer), Encoding.UTF8, "application/json");
+            StringContent httpContent = new(JsonSerializer.Serialize(credentialOffer), Encoding.UTF8, "application/json");
 
             HttpResponseMessage? response = null;
             try
             {
-                Uri endpoint = new ($"{this.WalletIssuerConfig.AgentApiUrl}issue-credential/send");
+                Uri endpoint = new($"{this.WalletIssuerConfig.AgentApiUrl}issue-credential/send");
                 response = await this.client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
 
@@ -598,19 +598,19 @@ namespace HealthGateway.Common.Delegates
                     else
                     {
                         this.logger.LogWarning($"Create credential response parse error {payload}");
-                        retVal.ResultError = new () { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                        retVal.ResultError = new() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                     }
                 }
                 else
                 {
-                    retVal.ResultError = new () { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                    retVal.ResultError = new() { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                     this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                 }
             }
 #pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
             {
-                retVal.ResultError = new () { ResultMessage = $"Exception issuing credential: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                retVal.ResultError = new() { ResultMessage = $"Exception issuing credential: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                 this.logger.LogError($"Unexpected exception in IssueCredentialAsync {e}");
             }
 #pragma warning restore CA1031 // Do not catch general exception types
@@ -624,7 +624,7 @@ namespace HealthGateway.Common.Delegates
 
         private async Task<RequestResult<WalletConnection>> SendMessageAsync(WalletConnection connection, string content)
         {
-            RequestResult<WalletConnection> retVal = new ()
+            RequestResult<WalletConnection> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -633,12 +633,12 @@ namespace HealthGateway.Common.Delegates
 
             object messageObject = new { content };
 
-            StringContent httpContent = new (JsonSerializer.Serialize(messageObject), Encoding.UTF8, "application/json");
+            StringContent httpContent = new(JsonSerializer.Serialize(messageObject), Encoding.UTF8, "application/json");
 
             HttpResponseMessage? response = null;
             try
             {
-                Uri endpoint = new ($"{this.WalletIssuerConfig.AgentApiUrl}connections/{connection.AgentId}/send-message");
+                Uri endpoint = new($"{this.WalletIssuerConfig.AgentApiUrl}connections/{connection.AgentId}/send-message");
                 response = await this.client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
 
@@ -648,14 +648,14 @@ namespace HealthGateway.Common.Delegates
                 }
                 else
                 {
-                    retVal.ResultError = new () { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                    retVal.ResultError = new() { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                     this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                 }
             }
 #pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
             {
-                retVal.ResultError = new () { ResultMessage = $"Exception sending message: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                retVal.ResultError = new() { ResultMessage = $"Exception sending message: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                 this.logger.LogError($"Unexpected exception in SendMessageAsync {e}");
             }
 #pragma warning restore CA1031 // Do not catch general exception types

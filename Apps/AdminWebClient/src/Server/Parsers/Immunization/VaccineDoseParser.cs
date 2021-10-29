@@ -47,7 +47,7 @@ namespace HealthGateway.Admin.Parsers.Immunization
         /// <returns>A list of vaccine dose results.</returns>
         public static IList<VaccineDose> FromPHSAModelList(IEnumerable<VaccineDoseResponse>? models)
         {
-            List<VaccineDose> doseResults = new ();
+            List<VaccineDose> doseResults = new();
             if (models != null)
             {
                 foreach (VaccineDoseResponse model in models)

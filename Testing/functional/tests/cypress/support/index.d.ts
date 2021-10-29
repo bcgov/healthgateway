@@ -12,5 +12,7 @@ declare namespace Cypress {
         enableModules(modules: string[]): Chainable<any>;
         setupDownloads(): void;
         restoreAuthCookies(): void;
+        checkVaccineRecordHasLoaded(): void;
+        checkFederalCardButtonLoaded(): void;
     }
 }

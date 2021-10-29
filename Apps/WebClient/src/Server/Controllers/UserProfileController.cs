@@ -176,7 +176,7 @@ namespace HealthGateway.WebClient.Controllers
         {
             // Retrieve the user identity id from the claims
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext!.User;
-            Guid userId = new Guid(user.FindFirst(ClaimTypes.NameIdentifier) !.Value);
+            Guid userId = new Guid(user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
             RequestResult<UserProfileModel> result = this.userProfileService.CloseUserProfile(hdid, userId);
             return new JsonResult(result);
@@ -257,7 +257,7 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}/sms/validate/{validationCode}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult ValidateSMS(string hdid, string validationCode)
+        public async Task<IActionResult> ValidateSMS(string hdid, string validationCode)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
@@ -265,7 +265,7 @@ namespace HealthGateway.WebClient.Controllers
                 PrimitiveRequestResult<bool> result = this.userSMSService.ValidateSMS(hdid, validationCode);
                 if (!result.ResourcePayload)
                 {
-                    System.Threading.Thread.Sleep(5000);
+                    await Task.Delay(5000).ConfigureAwait(true);
                 }
 
                 return new JsonResult(result);

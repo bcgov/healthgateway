@@ -102,7 +102,7 @@ namespace HealthGateway.WebClient.Listeners
                     this.logger.LogError($"DB Error encountered in WaitChannelNotification: {Channel}\n{e.ToString()}");
                     if (!stoppingToken.IsCancellationRequested)
                     {
-                        Thread.Sleep(SleepDuration);
+                        await Task.Delay(SleepDuration, stoppingToken).ConfigureAwait(true);
                     }
                 }
 

@@ -133,7 +133,7 @@ namespace HealthGateway.Common.Auditing
         /// <returns>The mapped application type.</returns>
         private static string GetApplicationType()
         {
-            AssemblyName assemblyName = Assembly.GetEntryAssembly() !.GetName();
+            AssemblyName assemblyName = Assembly.GetEntryAssembly()!.GetName();
             switch (assemblyName.Name)
             {
                 case "Configuration":

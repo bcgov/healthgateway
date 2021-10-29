@@ -7,7 +7,6 @@ import VueRouter from "vue-router";
 import Vuex, { Store } from "vuex";
 
 import { LoadStatus } from "@/models/storeOperations";
-import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
@@ -51,7 +50,6 @@ describe("Timeline view", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     logger.initialize("info");
 
-    const bannerId = "#incomplete-profile-banner";
     const linearTimelineTag = "lineartimeline-stub";
 
     test("is a Vue instance", () => {
@@ -90,47 +88,6 @@ describe("Timeline view", () => {
 
         expect(wrapper.find(linearTimelineTag).isVisible()).toBe(false);
         expect(wrapper.find("calendartimeline-stub").isVisible()).toBe(true);
-    });
-
-    test("Shows SMS incomplete profile banner", () => {
-        const user = new User();
-        user.hasSMS = true;
-        user.verifiedSMS = false;
-
-        // Setup vuex store
-        const options = new StoreOptionsStub();
-        options.modules.user.getters.user = () => user;
-        const wrapper = createWrapper(options);
-
-        expect(wrapper.find(bannerId).exists()).toBe(true);
-    });
-
-    test("Shows Email incomplete profile banner", () => {
-        const user = new User();
-        user.hasEmail = true;
-        user.verifiedEmail = false;
-
-        // Setup vuex store
-        const options = new StoreOptionsStub();
-        options.modules.user.getters.user = () => user;
-        const wrapper = createWrapper(options);
-
-        expect(wrapper.find(bannerId).exists()).toBe(true);
-    });
-
-    test("Hides incomplete profile banner when verified", () => {
-        const user = new User();
-        user.hasEmail = true;
-        user.verifiedEmail = true;
-        user.hasSMS = true;
-        user.verifiedSMS = true;
-
-        // Setup vuex store
-        const options = new StoreOptionsStub();
-        options.modules.user.getters.user = () => user;
-        const wrapper = createWrapper(options);
-
-        expect(wrapper.find(bannerId).exists()).toBe(false);
     });
 
     test("Shows Loading immunization", () => {

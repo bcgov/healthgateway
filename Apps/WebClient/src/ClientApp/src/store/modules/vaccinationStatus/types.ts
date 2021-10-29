@@ -9,7 +9,6 @@ import {
 import BannerError from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
-import Report from "@/models/report";
 import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
@@ -28,6 +27,13 @@ export interface VaccinationStatusState {
         status: LoadStatus;
         statusMessage: string;
     };
+    authenticatedVaccineRecord: {
+        vaccinationRecord?: CovidVaccineRecord;
+        error?: BannerError;
+        status: LoadStatus;
+        statusMessage: string;
+        resultMessage: string;
+    };
 }
 
 export interface VaccinationStatusGetters
@@ -44,6 +50,19 @@ export interface VaccinationStatusGetters
     authenticatedIsLoading(state: VaccinationStatusState): boolean;
     authenticatedError(state: VaccinationStatusState): BannerError | undefined;
     authenticatedStatusMessage(state: VaccinationStatusState): string;
+    authenticatedVaccineRecord(
+        state: VaccinationStatusState
+    ): CovidVaccineRecord | undefined;
+    authenticatedVaccineRecordIsLoading(state: VaccinationStatusState): boolean;
+    authenticatedVaccineRecordError(
+        state: VaccinationStatusState
+    ): BannerError | undefined;
+    authenticatedVaccineRecordStatusMessage(
+        state: VaccinationStatusState
+    ): string;
+    authenticatedVaccineRecordResultMessage(
+        state: VaccinationStatusState
+    ): string;
 }
 
 type StoreContext = ActionContext<VaccinationStatusState, RootState>;
@@ -64,7 +83,7 @@ export interface VaccinationStatusActions
             dateOfBirth: StringISODate;
             dateOfVaccine: StringISODate;
         }
-    ): Promise<Report>;
+    ): Promise<CovidVaccineRecord>;
     handleError(context: StoreContext, error: ResultError): void;
     retrieveAuthenticatedVaccineStatus(
         context: StoreContext,
@@ -107,14 +126,26 @@ export interface VaccinationStatusMutations
         state: VaccinationStatusState,
         error: BannerError
     ): void;
-    setAuthenticatedPdfRequested(state: VaccinationStatusState): void;
-    authenticatedPdfError(
-        state: VaccinationStatusState,
-        error: BannerError
-    ): void;
     setAuthenticatedStatusMessage(
         state: VaccinationStatusState,
         statusMessage: string
+    ): void;
+    setAuthenticatedVaccineRecordRequested(state: VaccinationStatusState): void;
+    setAuthenticatedVaccineRecordStatusMessage(
+        state: VaccinationStatusState,
+        statusMessage: string
+    ): void;
+    setAuthenticatedVaccineRecord(
+        state: VaccinationStatusState,
+        vaccineRecord: CovidVaccineRecord
+    ): void;
+    setAuthenticatedVaccineRecordError(
+        state: VaccinationStatusState,
+        error: BannerError
+    ): void;
+    setAuthenticatedVaccineRecordResultMessage(
+        state: VaccinationStatusState,
+        resultMessage: string
     ): void;
 }
 

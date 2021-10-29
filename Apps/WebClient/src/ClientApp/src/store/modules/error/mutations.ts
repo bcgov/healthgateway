@@ -3,7 +3,7 @@ import BannerError from "@/models/bannerError";
 import { ErrorBannerMutations, ErrorBannerState } from "./types";
 
 export const mutations: ErrorBannerMutations = {
-    dissmiss(state: ErrorBannerState) {
+    dismiss(state: ErrorBannerState) {
         state.errors = [];
         state.isShowing = !state.isShowing;
     },

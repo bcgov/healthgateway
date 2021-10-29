@@ -46,7 +46,7 @@ namespace HealthGateway.Patient.Test.Controllers
             var mockResult = new RequestResult<Common.Models.PatientModel>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
-                ResourcePayload = new ()
+                ResourcePayload = new()
                 {
                     Birthdate = DateTime.Now,
                     FirstName = MockedFirstName,

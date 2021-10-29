@@ -117,7 +117,7 @@ namespace HealthGateway.WebClient.Test.Services
         {
             string smsNumber = "1234561234";
 
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new ();
+            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
             messagingVerificationDelegateMock
                 .Setup(
                     s => s.Insert(It.IsAny<MessagingVerification>())).Returns(default(Guid));

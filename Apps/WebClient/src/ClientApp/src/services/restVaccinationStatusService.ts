@@ -5,7 +5,6 @@ import { ExternalConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
 import { ServiceName } from "@/models/errorInterfaces";
-import Report from "@/models/report";
 import RequestResult from "@/models/requestResult";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -20,8 +19,8 @@ import ErrorTranslator from "@/utility/errorTranslator";
 @injectable()
 export class RestVaccinationStatusService implements IVaccinationStatusService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly VACCINATION_STATUS_BASE_URI: string =
-        "v1/api/VaccineStatus";
+    private readonly PUBLIC_VACCINATION_STATUS_BASE_URI: string =
+        "v1/api/PublicVaccineStatus";
     private readonly AUTHENTICATED_VACCINATION_STATUS_BASE_URI: string =
         "v1/api/AuthenticatedVaccineStatus";
     private baseUri = "";
@@ -55,14 +54,16 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
 
             return this.http
                 .getWithCors<RequestResult<VaccinationStatus>>(
-                    `${this.baseUri}${this.VACCINATION_STATUS_BASE_URI}`,
+                    `${this.baseUri}${this.PUBLIC_VACCINATION_STATUS_BASE_URI}`,
                     headers
                 )
                 .then((requestResult) => {
                     resolve(requestResult);
                 })
                 .catch((err) => {
-                    this.logger.error(`Fetch error: ${err}`);
+                    this.logger.error(
+                        `Fetch public vaccine status error: ${err}`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
@@ -77,7 +78,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
         phn: string,
         dateOfBirth: StringISODate,
         dateOfVaccine: StringISODate
-    ): Promise<RequestResult<Report>> {
+    ): Promise<RequestResult<CovidVaccineRecord>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
                 reject();
@@ -88,17 +89,18 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
             headers["phn"] = phn;
             headers["dateOfBirth"] = dateOfBirth;
             headers["dateOfVaccine"] = dateOfVaccine;
-
             return this.http
-                .getWithCors<RequestResult<Report>>(
-                    `${this.baseUri}${this.VACCINATION_STATUS_BASE_URI}/pdf`,
+                .getWithCors<RequestResult<CovidVaccineRecord>>(
+                    `${this.baseUri}${this.PUBLIC_VACCINATION_STATUS_BASE_URI}/pdf`,
                     headers
                 )
                 .then((requestResult) => {
                     resolve(requestResult);
                 })
                 .catch((err) => {
-                    this.logger.error(`Fetch report error: ${err}`);
+                    this.logger.error(
+                        `Fetch public vaccine proof error: ${err}`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
@@ -126,7 +128,9 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
                     resolve(requestResult);
                 })
                 .catch((err) => {
-                    this.logger.error(`Fetch vaccine status: ${err}`);
+                    this.logger.error(
+                        `Fetch authenticated vaccine status error: ${err}`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
@@ -154,7 +158,9 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
                     resolve(requestResult);
                 })
                 .catch((err) => {
-                    this.logger.error(`Fetch vaccine record error: ${err}`);
+                    this.logger.error(
+                        `Fetch authenticated vaccine proof error: ${err}`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,

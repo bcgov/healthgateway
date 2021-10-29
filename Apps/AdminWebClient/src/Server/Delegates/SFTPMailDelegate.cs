@@ -65,7 +65,7 @@ namespace HealthGateway.Admin.Server.Delegates
                     privateKey = new PrivateKeyFile(this.documentStorageConfiguration.PrivateKeyPath);
                 }
 
-                this.connectionInfo = new (
+                this.connectionInfo = new(
                 this.documentStorageConfiguration.SftpHostname,
                 this.documentStorageConfiguration.SftpPort,
                 this.documentStorageConfiguration.SftpUsername,
@@ -90,7 +90,7 @@ namespace HealthGateway.Admin.Server.Delegates
             using Activity? activity = Source.StartActivity("SendDocument");
             this.logger.LogDebug($"Sending document to mail {document.FileName}...");
 
-            PrimitiveRequestResult<bool> retVal = new ();
+            PrimitiveRequestResult<bool> retVal = new();
 
             if (!this.connectionInitialized)
             {
@@ -105,8 +105,8 @@ namespace HealthGateway.Admin.Server.Delegates
 
                 try
                 {
-                    using MemoryStream documentStream = new (documentBytes);
-                    using SftpClient sftpClient = new (this.connectionInfo);
+                    using MemoryStream documentStream = new(documentBytes);
+                    using SftpClient sftpClient = new(this.connectionInfo);
 
                     sftpClient.Connect();
                     sftpClient.ChangeDirectory(this.documentStorageConfiguration.SftpFolderPath);

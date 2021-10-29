@@ -326,7 +326,7 @@ describe("Public User - Vaccine Card Page", () => {
         cy.get(feedbackDovIsRequiredSelector).should("be.visible");
     });
 
-    it("Public Vaccination Card - Partially Vaccinated 1 Dose", () => {
+    it("Public Vaccination Card - Partially Vaccinated", () => {
         const phn = "9735353315";
         const dobYear = "1967";
         const dobMonth = "June";
@@ -357,7 +357,7 @@ describe("Public User - Vaccine Card Page", () => {
         cy.get("[data-testid=statusPartiallyVaccinated]").should("be.visible");
     });
 
-    it("Public Vaccination Card - Fully Vaccinated 2 Doses", () => {
+    it("Public Vaccination Card - Fully Vaccinated", () => {
         const phn = "9735361219 ";
         const dobYear = "1994";
         const dobMonth = "June";
@@ -365,68 +365,6 @@ describe("Public User - Vaccine Card Page", () => {
         const dovYear = "2021";
         const dovMonth = "January";
         const dovDay = "20";
-
-        cy.enableModules([
-            "Immunization",
-            vaccinationStatusModule,
-            "VaccinationStatusPdf",
-        ]);
-        cy.visit(vaccineCardUrl);
-
-        enterVaccineCardPHN(phn);
-
-        select(dobYearSelector, dobYear);
-        select(dobMonthSelector, dobMonth);
-        select(dobDaySelector, dobDay);
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
-        select(dovDaySelector, dovDay);
-
-        clickVaccineCardEnterButton();
-
-        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
-        cy.get("[data-testid=statusVaccinated]").should("be.visible");
-    });
-
-    it("Public Vaccination Card - Fully Vaccinated 1 Dose", () => {
-        const phn = "9000691107";
-        const dobYear = "1987";
-        const dobMonth = "March";
-        const dobDay = "23";
-        const dovYear = "2021";
-        const dovMonth = "May";
-        const dovDay = "15";
-
-        cy.enableModules([
-            "Immunization",
-            vaccinationStatusModule,
-            "VaccinationStatusPdf",
-        ]);
-        cy.visit(vaccineCardUrl);
-
-        enterVaccineCardPHN(phn);
-
-        select(dobYearSelector, dobYear);
-        select(dobMonthSelector, dobMonth);
-        select(dobDaySelector, dobDay);
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
-        select(dovDaySelector, dovDay);
-
-        clickVaccineCardEnterButton();
-
-        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
-        cy.get("[data-testid=statusVaccinated]").should("be.visible");
-    });
-
-    it("Public Vaccination Card - Fully Vaccinated 3 Doses", () => {
-        const phn = "9000691185";
-        const dobYear = "1990";
-        const dobMonth = "June";
-        const dobDay = "21";
-        const dovYear = "2021";
-        const dovMonth = "March";
-        const dovDay = "1";
 
         cy.enableModules([
             "Immunization",

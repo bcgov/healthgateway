@@ -65,7 +65,7 @@ namespace HealthGateway.WebClient.Services
                 if (!string.IsNullOrWhiteSpace(clientEmail))
                 {
                     this.logger.LogTrace($"Queueing Admin Feedback job");
-                    ClientFeedback clientFeedback = new ()
+                    ClientFeedback clientFeedback = new()
                     {
                         UserFeedbackId = userFeedback.Id,
                         Email = clientEmail,

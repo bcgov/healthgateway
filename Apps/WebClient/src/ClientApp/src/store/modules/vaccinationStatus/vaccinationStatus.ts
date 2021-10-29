@@ -18,6 +18,13 @@ const state: VaccinationStatusState = {
         status: LoadStatus.NONE,
         statusMessage: "",
     },
+    authenticatedVaccineRecord: {
+        vaccinationRecord: undefined,
+        error: undefined,
+        status: LoadStatus.NONE,
+        statusMessage: "",
+        resultMessage: "",
+    },
 };
 
 const namespaced = true;

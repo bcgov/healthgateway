@@ -1,0 +1,18 @@
+{
+    "resourcePayload": {
+        "loaded": false,
+        "retryin": 10000,
+        "document": {
+            "mediaType": "application/pdf",
+            "encoding": "base64",
+            "data": ""
+        }
+    },
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 2,
+    "resultError": {
+        "actionCode": "REFRESH"
+    }
+}
