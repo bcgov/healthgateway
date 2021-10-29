@@ -226,7 +226,7 @@ export const actions: VaccinationStatusActions = {
             vaccinationStatusService
                 .getAuthenticatedVaccineRecord(params.hdid)
                 .then((result) => {
-                    const payload = result.resourcePayload;                 
+                    const payload = result.resourcePayload;
                     if (result.resultStatus === ResultType.Success) {
                         context.commit(
                             "setAuthenticatedVaccineRecord",
