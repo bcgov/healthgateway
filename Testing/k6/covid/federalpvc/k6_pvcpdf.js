@@ -24,7 +24,8 @@ export let environment = __ENV.HG_ENV ? __ENV.HG_ENV : "test"; // default to tes
 export let specialHeaderKey = __ENV.HG_KEY ? __ENV.HG_KEY : "nokey"; // special key 
 
 export let baseSiteUrl = "https://" + environment + ".healthgateway.gov.bc.ca";
-export let cardUrl = baseSiteUrl + "/api/immunizationservice/v1/api/VaccineStatus";
+export let VaccineStatusService = environment.includes("dev") ? "PublicVaccineStatus" : "VaccineStatus";
+export let cardUrl = baseSiteUrl + "/api/immunizationservice/v1/api/" + VaccineStatusService;
 export let pdfUrl = cardUrl + "/pdf";
 export let entryPageUrl = baseSiteUrl + "/vaccinecard";
 export let vendorChunkJsUrl = baseSiteUrl + "/js/chunk-vendors.c61f122d.js";
@@ -67,17 +68,17 @@ export let rpsRampingOptions = {
             executor: 'ramping-arrival-rate',
             startRate: 60,
             timeUnit: '1m',
-            preAllocatedVUs: 100,
-            maxVUs: 200,
+            preAllocatedVUs: 150,
+            maxVUs: 400,
             stages: [
-                { target: 120, duration: '30s' },
-                { target: 240, duration: '1m' },
-                { target: 480, duration: '2m' },
+                { target: 120, duration: '10s' },
+                { target: 240, duration: '30s' },
+                { target: 480, duration: '30s' },
                 { target: 960, duration: '30s' },
-                { target: 1100, duration: '3m' },
-                { target: 960, duration: '1m' },
+                { target: 1100, duration: '1m' },
+                { target: 1500, duration: '1m' },
                 { target: 240, duration: '1m' },
-                { target: 0, duration: '30s' }
+                { target: 10, duration: '15s' }
             ],
         },
     },
@@ -98,15 +99,17 @@ export let onceOptions = {
 };
 
 export let loadOptions = {
+    discardResponseBodies: false,
     stages: [
         { duration: "30s", target: 50 },
         { duration: "30s", target: 75 },
         { duration: "1m", target: 150 },
-        { duration: "2m", target: 200 },
-        { duration: "2m", target: 300 },
-        { duration: "3m", target: 400 },
-        { duration: "30s", target: 100 },
-        { duration: "20s", target: 50 },
+        { duration: "1m", target: 200 },
+        { duration: "1m", target: 300 },
+        { duration: "2m", target: 400 },
+        { duration: "30s", target: 600 },
+        { duration: "20s", target: 200 },
+        { duration: "20s", target: 100 },
         { duration: "10s", target: 1 },
     ],
     thresholds: {
@@ -203,7 +206,7 @@ export default function () {
 
     let randomUser = csvData[__VU % csvData.length];
 
-    //console.log('Random user: ', JSON.stringify(randomUser));
+    console.log('Random user: ', JSON.stringify(randomUser));
 
     let headers = {
         'User-Agent': 'k6',
@@ -225,15 +228,15 @@ export default function () {
         });
         checkResponse(responses[0]);
         success = check(responses[0], {
-            'Reached VaccineCard Page; Not Queue-IT': (r) => r.status === 200 && r.body.search('queue-it.net') === -1,
-            'VaccineCard Page Title Correct': (r) => r.status === 200 && r.html('title').text() == 'Health Gateway',
+            'Reached VaccineCard Page; Not Queue-IT': (r) => (r.status == 200) && (r.body.search('queue-it.net') === -1),
+            'VaccineCard Page Title Correct': (r) => (r.status == 200) && (r.html('title').text() == 'Health Gateway'),
         });
-    });
+    }); 
 
     group('get vaccinecard with QR', function () {
 
         if (success) {
-            sleep(5);  // the min time we think it would take someone to enter their information
+            sleep(3);  // min time we think it would take someone to enter their information
 
             let params = {
                 headers: {
@@ -248,8 +251,10 @@ export default function () {
 
             checkResponse(res2);
             check(res2, {
-                'Reached API Endpoint; Not Queue-IT': (r) => r.status === 200 && r.body.search('queue-it.net') === -1,
-                'API Response Content-Type is JSON': (r) => r.status === 200 && r.headers['Content-Type'].search('application/json') >= 0,
+                'Reached API Endpoint; Not Queue-IT': (r) => (r.status === 200) 
+                    && (r.body.search('queue-it.net') === -1),
+                'API Response Content-Type is JSON': (r) => (r.status === 200)
+                    && (r.headers['Content-Type'].search('application/json') >= 0),
             });
         }
         else {
@@ -272,12 +277,17 @@ export default function () {
         sleep(1); // the think-time before user chooses to download the pdfUrl.
         let res3 = http.get(pdfUrl, requestParams);
 
+        //console.log(res3.body.toString());
+
         checkResponse(res3);
         check(res3, {
-            'Reached VaccineStatus/pdf API Endpoint; Not Queue-IT': (r) => r.status === 200 && r.body.search('queue-it.net') === -1,
-            'Response Content-Type is application/json': (r) => r.status === 200 && r.headers['Content-Type'].search('application/json') >= 0,
-            'Response contains the Base64 PDF': (r) => r.status === 200 && r.body.includes("resourcePayload") && r.body.includes("VaccineProof.pdf") && r.body.includes("data"),
-            'Response does not contain actionCode=REFRESH': (r) => r.status === 200 && !(r.body.includes("actionCode") && r.body.includes("REFRESH"))
+            'Reached VaccineStatus/pdf API Endpoint; Not Queue-IT': (r) => (r.status === 200) && !r.body.includes('queue-it.net'),
+            'Response Content-Type is application/json': (r) => (r.status === 200) && (r.headers['Content-Type'].search('application/json') >= 0),
+            'Response contains a Federal PDF': (r) => (r.status === 200) 
+                && r.body.includes("\"resourcePayload\":")
+                && r.body.includes("\"mediaType\": \"application/pdf\"")
+                && r.body.includes("\"encoding\": \"base64\"")
+                && (r.json()['resultStatus'] === 1)
         });
 
     });
