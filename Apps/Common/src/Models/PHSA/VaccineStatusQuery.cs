@@ -46,5 +46,11 @@ namespace HealthGateway.Common.Models.PHSA
         /// </summary>
         [JsonPropertyName("dateOfVaccination")]
         public DateTime DateOfVaccine { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the Federal Proof of Vaccination document should be included.
+        /// </summary>
+        [JsonPropertyName("federalPvc")]
+        public bool IncludeFederalVaccineProof { get; set; }
     }
 }

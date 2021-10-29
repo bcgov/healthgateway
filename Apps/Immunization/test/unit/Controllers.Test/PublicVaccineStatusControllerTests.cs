@@ -22,16 +22,15 @@ namespace HealthGateway.Immunization.Test.Controllers
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Controllers;
-    using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
     /// <summary>
-    /// VaccineStatusController's Unit Tests.
+    /// PublicVaccineStatusController's Unit Tests.
     /// </summary>
-    public class VaccineStatusControllerTests
+    public class PublicVaccineStatusControllerTests
     {
         private readonly string phn = "1234567890";
         private readonly string dob = "1990-01-05";
@@ -59,10 +58,10 @@ namespace HealthGateway.Immunization.Test.Controllers
             };
 
             Mock<IVaccineStatusService> svcMock = new Mock<IVaccineStatusService>();
-            svcMock.Setup(s => s.GetVaccineStatus(this.phn, this.dob, this.dov)).ReturnsAsync(expectedRequestResult);
+            svcMock.Setup(s => s.GetPublicVaccineStatus(this.phn, this.dob, this.dov)).ReturnsAsync(expectedRequestResult);
 
-            VaccineStatusController controller = new VaccineStatusController(
-                new Mock<ILogger<VaccineStatusController>>().Object,
+            PublicVaccineStatusController controller = new PublicVaccineStatusController(
+                new Mock<ILogger<PublicVaccineStatusController>>().Object,
                 svcMock.Object);
 
             // Act

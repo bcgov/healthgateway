@@ -27,7 +27,9 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Utils;
-    using HealthGateway.Database.Constants;
+    using HealthGateway.Immunization.Models;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -42,8 +44,8 @@ namespace HealthGateway.Immunization.Services
         private const string TokenCacheKey = "TokenCacheKey";
 
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
-        private readonly IVaccineProofService vpService;
         private readonly IAuthenticationDelegate authDelegate;
+        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IMemoryCache memoryCache;
         private readonly ILogger<VaccineStatusService> logger;
         private readonly ClientCredentialsTokenRequest tokenRequest;
@@ -58,19 +60,18 @@ namespace HealthGateway.Immunization.Services
         /// <param name="logger">The injected logger.</param>
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="vaccineStatusDelegate">The injected vaccine status delegate.</param>
-        /// <param name="vaccineProofService">The injected vaccine proof service.</param>
         /// <param name="memoryCache">The cache to use to reduce lookups.</param>
+        /// <param name="httpContextAccessor">The injected http context accessor.</param>
         public VaccineStatusService(
             IConfiguration configuration,
             ILogger<VaccineStatusService> logger,
             IAuthenticationDelegate authDelegate,
             IVaccineStatusDelegate vaccineStatusDelegate,
-            IVaccineProofService vaccineProofService,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.authDelegate = authDelegate;
             this.vaccineStatusDelegate = vaccineStatusDelegate;
-            this.vpService = vaccineProofService;
 
             IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
             this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
@@ -82,15 +83,99 @@ namespace HealthGateway.Immunization.Services
             configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
 
             this.memoryCache = memoryCache;
+            this.httpContextAccessor = httpContextAccessor;
             this.logger = logger;
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus(string phn, string dateOfBirth, string dateOfVaccine)
+        public async Task<RequestResult<VaccineStatus>> GetPublicVaccineStatus(string phn, string dateOfBirth, string dateOfVaccine)
+        {
+            bool includeVaccineProof = false;
+            return await this.GetPublicVaccineStatusWithOptionalProof(phn, dateOfBirth, dateOfVaccine, includeVaccineProof).ConfigureAwait(true);
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<VaccineStatus>> GetAuthenticatedVaccineStatus(string hdid)
+        {
+            bool includeVaccineProof = false;
+            return await this.GetAuthenticatedVaccineStatusWithOptionalProof(hdid, includeVaccineProof).ConfigureAwait(true);
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<VaccineProofDocument>> GetPublicVaccineProof(string phn, string dateOfBirth, string dateOfVaccine)
+        {
+            bool includeVaccineProof = true;
+            RequestResult<VaccineStatus> vaccineStatusResult = await this.GetPublicVaccineStatusWithOptionalProof(phn, dateOfBirth, dateOfVaccine, includeVaccineProof).ConfigureAwait(true);
+
+            RequestResult<VaccineProofDocument> retVal = new()
+            {
+                ResultStatus = vaccineStatusResult.ResultStatus,
+                ResultError = vaccineStatusResult.ResultError,
+                TotalResultCount = vaccineStatusResult.TotalResultCount,
+                PageIndex = vaccineStatusResult.PageIndex,
+            };
+            if (vaccineStatusResult.ResourcePayload?.FederalVaccineProof?.Data != null)
+            {
+                retVal.ResourcePayload = new()
+                {
+                    Loaded = vaccineStatusResult.ResourcePayload.Loaded,
+                    RetryIn = vaccineStatusResult.ResourcePayload.RetryIn,
+                    Document = vaccineStatusResult.ResourcePayload.FederalVaccineProof,
+                    QRCode = vaccineStatusResult.ResourcePayload.QRCode,
+                };
+            }
+            else
+            {
+                retVal.ResultStatus = ResultType.Error;
+                if (retVal.ResultError == null)
+                {
+                    retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine Proof document is not available.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                }
+            }
+
+            return retVal;
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<VaccineProofDocument>> GetAuthenticatedVaccineProof(string hdid)
+        {
+            bool includeVaccineProof = true;
+            RequestResult<VaccineStatus> vaccineStatusResult = await this.GetAuthenticatedVaccineStatusWithOptionalProof(hdid, includeVaccineProof).ConfigureAwait(true);
+
+            RequestResult<VaccineProofDocument> retVal = new()
+            {
+                ResultStatus = vaccineStatusResult.ResultStatus,
+                ResultError = vaccineStatusResult.ResultError,
+                TotalResultCount = vaccineStatusResult.TotalResultCount,
+                PageIndex = vaccineStatusResult.PageIndex,
+            };
+            if (vaccineStatusResult.ResourcePayload?.FederalVaccineProof?.Data != null)
+            {
+                retVal.ResourcePayload = new()
+                {
+                    Loaded = vaccineStatusResult.ResourcePayload.Loaded,
+                    RetryIn = vaccineStatusResult.ResourcePayload.RetryIn,
+                    Document = vaccineStatusResult.ResourcePayload.FederalVaccineProof,
+                    QRCode = vaccineStatusResult.ResourcePayload.QRCode,
+                };
+            }
+            else
+            {
+                retVal.ResultStatus = ResultType.Error;
+                if (retVal.ResultError == null)
+                {
+                    retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine Proof document is not available.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                }
+            }
+
+            return retVal;
+        }
+
+        private async Task<RequestResult<VaccineStatus>> GetPublicVaccineStatusWithOptionalProof(string phn, string dateOfBirth, string dateOfVaccine, bool includeVaccineProof)
         {
             RequestResult<VaccineStatus> retVal = new()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
             };
 
             DateTime dob;
@@ -100,7 +185,7 @@ namespace HealthGateway.Immunization.Services
             }
             catch (Exception e) when (e is FormatException || e is ArgumentNullException)
             {
-                retVal.ResultStatus = Common.Constants.ResultType.Error;
+                retVal.ResultStatus = ResultType.Error;
                 retVal.ResultError = new RequestResultError()
                 {
                     ResultMessage = "Error parsing date of birth",
@@ -116,7 +201,7 @@ namespace HealthGateway.Immunization.Services
             }
             catch (Exception e) when (e is FormatException || e is ArgumentNullException)
             {
-                retVal.ResultStatus = Common.Constants.ResultType.Error;
+                retVal.ResultStatus = ResultType.Error;
                 retVal.ResultError = new RequestResultError()
                 {
                     ResultMessage = "Error parsing date of vaccine",
@@ -127,7 +212,7 @@ namespace HealthGateway.Immunization.Services
 
             if (!PHNValidator.IsValid(phn))
             {
-                retVal.ResultStatus = Common.Constants.ResultType.Error;
+                retVal.ResultStatus = ResultType.Error;
                 retVal.ResultError = new RequestResultError()
                 {
                     ResultMessage = "Error parsing phn",
@@ -141,6 +226,7 @@ namespace HealthGateway.Immunization.Services
                 PersonalHealthNumber = phn,
                 DateOfBirth = dob,
                 DateOfVaccine = dov,
+                IncludeFederalVaccineProof = includeVaccineProof,
             };
 
             this.memoryCache.TryGetValue(TokenCacheKey, out string? accessToken);
@@ -167,9 +253,38 @@ namespace HealthGateway.Immunization.Services
                 }
             }
 
-            RequestResult<PHSAResult<VaccineStatusResult>> result =
-                await this.vaccineStatusDelegate.GetVaccineStatus(query, accessToken, true).ConfigureAwait(true);
+            retVal = await this.GetVaccineStatusFromDelegate(query, accessToken, phn).ConfigureAwait(true);
+
+            return retVal;
+        }
+
+        private async Task<RequestResult<VaccineStatus>> GetAuthenticatedVaccineStatusWithOptionalProof(string hdid, bool includeVaccineProof)
+        {
+            // Gets the current user access token and pass it along to PHSA
+            string? bearerToken = await this.httpContextAccessor.HttpContext!.GetTokenAsync("access_token").ConfigureAwait(true);
+
+            VaccineStatusQuery query = new()
+            {
+                HdId = hdid,
+                IncludeFederalVaccineProof = includeVaccineProof,
+            };
+
+            RequestResult<VaccineStatus> retVal = await this.GetVaccineStatusFromDelegate(query, bearerToken).ConfigureAwait(true);
+
+            return retVal;
+        }
+
+        private async Task<RequestResult<VaccineStatus>> GetVaccineStatusFromDelegate(VaccineStatusQuery query, string accessToken, string? phn = null)
+        {
+            RequestResult<VaccineStatus> retVal = new()
+            {
+                ResultStatus = ResultType.Error,
+            };
+
+            bool isPublicEndpoint = string.IsNullOrEmpty(query.HdId);
+            RequestResult<PHSAResult<VaccineStatusResult>> result = await this.vaccineStatusDelegate.GetVaccineStatus(query, accessToken, isPublicEndpoint).ConfigureAwait(true);
             VaccineStatusResult? payload = result.ResourcePayload?.Result;
+
             retVal.ResultStatus = result.ResultStatus;
             retVal.ResultError = result.ResultError;
 
@@ -198,67 +313,6 @@ namespace HealthGateway.Immunization.Services
             {
                 retVal.ResourcePayload.Loaded = !result.ResourcePayload.LoadState.RefreshInProgress;
                 retVal.ResourcePayload.RetryIn = Math.Max(result.ResourcePayload.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds);
-            }
-
-            return retVal;
-        }
-
-        /// <inheritdoc/>
-        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF(string phn, string dateOfBirth, string dateOfVaccine, VaccineProofTemplate proofTemplate)
-        {
-            RequestResult<ReportModel> retVal;
-            RequestResult<VaccineStatus> vsResult = await this.GetVaccineStatus(phn, dateOfBirth, dateOfVaccine).ConfigureAwait(true);
-            if (vsResult.ResultStatus == ResultType.Success && vsResult.ResourcePayload != null && vsResult.ResourcePayload.Loaded)
-            {
-                retVal = await this.GetVaccineProof(phn, vsResult.ResourcePayload, proofTemplate).ConfigureAwait(true);
-            }
-            else
-            {
-                retVal = new()
-                {
-                    ResultStatus = vsResult.ResultStatus,
-                    ResultError = vsResult.ResultError,
-                };
-            }
-
-            return retVal;
-        }
-
-        private async Task<RequestResult<ReportModel>> GetVaccineProof(string phn, VaccineStatus vaccineStatus, VaccineProofTemplate proofTemplate)
-        {
-            RequestResult<ReportModel> retVal = new()
-            {
-                ResultStatus = ResultType.Error,
-            };
-            VaccineState state = vaccineStatus.State;
-            if (state == VaccineState.NotFound || state == VaccineState.DataMismatch || state == VaccineState.Threshold || state == VaccineState.Blocked)
-            {
-                retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine status not found", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA) };
-            }
-            else
-            {
-                VaccinationStatus requestState = state switch
-                {
-                    VaccineState.AllDosesReceived => VaccinationStatus.Fully,
-                    VaccineState.PartialDosesReceived => VaccinationStatus.Partially,
-                    VaccineState.Exempt => VaccinationStatus.Exempt,
-                    _ => VaccinationStatus.Unknown,
-                };
-
-                if (requestState != VaccinationStatus.Unknown)
-                {
-                    VaccineProofRequest request = new()
-                    {
-                        Status = requestState,
-                        SmartHealthCardQr = vaccineStatus.QRCode.Data!,
-                    };
-
-                    retVal = await this.vpService.GetVaccineProof(phn, request, proofTemplate).ConfigureAwait(true);
-                }
-                else
-                {
-                    retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine status is unknown", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
-                }
             }
 
             return retVal;

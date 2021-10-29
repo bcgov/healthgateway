@@ -17,7 +17,6 @@ import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
 import { ResultType } from "@/constants/resulttype";
 import { VaccinationState } from "@/constants/vaccinationState";
-import { VaccineProofTemplate } from "@/constants/vaccineProofTemplate";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
@@ -241,17 +240,17 @@ export default class PublicVaccineCardView extends Vue {
                         action: "download_card",
                         text: "Public COVID Card PDF",
                     });
-                    const mimeType = "application/pdf";
-                    const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
+                    const mimeType = result.resourcePayload.document.mediaType;
+                    const downloadLink = `data:${mimeType};base64,${result.resourcePayload.document.data}`;
 
                     fetch(downloadLink).then((res) => {
                         res.blob().then((blob) => {
-                            saveAs(blob, result.resourcePayload.fileName);
+                            saveAs(blob, "VaccineProof.pdf");
                         });
                     });
                 } else {
                     this.logger.error(
-                        "Error returned when retrieving vaccine PDF: " +
+                        "Error returned when retrieving vaccine proof PDF: " +
                             JSON.stringify(result.resultError)
                     );
                     this.downloadError = ErrorTranslator.toBannerError(

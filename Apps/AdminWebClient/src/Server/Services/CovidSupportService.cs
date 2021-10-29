@@ -45,7 +45,6 @@ namespace HealthGateway.Admin.Services
         private readonly IPatientService patientService;
         private readonly IImmunizationAdminDelegate immunizationDelegate;
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
-        private readonly IMailDelegate mailDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IVaccineProofDelegate vaccineProofDelegate;
         private readonly BCMailPlusConfig bcmpConfig;
@@ -58,7 +57,6 @@ namespace HealthGateway.Admin.Services
         /// <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
         /// <param name="immunizationDelegate">Delegate that provides immunization information.</param>
         /// <param name="vaccineStatusDelegate">The injected delegate that provides vaccine status information.</param>
-        /// <param name="mailDelegate">Delegate that provides mailing functionality.</param>
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="vaccineProofDelegate">The injected delegate to get the vaccine proof.</param>
@@ -67,7 +65,6 @@ namespace HealthGateway.Admin.Services
             IPatientService patientService,
             IImmunizationAdminDelegate immunizationDelegate,
             IVaccineStatusDelegate vaccineStatusDelegate,
-            IMailDelegate mailDelegate,
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
             IVaccineProofDelegate vaccineProofDelegate)
@@ -76,7 +73,6 @@ namespace HealthGateway.Admin.Services
             this.patientService = patientService;
             this.immunizationDelegate = immunizationDelegate;
             this.vaccineStatusDelegate = vaccineStatusDelegate;
-            this.mailDelegate = mailDelegate;
             this.httpContextAccessor = httpContextAccessor;
             this.vaccineProofDelegate = vaccineProofDelegate;
 
