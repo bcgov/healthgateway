@@ -213,6 +213,7 @@ export default function () {
         'X-API-KEY': specialHeaderKey,
     }
     let success = false;
+    http.setResponseCallback(http.expectedStatuses(200));
 
     group('Get SPA Web Page Assets Async', function () {
 
@@ -249,8 +250,6 @@ export default function () {
                     'dateOfVaccine': randomUser.dateOfVaccine
                 }
             }
-
-            http.setResponseCallback(http.expectedStatuses(200));
 
             let res2 = http.get(cardUrl, params);
 
