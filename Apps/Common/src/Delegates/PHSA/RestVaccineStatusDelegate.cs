@@ -54,7 +54,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="httpContextAccessor">The Http Context accessor.</param>
+        /// <param name="httpContextAccessor">The HTTP Context accessor.</param>
         public RestVaccineStatusDelegate(
             ILogger<RestVaccineStatusDelegate> logger,
             IHttpClientService httpClientService,
@@ -75,7 +75,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         public async Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
         {
             using Activity? activity = Source.StartActivity("GetVaccineStatus");
-            this.logger.LogDebug($"Getting vaccine status {query.HdId} {query.PersonalHealthNumber} {query.DateOfBirth} {query.DateOfVaccine}...");
+            this.logger.LogDebug($"Getting vaccine status {query.HdId} {query.PersonalHealthNumber} {query.DateOfBirth} {query.DateOfVaccine} {query.IncludeFederalVaccineProof}...");
 
             HttpContent? content = null;
             Uri endpoint = null!;
@@ -110,6 +110,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                     Dictionary<string, string?> queryDict = new()
                     {
                         ["subjectHdid"] = query.HdId,
+                        ["federalPvc"] = query.IncludeFederalVaccineProof.ToString(),
                     };
                     endpointString += this.phsaConfig.VaccineStatusEndpoint;
                     endpoint = new Uri(QueryHelpers.AddQueryString(endpointString, queryDict));

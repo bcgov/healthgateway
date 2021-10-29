@@ -1,10 +1,8 @@
 import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
-import { VaccineProofTemplate } from "@/constants/vaccineProofTemplate";
 import BannerError from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
-import Report from "@/models/report";
 import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -79,9 +77,8 @@ export const actions: VaccinationStatusActions = {
             phn: string;
             dateOfBirth: StringISODate;
             dateOfVaccine: StringISODate;
-            proofTemplate: VaccineProofTemplate;
         }
-    ): Promise<Report> {
+    ): Promise<CovidVaccineRecord> {
         context.commit("setPdfRequested");
 
         const vaccinationStatusService: IVaccinationStatusService =
@@ -94,8 +91,7 @@ export const actions: VaccinationStatusActions = {
                 .getPublicVaccineStatusPdf(
                     params.phn,
                     params.dateOfBirth,
-                    params.dateOfVaccine,
-                    params.proofTemplate
+                    params.dateOfVaccine
                 )
                 .then((result) => {
                     if (result.resultStatus === ResultType.Success) {
@@ -213,7 +209,6 @@ export const actions: VaccinationStatusActions = {
         context,
         params: {
             hdid: string;
-            proofTemplate: VaccineProofTemplate;
         }
     ): Promise<CovidVaccineRecord> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
@@ -226,10 +221,7 @@ export const actions: VaccinationStatusActions = {
             logger.debug(`Retrieving Vaccination Record`);
             context.commit("setAuthenticatedVaccineRecordRequested");
             vaccinationStatusService
-                .getAuthenticatedVaccineRecord(
-                    params.hdid,
-                    params.proofTemplate
-                )
+                .getAuthenticatedVaccineRecord(params.hdid)
                 .then((result) => {
                     const payload = result.resourcePayload;
                     if (result.resultStatus === ResultType.Success) {
