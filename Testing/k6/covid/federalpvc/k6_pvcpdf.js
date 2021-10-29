@@ -24,8 +24,7 @@ export let environment = __ENV.HG_ENV ? __ENV.HG_ENV : "test"; // default to tes
 export let specialHeaderKey = __ENV.HG_KEY ? __ENV.HG_KEY : "nokey"; // special key 
 
 export let baseSiteUrl = "https://" + environment + ".healthgateway.gov.bc.ca";
-export let VaccineStatusService = environment.includes("dev") ? "PublicVaccineStatus" : "VaccineStatus";
-export let cardUrl = baseSiteUrl + "/api/immunizationservice/v1/api/" + VaccineStatusService;
+export let cardUrl = baseSiteUrl + "/api/immunizationservice/v1/api/PublicVaccineStatus";
 export let pdfUrl = cardUrl + "/pdf";
 export let entryPageUrl = baseSiteUrl + "/vaccinecard";
 export let vendorChunkJsUrl = baseSiteUrl + "/js/chunk-vendors.c61f122d.js";
@@ -69,7 +68,7 @@ export let rpsRampingOptions = {
             startRate: 60,
             timeUnit: '1m',
             preAllocatedVUs: 150,
-            maxVUs: 400,
+            maxVUs: 1000,
             stages: [
                 { target: 120, duration: '10s' },
                 { target: 240, duration: '30s' },
@@ -77,6 +76,7 @@ export let rpsRampingOptions = {
                 { target: 960, duration: '30s' },
                 { target: 1100, duration: '1m' },
                 { target: 1500, duration: '1m' },
+                { target: 2000, duration: '1m' },
                 { target: 240, duration: '1m' },
                 { target: 10, duration: '15s' }
             ],
@@ -229,12 +229,12 @@ export default function () {
         });
         checkResponse(responses[0]);
         success = check(responses[0], {
-            'VaccineCard Page Title Correct': (r) => (r.status === 200) 
+            'VaccineCard Page Title Correct': (r) => (r.status === 200)
                 && r.html
                 && r.html('title').text().includes('Health Gateway')
         });
         sleep(1);
-    }); 
+    });
 
     group('Get VaccineCard with QR', function () {
 
@@ -255,8 +255,8 @@ export default function () {
 
             checkResponse(res2);
             check(res2, {
-                'Reached API Endpoint; Not Queue-IT': (r) => (r.status === 200) 
-                    && r.body 
+                'Reached API Endpoint; Not Queue-IT': (r) => (r.status === 200)
+                    && r.body
                     && !r.body.includes('queue-it.net'),
                 'API Response Content-Type is JSON': (r) => (r.status === 200)
                     && (r.headers['Content-Type'].search('application/json') >= 0),
@@ -286,22 +286,22 @@ export default function () {
 
         checkResponse(res3);
         check(res3, {
-            'Reached VaccineStatus/pdf API Endpoint; Not Queue-IT': (r) => (r.status === 200) 
-                &&  r.body 
+            'Reached VaccineStatus/pdf API Endpoint; Not Queue-IT': (r) => (r.status === 200)
+                && r.body
                 && !r.body.includes('queue-it.net'),
-            'Response Content-Type is application/json': (r) => (r.status === 200) 
-                && r.headers 
+            'Response Content-Type is application/json': (r) => (r.status === 200)
+                && r.headers
                 && (r.headers['Content-Type'].search('application/json') >= 0),
-            'Response contains a Federal PDF': (r) => (r.status === 200) 
+            'Response contains a Federal PDF': (r) => (r.status === 200)
                 && r.body
                 && r.body.includes("\"resourcePayload\":")
                 && r.body.includes("\"mediaType\": \"application/pdf\"")
                 && r.body.includes("\"encoding\": \"base64\"")
                 && (r.json()['resultStatus'] === 1),
-            'Response does not contain actionCode=REFRESH': (r) => (r.status === 200) 
-                && r.body 
-                && !(r.body.includes("actionCode") 
-                && r.body.includes("REFRESH"))
+            'Response does not contain actionCode=REFRESH': (r) => (r.status === 200)
+                && r.body
+                && !(r.body.includes("actionCode")
+                    && r.body.includes("REFRESH"))
 
         });
 
