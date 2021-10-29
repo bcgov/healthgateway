@@ -37,29 +37,29 @@ export const actions: VaccinationStatusActions = {
                     params.dateOfVaccine
                 )
                 .then((result) => {
+                    const payload = result.resourcePayload;
                     if (result.resultStatus === ResultType.Success) {
-                        const payload = result.resourcePayload;
-                        if (!payload.loaded && payload.retryin > 0) {
-                            logger.info("VaccinationStatus not loaded");
-                            context.commit(
-                                "setStatusMessage",
-                                "We're busy but will continue to try to fetch your record...."
-                            );
-                            setTimeout(() => {
-                                logger.info(
-                                    "Re-querying for vaccination status"
-                                );
-                                context.dispatch("retrieveVaccineStatus", {
-                                    phn: params.phn,
-                                    dateOfBirth: params.dateOfBirth,
-                                    dateOfVaccine: params.dateOfVaccine,
-                                });
-                            }, payload.retryin);
-                            resolve();
-                        } else {
-                            context.commit("setVaccinationStatus", payload);
-                            resolve();
-                        }
+                        context.commit("setVaccinationStatus", payload);
+                        resolve();
+                    } else if (
+                        result.resultError?.actionCode === ActionType.Refresh &&
+                        !payload.loaded &&
+                        payload.retryin > 0
+                    ) {
+                        logger.info("VaccinationStatus not loaded");
+                        context.commit(
+                            "setStatusMessage",
+                            "We're busy but will continue to try to fetch your record...."
+                        );
+                        setTimeout(() => {
+                            logger.info("Re-querying for vaccination status");
+                            context.dispatch("retrieveVaccineStatus", {
+                                phn: params.phn,
+                                dateOfBirth: params.dateOfBirth,
+                                dateOfVaccine: params.dateOfVaccine,
+                            });
+                        }, payload.retryin);
+                        resolve();
                     } else {
                         context.dispatch("handleError", result.resultError);
                         reject(result.resultError);
@@ -163,33 +163,36 @@ export const actions: VaccinationStatusActions = {
                 vaccinationStatusService
                     .getAuthenticatedVaccineStatus(params.hdid)
                     .then((result) => {
+                        const payload = result.resourcePayload;
                         if (result.resultStatus === ResultType.Success) {
-                            const payload = result.resourcePayload;
-                            if (!payload.loaded && payload.retryin > 0) {
-                                logger.info("VaccinationStatus not loaded");
-                                context.commit(
-                                    "setAuthenticatedStatusMessage",
-                                    "We're busy but will continue to try to fetch your record...."
+                            context.commit(
+                                "setAuthenticatedVaccinationStatus",
+                                payload
+                            );
+                            resolve();
+                        } else if (
+                            result.resultError?.actionCode ===
+                                ActionType.Refresh &&
+                            !payload.loaded &&
+                            payload.retryin > 0
+                        ) {
+                            logger.info("VaccinationStatus not loaded");
+                            context.commit(
+                                "setAuthenticatedStatusMessage",
+                                "We're busy but will continue to try to fetch your record...."
+                            );
+                            setTimeout(() => {
+                                logger.info(
+                                    "Re-querying for vaccination status"
                                 );
-                                setTimeout(() => {
-                                    logger.info(
-                                        "Re-querying for vaccination status"
-                                    );
-                                    context.dispatch(
-                                        "retrieveAuthenticatedVaccineStatus",
-                                        {
-                                            hdid: params.hdid,
-                                        }
-                                    );
-                                }, payload.retryin);
-                                resolve();
-                            } else {
-                                context.commit(
-                                    "setAuthenticatedVaccinationStatus",
-                                    payload
+                                context.dispatch(
+                                    "retrieveAuthenticatedVaccineStatus",
+                                    {
+                                        hdid: params.hdid,
+                                    }
                                 );
-                                resolve();
-                            }
+                            }, payload.retryin);
+                            resolve();
                         } else {
                             context.dispatch(
                                 "handleAuthenticatedError",
@@ -223,7 +226,7 @@ export const actions: VaccinationStatusActions = {
             vaccinationStatusService
                 .getAuthenticatedVaccineRecord(params.hdid)
                 .then((result) => {
-                    const payload = result.resourcePayload;
+                    const payload = result.resourcePayload;                 
                     if (result.resultStatus === ResultType.Success) {
                         context.commit(
                             "setAuthenticatedVaccineRecord",
