@@ -426,7 +426,7 @@ export default class PublicVaccineCardView extends Vue {
                     </h2>
                     <p class="mb-4">
                         To get your BC Vaccine Card and Federal Proof of
-                        Vaccination Certificate, please provide:
+                        Vaccination, please provide:
                     </p>
                     <b-row>
                         <b-col>
