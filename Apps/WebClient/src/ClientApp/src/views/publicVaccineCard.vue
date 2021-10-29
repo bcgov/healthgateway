@@ -231,8 +231,7 @@ export default class PublicVaccineCardView extends Vue {
             .getPublicVaccineStatusPdf(
                 this.phn.replace(/ /g, ""),
                 this.dateOfBirth,
-                this.dateOfVaccine,
-                VaccineProofTemplate.Federal
+                this.dateOfVaccine
             )
             .then((result) => {
                 if (result.resultStatus == ResultType.Success) {
