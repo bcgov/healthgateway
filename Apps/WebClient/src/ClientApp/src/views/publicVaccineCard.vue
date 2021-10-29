@@ -231,7 +231,8 @@ export default class PublicVaccineCardView extends Vue {
             .getPublicVaccineStatusPdf(
                 this.phn.replace(/ /g, ""),
                 this.dateOfBirth,
-                this.dateOfVaccine
+                this.dateOfVaccine,
+                VaccineProofTemplate.Federal
             )
             .then((result) => {
                 if (result.resultStatus == ResultType.Success) {
@@ -339,13 +340,13 @@ export default class PublicVaccineCardView extends Vue {
                         <b-dropdown-item
                             data-testid="save-as-image-dropdown-item"
                             @click="showVaccineCardMessageModal()"
-                            >Image (BC proof only)</b-dropdown-item
+                            >Image (BC proof)</b-dropdown-item
                         >
                         <b-dropdown-item
                             v-if="saveExportPdfShown"
                             data-testid="save-as-pdf-dropdown-item"
                             @click="showConfirmationModal()"
-                            >PDF (Federal and BC)</b-dropdown-item
+                            >PDF (Federal proof)</b-dropdown-item
                         >
                     </hg-dropdown>
                 </div>
