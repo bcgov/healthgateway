@@ -206,7 +206,7 @@ export default function () {
 
     let randomUser = csvData[__VU % csvData.length];
 
-    console.log('Random user: ', JSON.stringify(randomUser));
+    //console.log('Random user: ', JSON.stringify(randomUser));
 
     let headers = {
         'User-Agent': 'k6',
@@ -214,7 +214,7 @@ export default function () {
     }
     let success = false;
 
-    group('get SPA assets', function () {
+    group('Get SPA Web Page Assets Async', function () {
 
         let responses = http.batch([
             ['GET', entryPageUrl, null, { headers: headers, tags: { ctype: 'html' } }],
@@ -228,14 +228,19 @@ export default function () {
         });
         checkResponse(responses[0]);
         success = check(responses[0], {
-            'Reached VaccineCard Page; Not Queue-IT': (r) => (r.status == 200) && (r.body.search('queue-it.net') === -1),
-            'VaccineCard Page Title Correct': (r) => (r.status == 200) && (r.html('title').text() == 'Health Gateway'),
+            'Reached VaccineCard Page; Not Queue-IT': (r) => (r.status === 200) 
+                && r.body
+                && !r.body.includes('queue-it.net'),
+            'VaccineCard Page Title Correct': (r) => (r.status === 200) 
+                && r.html
+                && r.html('title').text().includes('Health Gateway')
         });
+        sleep(1);
     }); 
 
-    group('get vaccinecard with QR', function () {
+    group('Get VaccineCard with QR', function () {
 
-        if (success) {
+        if (success === true) {
             sleep(3);  // min time we think it would take someone to enter their information
 
             let params = {
@@ -247,12 +252,16 @@ export default function () {
                     'dateOfVaccine': randomUser.dateOfVaccine
                 }
             }
+
+            http.setResponseCallback(http.expectedStatuses(200));
+
             let res2 = http.get(cardUrl, params);
 
             checkResponse(res2);
             check(res2, {
                 'Reached API Endpoint; Not Queue-IT': (r) => (r.status === 200) 
-                    && (r.body.search('queue-it.net') === -1),
+                    && r.body 
+                    && !r.body.includes('queue-it.net'),
                 'API Response Content-Type is JSON': (r) => (r.status === 200)
                     && (r.headers['Content-Type'].search('application/json') >= 0),
             });
@@ -263,7 +272,7 @@ export default function () {
         sleep(1);
     });
 
-    group('Get Fed/Prov Combined PDF', function () {
+    group('Get Federal Proof of Vaccination PDF', function () {
         let requestParams = {
             headers: {
                 'User-Agent': 'k6',
@@ -281,9 +290,14 @@ export default function () {
 
         checkResponse(res3);
         check(res3, {
-            'Reached VaccineStatus/pdf API Endpoint; Not Queue-IT': (r) => (r.status === 200) && !r.body.includes('queue-it.net'),
-            'Response Content-Type is application/json': (r) => (r.status === 200) && (r.headers['Content-Type'].search('application/json') >= 0),
+            'Reached VaccineStatus/pdf API Endpoint; Not Queue-IT': (r) => (r.status === 200) 
+                &&  r.body 
+                && !r.body.includes('queue-it.net'),
+            'Response Content-Type is application/json': (r) => (r.status === 200) 
+                && r.headers 
+                && (r.headers['Content-Type'].search('application/json') >= 0),
             'Response contains a Federal PDF': (r) => (r.status === 200) 
+                && r.body
                 && r.body.includes("\"resourcePayload\":")
                 && r.body.includes("\"mediaType\": \"application/pdf\"")
                 && r.body.includes("\"encoding\": \"base64\"")
