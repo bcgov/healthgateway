@@ -228,9 +228,6 @@ export default function () {
         });
         checkResponse(responses[0]);
         success = check(responses[0], {
-            'Reached VaccineCard Page; Not Queue-IT': (r) => (r.status === 200) 
-                && r.body
-                && !r.body.includes('queue-it.net'),
             'VaccineCard Page Title Correct': (r) => (r.status === 200) 
                 && r.html
                 && r.html('title').text().includes('Health Gateway')
