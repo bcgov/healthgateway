@@ -151,13 +151,28 @@ namespace HealthGateway.Immunization.Services
             };
             if (vaccineStatusResult.ResourcePayload?.FederalVaccineProof?.Data != null)
             {
-                retVal.ResourcePayload = new()
+                int retryIn = vaccineStatusResult.ResourcePayload.RetryIn;
+                bool loaded = vaccineStatusResult.ResourcePayload.Loaded;
+                if (vaccineStatusResult.ResourcePayload?.FederalVaccineProof?.Data.Length > 0)
                 {
-                    Loaded = vaccineStatusResult.ResourcePayload.Loaded,
-                    RetryIn = vaccineStatusResult.ResourcePayload.RetryIn,
-                    Document = vaccineStatusResult.ResourcePayload.FederalVaccineProof,
-                    QRCode = vaccineStatusResult.ResourcePayload.QRCode,
-                };
+                    retVal.ResourcePayload = new()
+                    {
+                        Loaded = loaded,
+                        RetryIn = retryIn,
+                        Document = vaccineStatusResult.ResourcePayload.FederalVaccineProof,
+                        QRCode = vaccineStatusResult.ResourcePayload.QRCode,
+                    };
+                }
+                else
+                {
+                    retVal.ResourcePayload = new()
+                    {
+                        Loaded = !loaded,
+                        RetryIn = Math.Max(retryIn, this.phsaConfig.BackOffMilliseconds),
+                    };
+                    retVal.ResultStatus = ResultType.ActionRequired;
+                    retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine status refresh in progress", ActionType.Refresh);
+                }
             }
             else
             {
