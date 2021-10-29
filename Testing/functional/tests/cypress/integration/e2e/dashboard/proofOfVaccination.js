@@ -42,6 +42,6 @@ describe("Dashboard - Proof of Vaccination Card", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         interceptAuthenticatedVaccineStatus();
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
-        cy.verifyDownload("FederalVaccineProof.pdf");
+        cy.verifyDownload("VaccineProof.pdf");
     });
 });

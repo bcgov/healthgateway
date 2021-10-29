@@ -114,13 +114,14 @@ namespace HealthGateway.Immunization.Services
                 TotalResultCount = vaccineStatusResult.TotalResultCount,
                 PageIndex = vaccineStatusResult.PageIndex,
             };
-            if (vaccineStatusResult.ResourcePayload?.FederalVaccineProof?.Data != null)
+
+            if (vaccineStatusResult.ResourcePayload != null)
             {
                 retVal.ResourcePayload = new()
                 {
                     Loaded = vaccineStatusResult.ResourcePayload.Loaded,
                     RetryIn = vaccineStatusResult.ResourcePayload.RetryIn,
-                    Document = vaccineStatusResult.ResourcePayload.FederalVaccineProof,
+                    Document = vaccineStatusResult.ResourcePayload.FederalVaccineProof ?? new(),
                     QRCode = vaccineStatusResult.ResourcePayload.QRCode,
                 };
             }
@@ -149,15 +150,24 @@ namespace HealthGateway.Immunization.Services
                 TotalResultCount = vaccineStatusResult.TotalResultCount,
                 PageIndex = vaccineStatusResult.PageIndex,
             };
-            if (vaccineStatusResult.ResourcePayload?.FederalVaccineProof?.Data != null)
+
+            if (vaccineStatusResult.ResourcePayload != null)
             {
-                retVal.ResourcePayload = new()
+                if (vaccineStatusResult.ResourcePayload.State == VaccineState.NotFound)
                 {
-                    Loaded = vaccineStatusResult.ResourcePayload.Loaded,
-                    RetryIn = vaccineStatusResult.ResourcePayload.RetryIn,
-                    Document = vaccineStatusResult.ResourcePayload.FederalVaccineProof,
-                    QRCode = vaccineStatusResult.ResourcePayload.QRCode,
-                };
+                    retVal.ResultStatus = ResultType.ActionRequired;
+                    retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.Invalid);
+                }
+                else
+                {
+                    retVal.ResourcePayload = new()
+                    {
+                        Loaded = vaccineStatusResult.ResourcePayload.Loaded,
+                        RetryIn = vaccineStatusResult.ResourcePayload.RetryIn,
+                        Document = vaccineStatusResult.ResourcePayload.FederalVaccineProof ?? new(),
+                        QRCode = vaccineStatusResult.ResourcePayload.QRCode,
+                    };
+                }
             }
             else
             {
@@ -296,6 +306,7 @@ namespace HealthGateway.Immunization.Services
             else
             {
                 retVal.ResourcePayload = VaccineStatus.FromModel(payload, phn);
+                retVal.ResourcePayload.Loaded = true;
                 retVal.ResourcePayload.State = retVal.ResourcePayload.State switch
                 {
                     var state when state == VaccineState.Threshold || state == VaccineState.Blocked => VaccineState.NotFound,
@@ -309,8 +320,10 @@ namespace HealthGateway.Immunization.Services
                 }
             }
 
-            if (result.ResourcePayload != null)
+            if (result.ResourcePayload != null && result.ResourcePayload.LoadState.RefreshInProgress)
             {
+                retVal.ResultStatus = ResultType.ActionRequired;
+                retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine status refresh in progress", ActionType.Refresh);
                 retVal.ResourcePayload.Loaded = !result.ResourcePayload.LoadState.RefreshInProgress;
                 retVal.ResourcePayload.RetryIn = Math.Max(result.ResourcePayload.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds);
             }
