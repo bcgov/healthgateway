@@ -84,7 +84,7 @@ export let loadOptions = {
         { duration: "10s", target: 1 },
     ],
     thresholds: {
-        http_req_duration: ['p(99)<8000'], // 99% of requests must complete below 8s
+        http_req_duration: ['p(95)<29000'], // 95% of requests must complete below 10s
       },
 };
 
@@ -200,8 +200,8 @@ export default function () {
       });
 
     success = check(responses[0], {
-        'Reached VaccineCard Page; Not Queue-IT': (r) => r.body.search('queue-it.net') === -1,
-        'VaccineCard Page Title Correct': (r) => r.html('title').text() == 'Health Gateway',
+        'Reached VaccineCard Page; Not Queue-IT': (r) => r.status === 200 && r.body.search('queue-it.net') === -1,
+        'VaccineCard Page Title Correct': (r) => r.status === 200 && r.html('title').text() == 'Health Gateway',
       });
     });
 
@@ -209,7 +209,7 @@ export default function () {
 
     if (success)
     {
-        sleep(15);  // the min time we think it would take someone to enter their information
+        sleep(5);  // the min time we think it would take someone to enter their information
 
         let params = {
             headers:  { 'User-Agent': 'k6', 
@@ -222,8 +222,8 @@ export default function () {
 
         check(res2, {"VaccineStatus API Status 200": (r) => r.status === 200});
         check(res2, {
-            'Reached API Endpoint; Not Queue-IT': (r) => r.body.search('queue-it.net') === -1,
-            'API Response Content-Type is JSON': (r) => r.headers['Content-Type'].search('application/json') >= 0, 
+            'Reached API Endpoint; Not Queue-IT': (r) => r.status === 200 && r.body.search('queue-it.net') === -1,
+            'API Response Content-Type is JSON': (r) => r.status === 200 && r.headers['Content-Type'].search('application/json') >= 0, 
             });
     }
     else {
@@ -239,18 +239,51 @@ export default function () {
             'phn': randomUser.phn, 
             'dateOfBirth': randomUser.dateOfBirth, 
             'dateOfVaccine': randomUser.dateOfVaccine,
-            'proofTemplate': 'Combined' } 
+            'proofTemplate': 'Federal' } 
         }
-        sleep(2); // the think-time before user chooses to download the pdfUrl.
+        sleep(1); // the think-time before user chooses to download the pdfUrl.
         let res3 = http.get(pdfUrl, requestParams);
 
+        checkResponses(res3);
         check(res3, {"VaccineStatus/pdf API Status 200": (r) => r.status === 200});
         check(res3, {
-            'Reached VaccineStatus/pdf API Endpoint; Not Queue-IT': (r) => r.body.search('queue-it.net') === -1,
-            'Response Content-Type is application/json': (r) => r.headers['Content-Type'].search('application/json') >= 0,
-            'Response contains the Base64 PDF': (r) => r.body.includes("resourcePayload") && r.body.includes("VaccineProof.pdf") && r.body.includes("data")
+            'Reached VaccineStatus/pdf API Endpoint; Not Queue-IT': (r) => r.status === 200 && r.body.search('queue-it.net') === -1,
+            'Response Content-Type is application/json': (r) => r.status === 200 && r.headers['Content-Type'].search('application/json') >= 0,
+            'Response contains the Base64 PDF': (r) => r.status === 200 && r.body.includes("resourcePayload") && r.body.includes("VaccineProof.pdf") && r.body.includes("data")
         });
 
     });
 
+}
+
+export function checkResponse(response) {
+    if (isObject(response)) {
+        var ok =
+            check(response, {
+                "HttpStatusCode is 200": (r) => r.status === 200,
+                "HttpStatusCode is NOT 3xx Redirection": (r) =>
+                    !(r.status >= 300 && r.status <= 306),
+                "HttpStatusCode is NOT 401 Unauthorized": (r) =>
+                    r.status != 401,
+                "HttpStatusCode is NOT 402 Payment Required": (r) =>
+                    r.status != 402,
+                "HttpStatusCode is NOT 403 Forbidden": (r) => r.status != 403,
+                "HttpStatusCode is NOT 404 Not Found": (r) => r.status != 404,
+                "HttpStatusCode is NOT 405 Method Not Allowed": (r) =>
+                    r.status != 405,
+                "HttpStatusCode is NOT 406 Not Acceptable": (r) =>
+                    r.status != 406,
+                "HttpStatusCode is NOT 407 Proxy Authentication Required": (
+                    r
+                ) => r.status != 407,
+                "HttpStatusCode is NOT 408 Request Timeout": (r) =>
+                    r.status != 408,
+                "HttpStatusCode is NOT 4xx Client Error": (r) =>
+                    !(r.status >= 409 && r.status <= 499),
+                "HttpStatusCode is NOT 5xx Server Error": (r) =>
+                    !(r.status >= 500 && r.status <= 598),
+                "HttpStatusCode is NOT 0 (Timeout Error)": (r) => r.status != 0,
+            }) || errorRate.add(1);
+        return;
+    }
 }
