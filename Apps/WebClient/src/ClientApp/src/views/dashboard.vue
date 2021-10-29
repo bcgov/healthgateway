@@ -8,7 +8,6 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
-import { VaccineProofTemplate } from "@/constants/vaccineProofTemplate";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -29,7 +28,6 @@ export default class DashboardView extends Vue {
     })
     retrieveAuthenticatedVaccineRecord!: (params: {
         hdid: string;
-        proofTemplate: VaccineProofTemplate;
     }) => Promise<CovidVaccineRecord>;
 
     @Getter("authenticatedVaccineRecordIsLoading", {
@@ -91,7 +89,6 @@ export default class DashboardView extends Vue {
     private retrieveVaccinePdf() {
         this.retrieveAuthenticatedVaccineRecord({
             hdid: this.user.hdid,
-            proofTemplate: VaccineProofTemplate.Federal,
         });
     }
 
@@ -113,7 +110,7 @@ export default class DashboardView extends Vue {
                     text: "FederalPVC",
                 });
                 res.blob().then((blob) => {
-                    saveAs(blob, "FederalVaccineProof.pdf");
+                    saveAs(blob, "VaccineProof.pdf");
                 });
             });
         }

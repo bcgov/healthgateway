@@ -6,11 +6,9 @@ import {
     MutationTree,
 } from "vuex";
 
-import { VaccineProofTemplate } from "@/constants/vaccineProofTemplate";
 import BannerError from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
-import Report from "@/models/report";
 import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
@@ -84,9 +82,8 @@ export interface VaccinationStatusActions
             phn: string;
             dateOfBirth: StringISODate;
             dateOfVaccine: StringISODate;
-            proofTemplate: VaccineProofTemplate;
         }
-    ): Promise<Report>;
+    ): Promise<CovidVaccineRecord>;
     handleError(context: StoreContext, error: ResultError): void;
     retrieveAuthenticatedVaccineStatus(
         context: StoreContext,
@@ -98,7 +95,6 @@ export interface VaccinationStatusActions
         context: StoreContext,
         params: {
             hdid: string;
-            proofTemplate: VaccineProofTemplate;
         }
     ): Promise<CovidVaccineRecord>;
     handleAuthenticatedError(context: StoreContext, error: ResultError): void;

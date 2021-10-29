@@ -5,7 +5,6 @@ import {
 } from "oidc-client";
 import { Store } from "vuex";
 
-import { VaccineProofTemplate } from "@/constants/vaccineProofTemplate";
 import AddDependentRequest from "@/models/addDependentRequest";
 import { Dictionary } from "@/models/baseTypes";
 import Communication, { CommunicationType } from "@/models/communication";
@@ -71,15 +70,13 @@ export interface IVaccinationStatusService {
     getPublicVaccineStatusPdf(
         phn: string,
         dateOfBirth: StringISODate,
-        dateOfVaccine: StringISODate,
-        proofTemplate: VaccineProofTemplate
-    ): Promise<RequestResult<Report>>;
+        dateOfVaccine: StringISODate
+    ): Promise<RequestResult<CovidVaccineRecord>>;
     getAuthenticatedVaccineStatus(
         hdid: string
     ): Promise<RequestResult<VaccinationStatus>>;
     getAuthenticatedVaccineRecord(
-        hdid: string,
-        proofTemplate: VaccineProofTemplate
+        hdid: string
     ): Promise<RequestResult<CovidVaccineRecord>>;
 }
 

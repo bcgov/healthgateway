@@ -19,12 +19,12 @@ namespace HealthGateway.Immunization.Models
     using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
-    /// The Vaccination Record Result model.
+    /// The Vaccine Proof result model.
     /// </summary>
-    public class CovidVaccineRecord
+    public class VaccineProofDocument
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the Vaccination Record result has been retrieved.
+        /// Gets or sets a value indicating whether the Vaccine Proof document has been retrieved.
         /// Will be set to true if the object has been fully loaded.
         /// When false, only Loaded, and RetryIn will be populated.
         /// </summary>

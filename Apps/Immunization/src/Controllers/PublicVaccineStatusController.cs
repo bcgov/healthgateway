@@ -20,6 +20,7 @@ namespace HealthGateway.Immunization.Controllers
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Database.Constants;
+    using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -33,18 +34,18 @@ namespace HealthGateway.Immunization.Controllers
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
     [TypeFilter(typeof(AvailabilityFilter))]
-    public class VaccineStatusController : ControllerBase
+    public class PublicVaccineStatusController : ControllerBase
     {
         private readonly ILogger logger;
         private readonly IVaccineStatusService vaccineStatusService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VaccineStatusController"/> class.
+        /// Initializes a new instance of the <see cref="PublicVaccineStatusController"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="vaccineStatusService">The injected vaccine status service.</param>
-        public VaccineStatusController(
-            ILogger<VaccineStatusController> logger,
+        public PublicVaccineStatusController(
+            ILogger<PublicVaccineStatusController> logger,
             IVaccineStatusService vaccineStatusService)
         {
             this.logger = logger;
@@ -66,29 +67,34 @@ namespace HealthGateway.Immunization.Controllers
         [Produces("application/json")]
         public async Task<RequestResult<VaccineStatus>> GetVaccineStatus([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string dateOfVaccine)
         {
-            this.logger.LogTrace($"Fetching Vaccine Status for PHN: {phn}, DOB: {dateOfBirth}, and DOV: {dateOfVaccine}");
-            return await this.vaccineStatusService.GetVaccineStatus(phn, dateOfBirth, dateOfVaccine).ConfigureAwait(true);
+            this.logger.LogTrace($"Getting vaccine status for PHN: {phn}, DOB: {dateOfBirth}, and DOV: {dateOfVaccine}");
+            RequestResult<VaccineStatus> result = await this.vaccineStatusService.GetPublicVaccineStatus(phn, dateOfBirth, dateOfVaccine).ConfigureAwait(true);
+            this.logger.LogTrace($"Finished getting vaccine status for PHN: {phn}, DOB: {dateOfBirth}, and DOV: {dateOfVaccine}");
+
+            return result;
         }
 
         /// <summary>
-        /// Requests the vaccine status PDF for the supplied PHN and Date of Birth.
+        /// Requests the vaccine proof for the supplied PHN, Date of Birth, and Date of Vaccine.
         /// </summary>
         /// <param name="phn">The personal health number to query.</param>
         /// <param name="dateOfBirth">The date of birth (yyyy-MM-dd) for the supplied PHN.</param>
         /// <param name="dateOfVaccine">The date of one of the vaccine doess (yyyy-MM-dd) for the supplied PHN.</param>
-        /// <param name="proofTemplate">The template to use for the generated vaccine proof.</param>
-        /// <returns>The wrapped vaccine status.</returns>
-        /// <response code="200">Returns the Vaccine status.</response>
+        /// <returns>The wrapped vaccine proof.</returns>
+        /// <response code="200">Returns the vaccine proof.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Route("pdf")]
         [Produces("application/json")]
-        public async Task<RequestResult<ReportModel>> GetVaccineStatusPDF([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string dateOfVaccine, [FromHeader] VaccineProofTemplate proofTemplate)
+        public async Task<RequestResult<VaccineProofDocument>> GetVaccineProof([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string dateOfVaccine)
         {
-            this.logger.LogTrace($"Fetching Vaccine Status PDF for PHN: {phn}, DOB: {dateOfBirth}, and DOV: {dateOfVaccine}");
-            return await this.vaccineStatusService.GetVaccineStatusPDF(phn, dateOfBirth, dateOfVaccine, proofTemplate).ConfigureAwait(true);
+            this.logger.LogDebug($"Getting Vaccine Proof for PHN: {phn}, DOB: {dateOfBirth}, and DOV: {dateOfVaccine}");
+            RequestResult<VaccineProofDocument> result = await this.vaccineStatusService.GetPublicVaccineProof(phn, dateOfBirth, dateOfVaccine).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished getting Vaccine Proof for PHN: {phn}, DOB: {dateOfBirth}, and DOV: {dateOfVaccine}");
+
+            return result;
         }
     }
 }

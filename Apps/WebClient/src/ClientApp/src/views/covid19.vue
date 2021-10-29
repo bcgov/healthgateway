@@ -15,7 +15,6 @@ import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
-import { VaccineProofTemplate } from "@/constants/vaccineProofTemplate";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
@@ -61,7 +60,6 @@ export default class Covid19View extends Vue {
     })
     retrieveAuthenticatedVaccineRecord!: (params: {
         hdid: string;
-        proofTemplate: VaccineProofTemplate;
     }) => Promise<CovidVaccineRecord>;
 
     @Getter("webClient", { namespace: "config" })
@@ -274,7 +272,6 @@ export default class Covid19View extends Vue {
     private retrieveVaccinePdf() {
         this.retrieveAuthenticatedVaccineRecord({
             hdid: this.user.hdid,
-            proofTemplate: VaccineProofTemplate.Provincial,
         });
     }
 
