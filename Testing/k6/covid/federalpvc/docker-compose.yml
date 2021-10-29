@@ -2,7 +2,7 @@ version: '3.4'
 services:
   k6:
     image: loadimpact/k6:latest
-    command: run /k6_pvcpdf.js
+    command: run /k6_pvcpdf.js --insecure-skip-tls-verify
     volumes:
       - ./k6_pvcpdf.js:/k6_pvcpdf.js
       - ./papaparse.js:/papaparse.js

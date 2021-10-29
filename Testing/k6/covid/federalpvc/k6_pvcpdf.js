@@ -301,7 +301,12 @@ export default function () {
                 && r.body.includes("\"resourcePayload\":")
                 && r.body.includes("\"mediaType\": \"application/pdf\"")
                 && r.body.includes("\"encoding\": \"base64\"")
-                && (r.json()['resultStatus'] === 1)
+                && (r.json()['resultStatus'] === 1),
+            'Response does not contain actionCode=REFRESH': (r) => (r.status === 200) 
+                && r.body 
+                && !(r.body.includes("actionCode") 
+                && r.body.includes("REFRESH"))
+
         });
 
     });
