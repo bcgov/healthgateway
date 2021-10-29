@@ -262,7 +262,7 @@ export default class DashboardView extends Vue {
                         />
                     </template>
                     <div>
-                        Download and print your Federal Proof of Vacination for
+                        Download and print your Federal Proof of Vaccination for
                         domestic and international travel.
                     </div>
                 </hg-card-button>
