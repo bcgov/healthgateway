@@ -313,14 +313,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
         private static JWTModel CreateJWTModel(string json)
         {
-            JsonSerializerOptions options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true,
-                WriteIndented = true,
-            };
-
-            var jwt = JsonSerializer.Deserialize<JWTModel>(json, options);
+            var jwt = JsonSerializer.Deserialize<JWTModel>(json);
 
             return jwt ?? new();
         }

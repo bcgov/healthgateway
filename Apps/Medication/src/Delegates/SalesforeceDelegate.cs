@@ -103,14 +103,8 @@ namespace HealthGateway.Medication.Delegates
                         switch (response.StatusCode)
                         {
                             case HttpStatusCode.OK:
-                                var options = new JsonSerializerOptions
-                                {
-                                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                    IgnoreNullValues = true,
-                                    WriteIndented = true,
-                                };
                                 this.logger.LogTrace($"Response payload: {payload}");
-                                Models.Salesforce.ResponseWrapper? replyWrapper = JsonSerializer.Deserialize<Models.Salesforce.ResponseWrapper>(payload, options);
+                                Models.Salesforce.ResponseWrapper? replyWrapper = JsonSerializer.Deserialize<Models.Salesforce.ResponseWrapper>(payload);
                                 if (replyWrapper != null)
                                 {
                                     retVal.ResultStatus = Common.Constants.ResultType.Success;

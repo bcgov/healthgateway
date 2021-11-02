@@ -89,11 +89,10 @@ namespace HealthGateway.LaboratoryTests
             // Verify
             Assert.IsType<JsonResult>(actual);
 
-            JsonResult jsonResult = (JsonResult)actual;
-            Assert.IsType<RequestResult<IEnumerable<LaboratoryModel>>>(jsonResult.Value);
-
-            RequestResult<IEnumerable<LaboratoryModel>> result = (RequestResult<IEnumerable<LaboratoryModel>>)jsonResult.Value;
-            Assert.True(result.ResultStatus == Common.Constants.ResultType.Success);
+            JsonResult? jsonResult = actual as JsonResult;
+            Assert.IsType<RequestResult<IEnumerable<LaboratoryModel>>>(jsonResult?.Value);
+            RequestResult<IEnumerable<LaboratoryModel>>? result = jsonResult?.Value as RequestResult<IEnumerable<LaboratoryModel>>;
+            Assert.True(result != null && result.ResultStatus == Common.Constants.ResultType.Success);
         }
 
         /// <summary>
@@ -123,11 +122,9 @@ namespace HealthGateway.LaboratoryTests
             // Verify
             Assert.IsType<JsonResult>(actual);
 
-            JsonResult jsonResult = (JsonResult)actual;
-            Assert.IsType<RequestResult<IEnumerable<LaboratoryModel>>>(jsonResult.Value);
-
-            RequestResult<IEnumerable<LaboratoryModel>> result = (RequestResult<IEnumerable<LaboratoryModel>>)jsonResult.Value;
-            Assert.True(result.ResultStatus == Common.Constants.ResultType.Error);
+            JsonResult? jsonResult = actual as JsonResult;
+            RequestResult<IEnumerable<LaboratoryModel>>? result = jsonResult?.Value as RequestResult<IEnumerable<LaboratoryModel>>;
+            Assert.True(result != null && result.ResultStatus == Common.Constants.ResultType.Error);
         }
 
         /// <summary>
@@ -154,11 +151,9 @@ namespace HealthGateway.LaboratoryTests
             // Verify
             Assert.IsType<JsonResult>(actual);
 
-            JsonResult jsonResult = (JsonResult)actual;
-            Assert.IsType<RequestResult<LaboratoryReport>>(jsonResult.Value);
-
-            RequestResult<LaboratoryReport> result = (RequestResult<LaboratoryReport>)jsonResult.Value;
-            Assert.True(result.ResultStatus == Common.Constants.ResultType.Success);
+            JsonResult? jsonResult = actual as JsonResult;
+            RequestResult<LaboratoryReport>? result = jsonResult?.Value as RequestResult<LaboratoryReport>;
+            Assert.True(result != null && result.ResultStatus == Common.Constants.ResultType.Success);
         }
 
         /// <summary>
@@ -189,11 +184,9 @@ namespace HealthGateway.LaboratoryTests
             // Verify
             Assert.IsType<JsonResult>(actual);
 
-            JsonResult jsonResult = (JsonResult)actual;
-            Assert.IsType<RequestResult<LaboratoryReport>>(jsonResult.Value);
-
-            RequestResult<LaboratoryReport> result = (RequestResult<LaboratoryReport>)jsonResult.Value;
-            Assert.True(result.ResultStatus == Common.Constants.ResultType.Error);
+            JsonResult? jsonResult = (JsonResult)actual;
+            RequestResult<LaboratoryReport>? result = jsonResult?.Value as RequestResult<LaboratoryReport>;
+            Assert.True(result != null && result.ResultStatus == Common.Constants.ResultType.Error);
         }
 
         private Mock<IHttpContextAccessor> SetupHttpContextAccessorMock()

@@ -24,7 +24,6 @@ namespace HealthGateway.Admin.Server.Delegates
     using System.Net.Mime;
     using System.Text;
     using System.Text.Json;
-    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models.CovidSupport;
     using HealthGateway.Admin.Models.CovidSupport.PHSA;
@@ -196,14 +195,8 @@ namespace HealthGateway.Admin.Server.Delegates
                         switch (response.StatusCode)
                         {
                             case HttpStatusCode.OK:
-                                var options = new JsonSerializerOptions
-                                {
-                                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                    IgnoreNullValues = true,
-                                    WriteIndented = true,
-                                };
                                 this.logger.LogTrace($"Response payload: {payload}");
-                                PHSAResult<T>? phsaResult = JsonSerializer.Deserialize<PHSAResult<T>>(payload, options);
+                                PHSAResult<T>? phsaResult = JsonSerializer.Deserialize<PHSAResult<T>>(payload);
                                 if (phsaResult != null && phsaResult.Result != null)
                                 {
                                     retVal.ResultStatus = ResultType.Success;

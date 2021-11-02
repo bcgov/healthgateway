@@ -25,6 +25,7 @@ namespace HealthGateway.Common.Delegates
     using System.Net.Mime;
     using System.Text;
     using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
@@ -367,14 +368,7 @@ namespace HealthGateway.Common.Delegates
                         }
                         else
                         {
-                            var options = new JsonSerializerOptions
-                            {
-                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                IgnoreNullValues = true,
-                                WriteIndented = true,
-                            };
-
-                            T? requestResult = JsonSerializer.Deserialize<T>(payload, options);
+                            T? requestResult = JsonSerializer.Deserialize<T>(payload);
                             if (requestResult != null)
                             {
                                 retVal.ResourcePayload = requestResult;

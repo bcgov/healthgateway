@@ -23,6 +23,7 @@ namespace HealthGateway.Laboratory.Delegates
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -94,14 +95,8 @@ namespace HealthGateway.Laboratory.Delegates
                     switch (response.StatusCode)
                     {
                         case HttpStatusCode.OK:
-                            var options = new JsonSerializerOptions
-                            {
-                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                IgnoreNullValues = true,
-                                WriteIndented = true,
-                            };
                             this.logger.LogTrace($"Response payload: {payload}");
-                            PHSAResult<List<LaboratoryOrder>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<List<LaboratoryOrder>>>(payload, options);
+                            PHSAResult<List<LaboratoryOrder>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<List<LaboratoryOrder>>>(payload);
                             if (phsaResult != null && phsaResult.Result != null)
                             {
                                 retVal.ResultStatus = Common.Constants.ResultType.Success;
@@ -179,7 +174,7 @@ namespace HealthGateway.Laboratory.Delegates
                             var options = new JsonSerializerOptions
                             {
                                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                IgnoreNullValues = true,
+                                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                                 WriteIndented = true,
                             };
                             LaboratoryReport? report = JsonSerializer.Deserialize<LaboratoryReport>(payload, options);

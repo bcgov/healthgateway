@@ -45,7 +45,7 @@ namespace HealthGateway.CommonTests.Swagger
                 ActionName = "index",
                 ControllerName = "swagger",
                 ControllerTypeInfo = typeof(MockMethodInfo).GetTypeInfo(),
-                MethodInfo = typeof(MockMethodInfo).GetMethod("MockMethod"),
+                MethodInfo = typeof(MockMethodInfo).GetMethod("MockMethod")!,
             };
             ApiDescription apiDescription = new ApiDescription()
             {
