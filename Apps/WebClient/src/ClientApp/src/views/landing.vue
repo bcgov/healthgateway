@@ -49,19 +49,16 @@ interface Tile {
 @Component
 export default class LandingView extends Vue {
     @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
-
-    @Getter("oidcIsAuthenticated", { namespace: "auth" })
-    oidcIsAuthenticated!: boolean;
-
-    @Getter("isValidIdentityProvider", { namespace: "auth" })
-    isValidIdentityProvider!: boolean;
+    config!: WebClientConfiguration;
 
     @Getter("isOffline", { namespace: "config" })
     isOffline!: boolean;
 
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+    @Getter("oidcIsAuthenticated", { namespace: "auth" })
+    oidcIsAuthenticated!: boolean;
+
+    @Getter("isSidebarShown", { namespace: "navbar" })
+    isSidebarShown!: boolean;
 
     @Getter("userIsRegistered", { namespace: "user" })
     userIsRegistered!: boolean;
@@ -149,31 +146,22 @@ export default class LandingView extends Vue {
 
     private get offlineMessage(): string {
         if (this.isOffline) {
-            return this.webClientConfig.offlineMode?.message || "";
+            return this.config.offlineMode?.message || "";
         } else {
             return "";
         }
     }
 
-    private get isSidebarShown(): boolean {
-        return (
-            this.oidcIsAuthenticated &&
-            this.userIsRegistered &&
-            this.isValidIdentityProvider &&
-            !this.isOffline
-        );
-    }
-
     private mounted() {
         this.isOpenRegistration =
-            this.webClientConfig.registrationStatus == RegistrationStatus.Open;
+            this.config.registrationStatus == RegistrationStatus.Open;
 
-        for (const moduleName in this.webClientConfig.modules) {
+        for (const moduleName in this.config.modules) {
             var icon = this.icons.find(
                 (iconEntry) => iconEntry.name === moduleName
             );
             if (icon) {
-                icon.active = this.webClientConfig.modules[moduleName];
+                icon.active = this.config.modules[moduleName];
             }
         }
     }

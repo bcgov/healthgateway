@@ -19,49 +19,41 @@ import { IAuthenticationService, ILogger } from "@/services/interfaces";
 
 library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUserCircle);
 
-const auth = "auth";
-const user = "user";
-const navbar = "navbar";
-const config = "config";
-
 @Component({
     components: {
         RatingComponent,
     },
 })
 export default class HeaderComponent extends Vue {
-    @Action("toggleSidebar", { namespace: navbar }) toggleSidebar!: () => void;
-    @Action("setHeaderState", { namespace: navbar }) setHeaderState!: (
-        isOpen: boolean
-    ) => void;
+    @Action("toggleSidebar", { namespace: "navbar" })
+    toggleSidebar!: () => void;
 
-    @Getter("isMobile") isMobileWidth!: boolean;
-    @Getter("isSidebarOpen", { namespace: navbar }) isSidebarOpen!: boolean;
-    @Getter("isHeaderShown", { namespace: navbar }) isHeaderShown!: boolean;
-    @Getter("isOffline", {
-        namespace: config,
-    })
+    @Action("setHeaderState", { namespace: "navbar" })
+    setHeaderState!: (isOpen: boolean) => void;
+
+    @Getter("isMobile")
+    isMobileWidth!: boolean;
+
+    @Getter("isOffline", { namespace: "config" })
     isOffline!: boolean;
 
-    @Getter("oidcIsAuthenticated", {
-        namespace: auth,
-    })
+    @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated!: boolean;
 
-    @Getter("userIsRegistered", {
-        namespace: user,
-    })
-    userIsRegistered!: boolean;
-
-    @Getter("userIsActive", { namespace: user })
-    userIsActive!: boolean;
-
-    @Getter("user", { namespace: "user" }) user!: User;
-
-    @Getter("isValidIdentityProvider", {
-        namespace: auth,
-    })
+    @Getter("isValidIdentityProvider", { namespace: "auth" })
     isValidIdentityProvider!: boolean;
+
+    @Getter("isHeaderShown", { namespace: "navbar" })
+    isHeaderShown!: boolean;
+
+    @Getter("isSidebarOpen", { namespace: "navbar" })
+    isSidebarOpen!: boolean;
+
+    @Getter("isSidebarShown", { namespace: "navbar" })
+    isSidebarShown!: boolean;
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     @Ref("ratingComponent")
     readonly ratingComponent!: RatingComponent;
@@ -73,15 +65,6 @@ export default class HeaderComponent extends Vue {
 
     private lastScrollTop = 0;
     private static minimunScrollChange = 2;
-
-    private get displayMenu(): boolean {
-        return (
-            !this.isOffline &&
-            this.oidcIsAuthenticated &&
-            this.userIsRegistered &&
-            this.userIsActive
-        );
-    }
 
     private get userName(): string {
         return this.oidcUser
@@ -189,15 +172,17 @@ export default class HeaderComponent extends Vue {
         <b-navbar toggleable="md" type="dark">
             <!-- Hamburger toggle -->
             <hg-button
-                v-if="displayMenu && isMobileWidth"
+                v-if="isSidebarShown && isMobileWidth"
                 class="mr-2"
                 variant="icon"
                 @click="handleToggleClick"
-                ><hg-icon
+            >
+                <hg-icon
                     :icon="isSidebarOpen ? 'times' : 'bars'"
                     size="large"
                     class="menu-icon"
-            /></hg-button>
+                />
+            </hg-button>
 
             <!-- Brand -->
             <b-navbar-brand class="mx-0">
