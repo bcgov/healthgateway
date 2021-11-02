@@ -125,6 +125,8 @@ namespace HealthGateway.Immunization.Test.Services
         /// <param name="statusIndicator"> status indicator from delegate.</param>
         /// <param name="state">final state.</param>
         [Theory]
+        [InlineData("Exempt", VaccineState.Exempt)]
+        [InlineData("PartialDosesReceived", VaccineState.PartialDosesReceived)]
         [InlineData("AllDosesReceived", VaccineState.AllDosesReceived)]
         public void ShouldGetAuthenticatedVaccineStatus(string statusIndicator, VaccineState state)
         {
@@ -155,7 +157,7 @@ namespace HealthGateway.Immunization.Test.Services
                 ResourcePayload = new VaccineStatus()
                 {
                     Loaded = true,
-                    RetryIn = 0,                   
+                    RetryIn = 0,
                     FirstName = "Bob",
                     LastName = "Test",
                     Birthdate = this.dob,
