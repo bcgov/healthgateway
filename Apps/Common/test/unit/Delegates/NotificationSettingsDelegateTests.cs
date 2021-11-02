@@ -20,12 +20,10 @@ namespace HealthGateway.CommonTests.Delegates
     using System.Net;
     using System.Net.Http;
     using System.Text.Json;
-    using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -41,13 +39,6 @@ namespace HealthGateway.CommonTests.Delegates
     /// </summary>
     public class NotificationSettingsDelegateTests
     {
-        private readonly JsonSerializerOptions jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            WriteIndented = true,
-        };
-
         private readonly IConfiguration configuration;
 
         /// <summary>
@@ -233,7 +224,7 @@ namespace HealthGateway.CommonTests.Delegates
             };
             NotificationSettingsRequest request = new NotificationSettingsRequest(expected.ResourcePayload);
             request.SMSVerificationCode = "1234";
-            string json = JsonSerializer.Serialize(request, this.jsonOptions);
+            string json = JsonSerializer.Serialize(request);
 
             using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
             {
@@ -372,7 +363,7 @@ namespace HealthGateway.CommonTests.Delegates
         {
             string json = @"{""smsEnabled"": true, ""smsCellNumber"": ""5551231234"", ""smsVerified"": true, ""smsScope"": [""COVID19""], ""emailEnabled"": true, ""emailAddress"": ""email@email.blah"", ""emailScope"": [""COVID19""]}";
 
-            expectedRequestResult.ResourcePayload = JsonSerializer.Deserialize<NotificationSettingsResponse>(json, this.jsonOptions);
+            expectedRequestResult.ResourcePayload = JsonSerializer.Deserialize<NotificationSettingsResponse>(json);
             using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
             {
                 StatusCode = expectedResponseStatusCode,
@@ -415,7 +406,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             NotificationSettingsRequest request = new NotificationSettingsRequest(expectedRequestResult.ResourcePayload);
             request.SMSVerificationCode = "1234";
-            string json = JsonSerializer.Serialize(request, this.jsonOptions);
+            string json = JsonSerializer.Serialize(request);
             using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
             {
                 StatusCode = expectedResponseStatusCode,

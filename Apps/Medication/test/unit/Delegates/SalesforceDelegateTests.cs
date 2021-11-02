@@ -21,7 +21,6 @@ namespace HealthGateway.Medication.Delegates.Test
     using System.Net;
     using System.Net.Http;
     using System.Text.Json;
-    using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -314,14 +313,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
         private static JWTModel CreateJWTModel(string json)
         {
-            JsonSerializerOptions options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                WriteIndented = true,
-            };
-
-            var jwt = JsonSerializer.Deserialize<JWTModel>(json, options);
+            var jwt = JsonSerializer.Deserialize<JWTModel>(json);
 
             return jwt ?? new();
         }

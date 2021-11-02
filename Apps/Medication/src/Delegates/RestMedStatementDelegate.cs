@@ -121,21 +121,15 @@ namespace HealthGateway.Medication.Delegates
                                 RequestorIP = ipAddress,
                                 Query = query,
                             };
-                            var options = new JsonSerializerOptions
-                            {
-                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                                WriteIndented = true,
-                            };
 
-                            string json = JsonSerializer.Serialize(request, options);
+                            string json = JsonSerializer.Serialize(request);
                             using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
                             Uri endpoint = new Uri(this.baseURL, this.odrConfig.PatientProfileEndpoint);
                             HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
                             string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                             if (response.IsSuccessStatusCode)
                             {
-                                MedicationHistory? medicationHistory = JsonSerializer.Deserialize<MedicationHistory>(payload, options);
+                                MedicationHistory? medicationHistory = JsonSerializer.Deserialize<MedicationHistory>(payload);
                                 if (medicationHistory != null)
                                 {
                                     retVal.ResultStatus = Common.Constants.ResultType.Success;

@@ -24,14 +24,12 @@ namespace HealthGateway.Immunization.Delegates
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
-    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
-    using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Models.PHSA;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
@@ -153,14 +151,8 @@ namespace HealthGateway.Immunization.Delegates
                         switch (response.StatusCode)
                         {
                             case HttpStatusCode.OK:
-                                var options = new JsonSerializerOptions
-                                {
-                                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                                    WriteIndented = true,
-                                };
                                 this.logger.LogTrace($"Response payload: {payload}");
-                                PHSAResult<T>? phsaResult = JsonSerializer.Deserialize<PHSAResult<T>>(payload, options);
+                                PHSAResult<T>? phsaResult = JsonSerializer.Deserialize<PHSAResult<T>>(payload);
                                 if (phsaResult != null && phsaResult.Result != null)
                                 {
                                     retVal.ResultStatus = ResultType.Success;

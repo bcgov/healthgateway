@@ -17,12 +17,10 @@ namespace Healthgateway.JobScheduler.Jobs
 {
     using System;
     using System.Text.Json;
-    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
@@ -81,14 +79,7 @@ namespace Healthgateway.JobScheduler.Jobs
             this.logger.LogDebug($"Queueing Notification Settings push to PHSA...");
             if (this.jobEnabled)
             {
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                    WriteIndented = true,
-                };
-
-                NotificationSettingsRequest? notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJSON, options);
+                NotificationSettingsRequest? notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJSON);
                 if (notificationSettings != null)
                 {
                     string? accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest).AccessToken;

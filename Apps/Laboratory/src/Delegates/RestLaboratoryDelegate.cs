@@ -95,14 +95,8 @@ namespace HealthGateway.Laboratory.Delegates
                     switch (response.StatusCode)
                     {
                         case HttpStatusCode.OK:
-                            var options = new JsonSerializerOptions
-                            {
-                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                                WriteIndented = true,
-                            };
                             this.logger.LogTrace($"Response payload: {payload}");
-                            PHSAResult<List<LaboratoryOrder>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<List<LaboratoryOrder>>>(payload, options);
+                            PHSAResult<List<LaboratoryOrder>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<List<LaboratoryOrder>>>(payload);
                             if (phsaResult != null && phsaResult.Result != null)
                             {
                                 retVal.ResultStatus = Common.Constants.ResultType.Success;

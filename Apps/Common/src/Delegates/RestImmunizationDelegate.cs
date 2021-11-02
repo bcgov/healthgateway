@@ -111,13 +111,7 @@ namespace HealthGateway.Common.Delegates
                         switch (response.StatusCode)
                         {
                             case HttpStatusCode.OK:
-                                var options = new JsonSerializerOptions
-                                {
-                                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                                    WriteIndented = true,
-                                };
-                                RequestResult<ImmunizationEvent>? requestResult = JsonSerializer.Deserialize<RequestResult<ImmunizationEvent>>(payload, options);
+                                RequestResult<ImmunizationEvent>? requestResult = JsonSerializer.Deserialize<RequestResult<ImmunizationEvent>>(payload);
                                 if (requestResult != null)
                                 {
                                     retVal = requestResult;

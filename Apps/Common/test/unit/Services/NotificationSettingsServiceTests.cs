@@ -18,7 +18,6 @@ namespace HealthGateway.CommonTests.Services
     using System;
     using System.Collections.Generic;
     using System.Text.Json;
-    using System.Text.Json.Serialization;
     using Hangfire;
     using Hangfire.Common;
     using Hangfire.States;
@@ -66,14 +65,7 @@ namespace HealthGateway.CommonTests.Services
                                 mockJobClient.Object,
                                 mockResourceDelegateDelegate.Object);
 
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                WriteIndented = true,
-            };
-
-            string expectedJobParm = JsonSerializer.Serialize(nsr, options);
+            string expectedJobParm = JsonSerializer.Serialize(nsr);
             service.QueueNotificationSettings(nsr);
 
             mockJobClient.Verify(x => x.Create(

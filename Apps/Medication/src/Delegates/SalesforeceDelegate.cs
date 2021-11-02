@@ -23,7 +23,6 @@ namespace HealthGateway.Medication.Delegates
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
-    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Delegates;
@@ -104,14 +103,8 @@ namespace HealthGateway.Medication.Delegates
                         switch (response.StatusCode)
                         {
                             case HttpStatusCode.OK:
-                                var options = new JsonSerializerOptions
-                                {
-                                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                                    WriteIndented = true,
-                                };
                                 this.logger.LogTrace($"Response payload: {payload}");
-                                Models.Salesforce.ResponseWrapper? replyWrapper = JsonSerializer.Deserialize<Models.Salesforce.ResponseWrapper>(payload, options);
+                                Models.Salesforce.ResponseWrapper? replyWrapper = JsonSerializer.Deserialize<Models.Salesforce.ResponseWrapper>(payload);
                                 if (replyWrapper != null)
                                 {
                                     retVal.ResultStatus = Common.Constants.ResultType.Success;

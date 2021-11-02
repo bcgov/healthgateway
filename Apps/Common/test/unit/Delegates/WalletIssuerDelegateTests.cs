@@ -17,11 +17,9 @@ namespace HealthGateway.CommonTests.Delegates
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Text.Json;
-    using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
@@ -43,14 +41,6 @@ namespace HealthGateway.CommonTests.Delegates
     public class WalletIssuerDelegateTests
     {
         private const string AcapyConfigSectionKey = "AcaPy";
-
-        private readonly JsonSerializerOptions jsonOptions = new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            WriteIndented = true,
-        };
-
         private readonly IConfiguration configuration;
         private readonly WalletIssuerConfiguration walletIssuerConfig;
 
@@ -383,10 +373,12 @@ namespace HealthGateway.CommonTests.Delegates
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Unit Test")]
         private void MessageHandlerMockSetup(Mock<HttpMessageHandler> handlerMock, object responseObject, Uri endpoint, HttpStatusCode httpStatusCode = HttpStatusCode.OK)
         {
+            _ = this.configuration;
+
             HttpResponseMessage response = new()
             {
                 StatusCode = httpStatusCode,
-                Content = new StringContent(JsonSerializer.Serialize(responseObject, this.jsonOptions)),
+                Content = new StringContent(JsonSerializer.Serialize(responseObject)),
             };
 
             handlerMock
@@ -416,7 +408,7 @@ namespace HealthGateway.CommonTests.Delegates
             string json = @"{""connection_id"": ""3fa85f64-5717-4562-b3fc-2c963f66afa6"",""invitation_url"": ""https://invite.url/mock""}";
             Guid guid = Guid.Parse("6b0ed0250bf946a1bca33744e9f3acf1");
 
-            expectedRequestResult.ResourcePayload = JsonSerializer.Deserialize<ConnectionResponse>(json, this.jsonOptions);
+            expectedRequestResult.ResourcePayload = JsonSerializer.Deserialize<ConnectionResponse>(json);
             using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = expectedResponseStatusCode,

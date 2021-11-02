@@ -85,13 +85,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
-                        var options = new JsonSerializerOptions
-                        {
-                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                            WriteIndented = true,
-                        };
-                        NotificationSettingsResponse? notificationSettings = JsonSerializer.Deserialize<NotificationSettingsResponse>(payload, options);
+                        NotificationSettingsResponse? notificationSettings = JsonSerializer.Deserialize<NotificationSettingsResponse>(payload);
                         if (notificationSettings != null)
                         {
                             retVal.ResultStatus = Common.Constants.ResultType.Success;

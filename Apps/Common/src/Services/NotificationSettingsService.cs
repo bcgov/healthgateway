@@ -18,7 +18,6 @@ namespace HealthGateway.Common.Services
     using System;
     using System.Collections.Generic;
     using System.Text.Json;
-    using System.Text.Json.Serialization;
     using Hangfire;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
@@ -61,13 +60,7 @@ namespace HealthGateway.Common.Services
             }
 
             this.logger.LogTrace($"Queueing Notification Settings push to PHSA...");
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                WriteIndented = true,
-            };
-            string json = JsonSerializer.Serialize(notificationSettings, options);
+            string json = JsonSerializer.Serialize(notificationSettings);
             this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json));
 
             // Retrieve and update each delegate notification setting
@@ -92,7 +85,7 @@ namespace HealthGateway.Common.Services
                     dependentNotificationSettings.SMSVerified = notificationSettings.SMSVerified;
                 }
 
-                string delegateJson = JsonSerializer.Serialize(dependentNotificationSettings, options);
+                string delegateJson = JsonSerializer.Serialize(dependentNotificationSettings);
                 this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(delegateJson));
             }
 

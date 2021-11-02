@@ -368,14 +368,7 @@ namespace HealthGateway.Common.Delegates
                         }
                         else
                         {
-                            var options = new JsonSerializerOptions
-                            {
-                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                                WriteIndented = true,
-                            };
-
-                            T? requestResult = JsonSerializer.Deserialize<T>(payload, options);
+                            T? requestResult = JsonSerializer.Deserialize<T>(payload);
                             if (requestResult != null)
                             {
                                 retVal.ResourcePayload = requestResult;
