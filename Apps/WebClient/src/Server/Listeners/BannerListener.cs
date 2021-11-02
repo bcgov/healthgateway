@@ -116,7 +116,7 @@ namespace HealthGateway.WebClient.Listeners
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
-                IgnoreNullValues = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 WriteIndented = true,
             };
             options.Converters.Add(new JsonStringEnumConverter());

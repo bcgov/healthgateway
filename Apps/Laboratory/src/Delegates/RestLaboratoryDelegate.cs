@@ -23,6 +23,7 @@ namespace HealthGateway.Laboratory.Delegates
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -97,7 +98,7 @@ namespace HealthGateway.Laboratory.Delegates
                             var options = new JsonSerializerOptions
                             {
                                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                IgnoreNullValues = true,
+                                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                                 WriteIndented = true,
                             };
                             this.logger.LogTrace($"Response payload: {payload}");
@@ -179,7 +180,7 @@ namespace HealthGateway.Laboratory.Delegates
                             var options = new JsonSerializerOptions
                             {
                                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                IgnoreNullValues = true,
+                                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                                 WriteIndented = true,
                             };
                             LaboratoryReport? report = JsonSerializer.Deserialize<LaboratoryReport>(payload, options);

@@ -22,6 +22,7 @@ namespace HealthGateway.Medication.Delegates
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
@@ -123,7 +124,7 @@ namespace HealthGateway.Medication.Delegates
                             var options = new JsonSerializerOptions
                             {
                                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                IgnoreNullValues = true,
+                                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                                 WriteIndented = true,
                             };
 
@@ -263,7 +264,7 @@ namespace HealthGateway.Medication.Delegates
                 var options = new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    IgnoreNullValues = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                     WriteIndented = true,
                 };
                 string json = JsonSerializer.Serialize(request, options);

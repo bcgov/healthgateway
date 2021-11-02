@@ -103,11 +103,9 @@ namespace HealthGateway.Medication.Controllers.Test
 
             // Verify
             Assert.IsType<JsonResult>(actual);
-            JsonResult jsonResult = (JsonResult)actual;
-            Assert.IsType<RequestResult<IList<MedicationStatementHistory>>>(jsonResult.Value);
-
-            RequestResult<IList<MedicationStatementHistory>> requestResult = (RequestResult<IList<MedicationStatementHistory>>)jsonResult.Value;
-            Assert.True(requestResult.IsDeepEqual(expectedResult));
+            JsonResult? jsonResult = actual as JsonResult;
+            RequestResult<IList<MedicationStatementHistory>>? requestResult = jsonResult?.Value as RequestResult<IList<MedicationStatementHistory>>;
+            Assert.True(requestResult != null && requestResult.IsDeepEqual(expectedResult));
         }
     }
 }

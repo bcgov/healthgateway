@@ -23,6 +23,7 @@ namespace HealthGateway.Common.Delegates
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
@@ -113,7 +114,7 @@ namespace HealthGateway.Common.Delegates
                                 var options = new JsonSerializerOptions
                                 {
                                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                    IgnoreNullValues = true,
+                                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                                     WriteIndented = true,
                                 };
                                 RequestResult<ImmunizationEvent>? requestResult = JsonSerializer.Deserialize<RequestResult<ImmunizationEvent>>(payload, options);

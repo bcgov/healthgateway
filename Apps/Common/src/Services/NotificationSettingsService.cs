@@ -18,6 +18,7 @@ namespace HealthGateway.Common.Services
     using System;
     using System.Collections.Generic;
     using System.Text.Json;
+    using System.Text.Json.Serialization;
     using Hangfire;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
@@ -63,7 +64,7 @@ namespace HealthGateway.Common.Services
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 WriteIndented = true,
             };
             string json = JsonSerializer.Serialize(notificationSettings, options);

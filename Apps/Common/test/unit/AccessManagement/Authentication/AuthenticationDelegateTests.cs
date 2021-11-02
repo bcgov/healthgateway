@@ -19,6 +19,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
     using System.Net;
     using System.Net.Http;
     using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
@@ -54,7 +55,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 WriteIndented = true,
             };
             JWTModel? expected = JsonSerializer.Deserialize<JWTModel>(json, options);
@@ -98,7 +99,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 WriteIndented = true,
             };
             JWTModel? expected = JsonSerializer.Deserialize<JWTModel>(json, options);

@@ -23,6 +23,7 @@ namespace HealthGateway.Common.Delegates.PHSA
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
@@ -94,7 +95,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 var jsonOptions = new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    IgnoreNullValues = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                     WriteIndented = true,
                 };
                 string json = JsonSerializer.Serialize(query, jsonOptions);
@@ -254,7 +255,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 var jsonOptions = new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    IgnoreNullValues = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                     WriteIndented = true,
                 };
                 string json = JsonSerializer.Serialize(query, jsonOptions);

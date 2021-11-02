@@ -24,6 +24,7 @@ namespace HealthGateway.Admin.Server.Delegates
     using System.Net.Mime;
     using System.Text;
     using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models.CovidSupport;
@@ -199,7 +200,7 @@ namespace HealthGateway.Admin.Server.Delegates
                                 var options = new JsonSerializerOptions
                                 {
                                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                    IgnoreNullValues = true,
+                                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                                     WriteIndented = true,
                                 };
                                 this.logger.LogTrace($"Response payload: {payload}");

@@ -118,7 +118,6 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             services
                 .AddRazorPages()
-                .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.WriteIndented = true;

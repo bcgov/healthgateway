@@ -24,6 +24,7 @@ namespace HealthGateway.Immunization.Delegates
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
@@ -155,7 +156,7 @@ namespace HealthGateway.Immunization.Delegates
                                 var options = new JsonSerializerOptions
                                 {
                                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                    IgnoreNullValues = true,
+                                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                                     WriteIndented = true,
                                 };
                                 this.logger.LogTrace($"Response payload: {payload}");

@@ -20,6 +20,7 @@ namespace HealthGateway.CommonTests.Delegates
     using System.Net;
     using System.Net.Http;
     using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
@@ -43,7 +44,7 @@ namespace HealthGateway.CommonTests.Delegates
         private readonly JsonSerializerOptions jsonOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            IgnoreNullValues = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             WriteIndented = true,
         };
 

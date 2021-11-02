@@ -18,6 +18,7 @@ namespace HealthGateway.CommonTests.Services
     using System;
     using System.Collections.Generic;
     using System.Text.Json;
+    using System.Text.Json.Serialization;
     using Hangfire;
     using Hangfire.Common;
     using Hangfire.States;
@@ -68,7 +69,7 @@ namespace HealthGateway.CommonTests.Services
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 WriteIndented = true,
             };
 

@@ -17,6 +17,7 @@ namespace Healthgateway.JobScheduler.Jobs
 {
     using System;
     using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -83,7 +84,7 @@ namespace Healthgateway.JobScheduler.Jobs
                 var options = new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    IgnoreNullValues = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                     WriteIndented = true,
                 };
 
