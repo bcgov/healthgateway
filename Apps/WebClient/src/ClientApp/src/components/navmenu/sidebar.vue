@@ -36,11 +36,6 @@ library.add(
     farIdCard
 );
 
-const auth = "auth";
-const user = "user";
-const navbar = "navbar";
-const config = "config";
-
 @Component({
     components: {
         FeedbackComponent,
@@ -49,46 +44,33 @@ const config = "config";
 export default class SidebarComponent extends Vue {
     @Action("updateUserPreference", { namespace: "user" })
     updateUserPreference!: (params: { userPreference: UserPreference }) => void;
+
     @Action("createUserPreference", { namespace: "user" })
     createUserPreference!: (params: { userPreference: UserPreference }) => void;
 
-    @Action("toggleSidebar", { namespace: navbar }) toggleSidebar!: () => void;
-
-    @Action("setSidebarState", { namespace: navbar }) setSidebarState!: (
-        isOpen: boolean
-    ) => void;
-
-    @Getter("isMobile") isMobileWidth!: boolean;
-
-    @Getter("isSidebarOpen", { namespace: navbar }) isOpen!: boolean;
-
-    @Getter("oidcIsAuthenticated", {
-        namespace: auth,
-    })
-    oidcIsAuthenticated!: boolean;
-
-    @Getter("userIsRegistered", {
-        namespace: user,
-    })
-    userIsRegistered!: boolean;
+    @Getter("isMobile")
+    isMobileWidth!: boolean;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
-    @Getter("user", { namespace: "user" }) user!: User;
+    @Action("toggleSidebar", { namespace: "navbar" })
+    toggleSidebar!: () => void;
 
-    @Getter("isValidIdentityProvider", {
-        namespace: auth,
-    })
-    isValidIdentityProvider!: boolean;
+    @Action("setSidebarState", { namespace: "navbar" })
+    setSidebarState!: (isOpen: boolean) => void;
+
+    @Getter("isSidebarOpen", { namespace: "navbar" })
+    isOpen!: boolean;
+
+    @Getter("isSidebarShown", { namespace: "navbar" })
+    isSidebarShown!: boolean;
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     @Getter("userIsActive", { namespace: "user" })
     isActiveProfile!: boolean;
-
-    @Getter("isOffline", {
-        namespace: config,
-    })
-    isOffline!: boolean;
 
     private UserPreferenceType = UserPreferenceType;
 
@@ -246,15 +228,7 @@ export default class SidebarComponent extends Vue {
 </script>
 
 <template>
-    <div
-        v-show="
-            oidcIsAuthenticated &&
-            userIsRegistered &&
-            isValidIdentityProvider &&
-            !isOffline
-        "
-        class="wrapper"
-    >
+    <div v-show="isSidebarShown" class="wrapper">
         <!-- Sidebar -->
         <nav id="sidebar" data-testid="sidebar" :class="{ collapsed: !isOpen }">
             <b-row class="row-container">
