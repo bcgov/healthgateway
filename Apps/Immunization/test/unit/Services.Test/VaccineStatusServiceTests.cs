@@ -42,7 +42,6 @@ namespace HealthGateway.Immunization.Test.Services
     /// <summary>
     /// VaccineStatusService's Unit Tests.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "Ignore broken tests")]
     public class VaccineStatusServiceTests
     {
         private readonly string phn = "9735353315";
