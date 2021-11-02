@@ -97,10 +97,8 @@ namespace HealthGateway.Immunization.Test.Controllers
             // Verify
             Assert.IsType<JsonResult>(actual);
 
-            JsonResult jsonResult = (JsonResult)actual;
-            Assert.IsType<RequestResult<ImmunizationResult>>(jsonResult.Value);
-
-            RequestResult<ImmunizationResult>? result = jsonResult.Value as RequestResult<ImmunizationResult>;
+            JsonResult? jsonResult = actual as JsonResult;
+            RequestResult<ImmunizationResult>? result = jsonResult?.Value as RequestResult<ImmunizationResult>;
             Assert.True(result != null && result.ResultStatus == Common.Constants.ResultType.Success);
             int count = 0;
             if (result != null && result.ResultStatus == Common.Constants.ResultType.Success)
@@ -159,11 +157,8 @@ namespace HealthGateway.Immunization.Test.Controllers
 
             // Verify
             Assert.IsType<JsonResult>(actual);
-
-            JsonResult jsonResult = (JsonResult)actual;
-            Assert.IsType<RequestResult<ImmunizationEvent>>(jsonResult.Value);
-
-            RequestResult<ImmunizationEvent>? result = jsonResult.Value as RequestResult<ImmunizationEvent>;
+            JsonResult? jsonResult = actual as JsonResult;
+            RequestResult<ImmunizationEvent>? result = jsonResult?.Value as RequestResult<ImmunizationEvent>;
             Assert.True(result != null && result.ResultStatus == Common.Constants.ResultType.Success);
         }
     }
