@@ -54,11 +54,17 @@ export default class LandingView extends Vue {
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated!: boolean;
 
+    @Getter("isValidIdentityProvider", { namespace: "auth" })
+    isValidIdentityProvider!: boolean;
+
     @Getter("isOffline", { namespace: "config" })
     isOffline!: boolean;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
+
+    @Getter("userIsRegistered", { namespace: "user" })
+    userIsRegistered!: boolean;
 
     private get isVaccinationStatusEnabled(): boolean {
         return this.config.modules["VaccinationStatus"];
@@ -149,6 +155,15 @@ export default class LandingView extends Vue {
         }
     }
 
+    private get isSidebarShown(): boolean {
+        return (
+            this.oidcIsAuthenticated &&
+            this.userIsRegistered &&
+            this.isValidIdentityProvider &&
+            !this.isOffline
+        );
+    }
+
     private mounted() {
         this.isOpenRegistration =
             this.webClientConfig.registrationStatus == RegistrationStatus.Open;
@@ -177,10 +192,11 @@ export default class LandingView extends Vue {
             class="
                 vaccine-card-banner
                 small-banner
-                d-flex d-lg-none
+                d-flex
                 mx-n2
                 justify-content-center
             "
+            :class="{ 'd-lg-none': !isSidebarShown }"
         >
             <b-col cols="auto">
                 <img
@@ -207,10 +223,11 @@ export default class LandingView extends Vue {
             class="
                 vaccine-card-banner
                 large-banner
-                d-none d-lg-flex
+                d-none
                 justify-content-end
                 mx-n2
             "
+            :class="{ 'd-lg-flex': !isSidebarShown }"
         >
             <b-col cols="auto">
                 <img
@@ -435,11 +452,11 @@ export default class LandingView extends Vue {
             background-image: url("~@/assets/images/landing/vaccine-card-banner-bg-lg.svg");
             background-size: 731px;
             height: 186px;
-            padding-right: 180px;
+            padding-right: 175px;
 
             img {
                 width: 250px;
-                margin-right: 20px;
+                margin-right: 15px;
             }
         }
     }
