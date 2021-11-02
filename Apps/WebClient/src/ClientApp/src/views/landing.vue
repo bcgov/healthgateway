@@ -452,11 +452,11 @@ export default class LandingView extends Vue {
             background-image: url("~@/assets/images/landing/vaccine-card-banner-bg-lg.svg");
             background-size: 731px;
             height: 186px;
-            padding-right: 180px;
+            padding-right: 175px;
 
             img {
                 width: 250px;
-                margin-right: 20px;
+                margin-right: 15px;
             }
         }
     }
