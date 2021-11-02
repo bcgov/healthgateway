@@ -184,10 +184,10 @@ namespace HealthGateway.Immunization.Test.Services
         }
 
         /// <summary>
-        /// GetVaccineStatus - when the status when there is data mismatch.
+        /// GetPublicVaccineStatus - get the error result when the status indicator is "DataMismatch".
         /// </summary>
         [Fact]
-        public void ShouldGetErrorDismatchVaccineStatus()
+        public void ShouldGetErrorDataMismatchVaccineStatus()
         {
             RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new()
             {
@@ -246,14 +246,14 @@ namespace HealthGateway.Immunization.Test.Services
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             var actualResult = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
             Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResult.ResultStatus);
-            Assert.Equal(expectedResult.ResultError.ActionCode, actual: actualResult.ResultError?.ActionCode);
+            Assert.Equal(expectedResult.ResultError.ActionCode, actualResult.ResultError?.ActionCode);
         }
 
         /// <summary>
         /// GetPublicVaccineProof - Happy path.
         /// </summary>
         [Fact]
-        public void ShouldPublicGetVaccineProof()
+        public void ShouldGetPublicVaccineProof()
         {
             RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new()
             {
@@ -319,7 +319,7 @@ namespace HealthGateway.Immunization.Test.Services
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             var actualResult = Task.Run(async () => await service.GetPublicVaccineProof(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
-            Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actual: actualResult.ResourcePayload?.Document.Data);
+            Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actualResult.ResourcePayload?.Document.Data);
             Assert.NotNull(actualResult.ResourcePayload?.Document.Data);
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
         }
@@ -393,7 +393,7 @@ namespace HealthGateway.Immunization.Test.Services
                 this.GetHttpContextAccessor().Object);
 
             var actualResult = Task.Run(async () => await service.GetAuthenticatedVaccineProof(this.hdid).ConfigureAwait(true)).Result;
-            Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actual: actualResult.ResourcePayload?.Document.Data);
+            Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actualResult.ResourcePayload?.Document.Data);
             Assert.NotNull(actualResult.ResourcePayload?.Document.Data);
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
         }
