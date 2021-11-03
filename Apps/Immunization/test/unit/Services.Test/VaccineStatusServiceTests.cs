@@ -53,81 +53,19 @@ namespace HealthGateway.Immunization.Test.Services
         private readonly IConfiguration configuration = GetIConfigurationRoot();
 
         /// <summary>
-        /// GetPublicVaccineStatus - Happy Path.
+        /// GetPublicVaccineStatus and GetAuthenticatedVaccineStatus - Happy Path.
         /// </summary>
         /// <param name="statusIndicator"> status indicator from delegate.</param>
         /// <param name="state">final state.</param>
+        /// <param name="isPublicEndpoint">check to determine if the test is for public or authenticated page.</param>
         [Theory]
-        [InlineData("Exempt", VaccineState.Exempt)]
-        [InlineData("PartialDosesReceived", VaccineState.PartialDosesReceived)]
-        [InlineData("AllDosesReceived", VaccineState.AllDosesReceived)]
-        public void ShouldGetPublicVaccineStatus(string statusIndicator, VaccineState state)
-        {
-            RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new()
-            {
-                ResultStatus = Common.Constants.ResultType.Success,
-                ResourcePayload = new PHSAResult<VaccineStatusResult>()
-                {
-                    LoadState = new PHSALoadState() { RefreshInProgress = false, BackOffMilliseconds = 500 },
-                    Result = new VaccineStatusResult()
-                    {
-                        FirstName = "Bob",
-                        LastName = "Test",
-                        Birthdate = this.dob,
-                        StatusIndicator = statusIndicator,
-                    },
-                },
-            };
-            JWTModel jwtModel = new()
-            {
-                AccessToken = this.accessToken,
-            };
-
-            RequestResult<VaccineStatus> expectedResult = new RequestResult<VaccineStatus>()
-            {
-                ResultStatus = delegateResult.ResultStatus,
-                ResourcePayload = new VaccineStatus()
-                {
-                    Loaded = true,
-                    RetryIn = 0,
-                    PersonalHealthNumber = this.phn,
-                    FirstName = "Bob",
-                    LastName = "Test",
-                    Birthdate = this.dob,
-                    State = state,
-                },
-            };
-
-            Mock<IVaccineStatusDelegate> mockDelegate = new Mock<IVaccineStatusDelegate>();
-            mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, true)).Returns(Task.FromResult(delegateResult));
-
-            Mock<IAuthenticationDelegate> mockAuthDelegate = new Mock<IAuthenticationDelegate>();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>())).Returns(jwtModel);
-
-            IVaccineStatusService service = new VaccineStatusService(
-                this.configuration,
-                new Mock<ILogger<VaccineStatusService>>().Object,
-                mockAuthDelegate.Object,
-                mockDelegate.Object,
-                GetMemoryCache(),
-                this.GetHttpContextAccessor().Object);
-
-            string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
-            string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
-            var actualResult = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
-            Assert.True(expectedResult.IsDeepEqual(actualResult));
-        }
-
-        /// <summary>
-        /// GetAuthenticatedVaccineStatus - Happy Path.
-        /// </summary>
-        /// <param name="statusIndicator"> status indicator from delegate.</param>
-        /// <param name="state">final state.</param>
-        [Theory]
-        [InlineData("Exempt", VaccineState.Exempt)]
-        [InlineData("PartialDosesReceived", VaccineState.PartialDosesReceived)]
-        [InlineData("AllDosesReceived", VaccineState.AllDosesReceived)]
-        public void ShouldGetAuthenticatedVaccineStatus(string statusIndicator, VaccineState state)
+        [InlineData("Exempt", VaccineState.Exempt, true)]
+        [InlineData("PartialDosesReceived", VaccineState.PartialDosesReceived, true)]
+        [InlineData("AllDosesReceived", VaccineState.AllDosesReceived, true)]
+        [InlineData("Exempt", VaccineState.Exempt, false)]
+        [InlineData("PartialDosesReceived", VaccineState.PartialDosesReceived, false)]
+        [InlineData("AllDosesReceived", VaccineState.AllDosesReceived, false)]
+        public void ShouldGetVaccineStatus(string statusIndicator, VaccineState state, bool isPublicEndpoint)
         {
             RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new()
             {
@@ -157,6 +95,7 @@ namespace HealthGateway.Immunization.Test.Services
                 {
                     Loaded = true,
                     RetryIn = 0,
+                    PersonalHealthNumber = isPublicEndpoint ? this.phn : null,
                     FirstName = "Bob",
                     LastName = "Test",
                     Birthdate = this.dob,
@@ -166,7 +105,7 @@ namespace HealthGateway.Immunization.Test.Services
             };
 
             Mock<IVaccineStatusDelegate> mockDelegate = new Mock<IVaccineStatusDelegate>();
-            mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, false)).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, isPublicEndpoint)).Returns(Task.FromResult(delegateResult));
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new Mock<IAuthenticationDelegate>();
             mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>())).Returns(jwtModel);
@@ -179,15 +118,28 @@ namespace HealthGateway.Immunization.Test.Services
                 GetMemoryCache(),
                 this.GetHttpContextAccessor().Object);
 
-            var actualResult = Task.Run(async () => await service.GetAuthenticatedVaccineStatus(this.hdid).ConfigureAwait(true)).Result;
-            Assert.True(expectedResult.IsDeepEqual(actualResult));
+            if (isPublicEndpoint)
+            {
+                string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+                string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+                var actualResultPublic = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
+                Assert.True(expectedResult.IsDeepEqual(actualResultPublic));
+            }
+            else
+            {
+                var actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineStatus(this.hdid).ConfigureAwait(true)).Result;
+                Assert.True(expectedResult.IsDeepEqual(actualResultAuthenticated));
+            }
         }
 
         /// <summary>
-        /// GetPublicVaccineStatus - get the error result when the status indicator is "DataMismatch".
+        /// GetPublicVaccineStatus and GetAuthenticatedVaccineStatus - get the error result when the status indicator is DataMismatch.
         /// </summary>
-        [Fact]
-        public void ShouldGetErrorDataMismatchVaccineStatus()
+        /// <param name="isPublicEndpoint">check to determine if the test is for public or authenticated page.</param>
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ShouldGetErrorDataMismatchVaccineStatus(bool isPublicEndpoint)
         {
             RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new()
             {
@@ -229,7 +181,7 @@ namespace HealthGateway.Immunization.Test.Services
             };
 
             Mock<IVaccineStatusDelegate> mockDelegate = new Mock<IVaccineStatusDelegate>();
-            mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, true)).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, isPublicEndpoint)).Returns(Task.FromResult(delegateResult));
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new Mock<IAuthenticationDelegate>();
             mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>())).Returns(jwtModel);
@@ -242,18 +194,196 @@ namespace HealthGateway.Immunization.Test.Services
                 GetMemoryCache(),
                 this.GetHttpContextAccessor().Object);
 
-            string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
-            string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
-            var actualResult = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
-            Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResult.ResultStatus);
-            Assert.Equal(expectedResult.ResultError.ActionCode, actualResult.ResultError?.ActionCode);
+            if (isPublicEndpoint)
+            {
+                string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+                string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+                var actualResultPublic = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
+                Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResultPublic.ResultStatus);
+                Assert.Equal(expectedResult.ResultError.ActionCode, actualResultPublic.ResultError?.ActionCode);
+            }
+            else
+            {
+                var actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineStatus(this.hdid).ConfigureAwait(true)).Result;
+                Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResultAuthenticated.ResultStatus);
+                Assert.Equal(expectedResult.ResultError.ActionCode, actualResultAuthenticated.ResultError?.ActionCode);
+            }
         }
 
         /// <summary>
-        /// GetPublicVaccineProof - Happy path.
+        /// GetPublicVaccineStatus and GetAuthenticatedVaccineStatus - get the error result when the refresh in progress is enable.
         /// </summary>
-        [Fact]
-        public void ShouldGetPublicVaccineProof()
+        /// <param name="isPublicEndpoint">check to determine if the test is for public or authenticated page.</param>
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ShouldGetErrorRefreshInProgressVaccineStatus(bool isPublicEndpoint)
+        {
+            RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new()
+            {
+                ResultStatus = Common.Constants.ResultType.ActionRequired,
+                ResourcePayload = new PHSAResult<VaccineStatusResult>()
+                {
+                    LoadState = new PHSALoadState() { RefreshInProgress = true, BackOffMilliseconds = 500 },
+                    Result = new VaccineStatusResult()
+                    {
+                        FirstName = "Bob",
+                        LastName = "Test",
+                        Birthdate = this.dob,
+                        StatusIndicator = "PartialDosesReceived",
+                    },
+                },
+                ResultError = new()
+                {
+                    ActionCode = ActionType.Refresh,
+                },
+            };
+            JWTModel jwtModel = new()
+            {
+                AccessToken = this.accessToken,
+            };
+
+            RequestResult<VaccineStatus> expectedResult = new RequestResult<VaccineStatus>()
+            {
+                ResultStatus = delegateResult.ResultStatus,
+                ResourcePayload = new VaccineStatus()
+                {
+                    Loaded = true,
+                    RetryIn = 10000,
+                    PersonalHealthNumber = this.phn,
+                    FirstName = "Bob",
+                    LastName = "Test",
+                    Birthdate = this.dob,
+                    State = VaccineState.PartialDosesReceived,
+                },
+                ResultError = new()
+                {
+                    ActionCode = ActionType.Refresh,
+                },
+            };
+
+            Mock<IVaccineStatusDelegate> mockDelegate = new Mock<IVaccineStatusDelegate>();
+            mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, isPublicEndpoint)).Returns(Task.FromResult(delegateResult));
+
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new Mock<IAuthenticationDelegate>();
+            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>())).Returns(jwtModel);
+
+            IVaccineStatusService service = new VaccineStatusService(
+                this.configuration,
+                new Mock<ILogger<VaccineStatusService>>().Object,
+                mockAuthDelegate.Object,
+                mockDelegate.Object,
+                GetMemoryCache(),
+                this.GetHttpContextAccessor().Object);
+
+            if (isPublicEndpoint)
+            {
+                string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+                string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+                var actualResultPublic = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
+                Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResultPublic.ResultStatus);
+                Assert.Equal(expectedResult.ResultError.ActionCode, actualResultPublic.ResultError?.ActionCode);
+                Assert.Equal(expectedResult.ResourcePayload.RetryIn, actualResultPublic.ResourcePayload?.RetryIn);
+            }
+            else
+            {
+                var actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineStatus(this.hdid).ConfigureAwait(true)).Result;
+                Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResultAuthenticated.ResultStatus);
+                Assert.Equal(expectedResult.ResultError.ActionCode, actualResultAuthenticated.ResultError?.ActionCode);
+                Assert.Equal(expectedResult.ResourcePayload.RetryIn, actualResultAuthenticated.ResourcePayload?.RetryIn);
+            }
+        }
+
+        /// <summary>
+        /// GetPublicVaccineStatus and GetAuthenticatedVaccineStatus - get the error result when the status indicator is NotFound.
+        /// </summary>
+        /// <param name="isPublicEndpoint">check to determine if the test is for public (true) or authenticated (false) page.</param>
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ShouldGetErrorNotFoundVaccineStatus(bool isPublicEndpoint)
+        {
+            RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new()
+            {
+                ResultStatus = Common.Constants.ResultType.ActionRequired,
+                ResourcePayload = new PHSAResult<VaccineStatusResult>()
+                {
+                    LoadState = new PHSALoadState() { RefreshInProgress = false, BackOffMilliseconds = 500 },
+                    Result = new VaccineStatusResult()
+                    {
+                        FirstName = "Bob",
+                        LastName = "Test",
+                        Birthdate = this.dob,
+                        StatusIndicator = "NotFound",
+                    },
+                },
+                ResultError = new()
+                {
+                    ActionCode = ActionType.Invalid,
+                },
+            };
+            JWTModel jwtModel = new()
+            {
+                AccessToken = this.accessToken,
+            };
+
+            RequestResult<VaccineStatus> expectedResult = new RequestResult<VaccineStatus>()
+            {
+                ResultStatus = delegateResult.ResultStatus,
+                ResourcePayload = new VaccineStatus()
+                {
+                    Loaded = true,
+                    RetryIn = 0,
+                    PersonalHealthNumber = this.phn,
+                    FirstName = "Bob",
+                    LastName = "Test",
+                    Birthdate = this.dob,
+                    State = VaccineState.NotFound,
+                },
+                ResultError = new()
+                {
+                    ActionCode = ActionType.Invalid,
+                },
+            };
+
+            Mock<IVaccineStatusDelegate> mockDelegate = new Mock<IVaccineStatusDelegate>();
+            mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, isPublicEndpoint)).Returns(Task.FromResult(delegateResult));
+
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new Mock<IAuthenticationDelegate>();
+            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>())).Returns(jwtModel);
+
+            IVaccineStatusService service = new VaccineStatusService(
+                this.configuration,
+                new Mock<ILogger<VaccineStatusService>>().Object,
+                mockAuthDelegate.Object,
+                mockDelegate.Object,
+                GetMemoryCache(),
+                this.GetHttpContextAccessor().Object);
+
+            if (isPublicEndpoint)
+            {
+                string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+                string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+                var actualResultPublic = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
+                Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResultPublic.ResultStatus);
+                Assert.Equal(expectedResult.ResultError.ActionCode, actualResultPublic.ResultError?.ActionCode);
+            }
+            else
+            {
+                var actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineStatus(this.hdid).ConfigureAwait(true)).Result;
+                Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResultAuthenticated.ResultStatus);
+                Assert.Equal(expectedResult.ResultError.ActionCode, actualResultAuthenticated.ResultError?.ActionCode);
+            }
+        }
+
+        /// <summary>
+        /// GetPublicVaccineProof and GetAuthenticatedVaccineProof - get the vaccine proof for public and authenticated site (happy path).
+        /// </summary>
+        /// <param name="isPublicEndpoint">check to determine if the test is for public (true) or authenticated (false) page.</param>
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ShouldGetVaccineProof(bool isPublicEndpoint)
         {
             RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new()
             {
@@ -303,7 +433,7 @@ namespace HealthGateway.Immunization.Test.Services
             };
 
             Mock<IVaccineStatusDelegate> mockDelegate = new Mock<IVaccineStatusDelegate>();
-            mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, true)).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, isPublicEndpoint)).Returns(Task.FromResult(delegateResult));
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new Mock<IAuthenticationDelegate>();
             mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>())).Returns(jwtModel);
@@ -316,86 +446,22 @@ namespace HealthGateway.Immunization.Test.Services
                 GetMemoryCache(),
                 this.GetHttpContextAccessor().Object);
 
-            string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
-            string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
-            var actualResult = Task.Run(async () => await service.GetPublicVaccineProof(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
-            Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actualResult.ResourcePayload?.Document.Data);
-            Assert.NotNull(actualResult.ResourcePayload?.Document.Data);
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
-        }
-
-        /// <summary>
-        /// GetAuthenticatedVaccineProof - Happy path.
-        /// </summary>
-        [Fact]
-        public void ShouldGetAuthenticatedVaccineProof()
-        {
-            RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new()
+            if (isPublicEndpoint)
             {
-                ResultStatus = Common.Constants.ResultType.Success,
-                ResourcePayload = new PHSAResult<VaccineStatusResult>()
-                {
-                    LoadState = new PHSALoadState() { RefreshInProgress = false, BackOffMilliseconds = 500 },
-                    Result = new VaccineStatusResult()
-                    {
-                        FirstName = "Bob",
-                        LastName = "Test",
-                        Birthdate = this.dob,
-                        StatusIndicator = "PartialDosesReceived",
-                        FederalVaccineProof = new()
-                        {
-                            Data = "this is pdf",
-                            Encoding = "base64",
-                            Type = "application/pdf",
-                        },
-                    },
-                },
-            };
-            JWTModel jwtModel = new()
+                string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+                string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+                var actualResultPublic = Task.Run(async () => await service.GetPublicVaccineProof(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
+                Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actualResultPublic.ResourcePayload?.Document.Data);
+                Assert.NotNull(actualResultPublic.ResourcePayload?.Document.Data);
+                Assert.Equal(Common.Constants.ResultType.Success, actualResultPublic.ResultStatus);
+            }
+            else
             {
-                AccessToken = this.accessToken,
-            };
-
-            RequestResult<VaccineStatus> expectedResult = new RequestResult<VaccineStatus>()
-            {
-                ResultStatus = delegateResult.ResultStatus,
-                ResourcePayload = new VaccineStatus()
-                {
-                    Loaded = true,
-                    RetryIn = 0,
-                    PersonalHealthNumber = this.phn,
-                    FirstName = "Bob",
-                    LastName = "Test",
-                    Birthdate = this.dob,
-                    State = VaccineState.PartialDosesReceived,
-                    FederalVaccineProof = new()
-                    {
-                        Data = "this is pdf",
-                        Encoding = "base64",
-                        Type = "application/pdf",
-                    },
-                },
-            };
-
-            Mock<IVaccineStatusDelegate> mockDelegate = new Mock<IVaccineStatusDelegate>();
-
-            mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, false)).Returns(Task.FromResult(delegateResult));
-
-            Mock<IAuthenticationDelegate> mockAuthDelegate = new Mock<IAuthenticationDelegate>();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>())).Returns(jwtModel);
-
-            IVaccineStatusService service = new VaccineStatusService(
-                this.configuration,
-                new Mock<ILogger<VaccineStatusService>>().Object,
-                mockAuthDelegate.Object,
-                mockDelegate.Object,
-                GetMemoryCache(),
-                this.GetHttpContextAccessor().Object);
-
-            var actualResult = Task.Run(async () => await service.GetAuthenticatedVaccineProof(this.hdid).ConfigureAwait(true)).Result;
-            Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actualResult.ResourcePayload?.Document.Data);
-            Assert.NotNull(actualResult.ResourcePayload?.Document.Data);
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+                var actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineProof(this.hdid).ConfigureAwait(true)).Result;
+                Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actualResultAuthenticated.ResourcePayload?.Document.Data);
+                Assert.NotNull(actualResultAuthenticated.ResourcePayload?.Document.Data);
+                Assert.Equal(Common.Constants.ResultType.Success, actualResultAuthenticated.ResultStatus);
+            }
         }
 
         /// <summary>
