@@ -130,7 +130,7 @@ namespace HealthGateway.Immunization.Services
                     retVal.ResultStatus = ResultType.ActionRequired;
                     retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine Proof document is not available.", ActionType.Invalid);
                 }
-                else if (payload.Loaded && payload.FederalVaccineProof?.Data == null)
+                else if (payload.Loaded && string.IsNullOrEmpty(payload.FederalVaccineProof?.Data))
                 {
                     retVal.ResultStatus = ResultType.Error;
                     retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine Proof document is not available.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA) };
@@ -169,7 +169,7 @@ namespace HealthGateway.Immunization.Services
                     retVal.ResultStatus = ResultType.ActionRequired;
                     retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine Proof document is not available.", ActionType.Invalid);
                 }
-                else if (payload.Loaded && payload.FederalVaccineProof?.Data == null)
+                else if (payload.Loaded && string.IsNullOrEmpty(payload.FederalVaccineProof?.Data))
                 {
                     retVal.ResultStatus = ResultType.Error;
                     retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine Proof document is not available.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA) };
