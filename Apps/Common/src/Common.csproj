@@ -8,7 +8,6 @@
     <EmbeddedResource Remove="Authorization\**" />
     <None Remove="Authorization\**" />
     <None Remove="ServiceReference\dotnet-svcutil.params.json" />
-    <None Remove="Models\AcaPy\" />
     <None Remove="Models\PHSA\Recommendation\" />
   </ItemGroup>
   <ItemGroup>
@@ -70,7 +69,6 @@
     <Folder Include="Filters\" />
     <Folder Include="resources\" />
     <Folder Include="ServiceReference\" />
-    <Folder Include="Models\AcaPy\" />
     <Folder Include="Models\PHSA\Recommendation\" />
   </ItemGroup>
   <ItemGroup>
