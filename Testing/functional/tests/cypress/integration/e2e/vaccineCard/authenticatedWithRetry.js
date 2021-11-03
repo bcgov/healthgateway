@@ -1,15 +1,14 @@
 const { AuthMethod } = require("../../../support/constants");
 const method = "GET";
 const covid19Url = "/covid19";
-const fixtureLoadedPath = "ImmunizationService/covidVaccineRecordLoaded.json";
+const fixtureLoadedPath = "ImmunizationService/vaccineProofLoaded.json";
 const pathApi =
     "/v1/api/AuthenticatedVaccineStatus/pdf?hdid=P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-const fixtureNotLoadedPath =
-    "ImmunizationService/covidVaccineRecordNotLoaded.json";
+const fixtureNotLoadedPath = "ImmunizationService/vaccineProofNotLoaded.json";
 
 describe("Vaccination Card - Save as PDF - VaccinationExportPdf is enabled & Loaded is false - KeyCloak", () => {
     before(() => {
-       let isLoading = false;
+        let isLoading = false;
         cy.enableModules([
             "Immunization",
             "VaccinationStatus",
@@ -31,11 +30,11 @@ describe("Vaccination Card - Save as PDF - VaccinationExportPdf is enabled & Loa
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
             covid19Url
-        );  
+        );
         cy.checkVaccineRecordHasLoaded();
     });
 
-    it("Vaccine Record Retry", () => {  
+    it("Vaccine Record Retry", () => {
         cy.log("Load the fixture with loaded is false and retryin is 10000");
         cy.enableModules([
             "Immunization",
@@ -45,8 +44,8 @@ describe("Vaccination Card - Save as PDF - VaccinationExportPdf is enabled & Loa
         ]);
 
         cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle")
-        .should("be.enabled", "be.visible")
-        .click();
+            .should("be.enabled", "be.visible")
+            .click();
 
         cy.get("[data-testid=save-as-pdf-dropdown-item]")
             .should("be.visible")
@@ -55,8 +54,8 @@ describe("Vaccination Card - Save as PDF - VaccinationExportPdf is enabled & Loa
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
-       
-        cy.wait(10000)
+
+        cy.wait(10000);
         cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
     });
 });

@@ -12,6 +12,11 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 import { VaccinationStatusActions } from "./types";
 
+const retryStatusMessage =
+    "We're busy but will continue to try to fetch your record....";
+
+const retryLoggerMessage = "Re-querying for vaccination status";
+
 export const actions: VaccinationStatusActions = {
     retrieveVaccineStatus(
         context,
@@ -47,12 +52,9 @@ export const actions: VaccinationStatusActions = {
                         payload.retryin > 0
                     ) {
                         logger.info("VaccinationStatus not loaded");
-                        context.commit(
-                            "setStatusMessage",
-                            "We're busy but will continue to try to fetch your record...."
-                        );
+                        context.commit("setStatusMessage", retryStatusMessage);
                         setTimeout(() => {
-                            logger.info("Re-querying for vaccination status");
+                            logger.info(retryLoggerMessage);
                             context.dispatch("retrieveVaccineStatus", {
                                 phn: params.phn,
                                 dateOfBirth: params.dateOfBirth,
@@ -71,7 +73,7 @@ export const actions: VaccinationStatusActions = {
                 });
         });
     },
-    retrieveVaccineStatusPdf(
+    retrievePublicVaccineRecord(
         context,
         params: {
             phn: string;
@@ -79,8 +81,9 @@ export const actions: VaccinationStatusActions = {
             dateOfVaccine: StringISODate;
         }
     ): Promise<CovidVaccineRecord> {
-        context.commit("setPdfRequested");
-
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        logger.debug(`Retrieving Vaccination Record`);
+        context.commit("setPublicVaccineRecordRequested");
         const vaccinationStatusService: IVaccinationStatusService =
             container.get<IVaccinationStatusService>(
                 SERVICE_IDENTIFIER.VaccinationStatusService
@@ -94,8 +97,28 @@ export const actions: VaccinationStatusActions = {
                     params.dateOfVaccine
                 )
                 .then((result) => {
+                    const payload = result.resourcePayload;
                     if (result.resultStatus === ResultType.Success) {
-                        const payload = result.resourcePayload;
+                        context.commit("setPublicVaccineRecord", payload);
+                        resolve(payload);
+                    } else if (
+                        result.resultError?.actionCode === ActionType.Refresh &&
+                        !payload.loaded &&
+                        payload.retryin > 0
+                    ) {
+                        logger.info("Public VaccinationStatus not loaded");
+                        context.commit(
+                            "setPublicVaccineRecordStatusMessage",
+                            retryStatusMessage
+                        );
+                        setTimeout(() => {
+                            logger.info(retryLoggerMessage);
+                            context.dispatch("retrievePublicVaccineRecord", {
+                                phn: params.phn,
+                                dateOfBirth: params.dateOfBirth,
+                                dateOfVaccine: params.dateOfVaccine,
+                            });
+                        }, payload.retryin);
                         resolve(payload);
                     } else {
                         context.dispatch("handlePdfError", result.resultError);
@@ -179,12 +202,10 @@ export const actions: VaccinationStatusActions = {
                             logger.info("VaccinationStatus not loaded");
                             context.commit(
                                 "setAuthenticatedStatusMessage",
-                                "We're busy but will continue to try to fetch your record...."
+                                retryStatusMessage
                             );
                             setTimeout(() => {
-                                logger.info(
-                                    "Re-querying for vaccination status"
-                                );
+                                logger.info(retryLoggerMessage);
                                 context.dispatch(
                                     "retrieveAuthenticatedVaccineStatus",
                                     {

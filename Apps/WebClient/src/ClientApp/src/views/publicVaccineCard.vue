@@ -15,16 +15,15 @@ import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
-import { ResultType } from "@/constants/resulttype";
 import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
+import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger, IVaccinationStatusService } from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
 import { Mask, phnMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
 import SnowPlow from "@/utility/snowPlow";
@@ -55,6 +54,13 @@ export default class PublicVaccineCardView extends Vue {
         dateOfVaccine: StringISODate;
     }) => Promise<void>;
 
+    @Action("retrievePublicVaccineRecord", { namespace: "vaccinationStatus" })
+    retrievePublicVaccineRecord!: (params: {
+        phn: string;
+        dateOfBirth: StringISODate;
+        dateOfVaccine: StringISODate;
+    }) => Promise<void>;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -69,6 +75,19 @@ export default class PublicVaccineCardView extends Vue {
 
     @Getter("statusMessage", { namespace: "vaccinationStatus" })
     statusMessage!: string;
+
+    @Getter("publicVaccineRecord", { namespace: "vaccinationStatus" })
+    vaccineRecord!: CovidVaccineRecord | undefined;
+
+    @Getter("publicVaccineRecordStatusMessage", {
+        namespace: "vaccinationStatus",
+    })
+    vaccineRecordStatusMessage!: string;
+
+    @Getter("publicVaccineRecordIsLoading", {
+        namespace: "vaccinationStatus",
+    })
+    vaccineRecordIsLoading!: boolean;
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
@@ -98,11 +117,14 @@ export default class PublicVaccineCardView extends Vue {
     private dateOfBirth = "";
     private dateOfVaccine = "";
 
-    private isDownloadingPdf = false;
     private downloadError: BannerError | null = null;
 
     private get loadingStatusMessage(): string {
-        return this.isDownloading ? "Downloading...." : this.statusMessage;
+        return this.isDownloading
+            ? "Downloading...."
+            : this.vaccineRecordIsLoading
+            ? this.vaccineRecordStatusMessage
+            : this.statusMessage;
     }
 
     private get downloadButtonShown(): boolean {
@@ -224,50 +246,33 @@ export default class PublicVaccineCardView extends Vue {
         this.sensitivedocumentDownloadModal.showModal();
     }
 
-    private downloadVaccinePdf() {
-        this.downloadError = null;
-        this.isDownloadingPdf = true;
-        this.vaccinationStatusService
-            .getPublicVaccineStatusPdf(
-                this.phn.replace(/ /g, ""),
-                this.dateOfBirth,
-                this.dateOfVaccine
-            )
-            .then((result) => {
-                if (result.resultStatus == ResultType.Success) {
-                    SnowPlow.trackEvent({
-                        action: "download_card",
-                        text: "Public COVID Card PDF",
-                    });
-                    const mimeType = result.resourcePayload.document.mediaType;
-                    const downloadLink = `data:${mimeType};base64,${result.resourcePayload.document.data}`;
-
-                    fetch(downloadLink).then((res) => {
-                        res.blob().then((blob) => {
-                            saveAs(blob, "VaccineProof.pdf");
-                        });
-                    });
-                } else {
-                    this.logger.error(
-                        "Error returned when retrieving vaccine proof PDF: " +
-                            JSON.stringify(result.resultError)
-                    );
-                    this.downloadError = ErrorTranslator.toBannerError(
-                        "Retrieve PDF Error",
-                        result.resultError
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.downloadError = ErrorTranslator.toBannerError(
-                    "Retrieve PDF Error",
-                    err
-                );
-            })
-            .finally(() => {
-                this.isDownloadingPdf = false;
+    @Watch("vaccineRecord")
+    private saveVaccinePdf() {
+        if (this.vaccineRecord !== undefined) {
+            const mimeType = this.vaccineRecord.document.mediaType;
+            const downloadLink = `data:${mimeType};base64,${this.vaccineRecord.document.data}`;
+            fetch(downloadLink).then((res) => {
+                SnowPlow.trackEvent({
+                    action: "download_card",
+                    text: "Public COVID Card PDF",
+                });
+                res.blob().then((blob) => {
+                    saveAs(blob, "VaccineProof.pdf");
+                });
             });
+        }
+    }
+
+    private downloadVaccinePdf() {
+        this.retrievePublicVaccineRecord({
+            phn: this.phn.replace(/ /g, ""),
+            dateOfBirth: this.dateOfBirth,
+            dateOfVaccine: this.dateOfVaccine,
+        });
+    }
+
+    private get isLoadingVaccineRecordPdf(): boolean {
+        return this.vaccineRecordIsLoading || this.isDownloading;
     }
 }
 </script>
@@ -275,7 +280,7 @@ export default class PublicVaccineCardView extends Vue {
 <template>
     <div class="background flex-grow-1 d-flex flex-column">
         <loading
-            :is-loading="isLoading || isDownloading || isDownloadingPdf"
+            :is-loading="isLoading || isLoadingVaccineRecordPdf"
             :text="loadingStatusMessage"
         />
         <div class="header d-print-none">
