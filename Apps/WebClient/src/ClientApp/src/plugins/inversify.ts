@@ -15,7 +15,6 @@ export const SERVICE_IDENTIFIER = {
     DependentService: Symbol.for("DependentService"),
     UserCommentService: Symbol.for("UserCommentService"),
     UserRatingService: Symbol.for("UserRatingService"),
-    CredentialService: Symbol.for("CredentialService"),
     ReportService: Symbol.for("ReportService"),
     VaccinationStatusService: Symbol.for("VaccinationStatusService"),
 };

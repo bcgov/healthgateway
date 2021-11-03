@@ -33,7 +33,6 @@ import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserRating from "@/models/userRating";
 import VaccinationStatus from "@/models/vaccinationStatus";
-import { WalletConnection, WalletCredential } from "@/models/wallet";
 import { RootState } from "@/store/types";
 
 export interface IAuthenticationService {
@@ -215,24 +214,6 @@ export interface IHttpDelegate {
         payload?: unknown,
         headers?: Dictionary<string>
     ): Promise<T>;
-}
-
-export interface ICredentialService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getConnection(hdid: string): Promise<WalletConnection>;
-    createConnection(hdid: string): Promise<WalletConnection>;
-    disconnectConnection(
-        hdid: string,
-        connectionId: string
-    ): Promise<WalletConnection>;
-    createCredentials(
-        hdid: string,
-        targetIds: string[]
-    ): Promise<WalletCredential>;
-    revokeCredential(
-        hdid: string,
-        credentialId: string
-    ): Promise<WalletCredential>;
 }
 
 export interface IReportService {
