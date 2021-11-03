@@ -73,18 +73,6 @@ namespace Healthgateway.JobScheduler.Jobs
                 this.dbContext.SaveChanges();
             }
 
-            List<VaccineProofRequestCache> oldVaccineRequests = this.dbContext.VaccineProofRequestCache
-                    .Where(cache => cache.ExpiryDateTime < DateTime.UtcNow)
-                    .Take(this.deleteMaxRows)
-                    .OrderBy(o => o.ExpiryDateTime)
-                    .ToList();
-            if (oldVaccineRequests.Count > 0)
-            {
-                this.logger.LogInformation($"Deleting {oldVaccineRequests.Count} Vaccine Proof Request cache entries out of a maximum of {this.deleteMaxRows}");
-                this.dbContext.RemoveRange(oldVaccineRequests);
-                this.dbContext.SaveChanges();
-            }
-
             this.logger.LogInformation($"CleanCacheJob Finished running");
         }
 }
