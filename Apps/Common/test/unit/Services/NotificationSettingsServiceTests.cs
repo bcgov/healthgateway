@@ -65,14 +65,7 @@ namespace HealthGateway.CommonTests.Services
                                 mockJobClient.Object,
                                 mockResourceDelegateDelegate.Object);
 
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true,
-                WriteIndented = true,
-            };
-
-            string expectedJobParm = JsonSerializer.Serialize(nsr, options);
+            string expectedJobParm = JsonSerializer.Serialize(nsr);
             service.QueueNotificationSettings(nsr);
 
             mockJobClient.Verify(x => x.Create(

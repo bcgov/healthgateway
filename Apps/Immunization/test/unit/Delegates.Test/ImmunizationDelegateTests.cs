@@ -77,7 +77,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 Result = expectedViewResponse,
             };
 
-            string json = JsonSerializer.Serialize(phsaResponse, null);
+            string json = JsonSerializer.Serialize(phsaResponse);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
@@ -119,7 +119,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                     new List<ImmunizationRecommendationResponse>()),
             };
 
-            string json = JsonSerializer.Serialize(phsaResponse, null);
+            string json = JsonSerializer.Serialize(phsaResponse);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()

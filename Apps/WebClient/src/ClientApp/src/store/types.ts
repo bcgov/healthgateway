@@ -3,7 +3,6 @@ import { ActionContext, StoreOptions } from "vuex";
 import { AuthModule } from "./modules/auth/types";
 import { CommentModule } from "./modules/comment/types";
 import { ConfigModule } from "./modules/config/types";
-import { CredentialModule } from "./modules/credential/types";
 import { EncounterModule } from "./modules/encounter/types";
 import { ErrorBannerModule } from "./modules/error/types";
 import { IdleModule } from "./modules/idle/types";
@@ -48,7 +47,6 @@ export interface GatewayStoreOptions extends StoreOptions<RootState> {
         idle: IdleModule;
         errorBanner: ErrorBannerModule;
         timeline: TimelineModule;
-        credential: CredentialModule;
         vaccinationStatus: VaccinationStatusModule;
     };
 }

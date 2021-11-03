@@ -43,10 +43,13 @@ namespace HealthGateway.Immunization.Models
         /// <returns>A list of ImmunizationRecommendation objects.</returns>
         public static IList<TargetDisease> FromPHSAModelList(TargetDiseaseResponse model)
         {
-            List<TargetDisease> targetDiseases = new List<TargetDisease>();
-            foreach (SystemCode systemCode in model.TargetDiseaseCodes)
+            List<TargetDisease> targetDiseases = new();
+            if (model != null)
             {
-                targetDiseases.Add(FromPHSAModel(systemCode));
+                foreach (SystemCode systemCode in model.TargetDiseaseCodes)
+                {
+                    targetDiseases.Add(FromPHSAModel(systemCode));
+                }
             }
 
             return targetDiseases;

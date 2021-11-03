@@ -467,7 +467,7 @@ namespace HealthGateway.WebClient.Services
         {
             string activationHost = this.httpContextAccessor.HttpContext!.Request
                                              .GetTypedHeaders()
-                                             .Referer
+                                             .Referer!
                                              .GetLeftPart(UriPartial.Authority);
             string hostUrl = activationHost.ToString();
 

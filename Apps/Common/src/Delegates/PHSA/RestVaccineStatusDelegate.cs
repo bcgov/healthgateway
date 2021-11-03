@@ -23,10 +23,8 @@ namespace HealthGateway.Common.Delegates.PHSA
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
-    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
@@ -91,13 +89,7 @@ namespace HealthGateway.Common.Delegates.PHSA
 
             try
             {
-                var jsonOptions = new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    IgnoreNullValues = true,
-                    WriteIndented = true,
-                };
-                string json = JsonSerializer.Serialize(query, jsonOptions);
+                string json = JsonSerializer.Serialize(query);
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                 if (isPublicEndpoint)
                 {
@@ -135,7 +127,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 {
                     case HttpStatusCode.OK:
                         this.logger.LogTrace($"Response payload: {payload}");
-                        PHSAResult<VaccineStatusResult>? phsaResult = JsonSerializer.Deserialize<PHSAResult<VaccineStatusResult>>(payload, jsonOptions);
+                        PHSAResult<VaccineStatusResult>? phsaResult = JsonSerializer.Deserialize<PHSAResult<VaccineStatusResult>>(payload);
                         if (phsaResult != null && phsaResult.Result != null)
                         {
                             retVal.ResultStatus = ResultType.Success;
@@ -251,13 +243,7 @@ namespace HealthGateway.Common.Delegates.PHSA
 
             try
             {
-                var jsonOptions = new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    IgnoreNullValues = true,
-                    WriteIndented = true,
-                };
-                string json = JsonSerializer.Serialize(query, jsonOptions);
+                string json = JsonSerializer.Serialize(query);
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                 using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
 
@@ -274,7 +260,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 {
                     case HttpStatusCode.OK:
                         this.logger.LogTrace($"Response payload: {payload}");
-                        PHSAResult<RecordCard>? phsaResult = JsonSerializer.Deserialize<PHSAResult<RecordCard>>(payload, jsonOptions);
+                        PHSAResult<RecordCard>? phsaResult = JsonSerializer.Deserialize<PHSAResult<RecordCard>>(payload);
                         if (phsaResult != null && phsaResult.Result != null)
                         {
                             retVal.ResultStatus = ResultType.Success;
