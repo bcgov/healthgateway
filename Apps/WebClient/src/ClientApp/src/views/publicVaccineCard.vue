@@ -68,7 +68,7 @@ export default class PublicVaccineCardView extends Vue {
     status!: VaccinationStatus | undefined;
 
     @Getter("isLoading", { namespace: "vaccinationStatus" })
-    isLoading!: boolean;
+    isVaccinationStatusLoading!: boolean;
 
     @Getter("error", { namespace: "vaccinationStatus" })
     error!: BannerError | undefined;
@@ -271,18 +271,19 @@ export default class PublicVaccineCardView extends Vue {
         });
     }
 
-    private get isLoadingVaccineRecordPdf(): boolean {
-        return this.vaccineRecordIsLoading || this.isDownloading;
+    public get isLoading(): boolean {
+        return (
+            this.isVaccinationStatusLoading ||
+            this.vaccineRecordIsLoading ||
+            this.isDownloading
+        );
     }
 }
 </script>
 
 <template>
     <div class="background flex-grow-1 d-flex flex-column">
-        <loading
-            :is-loading="isLoading || isLoadingVaccineRecordPdf"
-            :text="loadingStatusMessage"
-        />
+        <loading :is-loading="isLoading" :text="loadingStatusMessage" />
         <div class="header d-print-none">
             <router-link id="homeLink" to="/" aria-label="Return to home page">
                 <img
@@ -564,7 +565,7 @@ export default class PublicVaccineCardView extends Vue {
                                 variant="primary"
                                 aria-label="Enter"
                                 type="submit"
-                                :disabled="isLoading"
+                                :disabled="isVaccinationStatusLoading"
                                 data-testid="btnEnter"
                                 class="w-100"
                             >

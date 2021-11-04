@@ -85,7 +85,7 @@ describe("Public User - Vaccine Card Page - Save with Retry", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
-        cy.wait(1000);
+        cy.wait(10000);
         cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
         cy.verifyDownload("VaccineProof.pdf");
     });

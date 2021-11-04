@@ -12,11 +12,6 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 import { VaccinationStatusActions } from "./types";
 
-const retryStatusMessage =
-    "We're busy but will continue to try to fetch your record....";
-
-const retryLoggerMessage = "Re-querying for vaccination status";
-
 export const actions: VaccinationStatusActions = {
     retrieveVaccineStatus(
         context,
@@ -52,9 +47,12 @@ export const actions: VaccinationStatusActions = {
                         payload.retryin > 0
                     ) {
                         logger.info("VaccinationStatus not loaded");
-                        context.commit("setStatusMessage", retryStatusMessage);
+                        context.commit(
+                            "setStatusMessage",
+                            "We're busy but will continue to try to fetch your record...."
+                        );
                         setTimeout(() => {
-                            logger.info(retryLoggerMessage);
+                            logger.info("Re-querying for vaccination status");
                             context.dispatch("retrieveVaccineStatus", {
                                 phn: params.phn,
                                 dateOfBirth: params.dateOfBirth,
@@ -106,13 +104,15 @@ export const actions: VaccinationStatusActions = {
                         !payload.loaded &&
                         payload.retryin > 0
                     ) {
-                        logger.info("Public VaccinationStatus not loaded");
+                        logger.info("Public Vaccination Proof not loaded");
                         context.commit(
                             "setPublicVaccineRecordStatusMessage",
-                            retryStatusMessage
+                            "We're busy but will continue to try to fetch your proof of vaccination...."
                         );
                         setTimeout(() => {
-                            logger.info(retryLoggerMessage);
+                            logger.info(
+                                "Re-querying for public proof of vaccination"
+                            );
                             context.dispatch("retrievePublicVaccineRecord", {
                                 phn: params.phn,
                                 dateOfBirth: params.dateOfBirth,
@@ -202,10 +202,12 @@ export const actions: VaccinationStatusActions = {
                             logger.info("VaccinationStatus not loaded");
                             context.commit(
                                 "setAuthenticatedStatusMessage",
-                                retryStatusMessage
+                                "We're busy but will continue to try to fetch your record...."
                             );
                             setTimeout(() => {
-                                logger.info(retryLoggerMessage);
+                                logger.info(
+                                    "Re-querying for authenticated proof of vaccination"
+                                );
                                 context.dispatch(
                                     "retrieveAuthenticatedVaccineStatus",
                                     {
