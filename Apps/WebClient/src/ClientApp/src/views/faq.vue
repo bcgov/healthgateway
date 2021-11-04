@@ -383,7 +383,7 @@
                     child’s) COVID-19 test results are available?</b-button
                 >
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer11" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer9" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -418,7 +418,7 @@
                     Gateway account. What should I do?</b-button
                 >
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer11" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer10" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -452,7 +452,7 @@
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer9
+                    v-b-toggle.accordion-faqAnswer11
                     data-testid="questionBtn"
                     block
                     variant="info"
