@@ -15,8 +15,8 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong>
-                                    October 29, 2021 - v1.4.14 - Canadian Proof of
-                                    Vaccination
+                                    October 29, 2021 - v1.4.14 - Canadian Proof
+                                    of Vaccination
                                 </strong>
                             </b-col>
                         </b-row>
@@ -24,8 +24,8 @@
                             <b-col>
                                 <ul>
                                     <li>
-                                        We added a downloadable pdf for the 
-                                        Canadian proof of vaccination. 
+                                        We added a downloadable pdf for the
+                                        Canadian proof of vaccination.
                                     </li>
                                 </ul>
                             </b-col>
