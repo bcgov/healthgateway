@@ -298,66 +298,54 @@ export default class TimelineView extends Vue {
 </script>
 
 <template>
-    <div class="flex-grow-1 d-flex flex-column">
-        <LoadingComponent
-            :is-custom="true"
-            :is-loading="isLoading"
-        ></LoadingComponent>
-        <b-row class="my-2 fluid">
+    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <LoadingComponent :is-custom="true" :is-loading="isLoading" />
+        <b-row>
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
-                <div class="px-2">
-                    <b-alert
-                        :show="dismissImmunizationBannerCountdown"
-                        dismissible
-                        variant="info"
-                        class="no-print"
-                        @dismissed="dismissImmunizationBannerCountdown = 0"
+                <b-alert
+                    :show="dismissImmunizationBannerCountdown"
+                    dismissible
+                    variant="info"
+                    class="no-print"
+                    @dismissed="dismissImmunizationBannerCountdown = 0"
+                >
+                    <h4
+                        v-if="immunizationIsDeferred"
+                        data-testid="immunizationLoading"
                     >
-                        <h4
-                            v-if="immunizationIsDeferred"
-                            data-testid="immunizationLoading"
+                        Still searching for immunization records
+                    </h4>
+                    <h4
+                        v-else-if="
+                            patientImmunizations.length >
+                            initialImmunizationCount
+                        "
+                        data-testid="immunizationReady"
+                    >
+                        Additional immunization records found. Loading into
+                        timeline
+                    </h4>
+                    <h4 v-else data-testid="immunizationEmpty">
+                        No additional records found
+                    </h4>
+                </b-alert>
+                <page-title title="Timeline">
+                    <router-link to="/covid19">
+                        <hg-button
+                            :disabled="covidImmunizations.length === 0"
+                            data-testid="covidcard-btn"
+                            class="float-right"
+                            variant="primary"
                         >
-                            Still searching for immunization records
-                        </h4>
-                        <h4
-                            v-else-if="
-                                patientImmunizations.length >
-                                initialImmunizationCount
-                            "
-                            data-testid="immunizationReady"
-                        >
-                            Additional immunization records found. Loading into
-                            timeline
-                        </h4>
-                        <h4 v-else data-testid="immunizationEmpty">
-                            No additional records found
-                        </h4>
-                    </b-alert>
-                </div>
-
-                <b-row id="pageTitle" class="px-2">
-                    <b-col cols="6" class="px-0">
-                        <h1 id="subject" class="my-0">Timeline</h1>
-                    </b-col>
-                    <b-col cols="6" align-self="end" class="px-0">
-                        <router-link to="/covid19">
-                            <hg-button
-                                :disabled="covidImmunizations.length === 0"
-                                data-testid="covidcard-btn"
-                                class="float-right"
-                                variant="primary"
-                            >
-                                <hg-icon
-                                    icon="check-circle"
-                                    size="medium"
-                                    class="mr-2"
-                                />
-                                <span>BC Vaccine Card</span>
-                            </hg-button>
-                        </router-link>
-                    </b-col>
-                </b-row>
-                <hr class="mb-0 mx-2" />
+                            <hg-icon
+                                icon="check-circle"
+                                size="medium"
+                                class="mr-2"
+                            />
+                            <span>BC Vaccine Card</span>
+                        </hg-button>
+                    </router-link>
+                </page-title>
                 <div
                     class="sticky-top sticky-offset px-2"
                     :class="{ 'header-offset': isHeaderShown }"
@@ -477,10 +465,6 @@ export default class TimelineView extends Vue {
 
 .column-wrapper {
     border: 1px;
-}
-
-#pageTitle {
-    color: $primary;
 }
 
 hr {

@@ -174,12 +174,8 @@ export default class App extends Vue {
             <NavSidebar class="d-print-none sticky-top vh-100" />
             <main class="col fill-height d-flex flex-column">
                 <CommunicationComponent v-show="isCommunicationVisible" />
-                <ErrorCard
-                    title="Whoops!"
-                    description="An error occurred."
-                    show="true"
-                />
-                <router-view></router-view>
+                <ErrorCard />
+                <router-view />
                 <IdleComponent ref="idleModal" />
             </main>
         </b-row>

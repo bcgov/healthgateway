@@ -13,17 +13,10 @@ export default class ContactUsView extends Vue {}
 </script>
 
 <template>
-    <div class="px-4">
+    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
         <b-row>
             <b-col>
-                <b-row class="my-3 fluid">
-                    <b-col>
-                        <div id="pageTitle">
-                            <h1 id="subject">Contact Us</h1>
-                            <hr />
-                        </div>
-                    </b-col>
-                </b-row>
+                <page-title title="Contact Us" />
                 <b-row>
                     <b-col>
                         <b-row>
@@ -114,15 +107,3 @@ export default class ContactUsView extends Vue {}
         </b-row>
     </div>
 </template>
-
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-
-#pageTitle {
-    color: $primary;
-}
-
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
-</style>

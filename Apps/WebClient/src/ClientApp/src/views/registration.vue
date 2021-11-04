@@ -300,33 +300,23 @@ export default class RegistrationView extends Vue {
 </script>
 
 <template>
-    <b-container class="pt-2">
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <div v-if="!isLoading && termsOfService !== ''">
-            <b-row v-if="isRegistrationClosed">
-                <b-col>
-                    <div id="pageTitle">
-                        <h1 id="Subject">Closed Registration</h1>
-                        <div id="Description">
-                            Thank you for your interest in the Health Gateway
-                            service. At this time, the registration is closed.
-                        </div>
-                    </div>
-                </b-col>
-            </b-row>
+    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <LoadingComponent :is-loading="isLoading" />
+        <b-container v-if="!isLoading && termsOfService !== ''">
+            <div v-if="isRegistrationClosed">
+                <page-title title="Closed Registration" />
+                <div id="Description">
+                    Thank you for your interest in the Health Gateway service.
+                    At this time, the registration is closed.
+                </div>
+            </div>
             <div v-else>
                 <b-form
                     v-if="isValidAge"
                     ref="registrationForm"
                     @submit.prevent="onSubmit"
                 >
-                    <b-row>
-                        <b-col>
-                            <div id="pageTitle">
-                                <h2 id="Subject">Registration</h2>
-                            </div>
-                        </b-col>
-                    </b-row>
+                    <page-title title="Registration" />
                     <b-row class="mb-2">
                         <b-col>
                             <h4 class="subheading">
@@ -502,8 +492,8 @@ export default class RegistrationView extends Vue {
                     </p>
                 </div>
             </div>
-        </div>
-    </b-container>
+        </b-container>
+    </div>
 </template>
 
 <style lang="scss" scoped>
