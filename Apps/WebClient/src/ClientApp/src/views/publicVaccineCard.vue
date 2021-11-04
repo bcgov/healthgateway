@@ -107,6 +107,17 @@ export default class PublicVaccineCardView extends Vue {
         return this.vaccinationState === VaccinationState.NotFound;
     }
 
+    private get isFullyVaccinated(): boolean {
+        return this.vaccinationState === VaccinationState.FullyVaccinated;
+    }
+
+    private get isCallOutMessageShown() {
+        return (
+            this.isVaccinationNotFound ||
+            this.isFullyVaccinated ||
+            this.isPartiallyVaccinated
+        );
+    }
     private bcsclogo: string = Image06;
 
     private logger!: ILogger;
@@ -356,11 +367,27 @@ export default class PublicVaccineCardView extends Vue {
                     </hg-dropdown>
                 </div>
                 <div
+                    v-if="isFullyVaccinated && saveExportPdfShown"
+                    class="d-print-none px-3 pb-3"
+                    :class="{ 'pt-3': !downloadButtonShown }"
+                >
+                    <div class="callout">
+                        <p class="m-0">
+                            Note: Your <b>federal proof of vaccination</b> can
+                            be downloaded using the <b>"Save as"</b> button.
+                        </p>
+                    </div>
+                </div>
+                <div
                     v-if="isPartiallyVaccinated || isVaccinationNotFound"
                     class="d-print-none px-3 pb-3"
                     :class="{ 'pt-3': !downloadButtonShown }"
                 >
                     <div class="callout">
+                        <p v-if="isPartiallyVaccinated && saveExportPdfShown">
+                            Note: Your <b>federal proof of vaccination</b> can
+                            be downloaded using the <b>"Save as"</b> button.
+                        </p>
                         <p class="m-0">
                             To learn more, visit
                             <a
