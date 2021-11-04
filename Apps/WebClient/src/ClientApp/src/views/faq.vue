@@ -88,9 +88,9 @@
                                 </li>
                             </ul>
                             <p>
-                                In future, Health Gateway will include health
-                                authority visits, laboratory test results, and
-                                diagnostic imaging reports.
+                                In the future, Health Gateway will include health
+                                health authority visits, laboratory test
+                                results, and diagnostic imaging reports.
                             </p>
                         </div></b-card-text
                     >
