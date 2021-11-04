@@ -15,6 +15,28 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong>
+                                    October 29, 2021 - v1.4.14 - Canadian Proof
+                                    of Vaccination
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We added a downloadable pdf for the
+                                        Canadian proof of vaccination.
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong>
                                     October 13, 2021 - v1.4.13 - COVID Vaccine
                                     Page
                                 </strong>
