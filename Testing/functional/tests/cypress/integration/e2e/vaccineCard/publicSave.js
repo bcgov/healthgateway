@@ -24,7 +24,7 @@ function enterVaccineCardPHN(phn) {
 
 function interceptVaccineStatus() {
     cy.intercept("GET", "**/v1/api/PublicVaccineStatus/pdf", {
-        fixture: "ImmunizationService/vaccineProof.json",
+        fixture: "ImmunizationService/vaccineProofLoaded.json",
     });
 }
 
