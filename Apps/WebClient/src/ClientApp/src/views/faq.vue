@@ -50,9 +50,9 @@
                                     <div>
                                         Access immunization records for vaccines
                                         administered by public health and
-                                        pharmacies. This includes your BC Vaccine 
-                                        Card, federal vaccine proof, and your 
-                                        COVID-19 immunization records.
+                                        pharmacies. This includes your BC
+                                        Vaccine Card, federal vaccine proof, and
+                                        your COVID-19 immunization records.
                                     </div>
                                 </li>
                                 <li>
@@ -88,9 +88,9 @@
                                 </li>
                             </ul>
                             <p>
-                                In future, Health Gateway will include health authority
-                                visits, laboratory test results, and diagnostic
-                                imaging reports.
+                                In future, Health Gateway will include health
+                                authority visits, laboratory test results, and
+                                diagnostic imaging reports.
                             </p>
                         </div></b-card-text
                     >
@@ -121,9 +121,9 @@
                             <p>
                                 Health Gateway shows your vaccinations as
                                 recorded in the Provincial Immunization
-                                Registry. To get your out-of-province COVID-19 
-                                vaccines added to the Registry, complete the online form
-                                at
+                                Registry. To get your out-of-province COVID-19
+                                vaccines added to the Registry, complete the
+                                online form at
                                 <a
                                     href="https://immunizationrecord.gov.bc.ca"
                                     target="blank_"
@@ -131,8 +131,8 @@
                                 >.
                             </p>
                             <p>
-                                If you would like to add other types of vaccine 
-                                records to your Health Gateway account, contact 
+                                If you would like to add other types of vaccine
+                                records to your Health Gateway account, contact
                                 your local public health unit.
                             </p>
                         </div></b-card-text
@@ -151,9 +151,8 @@
                     block
                     variant="info"
                     class="text-left"
-                    >My COVID-19 vaccine record has an error, 
-                    or my COVID-19 vaccine record is missing. 
-                    What should I do?
+                    >My COVID-19 vaccine record has an error, or my COVID-19
+                    vaccine record is missing. What should I do?
                 </b-button>
             </b-card-header>
             <b-collapse id="accordion-faqAnswer3" role="tabpanel">
@@ -166,8 +165,7 @@
                                 Gateway within 48 hours.
                             </p>
                             <p>
-                                Please
-                                complete the online form at
+                                Please complete the online form at
                                 <a
                                     href="https://www.gov.bc.ca/vaccinerecord"
                                     target="blank_"
@@ -175,10 +173,10 @@
                                 >.
                             </p>
                             <p>
-                                Note that any discrepancies in your immunization 
-                                provider, lot number or provider/clinic do 
-                                not affect the validity of your BC Vaccine 
-                                Card or federal proof.
+                                Note that any discrepancies in your immunization
+                                provider, lot number or provider/clinic do not
+                                affect the validity of your BC Vaccine Card or
+                                federal proof.
                             </p>
                         </div></b-card-text
                     >
@@ -246,12 +244,12 @@
                                 most immunizations administered by public health
                                 and pharmacies in BC. However, immunizations
                                 administered by family practice or travel
-                                clinics are not recorded in the Registry. 
-                                Immunizations administered by a pharmacy
-                                may be displayed as a dispensed
-                                medication rather than an immunization. 
-                                If you can’t find an immunization record, 
-                                try searching your dispensed medications.
+                                clinics are not recorded in the Registry.
+                                Immunizations administered by a pharmacy may be
+                                displayed as a dispensed medication rather than
+                                an immunization. If you can’t find an
+                                immunization record, try searching your
+                                dispensed medications.
                             </p>
                         </div></b-card-text
                     >
@@ -280,9 +278,9 @@
                         ><div data-testid="answerTxt">
                             <p>
                                 Health Gateway is a provincial service that
-                                provides British Columbians with access to
-                                their health information, regardless 
-                                of where they received care or services.
+                                provides British Columbians with access to their
+                                health information, regardless of where they
+                                received care or services.
                             </p>
                             <p>
                                 My Health and other regional portals provide
@@ -348,31 +346,28 @@
                     <b-card-text
                         ><div data-testid="answerTxt">
                             <p>
-                                Special Authority requests that your
-                                prescriber has made since March 2021 are being
-                                added gradually to the Health Gateway. 
-                                The Special Authority team is currently 
-                                experiencing a high volume of requests. Expected 
-                                turnaround is 1 business day for urgent requests 
-                                and 12-16 weeks for regular requests. Visit the
-                                  <a
+                                Special Authority requests that your prescriber
+                                has made since March 2021 are being added
+                                gradually to the Health Gateway. The Special
+                                Authority team is currently experiencing a high
+                                volume of requests. Expected turnaround is 1
+                                business day for urgent requests and 12-16 weeks
+                                for regular requests. Visit the
+                                <a
                                     href="https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/prescribers/special-authority "
                                     target="blank_"
                                     >Special Authority site</a
-                                >.
-                                
-                                for more information. If
-                                you have any questions, talk to your prescriber
-                                or pharmacist, or call 1-800-663-7100
-                                (toll-free) or 604-683-7151 (from the Lower
-                                Mainland).
+                                >. for more information. If you have any
+                                questions, talk to your prescriber or
+                                pharmacist, or call 1-800-663-7100 (toll-free)
+                                or 604-683-7151 (from the Lower Mainland).
                             </p>
                         </div></b-card-text
                     >
                 </b-card-body>
             </b-collapse>
         </b-card>
-         <b-card no-body class="mb-1 border-0">
+        <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
                 class="p-1 faq-header"
@@ -384,9 +379,8 @@
                     block
                     variant="info"
                     class="text-left"
-                    >How do I sign up to get a text message when 
-                    my (or my child’s) COVID-19 test results are 
-                    available?</b-button
+                    >How do I sign up to get a text message when my (or my
+                    child’s) COVID-19 test results are available?</b-button
                 >
             </b-card-header>
             <b-collapse id="accordion-faqAnswer11" role="tabpanel">
@@ -394,20 +388,21 @@
                     <b-card-text
                         ><div data-testid="answerTxt">
                             <p>
-                                To get a text message when your COVID-19 
-                                test results are available, you must add 
-                                and verify your mobile phone number in your 
-                                Health Gateway account. Most people do this 
-                                step when they register for their Health 
-                                Gateway account. To check if you have a 
-                                verified mobile phone number, go to your 
-                                Profile. You only need to do this once.
+                                To get a text message when your COVID-19 test
+                                results are available, you must add and verify
+                                your mobile phone number in your Health Gateway
+                                account. Most people do this step when they
+                                register for their Health Gateway account. To
+                                check if you have a verified mobile phone
+                                number, go to your Profile. You only need to do
+                                this once.
                             </p>
                         </div></b-card-text
                     >
                 </b-card-body>
             </b-collapse>
-        </b-card> <b-card no-body class="mb-1 border-0">
+        </b-card>
+        <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
                 class="p-1 faq-header"
@@ -419,8 +414,8 @@
                     block
                     variant="info"
                     class="text-left"
-                    >I’m having trouble adding my child/dependent 
-                    to my Health Gateway account. What should I do?</b-button
+                    >I’m having trouble adding my child/dependent to my Health
+                    Gateway account. What should I do?</b-button
                 >
             </b-card-header>
             <b-collapse id="accordion-faqAnswer11" role="tabpanel">
@@ -428,18 +423,20 @@
                     <b-card-text
                         ><div data-testid="answerTxt">
                             <p>
-                                This service requires that your dependent have 
-                                a BC Services Card (not a Care Card). To add a 
-                                dependent, type their full name exactly as it 
-                                appears on their BC Services Card, including 
-                                any middle names. If that doesn’t work, try other 
-                                slight variations of the name (e.g., put the name in 
-                                all capital letters, remove any hyphens, or try different 
-                                combinations of the given and last names). 
+                                This service requires that your dependent have a
+                                BC Services Card (not a Care Card). To add a
+                                dependent, type their full name exactly as it
+                                appears on their BC Services Card, including any
+                                middle names. If that doesn’t work, try other
+                                slight variations of the name (e.g., put the
+                                name in all capital letters, remove any hyphens,
+                                or try different combinations of the given and
+                                last names).
                             </p>
                             <p>
-                                If you are still unable to add your dependent, 
-                                email us at <a href="mailto:HealthGateway@gov.bc.ca"
+                                If you are still unable to add your dependent,
+                                email us at
+                                <a href="mailto:HealthGateway@gov.bc.ca"
                                     >HealthGateway@gov.bc.ca</a
                                 >.
                             </p>
