@@ -4,4 +4,6 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 RUN apt-get update -y && \ 
     apt-get install -y curl telnet
 WORKDIR /app
-RUN chmod -R 777 /app
+RUN mkdir -p Resources && \
+    chmod uog+rwx Resources
+    
