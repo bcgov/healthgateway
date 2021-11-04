@@ -1,15 +1,8 @@
 <template>
-    <div class="mx-sm-3 px-sm-4">
-        <b-row class="m-1 fluid">
-            <b-col>
-                <div id="pageTitle">
-                    <h1 id="subject">Frequently Asked Questions</h1>
-                    <hr />
-                </div>
-            </b-col>
-        </b-row>
-        <b-row class="m-1 fluid text-right">
-            <b-col> Last updated: <strong>2021-November-4</strong> </b-col>
+    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <page-title title="Frequently Asked Questions" />
+        <b-row class="mb-3 fluid text-right">
+            <b-col>Last updated: <strong>2021-November-4</strong></b-col>
         </b-row>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
@@ -484,12 +477,7 @@
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-#pageTitle {
-    color: $primary;
-}
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
+
 .faq-header {
     button {
         background-color: $soft_background !important;

@@ -294,225 +294,211 @@ export default class ReportsView extends Vue {
 </script>
 
 <template>
-    <div class="m-3 flex-grow-1 d-flex flex-column">
-        <b-row>
-            <b-col class="col-12 column-wrapper">
-                <page-title title="Export Records" />
-                <div class="my-3 px-3 py-4 form">
-                    <b-row>
-                        <b-col>
-                            <label for="reportType">Record Type</label>
-                        </b-col>
-                    </b-row>
-                    <b-row align-h="between" class="py-2">
-                        <b-col class="mb-2" sm="">
-                            <b-form-select
-                                id="reportType"
-                                v-model="reportComponentName"
-                                data-testid="reportType"
-                                :options="reportTypeOptions"
-                            >
-                            </b-form-select>
-                        </b-col>
-                        <b-col class="p-0 px-3" cols="auto">
-                            <hg-button
-                                v-b-toggle.advanced-panel
-                                variant="link"
-                                data-testid="advancedBtn"
-                                >Advanced
-                            </hg-button>
-                            <b-dropdown
-                                id="exportRecordBtn"
-                                text="Download"
-                                class="mb-1 ml-2"
-                                variant="primary"
-                                data-testid="exportRecordBtn"
-                                :disabled="isDownloadDisabled"
-                            >
-                                <b-dropdown-item
-                                    @click="
-                                        showConfirmationModal(
-                                            ReportFormatType.PDF
-                                        )
-                                    "
-                                    >PDF</b-dropdown-item
-                                >
-                                <b-dropdown-item
-                                    @click="
-                                        showConfirmationModal(
-                                            ReportFormatType.CSV
-                                        )
-                                    "
-                                    >CSV</b-dropdown-item
-                                >
-                                <b-dropdown-item
-                                    @click="
-                                        showConfirmationModal(
-                                            ReportFormatType.XLSX
-                                        )
-                                    "
-                                    >XLSX</b-dropdown-item
-                                >
-                            </b-dropdown>
-                        </b-col>
-                    </b-row>
-                    <b-row v-if="reportFilter.hasActiveFilter()" class="pb-2">
-                        <b-col v-if="reportFilter.hasDateFilter()">
-                            <div><strong>Date Range</strong></div>
-                            <b-form-tag
-                                variant="light"
-                                class="filter-selected"
-                                title="From"
-                                data-testid="clearFilter"
-                                :pill="true"
-                                @remove="clearFilterDates"
-                            >
-                                <span data-testid="selectedDatesFilter"
-                                    >{{
-                                        reportFilter.startDate
-                                            ? `From ${formatDate(
-                                                  reportFilter.startDate
-                                              )}`
-                                            : ""
-                                    }}
-                                    {{
-                                        reportFilter.endDate
-                                            ? ` Up To ${formatDate(
-                                                  reportFilter.endDate
-                                              )}`
-                                            : ""
-                                    }}</span
-                                >
-                            </b-form-tag>
-                        </b-col>
-
-                        <b-col
-                            v-if="
-                                reportFilter.hasMedicationsFilter() &&
-                                isMedicationReport
-                            "
-                            data-testid="medicationFilter"
-                        >
-                            <div><strong>Exclude</strong></div>
-                            <b-form-tag
-                                v-for="item in reportFilter.medications"
-                                :key="item"
-                                variant="danger"
-                                :title="item"
-                                :data-testid="item + '-clearFilter'"
-                                :pill="true"
-                                @remove="clearFilterMedication(item)"
-                            >
-                                <span :data-testid="item + '-excluded'">{{
-                                    item
-                                }}</span>
-                            </b-form-tag>
-                        </b-col>
-                    </b-row>
-                    <b-collapse
-                        id="advanced-panel"
-                        data-testid="advancedPanel"
-                        class="border-top"
+    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <page-title title="Export Records" />
+        <div class="my-3 px-3 py-4 form">
+            <b-row>
+                <b-col>
+                    <label for="reportType">Record Type</label>
+                </b-col>
+            </b-row>
+            <b-row align-h="between" class="py-2">
+                <b-col class="mb-2" sm="">
+                    <b-form-select
+                        id="reportType"
+                        v-model="reportComponentName"
+                        data-testid="reportType"
+                        :options="reportTypeOptions"
                     >
-                        <b-row>
-                            <b-col class="col-12 col-lg-4 pt-3">
-                                <label for="start-date">From</label>
-                                <hg-date-picker
-                                    id="start-date"
-                                    v-model="selectedStartDate"
-                                    data-testid="startDateInput"
-                                />
-                            </b-col>
-                            <b-col class="col-12 col-lg-4 pt-3">
-                                <label for="end-date">To</label>
-                                <hg-date-picker
-                                    id="end-date"
-                                    v-model="selectedEndDate"
-                                    data-testid="endDateInput"
-                                />
-                            </b-col>
-                        </b-row>
-                        <b-row v-show="isMedicationReport" class="pt-3">
-                            <b-col>
-                                <div>
-                                    <strong>Exclude These Records</strong>
-                                </div>
-                                <div>Medications:</div>
-                                <MultiSelectComponent
-                                    v-model="selectedMedicationOptions"
-                                    placeholder="Choose a medication"
-                                    :options="medicationOptions"
-                                    data-testid="medicationExclusionFilter"
-                                ></MultiSelectComponent>
-                            </b-col>
-                        </b-row>
-                        <b-row align-h="end" class="pt-4">
-                            <b-col cols="auto">
-                                <hg-button
-                                    v-b-toggle.advanced-panel
-                                    variant="secondary"
-                                    data-testid="clearBtn"
-                                    class="mb-1 mr-1"
-                                    :disabled="isLoading"
-                                    @click="cancelFilter"
-                                >
-                                    Cancel
-                                </hg-button>
-                                <hg-button
-                                    v-b-toggle.advanced-panel
-                                    variant="primary"
-                                    data-testid="applyFilterBtn"
-                                    class="mb-1 ml-1"
-                                    :disabled="isLoading"
-                                    @click="updateFilter"
-                                >
-                                    Apply
-                                </hg-button>
-                            </b-col>
-                        </b-row>
-                    </b-collapse>
-                </div>
-                <LoadingComponent
-                    :is-loading="isLoading || isGeneratingReport"
-                    :is-custom="!isGeneratingReport"
-                    :full-screen="false"
-                ></LoadingComponent>
-                <div
-                    v-if="reportComponentName"
-                    data-testid="reportSample"
-                    class="sample d-none d-md-block"
+                    </b-form-select>
+                </b-col>
+                <b-col class="p-0 px-3" cols="auto">
+                    <hg-button
+                        v-b-toggle.advanced-panel
+                        variant="link"
+                        data-testid="advancedBtn"
+                        >Advanced
+                    </hg-button>
+                    <b-dropdown
+                        id="exportRecordBtn"
+                        text="Download"
+                        class="mb-1 ml-2"
+                        variant="primary"
+                        data-testid="exportRecordBtn"
+                        :disabled="isDownloadDisabled"
+                    >
+                        <b-dropdown-item
+                            @click="showConfirmationModal(ReportFormatType.PDF)"
+                            >PDF</b-dropdown-item
+                        >
+                        <b-dropdown-item
+                            @click="showConfirmationModal(ReportFormatType.CSV)"
+                            >CSV</b-dropdown-item
+                        >
+                        <b-dropdown-item
+                            @click="
+                                showConfirmationModal(ReportFormatType.XLSX)
+                            "
+                            >XLSX</b-dropdown-item
+                        >
+                    </b-dropdown>
+                </b-col>
+            </b-row>
+            <b-row v-if="reportFilter.hasActiveFilter()" class="pb-2">
+                <b-col v-if="reportFilter.hasDateFilter()">
+                    <div><strong>Date Range</strong></div>
+                    <b-form-tag
+                        variant="light"
+                        class="filter-selected"
+                        title="From"
+                        data-testid="clearFilter"
+                        :pill="true"
+                        @remove="clearFilterDates"
+                    >
+                        <span data-testid="selectedDatesFilter"
+                            >{{
+                                reportFilter.startDate
+                                    ? `From ${formatDate(
+                                          reportFilter.startDate
+                                      )}`
+                                    : ""
+                            }}
+                            {{
+                                reportFilter.endDate
+                                    ? ` Up To ${formatDate(
+                                          reportFilter.endDate
+                                      )}`
+                                    : ""
+                            }}</span
+                        >
+                    </b-form-tag>
+                </b-col>
+
+                <b-col
+                    v-if="
+                        reportFilter.hasMedicationsFilter() &&
+                        isMedicationReport
+                    "
+                    data-testid="medicationFilter"
                 >
-                    <component
-                        :is="reportComponentName"
-                        ref="report"
-                        :filter="reportFilter"
-                        @on-is-loading-changed="isLoading = $event"
-                        @on-is-empty-changed="hasRecords = !$event"
+                    <div><strong>Exclude</strong></div>
+                    <b-form-tag
+                        v-for="item in reportFilter.medications"
+                        :key="item"
+                        variant="danger"
+                        :title="item"
+                        :data-testid="item + '-clearFilter'"
+                        :pill="true"
+                        @remove="clearFilterMedication(item)"
+                    >
+                        <span :data-testid="item + '-excluded'">{{
+                            item
+                        }}</span>
+                    </b-form-tag>
+                </b-col>
+            </b-row>
+            <b-collapse
+                id="advanced-panel"
+                data-testid="advancedPanel"
+                class="border-top"
+            >
+                <b-row>
+                    <b-col class="col-12 col-lg-4 pt-3">
+                        <label for="start-date">From</label>
+                        <hg-date-picker
+                            id="start-date"
+                            v-model="selectedStartDate"
+                            data-testid="startDateInput"
+                        />
+                    </b-col>
+                    <b-col class="col-12 col-lg-4 pt-3">
+                        <label for="end-date">To</label>
+                        <hg-date-picker
+                            id="end-date"
+                            v-model="selectedEndDate"
+                            data-testid="endDateInput"
+                        />
+                    </b-col>
+                </b-row>
+                <b-row v-show="isMedicationReport" class="pt-3">
+                    <b-col>
+                        <div>
+                            <strong>Exclude These Records</strong>
+                        </div>
+                        <div>Medications:</div>
+                        <MultiSelectComponent
+                            v-model="selectedMedicationOptions"
+                            placeholder="Choose a medication"
+                            :options="medicationOptions"
+                            data-testid="medicationExclusionFilter"
+                        ></MultiSelectComponent>
+                    </b-col>
+                </b-row>
+                <b-row align-h="end" class="pt-4">
+                    <b-col cols="auto">
+                        <hg-button
+                            v-b-toggle.advanced-panel
+                            variant="secondary"
+                            data-testid="clearBtn"
+                            class="mb-1 mr-1"
+                            :disabled="isLoading"
+                            @click="cancelFilter"
+                        >
+                            Cancel
+                        </hg-button>
+                        <hg-button
+                            v-b-toggle.advanced-panel
+                            variant="primary"
+                            data-testid="applyFilterBtn"
+                            class="mb-1 ml-1"
+                            :disabled="isLoading"
+                            @click="updateFilter"
+                        >
+                            Apply
+                        </hg-button>
+                    </b-col>
+                </b-row>
+            </b-collapse>
+        </div>
+        <LoadingComponent
+            :is-loading="isLoading || isGeneratingReport"
+            :is-custom="!isGeneratingReport"
+            :full-screen="false"
+        ></LoadingComponent>
+        <div
+            v-if="reportComponentName"
+            data-testid="reportSample"
+            class="sample d-none d-md-block"
+        >
+            <component
+                :is="reportComponentName"
+                ref="report"
+                :filter="reportFilter"
+                @on-is-loading-changed="isLoading = $event"
+                @on-is-empty-changed="hasRecords = !$event"
+            />
+        </div>
+        <div v-else>
+            <b-row>
+                <b-col>
+                    <img
+                        class="mx-auto d-block"
+                        src="@/assets/images/reports/reports.png"
+                        data-testid="infoImage"
+                        width="200"
+                        height="auto"
+                        alt="..."
                     />
-                </div>
-                <div v-else>
-                    <b-row>
-                        <b-col>
-                            <img
-                                class="mx-auto d-block"
-                                src="@/assets/images/reports/reports.png"
-                                data-testid="infoImage"
-                                width="200"
-                                height="auto"
-                                alt="..."
-                            />
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col class="text-center">
-                            <h5 data-testid="infoText">
-                                Select a record type above to create a report
-                            </h5>
-                        </b-col>
-                    </b-row>
-                </div>
-            </b-col>
-        </b-row>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col class="text-center">
+                    <h5 data-testid="infoText">
+                        Select a record type above to create a report
+                    </h5>
+                </b-col>
+            </b-row>
+        </div>
 
         <resource-centre />
         <message-modal
@@ -529,14 +515,6 @@ export default class ReportsView extends Vue {
 @import "@/assets/scss/_variables.scss";
 .column-wrapper {
     border: 1px;
-}
-
-#pageTitle {
-    color: $primary;
-}
-
-#pageTitle hr {
-    border-top: 2px solid $primary;
 }
 
 .sample {

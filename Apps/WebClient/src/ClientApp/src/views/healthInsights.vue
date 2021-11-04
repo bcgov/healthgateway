@@ -178,17 +178,11 @@ export default class HealthInsightsView extends Vue {
 </script>
 
 <template>
-    <div class="m-3 flex-grow-1 d-flex flex-column">
-        <LoadingComponent v-if="isLoading" :is-custom="true"></LoadingComponent>
+    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <LoadingComponent v-if="isLoading" :is-custom="true" />
         <b-row>
-            <b-col
-                id="healthInsights"
-                class="col-12 col-md-10 col-lg-9 column-wrapper"
-            >
-                <div id="pageTitle">
-                    <h1 id="subject">Health Insights</h1>
-                    <hr />
-                </div>
+            <b-col id="healthInsights" class="col-12 col-md-10 col-lg-9">
+                <page-title title="Health Insights" />
                 <div>
                     <h3>Medication count over time</h3>
                     <b-row class="py-4">
@@ -236,18 +230,3 @@ export default class HealthInsightsView extends Vue {
         <ProtectiveWordComponent :is-loading="isLoading" />
     </div>
 </template>
-
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-.column-wrapper {
-    border: 1px;
-}
-
-#pageTitle {
-    color: $primary;
-}
-
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
-</style>

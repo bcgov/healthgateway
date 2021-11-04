@@ -1,15 +1,8 @@
 <template>
-    <div class="m-3 px-4">
+    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
         <b-row>
             <b-col>
-                <b-row class="my-3 fluid">
-                    <b-col>
-                        <div id="pageTitle">
-                            <h1 id="subject">Health Gateway Release Notes</h1>
-                            <hr />
-                        </div>
-                    </b-col>
-                </b-row>
+                <page-title title="Health Gateway Release Notes" />
                 <b-row>
                     <b-col>
                         <b-row class="mb-2">
@@ -1974,13 +1967,3 @@
         </b-row>
     </div>
 </template>
-
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-#pageTitle {
-    color: $primary;
-}
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
-</style>

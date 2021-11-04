@@ -135,14 +135,11 @@ export default class DashboardView extends Vue {
 </script>
 
 <template>
-    <div
-        no-gutters
-        class="hg-dashboard m-3 m-md-4 flex-grow-1 d-flex flex-column"
-    >
+    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
         <LoadingComponent
             :is-loading="isLoading"
             :text="loadingStatusMessage"
-        ></LoadingComponent>
+        />
         <b-alert
             v-if="hasNewTermsOfService"
             show
@@ -286,19 +283,17 @@ export default class DashboardView extends Vue {
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-.hg-dashboard {
-    .health-gateway-logo {
-        height: 2em;
-        width: 2em;
-    }
+.health-gateway-logo {
+    height: 2em;
+    width: 2em;
+}
 
-    .canada-government-logo {
-        height: 1.5em;
-    }
+.canada-government-logo {
+    height: 1.5em;
+}
 
-    .checkmark {
-        color: $hg-state-success;
-    }
+.checkmark {
+    color: $hg-state-success;
 }
 </style>
 <style lang="scss">
