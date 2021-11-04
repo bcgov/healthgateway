@@ -19,6 +19,11 @@ const vaccinationStatusState: VaccinationStatusState = {
         status: LoadStatus.NONE,
         statusMessage: "",
     },
+    publicVaccineRecord: {
+        vaccinationRecord: undefined,
+        status: LoadStatus.NONE,
+        statusMessage: "",
+    },
     authenticated: {
         vaccinationStatus: undefined,
         error: undefined,
@@ -46,6 +51,15 @@ const vaccinationStatusGetters: VaccinationStatusGetters = {
     },
     statusMessage(): string {
         return "";
+    },
+    publicVaccineRecordIsLoading(): boolean {
+        return false;
+    },
+    publicVaccineRecordStatusMessage(): string {
+        return "";
+    },
+    publicVaccineRecord(): CovidVaccineRecord | undefined {
+        return undefined;
     },
     authenticatedVaccinationStatus(): VaccinationStatus | undefined {
         return undefined;
@@ -79,6 +93,7 @@ const vaccinationStatusGetters: VaccinationStatusGetters = {
 const vaccinationStatusActions: VaccinationStatusActions = {
     retrieveVaccineStatus: voidPromise,
     retrieveVaccineStatusPdf: voidPromise,
+    retrievePublicVaccineRecord: voidPromise,
     handleError: voidMethod,
     retrieveAuthenticatedVaccineStatus: voidPromise,
     retrieveAuthenticatedVaccineRecord: voidPromise,
@@ -101,6 +116,9 @@ const vaccinationStatusMutations: VaccinationStatusMutations = {
     setAuthenticatedVaccineRecord: voidMethod,
     setAuthenticatedVaccineRecordError: voidMethod,
     setAuthenticatedVaccineRecordResultMessage: voidMethod,
+    setPublicVaccineRecordRequested: voidMethod,
+    setPublicVaccineRecordStatusMessage: voidMethod,
+    setPublicVaccineRecord: voidMethod,
 };
 
 const vaccinationStatusStub: VaccinationStatusModule = {

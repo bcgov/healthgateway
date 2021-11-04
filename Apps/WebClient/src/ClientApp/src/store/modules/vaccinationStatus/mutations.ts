@@ -23,6 +23,24 @@ export const mutations: VaccinationStatusMutations = {
         state.public.status = LoadStatus.LOADED;
         state.public.statusMessage = "";
     },
+    setPublicVaccineRecordRequested(state: VaccinationStatusState) {
+        state.publicVaccineRecord.status = LoadStatus.REQUESTED;
+        state.publicVaccineRecord.statusMessage = "";
+    },
+    setPublicVaccineRecordStatusMessage(
+        state: VaccinationStatusState,
+        statusMessage: string
+    ) {
+        state.publicVaccineRecord.statusMessage = statusMessage;
+    },
+    setPublicVaccineRecord(
+        state: VaccinationStatusState,
+        vaccineRecord: CovidVaccineRecord
+    ) {
+        state.publicVaccineRecord.vaccinationRecord = vaccineRecord;
+        state.publicVaccineRecord.status = LoadStatus.LOADED;
+        state.publicVaccineRecord.statusMessage = "";
+    },
     vaccinationStatusError(state: VaccinationStatusState, error: BannerError) {
         state.public.vaccinationStatus = undefined;
         state.public.error = error;

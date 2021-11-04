@@ -71,7 +71,7 @@ export const actions: VaccinationStatusActions = {
                 });
         });
     },
-    retrieveVaccineStatusPdf(
+    retrievePublicVaccineRecord(
         context,
         params: {
             phn: string;
@@ -79,8 +79,9 @@ export const actions: VaccinationStatusActions = {
             dateOfVaccine: StringISODate;
         }
     ): Promise<CovidVaccineRecord> {
-        context.commit("setPdfRequested");
-
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        logger.debug(`Retrieving Vaccination Record`);
+        context.commit("setPublicVaccineRecordRequested");
         const vaccinationStatusService: IVaccinationStatusService =
             container.get<IVaccinationStatusService>(
                 SERVICE_IDENTIFIER.VaccinationStatusService
@@ -94,8 +95,30 @@ export const actions: VaccinationStatusActions = {
                     params.dateOfVaccine
                 )
                 .then((result) => {
+                    const payload = result.resourcePayload;
                     if (result.resultStatus === ResultType.Success) {
-                        const payload = result.resourcePayload;
+                        context.commit("setPublicVaccineRecord", payload);
+                        resolve(payload);
+                    } else if (
+                        result.resultError?.actionCode === ActionType.Refresh &&
+                        !payload.loaded &&
+                        payload.retryin > 0
+                    ) {
+                        logger.info("Public Vaccination Proof not loaded");
+                        context.commit(
+                            "setPublicVaccineRecordStatusMessage",
+                            "We're busy but will continue to try to fetch your proof of vaccination...."
+                        );
+                        setTimeout(() => {
+                            logger.info(
+                                "Re-querying for public proof of vaccination"
+                            );
+                            context.dispatch("retrievePublicVaccineRecord", {
+                                phn: params.phn,
+                                dateOfBirth: params.dateOfBirth,
+                                dateOfVaccine: params.dateOfVaccine,
+                            });
+                        }, payload.retryin);
                         resolve(payload);
                     } else {
                         context.dispatch("handlePdfError", result.resultError);
@@ -183,7 +206,7 @@ export const actions: VaccinationStatusActions = {
                             );
                             setTimeout(() => {
                                 logger.info(
-                                    "Re-querying for vaccination status"
+                                    "Re-querying for authenticated proof of vaccination"
                                 );
                                 context.dispatch(
                                     "retrieveAuthenticatedVaccineStatus",

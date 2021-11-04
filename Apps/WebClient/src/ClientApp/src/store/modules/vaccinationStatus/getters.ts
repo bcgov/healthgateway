@@ -20,6 +20,17 @@ export const getters: VaccinationStatusGetters = {
     statusMessage(state: VaccinationStatusState): string {
         return state.public.statusMessage;
     },
+    publicVaccineRecord(
+        state: VaccinationStatusState
+    ): CovidVaccineRecord | undefined {
+        return state.publicVaccineRecord.vaccinationRecord;
+    },
+    publicVaccineRecordIsLoading(state: VaccinationStatusState): boolean {
+        return state.publicVaccineRecord.status === LoadStatus.REQUESTED;
+    },
+    publicVaccineRecordStatusMessage(state: VaccinationStatusState): string {
+        return state.publicVaccineRecord.statusMessage;
+    },
     authenticatedVaccinationStatus(
         state: VaccinationStatusState
     ): VaccinationStatus | undefined {

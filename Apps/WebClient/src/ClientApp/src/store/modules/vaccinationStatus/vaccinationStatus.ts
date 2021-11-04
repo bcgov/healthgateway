@@ -12,6 +12,11 @@ const state: VaccinationStatusState = {
         status: LoadStatus.NONE,
         statusMessage: "",
     },
+    publicVaccineRecord: {
+        vaccinationRecord: undefined,
+        status: LoadStatus.NONE,
+        statusMessage: "",
+    },
     authenticated: {
         vaccinationStatus: undefined,
         error: undefined,

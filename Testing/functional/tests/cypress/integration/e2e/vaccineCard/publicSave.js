@@ -23,7 +23,7 @@ function enterVaccineCardPHN(phn) {
 }
 
 function interceptVaccineStatus() {
-    cy.intercept("GET", "**/v1/api/VaccineStatus/pdf", {
+    cy.intercept("GET", "**/v1/api/PublicVaccineStatus/pdf", {
         fixture: "ImmunizationService/vaccineProof.json",
     });
 }
@@ -35,6 +35,61 @@ function clickVaccineCardEnterButton() {
 function select(selector, value) {
     cy.get(selector).should("be.visible", "be.enabled").select(value);
 }
+
+describe("Public User - Vaccine Card Page - Save with Retry", () => {
+    beforeEach(() => {
+        deleteDownloadsFolder();
+        let isLoading = false;
+        cy.intercept("GET", "**/v1/api/PublicVaccineStatus/pdf", (req) => {
+            if (!isLoading) {
+                req.reply({
+                    fixture: "ImmunizationService/vaccineProofNotLoaded.json",
+                });
+            } else {
+                req.reply({
+                    fixture: "ImmunizationService/vaccineProofLoaded.json",
+                });
+            }
+            isLoading = !isLoading;
+        });
+    });
+    it("Save Dropdown List - Save PDF - Download confirmed With Retry", () => {
+        const phn = "9735361219 ";
+        const dobYear = "1994";
+        const dobMonth = "June";
+        const dobDay = "9";
+        const dovYear = "2021";
+        const dovMonth = "January";
+        const dovDay = "20";
+        cy.enableModules([
+            "Immunization",
+            vaccinationStatusModule,
+            "VaccinationStatusPdf",
+            "PublicVaccineDownloadPdf",
+        ]);
+        cy.visit(vaccineCardUrl);
+        enterVaccineCardPHN(phn);
+        select(dobYearSelector, dobYear);
+        select(dobMonthSelector, dobMonth);
+        select(dobDaySelector, dobDay);
+        select(dovYearSelector, dovYear);
+        select(dovMonthSelector, dovMonth);
+        select(dovDaySelector, dovDay);
+        clickVaccineCardEnterButton();
+        cy.get("[data-testid=save-dropdown-btn]")
+            .should("be.visible", "be.enabled")
+            .click();
+        cy.get("[data-testid=save-as-pdf-dropdown-item]")
+            .should("be.visible")
+            .click();
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=loadingSpinner]").should("be.visible");
+        cy.wait(10000);
+        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
+        cy.verifyDownload("VaccineProof.pdf");
+    });
+});
 
 describe("Public User - Vaccine Card Page - Save", () => {
     beforeEach(() => {
