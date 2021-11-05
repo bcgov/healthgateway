@@ -2,12 +2,6 @@ import { deleteDownloadsFolder } from "../../../support/utils";
 const { AuthMethod } = require("../../../support/constants");
 const dashboardUrl = "/dashboard";
 
-function interceptAuthenticatedVaccineStatus() {
-    cy.intercept("GET", "**/v1/api/AuthenticatedVaccineStatus/pdf?hdid*", {
-        fixture: "ImmunizationService/proofOfVaccination.json",
-    });
-}
-
 describe("Dashboard - Proof of Vaccination Card", () => {
     beforeEach(() => {
         deleteDownloadsFolder();
