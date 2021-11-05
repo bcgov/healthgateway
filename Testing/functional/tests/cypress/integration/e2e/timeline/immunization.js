@@ -1,7 +1,7 @@
 const { AuthMethod, localDevUri } = require("../../../support/constants");
 
 function useImmunizationFixture() {
-    cy.intercept("GET", "/v1/api/Immunization", (req) => {
+    cy.intercept("GET", "/v1/api/Immunization?*", (req) => {
         req.reply((res) => {
             res.send({
                 fixture: "ImmunizationService/immunization.json",
@@ -18,7 +18,7 @@ describe("Immunization", () => {
             "VaccinationStatus",
             "VaccinationStatusPdf",
         ]);
-        cy.intercept("GET", "/v1/api/Immunization", (req) => {
+        cy.intercept("GET", "/v1/api/Immunization?*", (req) => {
             req.reply((res) => {
                 if (!isLoading) {
                     res.send({
@@ -115,7 +115,7 @@ describe("Immunization", () => {
 
     it("Validate Empty Title", () => {
         cy.enableModules("Immunization");
-        cy.intercept("GET", "/v1/api/Immunization", {
+        cy.intercept("GET", "/v1/api/Immunization?*", {
             fixture: "ImmunizationService/immunizationEmptyName.json",
         });
         cy.login(
@@ -130,7 +130,7 @@ describe("Immunization", () => {
     });
 
     it("Validate Disabled Header Covid Card", () => {
-        cy.intercept("GET", "/v1/api/Immunization", (req) => {
+        cy.intercept("GET", "/v1/api/Immunization?*", (req) => {
             req.reply((res) => {
                 res.send({
                     fixture: "ImmunizationService/immunizationNoRecords.json",
