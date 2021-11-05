@@ -1,5 +1,6 @@
 /* Data Cleanup */
 TRUNCATE gateway."UserProfile" CASCADE;
+TRUNCATE gateway."UserProfileHistory" CASCADE;
 TRUNCATE gateway."Communication" CASCADE;
 TRUNCATE gateway."ResourceDelegate" CASCADE;
 TRUNCATE gateway."ResourceDelegateHistory" CASCADE;
