@@ -9,7 +9,22 @@ function interceptAuthenticatedVaccineStatus() {
 }
 
 describe("Dashboard - Proof of Vaccination Card", () => {
-    before(() => {
+    beforeEach(() => {
+        deleteDownloadsFolder();
+        let isLoading = false;
+        cy.intercept("GET", "**/v1/api/PublicVaccineStatus/pdf", (req) => {
+            if (!isLoading) {
+                req.reply({
+                    fixture: "ImmunizationService/vaccineProofNotLoaded.json",
+                });
+            } else {
+                req.reply({
+                    fixture: "ImmunizationService/vaccineProofLoaded.json",
+                });
+            }
+            isLoading = !isLoading;
+        });
+
         cy.enableModules(["Immunization", "FederalCardButton"]);
 
         cy.login(
@@ -20,11 +35,7 @@ describe("Dashboard - Proof of Vaccination Card", () => {
         );
     });
 
-    beforeEach(() => {
-        deleteDownloadsFolder();
-    });
-
-    it("Dashboard - Federal Card button - Spinner displayed", () => {
+    it("Dashboard - Federal Card button - Spinner displayed and download confirmed", () => {
         cy.get("[data-testid=proof-vaccination-card-btn]")
             .should("be.visible", "be.enabled")
             .click();
@@ -32,16 +43,8 @@ describe("Dashboard - Proof of Vaccination Card", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
-    });
-
-    it("Dashboard - Federal Card button - Download confirmed", () => {
-        cy.get("[data-testid=proof-vaccination-card-btn]")
-            .should("be.visible", "be.enabled")
-            .click();
-
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        interceptAuthenticatedVaccineStatus();
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.wait(10000);
+        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
         cy.verifyDownload("VaccineProof.pdf");
     });
 });
