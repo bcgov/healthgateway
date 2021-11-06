@@ -1,6 +1,6 @@
 const { AuthMethod, localDevUri } = require("../../../support/constants");
 describe("Immunization No Records", () => {
-    before(() => {
+    beforeEach(() => {
         let isLoading = false;
         cy.enableModules("Immunization");
         cy.intercept("GET", "/v1/api/Immunization?*", (req) => {

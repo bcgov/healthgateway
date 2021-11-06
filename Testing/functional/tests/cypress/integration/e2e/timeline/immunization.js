@@ -10,8 +10,8 @@ function useImmunizationFixture() {
     });
 }
 
-describe("Immunization", () => {
-    before(() => {
+describe("Immunization - Loading", () => {
+    beforeEach(() => {
         let isLoading = false;
         cy.enableModules([
             "Immunization",
@@ -86,7 +86,9 @@ describe("Immunization", () => {
         cy.get("[data-testid=forecastDueDate]").first().should("be.visible");
         cy.get("[data-testid=forecastStatus]").first().should("be.visible");
     });
+});
 
+describe("Immunization", () => {
     it("Validate Proof of Immunization Card & Download", () => {
         useImmunizationFixture();
         cy.enableModules([
