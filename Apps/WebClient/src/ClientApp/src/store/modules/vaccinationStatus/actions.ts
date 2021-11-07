@@ -162,7 +162,7 @@ export const actions: VaccinationStatusActions = {
             errorCode: "",
         };
 
-        context.commit("pdfError", bannerError);
+        context.commit("setPublicVaccineRecordError", bannerError);
     },
     retrieveAuthenticatedVaccineStatus(
         context,

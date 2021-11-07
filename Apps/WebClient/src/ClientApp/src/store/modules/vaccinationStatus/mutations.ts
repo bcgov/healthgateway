@@ -26,6 +26,7 @@ export const mutations: VaccinationStatusMutations = {
     setPublicVaccineRecordRequested(state: VaccinationStatusState) {
         state.publicVaccineRecord.status = LoadStatus.REQUESTED;
         state.publicVaccineRecord.statusMessage = "";
+        state.publicVaccineRecord.error = undefined;
     },
     setPublicVaccineRecordStatusMessage(
         state: VaccinationStatusState,
@@ -40,6 +41,7 @@ export const mutations: VaccinationStatusMutations = {
         state.publicVaccineRecord.vaccinationRecord = vaccineRecord;
         state.publicVaccineRecord.status = LoadStatus.LOADED;
         state.publicVaccineRecord.statusMessage = "";
+        state.publicVaccineRecord.error = undefined;
     },
     vaccinationStatusError(state: VaccinationStatusState, error: BannerError) {
         state.public.vaccinationStatus = undefined;
@@ -51,9 +53,12 @@ export const mutations: VaccinationStatusMutations = {
         state.public.error = undefined;
         state.public.statusMessage = "";
     },
-    pdfError(state: VaccinationStatusState, error: BannerError) {
-        state.public.error = error;
-        state.public.status = LoadStatus.ERROR;
+    setPublicVaccineRecordError(
+        state: VaccinationStatusState,
+        error: BannerError
+    ) {
+        state.publicVaccineRecord.error = error;
+        state.publicVaccineRecord.status = LoadStatus.ERROR;
     },
     setStatusMessage(state: VaccinationStatusState, statusMessage: string) {
         state.public.statusMessage = statusMessage;

@@ -30,6 +30,50 @@ function select(selector, value) {
     cy.get(selector).should("be.visible", "be.enabled").select(value);
 }
 
+describe("Public User - Vaccine Card Page - Save PDF but Vaccine Record not found", () => {
+    beforeEach(() => {
+        deleteDownloadsFolder();
+        cy.intercept("GET", "**/v1/api/PublicVaccineStatus/pdf", (req) => {
+            req.reply({
+                fixture: "ImmunizationService/vaccineProofLoadedNoPdf.json",
+            });
+        });
+    });
+    it("Save Dropdown List - Save PDF - Download confirmed With Retry", () => {
+        const phn = "9735361219 ";
+        const dobYear = "1994";
+        const dobMonth = "June";
+        const dobDay = "9";
+        const dovYear = "2021";
+        const dovMonth = "January";
+        const dovDay = "20";
+        cy.enableModules([
+            "Immunization",
+            vaccinationStatusModule,
+            "VaccinationStatusPdf",
+            "PublicVaccineDownloadPdf",
+        ]);
+        cy.visit(vaccineCardUrl);
+        enterVaccineCardPHN(phn);
+        select(dobYearSelector, dobYear);
+        select(dobMonthSelector, dobMonth);
+        select(dobDaySelector, dobDay);
+        select(dovYearSelector, dovYear);
+        select(dovMonthSelector, dovMonth);
+        select(dovDaySelector, dovDay);
+        clickVaccineCardEnterButton();
+        cy.get("[data-testid=save-dropdown-btn]")
+            .should("be.visible", "be.enabled")
+            .click();
+        cy.get("[data-testid=save-as-pdf-dropdown-item]")
+            .should("be.visible")
+            .click();
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=errorTextDescription]").should("be.visible");
+    });
+});
+
 describe("Public User - Vaccine Card Page - Save PDF", () => {
     beforeEach(() => {
         deleteDownloadsFolder();

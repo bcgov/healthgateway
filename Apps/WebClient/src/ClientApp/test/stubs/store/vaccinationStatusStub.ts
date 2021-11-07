@@ -21,6 +21,7 @@ const vaccinationStatusState: VaccinationStatusState = {
     },
     publicVaccineRecord: {
         vaccinationRecord: undefined,
+        error: undefined,
         status: LoadStatus.NONE,
         statusMessage: "",
     },
@@ -59,6 +60,9 @@ const vaccinationStatusGetters: VaccinationStatusGetters = {
         return "";
     },
     publicVaccineRecord(): CovidVaccineRecord | undefined {
+        return undefined;
+    },
+    publicVaccineRecordError(): BannerError | undefined {
         return undefined;
     },
     authenticatedVaccinationStatus(): VaccinationStatus | undefined {
@@ -105,7 +109,7 @@ const vaccinationStatusMutations: VaccinationStatusMutations = {
     setVaccinationStatus: voidMethod,
     vaccinationStatusError: voidMethod,
     setPdfRequested: voidMethod,
-    pdfError: voidMethod,
+    setPublicVaccineRecordError: voidMethod,
     setStatusMessage: voidMethod,
     setAuthenticatedRequested: voidMethod,
     setAuthenticatedVaccinationStatus: voidMethod,

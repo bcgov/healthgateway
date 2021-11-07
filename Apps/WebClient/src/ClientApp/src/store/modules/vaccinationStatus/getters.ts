@@ -17,6 +17,11 @@ export const getters: VaccinationStatusGetters = {
     error(state: VaccinationStatusState): BannerError | undefined {
         return state.public.error;
     },
+    publicVaccineRecordError(
+        state: VaccinationStatusState
+    ): BannerError | undefined {
+        return state.publicVaccineRecord.error;
+    },
     statusMessage(state: VaccinationStatusState): string {
         return state.public.statusMessage;
     },

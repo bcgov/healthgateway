@@ -14,6 +14,7 @@ const state: VaccinationStatusState = {
     },
     publicVaccineRecord: {
         vaccinationRecord: undefined,
+        error: undefined,
         status: LoadStatus.NONE,
         statusMessage: "",
     },
