@@ -80,13 +80,23 @@ namespace HealthGateway.Database.Delegates
                 Payload = communication,
                 Status = DBStatusCode.Deferred,
             };
+
             this.dbContext.Communication.Add(communication);
             if (commit)
             {
+                DateTime activeExpiryDateTime = this.ActiveCommunication(communication.CommunicationTypeCode).ExpiryDateTime;
                 try
                 {
-                    this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Created;
+                    if (communication.EffectiveDateTime > activeExpiryDateTime)
+                    {
+                        this.dbContext.SaveChanges();
+                        result.Status = DBStatusCode.Created;
+                    }
+                    else
+                    {
+                        result.Status = DBStatusCode.Error;
+                        result.Message = $"The new effective date {communication.EffectiveDateTime} must be greater than {activeExpiryDateTime}";
+                    }
                 }
                 catch (DbUpdateException e)
                 {
@@ -124,10 +134,19 @@ namespace HealthGateway.Database.Delegates
             this.dbContext.Communication.Update(communication);
             if (commit)
             {
+                DateTime activeExpiryDateTime = this.ActiveCommunication(communication.CommunicationTypeCode).ExpiryDateTime;
                 try
                 {
-                    this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Updated;
+                    if (communication.EffectiveDateTime > activeExpiryDateTime)
+                    {
+                        this.dbContext.SaveChanges();
+                        result.Status = DBStatusCode.Updated;
+                    }
+                    else
+                    {
+                        result.Status = DBStatusCode.Error;
+                        result.Message = $"The new effective date {communication.EffectiveDateTime} must be greater than {activeExpiryDateTime}";
+                    }
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
@@ -180,6 +199,17 @@ namespace HealthGateway.Database.Delegates
 
             this.logger.LogDebug($"Finished deleting Communication in DB");
             return result;
+        }
+
+        private Communication ActiveCommunication(CommunicationType communicationType)
+        {
+            DBResult<IEnumerable<Communication>> communicationList = this.GetAll();
+            var result = communicationList.Payload
+                                    .Where(c => c.CommunicationTypeCode == communicationType)
+                                    .OrderByDescending(o => o.ExpiryDateTime)
+                                    .FirstOrDefault();
+
+            return result != null ? result : new();
         }
     }
 }

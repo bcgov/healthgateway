@@ -373,7 +373,7 @@ export default class CommunicationTable extends Vue {
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
-                    message: "Add communication failed, please try again",
+                    message: err.resultMessage,
                 };
                 console.log(err);
             })
