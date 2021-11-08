@@ -16,7 +16,7 @@
     "core-js": "^3.19.1",
     "file-saver": "^2.0.5",
     "inversify": "^5.1.1",
-    "luxon": "^1.28.0",
+    "luxon": "^2.1.0",
     "reflect-metadata": "^0.1.13",
     "register-service-worker": "^1.7.2",
     "tiptap-vuetify": "^2.24.0",
