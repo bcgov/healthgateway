@@ -5,10 +5,9 @@ describe("Timeline - Immunization - Invalid Doses", () => {
         cy.enableModules("Immunization");
     });
 
-    it("Timeline - Partially Vaccinated 1 Valid Dose and 2 Invalid Doses - Keycloak user", () => {
+    it("Timeline - Partially Vaccinated 1 Valid Dose and 1 Invalid Dose - Keycloak user", () => {
         const validDoseDate1 = "Jul 14";
-        const invalidDoseDate1 = "Apr 2";
-        const invalidDoseDate2 = "Mar 30";
+        const invalidDoseDate1 = "Mar 30";
 
         cy.login(
             Cypress.env("keycloak.invaliddoses.username"),
@@ -21,9 +20,6 @@ describe("Timeline - Immunization - Invalid Doses", () => {
             .should("be.visible");
         cy.get("[data-testid=entryCardDate]")
             .contains(invalidDoseDate1)
-            .should("be.visible");
-        cy.get("[data-testid=entryCardDate]")
-            .contains(invalidDoseDate2)
             .should("be.visible");
     });
 });

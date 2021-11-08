@@ -5,10 +5,9 @@ describe("Export Reports - Immunizations - Invalid Doses", () => {
         cy.enableModules("Immunization");
     });
 
-    it("Immunization Report - Partially Vaccinated 1 Valid Dose and 2 Invalid Doses - Keycloak user", () => {
+    it("Immunization Report - Partially Vaccinated 1 Valid Dose and 1 Invalid Dose - Keycloak user", () => {
         const validDoseDate1 = "2021-Jul-14";
         const invalidDoseDate1 = "2021-Mar-30";
-        const invalidDoseDate2 = "2021-Apr-02";
 
         cy.login(
             Cypress.env("keycloak.invaliddoses.username"),
@@ -26,9 +25,6 @@ describe("Export Reports - Immunizations - Invalid Doses", () => {
             .should("be.visible");
         cy.get("[data-testid=immunizationDateItem]")
             .contains(invalidDoseDate1)
-            .should("be.visible");
-        cy.get("[data-testid=immunizationDateItem]")
-            .contains(invalidDoseDate2)
             .should("be.visible");
     });
 });

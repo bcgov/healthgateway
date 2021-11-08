@@ -7,7 +7,7 @@ describe("Immunization History Report", () => {
         cy.setupDownloads();
         let isLoading = false;
         cy.enableModules("Immunization");
-        cy.intercept("GET", "/v1/api/Immunization?*", (req) => {
+        cy.intercept("GET", "**/v1/api/Immunization?*", (req) => {
             req.reply((res) => {
                 if (!isLoading) {
                     res.send({
