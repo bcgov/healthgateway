@@ -84,7 +84,7 @@
         "idle-vue": "^2.0.5",
         "image-webpack-loader": "^7.0.1",
         "inversify": "^5.1.1",
-        "luxon": "^1.28.0",
+        "luxon": "^2.1.0",
         "oidc-client": "^1.11.5",
         "qrcode": "^1.4.4",
         "reflect-metadata": "^0.1.13",
