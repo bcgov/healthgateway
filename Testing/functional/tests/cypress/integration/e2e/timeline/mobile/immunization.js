@@ -64,7 +64,7 @@ describe("Immunization Async No Records", () => {
 describe("Immunization", () => {
     beforeEach(() => {
         cy.enableModules("Immunization");
-        cy.intercept("GET", "/v1/api/Immunization", {
+        cy.intercept("GET", "/v1/api/Immunization?*", {
             fixture: "ImmunizationService/immunization.json",
         });
         cy.viewport("iphone-6");
