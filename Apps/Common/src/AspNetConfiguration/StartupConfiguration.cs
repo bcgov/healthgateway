@@ -438,7 +438,8 @@ namespace HealthGateway.Common.AspNetConfiguration
             bool isSensitiveDataLoggingEnabled = section.GetValue<bool>("Enabled", false);
             this.Logger.LogDebug($"Sensitive Data Logging is enabled: {isSensitiveDataLoggingEnabled}");
 
-            services.AddDbContextPool<GatewayDbContext>(options => {
+            services.AddDbContextPool<GatewayDbContext>(options =>
+            {
                 options.UseNpgsql(this.configuration.GetConnectionString("GatewayConnection"));
                 if (isSensitiveDataLoggingEnabled)
                 {
