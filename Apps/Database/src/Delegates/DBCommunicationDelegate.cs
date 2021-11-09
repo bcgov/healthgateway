@@ -240,7 +240,7 @@ namespace HealthGateway.Database.Delegates
 
             if (!activeBannerCommunication.Any() ||
                 communication.CommunicationStatusCode == CommunicationStatus.Draft ||
-                AllowUpdateCurrentItem(activeBannerCommunication,communication))
+                AllowUpdateCurrentItem(activeBannerCommunication, communication))
             {
                 return true;
             }
@@ -263,6 +263,5 @@ namespace HealthGateway.Database.Delegates
 
             return communication;
         }
-
     }
 }
