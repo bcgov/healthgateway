@@ -102,6 +102,7 @@ const vaccinationStatusActions: VaccinationStatusActions = {
     retrieveAuthenticatedVaccineStatus: voidPromise,
     retrieveAuthenticatedVaccineRecord: voidPromise,
     handleAuthenticatedError: voidMethod,
+    handleAuthenticatedPdfError: voidMethod,
 };
 
 const vaccinationStatusMutations: VaccinationStatusMutations = {
