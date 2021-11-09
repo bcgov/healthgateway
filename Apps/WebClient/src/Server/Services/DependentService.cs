@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
@@ -193,11 +194,11 @@ namespace HealthGateway.WebClient.Services
                     if (result.ResultStatus != ResultType.Error)
                     {
                         result.ResultStatus = ResultType.Error;
-                        resultErrorMessage.Append($"Communication Exception when trying to retrieve Dependent(s) - HdId: {resourceDelegate.ResourceOwnerHdid};");
+                        resultErrorMessage.Append(CultureInfo.InvariantCulture, $"Communication Exception when trying to retrieve Dependent(s) - HdId: {resourceDelegate.ResourceOwnerHdid};");
                     }
                     else
                     {
-                        resultErrorMessage.Append($" HdId: {resourceDelegate.ResourceOwnerHdid};");
+                        resultErrorMessage.Append(CultureInfo.InvariantCulture, $" HdId: {resourceDelegate.ResourceOwnerHdid};");
                     }
                 }
             }

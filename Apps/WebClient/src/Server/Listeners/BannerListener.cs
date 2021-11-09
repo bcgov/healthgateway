@@ -81,13 +81,13 @@ namespace HealthGateway.WebClient.Listeners
                     using GatewayDbContext dbContext = scope.ServiceProvider.GetRequiredService<GatewayDbContext>();
                     this.CommunicationService = scope.ServiceProvider.GetRequiredService<ICommunicationService>();
                     using NpgsqlConnection con = (NpgsqlConnection)dbContext.Database.GetDbConnection();
-                    con.Open();
+                    await con.OpenAsync(stoppingToken).ConfigureAwait(true);
                     con.Notification += this.ReceiveEvent;
                     using NpgsqlCommand cmd = new NpgsqlCommand();
                     cmd.CommandText = @$"LISTEN ""{Channel}"";";
                     cmd.CommandType = CommandType.Text;
                     cmd.Connection = con;
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync(stoppingToken).ConfigureAwait(true);
 
                     while (!stoppingToken.IsCancellationRequested)
                     {
@@ -95,7 +95,7 @@ namespace HealthGateway.WebClient.Listeners
                         await con.WaitAsync(stoppingToken).ConfigureAwait(true);
                     }
 
-                    con.Close();
+                    await con.CloseAsync().ConfigureAwait(true);
                 }
                 catch (NpgsqlException e)
                 {

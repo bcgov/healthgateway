@@ -55,9 +55,10 @@ namespace HealthGateway.Database.Delegates
             {
                 Status = DBStatusCode.NotFound,
             };
-            result.Payload = this.dbContext.Note.Find(noteId, hdid);
-            if (result.Payload != null)
+            Note? note = this.dbContext.Note.Find(noteId, hdid);
+            if (note != null)
             {
+                result.Payload = note;
                 result.Status = DBStatusCode.Read;
             }
 

@@ -188,7 +188,7 @@ namespace HealthGateway.Medication.Services
                 if (uniqueDrugIdentifers.Count > drugProductsDict.Count)
                 {
                     // Get the DINs not found on the previous query
-                    List<string> notFoundDins = uniqueDrugIdentifers.Where(din => !drugProductsDict.Keys.Contains(din)).ToList();
+                    List<string> notFoundDins = uniqueDrugIdentifers.Where(din => !drugProductsDict.ContainsKey(din)).ToList();
 
                     // Retrieve the brand names using the provincial data
                     IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(notFoundDins);
