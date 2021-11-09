@@ -28,15 +28,12 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="XunitXml.TestLogger" Version="3.0.70" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers.Test\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Immunization.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis" Version="3.11.0" />
   </ItemGroup>
 </Project>

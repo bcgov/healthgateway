@@ -17,6 +17,7 @@ namespace HealthGateway.Encounter.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Security.Cryptography;
     using System.Text;
     using System.Text.Json.Serialization;
@@ -61,25 +62,23 @@ namespace HealthGateway.Encounter.Models
         /// </summary>
         /// <param name="model">The claim result to convert.</param>
         /// <returns>The newly created Encounter object.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms", Justification = "Team decision")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "SCS0006:Weak hashing function", Justification = "Team decision")]
         public static EncounterModel FromODRClaimModel(Claim model)
         {
-#pragma warning disable CA5351 // Do Not Use Broken Cryptographic Algorithms
-#pragma warning disable SCS0006 // Weak hashing function
             using var md5CryptoService = MD5.Create();
-#pragma warning restore SCS0006 // Weak hashing function
-#pragma warning restore CA5351 // Do Not Use Broken Cryptographic Algorithms
             StringBuilder sourceId = new();
-            sourceId.Append($"{model.ServiceDate:yyyyMMdd}");
-            sourceId.Append($"{model.SpecialtyDesc}");
-            sourceId.Append($"{model.PractitionerName}");
-            sourceId.Append($"{model.LocationName}");
-            sourceId.Append($"{model.LocationAddress.Province}");
-            sourceId.Append($"{model.LocationAddress.City}");
-            sourceId.Append($"{model.LocationAddress.PostalCode}");
-            sourceId.Append($"{model.LocationAddress.AddrLine1}");
-            sourceId.Append($"{model.LocationAddress.AddrLine2}");
-            sourceId.Append($"{model.LocationAddress.AddrLine3}");
-            sourceId.Append($"{model.LocationAddress.AddrLine4}");
+            sourceId.Append(CultureInfo.InvariantCulture, $"{model.ServiceDate:yyyyMMdd}");
+            sourceId.Append(CultureInfo.InvariantCulture, $"{model.SpecialtyDesc}");
+            sourceId.Append(CultureInfo.InvariantCulture, $"{model.PractitionerName}");
+            sourceId.Append(CultureInfo.InvariantCulture, $"{model.LocationName}");
+            sourceId.Append(CultureInfo.InvariantCulture, $"{model.LocationAddress.Province}");
+            sourceId.Append(CultureInfo.InvariantCulture, $"{model.LocationAddress.City}");
+            sourceId.Append(CultureInfo.InvariantCulture, $"{model.LocationAddress.PostalCode}");
+            sourceId.Append(CultureInfo.InvariantCulture, $"{model.LocationAddress.AddrLine1}");
+            sourceId.Append(CultureInfo.InvariantCulture, $"{model.LocationAddress.AddrLine2}");
+            sourceId.Append(CultureInfo.InvariantCulture, $"{model.LocationAddress.AddrLine3}");
+            sourceId.Append(CultureInfo.InvariantCulture, $"{model.LocationAddress.AddrLine4}");
             return new EncounterModel()
             {
                 Id = new Guid(md5CryptoService.ComputeHash(Encoding.Default.GetBytes(sourceId.ToString()))).ToString(),

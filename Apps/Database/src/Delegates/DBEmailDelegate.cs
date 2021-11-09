@@ -50,9 +50,9 @@ namespace HealthGateway.Database.Delegates
         public Email GetEmail(Guid emailId)
         {
             this.logger.LogTrace($"Getting email from DB... {emailId}");
-            Email retVal = this.dbContext.Find<Email>(emailId);
+            Email? retVal = this.dbContext.Find<Email>(emailId);
             this.logger.LogDebug($"Finished getting email from DB. {JsonSerializer.Serialize(retVal)}");
-            return retVal;
+            return retVal!;
         }
 
         /// <inheritdoc />

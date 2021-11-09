@@ -43,7 +43,7 @@ objects:
         dockerStrategy:
           from:
             kind: DockerImage
-            name: "mcr.microsoft.com/dotnet/aspnet:5.0"
+            name: "mcr.microsoft.com/dotnet/aspnet:6.0"
         type: Docker
       successfulBuildsHistoryLimit: 2
       failedBuildsHistoryLimit: 2
