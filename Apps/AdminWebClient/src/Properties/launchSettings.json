@@ -6,7 +6,7 @@
     "profiles": {
         "HealthGateway.Admin": {
             "commandName": "Project",
-            "launchBrowser": true,
+            "launchBrowser": false,
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
                 "ServerOnly": "false"
