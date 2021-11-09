@@ -84,18 +84,26 @@ namespace HealthGateway.Database.Delegates
             this.dbContext.Communication.Add(communication);
             if (commit)
             {
-                DateTime activeExpiryDateTime = this.ActiveCommunication(communication.CommunicationTypeCode).ExpiryDateTime;
                 try
                 {
-                    if (communication.EffectiveDateTime > activeExpiryDateTime)
+                    if (communication.CommunicationTypeCode != CommunicationType.Banner)
                     {
                         this.dbContext.SaveChanges();
                         result.Status = DBStatusCode.Created;
                     }
                     else
                     {
-                        result.Status = DBStatusCode.Error;
-                        result.Message = $"The new effective date {communication.EffectiveDateTime} must be greater than {activeExpiryDateTime}";
+                        bool isValid = this.IsCommunicationValidCommit(communication);
+                        if (isValid)
+                        {
+                            this.dbContext.SaveChanges();
+                            result.Status = DBStatusCode.Created;
+                        }
+                        else
+                        {
+                            result.Status = DBStatusCode.Error;
+                            result.Message = $"Only one active communication banner is allowed.";
+                        }
                     }
                 }
                 catch (DbUpdateException e)
@@ -134,18 +142,26 @@ namespace HealthGateway.Database.Delegates
             this.dbContext.Communication.Update(communication);
             if (commit)
             {
-                DateTime activeExpiryDateTime = this.ActiveCommunication(communication.CommunicationTypeCode).ExpiryDateTime;
                 try
                 {
-                    if (communication.EffectiveDateTime > activeExpiryDateTime)
+                    if (communication.CommunicationTypeCode != CommunicationType.Banner)
                     {
                         this.dbContext.SaveChanges();
                         result.Status = DBStatusCode.Updated;
                     }
                     else
                     {
-                        result.Status = DBStatusCode.Error;
-                        result.Message = $"The new effective date {communication.EffectiveDateTime} must be greater than {activeExpiryDateTime}";
+                        bool isValid = this.IsCommunicationValidCommit(communication);
+                        if (isValid)
+                        {
+                            this.dbContext.SaveChanges();
+                            result.Status = DBStatusCode.Updated;
+                        }
+                        else
+                        {
+                            result.Status = DBStatusCode.Error;
+                            result.Message = $"Only one active communication banner is allowed.";
+                        }
                     }
                 }
                 catch (DbUpdateConcurrencyException e)
@@ -201,15 +217,50 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        private Communication ActiveCommunication(CommunicationType communicationType)
+        private List<Communication> GetActiveBannerCommunications()
         {
-            DBResult<IEnumerable<Communication>> communicationList = this.GetAll();
-            var result = communicationList.Payload
-                                    .Where(c => c.CommunicationTypeCode == communicationType)
-                                    .OrderByDescending(o => o.ExpiryDateTime)
-                                    .FirstOrDefault();
+            List<Communication> communication = this.dbContext.Communication
+                 .OrderByDescending(c => c.CreatedDateTime)
+                 .Where(c => c.CommunicationTypeCode == CommunicationType.Banner
+                     && c.CommunicationStatusCode == CommunicationStatus.New && DateTime.UtcNow <= c.ExpiryDateTime)
+                 .ToList();
 
-            return result != null ? result : new();
+            return communication;
+        }
+
+        private bool IsCommunicationValidCommit(Communication communication)
+        {
+            List<Communication> activeBannerCommunication = this.GetActiveBannerCommunications();
+
+            if (communication.CommunicationStatusCode == CommunicationStatus.New)
+            {
+                if (activeBannerCommunication != null && activeBannerCommunication.Count == 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    var validCommunications = activeBannerCommunication
+                            .OrderByDescending(c => c.EffectiveDateTime)
+                            .Where(c => (c.ExpiryDateTime < communication.ExpiryDateTime &&
+                                        communication.EffectiveDateTime > c.ExpiryDateTime) ||
+                                        (communication.EffectiveDateTime < c.EffectiveDateTime && communication.ExpiryDateTime < c.EffectiveDateTime))
+                            .ToList();
+
+                    if (validCommunications != null && validCommunications.Count > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }

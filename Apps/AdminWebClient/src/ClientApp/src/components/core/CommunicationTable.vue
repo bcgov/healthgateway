@@ -375,6 +375,7 @@ export default class CommunicationTable extends Vue {
                     title: "Error",
                     message: err.resultMessage,
                 };
+                this.loadCommunicationList();
                 console.log(err);
             })
             .finally(() => {
@@ -408,14 +409,15 @@ export default class CommunicationTable extends Vue {
                 };
                 this.loadCommunicationList();
             })
-            .catch((err) => {
+            .catch((error) => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
-                    message: "Error updating communication. Please try again.",
+                    message: error.resultMessage,
                 };
-                console.log(err);
+                this.loadCommunicationList();
+                console.log(error);
             })
             .finally(() => {
                 this.isLoading = false;
