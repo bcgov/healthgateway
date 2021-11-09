@@ -19,7 +19,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HealthGateway.Database.Migrations
 {
-    public partial class AdminAllowOverlapBanner : Migration
+    public partial class AdminAllowOverlapMultipleStatus : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -28,7 +28,7 @@ namespace HealthGateway.Database.Migrations
                 ALTER TABLE IF EXISTS {schema}.""Communication"" DROP CONSTRAINT IF EXISTS unique_date_range";
 
             string constraint2 = @$"
-                ALTER TABLE {schema}.""Communication"" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange(""EffectiveDateTime"", ""ExpiryDateTime"") WITH &&) WHERE (""CommunicationTypeCode"" = 'Banner'  AND ""CommunicationStatusCode"" = 'New')";
+                ALTER TABLE {schema}.""Communication"" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange(""EffectiveDateTime"", ""ExpiryDateTime"") WITH &&) WHERE (""CommunicationTypeCode"" = 'Banner'  AND ""CommunicationStatusCode""  IN ('New' ,'Pending','Processed','Processing'))";
             migrationBuilder.Sql(constraint1);
             migrationBuilder.Sql(constraint2);
         }

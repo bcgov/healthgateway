@@ -27,8 +27,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20211108210951_AdminAllowOverlapBanner")]
-    partial class AdminAllowOverlapBanner
+    [Migration("20211109195934_AdminAllowOverlapMultipleStatus")]
+    partial class AdminAllowOverlapMultipleStatus
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

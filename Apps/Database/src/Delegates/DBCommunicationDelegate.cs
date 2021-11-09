@@ -31,6 +31,7 @@ namespace HealthGateway.Database.Delegates
     [ExcludeFromCodeCoverage]
     public class DBCommunicationDelegate : ICommunicationDelegate
     {
+        private const string BannerCommunicationOverlapMessage = "Banner post could not be added because there is an existing banner post.";
         private readonly ILogger<DBNoteDelegate> logger;
         private readonly GatewayDbContext dbContext;
 
@@ -102,7 +103,7 @@ namespace HealthGateway.Database.Delegates
                         else
                         {
                             result.Status = DBStatusCode.Error;
-                            result.Message = $"Only one active communication banner is allowed.";
+                            result.Message = BannerCommunicationOverlapMessage;
                         }
                     }
                 }
@@ -160,7 +161,7 @@ namespace HealthGateway.Database.Delegates
                         else
                         {
                             result.Status = DBStatusCode.Error;
-                            result.Message = $"Only one active communication banner is allowed.";
+                            result.Message = BannerCommunicationOverlapMessage;
                         }
                     }
                 }
@@ -217,50 +218,51 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        private List<Communication> GetActiveBannerCommunications()
+        private static bool AllowUpdateCurrentItem(List<Communication> activeBannerCommunication, Communication communication)
         {
-            List<Communication> communication = this.dbContext.Communication
-                 .OrderByDescending(c => c.CreatedDateTime)
-                 .Where(c => c.CommunicationTypeCode == CommunicationType.Banner
-                     && c.CommunicationStatusCode == CommunicationStatus.New && DateTime.UtcNow <= c.ExpiryDateTime)
-                 .ToList();
+            return activeBannerCommunication?.Count == 1 &&
+                     activeBannerCommunication.First().Id == communication.Id;
+        }
 
-            return communication;
+        private static bool IsValidCommunication(List<Communication> activeBannerCommunication, Communication communication)
+        {
+            return activeBannerCommunication
+                              .Where(c => (c.ExpiryDateTime < communication.ExpiryDateTime &&
+                                  communication.EffectiveDateTime > c.ExpiryDateTime)
+                                  || (communication.EffectiveDateTime < c.EffectiveDateTime &&
+                                  communication.ExpiryDateTime < c.EffectiveDateTime))
+                              .AsEnumerable().Any();
         }
 
         private bool IsCommunicationValidCommit(Communication communication)
         {
             List<Communication> activeBannerCommunication = this.GetActiveBannerCommunications();
 
-            if (communication.CommunicationStatusCode == CommunicationStatus.New)
-            {
-                if (activeBannerCommunication != null && activeBannerCommunication.Count == 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    var validCommunications = activeBannerCommunication
-                            .OrderByDescending(c => c.EffectiveDateTime)
-                            .Where(c => (c.ExpiryDateTime < communication.ExpiryDateTime &&
-                                        communication.EffectiveDateTime > c.ExpiryDateTime) ||
-                                        (communication.EffectiveDateTime < c.EffectiveDateTime && communication.ExpiryDateTime < c.EffectiveDateTime))
-                            .ToList();
-
-                    if (validCommunications != null && validCommunications.Count > 0)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            else
+            if (!activeBannerCommunication.Any() ||
+                communication.CommunicationStatusCode == CommunicationStatus.Draft ||
+                AllowUpdateCurrentItem(activeBannerCommunication,communication))
             {
                 return true;
             }
+            else
+            {
+                return IsValidCommunication(activeBannerCommunication, communication);
+            }
         }
+
+        private List<Communication> GetActiveBannerCommunications()
+        {
+            List<Communication> communication = this.dbContext.Communication
+                 .Where(c => c.CommunicationTypeCode == CommunicationType.Banner
+                     && (c.CommunicationStatusCode == CommunicationStatus.New ||
+                           c.CommunicationStatusCode == CommunicationStatus.Pending ||
+                           c.CommunicationStatusCode == CommunicationStatus.Processed ||
+                           c.CommunicationStatusCode == CommunicationStatus.Processing)
+                     && DateTime.UtcNow <= c.ExpiryDateTime)
+                 .ToList();
+
+            return communication;
+        }
+
     }
 }
