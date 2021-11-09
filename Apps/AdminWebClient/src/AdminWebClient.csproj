@@ -15,7 +15,7 @@
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.0" />
     <PackageReference Include="SSH.NET" Version="2020.0.1" />
     <PackageReference Include="UAParser" Version="3.1.47" />
-    <PackageReference Include="VueCliMiddleware" Version="5.0.0" />
+    <PackageReference Include="VueCliMiddleware" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" />
