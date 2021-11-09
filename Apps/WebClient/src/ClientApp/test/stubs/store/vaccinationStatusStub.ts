@@ -109,7 +109,6 @@ const vaccinationStatusMutations: VaccinationStatusMutations = {
     setVaccinationStatus: voidMethod,
     vaccinationStatusError: voidMethod,
     setPdfRequested: voidMethod,
-    setPublicVaccineRecordError: voidMethod,
     setStatusMessage: voidMethod,
     setAuthenticatedRequested: voidMethod,
     setAuthenticatedVaccinationStatus: voidMethod,
@@ -122,6 +121,7 @@ const vaccinationStatusMutations: VaccinationStatusMutations = {
     setAuthenticatedVaccineRecordResultMessage: voidMethod,
     setPublicVaccineRecordRequested: voidMethod,
     setPublicVaccineRecordStatusMessage: voidMethod,
+    setPublicVaccineRecordError: voidMethod,
     setPublicVaccineRecord: voidMethod,
 };
 
