@@ -12,11 +12,6 @@
     <None Remove="Constants\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.0" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -34,8 +29,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\.editorconfig" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis" Version="3.11.0" />
   </ItemGroup>
 </Project>
