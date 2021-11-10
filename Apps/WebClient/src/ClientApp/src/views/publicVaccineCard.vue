@@ -71,7 +71,10 @@ export default class PublicVaccineCardView extends Vue {
     isVaccinationStatusLoading!: boolean;
 
     @Getter("error", { namespace: "vaccinationStatus" })
-    error!: BannerError | undefined;
+    vaccinationStatusError!: BannerError | undefined;
+
+    @Getter("publicVaccineRecordError", { namespace: "vaccinationStatus" })
+    publicVaccineRecordError!: BannerError | undefined;
 
     @Getter("statusMessage", { namespace: "vaccinationStatus" })
     statusMessage!: string;
@@ -111,6 +114,20 @@ export default class PublicVaccineCardView extends Vue {
         return this.vaccinationState === VaccinationState.FullyVaccinated;
     }
 
+    private get bannerError(): BannerError | undefined {
+        if (
+            this.vaccinationStatusError !== undefined &&
+            this.publicVaccineRecordError === undefined
+        ) {
+            return this.vaccinationStatusError;
+        }
+        if (
+            this.vaccinationStatusError === undefined &&
+            this.publicVaccineRecordError !== undefined
+        ) {
+            return this.publicVaccineRecordError;
+        }
+    }
     private bcsclogo: string = Image06;
 
     private logger!: ILogger;
@@ -319,7 +336,7 @@ export default class PublicVaccineCardView extends Vue {
             <div class="bg-white rounded shadow">
                 <vaccine-card
                     :status="status"
-                    :error="error"
+                    :error="bannerError"
                     :show-generic-save-instructions="!downloadButtonShown"
                 />
                 <div
@@ -432,19 +449,21 @@ export default class PublicVaccineCardView extends Vue {
                 @submit.prevent="handleSubmit"
             >
                 <div class="my-2 my-sm-5 px-0 px-sm-5">
-                    <div v-if="error !== undefined">
+                    <div v-if="bannerError !== undefined">
                         <b-alert
                             variant="danger"
                             class="mb-3 p-3"
                             show
                             dismissible
                         >
-                            <h2 class="h4">{{ error.title }}</h2>
+                            <h2 class="h4">
+                                {{ bannerError.title }}
+                            </h2>
                             <div
                                 data-testid="errorTextDescription"
                                 class="pl-4"
                             >
-                                {{ error.description }}
+                                {{ bannerError.description }}
                             </div>
                         </b-alert>
                     </div>

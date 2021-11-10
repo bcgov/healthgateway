@@ -21,6 +21,7 @@ const vaccinationStatusState: VaccinationStatusState = {
     },
     publicVaccineRecord: {
         vaccinationRecord: undefined,
+        error: undefined,
         status: LoadStatus.NONE,
         statusMessage: "",
     },
@@ -61,6 +62,9 @@ const vaccinationStatusGetters: VaccinationStatusGetters = {
     publicVaccineRecord(): CovidVaccineRecord | undefined {
         return undefined;
     },
+    publicVaccineRecordError(): BannerError | undefined {
+        return undefined;
+    },
     authenticatedVaccinationStatus(): VaccinationStatus | undefined {
         return undefined;
     },
@@ -92,33 +96,33 @@ const vaccinationStatusGetters: VaccinationStatusGetters = {
 
 const vaccinationStatusActions: VaccinationStatusActions = {
     retrieveVaccineStatus: voidPromise,
-    retrieveVaccineStatusPdf: voidPromise,
-    retrievePublicVaccineRecord: voidPromise,
     handleError: voidMethod,
+    retrievePublicVaccineRecord: voidPromise,
+    handlePdfError: voidMethod,
     retrieveAuthenticatedVaccineStatus: voidPromise,
-    retrieveAuthenticatedVaccineRecord: voidPromise,
     handleAuthenticatedError: voidMethod,
+    retrieveAuthenticatedVaccineRecord: voidPromise,
+    handleAuthenticatedPdfError: voidMethod,
 };
 
 const vaccinationStatusMutations: VaccinationStatusMutations = {
     setRequested: voidMethod,
     setVaccinationStatus: voidMethod,
     vaccinationStatusError: voidMethod,
-    setPdfRequested: voidMethod,
-    pdfError: voidMethod,
     setStatusMessage: voidMethod,
+    setPublicVaccineRecordRequested: voidMethod,
+    setPublicVaccineRecord: voidMethod,
+    setPublicVaccineRecordError: voidMethod,
+    setPublicVaccineRecordStatusMessage: voidMethod,
     setAuthenticatedRequested: voidMethod,
     setAuthenticatedVaccinationStatus: voidMethod,
     authenticatedVaccinationStatusError: voidMethod,
     setAuthenticatedStatusMessage: voidMethod,
     setAuthenticatedVaccineRecordRequested: voidMethod,
-    setAuthenticatedVaccineRecordStatusMessage: voidMethod,
     setAuthenticatedVaccineRecord: voidMethod,
     setAuthenticatedVaccineRecordError: voidMethod,
+    setAuthenticatedVaccineRecordStatusMessage: voidMethod,
     setAuthenticatedVaccineRecordResultMessage: voidMethod,
-    setPublicVaccineRecordRequested: voidMethod,
-    setPublicVaccineRecordStatusMessage: voidMethod,
-    setPublicVaccineRecord: voidMethod,
 };
 
 const vaccinationStatusStub: VaccinationStatusModule = {

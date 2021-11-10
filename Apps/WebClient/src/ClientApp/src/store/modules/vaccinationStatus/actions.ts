@@ -71,6 +71,25 @@ export const actions: VaccinationStatusActions = {
                 });
         });
     },
+    handleError(context, error: ResultError) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
+        logger.error(`ERROR: ${JSON.stringify(error)}`);
+        const bannerError: BannerError = {
+            title: "Our Apologies",
+            description:
+                "We've found an issue and the Health Gateway team is working hard to fix it.",
+            detail: "",
+            errorCode: "",
+        };
+
+        if (error.actionCode === ActionType.DataMismatch) {
+            bannerError.title = "Data Mismatch";
+            bannerError.description = error.resultMessage;
+        }
+
+        context.commit("vaccinationStatusError", bannerError);
+    },
     retrievePublicVaccineRecord(
         context,
         params: {
@@ -131,25 +150,6 @@ export const actions: VaccinationStatusActions = {
                 });
         });
     },
-    handleError(context, error: ResultError) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
-        logger.error(`ERROR: ${JSON.stringify(error)}`);
-        const bannerError: BannerError = {
-            title: "Our Apologies",
-            description:
-                "We've found an issue and the Health Gateway team is working hard to fix it.",
-            detail: "",
-            errorCode: "",
-        };
-
-        if (error.actionCode === ActionType.DataMismatch) {
-            bannerError.title = "Data Mismatch";
-            bannerError.description = error.resultMessage;
-        }
-
-        context.commit("vaccinationStatusError", bannerError);
-    },
     handlePdfError(context, error: ResultError) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -162,7 +162,7 @@ export const actions: VaccinationStatusActions = {
             errorCode: "",
         };
 
-        context.commit("pdfError", bannerError);
+        context.commit("setPublicVaccineRecordError", bannerError);
     },
     retrieveAuthenticatedVaccineStatus(
         context,
@@ -231,6 +231,23 @@ export const actions: VaccinationStatusActions = {
             }
         });
     },
+    handleAuthenticatedError(context, error: ResultError) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
+        logger.error(`ERROR: ${JSON.stringify(error)}`);
+
+        const title = "Error Retrieving Vaccine Card";
+
+        context.commit(
+            "authenticatedVaccinationStatusError",
+            ErrorTranslator.toBannerError(title, error)
+        );
+        context.dispatch(
+            "errorBanner/addResultError",
+            { message: title, error },
+            { root: true }
+        );
+    },
     retrieveAuthenticatedVaccineRecord(
         context,
         params: {
@@ -291,23 +308,6 @@ export const actions: VaccinationStatusActions = {
                     reject(error);
                 });
         });
-    },
-    handleAuthenticatedError(context, error: ResultError) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
-        logger.error(`ERROR: ${JSON.stringify(error)}`);
-
-        const title = "Error Retrieving Vaccine Card";
-
-        context.commit(
-            "authenticatedVaccinationStatusError",
-            ErrorTranslator.toBannerError(title, error)
-        );
-        context.dispatch(
-            "errorBanner/addResultError",
-            { message: title, error },
-            { root: true }
-        );
     },
     handleAuthenticatedPdfError(context, error: ResultError) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);

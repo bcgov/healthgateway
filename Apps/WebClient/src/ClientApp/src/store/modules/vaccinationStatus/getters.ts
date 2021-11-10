@@ -28,6 +28,11 @@ export const getters: VaccinationStatusGetters = {
     publicVaccineRecordIsLoading(state: VaccinationStatusState): boolean {
         return state.publicVaccineRecord.status === LoadStatus.REQUESTED;
     },
+    publicVaccineRecordError(
+        state: VaccinationStatusState
+    ): BannerError | undefined {
+        return state.publicVaccineRecord.error;
+    },
     publicVaccineRecordStatusMessage(state: VaccinationStatusState): string {
         return state.publicVaccineRecord.statusMessage;
     },
