@@ -2,6 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Healthgateway.JobScheduler</RootNamespace>
     <DocumentationFile>.\JobScheduler.xml</DocumentationFile>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.27" />
