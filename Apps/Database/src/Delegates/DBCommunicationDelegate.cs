@@ -26,11 +26,15 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Wrapper;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+    using Npgsql;
 
     /// <inheritdoc />
     [ExcludeFromCodeCoverage]
     public class DBCommunicationDelegate : ICommunicationDelegate
     {
+        private const string BannerCommunicationOverlapMessage = "Banner post could not be added because there is an existing banner post.";
+        private const string UniqueConstraintSqlStateError = "23P01";
+        private const string UniqueConstraintDatetimeRange = "unique_date_range";
         private readonly ILogger<DBNoteDelegate> logger;
         private readonly GatewayDbContext dbContext;
 
@@ -80,6 +84,7 @@ namespace HealthGateway.Database.Delegates
                 Payload = communication,
                 Status = DBStatusCode.Deferred,
             };
+
             this.dbContext.Communication.Add(communication);
             if (commit)
             {
@@ -92,7 +97,7 @@ namespace HealthGateway.Database.Delegates
                 {
                     this.logger.LogError($"Unable to save Communication to DB {e}");
                     result.Status = DBStatusCode.Error;
-                    result.Message = e.Message;
+                    result.Message = IsUniqueConstraintDbError(e) ? BannerCommunicationOverlapMessage : e.Message;
                 }
             }
 
@@ -131,8 +136,15 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
+                    this.logger.LogError($"Unable to update Communication to DB {e}");
                     result.Status = DBStatusCode.Concurrency;
                     result.Message = e.Message;
+                }
+                catch (DbUpdateException e)
+                {
+                    this.logger.LogError($"Unable to update Communication to DB {e}");
+                    result.Status = DBStatusCode.Error;
+                    result.Message = IsUniqueConstraintDbError(e) ? BannerCommunicationOverlapMessage : e.Message;
                 }
             }
 
@@ -180,6 +192,19 @@ namespace HealthGateway.Database.Delegates
 
             this.logger.LogDebug($"Finished deleting Communication in DB");
             return result;
+        }
+
+        private static bool IsUniqueConstraintDbError(DbUpdateException exception)
+        {
+            PostgresException? postgresException = exception.InnerException as PostgresException;
+            if (postgresException?.SqlState == UniqueConstraintSqlStateError && postgresException?.ConstraintName == UniqueConstraintDatetimeRange)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

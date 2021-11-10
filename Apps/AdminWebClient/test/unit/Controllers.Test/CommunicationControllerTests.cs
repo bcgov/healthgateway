@@ -22,6 +22,7 @@ namespace HealthGateway.Admin.Test.Services
     using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
     using Xunit;
@@ -34,8 +35,12 @@ namespace HealthGateway.Admin.Test.Services
         /// <summary>
         /// AddCommunication - Happy Path.
         /// </summary>
-        [Fact]
-        public void ShouldAddCommunication()
+        /// <param name="communicationType">different types of communication.</param>
+        [Theory]
+        [InlineData(CommunicationType.Email)]
+        [InlineData(CommunicationType.Banner)]
+        [InlineData(CommunicationType.InApp)]
+        public void ShouldAddCommunication(CommunicationType communicationType)
         {
             // Sample communications to test
             Communication comm = new Communication()
@@ -44,6 +49,7 @@ namespace HealthGateway.Admin.Test.Services
                 Subject = "Testing communication",
                 EffectiveDateTime = new DateTime(2020, 04, 04),
                 ExpiryDateTime = new DateTime(2020, 05, 13),
+                CommunicationTypeCode = communicationType,
             };
 
             RequestResult<Communication> expected = new RequestResult<Communication>
