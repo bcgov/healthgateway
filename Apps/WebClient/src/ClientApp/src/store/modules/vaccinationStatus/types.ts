@@ -99,6 +99,7 @@ export interface VaccinationStatusActions
         }
     ): Promise<CovidVaccineRecord>;
     handleError(context: StoreContext, error: ResultError): void;
+    handlePdfError(context: StoreContext, error: ResultError): void;
     retrieveAuthenticatedVaccineStatus(
         context: StoreContext,
         params: {
@@ -112,6 +113,10 @@ export interface VaccinationStatusActions
         }
     ): Promise<CovidVaccineRecord>;
     handleAuthenticatedError(context: StoreContext, error: ResultError): void;
+    handleAuthenticatedPdfError(
+        context: StoreContext,
+        error: ResultError
+    ): void;
 }
 
 export interface VaccinationStatusMutations

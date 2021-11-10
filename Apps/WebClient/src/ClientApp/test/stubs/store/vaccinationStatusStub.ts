@@ -96,9 +96,9 @@ const vaccinationStatusGetters: VaccinationStatusGetters = {
 
 const vaccinationStatusActions: VaccinationStatusActions = {
     retrieveVaccineStatus: voidPromise,
-    retrieveVaccineStatusPdf: voidPromise,
     retrievePublicVaccineRecord: voidPromise,
     handleError: voidMethod,
+    handlePdfError: voidMethod,
     retrieveAuthenticatedVaccineStatus: voidPromise,
     retrieveAuthenticatedVaccineRecord: voidPromise,
     handleAuthenticatedError: voidMethod,
