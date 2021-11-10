@@ -96,12 +96,12 @@ const vaccinationStatusGetters: VaccinationStatusGetters = {
 
 const vaccinationStatusActions: VaccinationStatusActions = {
     retrieveVaccineStatus: voidPromise,
-    retrievePublicVaccineRecord: voidPromise,
     handleError: voidMethod,
+    retrievePublicVaccineRecord: voidPromise,
     handlePdfError: voidMethod,
     retrieveAuthenticatedVaccineStatus: voidPromise,
-    retrieveAuthenticatedVaccineRecord: voidPromise,
     handleAuthenticatedError: voidMethod,
+    retrieveAuthenticatedVaccineRecord: voidPromise,
     handleAuthenticatedPdfError: voidMethod,
 };
 
@@ -109,21 +109,20 @@ const vaccinationStatusMutations: VaccinationStatusMutations = {
     setRequested: voidMethod,
     setVaccinationStatus: voidMethod,
     vaccinationStatusError: voidMethod,
-    setPdfRequested: voidMethod,
     setStatusMessage: voidMethod,
+    setPublicVaccineRecordRequested: voidMethod,
+    setPublicVaccineRecord: voidMethod,
+    setPublicVaccineRecordError: voidMethod,
+    setPublicVaccineRecordStatusMessage: voidMethod,
     setAuthenticatedRequested: voidMethod,
     setAuthenticatedVaccinationStatus: voidMethod,
     authenticatedVaccinationStatusError: voidMethod,
     setAuthenticatedStatusMessage: voidMethod,
     setAuthenticatedVaccineRecordRequested: voidMethod,
-    setAuthenticatedVaccineRecordStatusMessage: voidMethod,
     setAuthenticatedVaccineRecord: voidMethod,
     setAuthenticatedVaccineRecordError: voidMethod,
+    setAuthenticatedVaccineRecordStatusMessage: voidMethod,
     setAuthenticatedVaccineRecordResultMessage: voidMethod,
-    setPublicVaccineRecordRequested: voidMethod,
-    setPublicVaccineRecordStatusMessage: voidMethod,
-    setPublicVaccineRecordError: voidMethod,
-    setPublicVaccineRecord: voidMethod,
 };
 
 const vaccinationStatusStub: VaccinationStatusModule = {

@@ -90,6 +90,7 @@ export interface VaccinationStatusActions
             dateOfVaccine: StringISODate;
         }
     ): Promise<void>;
+    handleError(context: StoreContext, error: ResultError): void;
     retrievePublicVaccineRecord(
         context: StoreContext,
         params: {
@@ -98,7 +99,6 @@ export interface VaccinationStatusActions
             dateOfVaccine: StringISODate;
         }
     ): Promise<CovidVaccineRecord>;
-    handleError(context: StoreContext, error: ResultError): void;
     handlePdfError(context: StoreContext, error: ResultError): void;
     retrieveAuthenticatedVaccineStatus(
         context: StoreContext,
@@ -106,13 +106,13 @@ export interface VaccinationStatusActions
             hdid: string;
         }
     ): Promise<void>;
+    handleAuthenticatedError(context: StoreContext, error: ResultError): void;
     retrieveAuthenticatedVaccineRecord(
         context: StoreContext,
         params: {
             hdid: string;
         }
     ): Promise<CovidVaccineRecord>;
-    handleAuthenticatedError(context: StoreContext, error: ResultError): void;
     handleAuthenticatedPdfError(
         context: StoreContext,
         error: ResultError
@@ -130,23 +130,22 @@ export interface VaccinationStatusMutations
         state: VaccinationStatusState,
         error: BannerError
     ): void;
-    setPdfRequested(state: VaccinationStatusState): void;
     setStatusMessage(
         state: VaccinationStatusState,
         statusMessage: string
     ): void;
+    setPublicVaccineRecordRequested(state: VaccinationStatusState): void;
     setPublicVaccineRecord(
         state: VaccinationStatusState,
         vaccineRecord: CovidVaccineRecord
     ): void;
-    setPublicVaccineRecordRequested(state: VaccinationStatusState): void;
-    setPublicVaccineRecordStatusMessage(
-        state: VaccinationStatusState,
-        statusMessage: string
-    ): void;
     setPublicVaccineRecordError(
         state: VaccinationStatusState,
         error: BannerError
+    ): void;
+    setPublicVaccineRecordStatusMessage(
+        state: VaccinationStatusState,
+        statusMessage: string
     ): void;
     setAuthenticatedRequested(state: VaccinationStatusState): void;
     setAuthenticatedVaccinationStatus(
@@ -162,10 +161,6 @@ export interface VaccinationStatusMutations
         statusMessage: string
     ): void;
     setAuthenticatedVaccineRecordRequested(state: VaccinationStatusState): void;
-    setAuthenticatedVaccineRecordStatusMessage(
-        state: VaccinationStatusState,
-        statusMessage: string
-    ): void;
     setAuthenticatedVaccineRecord(
         state: VaccinationStatusState,
         vaccineRecord: CovidVaccineRecord
@@ -173,6 +168,10 @@ export interface VaccinationStatusMutations
     setAuthenticatedVaccineRecordError(
         state: VaccinationStatusState,
         error: BannerError
+    ): void;
+    setAuthenticatedVaccineRecordStatusMessage(
+        state: VaccinationStatusState,
+        statusMessage: string
     ): void;
     setAuthenticatedVaccineRecordResultMessage(
         state: VaccinationStatusState,
