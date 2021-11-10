@@ -87,31 +87,16 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    if (communication.CommunicationTypeCode != CommunicationType.Banner)
-                    {
-                        this.dbContext.SaveChanges();
-                        result.Status = DBStatusCode.Created;
-                    }
-                    else
-                    {
-                        bool isValid = this.IsCommunicationValidCommit(communication);
-                        if (isValid)
-                        {
-                            this.dbContext.SaveChanges();
-                            result.Status = DBStatusCode.Created;
-                        }
-                        else
-                        {
-                            result.Status = DBStatusCode.Error;
-                            result.Message = BannerCommunicationOverlapMessage;
-                        }
-                    }
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Created;
                 }
                 catch (DbUpdateException e)
                 {
+                    string message = e.InnerException != null && e.InnerException.Message.Contains("unique_date_range",  StringComparison.OrdinalIgnoreCase)
+                                            ? BannerCommunicationOverlapMessage : e.Message;
                     this.logger.LogError($"Unable to save Communication to DB {e}");
                     result.Status = DBStatusCode.Error;
-                    result.Message = e.Message;
+                    result.Message = message;
                 }
             }
 
@@ -145,30 +130,22 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    if (communication.CommunicationTypeCode != CommunicationType.Banner)
-                    {
-                        this.dbContext.SaveChanges();
-                        result.Status = DBStatusCode.Updated;
-                    }
-                    else
-                    {
-                        bool isValid = this.IsCommunicationValidCommit(communication);
-                        if (isValid)
-                        {
-                            this.dbContext.SaveChanges();
-                            result.Status = DBStatusCode.Updated;
-                        }
-                        else
-                        {
-                            result.Status = DBStatusCode.Error;
-                            result.Message = BannerCommunicationOverlapMessage;
-                        }
-                    }
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
+                    this.logger.LogError($"Unable to update Communication to DB {e}");
                     result.Status = DBStatusCode.Concurrency;
                     result.Message = e.Message;
+                }
+                catch (DbUpdateException e)
+                {
+                    this.logger.LogError($"Unable to update Communication to DB {e}");
+                    string message = e.InnerException != null && e.InnerException.Message.Contains("unique_date_range", StringComparison.OrdinalIgnoreCase)
+                                          ? BannerCommunicationOverlapMessage : e.Message;
+                    result.Status = DBStatusCode.Error;
+                    result.Message = message;
                 }
             }
 
@@ -216,52 +193,6 @@ namespace HealthGateway.Database.Delegates
 
             this.logger.LogDebug($"Finished deleting Communication in DB");
             return result;
-        }
-
-        private static bool AllowUpdateCurrentItem(List<Communication> activeBannerCommunication, Communication communication)
-        {
-            return activeBannerCommunication?.Count == 1 &&
-                     activeBannerCommunication.First().Id == communication.Id;
-        }
-
-        private static bool IsValidCommunication(List<Communication> activeBannerCommunication, Communication communication)
-        {
-            return activeBannerCommunication
-                              .Where(c => (c.ExpiryDateTime < communication.ExpiryDateTime &&
-                                  communication.EffectiveDateTime > c.ExpiryDateTime)
-                                  || (communication.EffectiveDateTime < c.EffectiveDateTime &&
-                                  communication.ExpiryDateTime < c.EffectiveDateTime))
-                              .AsEnumerable().Any();
-        }
-
-        private bool IsCommunicationValidCommit(Communication communication)
-        {
-            List<Communication> activeBannerCommunication = this.GetActiveBannerCommunications();
-
-            if (!activeBannerCommunication.Any() ||
-                communication.CommunicationStatusCode == CommunicationStatus.Draft ||
-                AllowUpdateCurrentItem(activeBannerCommunication, communication))
-            {
-                return true;
-            }
-            else
-            {
-                return IsValidCommunication(activeBannerCommunication, communication);
-            }
-        }
-
-        private List<Communication> GetActiveBannerCommunications()
-        {
-            List<Communication> communication = this.dbContext.Communication
-                 .Where(c => c.CommunicationTypeCode == CommunicationType.Banner
-                     && (c.CommunicationStatusCode == CommunicationStatus.New ||
-                           c.CommunicationStatusCode == CommunicationStatus.Pending ||
-                           c.CommunicationStatusCode == CommunicationStatus.Processed ||
-                           c.CommunicationStatusCode == CommunicationStatus.Processing)
-                     && DateTime.UtcNow <= c.ExpiryDateTime)
-                 .ToList();
-
-            return communication;
         }
     }
 }
