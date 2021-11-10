@@ -179,7 +179,7 @@ namespace HealthGateway.Database.Delegates
         {
             Dictionary<DateTime, int> dateCount = this.dbContext.UserProfile
                 .Select(x => new { x.HdId, x.LastLoginDateTime })
-                .Union(
+                .Concat(
                     this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
                 .Select(x => new { x.HdId, lastLoginDate = x.LastLoginDateTime.AddMinutes(offset.TotalMinutes).Date })
                 .Distinct()
@@ -208,7 +208,7 @@ namespace HealthGateway.Database.Delegates
 
             int recurrentCount = this.dbContext.UserProfile
                 .Select(x => new { x.HdId, x.LastLoginDateTime })
-                .Union(
+                .Concat(
                     this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
                 .Select(x => new { x.HdId, lastLoginDate = x.LastLoginDateTime.AddMinutes(offset.TotalMinutes).Date })
                 .Where(x => x.lastLoginDate >= startDate && x.lastLoginDate <= endDate)
