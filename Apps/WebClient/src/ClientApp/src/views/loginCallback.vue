@@ -36,10 +36,16 @@ export default class LoginCallbackView extends Vue {
                 // Otherwise the router will handle the path.
                 if (this.isValidIdentityProvider) {
                     this.checkRegistration().then(() => {
-                        this.$router.push({ path: redirectPath });
+                        this.$router
+                            .push({ path: redirectPath })
+                            .catch((error) => {
+                                console.warn(error.message);
+                            });
                     });
                 } else {
-                    this.$router.push({ path: redirectPath });
+                    this.$router.push({ path: redirectPath }).catch((error) => {
+                        console.warn(error.message);
+                    });
                 }
             })
             .catch((err) => {
