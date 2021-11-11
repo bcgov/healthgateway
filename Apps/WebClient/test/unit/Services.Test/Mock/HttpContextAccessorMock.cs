@@ -26,7 +26,7 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpContextAccessorMock"/> class.
         /// </summary>
-        /// <param name="headerDictionary">headerDictionary.</param>
+        /// <param name="headerDictionary">header dictionary.</param>
         public HttpContextAccessorMock(IHeaderDictionary headerDictionary)
         {
             Mock<HttpRequest> httpRequestMock = new();

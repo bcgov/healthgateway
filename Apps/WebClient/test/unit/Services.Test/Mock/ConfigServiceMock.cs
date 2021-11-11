@@ -27,7 +27,7 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigServiceMock"/> class.
         /// </summary>
-        /// <param name="minPatientAge">minPatientAge.</param>
+        /// <param name="minPatientAge">minimum patient age.</param>
         public ConfigServiceMock(int minPatientAge)
         {
             this.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration() { WebClient = new WebClientConfiguration() { MinPatientAge = minPatientAge } });

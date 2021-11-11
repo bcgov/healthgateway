@@ -41,7 +41,7 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <summary>
         /// Initializes a new instance of the <see cref="UserPreferenceDelegateMock"/> class.
         /// </summary>
-        /// <param name="readResult">readResult.</param>
+        /// <param name="readResult">read result.</param>
         /// <param name="action">action.</param>
         public UserPreferenceDelegateMock(DBResult<UserPreference> readResult, string action)
         {

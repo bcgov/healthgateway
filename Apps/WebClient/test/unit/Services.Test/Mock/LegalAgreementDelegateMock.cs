@@ -30,7 +30,7 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <summary>
         /// Initializes a new instance of the <see cref="LegalAgreementDelegateMock"/> class.
         /// </summary>
-        /// <param name="termsOfService">termsOfService.</param>
+        /// <param name="termsOfService">terms of service.</param>
         public LegalAgreementDelegateMock(LegalAgreement termsOfService)
         {
             this.Setup(s => s.GetActiveByAgreementType(LegalAgreementType.TermsofService))

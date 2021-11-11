@@ -29,7 +29,7 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// Initializes a new instance of the <see cref="PatientServiceMock"/> class.
         /// </summary>
         /// <param name="hdid">hdid.</param>
-        /// <param name="patientModel">patientModel.</param>
+        /// <param name="patientModel">patient model.</param>
         public PatientServiceMock(string hdid, PatientModel patientModel)
         {
             this.Setup(s => s.GetPatient(hdid, PatientIdentifierType.HDID, false))

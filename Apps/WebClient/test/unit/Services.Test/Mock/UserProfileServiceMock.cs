@@ -42,11 +42,11 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
         /// </summary>
         /// <param name="hdId">hdId.</param>
-        /// <param name="dbResultStatus">dbResultStatus.</param>
-        /// <param name="userProfileData">userProfileData.</param>
-        /// <param name="userProfileDbResult">userProfileDbResult.</param>
-        /// <param name="readResult">readResult.</param>
-        /// <param name="termsOfService">termsOfService.</param>
+        /// <param name="dbResultStatus">db result status.</param>
+        /// <param name="userProfileData">user profile data.</param>
+        /// <param name="userProfileDbResult">user profile from DbResult.</param>
+        /// <param name="readResult">read result.</param>
+        /// <param name="termsOfService">terms of service.</param>
         public UserProfileServiceMock(string hdId, DBStatusCode dbResultStatus, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, DBResult<IEnumerable<UserPreference>> readResult, LegalAgreement termsOfService)
         {
             this.userProfileService = new UserProfileService(
@@ -69,9 +69,9 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
         /// </summary>
         /// <param name="message">message.</param>
-        /// <param name="userProfileData">userProfileData.</param>
-        /// <param name="userProfileDbResult">userProfileDbResult.</param>
-        /// <param name="registrationStatus">registrationStatus.</param>
+        /// <param name="userProfileData">user profile data.</param>
+        /// <param name="userProfileDbResult">user profile from DbResult.</param>
+        /// <param name="registrationStatus">registration status.</param>
         public UserProfileServiceMock(string message,  UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, string registrationStatus)
         {
             var externalConfiguration = new ExternalConfiguration()
@@ -103,8 +103,8 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
         /// </summary>
         /// <param name="hdid">hdid.</param>
-        /// <param name="patientModel">patientModel.</param>
-        /// <param name="minPatientAge">minPatientAge.</param>
+        /// <param name="patientModel">patient model.</param>
+        /// <param name="minPatientAge">minimum patient age.</param>
         public UserProfileServiceMock(string hdid, PatientModel patientModel, int minPatientAge)
         {
             this.userProfileService = new UserProfileService(
@@ -127,11 +127,11 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
         /// </summary>
         /// <param name="hdId">hdId.</param>
-        /// <param name="userProfileData">userProfileData.</param>
-        /// <param name="userProfileDbResult">userProfileDbResult.</param>
-        /// <param name="readResult">readResult.</param>
-        /// <param name="messagingVerification">messagingVerification.</param>
-        /// <param name="termsOfService">termsOfService.</param>
+        /// <param name="userProfileData">user profile data.</param>
+        /// <param name="userProfileDbResult">user profile from DbResult.</param>
+        /// <param name="readResult">read result.</param>
+        /// <param name="messagingVerification">messaging verification.</param>
+        /// <param name="termsOfService">terms of service.</param>
         /// <param name="commit">commit.</param>
         public UserProfileServiceMock(string hdId, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, DBResult<IEnumerable<UserPreference>> readResult, MessagingVerification messagingVerification, LegalAgreement termsOfService, bool commit = true)
         {
@@ -154,7 +154,7 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
         /// </summary>
-        /// <param name="readResult">readResult.</param>
+        /// <param name="readResult">read result.</param>
         /// <param name="action">action.</param>
         public UserProfileServiceMock(DBResult<UserPreference> readResult, string action)
         {
@@ -178,11 +178,11 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
         /// </summary>
         /// <param name="hdId">hdId.</param>
-        /// <param name="userProfileData">userProfileData.</param>
-        /// <param name="userProfileDbResult">userProfileDbResult.</param>
-        /// <param name="headerDictionary">headerDictionary.</param>
-        /// <param name="shouldEmailCommit">shouldEmailCommit.</param>
-        /// <param name="shouldProfileCommit">shouldProfileCommit.</param>
+        /// <param name="userProfileData">user profile data.</param>
+        /// <param name="userProfileDbResult">user profile from DbResult.</param>
+        /// <param name="headerDictionary">header dictionary.</param>
+        /// <param name="shouldEmailCommit">should email commit.</param>
+        /// <param name="shouldProfileCommit">should profile commit.</param>
         public UserProfileServiceMock(string hdId, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, IHeaderDictionary headerDictionary, bool shouldEmailCommit, bool shouldProfileCommit = true)
         {
             this.userProfileService = new UserProfileService(

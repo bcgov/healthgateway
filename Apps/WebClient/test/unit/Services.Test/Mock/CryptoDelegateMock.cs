@@ -26,7 +26,7 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <summary>
         /// Initializes a new instance of the <see cref="CryptoDelegateMock"/> class.
         /// </summary>
-        /// <param name="message">message.</param>
+        /// <param name="message">message sent to delegate.</param>
         public CryptoDelegateMock(string message)
         {
             this.Setup(s => s.GenerateKey()).Returns(message);

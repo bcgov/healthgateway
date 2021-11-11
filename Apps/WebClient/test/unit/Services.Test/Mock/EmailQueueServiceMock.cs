@@ -27,7 +27,7 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailQueueServiceMock"/> class.
         /// </summary>
-        /// <param name="shouldCommit">shouldCommit.</param>
+        /// <param name="shouldCommit">check if allowing to commit.</param>
         public EmailQueueServiceMock(bool shouldCommit)
         {
             this.Setup(s => s.QueueNewEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>(), shouldCommit));

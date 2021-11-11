@@ -36,7 +36,7 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingVerificationDelegateMock"/> class.
         /// </summary>
-        /// <param name="messagingVerification">messagingVerification.</param>
+        /// <param name="messagingVerification">messaging verification.</param>
         public MessagingVerificationDelegateMock(MessagingVerification messagingVerification)
         {
             this.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(messagingVerification);

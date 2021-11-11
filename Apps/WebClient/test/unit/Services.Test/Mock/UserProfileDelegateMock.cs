@@ -30,8 +30,8 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileDelegateMock"/> class.
         /// </summary>
-        /// <param name="userProfile">userProfile.</param>
-        /// <param name="userProfileData">userProfileData.</param>
+        /// <param name="userProfile">user profile.</param>
+        /// <param name="userProfileData">user profile data.</param>
         /// <param name="hdid">hdid.</param>
         public UserProfileDelegateMock(UserProfile userProfile, DBResult<UserProfile> userProfileData, string hdid)
         {
@@ -42,8 +42,8 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileDelegateMock"/> class.
         /// </summary>
-        /// <param name="userProfile">userProfile.</param>
-        /// <param name="insertResult">insertResult.</param>
+        /// <param name="userProfile">user profile.</param>
+        /// <param name="insertResult">insert result.</param>
         public UserProfileDelegateMock(UserProfile userProfile, DBResult<UserProfile> insertResult)
         {
             this.Setup(s => s.InsertUserProfile(It.Is<UserProfile>(x => x.HdId == userProfile.HdId))).Returns(insertResult);
@@ -53,8 +53,8 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// Initializes a new instance of the <see cref="UserProfileDelegateMock"/> class.
         /// </summary>
         /// <param name="hdid">hdid.</param>
-        /// <param name="userProfile">userProfile.</param>
-        /// <param name="userProfileDBResult">userProfileDBResult.</param>
+        /// <param name="userProfile">user profile.</param>
+        /// <param name="userProfileDBResult">user profile from DBResult.</param>
         /// <param name="commit">commit.</param>
         public UserProfileDelegateMock(string hdid, UserProfile userProfile, DBResult<UserProfile> userProfileDBResult, bool commit = true)
         {

@@ -527,7 +527,7 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldRecoverUserProfileAlreadyActive()
         {
             // Arrange
-            UserProfile userProfile = new UserProfile
+            UserProfile userProfile = new()
             {
                 HdId = this.hdid,
                 AcceptedTermsOfService = true,
