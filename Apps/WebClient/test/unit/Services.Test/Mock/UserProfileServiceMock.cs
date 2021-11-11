@@ -1,0 +1,213 @@
+//-------------------------------------------------------------------------
+// Copyright © 2019 Province of British Columbia
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//-------------------------------------------------------------------------
+namespace HealthGateway.WebClientTests.Services.Test.Mock
+{
+    using System;
+    using System.Collections.Generic;
+    using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Services;
+    using HealthGateway.Database.Constants;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
+    using HealthGateway.WebClient.Models;
+    using HealthGateway.WebClient.Services;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Logging;
+    using Moq;
+
+    /// <summary>
+    /// UserProfileServiceTestMock class mock the UserProfileService.
+    /// </summary>
+    public class UserProfileServiceMock : Mock<IUserProfileService>
+    {
+        private readonly UserProfileService userProfileService;
+        private readonly Mock<IConfigurationService> emptyConfigServiceMock = new();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
+        /// </summary>
+        /// <param name="hdId">hdId.</param>
+        /// <param name="dbResultStatus">dbResultStatus.</param>
+        /// <param name="userProfileData">userProfileData.</param>
+        /// <param name="userProfileDbResult">userProfileDbResult.</param>
+        /// <param name="readResult">readResult.</param>
+        /// <param name="termsOfService">termsOfService.</param>
+        public UserProfileServiceMock(string hdId, DBStatusCode dbResultStatus, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, DBResult<IEnumerable<UserPreference>> readResult, LegalAgreement termsOfService)
+        {
+            this.userProfileService = new UserProfileService(
+                new Mock<ILogger<UserProfileService>>().Object,
+                new Mock<IPatientService>().Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object,
+                this.emptyConfigServiceMock.Object,
+                new Mock<IEmailQueueService>().Object,
+                new NotificationSettingsServiceMock().Object,
+                new UserProfileDelegateMock(userProfileData, userProfileDbResult, hdId).Object,
+                new UserPreferenceDelegateMock(readResult, hdId).Object,
+                new LegalAgreementDelegateMock(termsOfService).Object,
+                new MessagingVerificationDelegateMock().Object,
+                new Mock<ICryptoDelegate>().Object,
+                new Mock<IHttpContextAccessor>().Object);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
+        /// </summary>
+        /// <param name="message">message.</param>
+        /// <param name="userProfileData">userProfileData.</param>
+        /// <param name="userProfileDbResult">userProfileDbResult.</param>
+        /// <param name="registrationStatus">registrationStatus.</param>
+        public UserProfileServiceMock(string message,  UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, string registrationStatus)
+        {
+            var externalConfiguration = new ExternalConfiguration()
+            {
+                WebClient = new WebClientConfiguration()
+                {
+                    RegistrationStatus = registrationStatus,
+                },
+            };
+            this.emptyConfigServiceMock.Setup(s => s.GetConfiguration()).Returns(externalConfiguration);
+
+            this.userProfileService = new UserProfileService(
+                new Mock<ILogger<UserProfileService>>().Object,
+                new Mock<IPatientService>().Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object,
+                this.emptyConfigServiceMock.Object,
+                new Mock<IEmailQueueService>().Object,
+                new NotificationSettingsServiceMock().Object,
+                new UserProfileDelegateMock(userProfileData, userProfileDbResult).Object,
+                new Mock<IUserPreferenceDelegate>().Object,
+                new Mock<ILegalAgreementDelegate>().Object,
+                new MessagingVerificationDelegateMock().Object,
+                new CryptoDelegateMock(message).Object,
+                new Mock<IHttpContextAccessor>().Object);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
+        /// </summary>
+        /// <param name="hdid">hdid.</param>
+        /// <param name="patientModel">patientModel.</param>
+        /// <param name="minPatientAge">minPatientAge.</param>
+        public UserProfileServiceMock(string hdid, PatientModel patientModel, int minPatientAge)
+        {
+            this.userProfileService = new UserProfileService(
+                new Mock<ILogger<UserProfileService>>().Object,
+                new PatientServiceMock(hdid, patientModel).Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object,
+                new ConfigServiceMock(minPatientAge).Object,
+                new Mock<IEmailQueueService>().Object,
+                new Mock<INotificationSettingsService>().Object,
+                new Mock<IUserProfileDelegate>().Object,
+                new Mock<IUserPreferenceDelegate>().Object,
+                new Mock<ILegalAgreementDelegate>().Object,
+                new MessagingVerificationDelegateMock().Object,
+                new Mock<ICryptoDelegate>().Object,
+                new Mock<IHttpContextAccessor>().Object);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
+        /// </summary>
+        /// <param name="hdId">hdId.</param>
+        /// <param name="userProfileData">userProfileData.</param>
+        /// <param name="userProfileDbResult">userProfileDbResult.</param>
+        /// <param name="readResult">readResult.</param>
+        /// <param name="messagingVerification">messagingVerification.</param>
+        /// <param name="termsOfService">termsOfService.</param>
+        /// <param name="commit">commit.</param>
+        public UserProfileServiceMock(string hdId, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, DBResult<IEnumerable<UserPreference>> readResult, MessagingVerification messagingVerification, LegalAgreement termsOfService, bool commit = true)
+        {
+            this.userProfileService = new UserProfileService(
+                new Mock<ILogger<UserProfileService>>().Object,
+                new Mock<IPatientService>().Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object,
+                this.emptyConfigServiceMock.Object,
+                new Mock<IEmailQueueService>().Object,
+                new NotificationSettingsServiceMock().Object,
+                new UserProfileDelegateMock(hdId, userProfileData, userProfileDbResult, commit).Object,
+                new UserPreferenceDelegateMock(readResult, hdId).Object,
+                new LegalAgreementDelegateMock(termsOfService).Object,
+                new MessagingVerificationDelegateMock(messagingVerification).Object,
+                new Mock<ICryptoDelegate>().Object,
+                new Mock<IHttpContextAccessor>().Object);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
+        /// </summary>
+        /// <param name="readResult">readResult.</param>
+        /// <param name="action">action.</param>
+        public UserProfileServiceMock(DBResult<UserPreference> readResult, string action)
+        {
+            this.userProfileService = new UserProfileService(
+                new Mock<ILogger<UserProfileService>>().Object,
+                new Mock<IPatientService>().Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object,
+                new Mock<IConfigurationService>().Object,
+                new Mock<IEmailQueueService>().Object,
+                new Mock<INotificationSettingsService>().Object,
+                new Mock<IUserProfileDelegate>().Object,
+                new UserPreferenceDelegateMock(readResult, action).Object,
+                new Mock<ILegalAgreementDelegate>().Object,
+                new Mock<IMessagingVerificationDelegate>().Object,
+                new Mock<ICryptoDelegate>().Object,
+                new Mock<IHttpContextAccessor>().Object);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
+        /// </summary>
+        /// <param name="hdId">hdId.</param>
+        /// <param name="userProfileData">userProfileData.</param>
+        /// <param name="userProfileDbResult">userProfileDbResult.</param>
+        /// <param name="headerDictionary">headerDictionary.</param>
+        /// <param name="shouldEmailCommit">shouldEmailCommit.</param>
+        /// <param name="shouldProfileCommit">shouldProfileCommit.</param>
+        public UserProfileServiceMock(string hdId, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, IHeaderDictionary headerDictionary, bool shouldEmailCommit, bool shouldProfileCommit = true)
+        {
+            this.userProfileService = new UserProfileService(
+                new Mock<ILogger<UserProfileService>>().Object,
+                new Mock<IPatientService>().Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object,
+                new Mock<IConfigurationService>().Object,
+                new EmailQueueServiceMock(shouldEmailCommit).Object,
+                new Mock<INotificationSettingsService>().Object,
+                new UserProfileDelegateMock(hdId, userProfileData, userProfileDbResult, shouldProfileCommit).Object,
+                new Mock<IUserPreferenceDelegate>().Object,
+                new Mock<ILegalAgreementDelegate>().Object,
+                new Mock<IMessagingVerificationDelegate>().Object,
+                new Mock<ICryptoDelegate>().Object,
+                new HttpContextAccessorMock(headerDictionary).Object);
+        }
+
+        /// <summary>
+        /// GetUserProfileServiceMock.
+        /// </summary>
+        /// <returns>UserProfileService.</returns>
+        public UserProfileService UserProfileServiceMockInstance()
+        {
+            return this.userProfileService;
+        }
+    }
+}
