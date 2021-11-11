@@ -434,6 +434,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         public void ConfigureDatabaseServices(IServiceCollection services)
         {
             this.Logger.LogDebug("ConfigureDatabaseServices...");
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             IConfigurationSection section = this.configuration.GetSection("Logging:SensitiveDataLogging");
             bool isSensitiveDataLoggingEnabled = section.GetValue<bool>("Enabled", false);
             this.Logger.LogDebug($"Sensitive Data Logging is enabled: {isSensitiveDataLoggingEnabled}");

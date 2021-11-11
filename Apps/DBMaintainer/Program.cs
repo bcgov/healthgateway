@@ -38,6 +38,7 @@ namespace HealthGateway.DrugMaintainer
         /// <param name="args">The set of command line arguments.</param>
         public static void Main(string[] args)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             IHost host = CreateWebHostBuilder(args).Build();
 
             // Process Federal file
