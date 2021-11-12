@@ -222,8 +222,16 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(k => k.VerificationType)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Create Composite Key for User Preference
             modelBuilder.Entity<UserPreference>()
                 .HasKey(c => new { c.HdId, c.Preference });
+
+            // Create Foreign keys for UserPreference
+            modelBuilder.Entity<UserPreference>()
+                    .HasOne<UserProfile>()
+                    .WithMany()
+                    .HasPrincipalKey(k => k.HdId)
+                    .HasForeignKey(k => k.HdId);
 
             modelBuilder.Entity<Communication>()
                 .HasOne<CommunicationTypeCode>()
