@@ -1,6 +1,21 @@
 const { AuthMethod } = require("../../../support/constants");
 
-describe("Comments", () => {
+describe("Comments Disable", () => {
+    beforeEach(() => {
+        cy.enableModules(["Laboratory"]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+    });
+    it("Comments Disable", () => {
+        cy.enableModules(["Laboratory"]);
+        cy.get("[data-testid=addCommentTextArea]").should("not.exist");
+        cy.get("[data-testid=postCommentBtn]").should("not.exist");
+    });
+});
+describe("Comments Enable", () => {
     beforeEach(() => {
         cy.enableModules(["Laboratory", "Comment"]);
         cy.login(

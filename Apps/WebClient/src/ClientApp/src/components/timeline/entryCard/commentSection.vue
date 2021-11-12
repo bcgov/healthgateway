@@ -5,6 +5,7 @@ import { Action, Getter } from "vuex-class";
 
 import AddCommentComponent from "@/components/timeline/entryCard/addComment.vue";
 import CommentComponent from "@/components/timeline/entryCard/comment.vue";
+import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
@@ -28,6 +29,9 @@ export default class CommentSectionComponent extends Vue {
     @Prop({ default: false }) isMobileDetails!: boolean;
 
     @Getter("user", { namespace: "user" }) user!: User;
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     @Action("updateComment", { namespace: "comment" })
     updateComment!: (params: {
         hdid: string;
@@ -50,6 +54,10 @@ export default class CommentSectionComponent extends Vue {
         createdDateTime: new DateWrapper().toISODate(),
         version: 0,
     };
+
+    private get isCommentEnabled(): boolean {
+        return this.config.modules["Comment"];
+    }
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -113,7 +121,7 @@ export default class CommentSectionComponent extends Vue {
 </script>
 
 <template>
-    <b-row class="pt-2">
+    <b-row v-if="isCommentEnabled" class="pt-2">
         <b-col>
             <b-row class="pt-2">
                 <b-col>
