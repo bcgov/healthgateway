@@ -71,6 +71,7 @@ describe("Public User - Vaccine Card Page - Save PDF but Vaccine Record not foun
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.get("[data-testid=errorTextDescription]").should("be.visible");
+        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
     });
 });
 
