@@ -1,5 +1,6 @@
 describe("Landing Page", () => {
     beforeEach(() => {
+        cy.enableModules(["VaccinationStatus"]);
         cy.visit("/");
     });
 

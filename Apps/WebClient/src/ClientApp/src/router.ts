@@ -360,6 +360,11 @@ export const beforeEachGuard: NavigationGuard = (
                 availableModules.includes(val)
             );
 
+        if (!hasRequiredModules) {
+            next({ path: UNAUTHORIZED_PATH });
+            return;
+        }
+
         if (isValidState && hasRequiredModules) {
             next();
             return;
