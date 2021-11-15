@@ -129,8 +129,8 @@ export default class RegistrationInfoView extends Vue {
                                 />
                             </span>
                             <span class="ml-2"
-                                >I have a BC Services Card, but how do I use
-                                it?</span
+                                >I Have a BC Services Card, but How Do I Use
+                                It?</span
                             >
                         </hg-button>
                         <b-collapse
@@ -262,7 +262,7 @@ export default class RegistrationInfoView extends Vue {
                                     aria-hidden="true"
                                 />
                             </span>
-                            <span class="ml-2">Is there another option?</span>
+                            <span class="ml-2">Is There Another Option?</span>
                         </hg-button>
                         <b-collapse id="collapse-4" v-model="dongleVisible">
                             <div class="m-5 px-4">
