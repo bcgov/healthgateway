@@ -21,6 +21,7 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.WebClientTests.Services.Test.Constants;
     using Moq;
 
     /// <summary>
@@ -45,12 +46,12 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <param name="action">action.</param>
         public UserPreferenceDelegateMock(DBResult<UserPreference> readResult, string action)
         {
-            if (action == "update")
+            if (action == TestConstants.UpdateAction)
             {
                 this.Setup(s => s.UpdateUserPreference(It.IsAny<UserPreference>(), It.IsAny<bool>())).Returns(readResult);
             }
 
-            if (action == "create")
+            if (action == TestConstants.CreateAction)
             {
                 this.Setup(s => s.CreateUserPreference(It.IsAny<UserPreference>(), It.IsAny<bool>())).Returns(readResult);
             }

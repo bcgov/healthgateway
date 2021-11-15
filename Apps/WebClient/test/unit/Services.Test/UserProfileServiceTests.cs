@@ -27,6 +27,7 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.WebClient.Constants;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
+    using HealthGateway.WebClientTests.Services.Test.Constants;
     using HealthGateway.WebClientTests.Services.Test.Mock;
     using Microsoft.AspNetCore.Http;
     using Moq;
@@ -38,7 +39,7 @@ namespace HealthGateway.WebClient.Test.Services
     public class UserProfileServiceTests
     {
         private readonly string hdid = "1234567890123456789012345678901234567890123456789012";
-        private readonly Mock<IConfigurationService> emptyConfigServiceMock = new Mock<IConfigurationService>();
+        private readonly Mock<IConfigurationService> emptyConfigServiceMock = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileServiceTests"/> class.
@@ -56,10 +57,10 @@ namespace HealthGateway.WebClient.Test.Services
         }
 
         /// <summary>
-        /// GetUserProfile call - Happy Path.
+        /// GetUserProfile call - test for status Read, Error and NotFound.
         /// </summary>
         /// <param name="dBStatus">Db Status code.</param>
-        [Theory(DisplayName = "ShouldGetUserProfile by status - {0}")]
+        [Theory]
         [InlineData(DBStatusCode.Read)]
         [InlineData(DBStatusCode.Error)]
         [InlineData(DBStatusCode.NotFound)]
@@ -132,12 +133,12 @@ namespace HealthGateway.WebClient.Test.Services
         }
 
         /// <summary>
-        ///  CreateUserProfile call.
+        /// CreateUserProfile call.
         /// </summary>
         /// <param name="dbStatus">Db status code.</param>
         /// <param name="registration">Registration status code.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory(DisplayName = "ShouldInsertUserProfile when status is {0} registration status is {1}")]
+        [Theory]
         [InlineData(DBStatusCode.Created, RegistrationStatus.Open)]
         [InlineData(DBStatusCode.Error, RegistrationStatus.Closed)]
         public async Task ShouldInsertUserProfile(DBStatusCode dbStatus, string registration)
@@ -237,7 +238,7 @@ namespace HealthGateway.WebClient.Test.Services
         /// GetUserPreferences call.
         /// </summary>
         /// <param name="dBStatusCode">Db status code.</param>
-        [Theory(DisplayName = "ShouldGetUserPreference by status - {0}")]
+        [Theory]
         [InlineData(DBStatusCode.Read)]
         [InlineData(DBStatusCode.Error)]
         public void ShouldGetUserPreference(DBStatusCode dBStatusCode)
@@ -305,7 +306,7 @@ namespace HealthGateway.WebClient.Test.Services
         ///  CreateUserPreference call.
         /// </summary>
         /// <param name="dBStatusCode">dBStatusCode.</param>
-        [Theory(DisplayName = "ShouldCreateUserPreference by status - {0}")]
+        [Theory]
         [InlineData(DBStatusCode.Created)]
         [InlineData(DBStatusCode.Error)]
         public void ShouldCreateUserPreference(DBStatusCode dBStatusCode)
@@ -323,7 +324,7 @@ namespace HealthGateway.WebClient.Test.Services
                 Status = dBStatusCode,
             };
 
-            IUserProfileService service = new UserProfileServiceMock(readResult, "create").UserProfileServiceMockInstance();
+            IUserProfileService service = new UserProfileServiceMock(readResult, TestConstants.CreateAction).UserProfileServiceMockInstance();
 
             // Act
             var actualResult = service.CreateUserPreference(userPreferenceModel);
@@ -345,7 +346,7 @@ namespace HealthGateway.WebClient.Test.Services
         ///  UpdateUserPreference call.
         /// </summary>
         /// <param name="dBStatusCode">dBStatusCode.</param>
-        [Theory(DisplayName = "ShouldUpdateUserPreference by status - {0}")]
+        [Theory]
         [InlineData(DBStatusCode.Updated)]
         [InlineData(DBStatusCode.Error)]
         public void ShouldUpdateUserPreference(DBStatusCode dBStatusCode)
@@ -363,7 +364,7 @@ namespace HealthGateway.WebClient.Test.Services
                 Status = dBStatusCode,
             };
 
-            IUserProfileService service = new UserProfileServiceMock(readResult, "update").UserProfileServiceMockInstance();
+            IUserProfileService service = new UserProfileServiceMock(readResult, TestConstants.UpdateAction).UserProfileServiceMockInstance();
 
             // Act
             var actualResult = service.UpdateUserPreference(userPreferenceModel);
@@ -521,7 +522,7 @@ namespace HealthGateway.WebClient.Test.Services
         }
 
         /// <summary>
-        /// RecoverUserProfile - Alraedy active happy Path.
+        /// RecoverUserProfile - Active happy Path.
         /// </summary>
         [Fact]
         public void ShouldRecoverUserProfileAlreadyActive()
