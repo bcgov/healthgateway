@@ -55,9 +55,9 @@ namespace HealthGateway.Database.Models
         public string? Text { get; set; }
 
         /// <summary>
-        /// Gets or sets the Note timeline datetime.
+        /// Gets or sets the Note timeline date.
         /// </summary>
         [Required]
-        public DateTime JournalDateTime { get; set; }
+        public DateOnly JournalDate { get; set; }
     }
 }
