@@ -116,7 +116,7 @@ export default class LoginView extends Vue {
                         Not yet registered?
 
                         <hg-button to="/registrationInfo" variant="link"
-                            >Sign up</hg-button
+                            >Sign Up</hg-button
                         >
                     </p>
                     <b-card-body v-if="hasMultipleProviders || isRetry">
