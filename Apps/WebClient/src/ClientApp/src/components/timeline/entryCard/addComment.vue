@@ -5,7 +5,6 @@ import Vue from "vue";
 import { Component, Emit, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";
 import type { UserComment } from "@/models/userComment";
@@ -20,9 +19,6 @@ export default class AddCommentComponent extends Vue {
     @Prop() comment!: UserComment;
 
     @Getter("user", { namespace: "user" }) user!: User;
-
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
 
     @Action("createComment", { namespace: "comment" })
     createComment!: (params: {
@@ -40,10 +36,6 @@ export default class AddCommentComponent extends Vue {
 
     private onSubmit(): void {
         this.addComment();
-    }
-
-    private get isCommentEnabled(): boolean {
-        return this.config.modules["Comment"];
     }
 
     private addComment(): void {
@@ -86,7 +78,7 @@ export default class AddCommentComponent extends Vue {
 </script>
 
 <template>
-    <b-row v-if="isCommentEnabled">
+    <b-row>
         <b-col cols="auto" class="pl-0 pr-2 align-self-center">
             <div :id="'tooltip-' + comment.parentEntryId" class="tooltip-info">
                 <hg-icon icon="lock" size="small" />
