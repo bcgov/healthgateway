@@ -694,12 +694,12 @@ export default class PublicVaccineCardView extends Vue {
                 </p>
                 <div class="my-3">
                     <hg-button variant="secondary" href="tel:+18338382323">
-                        Call: 1-833-838-2323 (toll free)
+                        Call: 1-833-838-2323 (Toll-Free)
                     </hg-button>
                 </div>
                 <div class="my-3">
                     <hg-button variant="secondary" href="tel:711">
-                        Telephone for the deaf: Dial 711
+                        Telephone for the Deaf: Dial 711
                     </hg-button>
                 </div>
                 <div class="text-muted">

@@ -358,7 +358,7 @@ export default class NewDependentComponent extends Vue {
                         data-testid="registerDependentBtn"
                         variant="primary"
                         @click="handleOk"
-                        >Register dependent</hg-button
+                        >Register Dependent</hg-button
                     >
                 </div>
             </b-row>

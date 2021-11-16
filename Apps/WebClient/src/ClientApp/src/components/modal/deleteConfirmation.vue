@@ -97,7 +97,7 @@ export default class DeleteModalComponent extends Vue {
                                 variant="primary"
                                 @click="handleSubmit($event)"
                             >
-                                Yes, I'm sure
+                                Yes, I'm Sure
                             </hg-button>
                         </b-col>
                     </b-row>
