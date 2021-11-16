@@ -37,8 +37,7 @@ describe("Landing Page", () => {
                     message: "customized offline message",
                     whitelist: [],
                 };
-                cy.server();
-                cy.route("GET", "/v1/api/configuration/", config);
+                cy.intercept("GET", "/v1/api/configuration/", config);
             });
         cy.visit("/");
         cy.get("[data-testid=offlineMessage]").contains(
