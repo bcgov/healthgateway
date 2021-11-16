@@ -2,6 +2,7 @@
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
+
 import AddCommentComponent from "@/components/timeline/entryCard/addComment.vue";
 import CommentComponent from "@/components/timeline/entryCard/comment.vue";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -27,7 +28,6 @@ export default class CommentSectionComponent extends Vue {
     @Prop({ default: false }) isMobileDetails!: boolean;
 
     @Getter("user", { namespace: "user" }) user!: User;
-
     @Action("updateComment", { namespace: "comment" })
     updateComment!: (params: {
         hdid: string;
