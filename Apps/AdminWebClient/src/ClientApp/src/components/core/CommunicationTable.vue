@@ -278,23 +278,27 @@ export default class CommunicationTable extends Vue {
     }
 
     private checkDisabled(item: Communication) {
-        const now = new Date();
+        const now = new DateWrapper();
         if (
             item.communicationTypeCode === CommunicationType.Banner ||
             item.communicationTypeCode === CommunicationType.InApp
         ) {
-            const expiryDateTime = new Date(item.expiryDateTime);
+            const expiryDateTime = new DateWrapper(item.expiryDateTime, {
+                isUtc: true,
+            });
             if (
                 item.communicationStatusCode != CommunicationStatus.Draft &&
-                expiryDateTime < now
+                expiryDateTime.isBefore(now)
             ) {
                 return true;
             }
         } else if (item.communicationTypeCode === CommunicationType.Email) {
-            const scheduledDateTime = new Date(item.scheduledDateTime);
+            const scheduledDateTime = new DateWrapper(item.scheduledDateTime, {
+                isUtc: true,
+            });
             if (
                 item.communicationStatusCode != CommunicationStatus.Draft &&
-                scheduledDateTime < now
+                scheduledDateTime.isBefore(now)
             ) {
                 return true;
             }
