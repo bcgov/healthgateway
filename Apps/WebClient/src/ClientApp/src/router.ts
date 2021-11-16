@@ -136,13 +136,18 @@ function getAvailableModules() {
     return availableModules;
 }
 
-const UNAUTHORIZED_PATH = "/unauthorized";
+const IDIR_LOGGED_IN_PATH = "/idirLoggedIn";
+const LOGIN_PATH = "/login";
+const PROFILE_PATH = "/profile";
 const REGISTRATION_PATH = "/registration";
 const REGISTRATION_INFO_PATH = "/registrationInfo";
+const ROOT_PATH = "/";
+const TIMELINE_PATH = "/timeline";
+const UNAUTHORIZED_PATH = "/unauthorized";
 
 const routes = [
     {
-        path: "/",
+        path: ROOT_PATH,
         component: LandingView,
         meta: {
             validStates: [
@@ -179,7 +184,7 @@ const routes = [
         meta: { validStates: [UserState.registered] },
     },
     {
-        path: "/profile",
+        path: PROFILE_PATH,
         component: ProfileView,
         meta: {
             validStates: [UserState.registered, UserState.pendingDeletion],
@@ -193,7 +198,7 @@ const routes = [
         },
     },
     {
-        path: "/timeline",
+        path: TIMELINE_PATH,
         component: TimelineView,
         meta: { validStates: [UserState.registered] },
     },
@@ -274,7 +279,7 @@ const routes = [
         meta: { stateless: true },
     },
     {
-        path: "/login",
+        path: LOGIN_PATH,
         component: LoginView,
         props: (route: Route) => ({
             isRetry: route.query.isRetry === "true",
@@ -300,7 +305,7 @@ const routes = [
         meta: { stateless: true },
     },
     {
-        path: "/idirLoggedIn",
+        path: IDIR_LOGGED_IN_PATH,
         component: IdirLoggedInView,
         meta: { validStates: [UserState.invalidLogin] },
     },
@@ -366,40 +371,41 @@ export const beforeEachGuard: NavigationGuard = (
         }
 
         // If the route does not accept the state, go to one of the default locations
-        switch (currentUserState) {
-            case UserState.offline:
-                next({ path: "/" });
-                break;
-            case UserState.pendingDeletion:
-                next({ path: "/profile" });
-                break;
-            case UserState.registered:
-                if (hasRequiredModules) {
-                    next({ path: "/timeline" });
-                } else {
-                    next({ path: UNAUTHORIZED_PATH });
-                }
+        const defaultPath = getDefaultPath(
+            currentUserState,
+            hasRequiredModules
+        );
 
-                break;
-            case UserState.notRegistered:
-                next({ path: REGISTRATION_PATH });
-                break;
-            case UserState.invalidLogin:
-                next({ path: "/idirLoggedIn" });
-                break;
-            case UserState.unauthenticated:
-                if (hasRequiredModules) {
-                    next({ path: "/login", query: { redirect: to.path } });
-                } else {
-                    next({ path: UNAUTHORIZED_PATH });
-                }
-                break;
-            default:
-                next({ path: UNAUTHORIZED_PATH });
-                break;
+        if (defaultPath === LOGIN_PATH) {
+            next({ path: defaultPath, query: { redirect: to.path } });
+            return;
         }
+
+        next({ path: defaultPath });
     });
 };
+
+function getDefaultPath(
+    currentUserState: UserState,
+    hasRequiredModules: boolean
+): string {
+    switch (currentUserState) {
+        case UserState.offline:
+            return ROOT_PATH;
+        case UserState.pendingDeletion:
+            return PROFILE_PATH;
+        case UserState.registered:
+            return hasRequiredModules ? TIMELINE_PATH : UNAUTHORIZED_PATH;
+        case UserState.notRegistered:
+            return REGISTRATION_PATH;
+        case UserState.invalidLogin:
+            return IDIR_LOGGED_IN_PATH;
+        case UserState.unauthenticated:
+            return hasRequiredModules ? LOGIN_PATH : UNAUTHORIZED_PATH;
+        default:
+            return UNAUTHORIZED_PATH;
+    }
+}
 
 const router = new VueRouter({
     mode: "history",
