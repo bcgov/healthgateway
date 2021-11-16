@@ -464,14 +464,26 @@ namespace HealthGateway.Common.AspNetConfiguration
         public void ConfigureSwaggerServices(IServiceCollection services)
         {
             services.Configure<SwaggerSettings>(this.configuration.GetSection(nameof(SwaggerSettings)));
-            var xmlFile = $"{Assembly.GetCallingAssembly()!.GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            string xmlPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+            Assembly callingAssembly = Assembly.GetCallingAssembly();
+            Assembly executingAssembly = Assembly.GetExecutingAssembly();
+
+            // Calling Assembly (Core App) + References + Executing Assembly (Common) References
+            var xmlDocs = new AssemblyName[] { callingAssembly.GetName() }
+                                .Union(callingAssembly.GetReferencedAssemblies())
+                                .Union(executingAssembly.GetReferencedAssemblies())
+                                .Select(a => Path.Combine(xmlPath, $"{a.Name}.xml"))
+                                .Where(f => File.Exists(f)).ToArray();
+
             services
                 .AddApiVersionWithExplorer()
                 .AddSwaggerOptions()
                 .AddSwaggerGen(options =>
                 {
-                    options.IncludeXmlComments(xmlPath);
+                    Array.ForEach(xmlDocs, (d) =>
+                    {
+                        options.IncludeXmlComments(d);
+                    });
                 });
         }
 
