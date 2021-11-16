@@ -3,7 +3,7 @@
   <PropertyGroup>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <RootNamespace>HealthGateway.Medication</RootNamespace>
-    <DocumentationFile>.\Medication.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Database\**" />

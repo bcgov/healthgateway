@@ -5,7 +5,7 @@
     <!-- SonarQube needs this -->
     <SonarQubeTestProject>true</SonarQubeTestProject>
     <RootNamespace>HealthGateway.MedicationTests</RootNamespace>
-    <DocumentationFile>.\MedicationTests.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\..\stylecop.json" />
