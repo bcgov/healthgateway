@@ -360,11 +360,6 @@ export const beforeEachGuard: NavigationGuard = (
                 availableModules.includes(val)
             );
 
-        if (!hasRequiredModules) {
-            next({ path: UNAUTHORIZED_PATH });
-            return;
-        }
-
         if (isValidState && hasRequiredModules) {
             next();
             return;
@@ -393,7 +388,11 @@ export const beforeEachGuard: NavigationGuard = (
                 next({ path: "/idirLoggedIn" });
                 break;
             case UserState.unauthenticated:
-                next({ path: "/login", query: { redirect: to.path } });
+                if (hasRequiredModules) {
+                    next({ path: "/login", query: { redirect: to.path } });
+                } else {
+                    next({ path: UNAUTHORIZED_PATH });
+                }
                 break;
             default:
                 next({ path: UNAUTHORIZED_PATH });
