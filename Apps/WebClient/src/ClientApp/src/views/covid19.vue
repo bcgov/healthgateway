@@ -272,6 +272,10 @@ export default class Covid19View extends Vue {
     private retrieveVaccinePdf() {
         this.retrieveAuthenticatedVaccineRecord({
             hdid: this.user.hdid,
+        }).catch((err) => {
+            this.logger.error(
+                `Error loading authenticated record data: ${err}`
+            );
         });
     }
 
