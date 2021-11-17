@@ -47,7 +47,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the Note timeline datetime.
         /// </summary>
-        public DateTime JournalDateTime { get; set; }
+        public DateOnly JournalDate { get; set; }
 
         /// <summary>
         /// Gets or sets the note db version.
@@ -91,7 +91,7 @@ namespace HealthGateway.WebClient.Models
             {
                 Id = model.Id,
                 HdId = model.HdId,
-                JournalDateTime = model.JournalDateTime,
+                JournalDate = model.JournalDate,
                 Version = model.Version,
                 CreatedDateTime = model.CreatedDateTime,
                 CreatedBy = model.CreatedBy,
@@ -132,7 +132,7 @@ namespace HealthGateway.WebClient.Models
             {
                 Id = this.Id,
                 HdId = this.HdId,
-                JournalDateTime = this.JournalDateTime,
+                JournalDate = this.JournalDate,
                 Version = this.Version,
                 CreatedDateTime = this.CreatedDateTime,
                 CreatedBy = this.CreatedBy,

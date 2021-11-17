@@ -52,6 +52,13 @@ namespace HealthGateway.DrugMaintainer
             PharmaCareDrugMapper mapper = new PharmaCareDrugMapper(filedownload);
             csv.Context.RegisterClassMap(mapper);
             List<PharmaCareDrug> records = csv.GetRecords<PharmaCareDrug>().ToList();
+            foreach (PharmaCareDrug drug in records)
+            {
+                drug.EffectiveDate = drug.EffectiveDate.ToUniversalTime();
+                drug.EndDate = drug.EndDate.ToUniversalTime();
+                drug.FormularyListDate = drug.FormularyListDate.ToUniversalTime();
+            }
+
             return records;
         }
     }

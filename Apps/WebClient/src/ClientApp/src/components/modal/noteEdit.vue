@@ -127,7 +127,7 @@ export default class NoteEditComponent extends Vue {
                 id: entry.id,
                 text: this.text,
                 title: this.title,
-                journalDateTime: new DateWrapper(this.dateString).toISODate(),
+                journalDate: new DateWrapper(this.dateString).toISODate(),
                 version: entry.version as number,
                 hdId: this.user.hdid,
             },
@@ -151,7 +151,7 @@ export default class NoteEditComponent extends Vue {
             note: {
                 text: this.text,
                 title: this.title,
-                journalDateTime: new DateWrapper(this.dateString).toISODate(),
+                journalDate: new DateWrapper(this.dateString).toISODate(),
                 hdId: this.user.hdid,
                 version: 0,
             },
@@ -173,7 +173,7 @@ export default class NoteEditComponent extends Vue {
 
     private onNoteAdded(note: UserNote) {
         this.clearFilter();
-        this.setSelectedDate(new DateWrapper(note.journalDateTime));
+        this.setSelectedDate(new DateWrapper(note.journalDate));
     }
 
     private handleOk(bvModalEvt: Event) {

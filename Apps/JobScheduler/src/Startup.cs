@@ -70,6 +70,7 @@ namespace HealthGateway.JobScheduler
         public void ConfigureServices(IServiceCollection services)
         {
             this.startupConfig.ConfigureForwardHeaders(services);
+            this.startupConfig.ConfigureDatabaseServices(services);
             this.startupConfig.ConfigureHttpServices(services);
             services.AddRazorPages();
             this.startupConfig.ConfigureOpenIdConnectServices(services);
@@ -91,11 +92,6 @@ namespace HealthGateway.JobScheduler
                         });
                     });
             });
-
-            services.AddDbContextPool<GatewayDbContext>(options =>
-                options.UseNpgsql(
-                    this.configuration.GetConnectionString("GatewayConnection"),
-                    b => b.MigrationsAssembly(nameof(Database))));
 
             // Add Delegates and services for jobs
             services.AddTransient<IFileDownloadService, FileDownloadService>();

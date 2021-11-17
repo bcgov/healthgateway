@@ -16,7 +16,7 @@ export default class NoteTimelineEntry extends TimelineEntry {
         super(
             model.id ?? "TEMP_ID",
             EntryType.Note,
-            new DateWrapper(model.journalDateTime ?? "")
+            new DateWrapper(model.journalDate ?? "")
         );
         this.text = model.text || "";
         this.title = model.title || "No Title";
@@ -48,7 +48,7 @@ export default class NoteTimelineEntry extends TimelineEntry {
             hdId: this.hdid,
             title: this.title,
             text: this.text,
-            journalDateTime: this.date.toISODate(),
+            journalDate: this.date.toISODate(),
             version: this.version || 0,
         };
     }
