@@ -29,16 +29,35 @@ export const mutations: VaccinationStatusMutations = {
         state.public.status = LoadStatus.ERROR;
         state.public.statusMessage = "";
     },
-    setPdfRequested(state: VaccinationStatusState) {
-        state.public.error = undefined;
-        state.public.statusMessage = "";
-    },
-    pdfError(state: VaccinationStatusState, error: BannerError) {
-        state.public.error = error;
-        state.public.status = LoadStatus.ERROR;
-    },
     setStatusMessage(state: VaccinationStatusState, statusMessage: string) {
         state.public.statusMessage = statusMessage;
+    },
+    setPublicVaccineRecordRequested(state: VaccinationStatusState) {
+        state.publicVaccineRecord.status = LoadStatus.REQUESTED;
+        state.publicVaccineRecord.statusMessage = "";
+        state.publicVaccineRecord.error = undefined;
+    },
+    setPublicVaccineRecord(
+        state: VaccinationStatusState,
+        vaccineRecord: CovidVaccineRecord
+    ) {
+        state.publicVaccineRecord.vaccinationRecord = vaccineRecord;
+        state.publicVaccineRecord.status = LoadStatus.LOADED;
+        state.publicVaccineRecord.statusMessage = "";
+        state.publicVaccineRecord.error = undefined;
+    },
+    setPublicVaccineRecordError(
+        state: VaccinationStatusState,
+        error: BannerError
+    ) {
+        state.publicVaccineRecord.error = error;
+        state.publicVaccineRecord.status = LoadStatus.ERROR;
+    },
+    setPublicVaccineRecordStatusMessage(
+        state: VaccinationStatusState,
+        statusMessage: string
+    ) {
+        state.publicVaccineRecord.statusMessage = statusMessage;
     },
     setAuthenticatedRequested(state: VaccinationStatusState) {
         state.authenticated.error = undefined;
@@ -77,12 +96,6 @@ export const mutations: VaccinationStatusMutations = {
         state.authenticatedVaccineRecord.statusMessage = "";
         state.authenticatedVaccineRecord.resultMessage = "";
     },
-    setAuthenticatedVaccineRecordStatusMessage(
-        state: VaccinationStatusState,
-        statusMessage: string
-    ) {
-        state.authenticatedVaccineRecord.statusMessage = statusMessage;
-    },
     setAuthenticatedVaccineRecord(
         state: VaccinationStatusState,
         vaccineRecord: CovidVaccineRecord
@@ -98,6 +111,12 @@ export const mutations: VaccinationStatusMutations = {
     ) {
         state.authenticatedVaccineRecord.error = error;
         state.authenticatedVaccineRecord.status = LoadStatus.ERROR;
+    },
+    setAuthenticatedVaccineRecordStatusMessage(
+        state: VaccinationStatusState,
+        statusMessage: string
+    ) {
+        state.authenticatedVaccineRecord.statusMessage = statusMessage;
     },
     setAuthenticatedVaccineRecordResultMessage(
         state: VaccinationStatusState,

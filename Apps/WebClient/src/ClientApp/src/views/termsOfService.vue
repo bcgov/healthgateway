@@ -59,9 +59,9 @@ export default class TermsOfServiceView extends Vue {
 </script>
 
 <template>
-    <div class="m-3">
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <b-row class="my-3 fluid">
+    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <LoadingComponent :is-loading="isLoading" />
+        <b-row>
             <b-col class="col-12 col-lg-9 column-wrapper">
                 <b-row>
                     <b-col>
@@ -75,14 +75,7 @@ export default class TermsOfServiceView extends Vue {
                         </b-alert>
                     </b-col>
                 </b-row>
-                <b-row>
-                    <b-col>
-                        <div id="pageTitle">
-                            <h1 id="Subject">Terms of Service</h1>
-                            <hr />
-                        </div>
-                    </b-col>
-                </b-row>
+                <page-title title="Terms of Service" />
                 <div v-if="!isLoading">
                     <b-row class="mb-3">
                         <b-col>
@@ -97,14 +90,6 @@ export default class TermsOfServiceView extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-
-#pageTitle {
-    color: $primary;
-}
-
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
 
 #termsOfService {
     background-color: $light_background;

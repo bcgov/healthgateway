@@ -49,16 +49,19 @@ interface Tile {
 @Component
 export default class LandingView extends Vue {
     @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
-
-    @Getter("oidcIsAuthenticated", { namespace: "auth" })
-    oidcIsAuthenticated!: boolean;
+    config!: WebClientConfiguration;
 
     @Getter("isOffline", { namespace: "config" })
     isOffline!: boolean;
 
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+    @Getter("oidcIsAuthenticated", { namespace: "auth" })
+    oidcIsAuthenticated!: boolean;
+
+    @Getter("isSidebarShown", { namespace: "navbar" })
+    isSidebarShown!: boolean;
+
+    @Getter("userIsRegistered", { namespace: "user" })
+    userIsRegistered!: boolean;
 
     private get isVaccinationStatusEnabled(): boolean {
         return this.config.modules["VaccinationStatus"];
@@ -143,7 +146,7 @@ export default class LandingView extends Vue {
 
     private get offlineMessage(): string {
         if (this.isOffline) {
-            return this.webClientConfig.offlineMode?.message || "";
+            return this.config.offlineMode?.message || "";
         } else {
             return "";
         }
@@ -151,14 +154,14 @@ export default class LandingView extends Vue {
 
     private mounted() {
         this.isOpenRegistration =
-            this.webClientConfig.registrationStatus == RegistrationStatus.Open;
+            this.config.registrationStatus == RegistrationStatus.Open;
 
-        for (const moduleName in this.webClientConfig.modules) {
+        for (const moduleName in this.config.modules) {
             var icon = this.icons.find(
                 (iconEntry) => iconEntry.name === moduleName
             );
             if (icon) {
-                icon.active = this.webClientConfig.modules[moduleName];
+                icon.active = this.config.modules[moduleName];
             }
         }
     }
@@ -177,10 +180,11 @@ export default class LandingView extends Vue {
             class="
                 vaccine-card-banner
                 small-banner
-                d-flex d-lg-none
+                d-flex
                 mx-n2
                 justify-content-center
             "
+            :class="{ 'd-lg-none': !isSidebarShown }"
         >
             <b-col cols="auto">
                 <img
@@ -207,10 +211,11 @@ export default class LandingView extends Vue {
             class="
                 vaccine-card-banner
                 large-banner
-                d-none d-lg-flex
+                d-none
                 justify-content-end
                 mx-n2
             "
+            :class="{ 'd-lg-flex': !isSidebarShown }"
         >
             <b-col cols="auto">
                 <img
@@ -435,11 +440,11 @@ export default class LandingView extends Vue {
             background-image: url("~@/assets/images/landing/vaccine-card-banner-bg-lg.svg");
             background-size: 731px;
             height: 186px;
-            padding-right: 180px;
+            padding-right: 175px;
 
             img {
                 width: 250px;
-                margin-right: 20px;
+                margin-right: 15px;
             }
         }
     }

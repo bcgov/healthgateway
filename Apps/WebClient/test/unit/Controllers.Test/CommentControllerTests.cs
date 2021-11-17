@@ -102,9 +102,10 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             CommentController service = new CommentController(commentServiceMock.Object);
             var actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
-            RequestResult<UserComment> actualRequestResult = (RequestResult<UserComment>)((JsonResult)actualResult).Value;
-            Assert.Equal(Common.Constants.ResultType.Success, actualRequestResult.ResultStatus);
-            Assert.Equal(Hdid, actualRequestResult.ResourcePayload!.UpdatedBy);
+            var jsonResult = actualResult as JsonResult;
+            RequestResult<UserComment>? actualRequestResult = jsonResult?.Value as RequestResult<UserComment>;
+            Assert.True(actualRequestResult != null && actualRequestResult.ResultStatus == Common.Constants.ResultType.Success);
+            Assert.Equal(Hdid, actualRequestResult?.ResourcePayload!.UpdatedBy);
         }
 
         /// <summary>
@@ -173,9 +174,10 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             CommentController service = new CommentController(commentServiceMock.Object);
             var actualResult = service.Delete(Hdid, expectedResult.ResourcePayload);
-            RequestResult<UserComment> actualRequestResult = (RequestResult<UserComment>)((JsonResult)actualResult).Value;
-            Assert.Equal(Common.Constants.ResultType.Success, actualRequestResult.ResultStatus);
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
+            var jsonResult = actualResult as JsonResult;
+            RequestResult<UserComment>? actualRequestResult = jsonResult?.Value as RequestResult<UserComment>;
+            Assert.True(actualRequestResult != null && actualRequestResult.ResultStatus == Common.Constants.ResultType.Success);
+            Assert.True(actualRequestResult?.IsDeepEqual(expectedResult));
         }
 
         /// <summary>
@@ -229,8 +231,9 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             CommentController service = new CommentController(commentServiceMock.Object);
             var actualResult = service.GetAllForEntry(Hdid, "parentEntryIdMock");
-            RequestResult<IEnumerable<UserComment>> actualRequestResult = (RequestResult<IEnumerable<UserComment>>)((JsonResult)actualResult).Value;
-            Assert.Equal(Common.Constants.ResultType.Success, actualRequestResult.ResultStatus);
+            var jsonResult = actualResult as JsonResult;
+            RequestResult<IEnumerable<UserComment>>? actualRequestResult = jsonResult?.Value as RequestResult<IEnumerable<UserComment>>;
+            Assert.True(actualRequestResult != null && actualRequestResult.ResultStatus == Common.Constants.ResultType.Success);
         }
     }
 }

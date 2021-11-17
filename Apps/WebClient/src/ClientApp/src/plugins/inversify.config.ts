@@ -12,7 +12,6 @@ import {
     IAuthenticationService,
     ICommunicationService,
     IConfigService,
-    ICredentialService,
     IDependentService,
     IEncounterService,
     IHttpDelegate,
@@ -44,7 +43,6 @@ import { RestUserFeedbackService } from "@/services/restUserFeedback";
 import { RestUserNoteService } from "@/services/restUserNoteService";
 import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserRatingService } from "@/services/restUserRatingService";
-import { RestCredentialService } from "@/services/restCredentialService";
 import { RestReportService } from "@/services/restReportService";
 import { RestVaccinationStatusService } from "@/services/restVaccinationStatusService";
 import { WinstonLogger } from "@/services/winstonLogger";
@@ -112,10 +110,6 @@ container
 container
     .bind<IUserRatingService>(SERVICE_IDENTIFIER.UserRatingService)
     .to(RestUserRatingService)
-    .inSingletonScope();
-container
-    .bind<ICredentialService>(SERVICE_IDENTIFIER.CredentialService)
-    .to(RestCredentialService)
     .inSingletonScope();
 container
     .bind<IReportService>(SERVICE_IDENTIFIER.ReportService)

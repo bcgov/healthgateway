@@ -16,7 +16,7 @@
 
 namespace HealthGateway.Common.Models
 {
-    using HealthGateway.Database.Constants;
+    using HealthGateway.Common.Constants;
 
     /// <summary>
     /// Defines the Vaccine Card template Configuration model.

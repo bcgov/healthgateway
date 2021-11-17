@@ -49,11 +49,6 @@ describe("Communication", () => {
             .should("exist")
             .contains("In-App Banner");
 
-        cy.visit("/credentials");
-        cy.get("[data-testid=communicationBanner]")
-            .should("exist")
-            .contains("In-App Banner");
-
         cy.visit("/dependents");
         cy.get("[data-testid=communicationBanner]")
             .should("exist")

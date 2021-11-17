@@ -28,6 +28,7 @@ describe("Menu System", () => {
     });
 
     it("Validate Profile Button for Desktop", () => {
+        login(false);
         cy.get("[data-testid=sidebarUserName]").should("not.exist");
         cy.get("[data-testid=profileButtonUserName]")
             .should("be.visible")

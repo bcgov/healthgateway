@@ -67,9 +67,10 @@ namespace HealthGateway.WebClient.Test.Controllers
             IActionResult actualResult = this.GetUserProfile(expected, null);
 
             Assert.IsType<JsonResult>(actualResult);
-            var reqResult = (RequestResult<UserProfileModel>)((JsonResult)actualResult).Value;
-            Assert.Equal(ResultType.Success, reqResult.ResultStatus);
-            Assert.Empty(reqResult.ResourcePayload?.Preferences);
+            var jsonResult = actualResult as JsonResult;
+            var reqResult = jsonResult?.Value as RequestResult<UserProfileModel>;
+            Assert.True(reqResult != null && reqResult.ResultStatus == ResultType.Success && reqResult.ResourcePayload != null);
+            Assert.Empty(reqResult?.ResourcePayload?.Preferences);
         }
 
         /// <summary>
@@ -297,8 +298,8 @@ namespace HealthGateway.WebClient.Test.Controllers
                 emailServiceMock.Object,
                 new Mock<IUserSMSService>().Object);
             IActionResult actualResult = controller.UpdateUserEmail(this.hdid, "emailadd@hgw.ca");
-
-            Assert.True((bool)((JsonResult)actualResult).Value);
+            var userUpdated = (actualResult as JsonResult)?.Value;
+            Assert.True(userUpdated != null && (bool)userUpdated);
         }
 
         /// <summary>
@@ -377,8 +378,8 @@ namespace HealthGateway.WebClient.Test.Controllers
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object);
             IActionResult actualResult = controller.UpdateUserSMSNumber(this.hdid, "250 123 456");
-
-            Assert.True((bool)((JsonResult)actualResult).Value);
+            var smsUpdated = (actualResult as JsonResult)?.Value;
+            Assert.True(smsUpdated != null && (bool)smsUpdated);
         }
 
         /// <summary>

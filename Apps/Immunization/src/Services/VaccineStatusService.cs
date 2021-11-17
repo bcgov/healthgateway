@@ -106,6 +106,7 @@ namespace HealthGateway.Immunization.Services
         {
             bool includeVaccineProof = true;
             RequestResult<VaccineStatus> vaccineStatusResult = await this.GetPublicVaccineStatusWithOptionalProof(phn, dateOfBirth, dateOfVaccine, includeVaccineProof).ConfigureAwait(true);
+            VaccineStatus payload = vaccineStatusResult.ResourcePayload!;
 
             RequestResult<VaccineProofDocument> retVal = new()
             {
@@ -113,24 +114,26 @@ namespace HealthGateway.Immunization.Services
                 ResultError = vaccineStatusResult.ResultError,
                 TotalResultCount = vaccineStatusResult.TotalResultCount,
                 PageIndex = vaccineStatusResult.PageIndex,
+                ResourcePayload = new()
+                {
+                    Loaded = payload.Loaded,
+                    RetryIn = payload.RetryIn,
+                    Document = payload.FederalVaccineProof ?? new(),
+                    QRCode = payload.QRCode,
+                },
             };
 
-            if (vaccineStatusResult.ResourcePayload != null)
+            if (vaccineStatusResult.ResultStatus == ResultType.Success)
             {
-                retVal.ResourcePayload = new()
+                if (payload.State == VaccineState.NotFound)
                 {
-                    Loaded = vaccineStatusResult.ResourcePayload.Loaded,
-                    RetryIn = vaccineStatusResult.ResourcePayload.RetryIn,
-                    Document = vaccineStatusResult.ResourcePayload.FederalVaccineProof ?? new(),
-                    QRCode = vaccineStatusResult.ResourcePayload.QRCode,
-                };
-            }
-            else
-            {
-                retVal.ResultStatus = ResultType.Error;
-                if (retVal.ResultError == null)
+                    retVal.ResultStatus = ResultType.ActionRequired;
+                    retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine Proof document is not available.", ActionType.Invalid);
+                }
+                else if (payload.Loaded && string.IsNullOrEmpty(payload.FederalVaccineProof?.Data))
                 {
-                    retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine Proof document is not available.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                    retVal.ResultStatus = ResultType.Error;
+                    retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine Proof document is not available.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA) };
                 }
             }
 
@@ -142,6 +145,7 @@ namespace HealthGateway.Immunization.Services
         {
             bool includeVaccineProof = true;
             RequestResult<VaccineStatus> vaccineStatusResult = await this.GetAuthenticatedVaccineStatusWithOptionalProof(hdid, includeVaccineProof).ConfigureAwait(true);
+            VaccineStatus payload = vaccineStatusResult.ResourcePayload!;
 
             RequestResult<VaccineProofDocument> retVal = new()
             {
@@ -149,32 +153,26 @@ namespace HealthGateway.Immunization.Services
                 ResultError = vaccineStatusResult.ResultError,
                 TotalResultCount = vaccineStatusResult.TotalResultCount,
                 PageIndex = vaccineStatusResult.PageIndex,
+                ResourcePayload = new()
+                {
+                    Loaded = payload.Loaded,
+                    RetryIn = payload.RetryIn,
+                    Document = payload.FederalVaccineProof ?? new(),
+                    QRCode = payload.QRCode,
+                },
             };
 
-            if (vaccineStatusResult.ResourcePayload != null)
+            if (vaccineStatusResult.ResultStatus == ResultType.Success)
             {
-                if (vaccineStatusResult.ResourcePayload.State == VaccineState.NotFound)
+                if (payload.State == VaccineState.NotFound)
                 {
                     retVal.ResultStatus = ResultType.ActionRequired;
-                    retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.Invalid);
+                    retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine Proof document is not available.", ActionType.Invalid);
                 }
-                else
+                else if (payload.Loaded && string.IsNullOrEmpty(payload.FederalVaccineProof?.Data))
                 {
-                    retVal.ResourcePayload = new()
-                    {
-                        Loaded = vaccineStatusResult.ResourcePayload.Loaded,
-                        RetryIn = vaccineStatusResult.ResourcePayload.RetryIn,
-                        Document = vaccineStatusResult.ResourcePayload.FederalVaccineProof ?? new(),
-                        QRCode = vaccineStatusResult.ResourcePayload.QRCode,
-                    };
-                }
-            }
-            else
-            {
-                retVal.ResultStatus = ResultType.Error;
-                if (retVal.ResultError == null)
-                {
-                    retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine Proof document is not available.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                    retVal.ResultStatus = ResultType.Error;
+                    retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine Proof document is not available.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA) };
                 }
             }
 
@@ -289,24 +287,20 @@ namespace HealthGateway.Immunization.Services
             RequestResult<VaccineStatus> retVal = new()
             {
                 ResultStatus = ResultType.Error,
+                ResourcePayload = new() { State = VaccineState.NotFound },
             };
 
             bool isPublicEndpoint = string.IsNullOrEmpty(query.HdId);
             RequestResult<PHSAResult<VaccineStatusResult>> result = await this.vaccineStatusDelegate.GetVaccineStatus(query, accessToken, isPublicEndpoint).ConfigureAwait(true);
             VaccineStatusResult? payload = result.ResourcePayload?.Result;
+            PHSALoadState? loadState = result.ResourcePayload?.LoadState;
 
             retVal.ResultStatus = result.ResultStatus;
             retVal.ResultError = result.ResultError;
 
-            if (payload == null)
-            {
-                retVal.ResourcePayload = new();
-                retVal.ResourcePayload.State = VaccineState.NotFound;
-            }
-            else
+            if (payload != null)
             {
                 retVal.ResourcePayload = VaccineStatus.FromModel(payload, phn);
-                retVal.ResourcePayload.Loaded = true;
                 retVal.ResourcePayload.State = retVal.ResourcePayload.State switch
                 {
                     var state when state == VaccineState.Threshold || state == VaccineState.Blocked => VaccineState.NotFound,
@@ -320,12 +314,15 @@ namespace HealthGateway.Immunization.Services
                 }
             }
 
-            if (result.ResourcePayload != null && result.ResourcePayload.LoadState.RefreshInProgress)
+            if (loadState != null)
             {
-                retVal.ResultStatus = ResultType.ActionRequired;
-                retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine status refresh in progress", ActionType.Refresh);
-                retVal.ResourcePayload.Loaded = !result.ResourcePayload.LoadState.RefreshInProgress;
-                retVal.ResourcePayload.RetryIn = Math.Max(result.ResourcePayload.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds);
+                retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
+                if (loadState.RefreshInProgress)
+                {
+                    retVal.ResultStatus = ResultType.ActionRequired;
+                    retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine status refresh in progress", ActionType.Refresh);
+                    retVal.ResourcePayload.RetryIn = Math.Max(loadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds);
+                }
             }
 
             return retVal;

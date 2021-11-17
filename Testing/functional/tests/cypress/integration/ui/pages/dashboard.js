@@ -32,6 +32,7 @@ describe("Authenticated User - Dashboard Page", () => {
     });
 
     it("Dashboard - Link to Covid19 page", () => {
+        cy.enableModules(["VaccinationStatus"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

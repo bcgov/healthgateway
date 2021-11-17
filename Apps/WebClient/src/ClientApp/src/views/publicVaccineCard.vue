@@ -15,16 +15,15 @@ import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
-import { ResultType } from "@/constants/resulttype";
 import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
+import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger, IVaccinationStatusService } from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
 import { Mask, phnMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
 import SnowPlow from "@/utility/snowPlow";
@@ -55,6 +54,13 @@ export default class PublicVaccineCardView extends Vue {
         dateOfVaccine: StringISODate;
     }) => Promise<void>;
 
+    @Action("retrievePublicVaccineRecord", { namespace: "vaccinationStatus" })
+    retrievePublicVaccineRecord!: (params: {
+        phn: string;
+        dateOfBirth: StringISODate;
+        dateOfVaccine: StringISODate;
+    }) => Promise<void>;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -62,13 +68,29 @@ export default class PublicVaccineCardView extends Vue {
     status!: VaccinationStatus | undefined;
 
     @Getter("isLoading", { namespace: "vaccinationStatus" })
-    isLoading!: boolean;
+    isVaccinationStatusLoading!: boolean;
 
     @Getter("error", { namespace: "vaccinationStatus" })
-    error!: BannerError | undefined;
+    vaccinationStatusError!: BannerError | undefined;
+
+    @Getter("publicVaccineRecordError", { namespace: "vaccinationStatus" })
+    publicVaccineRecordError!: BannerError | undefined;
 
     @Getter("statusMessage", { namespace: "vaccinationStatus" })
     statusMessage!: string;
+
+    @Getter("publicVaccineRecord", { namespace: "vaccinationStatus" })
+    vaccineRecord!: CovidVaccineRecord | undefined;
+
+    @Getter("publicVaccineRecordStatusMessage", {
+        namespace: "vaccinationStatus",
+    })
+    vaccineRecordStatusMessage!: string;
+
+    @Getter("publicVaccineRecordIsLoading", {
+        namespace: "vaccinationStatus",
+    })
+    vaccineRecordIsLoading!: boolean;
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
@@ -88,6 +110,24 @@ export default class PublicVaccineCardView extends Vue {
         return this.vaccinationState === VaccinationState.NotFound;
     }
 
+    private get isFullyVaccinated(): boolean {
+        return this.vaccinationState === VaccinationState.FullyVaccinated;
+    }
+
+    private get bannerError(): BannerError | undefined {
+        if (
+            this.vaccinationStatusError !== undefined &&
+            this.publicVaccineRecordError === undefined
+        ) {
+            return this.vaccinationStatusError;
+        }
+        if (
+            this.vaccinationStatusError === undefined &&
+            this.publicVaccineRecordError !== undefined
+        ) {
+            return this.publicVaccineRecordError;
+        }
+    }
     private bcsclogo: string = Image06;
 
     private logger!: ILogger;
@@ -98,11 +138,14 @@ export default class PublicVaccineCardView extends Vue {
     private dateOfBirth = "";
     private dateOfVaccine = "";
 
-    private isDownloadingPdf = false;
     private downloadError: BannerError | null = null;
 
     private get loadingStatusMessage(): string {
-        return this.isDownloading ? "Downloading...." : this.statusMessage;
+        return this.isDownloading
+            ? "Downloading...."
+            : this.vaccineRecordIsLoading
+            ? this.vaccineRecordStatusMessage
+            : this.statusMessage;
     }
 
     private get downloadButtonShown(): boolean {
@@ -224,60 +267,44 @@ export default class PublicVaccineCardView extends Vue {
         this.sensitivedocumentDownloadModal.showModal();
     }
 
-    private downloadVaccinePdf() {
-        this.downloadError = null;
-        this.isDownloadingPdf = true;
-        this.vaccinationStatusService
-            .getPublicVaccineStatusPdf(
-                this.phn.replace(/ /g, ""),
-                this.dateOfBirth,
-                this.dateOfVaccine
-            )
-            .then((result) => {
-                if (result.resultStatus == ResultType.Success) {
-                    SnowPlow.trackEvent({
-                        action: "download_card",
-                        text: "Public COVID Card PDF",
-                    });
-                    const mimeType = result.resourcePayload.document.mediaType;
-                    const downloadLink = `data:${mimeType};base64,${result.resourcePayload.document.data}`;
-
-                    fetch(downloadLink).then((res) => {
-                        res.blob().then((blob) => {
-                            saveAs(blob, "VaccineProof.pdf");
-                        });
-                    });
-                } else {
-                    this.logger.error(
-                        "Error returned when retrieving vaccine proof PDF: " +
-                            JSON.stringify(result.resultError)
-                    );
-                    this.downloadError = ErrorTranslator.toBannerError(
-                        "Retrieve PDF Error",
-                        result.resultError
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.downloadError = ErrorTranslator.toBannerError(
-                    "Retrieve PDF Error",
-                    err
-                );
-            })
-            .finally(() => {
-                this.isDownloadingPdf = false;
+    @Watch("vaccineRecord")
+    private saveVaccinePdf() {
+        if (this.vaccineRecord !== undefined) {
+            const mimeType = this.vaccineRecord.document.mediaType;
+            const downloadLink = `data:${mimeType};base64,${this.vaccineRecord.document.data}`;
+            fetch(downloadLink).then((res) => {
+                SnowPlow.trackEvent({
+                    action: "download_card",
+                    text: "Public COVID Card PDF",
+                });
+                res.blob().then((blob) => {
+                    saveAs(blob, "VaccineProof.pdf");
+                });
             });
+        }
+    }
+
+    private downloadVaccinePdf() {
+        this.retrievePublicVaccineRecord({
+            phn: this.phn.replace(/ /g, ""),
+            dateOfBirth: this.dateOfBirth,
+            dateOfVaccine: this.dateOfVaccine,
+        });
+    }
+
+    public get isLoading(): boolean {
+        return (
+            this.isVaccinationStatusLoading ||
+            this.vaccineRecordIsLoading ||
+            this.isDownloading
+        );
     }
 }
 </script>
 
 <template>
     <div class="background flex-grow-1 d-flex flex-column">
-        <loading
-            :is-loading="isLoading || isDownloading || isDownloadingPdf"
-            :text="loadingStatusMessage"
-        />
+        <loading :is-loading="isLoading" :text="loadingStatusMessage" />
         <div class="header d-print-none">
             <router-link id="homeLink" to="/" aria-label="Return to home page">
                 <img
@@ -309,7 +336,7 @@ export default class PublicVaccineCardView extends Vue {
             <div class="bg-white rounded shadow">
                 <vaccine-card
                     :status="status"
-                    :error="error"
+                    :error="bannerError"
                     :show-generic-save-instructions="!downloadButtonShown"
                 />
                 <div
@@ -350,11 +377,31 @@ export default class PublicVaccineCardView extends Vue {
                     </hg-dropdown>
                 </div>
                 <div
+                    v-if="isFullyVaccinated && saveExportPdfShown"
+                    class="d-print-none px-3 pb-3"
+                    :class="{ 'pt-3': !downloadButtonShown }"
+                >
+                    <div class="callout">
+                        <p class="m-0">
+                            Note: Your
+                            <strong>federal proof of vaccination</strong> can be
+                            downloaded using the
+                            <strong>"Save as"</strong> button.
+                        </p>
+                    </div>
+                </div>
+                <div
                     v-if="isPartiallyVaccinated || isVaccinationNotFound"
                     class="d-print-none px-3 pb-3"
                     :class="{ 'pt-3': !downloadButtonShown }"
                 >
                     <div class="callout">
+                        <p v-if="isPartiallyVaccinated && saveExportPdfShown">
+                            Note: Your
+                            <strong>federal proof of vaccination</strong> can be
+                            downloaded using the
+                            <strong>"Save as"</strong> button.
+                        </p>
                         <p class="m-0">
                             To learn more, visit
                             <a
@@ -402,19 +449,21 @@ export default class PublicVaccineCardView extends Vue {
                 @submit.prevent="handleSubmit"
             >
                 <div class="my-2 my-sm-5 px-0 px-sm-5">
-                    <div v-if="error !== undefined">
+                    <div v-if="bannerError !== undefined">
                         <b-alert
                             variant="danger"
                             class="mb-3 p-3"
                             show
                             dismissible
                         >
-                            <h2 class="h4">{{ error.title }}</h2>
+                            <h2 class="h4">
+                                {{ bannerError.title }}
+                            </h2>
                             <div
                                 data-testid="errorTextDescription"
                                 class="pl-4"
                             >
-                                {{ error.description }}
+                                {{ bannerError.description }}
                             </div>
                         </b-alert>
                     </div>
@@ -559,7 +608,7 @@ export default class PublicVaccineCardView extends Vue {
                                 variant="primary"
                                 aria-label="Enter"
                                 type="submit"
-                                :disabled="isLoading"
+                                :disabled="isVaccinationStatusLoading"
                                 data-testid="btnEnter"
                                 class="w-100"
                             >
@@ -645,12 +694,12 @@ export default class PublicVaccineCardView extends Vue {
                 </p>
                 <div class="my-3">
                     <hg-button variant="secondary" href="tel:+18338382323">
-                        Call: 1-833-838-2323 (toll free)
+                        Call: 1-833-838-2323 (Toll-Free)
                     </hg-button>
                 </div>
                 <div class="my-3">
                     <hg-button variant="secondary" href="tel:711">
-                        Telephone for the deaf: Dial 711
+                        Telephone for the Deaf: Dial 711
                     </hg-button>
                 </div>
                 <div class="text-muted">

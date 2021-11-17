@@ -86,47 +86,28 @@ export default class DependentsView extends Vue {
 }
 </script>
 <template>
-    <div class="m-3 flex-grow-1 d-flex flex-column">
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <LoadingComponent :is-loading="isLoading" />
         <b-row>
             <b-col class="col-12 col-lg-9 column-wrapper">
-                <b-row>
-                    <b-col>
-                        <b-row id="pageTitle">
-                            <b-col cols="7">
-                                <h1 id="Subject" class="my-0">Dependents</h1>
-                            </b-col>
-                            <b-col cols="5" align-self="end">
-                                <hg-button
-                                    data-testid="addNewDependentBtn"
-                                    class="float-right"
-                                    variant="secondary"
-                                    @click="showModal()"
-                                >
-                                    <hg-icon
-                                        icon="user-plus"
-                                        size="medium"
-                                        class="mr-2"
-                                    />
-                                    <span>Add a new dependent</span>
-                                </hg-button>
-                            </b-col>
-                        </b-row>
-                        <hr />
-                        <b-row id="pageTitle" class="mt-3">
-                            <b-col>
-                                <h5>
-                                    You can add your dependents under the age of
-                                    {{ webClientConfig.maxDependentAge }} to
-                                    view their COVID-19 results. Please complete
-                                    the form with your dependent's information,
-                                    exactly as it appears on their BC Services
-                                    Card.
-                                </h5>
-                            </b-col>
-                        </b-row>
-                    </b-col>
-                </b-row>
+                <page-title title="Dependents">
+                    <hg-button
+                        data-testid="addNewDependentBtn"
+                        class="float-right"
+                        variant="secondary"
+                        @click="showModal()"
+                    >
+                        <hg-icon icon="user-plus" size="medium" class="mr-2" />
+                        <span>Add a New Dependent</span>
+                    </hg-button>
+                </page-title>
+                <h5 class="my-3">
+                    You can add your dependents under the age of
+                    {{ webClientConfig.maxDependentAge }} to view their COVID-19
+                    results. Please complete the form with your dependent's
+                    information, exactly as it appears on their BC Services
+                    Card.
+                </h5>
                 <b-row
                     v-for="dependent in dependents"
                     :key="dependent.hdid"
@@ -149,14 +130,3 @@ export default class DependentsView extends Vue {
         />
     </div>
 </template>
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-
-#pageTitle {
-    color: $primary;
-}
-
-hr {
-    border-top: 2px solid $primary;
-}
-</style>

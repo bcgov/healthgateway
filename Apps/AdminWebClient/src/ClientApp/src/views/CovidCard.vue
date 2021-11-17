@@ -248,6 +248,16 @@ export default class CovidCardView extends Vue {
                                 lotNumber: dose.lot,
                             };
                         }) ?? [];
+                    this.immunizations.sort((a, b) => {
+                        const firstDate = new DateWrapper(a.date);
+                        const secondDate = new DateWrapper(b.date);
+
+                        // Sort dates in descending order
+                        if (firstDate.isBefore(secondDate)) {
+                            return 1;
+                        }
+                        return firstDate.isAfter(secondDate) ? -1 : 0;
+                    });
                 }
             })
             .catch(() => {

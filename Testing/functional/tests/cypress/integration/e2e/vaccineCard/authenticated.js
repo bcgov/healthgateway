@@ -1,6 +1,11 @@
+import { deleteDownloadsFolder } from "../../../support/utils";
 const { AuthMethod, localDevUri } = require("../../../support/constants");
 
 describe("Authenticated User - Vaccine Card Page", () => {
+    beforeEach(() => {
+        deleteDownloadsFolder();
+    });
+
     it("Vaccination Card - Partially Vaccinated 1 Valid Dose - Keycloak", () => {
         cy.enableModules(["Immunization", "VaccinationStatus"]);
         cy.login(
@@ -91,7 +96,8 @@ describe("Authenticated User - Vaccine Card Page", () => {
             .click();
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
-        cy.get("[data-testid=genericMessageModal]").should("not.exist");
+        cy.get("[data-testid=loadingSpinner]").should("be.visible");
+        cy.verifyDownload("ProvincialVaccineProof.png");
     });
 
     it("Vaccination Card - Not Found - Save - Keycloak", () => {
@@ -170,7 +176,8 @@ describe("Authenticated User - Vaccine Card Page", () => {
             .click();
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
-        cy.get("[data-testid=genericMessageModal]").should("not.exist");
+        cy.get("[data-testid=loadingSpinner]").should("be.visible");
+        cy.verifyDownload("ProvincialVaccineProof.png");
     });
 
     it("Vaccination Card - Save as PDF - VaccinationExportPdf is disabled - KeyCloak", () => {
@@ -219,5 +226,7 @@ describe("Authenticated User - Vaccine Card Page", () => {
             .click();
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=loadingSpinner]").should("be.visible");
+        cy.verifyDownload("ProvincialVaccineProof.pdf");
     });
 });

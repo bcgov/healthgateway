@@ -37,7 +37,7 @@ Create a cypress.env.json and update with passwords or any other environment var
 While creating and debugging tests you will want to run Cypress interactively.
 
 ```bash
-export CYPRESS_BASE_URL=http://localhost:5000
+export CYPRESS_BASE_URL=http://localhost:5002
 npx cypress open
 ```
 

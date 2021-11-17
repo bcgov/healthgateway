@@ -136,8 +136,9 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             NoteController service = new NoteController(noteServiceMock.Object);
             var actualResult = service.GetAll(Hdid);
-            RequestResult<IEnumerable<UserNote>> actualRequestResult = (RequestResult<IEnumerable<UserNote>>)((JsonResult)actualResult).Value;
-            Assert.Equal(Common.Constants.ResultType.Success, actualRequestResult.ResultStatus);
+            var jsonResult = actualResult as JsonResult;
+            RequestResult<IEnumerable<UserNote>>? actualRequestResult = jsonResult?.Value as RequestResult<IEnumerable<UserNote>>;
+            Assert.True(actualRequestResult != null && actualRequestResult.ResultStatus == Common.Constants.ResultType.Success);
         }
     }
 }

@@ -3,11 +3,11 @@ describe("Immunization History Report", () => {
     let sensitiveDocText =
         " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
 
-    before(() => {
+    beforeEach(() => {
         cy.setupDownloads();
         let isLoading = false;
         cy.enableModules("Immunization");
-        cy.intercept("GET", "/v1/api/Immunization", (req) => {
+        cy.intercept("GET", "**/v1/api/Immunization?*", (req) => {
             req.reply((res) => {
                 if (!isLoading) {
                     res.send({
@@ -42,13 +42,9 @@ describe("Immunization History Report", () => {
             .should("be.enabled", "be.visible")
             .select("Immunizations");
 
-        cy.get("[data-testid=reportSample]").scrollTo(
-            "bottom"
-        );
+        cy.get("[data-testid=reportSample]").scrollTo("bottom");
 
-        cy.get("[data-testid=reportSample]").should(
-            "be.visible"
-        );
+        cy.get("[data-testid=reportSample]").should("be.visible");
 
         cy.get("[data-testid=immunizationDateTitle]").should("be.visible");
         cy.get("[data-testid=immunizationProviderClinicTitle]").should(
@@ -80,9 +76,7 @@ describe("Immunization History Report", () => {
             .should("be.enabled", "be.visible")
             .click();
 
-        cy.get("[data-testid=exportRecordBtn] a")
-            .first()
-            .click();
+        cy.get("[data-testid=exportRecordBtn] a").first().click();
 
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
 

@@ -1,24 +1,15 @@
+import { deleteDownloadsFolder } from "../../../support/utils";
 const { AuthMethod, localDevUri } = require("../../../support/constants");
 
-function useImmunizationFixture() {
-    cy.intercept("GET", "/v1/api/Immunization", (req) => {
-        req.reply((res) => {
-            res.send({
-                fixture: "ImmunizationService/immunization.json",
-            });
-        });
-    });
-}
-
-describe("Immunization", () => {
-    before(() => {
+describe("Immunization - With Refresh", () => {
+    beforeEach(() => {
         let isLoading = false;
         cy.enableModules([
             "Immunization",
             "VaccinationStatus",
             "VaccinationStatusPdf",
         ]);
-        cy.intercept("GET", "/v1/api/Immunization", (req) => {
+        cy.intercept("GET", "**/v1/api/Immunization?*", (req) => {
             req.reply((res) => {
                 if (!isLoading) {
                     res.send({
@@ -86,9 +77,64 @@ describe("Immunization", () => {
         cy.get("[data-testid=forecastDueDate]").first().should("be.visible");
         cy.get("[data-testid=forecastStatus]").first().should("be.visible");
     });
+});
 
-    it("Validate Proof of Immunization Card & Download", () => {
-        useImmunizationFixture();
+describe("Immunization - Empty Title", () => {
+    beforeEach(() => {
+        cy.intercept("GET", "**/v1/api/Immunization?*", {
+            fixture: "ImmunizationService/immunizationEmptyName.json",
+        });
+    });
+
+    it("Validate Empty Title", () => {
+        cy.enableModules("Immunization");
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+        cy.get("[data-testid=immunizationTitle]")
+            .should("be.visible")
+            .should("have.text", "Immunization");
+    });
+});
+
+describe("Immunization - No Records", () => {
+    beforeEach(() => {
+        cy.intercept("GET", "**/v1/api/Immunization?*", (req) => {
+            req.reply((res) => {
+                res.send({
+                    fixture: "ImmunizationService/immunizationNoRecords.json",
+                });
+            });
+        });
+    });
+
+    it("Validate Disabled Header Covid Card", () => {
+        cy.enableModules("Immunization");
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+
+        cy.get("[data-testid=covidcard-btn]")
+            .should("be.visible")
+            .should("not.be.enabled");
+    });
+});
+
+describe("Immunization", () => {
+    beforeEach(() => {
+        deleteDownloadsFolder();
+        cy.intercept("GET", "**/v1/api/Immunization?*", {
+            fixture: "ImmunizationService/immunization.json",
+        });
+    });
+
+    it("Validate Provincial VaccineProof Download", () => {
         cy.enableModules([
             "Immunization",
             "VaccinationStatus",
@@ -110,61 +156,7 @@ describe("Immunization", () => {
             .click();
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
-        cy.get("[data-testid=genericMessageModal]").should("not.exist");
-    });
-
-    it("Validate Empty Title", () => {
-        cy.enableModules("Immunization");
-        cy.intercept("GET", "/v1/api/Immunization", {
-            fixture: "ImmunizationService/immunizationEmptyName.json",
-        });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.checkTimelineHasLoaded();
-        cy.get("[data-testid=immunizationTitle]")
-            .should("be.visible")
-            .should("have.text", "Immunization");
-    });
-
-    it("Validate Disabled Header Covid Card", () => {
-        cy.intercept("GET", "/v1/api/Immunization", (req) => {
-            req.reply((res) => {
-                res.send({
-                    fixture: "ImmunizationService/immunizationNoRecords.json",
-                });
-            });
-        });
-        cy.enableModules("Immunization");
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.checkTimelineHasLoaded();
-
-        cy.get("[data-testid=covidcard-btn]")
-            .should("be.visible")
-            .should("not.be.enabled");
-    });
-
-    it("Validate Header Covid Card", () => {
-        useImmunizationFixture();
-        cy.enableModules(["Immunization", "VaccinationStatus"]);
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.checkTimelineHasLoaded();
-
-        cy.get("[data-testid=covidcard-btn]")
-            .should("be.visible")
-            .should("be.enabled")
-            .click();
-
-        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
+        cy.get("[data-testid=loadingSpinner]").should("be.visible");
+        cy.verifyDownload("ProvincialVaccineProof.png");
     });
 });

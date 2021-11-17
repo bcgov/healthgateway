@@ -118,7 +118,6 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             services
                 .AddRazorPages()
-                .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.WriteIndented = true;
@@ -435,8 +434,27 @@ namespace HealthGateway.Common.AspNetConfiguration
         public void ConfigureDatabaseServices(IServiceCollection services)
         {
             this.Logger.LogDebug("ConfigureDatabaseServices...");
-            services.AddDbContextPool<GatewayDbContext>(options => options.UseNpgsql(
-                    this.configuration.GetConnectionString("GatewayConnection")));
+            IConfigurationSection section = this.configuration.GetSection("Logging:SensitiveDataLogging");
+            bool isSensitiveDataLoggingEnabled = section.GetValue<bool>("Enabled", false);
+            this.Logger.LogDebug($"Sensitive Data Logging is enabled: {isSensitiveDataLoggingEnabled}");
+
+            services.AddDbContextPool<GatewayDbContext>(options =>
+            {
+                options.UseNpgsql(this.configuration.GetConnectionString("GatewayConnection"));
+                if (isSensitiveDataLoggingEnabled)
+                {
+                    options.EnableSensitiveDataLogging();
+                }
+            });
+
+            if (isSensitiveDataLoggingEnabled)
+            {
+                services.AddLogging(loggingBuilder =>
+                {
+                    loggingBuilder.AddConsole()
+                        .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information);
+                });
+            }
         }
 
         /// <summary>
@@ -446,14 +464,26 @@ namespace HealthGateway.Common.AspNetConfiguration
         public void ConfigureSwaggerServices(IServiceCollection services)
         {
             services.Configure<SwaggerSettings>(this.configuration.GetSection(nameof(SwaggerSettings)));
-            var xmlFile = $"{Assembly.GetCallingAssembly()!.GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            string xmlPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+            Assembly callingAssembly = Assembly.GetCallingAssembly();
+            Assembly executingAssembly = Assembly.GetExecutingAssembly();
+
+            // Calling Assembly (Core App) + References + Executing Assembly (Common) References
+            var xmlDocs = new AssemblyName[] { callingAssembly.GetName() }
+                                .Union(callingAssembly.GetReferencedAssemblies())
+                                .Union(executingAssembly.GetReferencedAssemblies())
+                                .Select(a => Path.Combine(xmlPath, $"{a.Name}.xml"))
+                                .Where(f => File.Exists(f)).ToArray();
+
             services
                 .AddApiVersionWithExplorer()
                 .AddSwaggerOptions()
                 .AddSwaggerGen(options =>
                 {
-                    options.IncludeXmlComments(xmlPath);
+                    Array.ForEach(xmlDocs, (d) =>
+                    {
+                        options.IncludeXmlComments(d);
+                    });
                 });
         }
 

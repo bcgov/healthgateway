@@ -9,15 +9,21 @@ import {
 } from "@/store/modules/navbar/types";
 
 const navbarState: NavbarState = {
-    isSidebarOpen: false,
     isHeaderShown: false,
+    isSidebarOpen: false,
 };
 
 const navbarGetters: NavbarGetters = {
+    isHeaderShown(): boolean {
+        return false;
+    },
+    isFooterShown(): boolean {
+        return false;
+    },
     isSidebarOpen(): boolean {
         return false;
     },
-    isHeaderShown(): boolean {
+    isSidebarShown(): boolean {
         return false;
     },
 };

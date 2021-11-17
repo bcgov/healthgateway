@@ -14,8 +14,24 @@ export interface NavbarState {
 }
 
 export interface NavbarGetters extends GetterTree<NavbarState, RootState> {
-    isSidebarOpen(state: NavbarState): boolean;
     isHeaderShown(state: NavbarState): boolean;
+    isFooterShown(
+        _state: NavbarState,
+        // eslint-disable-next-line
+        _getters: any,
+        _rootState: RootState,
+        // eslint-disable-next-line
+        rootGetters: any
+    ): boolean;
+    isSidebarOpen(state: NavbarState): boolean;
+    isSidebarShown(
+        _state: NavbarState,
+        // eslint-disable-next-line
+        _getters: any,
+        _rootState: RootState,
+        // eslint-disable-next-line
+        rootGetters: any
+    ): boolean;
 }
 
 type StoreContext = ActionContext<NavbarState, RootState>;

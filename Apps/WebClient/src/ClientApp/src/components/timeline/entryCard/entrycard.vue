@@ -7,6 +7,7 @@ import { Component, Prop, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 import EventBus, { EventMessageName } from "@/eventbus";
+import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
 
@@ -32,6 +33,9 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop({ default: false }) hasAttachment!: boolean;
     @Getter("isMobile") isMobileWidth!: boolean;
 
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     private eventBus = EventBus;
     private detailsVisible = false;
 
@@ -52,6 +56,10 @@ export default class EntrycardTimelineComponent extends Vue {
         } else {
             return this.entry.date.format();
         }
+    }
+
+    private get isCommentEnabled(): boolean {
+        return this.config.modules["Comment"];
     }
 
     private get commentCount(): number {
@@ -157,7 +165,7 @@ export default class EntrycardTimelineComponent extends Vue {
                         <slot name="details-body"></slot>
                     </b-col>
                 </b-row>
-                <b-row v-if="allowComment">
+                <b-row v-if="allowComment && isCommentEnabled">
                     <b-col class="leftPane d-none d-md-block"></b-col>
                     <b-col class="pb-1 pt-1 px-3">
                         <CommentSection

@@ -77,7 +77,7 @@ namespace HealthGateway.Database.Delegates
             if (result.Status == DBStatusCode.Read)
             {
                 // Copy certain attributes into the fetched User Profile
-                result.Payload.Email = profile.Email;
+                result.Payload!.Email = profile.Email;
                 result.Payload.AcceptedTermsOfService = profile.AcceptedTermsOfService;
                 result.Payload.UpdatedBy = profile.UpdatedBy;
                 result.Payload.Version = profile.Version;
@@ -113,9 +113,18 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace($"Getting user profile from DB... {hdId}");
             DBResult<UserProfile> result = new DBResult<UserProfile>();
-            UserProfile profile = this.dbContext.UserProfile.Find(hdId);
-            result.Payload = profile;
-            result.Status = profile != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            UserProfile? profile = this.dbContext.UserProfile.Find(hdId);
+            if (profile != null)
+            {
+                result.Payload = profile;
+                result.Status = DBStatusCode.Read;
+            }
+            else
+            {
+                this.logger.LogInformation($"Unable to find User by HDID {hdId}");
+                result.Status = DBStatusCode.NotFound;
+            }
+
             this.logger.LogDebug($"Finished getting user profile from DB. {JsonSerializer.Serialize(result)}");
             return result;
         }
@@ -170,7 +179,7 @@ namespace HealthGateway.Database.Delegates
         {
             Dictionary<DateTime, int> dateCount = this.dbContext.UserProfile
                 .Select(x => new { x.HdId, x.LastLoginDateTime })
-                .Union(
+                .Concat(
                     this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
                 .Select(x => new { x.HdId, lastLoginDate = x.LastLoginDateTime.AddMinutes(offset.TotalMinutes).Date })
                 .Distinct()
@@ -199,7 +208,7 @@ namespace HealthGateway.Database.Delegates
 
             int recurrentCount = this.dbContext.UserProfile
                 .Select(x => new { x.HdId, x.LastLoginDateTime })
-                .Union(
+                .Concat(
                     this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
                 .Select(x => new { x.HdId, lastLoginDate = x.LastLoginDateTime.AddMinutes(offset.TotalMinutes).Date })
                 .Where(x => x.lastLoginDate >= startDate && x.lastLoginDate <= endDate)

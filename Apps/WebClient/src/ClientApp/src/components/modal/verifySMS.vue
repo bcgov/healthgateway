@@ -298,7 +298,7 @@ export default class VerifySMSComponent extends Vue {
                         :disabled="smsVerificationSent"
                         @click="sendUserSMSUpdate()"
                     >
-                        Send new code
+                        Send New Code
                     </hg-button>
                 </b-col>
             </b-row>

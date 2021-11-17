@@ -17,8 +17,8 @@ namespace HealthGateway.Common.Delegates
 {
     using System;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// A mechanism to generate or mail out Vaccine Proofs.
@@ -41,20 +41,6 @@ namespace HealthGateway.Common.Delegates
         /// <param name="request">The vaccination data to be used for generating the Vaccine Proof.</param>
         /// <returns>A response object that includes the status and identifier of the Vaccine Proof.</returns>
         public Task<RequestResult<VaccineProofResponse>> GenerateAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request);
-
-        /// <summary>
-        /// Fetches the status of a Vaccine Proof to determine if it has been generated and can be retrieved.
-        /// </summary>
-        /// <param name="id">The id from the VaccineProofResponse object.</param>
-        /// <returns>A response object that includes the status and identifier of the Vaccine Proof.</returns>
-        public Task<RequestResult<VaccineProofResponse>> GetStatusAsync(string id);
-
-        /// <summary>
-        /// Fetches the generated Vaccine Proof.
-        /// </summary>
-        /// <param name="id">The id from the VaccineProofResponse object.</param>
-        /// <returns>A report model containing the generated Vaccine Proof document.</returns>
-        public Task<RequestResult<ReportModel>> GetAssetAsync(string id);
 
         /// <summary>
         /// Fetches the generated Vaccine Proof directly.

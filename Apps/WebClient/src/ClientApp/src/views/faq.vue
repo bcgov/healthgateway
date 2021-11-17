@@ -1,15 +1,8 @@
 <template>
-    <div class="mx-sm-3 px-sm-4">
-        <b-row class="m-1 fluid">
-            <b-col>
-                <div id="pageTitle">
-                    <h1 id="subject">Frequently Asked Questions</h1>
-                    <hr />
-                </div>
-            </b-col>
-        </b-row>
-        <b-row class="m-1 fluid text-right">
-            <b-col> Last updated: <strong>2021-June-16</strong> </b-col>
+    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <page-title title="Frequently Asked Questions" />
+        <b-row class="mb-3 fluid text-right">
+            <b-col>Last updated: <strong>2021-November-4</strong></b-col>
         </b-row>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
@@ -23,7 +16,7 @@
                     block
                     variant="info"
                     class="text-left"
-                    >What health information is available in the Health
+                    >What health information is available in Health
                     Gateway?</b-button
                 >
             </b-card-header>
@@ -33,7 +26,7 @@
                         ><div data-testid="answerTxt">
                             <p>
                                 The Health Gateway provides access to the
-                                following health information from our provincial
+                                following health information from the provincial
                                 health repositories:
                             </p>
                             <ul>
@@ -50,19 +43,9 @@
                                     <div>
                                         Access immunization records for vaccines
                                         administered by public health and
-                                        pharmacies. The Health Gateway also
-                                        provides the digital COVID-19
-                                        immunization card, which you can
-                                        download and print as proof of your
-                                        immunization. Contact your
-                                        <a
-                                            href="https://immunizebc.ca/finder"
-                                            target="blank_"
-                                            >local public health unit</a
-                                        >
-                                        to have vaccines provided by family
-                                        doctors or travel clinics added to the
-                                        provincial immunization registry.
+                                        pharmacies. This includes your BC
+                                        Vaccine Card, federal vaccine proof, and
+                                        your COVID-19 immunization records.
                                     </div>
                                 </li>
                                 <li>
@@ -70,7 +53,7 @@
                                     <div>
                                         Get a text or email when your results
                                         are available. Access test results of
-                                        children 11 years and younger.
+                                        your children 11 years and younger.
                                     </div>
                                 </li>
                                 <li>
@@ -98,9 +81,9 @@
                                 </li>
                             </ul>
                             <p>
-                                Future data sets will include health authority
-                                visits, laboratory test results, and diagnostic
-                                imaging reports.
+                                In the future, Health Gateway will include
+                                health authority visits, laboratory test
+                                results, and diagnostic imaging reports.
                             </p>
                         </div></b-card-text
                     >
@@ -119,9 +102,9 @@
                     block
                     variant="info"
                     class="text-left"
-                    >I received one or both doses of the COVID-19 vaccine
-                    outside of BC. How do I get my out-of-province dose(s) to
-                    appear in Health Gateway?</b-button
+                    >I received one or more doses of the COVID-19 vaccine
+                    outside of BC. How do I add my out-of-province dose(s) to
+                    Health Gateway?</b-button
                 >
             </b-card-header>
             <b-collapse id="accordion-faqAnswer2" role="tabpanel">
@@ -131,20 +114,19 @@
                             <p>
                                 Health Gateway shows your vaccinations as
                                 recorded in the Provincial Immunization
-                                Registry. To get your out-of-province vaccines
-                                added to the Registry, complete the online form
-                                at
+                                Registry. To get your out-of-province COVID-19
+                                vaccines added to the Registry, complete the
+                                online form at
                                 <a
-                                    href="https://www.gov.bc.ca/vaccinerecord"
+                                    href="https://immunizationrecord.gov.bc.ca"
                                     target="blank_"
-                                    >gov.bc.ca/vaccinerecord</a
+                                    >immunizationrecord.gov.bc.ca</a
                                 >.
                             </p>
                             <p>
-                                You will need to upload proof of your
-                                vaccination. Once your information has been
-                                submitted, it may take about 7 business days for
-                                it to appear in Health Gateway.
+                                If you would like to add other types of vaccine
+                                records to your Health Gateway account, contact
+                                your local public health unit.
                             </p>
                         </div></b-card-text
                     >
@@ -162,8 +144,8 @@
                     block
                     variant="info"
                     class="text-left"
-                    >I received my COVID-19 vaccine in BC, but it’s not showing
-                    in Health Gateway. What should I do?
+                    >My COVID-19 vaccine record has an error, or my COVID-19
+                    vaccine record is missing. What should I do?
                 </b-button>
             </b-card-header>
             <b-collapse id="accordion-faqAnswer3" role="tabpanel">
@@ -171,38 +153,23 @@
                     <b-card-text
                         ><div data-testid="answerTxt">
                             <p>
-                                Your vaccine will usually appear in Health
-                                Gateway within 48 hours, but with the thousands
-                                of vaccinations happening each day, sometimes
-                                records can take a bit of time to be added.
-                                Please check back again.
+                                If you received your COVID-19 vaccine in BC,
+                                your vaccine will usually appear in Health
+                                Gateway within 48 hours.
                             </p>
                             <p>
-                                Once it has been 8 weeks since your first dose,
-                                you can call the Get Vaccinated line at
-                                1-833-838-2323 to book your second dose
-                                appointment. If your first dose still isn’t
-                                showing, let the call centre agent know. You
-                                will be asked to bring proof of your first dose
-                                with you to your second dose appointment.
-                            </p>
-                            <p>
-                                If you will not be booking another COVID-19
-                                vaccine appointment and your vaccine record(s)
-                                are not showing in Health Gateway, please
-                                complete the online form at
+                                Please complete the online form at
                                 <a
                                     href="https://www.gov.bc.ca/vaccinerecord"
                                     target="blank_"
-                                    >gov.bc.ca/vaccinerecord</a
-                                >. You will need to upload proof of your
-                                vaccine(s). Once your information has been
-                                submitted, it may take about 7 business days for
-                                it to appear in Health Gateway. (Note: The
-                                easiest way is to bring your first dose record
-                                with you to your second dose appointment. Only
-                                use the online form if you are not going to
-                                another appointment.)
+                                    >immunizationrecord.gov.bc.ca</a
+                                >.
+                            </p>
+                            <p>
+                                Note that any discrepancies in your immunization
+                                provider, lot number or provider/clinic do not
+                                affect the validity of your BC Vaccine Card or
+                                federal proof.
                             </p>
                         </div></b-card-text
                     >
@@ -270,12 +237,12 @@
                                 most immunizations administered by public health
                                 and pharmacies in BC. However, immunizations
                                 administered by family practice or travel
-                                clinics are not recorded in the Registry. Note
-                                that immunizations administered by a pharmacy
-                                may be displayed in your profile as a dispensed
-                                medication rather than an immunization , but
-                                these will be added to the Registry in the
-                                future.
+                                clinics are not recorded in the Registry.
+                                Immunizations administered by a pharmacy may be
+                                displayed as a dispensed medication rather than
+                                an immunization. If you can’t find an
+                                immunization record, try searching your
+                                dispensed medications.
                             </p>
                         </div></b-card-text
                     >
@@ -303,10 +270,10 @@
                     <b-card-text
                         ><div data-testid="answerTxt">
                             <p>
-                                The Health Gateway is a provincial service which
-                                provides British Columbians with access to
-                                information, regardless of where they received
-                                care or services.
+                                Health Gateway is a provincial service that
+                                provides British Columbians with access to their
+                                health information, regardless of where they
+                                received care or services.
                             </p>
                             <p>
                                 My Health and other regional portals provide
@@ -372,14 +339,21 @@
                     <b-card-text
                         ><div data-testid="answerTxt">
                             <p>
-                                Special Authority request(s) that your
-                                prescriber has made since March 2021 are being
-                                added gradually to the Health Gateway. If a
-                                request is not here yet, please check back. If
-                                you have any questions, talk to your prescriber
-                                or pharmacist, or call 1-800-663-7100
-                                (toll-free) or 604-683-7151 (from the Lower
-                                Mainland).
+                                Special Authority requests that your prescriber
+                                has made since March 2021 are being added
+                                gradually to the Health Gateway. The Special
+                                Authority team is currently experiencing a high
+                                volume of requests. Expected turnaround is 1
+                                business day for urgent requests and 12-16 weeks
+                                for regular requests. Visit the
+                                <a
+                                    href="https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/prescribers/special-authority "
+                                    target="blank_"
+                                    >Special Authority site</a
+                                >. for more information. If you have any
+                                questions, talk to your prescriber or
+                                pharmacist, or call 1-800-663-7100 (toll-free)
+                                or 604-683-7151 (from the Lower Mainland).
                             </p>
                         </div></b-card-text
                     >
@@ -398,10 +372,88 @@
                     block
                     variant="info"
                     class="text-left"
-                    >How frequently do you add new features?</b-button
+                    >How do I sign up to get a text message when my (or my
+                    child’s) COVID-19 test results are available?</b-button
                 >
             </b-card-header>
             <b-collapse id="accordion-faqAnswer9" role="tabpanel">
+                <b-card-body>
+                    <b-card-text
+                        ><div data-testid="answerTxt">
+                            <p>
+                                To get a text message when your COVID-19 test
+                                results are available, you must add and verify
+                                your mobile phone number in your Health Gateway
+                                account. Most people do this step when they
+                                register for their Health Gateway account. To
+                                check if you have a verified mobile phone
+                                number, go to your Profile. You only need to do
+                                this once.
+                            </p>
+                        </div></b-card-text
+                    >
+                </b-card-body>
+            </b-collapse>
+        </b-card>
+        <b-card no-body class="mb-1 border-0">
+            <b-card-header
+                header-tag="header"
+                class="p-1 faq-header"
+                role="tab"
+            >
+                <b-button
+                    v-b-toggle.accordion-faqAnswer10
+                    data-testid="questionBtn"
+                    block
+                    variant="info"
+                    class="text-left"
+                    >I’m having trouble adding my child/dependent to my Health
+                    Gateway account. What should I do?</b-button
+                >
+            </b-card-header>
+            <b-collapse id="accordion-faqAnswer10" role="tabpanel">
+                <b-card-body>
+                    <b-card-text
+                        ><div data-testid="answerTxt">
+                            <p>
+                                This service requires that your dependent have a
+                                BC Services Card (not a Care Card). To add a
+                                dependent, type their full name exactly as it
+                                appears on their BC Services Card, including any
+                                middle names. If that doesn’t work, try other
+                                slight variations of the name (e.g., put the
+                                name in all capital letters, remove any hyphens,
+                                or try different combinations of the given and
+                                last names).
+                            </p>
+                            <p>
+                                If you are still unable to add your dependent,
+                                email us at
+                                <a href="mailto:HealthGateway@gov.bc.ca"
+                                    >HealthGateway@gov.bc.ca</a
+                                >.
+                            </p>
+                        </div></b-card-text
+                    >
+                </b-card-body>
+            </b-collapse>
+        </b-card>
+        <b-card no-body class="mb-1 border-0">
+            <b-card-header
+                header-tag="header"
+                class="p-1 faq-header"
+                role="tab"
+            >
+                <b-button
+                    v-b-toggle.accordion-faqAnswer11
+                    data-testid="questionBtn"
+                    block
+                    variant="info"
+                    class="text-left"
+                    >How frequently do you add new features?</b-button
+                >
+            </b-card-header>
+            <b-collapse id="accordion-faqAnswer11" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -425,12 +477,7 @@
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-#pageTitle {
-    color: $primary;
-}
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
+
 .faq-header {
     button {
         background-color: $soft_background !important;

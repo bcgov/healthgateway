@@ -84,10 +84,19 @@ namespace HealthGateway.Database.Delegates
         public DBResult<UserFeedback> GetUserFeedback(Guid feedbackId)
         {
             this.logger.LogTrace($"Getting user feedback from DB... {feedbackId}");
-            UserFeedback feedback = this.dbContext.UserFeedback.Find(feedbackId);
+            UserFeedback? feedback = this.dbContext.UserFeedback.Find(feedbackId);
             DBResult<UserFeedback> result = new DBResult<UserFeedback>();
-            result.Payload = feedback;
-            result.Status = feedback != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            if (feedback != null)
+            {
+                result.Payload = feedback;
+                result.Status = DBStatusCode.Read;
+            }
+            else
+            {
+                this.logger.LogInformation($"Unable to find feedback using ID: {feedbackId}");
+                result.Status = DBStatusCode.NotFound;
+            }
+
             this.logger.LogDebug($"Finished getting user feedback from DB... {JsonSerializer.Serialize(result)}");
             return result;
         }

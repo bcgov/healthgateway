@@ -278,23 +278,27 @@ export default class CommunicationTable extends Vue {
     }
 
     private checkDisabled(item: Communication) {
-        const now = new Date();
+        const now = new DateWrapper();
         if (
             item.communicationTypeCode === CommunicationType.Banner ||
             item.communicationTypeCode === CommunicationType.InApp
         ) {
-            const expiryDateTime = new Date(item.expiryDateTime);
+            const expiryDateTime = new DateWrapper(item.expiryDateTime, {
+                isUtc: true,
+            });
             if (
                 item.communicationStatusCode != CommunicationStatus.Draft &&
-                expiryDateTime < now
+                expiryDateTime.isBefore(now)
             ) {
                 return true;
             }
         } else if (item.communicationTypeCode === CommunicationType.Email) {
-            const scheduledDateTime = new Date(item.scheduledDateTime);
+            const scheduledDateTime = new DateWrapper(item.scheduledDateTime, {
+                isUtc: true,
+            });
             if (
                 item.communicationStatusCode != CommunicationStatus.Draft &&
-                scheduledDateTime < now
+                scheduledDateTime.isBefore(now)
             ) {
                 return true;
             }
@@ -373,8 +377,9 @@ export default class CommunicationTable extends Vue {
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
-                    message: "Add communication failed, please try again",
+                    message: err.resultMessage,
                 };
+                this.loadCommunicationList();
                 console.log(err);
             })
             .finally(() => {
@@ -408,14 +413,15 @@ export default class CommunicationTable extends Vue {
                 };
                 this.loadCommunicationList();
             })
-            .catch((err) => {
+            .catch((error) => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
-                    message: "Error updating communication. Please try again.",
+                    message: error.resultMessage,
                 };
-                console.log(err);
+                this.loadCommunicationList();
+                console.log(error);
             })
             .finally(() => {
                 this.isLoading = false;

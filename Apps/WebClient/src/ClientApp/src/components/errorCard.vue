@@ -29,7 +29,7 @@ export default class ErrorCardComponent extends Vue {
         data-testid="errorBanner"
         variant="danger"
         dismissible
-        class="no-print mt-3 mx-2"
+        class="no-print m-3 m-md-4"
         :show="isShowing"
         @dismissed="dismissBanner"
     >

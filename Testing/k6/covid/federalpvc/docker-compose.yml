@@ -1,0 +1,13 @@
+version: '3.4'
+services:
+  k6:
+    image: loadimpact/k6:latest
+    command: run /k6_pvcpdf.js --insecure-skip-tls-verify
+    volumes:
+      - ./k6_pvcpdf.js:/k6_pvcpdf.js
+      - ./papaparse.js:/papaparse.js
+      - ./data.csv:/data.csv
+    environment: 
+      - "HG_TYPE=${HG_TYPE}"
+      - "HG_ENV=${HG_ENV}"
+      - "HG_KEY=${HG_KEY}"

@@ -19,6 +19,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
     using System.Net;
     using System.Net.Http;
     using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
@@ -51,13 +52,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             };
 
             string json = @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true,
-                WriteIndented = true,
-            };
-            JWTModel? expected = JsonSerializer.Deserialize<JWTModel>(json, options);
+            JWTModel? expected = JsonSerializer.Deserialize<JWTModel>(json);
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<IAuthenticationDelegate> logger = loggerFactory.CreateLogger<IAuthenticationDelegate>();
             var handlerMock = new Mock<HttpMessageHandler>();
@@ -95,13 +90,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
                 ClientSecret = "SOME_SECRET",
             };
             string json = @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true,
-                WriteIndented = true,
-            };
-            JWTModel? expected = JsonSerializer.Deserialize<JWTModel>(json, options);
+            JWTModel? expected = JsonSerializer.Deserialize<JWTModel>(json);
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<IAuthenticationDelegate> logger = loggerFactory.CreateLogger<IAuthenticationDelegate>();
             var handlerMock = new Mock<HttpMessageHandler>();

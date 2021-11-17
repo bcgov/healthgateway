@@ -47,7 +47,6 @@ import {
     IAuthenticationService,
     ICommunicationService,
     IConfigService,
-    ICredentialService,
     IDependentService,
     IEncounterService,
     IHttpDelegate,
@@ -138,9 +137,6 @@ configService.getConfiguration().then((config: ExternalConfiguration) => {
     const userRatingService: IUserRatingService = container.get(
         SERVICE_IDENTIFIER.UserRatingService
     );
-    const credentialService: ICredentialService = container.get(
-        SERVICE_IDENTIFIER.CredentialService
-    );
     const dependentService: IDependentService = container.get(
         SERVICE_IDENTIFIER.DependentService
     );
@@ -172,7 +168,6 @@ configService.getConfiguration().then((config: ExternalConfiguration) => {
     communicationService.initialize(httpDelegate);
     userCommentService.initialize(config, httpDelegate);
     userRatingService.initialize(httpDelegate);
-    credentialService.initialize(config, httpDelegate);
     dependentService.initialize(config, httpDelegate);
     reportService.initialize(httpDelegate);
     vaccinationStatusService.initialize(config, httpDelegate);

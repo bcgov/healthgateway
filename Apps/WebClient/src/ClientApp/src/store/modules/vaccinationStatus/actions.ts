@@ -71,43 +71,6 @@ export const actions: VaccinationStatusActions = {
                 });
         });
     },
-    retrieveVaccineStatusPdf(
-        context,
-        params: {
-            phn: string;
-            dateOfBirth: StringISODate;
-            dateOfVaccine: StringISODate;
-        }
-    ): Promise<CovidVaccineRecord> {
-        context.commit("setPdfRequested");
-
-        const vaccinationStatusService: IVaccinationStatusService =
-            container.get<IVaccinationStatusService>(
-                SERVICE_IDENTIFIER.VaccinationStatusService
-            );
-
-        return new Promise((resolve, reject) => {
-            vaccinationStatusService
-                .getPublicVaccineStatusPdf(
-                    params.phn,
-                    params.dateOfBirth,
-                    params.dateOfVaccine
-                )
-                .then((result) => {
-                    if (result.resultStatus === ResultType.Success) {
-                        const payload = result.resourcePayload;
-                        resolve(payload);
-                    } else {
-                        context.dispatch("handlePdfError", result.resultError);
-                        reject(result.resultError);
-                    }
-                })
-                .catch((error) => {
-                    context.dispatch("handlePdfError", error);
-                    reject(error);
-                });
-        });
-    },
     handleError(context, error: ResultError) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -127,6 +90,66 @@ export const actions: VaccinationStatusActions = {
 
         context.commit("vaccinationStatusError", bannerError);
     },
+    retrievePublicVaccineRecord(
+        context,
+        params: {
+            phn: string;
+            dateOfBirth: StringISODate;
+            dateOfVaccine: StringISODate;
+        }
+    ): Promise<CovidVaccineRecord> {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        logger.debug(`Retrieving Vaccination Record`);
+        context.commit("setPublicVaccineRecordRequested");
+        const vaccinationStatusService: IVaccinationStatusService =
+            container.get<IVaccinationStatusService>(
+                SERVICE_IDENTIFIER.VaccinationStatusService
+            );
+
+        return new Promise((resolve, reject) => {
+            vaccinationStatusService
+                .getPublicVaccineStatusPdf(
+                    params.phn,
+                    params.dateOfBirth,
+                    params.dateOfVaccine
+                )
+                .then((result) => {
+                    const payload = result.resourcePayload;
+                    if (result.resultStatus === ResultType.Success) {
+                        context.commit("setPublicVaccineRecord", payload);
+                        resolve(payload);
+                    } else if (
+                        result.resultError?.actionCode === ActionType.Refresh &&
+                        !payload.loaded &&
+                        payload.retryin > 0
+                    ) {
+                        logger.info("Public Vaccination Proof not loaded");
+                        context.commit(
+                            "setPublicVaccineRecordStatusMessage",
+                            "We're busy but will continue to try to fetch your proof of vaccination...."
+                        );
+                        setTimeout(() => {
+                            logger.info(
+                                "Re-querying for public proof of vaccination"
+                            );
+                            context.dispatch("retrievePublicVaccineRecord", {
+                                phn: params.phn,
+                                dateOfBirth: params.dateOfBirth,
+                                dateOfVaccine: params.dateOfVaccine,
+                            });
+                        }, payload.retryin);
+                        resolve(payload);
+                    } else {
+                        context.dispatch("handlePdfError", result.resultError);
+                        reject(result.resultError);
+                    }
+                })
+                .catch((error) => {
+                    context.dispatch("handlePdfError", error);
+                    reject(error);
+                });
+        });
+    },
     handlePdfError(context, error: ResultError) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -139,7 +162,7 @@ export const actions: VaccinationStatusActions = {
             errorCode: "",
         };
 
-        context.commit("pdfError", bannerError);
+        context.commit("setPublicVaccineRecordError", bannerError);
     },
     retrieveAuthenticatedVaccineStatus(
         context,
@@ -183,7 +206,7 @@ export const actions: VaccinationStatusActions = {
                             );
                             setTimeout(() => {
                                 logger.info(
-                                    "Re-querying for vaccination status"
+                                    "Re-querying for authenticated proof of vaccination"
                                 );
                                 context.dispatch(
                                     "retrieveAuthenticatedVaccineStatus",
@@ -207,6 +230,23 @@ export const actions: VaccinationStatusActions = {
                     });
             }
         });
+    },
+    handleAuthenticatedError(context, error: ResultError) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
+        logger.error(`ERROR: ${JSON.stringify(error)}`);
+
+        const title = "Error Retrieving Vaccine Card";
+
+        context.commit(
+            "authenticatedVaccinationStatusError",
+            ErrorTranslator.toBannerError(title, error)
+        );
+        context.dispatch(
+            "errorBanner/addResultError",
+            { message: title, error },
+            { root: true }
+        );
     },
     retrieveAuthenticatedVaccineRecord(
         context,
@@ -268,23 +308,6 @@ export const actions: VaccinationStatusActions = {
                     reject(error);
                 });
         });
-    },
-    handleAuthenticatedError(context, error: ResultError) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
-        logger.error(`ERROR: ${JSON.stringify(error)}`);
-
-        const title = "Error Retrieving Vaccine Card";
-
-        context.commit(
-            "authenticatedVaccinationStatusError",
-            ErrorTranslator.toBannerError(title, error)
-        );
-        context.dispatch(
-            "errorBanner/addResultError",
-            { message: title, error },
-            { root: true }
-        );
     },
     handleAuthenticatedPdfError(context, error: ResultError) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);

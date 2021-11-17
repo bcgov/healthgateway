@@ -25,6 +25,7 @@ namespace HealthGateway.Common.Delegates
     using System.Net.Mime;
     using System.Text;
     using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
@@ -182,48 +183,6 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<VaccineProofResponse>> GetStatusAsync(string id)
-        {
-            this.logger.LogTrace($"Retrieving status of job {id} from BC Mail Plus...");
-            RequestResult<VaccineProofResponse> retVal = new()
-            {
-                ResultStatus = ResultType.Error,
-                PageIndex = 0,
-            };
-
-            string endpointString = string.Format(CultureInfo.InvariantCulture, "{0}{1}", this.bcMailPlusEndpoint, "status");
-
-            BcmpJobStatusesQuery statusQuery = new(new List<string>() { id });
-            using StringContent httpContent = new(JsonSerializer.Serialize(statusQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
-
-            RequestResult<BcmpJobStatusesResult> requestResult = await this.PostAsync<BcmpJobStatusesResult>(endpointString, httpContent).ConfigureAwait(true);
-            BcmpJobStatusResult? jobStatusResult = requestResult.ResourcePayload?.StatusResults?.SingleOrDefault(r => r.JobId == id);
-            if (jobStatusResult != null)
-            {
-                retVal.ResourcePayload = new VaccineProofResponse()
-                {
-                    Id = jobStatusResult.JobId,
-                    Status = jobStatusResult.JobStatus switch
-                    {
-                        BcmpJobStatus.Started => VaccineProofRequestStatus.Started,
-                        BcmpJobStatus.Completed => VaccineProofRequestStatus.Completed,
-                        _ => VaccineProofRequestStatus.Unknown,
-                    },
-                };
-                retVal.ResultStatus = ResultType.Success;
-                retVal.TotalResultCount = 1;
-                this.logger.LogTrace($"The BC Mail Plus job {jobStatusResult.JobId} has a status of {jobStatusResult.JobStatus}");
-            }
-            else
-            {
-                retVal.ResultStatus = requestResult.ResultStatus;
-                retVal.ResultError = requestResult.ResultError;
-            }
-
-            return retVal;
-        }
-
-        /// <inheritdoc/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Prevent exception propagation")]
         public async Task<RequestResult<ReportModel>> GetAssetAsync(Uri assetUri)
         {
@@ -244,76 +203,9 @@ namespace HealthGateway.Common.Delegates
                 {
                     case HttpStatusCode.OK:
                         byte[] payload = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(true);
-                        this.logger.LogTrace($"Response: {response}");
-                        retVal.ResourcePayload = new()
+                        if (payload.Length > 0)
                         {
-                            Data = Convert.ToBase64String(payload),
-                            FileName = "VaccineProof.pdf",
-                        };
-                        retVal.ResultStatus = ResultType.Success;
-                        retVal.TotalResultCount = 1;
-                        break;
-                    case HttpStatusCode.NotFound:
-                        retVal.ResultStatus = ResultType.ActionRequired;
-                        retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine Proof is not yet available", ActionType.Refresh);
-                        break;
-                    default:
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"HTTP Error {response.StatusCode} encountered from BC Mail Plus", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
-                        break;
-                }
-            }
-            catch (Exception e)
-            {
-                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception while fetching Vaccine Proof: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
-                this.logger.LogError($"Unexpected exception while fetching Vaccine Proof {e}");
-            }
-
-            return retVal;
-        }
-
-        /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Prevent exception propagation")]
-        public async Task<RequestResult<ReportModel>> GetAssetAsync(string id)
-        {
-            RequestResult<ReportModel> retVal = new()
-            {
-                ResultStatus = ResultType.Error,
-                PageIndex = 0,
-            };
-
-            this.logger.LogTrace($"Retrieving document associated with job {id} from BC Mail Plus...");
-            string endpointString = string.Format(CultureInfo.InvariantCulture, "{0}{1}", this.bcMailPlusEndpoint, "asset");
-
-            BcmpAssetQuery assetQuery = new() { JobId = id, AssetType = "RECORD_PDF" };
-            using StringContent httpContent = new(JsonSerializer.Serialize(assetQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
-
-            using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-            Uri endpoint = new(endpointString);
-
-            try
-            {
-                HttpResponseMessage response = await client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
-                this.logger.LogTrace($"Response: {response}");
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.OK:
-                        byte[] payload = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(true);
-
-                        byte[] errorMessagePrefix = Encoding.UTF8.GetBytes("ERROR: ");
-                        if (payload.Length == 0)
-                        {
-                            retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine Proof document is empty", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
-                            this.logger.LogWarning("Vaccine Proof document is empty");
-                        }
-                        else if (payload.Length > errorMessagePrefix.Length && payload.Take(errorMessagePrefix.Length).SequenceEqual(errorMessagePrefix))
-                        {
-                            retVal.ResultError = new RequestResultError() { ResultMessage = $"Error encountered from BC Mail Plus", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
-                            this.logger.LogWarning($"Error Details:{Environment.NewLine}{Encoding.UTF8.GetString(payload)}");
-                        }
-                        else
-                        {
+                            this.logger.LogTrace($"Response: {response}");
                             retVal.ResourcePayload = new()
                             {
                                 Data = Convert.ToBase64String(payload),
@@ -322,10 +214,18 @@ namespace HealthGateway.Common.Delegates
                             retVal.ResultStatus = ResultType.Success;
                             retVal.TotalResultCount = 1;
                         }
+                        else
+                        {
+                            retVal.ResultError = new RequestResultError() { ResultMessage = $"Empty file returned from BC Mail Plus", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
+                        }
 
                         break;
+                    case HttpStatusCode.NotFound:
+                        retVal.ResultStatus = ResultType.ActionRequired;
+                        retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine Proof is not yet available", ActionType.Refresh);
+                        break;
                     default:
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"HTTP Error encountered from BC Mail Plus", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
+                        retVal.ResultError = new RequestResultError() { ResultMessage = $"HTTP Error {response.StatusCode} encountered from BC Mail Plus", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
                         break;
                 }
             }
@@ -367,14 +267,7 @@ namespace HealthGateway.Common.Delegates
                         }
                         else
                         {
-                            var options = new JsonSerializerOptions
-                            {
-                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                IgnoreNullValues = true,
-                                WriteIndented = true,
-                            };
-
-                            T? requestResult = JsonSerializer.Deserialize<T>(payload, options);
+                            T? requestResult = JsonSerializer.Deserialize<T>(payload);
                             if (requestResult != null)
                             {
                                 retVal.ResourcePayload = requestResult;

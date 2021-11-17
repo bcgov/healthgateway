@@ -98,14 +98,6 @@ namespace HealthGateway.Common.ErrorHandling
         }
 
         /// <summary>
-        /// Gets the WalletIssuer service code.
-        /// </summary>
-        public static ServiceType WalletIssuer
-        {
-            get { return new ServiceType("WAL"); }
-        }
-
-        /// <summary>
         /// Gets the CDogs service code.
         /// </summary>
         public static ServiceType CDogs

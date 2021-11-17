@@ -107,7 +107,6 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<IAdminTagDelegate, DBAdminTagDelegate>();
             services.AddTransient<IFeedbackTagDelegate, DBFeedbackTagDelegate>();
             services.AddTransient<IImmunizationAdminDelegate, RestImmunizationAdminDelegate>();
-            services.AddTransient<IMailDelegate, SFTPMailDelegate>();
             services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
 

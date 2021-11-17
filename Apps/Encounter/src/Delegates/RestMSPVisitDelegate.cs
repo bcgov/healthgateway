@@ -21,7 +21,6 @@ namespace HealthGateway.Encounter.Delegates
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
-    using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.ErrorHandling;
@@ -100,22 +99,16 @@ namespace HealthGateway.Encounter.Delegates
                     RequestorIP = ipAddress,
                     Query = query,
                 };
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    IgnoreNullValues = true,
-                    WriteIndented = true,
-                };
                 try
                 {
-                    string json = JsonSerializer.Serialize(request, options);
+                    string json = JsonSerializer.Serialize(request);
                     using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
                     Uri endpoint = new Uri(this.baseURL, this.odrConfig.MSPVisitsEndpoint);
                     HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                     if (response.IsSuccessStatusCode)
                     {
-                        MSPVisitHistory? visitHistory = JsonSerializer.Deserialize<MSPVisitHistory>(payload, options);
+                        MSPVisitHistory? visitHistory = JsonSerializer.Deserialize<MSPVisitHistory>(payload);
                         retVal.ResultStatus = Common.Constants.ResultType.Success;
                         retVal.ResourcePayload = visitHistory?.Response;
                         retVal.TotalResultCount = visitHistory?.Response?.TotalRecords;

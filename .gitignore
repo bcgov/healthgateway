@@ -38,3 +38,6 @@ Thumbs.db
 .dropox.attr
 .dropbox.cache
 Testing/functional/e2e/debug.log
+
+# CSV files and Logs
+*.log

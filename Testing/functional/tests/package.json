@@ -12,9 +12,9 @@
     "author": "",
     "license": "Apache-2.0",
     "devDependencies": {
-        "browserstack-cypress-cli": "^1.6.0",
+        "browserstack-cypress-cli": "^1.0.1",
         "cy-verify-downloads": "^0.0.5",
-        "cypress": "^6.9.1",
+        "cypress": "^9.0.0",
         "cypress-multi-reporters": "^1.4.0",
         "cypress-xpath": "^1.6.0",
         "eslint": "^7.18.0",

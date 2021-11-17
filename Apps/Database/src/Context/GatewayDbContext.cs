@@ -78,9 +78,6 @@ namespace HealthGateway.Database.Context
         public DbSet<EventLog> EventLog { get; set; } = null!;
         public DbSet<AdminTag> AdminTag { get; set; } = null!;
         public DbSet<UserFeedbackTag> UserFeedbackTag { get; set; } = null!;
-        public DbSet<WalletConnection> WalletConnection { get; set; } = null!;
-        public DbSet<WalletCredential> WalletCredential { get; set; } = null!;
-        public DbSet<VaccineProofRequestCache> VaccineProofRequestCache { get; set; } = null!;
 
 #pragma warning restore CS1591, SA1600
 
@@ -328,65 +325,6 @@ namespace HealthGateway.Database.Context
                 .HasIndex(p => p.Name)
                 .IsUnique(true);
 
-            // Wallet Setup
-            modelBuilder.Entity<WalletConnection>()
-                .HasOne<WalletConnectionStatusCode>()
-                .WithMany()
-                .HasPrincipalKey(k => k.StatusCode)
-                .HasForeignKey(k => k.Status);
-
-            var walletConnectionStatusConverter = new ValueConverter<WalletConnectionStatus, string>(
-                v => EnumUtility.ToEnumString<WalletConnectionStatus>(v, false),
-                v => EnumUtility.ToEnum<WalletConnectionStatus>(v, false));
-
-            modelBuilder.Entity<WalletConnection>()
-                .Property(e => e.Status)
-                .HasConversion(walletConnectionStatusConverter);
-
-            modelBuilder.Entity<WalletConnectionStatusCode>()
-                .Property(e => e.StatusCode)
-                .HasConversion(walletConnectionStatusConverter);
-
-            modelBuilder.Entity<WalletCredential>()
-                .HasOne<WalletCredentialStatusCode>()
-                .WithMany()
-                .HasPrincipalKey(k => k.StatusCode)
-                .HasForeignKey(k => k.Status);
-
-            var walletCredentialStatusConverter = new ValueConverter<WalletCredentialStatus, string>(
-                v => EnumUtility.ToEnumString<WalletCredentialStatus>(v, false),
-                v => EnumUtility.ToEnum<WalletCredentialStatus>(v, false));
-
-            modelBuilder.Entity<WalletCredential>()
-                .Property(e => e.Status)
-                .HasConversion(walletCredentialStatusConverter);
-
-            modelBuilder.Entity<WalletCredentialStatusCode>()
-                .Property(e => e.StatusCode)
-                .HasConversion(walletCredentialStatusConverter);
-
-            // Create Foreign keys for VaccineProofRequestCache code tables.
-            modelBuilder.Entity<VaccineProofRequestCache>()
-                  .HasOne<VaccineProofTemplateCode>()
-                  .WithMany()
-                  .HasPrincipalKey(k => k.TemplateCode)
-                  .HasForeignKey(k => k.ProofTemplate);
-
-            var vaccineProofTemplateConvertor = new ValueConverter<VaccineProofTemplate, string>(
-                v => EnumUtility.ToEnumString<VaccineProofTemplate>(v, true),
-                v => EnumUtility.ToEnum<VaccineProofTemplate>(v, true));
-
-            modelBuilder.Entity<VaccineProofRequestCache>()
-                .Property(e => e.ProofTemplate)
-                .HasConversion(vaccineProofTemplateConvertor);
-
-            modelBuilder.Entity<VaccineProofTemplateCode>()
-                .Property(e => e.TemplateCode)
-                .HasConversion(vaccineProofTemplateConvertor);
-
-            // Create Composite Key for Vaccine Proof Request Cache
-            modelBuilder.Entity<VaccineProofRequestCache>().HasAlternateKey(k => new { k.PersonIdentifier, k.ProofTemplate, k.ShcImageHash });
-
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
@@ -397,8 +335,6 @@ namespace HealthGateway.Database.Context
             this.SeedCommunication(modelBuilder);
             this.SeedResourceDelegateReason(modelBuilder);
             this.SeedCommentEntryTypeCode(modelBuilder);
-            this.SeedWalletCodes(modelBuilder);
-            this.SeedVaccineProofTemplateCodes(modelBuilder);
         }
 
         /// <summary>
@@ -1007,116 +943,6 @@ namespace HealthGateway.Database.Context
                 {
                     CommentEntryCode = CommentEntryType.Encounter,
                     Description = "Comment for an Encounter Entry",
-                    CreatedBy = UserId.DefaultUser,
-                    CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = UserId.DefaultUser,
-                    UpdatedDateTime = this.DefaultSeedDate,
-                });
-        }
-
-        /// <summary>
-        /// Seeds the Wallet Connection and Credential codes.
-        /// </summary>
-        /// <param name="modelBuilder">The passed in model builder.</param>
-        private void SeedWalletCodes(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<WalletConnectionStatusCode>().HasData(
-                new WalletConnectionStatusCode
-                {
-                    StatusCode = WalletConnectionStatus.Pending,
-                    Description = "Wallet Connection is Pending",
-                    CreatedBy = UserId.DefaultUser,
-                    CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = UserId.DefaultUser,
-                    UpdatedDateTime = this.DefaultSeedDate,
-                },
-                new WalletConnectionStatusCode
-                {
-                    StatusCode = WalletConnectionStatus.Connected,
-                    Description = "Wallet Connection has been created and added",
-                    CreatedBy = UserId.DefaultUser,
-                    CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = UserId.DefaultUser,
-                    UpdatedDateTime = this.DefaultSeedDate,
-                },
-                new WalletConnectionStatusCode
-                {
-                    StatusCode = WalletConnectionStatus.Disconnected,
-                    Description = "Wallet Connection has been revoked",
-                    CreatedBy = UserId.DefaultUser,
-                    CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = UserId.DefaultUser,
-                    UpdatedDateTime = this.DefaultSeedDate,
-                });
-
-            modelBuilder.Entity<WalletCredentialStatusCode>().HasData(
-                new WalletCredentialStatusCode
-                {
-                    StatusCode = WalletCredentialStatus.Created,
-                    Description = "Wallet Credential has been created",
-                    CreatedBy = UserId.DefaultUser,
-                    CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = UserId.DefaultUser,
-                    UpdatedDateTime = this.DefaultSeedDate,
-                },
-                new WalletCredentialStatusCode
-                {
-                    StatusCode = WalletCredentialStatus.Added,
-                    Description = "Credential has been added to Wallet",
-                    CreatedBy = UserId.DefaultUser,
-                    CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = UserId.DefaultUser,
-                    UpdatedDateTime = this.DefaultSeedDate,
-                },
-                new WalletCredentialStatusCode
-                {
-                    StatusCode = WalletCredentialStatus.Revoked,
-                    Description = "Credential has been revoked",
-                    CreatedBy = UserId.DefaultUser,
-                    CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = UserId.DefaultUser,
-                    UpdatedDateTime = this.DefaultSeedDate,
-                });
-        }
-
-        /// <summary>
-        /// Seeds the Vaccine Proof Template codes.
-        /// </summary>
-        /// <param name="modelBuilder">The passed in model builder.</param>
-        private void SeedVaccineProofTemplateCodes(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<VaccineProofTemplateCode>().HasData(
-                new VaccineProofTemplateCode
-                {
-                    TemplateCode = VaccineProofTemplate.Provincial,
-                    Description = "The Provincial template (single page)",
-                    CreatedBy = UserId.DefaultUser,
-                    CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = UserId.DefaultUser,
-                    UpdatedDateTime = this.DefaultSeedDate,
-                },
-                new VaccineProofTemplateCode
-                {
-                    TemplateCode = VaccineProofTemplate.Federal,
-                    Description = "The Federal template (single page)",
-                    CreatedBy = UserId.DefaultUser,
-                    CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = UserId.DefaultUser,
-                    UpdatedDateTime = this.DefaultSeedDate,
-                },
-                new VaccineProofTemplateCode
-                {
-                    TemplateCode = VaccineProofTemplate.Combined,
-                    Description = "The Combined Federal and Provincial template",
-                    CreatedBy = UserId.DefaultUser,
-                    CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = UserId.DefaultUser,
-                    UpdatedDateTime = this.DefaultSeedDate,
-                },
-                new VaccineProofTemplateCode
-                {
-                    TemplateCode = VaccineProofTemplate.CombinedCover,
-                    Description = "The Combined Federal and Provincial template with a cover page",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
