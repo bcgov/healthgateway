@@ -87,9 +87,11 @@ namespace HealthGateway.Admin.Services
         {
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
             TimeSpan ts = new(0, timeOffset, 0);
-            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date;
-            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date;
-            return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate, ts);
+            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
+            startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
+            endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+            return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
         }
 
         /// <inheritdoc />
@@ -142,9 +144,11 @@ namespace HealthGateway.Admin.Services
         {
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
             TimeSpan ts = new(0, timeOffset, 0);
-            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date;
-            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date;
-            return this.ratingDelegate.GetSummary(startDate, endDate, ts);
+            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
+            startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
+            endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+            return this.ratingDelegate.GetSummary(startDate, endDate);
         }
     }
 }
