@@ -81,11 +81,11 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public IDictionary<string, int> GetSummary(DateTime startDate, DateTime endDate, TimeSpan offset)
+        public IDictionary<string, int> GetSummary(DateTime startDate, DateTime endDate)
         {
             this.logger.LogTrace($"Retrieving the ratings summary between {startDate} and {endDate}...");
             return this.dbContext.Rating
-                .Where(r => r.CreatedDateTime.AddMinutes(offset.TotalMinutes).Date >= startDate && r.CreatedDateTime.AddMinutes(offset.TotalMinutes).Date <= endDate && !r.Skip)
+                .Where(r => r.CreatedDateTime >= startDate && r.CreatedDateTime <= endDate && !r.Skip)
                 .GroupBy(x => x.RatingValue)
                 .Select(r => new { Value = r.Key, Count = r.Count() })
                 .ToDictionary(r => r.Value.ToString(CultureInfo.CurrentCulture), r => r.Count);
