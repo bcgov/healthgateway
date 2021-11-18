@@ -58,9 +58,9 @@ export default class COVID19ReportComponent extends Vue {
                 b.labResults[0].collectedDateTime
             );
 
-            return firstDate.isAfter(secondDate)
+            return firstDate.isBefore(secondDate)
                 ? 1
-                : firstDate.isBefore(secondDate)
+                : firstDate.isAfter(secondDate)
                 ? -1
                 : 0;
         });

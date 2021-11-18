@@ -58,9 +58,9 @@ export default class MedicationRequestReportComponent extends Vue {
             const firstDate = new DateWrapper(a.requestedDate);
             const secondDate = new DateWrapper(b.requestedDate);
 
-            return firstDate.isAfter(secondDate)
+            return firstDate.isBefore(secondDate)
                 ? 1
-                : firstDate.isBefore(secondDate)
+                : firstDate.isAfter(secondDate)
                 ? -1
                 : 0;
         });
