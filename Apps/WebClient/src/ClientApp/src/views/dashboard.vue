@@ -201,27 +201,6 @@ export default class DashboardView extends Vue {
         <b-row>
             <b-col cols="12" :lg="cardColumnSize" class="p-3">
                 <hg-card-button
-                    title="BC Vaccine Card"
-                    to="/covid19"
-                    data-testid="bc-vaccine-card-btn"
-                >
-                    <template #icon>
-                        <hg-icon
-                            class="checkmark"
-                            icon="check-circle"
-                            size="extra-large"
-                            square
-                        />
-                    </template>
-                    <div>
-                        View, download and print your BC Vaccine Card. Present
-                        this card as proof of vaccination at some BC businesses,
-                        services and events.
-                    </div>
-                </hg-card-button>
-            </b-col>
-            <b-col cols="12" :lg="cardColumnSize" class="p-3">
-                <hg-card-button
                     title="Health Records"
                     to="/timeline"
                     data-testid="health-records-card-btn"
@@ -261,6 +240,27 @@ export default class DashboardView extends Vue {
                     <div>
                         Download and print your Federal Proof of Vaccination for
                         domestic and international travel.
+                    </div>
+                </hg-card-button>
+            </b-col>
+            <b-col cols="12" :lg="cardColumnSize" class="p-3">
+                <hg-card-button
+                    title="BC Vaccine Card"
+                    to="/covid19"
+                    data-testid="bc-vaccine-card-btn"
+                >
+                    <template #icon>
+                        <hg-icon
+                            class="checkmark"
+                            icon="check-circle"
+                            size="extra-large"
+                            square
+                        />
+                    </template>
+                    <div>
+                        View, download and print your BC Vaccine Card. Present
+                        this card as proof of vaccination at some BC businesses,
+                        services and events.
                     </div>
                 </hg-card-button>
             </b-col>
