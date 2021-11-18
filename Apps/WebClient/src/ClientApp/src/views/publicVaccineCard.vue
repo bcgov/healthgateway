@@ -289,6 +289,8 @@ export default class PublicVaccineCardView extends Vue {
             phn: this.phn.replace(/ /g, ""),
             dateOfBirth: this.dateOfBirth,
             dateOfVaccine: this.dateOfVaccine,
+        }).catch((err) => {
+            this.logger.error(`Error loading public record data: ${err}`);
         });
     }
 
