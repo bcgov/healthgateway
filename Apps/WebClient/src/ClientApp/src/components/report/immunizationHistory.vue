@@ -68,7 +68,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get isRecommendationEmpty() {
-        return this.patientRecommendations.length === 0;
+        return this.visibleRecomendations.length === 0;
     }
 
     private get visibleImmunizations(): ImmunizationEvent[] {
@@ -101,23 +101,49 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         });
     }
 
+    private get visibleRecomendations(): Recommendation[] {
+        let records = this.patientRecommendations.filter(
+            (x) => x.immunization.name !== null && x.immunization.name !== ""
+        );
+
+        records.sort((a, b) => {
+            const firstDateEmpty =
+                a.diseaseDueDate === null || a.diseaseDueDate === undefined;
+            const secondDateEmpty =
+                b.diseaseDueDate === null || b.diseaseDueDate === undefined;
+
+            if (firstDateEmpty && secondDateEmpty) {
+                return 0;
+            } else if (firstDateEmpty) {
+                return 1;
+            } else if (secondDateEmpty) {
+                return -1;
+            }
+
+            const firstDate = new DateWrapper(a.diseaseDueDate);
+            const secondDate = new DateWrapper(b.diseaseDueDate);
+
+            return firstDate.isBefore(secondDate)
+                ? 1
+                : firstDate.isAfter(secondDate)
+                ? -1
+                : 0;
+        });
+
+        return records;
+    }
+
     private get recomendationItems(): RecomendationRow[] {
-        return this.patientRecommendations
-            .filter(
-                (x) =>
-                    x.immunization.name !== null && x.immunization.name !== ""
-            )
-            .map<RecomendationRow>((x) => {
-                return {
-                    immunization: x.immunization.name,
-                    due_date:
-                        x.diseaseDueDate === undefined ||
-                        x.diseaseDueDate === null
-                            ? ""
-                            : DateWrapper.format(x.diseaseDueDate),
-                    status: x.status || "",
-                };
-            });
+        return this.visibleRecomendations.map<RecomendationRow>((x) => {
+            return {
+                immunization: x.immunization.name,
+                due_date:
+                    x.diseaseDueDate === undefined || x.diseaseDueDate === null
+                        ? ""
+                        : DateWrapper.format(x.diseaseDueDate),
+                status: x.status || "",
+            };
+        });
     }
 
     @Watch("isLoading")
