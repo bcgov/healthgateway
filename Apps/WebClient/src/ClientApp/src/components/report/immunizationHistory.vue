@@ -80,11 +80,15 @@ export default class ImmunizationHistoryReportComponent extends Vue {
             const firstDate = new DateWrapper(a.dateOfImmunization);
             const secondDate = new DateWrapper(b.dateOfImmunization);
 
-            return firstDate.isBefore(secondDate)
-                ? 1
-                : firstDate.isAfter(secondDate)
-                ? -1
-                : 0;
+            if (firstDate.isBefore(secondDate)) {
+                return 1;
+            }
+
+            if (firstDate.isAfter(secondDate)) {
+                return -1;
+            }
+
+            return 0;
         });
 
         return records;
@@ -114,20 +118,28 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
             if (firstDateEmpty && secondDateEmpty) {
                 return 0;
-            } else if (firstDateEmpty) {
+            }
+
+            if (firstDateEmpty) {
                 return 1;
-            } else if (secondDateEmpty) {
+            }
+
+            if (secondDateEmpty) {
                 return -1;
             }
 
             const firstDate = new DateWrapper(a.diseaseDueDate);
             const secondDate = new DateWrapper(b.diseaseDueDate);
 
-            return firstDate.isBefore(secondDate)
-                ? 1
-                : firstDate.isAfter(secondDate)
-                ? -1
-                : 0;
+            if (firstDate.isBefore(secondDate)) {
+                return 1;
+            }
+
+            if (firstDate.isAfter(secondDate)) {
+                return -1;
+            }
+
+            return 0;
         });
 
         return records;
