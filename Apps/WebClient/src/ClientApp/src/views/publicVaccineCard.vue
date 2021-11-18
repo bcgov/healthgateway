@@ -566,7 +566,7 @@ export default class PublicVaccineCardView extends Vue {
                                     :allow-future="false"
                                     :min-year="2020"
                                     data-testid="dateOfVaccineInput"
-                                    aria-label="Date of Vaccine (Dose 1 or Dose 2)"
+                                    aria-label="Date of Vaccine (Any Dose)"
                                     @blur="$v.dateOfBirth.$touch()"
                                 />
                                 <b-form-invalid-feedback
