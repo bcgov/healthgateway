@@ -228,10 +228,10 @@ namespace HealthGateway.Database.Context
 
             // Create Foreign keys for UserPreference
             modelBuilder.Entity<UserPreference>()
-            .HasOne<UserProfile>()
-            .WithMany()
-            .HasPrincipalKey(k => k.HdId)
-            .HasForeignKey(k => k.HdId);
+                .HasOne<UserProfile>()
+                .WithMany()
+                .HasPrincipalKey(k => k.HdId)
+                .HasForeignKey(k => k.HdId);
 
             modelBuilder.Entity<Communication>()
                 .HasOne<CommunicationTypeCode>()
