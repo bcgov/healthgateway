@@ -33,6 +33,7 @@ jobs:
 
       - script: |
           set -e
+          export DOTNET_ROLL_FORWARD=Major
           export SONAR_SCANNER_OPTS="-Xmx3072m"
           dotnet sonarscanner begin \
             /o:bcgov-sonarcloud \
