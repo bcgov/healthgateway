@@ -30,7 +30,7 @@ namespace HealthGateway.Laboratory.Controllers
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// The Immunization controller.
+    /// The authenticated laboratory controller.
     /// </summary>
     [Authorize]
     [ApiVersion("1.0")]
