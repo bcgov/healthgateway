@@ -19,7 +19,7 @@ import LoadingComponent from "@/components/loading.vue";
 import VerifySMSComponent from "@/components/modal/verifySMS.vue";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
-import { DateWrapper } from "@/models/dateWrapper";
+import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
 import User, { OidcUserProfile } from "@/models/user";
 import UserProfile from "@/models/userProfile";
@@ -109,7 +109,7 @@ export default class ProfileView extends Vue {
     private userProfileService!: IUserProfileService;
     private userProfile!: UserProfile;
 
-    private lastLoginDateString = "";
+    private lastLoginDateString: string[] | null = [];
 
     private showCloseWarning = false;
 
@@ -121,6 +121,21 @@ export default class ProfileView extends Vue {
         return (
             this.email === null || this.email === undefined || this.email === ""
         );
+    }
+
+    private getLastLoginDateList(
+        lastLoginDateList: StringISODate[] | null
+    ): string[] | null {
+        if (lastLoginDateList !== null && lastLoginDateList.length > 0) {
+            for (let i = 0; i < lastLoginDateList.length; i++) {
+                this.lastLoginDateString?.push(
+                    new DateWrapper(lastLoginDateList[i], {
+                        isUtc: true,
+                    }).format()
+                );
+            }
+        }
+        return null;
     }
 
     private mounted() {
@@ -154,13 +169,9 @@ export default class ProfileView extends Vue {
                         `User Profile: ${JSON.stringify(this.userProfile)}`
                     );
                     this.userProfile = results[1];
-                    this.lastLoginDateString = new DateWrapper(
-                        this.userProfile.lastLoginDateTime,
-                        {
-                            isUtc: true,
-                        }
-                    ).format();
-
+                    this.lastLoginDateString = this.getLastLoginDateList(
+                        results[1].lastLoginDateTime
+                    );
                     this.email = this.userProfile.email;
                     this.emailVerified = this.userProfile.isEmailVerified;
                     this.emailVerificationSent = this.emailVerified;
