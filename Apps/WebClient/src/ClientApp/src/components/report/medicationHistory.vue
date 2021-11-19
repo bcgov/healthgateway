@@ -151,6 +151,7 @@ export default class MedicationHistoryReportComponent extends Vue {
         {
             key: "date",
             thClass: this.headerClass,
+            tdAttr: { "data-testid": "medicationDateItem" },
         },
         {
             key: "din_pin",

@@ -125,6 +125,7 @@ export default class MSPVisitsReportComponent extends Vue {
         {
             key: "date",
             thClass: this.headerClass,
+            tdAttr: { "data-testid": "mspVisitDateItem" },
         },
         {
             key: "specialty_description",
