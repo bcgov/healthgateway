@@ -124,9 +124,9 @@ export default class ProfileView extends Vue {
     }
 
     private getLastLoginDateList(
-        lastLoginDateList: StringISODate[] | null
+        lastLoginDateList: StringISODate[] | undefined
     ): string[] | null {
-        if (lastLoginDateList !== null && lastLoginDateList.length > 0) {
+        if (lastLoginDateList !== undefined && lastLoginDateList.length > 0) {
             for (let i = 0; i < lastLoginDateList.length; i++) {
                 this.lastLoginDateString?.push(
                     new DateWrapper(lastLoginDateList[i], {
@@ -507,7 +507,12 @@ export default class ProfileView extends Vue {
                             >Last Login Date</label
                         >
                         <div id="lastLoginDate">
-                            {{ lastLoginDateString }}
+                            <li
+                                v-for="(item, index) in lastLoginDateString"
+                                v-bind:key="index"
+                            >
+                                {{ item }}
+                            </li>
                         </div>
                     </b-col>
                 </b-row>
