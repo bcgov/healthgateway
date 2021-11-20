@@ -24,8 +24,8 @@ export default interface UserProfile {
     // Flag to know if the terms of service have been updated since last login
     hasTermsOfServiceUpdated?: boolean;
 
-    // Datetime of the user's last login
-    lastLoginDateTime?: StringISODate[];
+    // List of datetime of the user's last login
+    lastLoginDateTimes?: StringISODate[];
 
     // Date when the user profile will be deleted
     closedDateTime?: StringISODate;

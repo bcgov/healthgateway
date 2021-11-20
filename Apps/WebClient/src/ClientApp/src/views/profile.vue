@@ -19,7 +19,7 @@ import LoadingComponent from "@/components/loading.vue";
 import VerifySMSComponent from "@/components/modal/verifySMS.vue";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
-import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
 import User, { OidcUserProfile } from "@/models/user";
 import UserProfile from "@/models/userProfile";
@@ -109,7 +109,7 @@ export default class ProfileView extends Vue {
     private userProfileService!: IUserProfileService;
     private userProfile!: UserProfile;
 
-    private lastLoginDateString: string[] | null = [];
+    private lastLoginDateStrings: string[] | undefined = [];
 
     private showCloseWarning = false;
 
@@ -123,21 +123,18 @@ export default class ProfileView extends Vue {
         );
     }
 
-    private getLastLoginDateList(
-        lastLoginDateList: StringISODate[] | undefined
-    ): string[] | null {
-        if (lastLoginDateList !== undefined && lastLoginDateList.length > 0) {
-            for (let i = 0; i < lastLoginDateList.length; i++) {
-                this.lastLoginDateString?.push(
-                    new DateWrapper(lastLoginDateList[i], {
-                        isUtc: true,
-                    }).format()
-                );
-            }
+    private getLastLoginDateStrings() {
+        let items: string[] = [];
+        if (
+            this.lastLoginDateStrings !== undefined &&
+            this.lastLoginDateStrings.length > 0
+        ) {
+            this.lastLoginDateStrings.forEach((item) =>
+                items.push(new DateWrapper(item).format("yyyy-MMM-dd, t"))
+            );
         }
-        return null;
+        return items;
     }
-
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.userProfileService = container.get<IUserProfileService>(
@@ -169,9 +166,8 @@ export default class ProfileView extends Vue {
                         `User Profile: ${JSON.stringify(this.userProfile)}`
                     );
                     this.userProfile = results[1];
-                    this.lastLoginDateString = this.getLastLoginDateList(
-                        results[1].lastLoginDateTime
-                    );
+                    this.lastLoginDateStrings =
+                        this.userProfile.lastLoginDateTimes;
                     this.email = this.userProfile.email;
                     this.emailVerified = this.userProfile.isEmailVerified;
                     this.emailVerificationSent = this.emailVerified;
@@ -501,21 +497,6 @@ export default class ProfileView extends Vue {
                         </div>
                     </b-col>
                 </b-row>
-                <b-row class="mb-3">
-                    <b-col>
-                        <label for="lastLoginDate" class="hg-label"
-                            >Last Login Date</label
-                        >
-                        <div id="lastLoginDate">
-                            <li
-                                v-for="(item, index) in lastLoginDateString"
-                                v-bind:key="index"
-                            >
-                                {{ item }}
-                            </li>
-                        </div>
-                    </b-col>
-                </b-row>
                 <b-row>
                     <b-col>
                         <b-row>
@@ -765,6 +746,26 @@ export default class ProfileView extends Vue {
                                         />
                                     </div>
                                 </b-form-group>
+                            </b-col>
+                        </b-row>
+                        <b-row class="mb-3">
+                            <b-col>
+                                <label for="lastLoginDate" class="hg-label"
+                                    >Login History</label
+                                >
+                                <div id="lastLoginDate">
+                                    <ul>
+                                        <li
+                                            v-for="(
+                                                item, index
+                                            ) in getLastLoginDateStrings()"
+                                            :key="index"
+                                            data-testid="lastLoginDateItem"
+                                        >
+                                            {{ item }}
+                                        </li>
+                                    </ul>
+                                </div>
                             </b-col>
                         </b-row>
                         <b-row
