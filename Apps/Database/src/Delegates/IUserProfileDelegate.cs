@@ -98,5 +98,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="endDate">The end date to evaluate the user in UTC.</param>
         /// <returns>The count of recurrent users.</returns>
         int GetRecurrentUserCount(int dayCount, DateTime startDate, DateTime endDate);
+
+        /// <summary>
+        /// Returns the list of UserProfileHistory for a particular hdid and x number of records to return.
+        /// </summary>
+        /// <param name="hdId">The unique profile key to find.</param>
+        /// <param name="limit">The number of rows to return.</param>
+        /// <returns>A list of matching UserProfileHistory wrapped in a DBResult.</returns>
+        DBResult<IEnumerable<UserProfileHistory>> GetUserProfileHistories(string hdid, int limit);
     }
 }
