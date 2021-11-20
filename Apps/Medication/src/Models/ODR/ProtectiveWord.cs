@@ -27,7 +27,7 @@ namespace HealthGateway.Medication.Models.ODR
         /// Gets or sets the Id of the request.
         /// </summary>
         [JsonPropertyName("uuid")]
-        public Guid Id { get; set; } = default;
+        public Guid Id { get; set; } = Guid.Empty;
 
         /// <summary>
         /// Gets or sets the HDID of the requestor.
