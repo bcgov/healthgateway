@@ -6,7 +6,7 @@
         "immunizations": [
             {
                 "id": "8bae0359-4eb6-4504-a313-08d992a432e4",
-                "dateOfImmunization": "2021-01-01T00:00:00",
+                "dateOfImmunization": "2019-01-01T00:00:00",
                 "status": "Completed",
                 "valid": false,
                 "providerOrClinic": null,
@@ -46,7 +46,7 @@
             },
             {
                 "id": "705f0200-7e6e-4935-a315-08d992a432e4",
-                "dateOfImmunization": "2014-07-07T00:00:00",
+                "dateOfImmunization": "2021-01-07T00:00:00",
                 "status": "Completed",
                 "valid": true,
                 "providerOrClinic": null,
@@ -63,204 +63,11 @@
                     ]
                 },
                 "forecast": null
-            },
-            {
-                "id": "a6ea374a-17c1-413f-a316-08d992a432e4",
-                "dateOfImmunization": "2021-02-24T00:00:00",
-                "status": "Completed",
-                "valid": false,
-                "providerOrClinic": null,
-                "targetedDisease": "NOTSET",
-                "immunization": {
-                    "name": "Hepatitis B",
-                    "immunizationAgents": [
-                        {
-                            "code": "SCT_AG0004",
-                            "name": "HB",
-                            "lotNumber": null,
-                            "productName": null
-                        }
-                    ]
-                },
-                "forecast": null
-            },
-            {
-                "id": "4c20f9b4-c128-4cb3-a317-08d992a432e4",
-                "dateOfImmunization": "2021-02-24T00:00:00",
-                "status": "Completed",
-                "valid": true,
-                "providerOrClinic": null,
-                "targetedDisease": "NOTSET",
-                "immunization": {
-                    "name": "Human Papillomavirus-HPV9",
-                    "immunizationAgents": [
-                        {
-                            "code": "BCYSCT_AG082",
-                            "name": "HPV-9",
-                            "lotNumber": null,
-                            "productName": null
-                        }
-                    ]
-                },
-                "forecast": null
-            },
-            {
-                "id": "80d5e18c-d474-4b5b-a318-08d992a432e4",
-                "dateOfImmunization": "2021-02-24T00:00:00",
-                "status": "Completed",
-                "valid": true,
-                "providerOrClinic": null,
-                "targetedDisease": "NOTSET",
-                "immunization": {
-                    "name": "Diphtheria, Tetanus, Pertussis",
-                    "immunizationAgents": [
-                        {
-                            "code": "125581003",
-                            "name": "DTaP",
-                            "lotNumber": null,
-                            "productName": null
-                        }
-                    ]
-                },
-                "forecast": null
-            },
-            {
-                "id": "da520e8b-e248-4eff-a319-08d992a432e4",
-                "dateOfImmunization": "2021-02-24T00:00:00",
-                "status": "Completed",
-                "valid": true,
-                "providerOrClinic": null,
-                "targetedDisease": "NOTSET",
-                "immunization": {
-                    "name": "Polio",
-                    "immunizationAgents": [
-                        {
-                            "code": "111164008",
-                            "name": "Polio",
-                            "lotNumber": null,
-                            "productName": null
-                        }
-                    ]
-                },
-                "forecast": null
-            },
-            {
-                "id": "57b78e93-db41-4c09-a31a-08d992a432e4",
-                "dateOfImmunization": "2021-02-24T00:00:00",
-                "status": "Completed",
-                "valid": true,
-                "providerOrClinic": null,
-                "targetedDisease": "NOTSET",
-                "immunization": {
-                    "name": "Hepatitis B",
-                    "immunizationAgents": [
-                        {
-                            "code": "SCT_AG0004",
-                            "name": "HB",
-                            "lotNumber": null,
-                            "productName": null
-                        }
-                    ]
-                },
-                "forecast": null
-            },
-            {
-                "id": "837f4e95-7b69-4529-a31b-08d992a432e4",
-                "dateOfImmunization": "2021-04-01T00:00:00",
-                "status": "Completed",
-                "valid": false,
-                "providerOrClinic": null,
-                "targetedDisease": "COVID19",
-                "immunization": {
-                    "name": "COVID-19 Spike Protein Subunit",
-                    "immunizationAgents": [
-                        {
-                            "code": "29291000087103",
-                            "name": "COVID-19 Spike Protein Subunit",
-                            "lotNumber": null,
-                            "productName": "Novavax NVx-CoV2372 / Covovax"
-                        }
-                    ]
-                },
-                "forecast": null
-            },
-            {
-                "id": "8717f1f4-29cc-4f43-a31c-08d992a432e4",
-                "dateOfImmunization": "2021-07-04T00:00:00",
-                "status": "Completed",
-                "valid": true,
-                "providerOrClinic": null,
-                "targetedDisease": "COVID19",
-                "immunization": {
-                    "name": "COVID-19 mRNA",
-                    "immunizationAgents": [
-                        {
-                            "code": "1119349007",
-                            "name": "COVID-19 mRNA",
-                            "lotNumber": "EK4241HX",
-                            "productName": "Pfizer mRNA BNT162b2"
-                        }
-                    ]
-                },
-                "forecast": {
-                    "recommendationId": "5588010_145363248",
-                    "createDate": "2021-08-18T00:00:00",
-                    "status": "Overdue",
-                    "displayName": "COVID-19 mRNA",
-                    "eligibleDate": "2021-07-22T00:00:00",
-                    "dueDate": "2021-08-01T00:00:00"
-                }
             }
         ],
-        "recommendations": [
-            {
-                "recommendationSetId": "5588010_145363248",
-                "disseaseEligibleDate": null,
-                "diseaseDueDate": null,
-                "agentEligibleDate": "2021-07-22T00:00:00",
-                "agentDueDate": "2021-08-01T00:00:00",
-                "status": "Overdue",
-                "targetDiseases": [],
-                "immunization": {
-                    "name": null,
-                    "immunizationAgents": [
-                        {
-                            "code": "1119349007",
-                            "name": "COVID-19 mRNA",
-                            "lotNumber": "",
-                            "productName": ""
-                        }
-                    ]
-                }
-            },
-            {
-                "recommendationSetId": "5588010_145363248",
-                "disseaseEligibleDate": "2021-07-22T00:00:00",
-                "diseaseDueDate": "2021-08-01T00:00:00",
-                "agentEligibleDate": null,
-                "agentDueDate": null,
-                "status": "Overdue",
-                "targetDiseases": [
-                    {
-                        "code": "186747009",
-                        "name": "Coronavirus infection"
-                    }
-                ],
-                "immunization": {
-                    "name": null,
-                    "immunizationAgents": [
-                        {
-                            "code": "840536004",
-                            "name": "COVID-19 mRNA",
-                            "lotNumber": "",
-                            "productName": ""
-                        }
-                    ]
-                }
-            }
-        ]
+        "recommendations": []
     },
-    "totalResultCount": 1,
+    "totalResultCount": 3,
     "pageIndex": 0,
     "pageSize": 25,
     "resultStatus": 1,

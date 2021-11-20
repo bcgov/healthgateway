@@ -1,7 +1,7 @@
 const { AuthMethod } = require("../../../support/constants");
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
-describe("Reports - Medication Statement", () => {
+describe("Reports - Medication", () => {
     beforeEach(() => {
         cy.enableModules([
             "Encounter",
@@ -18,7 +18,7 @@ describe("Reports - Medication Statement", () => {
         );
     });
 
-    it("Validate Medication Report with Unsorted Data", () => {
+    it("Validate Medication Statement Report with Unsorted Data", () => {
         cy.intercept("GET", `**/v1/api/MedicationStatement/${HDID}`, (req) => {
             req.reply({
                 fixture: "Report/medicationStatementUnSorted.json",
@@ -39,34 +39,56 @@ describe("Reports - Medication Statement", () => {
                     .then(($dateItem) => {
                         // Column date in the 2nd row in the table
                         const secondDate = new Date($dateItem.text().trim());
-                        // Check if the sorting is descending
                         expect(firstDate).to.be.gte(secondDate);
+                        // Column date in the last row in the table
+                        cy.get("[data-testid=medicationDateItem]")
+                            .eq(2)
+                            .then(($dateItem) => {
+                                // Column date in the last row in the table
+                                const lastDate = new Date(
+                                    $dateItem.text().trim()
+                                );
+                                expect(firstDate).to.be.gte(lastDate);
+                                expect(secondDate).to.be.gte(lastDate);
+                            });
                     });
             });
     });
 
-    it("Validate Medication Report with Sorted Data", () => {
-        cy.intercept("GET", `**/v1/api/MedicationStatement/${HDID}`, (req) => {
+    it("Validate Medication Request Report with Unsorted Data", () => {
+        cy.intercept("GET", `**/v1/api/MedicationRequest/${HDID}`, (req) => {
             req.reply({
-                fixture: "Report/medicationStatementSorted.json",
+                fixture: "Report/medicationRequestUnSorted.json",
             });
         });
         cy.get("[data-testid=reportType]")
             .should("be.enabled", "be.visible")
-            .select("Medications");
+            .select("Special Authority Requests");
+
         cy.get("[data-testid=reportSample]").should("be.visible");
 
-        cy.get("[data-testid=medicationDateItem]")
+        cy.get("[data-testid=medicationRequestDateItem]")
             .first()
             .then(($dateItem) => {
                 // Column date in the 1st row in the table
                 const firstDate = new Date($dateItem.text().trim());
-                cy.get("[data-testid=medicationDateItem]")
+                cy.get("[data-testid=medicationRequestDateItem]")
                     .eq(1)
                     .then(($dateItem) => {
                         // Column date in the 2nd row in the table
                         const secondDate = new Date($dateItem.text().trim());
                         expect(firstDate).to.be.gte(secondDate);
+                        // Column date in the last row in the table
+                        cy.get("[data-testid=medicationRequestDateItem]")
+                            .eq(2)
+                            .then(($dateItem) => {
+                                // Column date in the last row in the table
+                                const lastDate = new Date(
+                                    $dateItem.text().trim()
+                                );
+                                expect(firstDate).to.be.gte(lastDate);
+                                expect(secondDate).to.be.gte(lastDate);
+                            });
                     });
             });
     });
@@ -111,35 +133,18 @@ describe("Reports - Covid19", () => {
                     .then(($dateItem) => {
                         // Column date in the 2nd row in the table
                         const secondDate = new Date($dateItem.text().trim());
-                        // Check if the sorting is descending
                         expect(firstDate).to.be.gte(secondDate);
-                    });
-            });
-    });
-
-    it("Validate Covid19 Report with Sorted Data", () => {
-        cy.intercept("GET", `**/v1/api/Laboratory?hdid=${HDID}`, (req) => {
-            req.reply({
-                fixture: "Report/covid19Sorted.json",
-            });
-        });
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("COVID-19 Test Results");
-
-        cy.get("[data-testid=reportSample]").should("be.visible");
-
-        cy.get("[data-testid=covid19DateItem]")
-            .first()
-            .then(($dateItem) => {
-                // Column date in the 1st row in the table
-                const firstDate = new Date($dateItem.text().trim());
-                cy.get("[data-testid=covid19DateItem]")
-                    .eq(1)
-                    .then(($dateItem) => {
-                        // Column date in the 2nd row in the table
-                        const secondDate = new Date($dateItem.text().trim());
-                        expect(firstDate).to.be.gte(secondDate);
+                        // Column date in the last row in the table
+                        cy.get("[data-testid=covid19DateItem]")
+                            .eq(2)
+                            .then(($dateItem) => {
+                                // Column date in the last row in the table
+                                const lastDate = new Date(
+                                    $dateItem.text().trim()
+                                );
+                                expect(firstDate).to.be.gte(lastDate);
+                                expect(secondDate).to.be.gte(lastDate);
+                            });
                     });
             });
     });
@@ -184,35 +189,18 @@ describe("Reports - Immunization", () => {
                     .then(($dateItem) => {
                         // Column date in the 2nd row in the table
                         const secondDate = new Date($dateItem.text().trim());
-                        // Check if the sorting is descending
                         expect(firstDate).to.be.gte(secondDate);
-                    });
-            });
-    });
-
-    it("Validate Immunization Report with Sorted Data", () => {
-        cy.intercept("GET", `**/v1/api/Immunization?hdid=${HDID}`, (req) => {
-            req.reply({
-                fixture: "Report/immunizationSorted.json",
-            });
-        });
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("Immunizations");
-
-        cy.get("[data-testid=reportSample]").should("be.visible");
-
-        cy.get("[data-testid=immunizationDateItem]")
-            .first()
-            .then(($dateItem) => {
-                // Column date in the 1st row in the table
-                const firstDate = new Date($dateItem.text().trim());
-                cy.get("[data-testid=immunizationDateItem]")
-                    .eq(1)
-                    .then(($dateItem) => {
-                        // Column date in the 2nd row in the table
-                        const secondDate = new Date($dateItem.text().trim());
-                        expect(firstDate).to.be.gte(secondDate);
+                        // Column date in the last row in the table
+                        cy.get("[data-testid=immunizationDateItem]")
+                            .eq(2)
+                            .then(($dateItem) => {
+                                // Column date in the last row in the table
+                                const lastDate = new Date(
+                                    $dateItem.text().trim()
+                                );
+                                expect(firstDate).to.be.gte(lastDate);
+                                expect(secondDate).to.be.gte(lastDate);
+                            });
                     });
             });
     });
@@ -257,35 +245,18 @@ describe("Reports - MSP Visit", () => {
                     .then(($dateItem) => {
                         // Column date in the 2nd row in the table
                         const secondDate = new Date($dateItem.text().trim());
-                        // Check if the sorting is descending
                         expect(firstDate).to.be.gte(secondDate);
-                    });
-            });
-    });
-
-    it("Validate MSP Visit Report with Sorted Data", () => {
-        cy.intercept("GET", `**/v1/api/Encounter/${HDID}`, (req) => {
-            req.reply({
-                fixture: "Report/mspVisitSorted.json",
-            });
-        });
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("Health Visits");
-
-        cy.get("[data-testid=reportSample]").should("be.visible");
-
-        cy.get("[data-testid=mspVisitDateItem]")
-            .first()
-            .then(($dateItem) => {
-                // Column date in the 1st row in the table
-                const firstDate = new Date($dateItem.text().trim());
-                cy.get("[data-testid=mspVisitDateItem]")
-                    .eq(1)
-                    .then(($dateItem) => {
-                        // Column date in the 2nd row in the table
-                        const secondDate = new Date($dateItem.text().trim());
-                        expect(firstDate).to.be.gte(secondDate);
+                        // Column date in the last row in the table
+                        cy.get("[data-testid=mspVisitDateItem]")
+                            .eq(2)
+                            .then(($dateItem) => {
+                                // Column date in the last row in the table
+                                const lastDate = new Date(
+                                    $dateItem.text().trim()
+                                );
+                                expect(firstDate).to.be.gte(lastDate);
+                                expect(secondDate).to.be.gte(lastDate);
+                            });
                     });
             });
     });
