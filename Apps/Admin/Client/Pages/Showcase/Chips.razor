@@ -1,0 +1,45 @@
+@page "/showcase/chips"
+
+<PageTitle>Chips</PageTitle>
+
+@foreach (Variant variant in Variants)
+{
+    <article>
+        <MudText Class="mt-4 mb-3" Typo="Typo.h4">@variant Variant</MudText>
+        <div>
+            @foreach (Color colour in Colours)
+            {
+                <MudChip Class="my-2" Variant="@variant" Size="Size.Small" Color="@colour">@colour</MudChip>
+            }
+        </div>
+        <div>
+            @foreach (Color colour in Colours)
+            {
+                <MudChip Class="my-2" Variant="@variant" Size="Size.Small" Color="@colour" OnClose="Close">@colour</MudChip>
+            }
+        </div>
+    </article>
+}
+
+@code
+{
+    public IList<Variant> Variants { get; } = new List<Variant>()
+    {
+        Variant.Filled,
+        Variant.Outlined,
+        Variant.Text,
+    };
+    public IList<Color> Colours { get; } = new List<Color>()
+    {
+        Color.Default,
+        Color.Primary,
+        Color.Secondary,
+        Color.Tertiary,
+        Color.Info,
+        Color.Success,
+        Color.Warning,
+        Color.Error,
+    };
+
+    void Close(MudChip chip) { }
+}
