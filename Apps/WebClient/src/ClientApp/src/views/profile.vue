@@ -109,7 +109,7 @@ export default class ProfileView extends Vue {
     private userProfileService!: IUserProfileService;
     private userProfile!: UserProfile;
 
-    private lastLoginDateStrings: string[] | undefined = [];
+    private loginDateTimes: string[] | undefined = [];
 
     private showCloseWarning = false;
 
@@ -126,10 +126,10 @@ export default class ProfileView extends Vue {
     private get formattedLoginDateTimes(): string[] {
         let items: string[] = [];
         if (
-            this.lastLoginDateStrings !== undefined &&
-            this.lastLoginDateStrings.length > 0
+            this.loginDateTimes !== undefined &&
+            this.loginDateTimes.length > 0
         ) {
-            this.lastLoginDateStrings.forEach((item) =>
+            this.loginDateTimes.forEach((item) =>
                 items.push(new DateWrapper(item).format("yyyy-MMM-dd, t"))
             );
         }
@@ -167,8 +167,7 @@ export default class ProfileView extends Vue {
                         `User Profile: ${JSON.stringify(this.userProfile)}`
                     );
                     this.userProfile = results[1];
-                    this.lastLoginDateStrings =
-                        this.userProfile.lastLoginDateTimes;
+                    this.loginDateTimes = this.userProfile.lastLoginDateTimes;
                     this.email = this.userProfile.email;
                     this.emailVerified = this.userProfile.isEmailVerified;
                     this.emailVerificationSent = this.emailVerified;
