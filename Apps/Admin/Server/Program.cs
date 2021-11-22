@@ -23,6 +23,7 @@ namespace HealthGateway.Admin.Server
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The entry point for the project.
@@ -37,7 +38,7 @@ namespace HealthGateway.Admin.Server
         /// <returns>A task which represents the exit of the application.</returns>
         public static async Task Main(string[] args)
         {
-            WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
+            WebApplicationBuilder builder = ProgramConfiguration.CreateWebAppBuilder(args);
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
