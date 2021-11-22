@@ -1,0 +1,75 @@
+{
+    "resourcePayload": {
+        "loadState": {
+            "refreshInProgress": false
+        },
+        "immunizations": [
+            {
+                "id": "8bae0359-4eb6-4504-a313-08d992a432e4",
+                "dateOfImmunization": "2019-01-01T00:00:00",
+                "status": "Completed",
+                "valid": false,
+                "providerOrClinic": null,
+                "targetedDisease": "NOTSET",
+                "immunization": {
+                    "name": "Measles, Mumps, Rubella",
+                    "immunizationAgents": [
+                        {
+                            "code": "61153008",
+                            "name": "MMR",
+                            "lotNumber": null,
+                            "productName": null
+                        }
+                    ]
+                },
+                "forecast": null
+            },
+            {
+                "id": "3a530cd1-c185-4a90-a314-08d992a432e4",
+                "dateOfImmunization": "2001-02-14T00:00:00",
+                "status": "Completed",
+                "valid": true,
+                "providerOrClinic": null,
+                "targetedDisease": "NOTSET",
+                "immunization": {
+                    "name": "Tetanus",
+                    "immunizationAgents": [
+                        {
+                            "code": "58098008",
+                            "name": "Tetanus",
+                            "lotNumber": null,
+                            "productName": null
+                        }
+                    ]
+                },
+                "forecast": null
+            },
+            {
+                "id": "705f0200-7e6e-4935-a315-08d992a432e4",
+                "dateOfImmunization": "2021-01-07T00:00:00",
+                "status": "Completed",
+                "valid": true,
+                "providerOrClinic": null,
+                "targetedDisease": "NOTSET",
+                "immunization": {
+                    "name": "Chickenpox (Varicella)",
+                    "immunizationAgents": [
+                        {
+                            "code": "412530002",
+                            "name": "Varicella",
+                            "lotNumber": null,
+                            "productName": null
+                        }
+                    ]
+                },
+                "forecast": null
+            }
+        ],
+        "recommendations": []
+    },
+    "totalResultCount": 3,
+    "pageIndex": 0,
+    "pageSize": 25,
+    "resultStatus": 1,
+    "resultError": null
+}

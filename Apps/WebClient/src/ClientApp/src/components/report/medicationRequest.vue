@@ -146,6 +146,7 @@ export default class MedicationRequestReportComponent extends Vue {
             key: "date",
             thClass: this.headerClass,
             thStyle: { width: "10%" },
+            tdAttr: { "data-testid": "medicationRequestDateItem" },
         },
         {
             key: "requested_drug_name",
