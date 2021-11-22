@@ -1,0 +1,45 @@
+@using HealthGateway.Admin.Client.Theme
+@inherits LayoutComponentBase
+<MudThemeProvider Theme="@CurrentTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="DrawerToggle" />
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Typo="Typo.h6" Class="ml-4">Health Gateway Admin</MudText>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+            <MudText Typo="Typo.h6" Class="ml-4">HG Admin</MudText>
+        </MudHidden>
+        <MudSpacer />
+        <MudTooltip Text="Toggle Dark Mode">
+            <MudIconButton Icon="@Icons.Material.Filled.BrightnessMedium" Color="Color.Inherit" Edge="Edge.End" OnClick="ToggleTheme" />
+        </MudTooltip>
+        <AuthorizeView>
+            <Authorized>
+                <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
+                    <ActivatorContent>
+                        <MudIcon Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Edge="Edge.End" />
+                    </ActivatorContent>
+                    <ChildContent>
+                        <MudNavLink href="claims" Typo="Typo.h6" Underline="Underline.None" align="center">
+                            @(context.User.Identity?.Name ?? "Unknown")
+                        </MudNavLink>
+                        <MudNavLink Icon="@Icons.Material.Outlined.Login" OnClick="BeginSignOut">Logout</MudNavLink>
+                    </ChildContent>
+                </MudMenu>
+            </Authorized>
+        </AuthorizeView>
+    </MudAppBar>
+    <MudDrawer @bind-Open="DrawerOpen" Elevation="1" ClipMode="DrawerClipMode.Always">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="px-4 py-4">
+            <main>
+                @Body
+            </main>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>

@@ -1,0 +1,44 @@
+@page "/showcase/paper-and-cards"
+
+<PageTitle>Paper and Cards</PageTitle>
+
+<MudGrid>
+    <MudItem xs="12" sm="6">
+        <article>
+            <MudText Class="mt-4 mb-3" Typo="Typo.h4">Paper</MudText>
+            <MudPaper Class="my-2 pa-4"><MudText Typo="Typo.body1">Content</MudText></MudPaper>
+        </article>
+    </MudItem>
+    <MudItem xs="12" sm="6">
+        <article>
+            <MudText Class="mt-4 mb-3" Typo="Typo.h4">Card</MudText>
+            <MudCard Class="my-2">
+                <MudCardHeader><MudText Typo="Typo.h5">Header</MudText></MudCardHeader>
+                <MudCardContent><MudText Typo="Typo.body1">Content</MudText></MudCardContent>
+                <MudCardActions>
+                    <MudButton Color="Color.Secondary" Class="mr-2">Action</MudButton>
+                    <MudButton Color="Color.Secondary">Action 2</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </article>
+    </MudItem>
+    <MudItem xs="12" sm="6">
+        <article>
+            <MudText Class="mt-4 mb-3" Typo="Typo.h4">Outlined Paper</MudText>
+            <MudPaper Class="my-2 pa-4" Outlined="true"><MudText Typo="Typo.body1">Content</MudText></MudPaper>
+        </article>
+    </MudItem>
+    <MudItem xs="12" sm="6">
+        <article>
+            <MudText Class="mt-4 mb-3" Typo="Typo.h4">Outlined Card</MudText>
+            <MudCard Class="my-2" Outlined="true">
+                <MudCardHeader><MudText Typo="Typo.h5">Header</MudText></MudCardHeader>
+                <MudCardContent><MudText Typo="Typo.body1">Content</MudText></MudCardContent>
+                <MudCardActions>
+                    <MudButton Color="Color.Secondary" Class="mr-2">Action</MudButton>
+                    <MudButton Color="Color.Secondary">Action 2</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </article>
+    </MudItem>
+</MudGrid>

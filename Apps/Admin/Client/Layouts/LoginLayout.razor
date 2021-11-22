@@ -1,0 +1,39 @@
+@using HealthGateway.Admin.Client.Theme
+@inherits LayoutComponentBase
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<MudThemeProvider Theme="@CurrentTheme" />
+<MudSnackbarProvider />
+<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center" Style="height: 100vh;">
+    <div class="d-flex flex-column mud-width-full">
+        <MudPaper Elevation="25" Class="pa-8" Width="100%" MaxWidth="500px">
+            @Body
+        </MudPaper>
+    </div>
+</MudContainer>
+
+@code
+{
+    private const string DarkThemeKey = "DarkMode";
+
+    private bool DarkMode { get; set; } = true;
+
+    private static MudTheme LightTheme { get; } = new LightTheme();
+
+    private static MudTheme DarkTheme { get; } = new DarkTheme();
+
+    private MudTheme? CurrentTheme => this.DarkMode ? DarkTheme : LightTheme;
+
+    /// <inheritdoc/>
+    protected async override void OnInitialized()
+    {
+        if (await this.LocalStorage.ContainKeyAsync(DarkThemeKey).ConfigureAwait(true))
+        {
+            this.DarkMode = await this.LocalStorage.GetItemAsync<bool>(DarkThemeKey).ConfigureAwait(true);
+        }
+        else
+        {
+            await this.LocalStorage.SetItemAsync<bool>(DarkThemeKey, this.DarkMode).ConfigureAwait(true);
+        }
+    }
+}
