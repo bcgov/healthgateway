@@ -123,7 +123,7 @@ export default class ProfileView extends Vue {
         );
     }
 
-    private get LastLoginDateStrings(): string[] {
+    private get formattedLoginDateTimes(): string[] {
         let items: string[] = [];
         if (
             this.lastLoginDateStrings !== undefined &&
@@ -759,7 +759,7 @@ export default class ProfileView extends Vue {
                                         <li
                                             v-for="(
                                                 item, index
-                                            ) in LastLoginDateStrings"
+                                            ) in formattedLoginDateTimes"
                                             :key="index"
                                             data-testid="lastLoginDateItem"
                                         >
