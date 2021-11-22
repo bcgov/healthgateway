@@ -33,6 +33,7 @@ function createWrapper(
         stubs: {
             "hg-icon": true,
             "hg-button": true,
+            "page-title": true,
         },
     });
 }
