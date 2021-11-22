@@ -23,12 +23,7 @@ namespace HealthGateway.Database.Migrations
     public partial class AddFkInUserPreferenceTable : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropForeignKey(
-               name: "FK_UserPreference_UserProfile_UserProfileId",
-               schema: "gateway",
-               table: "UserPreference");
-
+        {          
             migrationBuilder.AddForeignKey(
                 name: "FK_UserPreference_UserProfile_UserProfileId",
                 schema: "gateway",
