@@ -16,6 +16,7 @@
 namespace HealthGateway.HGAdmin.Client.Pages
 {
     using System.Security.Claims;
+    using System.Threading.Tasks;
     using HealthGateway.Admin.Client.Authorization;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Authorization;
@@ -38,7 +39,7 @@ namespace HealthGateway.HGAdmin.Client.Pages
         private bool PrototypeFeaturesEnabled => this.Configuration.GetSection("PrototypeFeaturesEnabled").Get<bool>();
 
         /// <inheritdoc />
-        protected async override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
             AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(true);
             ClaimsPrincipal user = authState.User;
