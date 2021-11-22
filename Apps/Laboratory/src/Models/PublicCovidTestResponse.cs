@@ -36,6 +36,12 @@ namespace HealthGateway.Laboratory.Models
         public string Lab { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the report ID.
+        /// </summary>
+        [JsonPropertyName("reportId")]
+        public string ReportId { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the date time when the lab collection took place.
         /// </summary>
         [JsonPropertyName("collectionDateTime")]
@@ -46,6 +52,12 @@ namespace HealthGateway.Laboratory.Models
         /// </summary>
         [JsonPropertyName("resultDateTime")]
         public DateTime? ResultDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the test name.
+        /// </summary>
+        [JsonPropertyName("testName")]
+        public string TestName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the test type.
