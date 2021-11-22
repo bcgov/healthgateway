@@ -123,7 +123,7 @@ export default class ProfileView extends Vue {
         );
     }
 
-    private getLastLoginDateStrings() {
+    private get LastLoginDateStrings(): string[] {
         let items: string[] = [];
         if (
             this.lastLoginDateStrings !== undefined &&
@@ -135,6 +135,7 @@ export default class ProfileView extends Vue {
         }
         return items;
     }
+
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.userProfileService = container.get<IUserProfileService>(
@@ -758,7 +759,7 @@ export default class ProfileView extends Vue {
                                         <li
                                             v-for="(
                                                 item, index
-                                            ) in getLastLoginDateStrings()"
+                                            ) in LastLoginDateStrings"
                                             :key="index"
                                             data-testid="lastLoginDateItem"
                                         >
