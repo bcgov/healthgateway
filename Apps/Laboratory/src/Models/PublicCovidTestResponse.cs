@@ -15,84 +15,63 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Models
 {
-    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Text.Json.Serialization;
+    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
-    /// The representation of a COVID-19 test result for public access.
+    /// Represents the result from querying COVID-19 test responses in public.
     /// </summary>
     public class PublicCovidTestResponse
     {
         /// <summary>
-        /// Gets or sets the first name and last initial of the patient.
+        /// Initializes a new instance of the <see cref="PublicCovidTestResponse"/> class.
         /// </summary>
-        [JsonPropertyName("patientDisplayName")]
-        public string PatientDisplayName { get; set; } = string.Empty;
+        public PublicCovidTestResponse()
+        {
+        }
 
         /// <summary>
-        /// Gets or sets the reporting lab.
+        /// Initializes a new instance of the <see cref="PublicCovidTestResponse"/> class.
         /// </summary>
-        [JsonPropertyName("lab")]
-        public string Lab { get; set; } = string.Empty;
+        /// <param name="records">The list of COVID-19 test records.</param>
+        [JsonConstructor]
+        public PublicCovidTestResponse(IList<PublicCovidTestRecord> records)
+        {
+            this.Records = records;
+        }
 
         /// <summary>
-        /// Gets or sets the report ID.
+        /// Gets or sets a value indicating whether the responses have been retrieved.
+        /// Will be set to true if the object has been fully loaded.
+        /// When false, only Loaded, and RetryIn will be populated.
         /// </summary>
-        [JsonPropertyName("reportId")]
-        public string ReportId { get; set; } = string.Empty;
+        [JsonPropertyName("loaded")]
+        public bool Loaded { get; set; }
 
         /// <summary>
-        /// Gets or sets the date time when the lab collection took place.
+        /// Gets or sets the minimal amount of time that should be waited before another request.
+        /// The unit of measurement is in milliseconds.
         /// </summary>
-        [JsonPropertyName("collectionDateTime")]
-        public DateTime? CollectionDateTime { get; set; }
+        [JsonPropertyName("retryin")]
+        public int RetryIn { get; set; }
 
         /// <summary>
-        /// Gets or sets the result date time.
+        /// Gets the COVID-19 test records.
         /// </summary>
-        [JsonPropertyName("resultDateTime")]
-        public DateTime? ResultDateTime { get; set; }
+        [JsonPropertyName("responses")]
+        public IList<PublicCovidTestRecord> Records { get; }
 
         /// <summary>
-        /// Gets or sets the test name.
+        /// Converts a VaccineStatusResult to a VaccineStatus model.
         /// </summary>
-        [JsonPropertyName("testName")]
-        public string TestName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the test type.
-        /// </summary>
-        [JsonPropertyName("testType")]
-        public string TestType { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the status of the test from the lab.
-        /// </summary>
-        [JsonPropertyName("testStatus")]
-        public string TestStatus { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the outcome of the test from the lab.
-        /// </summary>
-        [JsonPropertyName("testOutcome")]
-        public string TestOutcome { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the result title.
-        /// </summary>
-        [JsonPropertyName("resultTitle")]
-        public string ResultTitle { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the result description.
-        /// </summary>
-        [JsonPropertyName("resultDescription")]
-        public string ResultDescription { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the result link.
-        /// </summary>
-        [JsonPropertyName("resultLink")]
-        public string ResultLink { get; set; } = string.Empty;
+        /// <param name="model">The result model.</param>
+        /// <param name="personalHealthNumber">the patient's personal health number.</param>
+        /// <returns>The vaccine status model.</returns>
+        public static PublicCovidTestResponse FromModel(IEnumerable<PublicCovidTestResult> model, string? personalHealthNumber = null)
+        {
+            return new PublicCovidTestResponse(model.Select(PublicCovidTestRecord.FromModel).ToList());
+        }
     }
 }

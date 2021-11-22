@@ -13,33 +13,36 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Laboratory.Models
+namespace HealthGateway.Common.Constants.PHSA
 {
-    using System;
-
     /// <summary>
-    /// Provides configuration data for the Laboratory Delegate.
+    /// Represents the state of a result for COVID-19 test records.
     /// </summary>
-    public class LaboratoryConfig
+    public enum LabIndicatorType
     {
         /// <summary>
-        /// Gets or sets the laboratory base endpoint.
+        /// Indicates that we have insufficient information to return a result.
         /// </summary>
-        public Uri BaseUrl { get; set; } = null!;
+        NotFound,
 
         /// <summary>
-        /// Gets or sets the lab orders endpoint.
+        /// Indicates the records were successfully retrieved.
         /// </summary>
-        public string LabOrdersEndpoint { get; set; } = string.Empty;
+        Found,
 
         /// <summary>
-        /// Gets or sets the public COVID-19 tests endpoint.
+        /// Indicates the provided data did not match any requested records.
         /// </summary>
-        public string PublicCovidTestsEndPoint { get; set; } = string.Empty;
+        DataMismatch,
 
         /// <summary>
-        /// Gets or sets the total number of records to retrieve in one call.
+        /// Indicates the requested records are unavailable due to too many requests.
         /// </summary>
-        public string FetchSize { get; set; } = string.Empty;
+        Threshold,
+
+        /// <summary>
+        /// Indicates the requested records have been protected from being accessed.
+        /// </summary>
+        Blocked,
     }
 }

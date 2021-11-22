@@ -20,12 +20,16 @@ namespace HealthGateway.LaboratoryTests
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Models;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -61,7 +65,7 @@ namespace HealthGateway.LaboratoryTests
             };
             try
             {
-                var handlerMock = new Mock<HttpMessageHandler>();
+                Mock<HttpMessageHandler>? handlerMock = new Mock<HttpMessageHandler>();
                 handlerMock
                    .Protected()
                    .Setup<Task<HttpResponseMessage>>(
@@ -70,10 +74,10 @@ namespace HealthGateway.LaboratoryTests
                       ItExpr.IsAny<CancellationToken>())
                    .ReturnsAsync(httpResponseMessage)
                    .Verifiable();
-                using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+                using ILoggerFactory? loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
                 Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
                 mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-                ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
+                ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, CreateValidHttpContext().Object, this.configuration);
                 RequestResult<IEnumerable<LaboratoryOrder>> actualResult = Task.Run(async () => await labDelegate.GetLaboratoryOrders(string.Empty, string.Empty).ConfigureAwait(true)).Result;
                 Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
                 Assert.Equal("9735352542", actualResult.ResourcePayload!.First<LaboratoryOrder>().PHN);
@@ -97,7 +101,7 @@ namespace HealthGateway.LaboratoryTests
             };
             try
             {
-                var handlerMock = new Mock<HttpMessageHandler>();
+                Mock<HttpMessageHandler>? handlerMock = new Mock<HttpMessageHandler>();
                 handlerMock
                    .Protected()
                    .Setup<Task<HttpResponseMessage>>(
@@ -106,10 +110,10 @@ namespace HealthGateway.LaboratoryTests
                       ItExpr.IsAny<CancellationToken>())
                    .ReturnsAsync(httpResponseMessage)
                    .Verifiable();
-                using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+                using ILoggerFactory? loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
                 Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
                 mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-                ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
+                ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, CreateValidHttpContext().Object, this.configuration);
                 RequestResult<IEnumerable<LaboratoryOrder>> actualResult = Task.Run(async () => await labDelegate.GetLaboratoryOrders(string.Empty, string.Empty).ConfigureAwait(true)).Result;
                 Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
                 Assert.Contains(ExpectedSubstring, actualResult!.ResultError!.ResultMessage, StringComparison.OrdinalIgnoreCase);
@@ -133,7 +137,7 @@ namespace HealthGateway.LaboratoryTests
             };
             try
             {
-                var handlerMock = new Mock<HttpMessageHandler>();
+                Mock<HttpMessageHandler>? handlerMock = new Mock<HttpMessageHandler>();
                 handlerMock
                    .Protected()
                    .Setup<Task<HttpResponseMessage>>(
@@ -142,10 +146,10 @@ namespace HealthGateway.LaboratoryTests
                       ItExpr.IsAny<CancellationToken>())
                    .ReturnsAsync(httpResponseMessage)
                    .Verifiable();
-                using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+                using ILoggerFactory? loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
                 Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
                 mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-                ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
+                ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, CreateValidHttpContext().Object, this.configuration);
                 RequestResult<IEnumerable<LaboratoryOrder>> actualResult = Task.Run(async () => await labDelegate.GetLaboratoryOrders(string.Empty, string.Empty).ConfigureAwait(true)).Result;
                 Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
                 Assert.Empty(actualResult.ResourcePayload);
@@ -169,7 +173,7 @@ namespace HealthGateway.LaboratoryTests
             };
             try
             {
-                var handlerMock = new Mock<HttpMessageHandler>();
+                Mock<HttpMessageHandler>? handlerMock = new Mock<HttpMessageHandler>();
                 handlerMock
                    .Protected()
                    .Setup<Task<HttpResponseMessage>>(
@@ -178,10 +182,10 @@ namespace HealthGateway.LaboratoryTests
                       ItExpr.IsAny<CancellationToken>())
                    .ReturnsAsync(httpResponseMessage)
                    .Verifiable();
-                using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+                using ILoggerFactory? loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
                 Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
                 mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-                ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
+                ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, CreateValidHttpContext().Object, this.configuration);
                 RequestResult<IEnumerable<LaboratoryOrder>> actualResult = Task.Run(async () => await labDelegate.GetLaboratoryOrders(string.Empty, string.Empty).ConfigureAwait(true)).Result;
                 Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
             }
@@ -206,7 +210,7 @@ namespace HealthGateway.LaboratoryTests
             };
             try
             {
-                var handlerMock = new Mock<HttpMessageHandler>();
+                Mock<HttpMessageHandler>? handlerMock = new Mock<HttpMessageHandler>();
                 handlerMock
                    .Protected()
                    .Setup<Task<HttpResponseMessage>>(
@@ -215,12 +219,13 @@ namespace HealthGateway.LaboratoryTests
                       ItExpr.IsAny<CancellationToken>())
                    .ReturnsAsync(httpResponseMessage)
                    .Verifiable();
-                using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+                using ILoggerFactory? loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
                 Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
                 mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
                 ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                     loggerFactory.CreateLogger<RestLaboratoryDelegate>(),
                     mockHttpClientService.Object,
+                    CreateValidHttpContext().Object,
                     this.configuration);
                 RequestResult<LaboratoryReport> actualResult = Task.Run(async () => await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty, string.Empty).ConfigureAwait(true)).Result;
                 Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
@@ -245,7 +250,7 @@ namespace HealthGateway.LaboratoryTests
             };
             try
             {
-                var handlerMock = new Mock<HttpMessageHandler>();
+                Mock<HttpMessageHandler>? handlerMock = new Mock<HttpMessageHandler>();
                 handlerMock
                    .Protected()
                    .Setup<Task<HttpResponseMessage>>(
@@ -254,10 +259,10 @@ namespace HealthGateway.LaboratoryTests
                       ItExpr.IsAny<CancellationToken>())
                    .ReturnsAsync(httpResponseMessage)
                    .Verifiable();
-                using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+                using ILoggerFactory? loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
                 Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
                 mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-                ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
+                ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, CreateValidHttpContext().Object, this.configuration);
                 RequestResult<LaboratoryReport> actualResult = Task.Run(async () => await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty, string.Empty).ConfigureAwait(true)).Result;
                 Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
             }
@@ -280,7 +285,7 @@ namespace HealthGateway.LaboratoryTests
             };
             try
             {
-                var handlerMock = new Mock<HttpMessageHandler>();
+                Mock<HttpMessageHandler>? handlerMock = new Mock<HttpMessageHandler>();
                 handlerMock
                    .Protected()
                    .Setup<Task<HttpResponseMessage>>(
@@ -289,10 +294,10 @@ namespace HealthGateway.LaboratoryTests
                       ItExpr.IsAny<CancellationToken>())
                    .ReturnsAsync(httpResponseMessage)
                    .Verifiable();
-                using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+                using ILoggerFactory? loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
                 Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
                 mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-                ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
+                ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, CreateValidHttpContext().Object, this.configuration);
                 RequestResult<LaboratoryReport> actualResult = Task.Run(async () => await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty, string.Empty).ConfigureAwait(true)).Result;
                 Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
             }
@@ -315,7 +320,7 @@ namespace HealthGateway.LaboratoryTests
             };
             try
             {
-                var handlerMock = new Mock<HttpMessageHandler>();
+                Mock<HttpMessageHandler>? handlerMock = new Mock<HttpMessageHandler>();
                 handlerMock
                    .Protected()
                    .Setup<Task<HttpResponseMessage>>(
@@ -324,10 +329,10 @@ namespace HealthGateway.LaboratoryTests
                       ItExpr.IsAny<CancellationToken>())
                    .ReturnsAsync(httpResponseMessage)
                        .Verifiable();
-                using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+                using ILoggerFactory? loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
                 Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
                 mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-                ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
+                ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, CreateValidHttpContext().Object, this.configuration);
                 RequestResult<LaboratoryReport> actualResult = Task.Run(async () => await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty, string.Empty).ConfigureAwait(true)).Result;
                 Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
                 Assert.Contains($"HTTP Error {HttpStatusCode.BadRequest}", actualResult.ResultError!.ResultMessage, StringComparison.OrdinalIgnoreCase);
@@ -336,6 +341,48 @@ namespace HealthGateway.LaboratoryTests
             {
                 httpResponseMessage.Dispose();
             }
+        }
+
+        private static Mock<IHttpContextAccessor> CreateValidHttpContext(string token = "some-bearer-token", string userId = "UserId123", string hdid = "TheTestHdid")
+        {
+            IHeaderDictionary headerDictionary = new HeaderDictionary
+            {
+                { "Authorization", token },
+                { "referer", "http://localhost/" },
+            };
+            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
+
+            List<Claim> claims = new()
+            {
+                new Claim(ClaimTypes.Name, "username"),
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim("hdid", hdid),
+                new Claim("auth_time", "123"),
+                new Claim("access_token", token),
+            };
+            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
+            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+
+            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+            httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
+            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
+            Mock<IAuthenticationService> authenticationMock = new Mock<IAuthenticationService>();
+            AuthenticateResult? authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
+            authResult.Properties.StoreTokens(new[]
+            {
+                new AuthenticationToken { Name = "access_token", Value = token },
+            });
+            authenticationMock
+                .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
+                .ReturnsAsync(authResult);
+
+            httpContextAccessorMock
+                .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
+                .Returns(authenticationMock.Object);
+            return httpContextAccessorMock;
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

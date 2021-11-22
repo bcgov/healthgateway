@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,6 +29,11 @@ namespace HealthGateway.Common.Constants
         /// Error message to return patient data does not match request.
         /// </summary>
         public const string DataMismatch = "The information you entered does not match our records. Please try again.";
+
+        /// <summary>
+        /// Error message to return when records are not available.
+        /// </summary>
+        public const string RecordsNotAvailable = "The records you requested are not currently available.";
 
         /// <summary>
         /// Error message to return when a Pharmanet record is protected.

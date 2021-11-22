@@ -15,11 +15,11 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Controllers
 {
-    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
     using HealthGateway.Laboratory.Models;
+    using HealthGateway.Laboratory.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -37,13 +37,21 @@ namespace HealthGateway.Laboratory.Controllers
         private readonly ILogger logger;
 
         /// <summary>
+        /// Gets or sets the laboratory data service.
+        /// </summary>
+        private readonly ILaboratoryService laboratoryService;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="PublicLaboratoryController"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
+        /// <param name="laboratoryService">The laboratory data service.</param>
         public PublicLaboratoryController(
-            ILogger<PublicLaboratoryController> logger)
+            ILogger<PublicLaboratoryController> logger,
+            ILaboratoryService laboratoryService)
         {
             this.logger = logger;
+            this.laboratoryService = laboratoryService;
         }
 
         /// <summary>
@@ -60,11 +68,13 @@ namespace HealthGateway.Laboratory.Controllers
         [HttpGet]
         [Route("CovidTests")]
         [Produces("application/json")]
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task<RequestResult<PublicCovidTestResponseResult>> CovidTests([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string collectionDate)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task<RequestResult<PublicCovidTestResponse>> CovidTests([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string collectionDate)
         {
-            throw new NotImplementedException();
+            this.logger.LogTrace($"Getting COVID-19 test results for PHN: {phn}, DOB: {dateOfBirth}, and collection date: {collectionDate}");
+            RequestResult<PublicCovidTestResponse> result = await this.laboratoryService.GetPublicCovidTestsAsync(phn, dateOfBirth, collectionDate).ConfigureAwait(true);
+            this.logger.LogTrace($"Finished getting COVID-19 test results for PHN: {phn}, DOB: {dateOfBirth}, and collection date: {collectionDate}");
+
+            return result;
         }
     }
 }
