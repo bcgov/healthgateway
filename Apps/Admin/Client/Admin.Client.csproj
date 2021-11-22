@@ -39,7 +39,6 @@
   <ItemGroup>
     <Folder Include="wwwroot\fonts\" />
     <Folder Include="Authorization\" />
-    <Folder Include="Common\" />
     <Folder Include="Pages\" />
     <Folder Include="Services\" />
     <Folder Include="Store\" />
@@ -47,7 +46,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Authorization\" />
-    <None Remove="Common\" />
     <None Remove="Pages\" />
     <None Remove="Services\" />
     <None Remove="Store\" />
