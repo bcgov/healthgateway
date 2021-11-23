@@ -1,12 +1,8 @@
 # Fixes or Implements AB#nnnn
 
--   [ ] Enhancement
--   [ ] Bug
--   [ ] Documentation
-
 ## Description
 
-A sentences or two describing the overall goals of the pull request's commits.
+A sentence or two describing the overall goals of the pull request's commits.
 
 If you are reviewing this PR, please adhere to the guidelines as [documented](https://github.com/bcgov/healthgateway/wiki/prguidance).
 
@@ -15,10 +11,6 @@ If you are reviewing this PR, please adhere to the guidelines as [documented](ht
 -   [ ] Unit Tests Updated
 -   [ ] Functional Tests Updated
 -   [ ] Not Required
-
-### Steps to Reproduce
-
-If this is a bug, please provide details on how to reproduce the code.
 
 ### UI Changes
 
