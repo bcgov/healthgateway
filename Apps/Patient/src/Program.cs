@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.HGAdmin.Server
 {
+    using System.Diagnostics.CodeAnalysis;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using Microsoft.AspNetCore.Builder;
@@ -22,8 +24,6 @@ namespace HealthGateway.HGAdmin.Server
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// The entry point for the project.

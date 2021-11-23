@@ -93,7 +93,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <summary>
         /// Create an intiial logger to use during Program startup.
         /// </summary>
-        /// <param name="configuration"></param>
+        /// <param name="configuration">The configuration to use.</param>
         /// <returns>An instance of a logger.</returns>
         public static ILogger GetInitialLogger(IConfiguration configuration)
         {
