@@ -350,7 +350,7 @@ export default class LandingView extends Vue {
                     variant="secondary"
                     to="/publicLaboratory"
                     class="my-2 text-center"
-                    >Get Results</hg-button
+                    >Get Result</hg-button
                 >   
             </b-col>
         </b-row>
