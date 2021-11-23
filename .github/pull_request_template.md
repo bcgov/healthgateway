@@ -1,12 +1,12 @@
 # Fixes or Implements AB#nnnn
 
 -   [ ] Enhancement
--   [ ] Bug
+-   [ ] Bugfix
 -   [ ] Documentation
 
 ## Description
 
-A sentences or two describing the overall goals of the pull request's commits.
+A sentence or two describing the overall goals of the pull request's commits.
 
 If you are reviewing this PR, please adhere to the guidelines as [documented](https://github.com/bcgov/healthgateway/wiki/prguidance).
 
