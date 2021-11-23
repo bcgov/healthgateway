@@ -15,9 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AspNetConfiguration
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.IO;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;

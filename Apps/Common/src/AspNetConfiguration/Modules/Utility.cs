@@ -19,11 +19,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Services;
-    using HealthGateway.Database.Context;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;

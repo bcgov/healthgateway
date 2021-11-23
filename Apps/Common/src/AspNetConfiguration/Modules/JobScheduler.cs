@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
     using Hangfire;
     using Hangfire.PostgreSql;
