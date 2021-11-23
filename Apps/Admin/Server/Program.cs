@@ -19,10 +19,13 @@ namespace HealthGateway.Admin.Server
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.AspNetConfiguration.Modules;
     using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The entry point for the project.
@@ -37,24 +40,32 @@ namespace HealthGateway.Admin.Server
         /// <returns>A task which represents the exit of the application.</returns>
         public static async Task Main(string[] args)
         {
-            WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
+            WebApplicationBuilder builder = ProgramConfiguration.CreateWebAppBuilder(args);
+
+            IServiceCollection services = builder.Services;
+            IConfiguration configuration = builder.Configuration;
+            ILogger logger = ProgramConfiguration.GetInitialLogger(configuration);
+            IWebHostEnvironment environment = builder.Environment;
+
+            HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
+            Db.ConfigureDatabaseServices(services, logger, configuration);
+            HttpWeb.ConfigureHttpServices(services, logger);
+            Audit.ConfigureAuditServices(services, logger);
+            Auth.ConfigureAuthServicesForJwtBearer(services, logger, configuration, environment);
+            Auth.ConfigureAuthorizationServices(services, logger, configuration);
+            SwaggerDoc.ConfigureSwaggerServices(services, configuration);
+            JobScheduler.ConfigureHangfireQueue(services, configuration);
+            Patient.ConfigurePatientAccess(services, configuration);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
-            builder.Services.AddRazorPages();
+            services.AddControllersWithViews();
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("allowAny", policy =>
-                {
-                    policy
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                });
-            });
-
-            var app = builder.Build();
+            WebApplication app = builder.Build();
+            HttpWeb.UseForwardHeaders(app, logger, configuration);
+            HttpWeb.UseHttp(app, logger, configuration, environment);
+            HttpWeb.UseContentSecurityPolicy(app, configuration);
+            SwaggerDoc.UseSwagger(app, logger);
+            Auth.UseAuth(app, logger);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -67,34 +78,10 @@ namespace HealthGateway.Admin.Server
             }
 
             app.UseBlazorFrameworkFiles();
-            app.UseStaticFiles();
-            app.UseRouting();
-
-            // Enable CORS
-            string enableCors = builder.Configuration.GetValue<string>("AllowOrigins", string.Empty);
-            if (!string.IsNullOrEmpty(enableCors))
-            {
-                app.UseCors(builder =>
-                {
-                    builder
-                        .WithOrigins(enableCors)
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-                });
-            }
-
-            ContentSecurityPolicyConfig cspConfig = new();
-            builder.Configuration.GetSection("ContentSecurityPolicy").Bind(cspConfig);
-            string csp = cspConfig.ContentSecurityPolicy();
-            app.Use(async (context, next) =>
-            {
-                context.Response.Headers.Add("Content-Security-Policy", csp);
-                await next().ConfigureAwait(true);
-            });
-
             app.MapRazorPages();
             app.MapControllers();
             app.MapFallbackToFile("index.html");
+
             await app.RunAsync().ConfigureAwait(true);
         }
     }
