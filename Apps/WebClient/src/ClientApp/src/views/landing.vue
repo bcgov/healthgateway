@@ -546,6 +546,10 @@ export default class LandingView extends Vue {
     }
     .covid19-section {
         background-color: #8bd5c7;
+
+        @media (max-width: 767px) {
+            margin-bottom: 10px !important;
+        }
     }
 }
 </style>
