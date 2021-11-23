@@ -341,7 +341,7 @@ export default class LandingView extends Vue {
         </b-row>
         <b-row
             v-if="isPublicLaboratoryResultEnabled"
-            class="covid19-section m-0 py-4 mx-n2"
+            class="covid19-section mb-3 mb-md-0 py-4 mx-n2"
             data-testid="covidRecordLandingPage"
         >
             <b-col class="col-12 col-md-5 offset-md-1">
@@ -546,10 +546,6 @@ export default class LandingView extends Vue {
     }
     .covid19-section {
         background-color: #8bd5c7;
-
-        @media (max-width: 767px) {
-            margin-bottom: 10px !important;
-        }
     }
 }
 </style>
