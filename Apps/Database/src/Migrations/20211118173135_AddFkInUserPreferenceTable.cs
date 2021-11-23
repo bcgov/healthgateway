@@ -24,10 +24,9 @@ namespace HealthGateway.Database.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-               name: "FK_UserPreference_UserProfile_UserProfileId",
-               schema: "gateway",
-               table: "UserPreference");
+            string schema = "gateway";
+            string constraint1 = @$"ALTER TABLE IF EXISTS {schema}.""UserPreference"" DROP CONSTRAINT IF EXISTS ""FK_UserPreference_UserProfile_UserProfileId"";";
+            migrationBuilder.Sql(constraint1);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_UserPreference_UserProfile_UserProfileId",
