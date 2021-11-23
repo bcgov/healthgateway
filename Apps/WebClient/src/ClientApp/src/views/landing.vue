@@ -19,7 +19,6 @@ import Image03 from "@/assets/images/landing/003_reduced-3.jpeg";
 import Image04 from "@/assets/images/landing/004_reduced-living-room.jpeg";
 import Image05 from "@/assets/images/landing/005_reduced-family.jpeg";
 import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
-import Image07 from "@/assets/images/landing/007_background-covid-test.png";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
 
@@ -68,10 +67,13 @@ export default class LandingView extends Vue {
         return this.config.modules["VaccinationStatus"];
     }
 
+    private get isPublicLaboratoryResultEnabled(): boolean {
+        return this.config.modules["PublicLaboratoryResult"];
+    }
+
     private logo: string = Image00;
     private devices: string = Image02;
     private bcsclogo: string = Image06;
-    private covid19Background: string = Image07;
     private isOpenRegistration = false;
 
     private icons: Icon[] = [
@@ -337,32 +339,19 @@ export default class LandingView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
-        <b-row class="my-0 my-md-1">
-            <b-col>
-                <b-row class="d-flex mx-n2 align-content-around my-md-5 my-0">
-                    <b-col class="col-12 col-lg-6 col-md-6">
-                        <div class="container">
-                            <img
-                                class="img-fluid d-md-block"
-                                :src="covid19Background"
-                                width="500"
-                                height="auto"
-                                alt=""
-                            />
-                            <div class="covid19-description top-right">
-                                <h2>Get your COVID-19</h2>
-                                <h2>test result</h2>
-                                <hg-button
-                                    variant="danger"
-                                    to="/"
-                                    class="w-15 my-2 text-center"
-                                >
-                                    Get Results</hg-button
-                                >       
-                            </div>
-                        </div>
-                    </b-col>
-                </b-row>
+        <b-row
+            v-if="isPublicLaboratoryResultEnabled"
+            class="covid19-section m-0 py-4 mx-n2"
+            data-testid="covidRecordLandingPage"
+        >
+            <b-col class="col-12 col-md-5 offset-md-1">
+                <h2>Get your COVID‑19 test result</h2>
+                <hg-button
+                    variant="secondary"
+                    to="/publicLaboratory"
+                    class="my-2 text-center"
+                    >Get Results</hg-button
+                >   
             </b-col>
         </b-row>
         <b-row class="tile-section my-0 my-md-1">
@@ -415,30 +404,6 @@ export default class LandingView extends Vue {
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-.container {
-    position: relative;
-    left: 20%;
-
-    @media (max-width: 768px) {
-        left: 1%;
-        margin-bottom: 25px;
-    }
-}
-
-.top-right {
-    position: absolute;
-    top: 25%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
-    @media (max-width: 767px) {
-        top: 45%;
-        left: 50%;
-    }
-    @media (min-width: 992px) {
-        left: 40%;
-    }
-}
 .landing {
     color: $primary;
 
@@ -502,22 +467,7 @@ export default class LandingView extends Vue {
             }
         }
     }
-    .covid19-background {
-        background-repeat: no-repeat;
-        background-image: url("~@/assets/images/landing/007_background-covid-test.png");
 
-        @media (max-width: 767px) {
-            margin-bottom: 25px;
-            height: 40vh;
-        }
-    }
-
-    .covid19-description {
-        @media (max-width: 767px) {
-            font-size: 0.8rem;
-            margin-bottom: 25px;
-        }
-    }
     .tile-section {
         margin-left: 0px;
         margin-right: 0px;
@@ -593,6 +543,9 @@ export default class LandingView extends Vue {
                 position: absolute;
             }
         }
+    }
+    .covid19-section {
+        background-color: #8bd5c7;
     }
 }
 </style>
