@@ -26,7 +26,8 @@
         },
         "ExternalURLs": {
             "External": "https://localhost/external"
-        }
+        },
+        "UserProfileHistoryRecordLimit": 2
     },
     "ServiceEndpoints": {
         "Service": "https://localhost/service"

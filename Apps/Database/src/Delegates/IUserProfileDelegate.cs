@@ -102,7 +102,7 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Returns the list of UserProfileHistory for a particular hdid and x number of records to return.
         /// </summary>
-        /// <param name="hdId">The unique profile key to find.</param>
+        /// <param name="hdid">The unique profile key to find.</param>
         /// <param name="limit">The number of rows to return.</param>
         /// <returns>A list of matching UserProfileHistory wrapped in a DBResult.</returns>
         DBResult<IEnumerable<UserProfileHistory>> GetUserProfileHistories(string hdid, int limit);
