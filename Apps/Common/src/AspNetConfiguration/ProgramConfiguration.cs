@@ -18,6 +18,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
+    using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
@@ -60,6 +61,54 @@ namespace HealthGateway.Common.AspNetConfiguration
                 {
                     webBuilder.UseStartup<T>();
                 });
+        }
+
+        /// <summary>
+        /// Creates a WebApplicationBuilder with configuration set and open telemetry.
+        /// </summary>
+        /// <param name="args">The command line arguments.</param>
+        /// <returns>Returns the configured WebApplicationBuilder.</returns>
+        public static WebApplicationBuilder CreateWebAppBuilder(string[] args)
+        {
+            WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
+
+            // Configure logging
+            builder.Logging.ClearProviders();
+            builder.Logging.AddSimpleConsole(options =>
+            {
+                options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
+                options.IncludeScopes = true;
+            });
+
+            // OpenTelemetry
+            builder.Logging.AddOpenTelemetry();
+
+            // Additional configuration sources
+            builder.Configuration.AddJsonFile("appsettings.local.json", true, true);
+            builder.Configuration.AddEnvironmentVariables(prefix: EnvironmentPrefix);
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Create an intiial logger to use during Program startup.
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns>An instance of a logger.</returns>
+        public static ILogger GetInitialLogger(IConfiguration configuration)
+        {
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddSimpleConsole(options =>
+                {
+                    options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
+                    options.IncludeScopes = true;
+                });
+
+                builder.AddConfiguration(configuration);
+            });
+
+            return loggerFactory.CreateLogger("Startup");
         }
     }
 }

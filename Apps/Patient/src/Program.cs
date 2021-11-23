@@ -13,11 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Patient
+namespace HealthGateway.HGAdmin.Server
 {
-    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AspNetConfiguration;
-    using Microsoft.Extensions.Hosting;
+    using HealthGateway.Common.AspNetConfiguration.Modules;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// The entry point for the project.
@@ -29,17 +35,35 @@ namespace HealthGateway.Patient
         /// The entry point for the class.
         /// </summary>
         /// <param name="args">The command line arguments to be passed in.</param>
-        public static void Main(string[] args)
+        /// <returns>A task which represents the exit of the application.</returns>
+        public static async Task Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
-        }
+            WebApplicationBuilder builder = ProgramConfiguration.CreateWebAppBuilder(args);
 
-        /// <summary>.
-        /// Creates the IWebHostBuilder.
-        /// </summary>
-        /// <param name="args">The command line arguments to be passed in.</param>
-        /// <returns>Returns the configured webhost.</returns>
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            ProgramConfiguration.CreateHostBuilder<Startup>(args);
+            IServiceCollection services = builder.Services;
+            IConfiguration configuration = builder.Configuration;
+            ILogger logger = ProgramConfiguration.GetInitialLogger(configuration);
+            IWebHostEnvironment environment = builder.Environment;
+
+            HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
+            Db.ConfigureDatabaseServices(services, logger, configuration);
+            HttpWeb.ConfigureHttpServices(services, logger);
+            Audit.ConfigureAuditServices(services, logger);
+            Auth.ConfigureAuthServicesForJwtBearer(services, logger, configuration, environment);
+            Auth.ConfigureAuthorizationServices(services, logger, configuration);
+            SwaggerDoc.ConfigureSwaggerServices(services, configuration);
+            Patient.ConfigurePatientAccess(services, configuration);
+            Utility.ConfigureTracing(services, logger, configuration);
+
+            WebApplication app = builder.Build();
+
+            HttpWeb.UseForwardHeaders(app, logger, configuration);
+            SwaggerDoc.UseSwagger(app, logger);
+            HttpWeb.UseHttp(app, logger, configuration, environment);
+            Auth.UseAuth(app, logger);
+            HttpWeb.UseRest(app, logger);
+
+            await app.RunAsync().ConfigureAwait(true);
+        }
     }
 }
