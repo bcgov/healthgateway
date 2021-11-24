@@ -14,7 +14,7 @@
             "executablePath": "dotnet",
             "commandLineArgs": "watch --project ."
         },
-        "HGAdmin": {
+        "Admin": {
             "commandName": "Project",
             "dotnetRunMessages": true,
             "launchBrowser": true,

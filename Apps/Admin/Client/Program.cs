@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.HGAdmin.Client
+namespace HealthGateway.Admin.Client
 {
     using System;
     using System.Diagnostics.CodeAnalysis;

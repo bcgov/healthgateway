@@ -6,9 +6,7 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(RunConfiguration)' == 'HGAdmin' ">
-    <ExternalConsole>true</ExternalConsole>
-  </PropertyGroup>
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Admin' " />
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.1.5" />
     <PackageReference Include="Fluxor" Version="4.2.1" />
