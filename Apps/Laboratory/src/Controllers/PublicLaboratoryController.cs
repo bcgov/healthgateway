@@ -16,7 +16,6 @@
 namespace HealthGateway.Laboratory.Controllers
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
@@ -59,10 +58,10 @@ namespace HealthGateway.Laboratory.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
-        [Route("GetCovidTest")]
+        [Route("CovidTests")]
         [Produces("application/json")]
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task<RequestResult<IEnumerable<PublicCovidTestResponse>>> GetCovidTest([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string collectionDate)
+        public async Task<RequestResult<PublicCovidTestResponseResult>> CovidTests([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string collectionDate)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             throw new NotImplementedException();
