@@ -203,6 +203,31 @@ describe("Reports - Immunization", () => {
                             });
                     });
             });
+
+        cy.get("[data-testid=recommendationDateItem]")
+            .first()
+            .then(($dateItem) => {
+                // Column date in the 1st row in the table
+                const firstDate = new Date($dateItem.text().trim());
+                cy.get("[data-testid=recommendationDateItem]")
+                    .eq(1)
+                    .then(($dateItem) => {
+                        // Column date in the 2nd row in the table
+                        const secondDate = new Date($dateItem.text().trim());
+                        expect(firstDate).to.be.gte(secondDate);
+                        // Column date in the last row in the table
+                        cy.get("[data-testid=recommendationDateItem]")
+                            .eq(2)
+                            .then(($dateItem) => {
+                                // Column date in the last row in the table
+                                const lastDate = new Date(
+                                    $dateItem.text().trim()
+                                );
+                                expect(firstDate).to.be.gte(lastDate);
+                                expect(secondDate).to.be.gte(lastDate);
+                            });
+                    });
+            });
     });
 });
 

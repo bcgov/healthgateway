@@ -65,7 +65,83 @@
                 "forecast": null
             }
         ],
-        "recommendations": []
+        "recommendations": [
+            {
+                "recommendationSetId": "5513119_138378891",
+                "disseaseEligibleDate": "2020-12-30T00:00:00",
+                "diseaseDueDate": "2021-02-02T00:00:00",
+                "agentEligibleDate": null,
+                "agentDueDate": null,
+                "status": "Eligible",
+                "targetDiseases": [
+                    {
+                        "code": "240532009",
+                        "name": "Human papillomavirus infection"
+                    }
+                ],
+                "immunization": {
+                    "name": "Human Papillomavirus-HPV9",
+                    "immunizationAgents": [
+                        {
+                            "code": "BCYSCT_AN032",
+                            "name": "HPV-9",
+                            "lotNumber": "",
+                            "productName": ""
+                        }
+                    ]
+                }
+            },
+            {
+                "recommendationSetId": "5513119_138378894",
+                "disseaseEligibleDate": "2020-11-30T00:00:00",
+                "diseaseDueDate": "2021-04-02T00:00:00",
+                "agentEligibleDate": "2020-11-30T00:00:00",
+                "agentDueDate": "2020-11-30T00:00:00",
+                "status": "Eligible",
+                "targetDiseases": [
+                    {
+                        "code": "240532009",
+                        "name": "Human papillomavirus infection 2"
+                    }
+                ],
+                "immunization": {
+                    "name": "Test",
+                    "immunizationAgents": [
+                        {
+                            "code": "BCYSCT_AG082",
+                            "name": "HPV-9",
+                            "lotNumber": "",
+                            "productName": ""
+                        }
+                    ]
+                }
+            },
+            {
+                "recommendationSetId": "5513119_138378894",
+                "disseaseEligibleDate": "2020-11-30T00:00:00",
+                "diseaseDueDate": "2021-06-02T00:00:00",
+                "agentEligibleDate": "2020-11-30T00:00:00",
+                "agentDueDate": "2020-11-30T00:00:00",
+                "status": "Eligible",
+                "targetDiseases": [
+                    {
+                        "code": "240532009",
+                        "name": "Human papillomavirus infection 2"
+                    }
+                ],
+                "immunization": {
+                    "name": "Test 2",
+                    "immunizationAgents": [
+                        {
+                            "code": "BCYSCT_AG082",
+                            "name": "HPV-9",
+                            "lotNumber": "",
+                            "productName": ""
+                        }
+                    ]
+                }
+            }
+        ]
     },
     "totalResultCount": 3,
     "pageIndex": 0,
