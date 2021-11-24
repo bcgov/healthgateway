@@ -54,7 +54,6 @@ namespace HealthGateway.Admin.Client.Store.Configuration
             if (response.IsSuccessStatusCode)
             {
                 this.Logger.LogInformation("External Configuration loaded successfully!");
-                await Task.Delay(TimeSpan.FromMilliseconds(2000)).ConfigureAwait(true);
                 dispatcher.Dispatch(new LoadSuccessAction(response.Content));
             }
             else
