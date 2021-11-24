@@ -150,6 +150,8 @@ namespace HealthGateway.Common.Auditing
                     return ApplicationType.Medication;
                 case "AdminWebClient":
                     return ApplicationType.AdminWebClient;
+                case "Admin.Server":
+                    return ApplicationType.AdminWebClient;
                 case "Laboratory":
                     return ApplicationType.Laboratory;
                 case "Encounter":
