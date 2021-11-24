@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.HGAdmin.Client.Pages
+namespace HealthGateway.Admin.Client.Pages
 {
     using System.Security.Claims;
     using System.Threading.Tasks;
