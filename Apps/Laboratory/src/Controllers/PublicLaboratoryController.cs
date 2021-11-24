@@ -16,6 +16,7 @@
 namespace HealthGateway.Laboratory.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
@@ -47,13 +48,13 @@ namespace HealthGateway.Laboratory.Controllers
         }
 
         /// <summary>
-        /// Requests a COVID-19 test result for the supplied PHN, date of birth, and collection date.
+        /// Requests the COVID-19 test results for the supplied PHN, date of birth, and collection date.
         /// </summary>
         /// <param name="phn">The Personal Health Number to query.</param>
         /// <param name="dateOfBirth">The date of birth (yyyy-MM-dd) associated with the supplied PHN.</param>
         /// <param name="collectionDate">The date the test was collected (yyyy-MM-dd).</param>
-        /// <returns>The wrapped COVID-19 test result or an appropriate error.</returns>
-        /// <response code="200">Returns the COVID-19 test result or an appropriate error.</response>
+        /// <returns>The wrapped collection of COVID-19 test results or an appropriate error.</returns>
+        /// <response code="200">Returns the collection of COVID-19 test results or an appropriate error.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
@@ -61,7 +62,7 @@ namespace HealthGateway.Laboratory.Controllers
         [Route("GetCovidTest")]
         [Produces("application/json")]
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task<RequestResult<PublicCovidTestResponse>> GetCovidTest([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string collectionDate)
+        public async Task<RequestResult<IEnumerable<PublicCovidTestResponse>>> GetCovidTest([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string collectionDate)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             throw new NotImplementedException();
