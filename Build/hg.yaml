@@ -3,6 +3,7 @@ parameters:
     type: string
     default: NotSpecified
     values:
+      - Admin
       - AdminWebClient
       - Common
       - Database

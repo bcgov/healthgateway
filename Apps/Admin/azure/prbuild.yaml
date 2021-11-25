@@ -1,0 +1,24 @@
+name: PR$(Rev:.r) #Build number
+
+pr:
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - Apps/Admin
+#      - Apps/Common
+#      - Apps/Database
+
+trigger: none
+
+pool:
+  name: "HealthGateway"
+
+extends:
+  template: /Build/hg.yaml
+  parameters:
+    Application: Admin
+    DotNetTests: false
+    NPMInstall: false
+    NPMTests: false
