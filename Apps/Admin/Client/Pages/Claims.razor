@@ -13,7 +13,6 @@
 @inject IState<State> configState;
 @inject StateFacade configFacade;
 @inject IJSRuntime jsRuntime
-@inject IDispatcher Dispatcher
 
 <PageTitle>User Info</PageTitle>
 <MudHidden Invert="@(!configState.Value.IsLoading)"> 
