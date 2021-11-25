@@ -65,7 +65,6 @@
             expires = "";
         }
         string cookieValue = $"{name}={value}{expires}; path=/";
-
         await jsRuntime.InvokeVoidAsync("eval", $@"document.cookie = ""{cookieValue}""");
     }
 
