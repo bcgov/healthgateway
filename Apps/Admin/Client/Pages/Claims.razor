@@ -13,10 +13,11 @@
 @inject IState<State> configState;
 @inject StateFacade configFacade;
 @inject IJSRuntime jsRuntime
+@inject IDispatcher Dispatcher
 
 <PageTitle>User Info</PageTitle>
-<MudHidden IsHidden="@(!configState.Value.IsLoading)"> 
-    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+<MudHidden Invert="@(!configState.Value.IsLoading)"> 
+    <MudProgressLinear Color="Color.Primary" Indeterminate="@(configState.Value.IsLoading)" Class="my-7" />
 </MudHidden>
 <MudContainer>
     <h1>User Info</h1>
@@ -64,7 +65,7 @@
             expires = "";
         }
         string cookieValue = $"{name}={value}{expires}; path=/";
-        
+
         await jsRuntime.InvokeVoidAsync("eval", $@"document.cookie = ""{cookieValue}""");
     }
 
@@ -74,7 +75,7 @@
         ClaimsPrincipal user = authState.User;
 
         if (user.Identity!=null && user.Identity.IsAuthenticated)
-        {
+        {         
             var tokenResult = await TokenProvider.RequestAccessToken().ConfigureAwait(true);
             tokenResult.TryGetToken(out var accessToken);
             _token = accessToken.Value;
