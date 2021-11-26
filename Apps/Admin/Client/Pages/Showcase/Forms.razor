@@ -1,0 +1,107 @@
+@page "/showcase/forms"
+
+<PageTitle>Forms</PageTitle>
+
+<article>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Plain Controls</MudText>
+    <MudForm>
+        <MudGrid>
+            <MudItem xs="12" sm="8">
+                <MudRadioGroup Class="mx-1 my-3" T="string" Required="true" RequiredError="Radio option is required!">
+                    <MudRadio Option="@("1")">Radio Option 1</MudRadio>
+                    <MudRadio Option="@("2")">Radio Option 2</MudRadio>
+                    <MudRadio Option="@("3")">Radio Option 3</MudRadio>
+                </MudRadioGroup>
+                <div class="my-3">
+                    <MudCheckBox Class="mx-1" T="bool" Label="Checkbox" />
+                    <MudSwitch Class="mx-1" T="bool" Label="Switch" />
+                </div>
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <MudSlider Step="10">Slider</MudSlider>
+            </MudItem>
+        </MudGrid>
+    </MudForm>
+</article>
+@foreach (Variant variant in Variants)
+{
+    <article>
+        <MudText Class="mt-4 mb-3" Typo="Typo.h4">@variant Variant</MudText>
+        <MudForm>
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudTextField Class="my-3" Variant="@variant" T="string" Label="Text Field" />
+                    <MudTextField Class="my-3" Variant="@variant" T="string" Label="Text Field with Helper Text" InputType="InputType.Password" HelperText="Choose a strong password" />
+                    <MudTextField Class="my-3" Variant="@variant" T="string" Label="Text Field with Helper Text on Focus" InputType="InputType.Password" HelperText="Choose a strong password" HelperTextOnFocus="true" />
+                    <MudTextField Class="my-3" Variant="@variant" T="string" Label="Text Field with Counter" Counter="40" />
+                    <MudTextField Class="my-3" Variant="@variant" T="string" Label="Clearable Text Field" Clearable="true" />
+                    <MudTextField Class="my-3" Variant="@variant" T="string" Label="Multi-line Text Field" Lines="3" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField Class="my-3" Variant="@variant" T="string" Label="Required Text Field" Required="true" RequiredError="This field is required!" />
+                    <MudTextField Class="my-3" Variant="@variant" T="string" Label="Required Text Field with Helper Text" Required="true" RequiredError="This field is required!" InputType="InputType.Password" HelperText="Choose a strong password" />
+                    <MudTextField Class="my-3" Variant="@variant" T="string" Label="Required Text Field with Helper Text on Focus" Required="true" RequiredError="This field is required!" InputType="InputType.Password" HelperText="Choose a strong password" HelperTextOnFocus="true" />
+                    <MudTextField Class="my-3" Variant="@variant" T="string" Label="Required Text Field with Counter" Required="true" RequiredError="This field is required!" Counter="40" />
+                    <MudTextField Class="my-3" Variant="@variant" T="string" Label="Required Text Field with Adornment" Required="true" RequiredError="This field is required!" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.VisibilityOff" />
+                    <MudTextField Class="my-3" Variant="@variant" T="string" Label="Disabled Text Field" Disabled="true" />
+                </MudItem>
+            </MudGrid>
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudNumericField Class="my-3" Variant="@variant" T="int" Label="Numeric Field – Integer" />
+                    <MudNumericField Class="my-3" Variant="@variant" T="double" Label="Numeric Field – Double" Step="1.0/3" />
+                    <MudNumericField Class="my-3" Variant="@variant" T="decimal" Label="Numeric Field – Decimal" Step="0.01M" />
+                    <MudNumericField Class="my-3" Variant="@variant" T="int" Label="Numeric Field – Disabled" Disabled="true" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudNumericField Class="my-3" Variant="@variant" T="int" Label="Numeric Field – Integer" HideSpinButtons="true" />
+                    <MudNumericField Class="my-3" Variant="@variant" T="double" Label="Numeric Field – Double" HideSpinButtons="true" />
+                    <MudNumericField Class="my-3" Variant="@variant" T="decimal" Label="Numeric Field – Decimal" HideSpinButtons="true" />
+                    <MudNumericField Class="my-3" Variant="@variant" T="int" Label="Numeric Field – Disabled" HideSpinButtons="true" Disabled="true" />
+                </MudItem>
+            </MudGrid>
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudSelect Class="my-3" T="string" Label="Select">
+                        <MudSelectItem Value="@("Cappuccino")" />
+                        <MudSelectItem Value="@("Cafe Latte")" />
+                        <MudSelectItem Value="@("Espresso")" />
+                        <MudSelectItem Value="@("Irish Coffee")" />
+                    </MudSelect>
+                    <MudSelect Class="my-3" T="string" Label="Select with Helper Text" HelperText="Helper text">
+                        <MudSelectItem Value="@("Cappuccino")" />
+                        <MudSelectItem Value="@("Cafe Latte")" />
+                        <MudSelectItem Value="@("Espresso")" />
+                        <MudSelectItem Value="@("Irish Coffee")" />
+                    </MudSelect>
+                    <MudSelect Class="my-3" T="string" Label="Disabled Select" Disabled="true" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudSelect Class="my-3" T="string" Label="Multi-select" MultiSelection="true">
+                        <MudSelectItem Value="@("Cappuccino")" />
+                        <MudSelectItem Value="@("Cafe Latte")" />
+                        <MudSelectItem Value="@("Espresso")" />
+                        <MudSelectItem Value="@("Irish Coffee")" />
+                    </MudSelect>
+                    <MudSelect Class="my-3" T="string" Label="Multi-select with Helper Text" HelperText="Helper text" MultiSelection="true">
+                        <MudSelectItem Value="@("Cappuccino")" />
+                        <MudSelectItem Value="@("Cafe Latte")" />
+                        <MudSelectItem Value="@("Espresso")" />
+                        <MudSelectItem Value="@("Irish Coffee")" />
+                    </MudSelect>
+                    <MudSelect Class="my-3" T="string" Label="Disabled Multi-select" Disabled="true" MultiSelection="true" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </article>
+}
+
+@code
+{
+    public IList<Variant> Variants { get; } = new List<Variant>()
+    {
+        Variant.Text,
+        Variant.Outlined,
+        Variant.Filled,
+    };
+}
