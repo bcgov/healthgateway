@@ -154,6 +154,7 @@ namespace HealthGateway.Common.Auditing
                     return ApplicationType.Encounter;
                 case "ReSharperTestRunner":
                 case "testhost":
+                    return ApplicationType.Configuration;
                 default:
                     throw new NotSupportedException($"Audit Error: Invalid application name '{assemblyName.Name}'");
             }
