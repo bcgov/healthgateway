@@ -16,9 +16,7 @@
 namespace HealthGateway.Laboratory.Models
 {
     using System.Collections.Generic;
-    using System.Linq;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
     /// Represents the result from querying COVID-19 test responses in public.
@@ -63,16 +61,5 @@ namespace HealthGateway.Laboratory.Models
         /// </summary>
         [JsonPropertyName("responses")]
         public IList<PublicCovidTestRecord> Records { get; }
-
-        /// <summary>
-        /// Converts a VaccineStatusResult to a VaccineStatus model.
-        /// </summary>
-        /// <param name="model">The result model.</param>
-        /// <param name="personalHealthNumber">the patient's personal health number.</param>
-        /// <returns>The vaccine status model.</returns>
-        public static PublicCovidTestResponse FromModel(IEnumerable<PublicCovidTestResult> model, string? personalHealthNumber = null)
-        {
-            return new PublicCovidTestResponse(model.Select(PublicCovidTestRecord.FromModel).ToList());
-        }
     }
 }
