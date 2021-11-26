@@ -1,0 +1,31 @@
+@page "/showcase/pagination"
+
+<PageTitle>Pagination</PageTitle>
+
+@foreach (Variant variant in Variants)
+{
+    <article>
+        <MudText Class="mt-4 mb-3" Typo="Typo.h4">@variant Variant</MudText>
+        @foreach (Color colour in Colours)
+        {
+            <MudPagination Class="my-2 mx-3" Variant="@variant" Color="@colour" ShowFirstButton="true" ShowLastButton="true" Count="15" />
+        }
+    </article>
+}
+
+@code
+{
+    public IList<Variant> Variants { get; } = new List<Variant>()
+    {
+        Variant.Text,
+        Variant.Outlined,
+        Variant.Filled,
+    };
+    public IList<Color> Colours { get; } = new List<Color>()
+    {
+        Color.Default,
+        Color.Primary,
+        Color.Secondary,
+        Color.Tertiary,
+    };
+}

@@ -1,9 +1,17 @@
-@page "/showcase/buttons"
+@page "/showcase/links-and-buttons"
 
-<PageTitle>Buttons</PageTitle>
+<PageTitle>Links and Buttons</PageTitle>
 
 <article>
-    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Filled Variant</MudText>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Links</MudText>
+    <MudLink Class="mx-1 my-2" Href="#">Default</MudLink>
+    <MudLink Class="mx-1 my-2" Href="#" Disabled="true">Disabled</MudLink>
+    <MudLink Class="mx-1 my-2" Href="#" Underline="Underline.Always">Always Underlined</MudLink>
+    <MudLink Class="mx-1 my-2" Href="#" Underline="Underline.None">Never Underlined</MudLink>
+</article>
+<MudDivider DividerType="DividerType.Middle" Class="my-6" />
+<article>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Filled Button Variant</MudText>
     <div>
         <MudButton Class="mx-1 my-2" Variant="Variant.Filled" Color="@Color.Primary" Disabled="true">Disabled</MudButton>
         @foreach (Color colour in Colours)
@@ -18,7 +26,7 @@
     </div>
 </article>
 <article>
-    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Outlined Variant</MudText>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Outlined Button Variant</MudText>
     <div>
         <MudButton Class="mx-1 my-2" Variant="Variant.Outlined" Color="@Color.Primary" Disabled="true">Disabled</MudButton>
         @foreach (Color colour in Colours)
@@ -34,7 +42,7 @@
     </div>
 </article>
 <article>
-    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Text Variant</MudText>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Text Button Variant</MudText>
     <div>
         <MudButton Class="mx-1 my-2" Variant="Variant.Text" Color="@Color.Primary" Disabled="true">Disabled</MudButton>
         @foreach (Color colour in Colours)

@@ -1,65 +1,32 @@
 @page "/showcase/alerts"
 
 <PageTitle>Alerts</PageTitle>
-
-@foreach (Variant variant in Variants)
-{
-    <article>
-        <MudText Class="mt-4 mb-3" Typo="Typo.h4">@variant Variant</MudText>
-        <MudGrid>
-            <MudItem md="6" xs="12">
-                @foreach ((Severity severity, string message) in Severities)
-                {
-                    <MudAlert Variant="@variant" Severity="@severity" Class="my-3">@message</MudAlert>
-                }
-            </MudItem>
-            <MudItem md="6" xs="12">
-                @foreach ((Severity severity, string message) in Severities)
-                {
-                    <MudAlert Variant="@variant" Severity="@severity" ShowCloseIcon="true" Class="my-3">@message</MudAlert>
-                }
-            </MudItem>
-        </MudGrid>
-    </article>
-}
 <article>
-    <MudText Class="mt-4 mb-3" Typo="Typo.h4">All Variants – Dense Mode</MudText>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Alerts</MudText>
     <MudGrid>
-        @foreach (Variant variant in Variants)
-        {
-            <MudItem md="4" xs="12">
-                @foreach ((Severity severity, string message) in Severities)
-                {
-                    <MudAlert Variant="@variant" Severity="@severity" Dense="true" Class="my-3">@variant @severity</MudAlert>
-                }
-            </MudItem>
-        }
+           
+        <MudItem md="6" xs="12">
+            @foreach ((Severity severity, string message) in Severities)
+            {
+                <MudAlert Variant="Variant.Text" Severity="@severity" ShowCloseIcon="true" Class="my-3">@message</MudAlert>
+            }
+        </MudItem>
     </MudGrid>
-</article>
+</article> 
 <article>
-    <MudText Class="mt-4 mb-3" Typo="Typo.h4">All Variants – Dense Mode with Close Buttons</MudText>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Snackbar Alerts</MudText>
     <MudGrid>
-        @foreach (Variant variant in Variants)
-        {
             <MudItem md="4" xs="12">
                 @foreach ((Severity severity, string message) in Severities)
                 {
-                    <MudAlert Variant="@variant" Severity="@severity" Dense="true" ShowCloseIcon="true" Class="my-3">@variant @severity</MudAlert>
+                    <MudAlert Variant="Variant.Filled" Severity="@severity" Dense="true" NoIcon="true" Class="my-3">@severity</MudAlert>
                 }
             </MudItem>
-        }
     </MudGrid>
 </article>
 
 @code
 {
-    public IList<Variant> Variants { get; } = new List<Variant>()
-    {
-        Variant.Text,
-        Variant.Outlined,
-        Variant.Filled,
-    };
-
     public IList<(Severity severity, string message)> Severities { get; } = new List<(Severity severity, string message)>()
     {
         (Severity.Normal,"The reactor type is RBMK-1000"),
