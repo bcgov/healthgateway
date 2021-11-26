@@ -25,6 +25,7 @@ namespace HealthGateway.LaboratoryTests
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Services;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -46,11 +47,11 @@ namespace HealthGateway.LaboratoryTests
         [Fact]
         public void GetLabOrders()
         {
-            var service = GetLabServiceForLabOrdersTests(Common.Constants.ResultType.Success);
-            var actualResult = service.GetLaboratoryOrders(BearerToken, HdId, 0);
+            ILaboratoryService? service = GetLabServiceForLabOrdersTests(Common.Constants.ResultType.Success);
+            Task<RequestResult<IEnumerable<LaboratoryModel>>>? actualResult = service.GetLaboratoryOrders(BearerToken, HdId, 0);
 
             Assert.True(actualResult.Result.ResultStatus == Common.Constants.ResultType.Success);
-            var count = 0;
+            int count = 0;
             foreach (LaboratoryModel model in actualResult.Result!.ResourcePayload!)
             {
                 count++;
@@ -66,8 +67,8 @@ namespace HealthGateway.LaboratoryTests
         [Fact]
         public void GetLabOrdersWithError()
         {
-            var service = GetLabServiceForLabOrdersTests(Common.Constants.ResultType.Error);
-            var actualResult = service.GetLaboratoryOrders(BearerToken, HdId, 0);
+            ILaboratoryService? service = GetLabServiceForLabOrdersTests(Common.Constants.ResultType.Error);
+            Task<RequestResult<IEnumerable<LaboratoryModel>>>? actualResult = service.GetLaboratoryOrders(BearerToken, HdId, 0);
             Assert.True(actualResult.Result.ResultStatus == Common.Constants.ResultType.Error);
         }
 
@@ -91,14 +92,14 @@ namespace HealthGateway.LaboratoryTests
                 ResourcePayload = labReport,
             };
 
-            var mockLaboratoryDelegate = new Mock<ILaboratoryDelegate>();
+            Mock<ILaboratoryDelegate>? mockLaboratoryDelegate = new Mock<ILaboratoryDelegate>();
             mockLaboratoryDelegate.Setup(s => s.GetLabReport(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
-            var mockLaboratoryDelegateFactory = new Mock<ILaboratoryDelegateFactory>();
+            Mock<ILaboratoryDelegateFactory>? mockLaboratoryDelegateFactory = new Mock<ILaboratoryDelegateFactory>();
             mockLaboratoryDelegateFactory.Setup(s => s.CreateInstance()).Returns(mockLaboratoryDelegate.Object);
 
-            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-            var context = new DefaultHttpContext()
+            Mock<IHttpContextAccessor>? mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            DefaultHttpContext? context = new DefaultHttpContext()
             {
                 Connection =
                 {
@@ -108,8 +109,14 @@ namespace HealthGateway.LaboratoryTests
             context.Request.Headers.Add("Authorization", "MockJWTHeader");
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
 
-            ILaboratoryService service = new LaboratoryService(mockLaboratoryDelegateFactory.Object);
-            var actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, BearerToken);
+            ILaboratoryService service = new LaboratoryService(
+                GetIConfigurationRoot(),
+                new Mock<ILogger<LaboratoryService>>().Object,
+                mockLaboratoryDelegateFactory.Object,
+                null!,
+                null!);
+
+            Task<RequestResult<LaboratoryReport>>? actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, BearerToken);
 
             Assert.True(actualResult.Result.ResultStatus == Common.Constants.ResultType.Success);
             Assert.True(actualResult.Result!.ResourcePayload!.Report == MockedReportContent);
@@ -146,14 +153,14 @@ namespace HealthGateway.LaboratoryTests
                 ResourcePayload = labOrders,
             };
 
-            var mockLaboratoryDelegate = new Mock<ILaboratoryDelegate>();
+            Mock<ILaboratoryDelegate>? mockLaboratoryDelegate = new Mock<ILaboratoryDelegate>();
             mockLaboratoryDelegate.Setup(s => s.GetLaboratoryOrders(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
 
-            var mockLaboratoryDelegateFactory = new Mock<ILaboratoryDelegateFactory>();
+            Mock<ILaboratoryDelegateFactory>? mockLaboratoryDelegateFactory = new Mock<ILaboratoryDelegateFactory>();
             mockLaboratoryDelegateFactory.Setup(s => s.CreateInstance()).Returns(mockLaboratoryDelegate.Object);
 
-            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-            var context = new DefaultHttpContext()
+            Mock<IHttpContextAccessor>? mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            DefaultHttpContext? context = new DefaultHttpContext()
             {
                 Connection =
                 {
@@ -163,8 +170,25 @@ namespace HealthGateway.LaboratoryTests
             context.Request.Headers.Add("Authorization", "MockJWTHeader");
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
 
-            ILaboratoryService service = new LaboratoryService(mockLaboratoryDelegateFactory.Object);
+            ILaboratoryService service = new LaboratoryService(
+                GetIConfigurationRoot(),
+                new Mock<ILogger<LaboratoryService>>().Object,
+                mockLaboratoryDelegateFactory.Object,
+                null!,
+                null!);
+
             return service;
+        }
+
+        private static IConfigurationRoot GetIConfigurationRoot()
+        {
+            return new ConfigurationBuilder()
+
+                // .SetBasePath(outputPath)
+                .AddJsonFile("appsettings.json", optional: true)
+                .AddJsonFile("appsettings.Development.json", optional: true)
+                .AddJsonFile("appsettings.local.json", optional: true)
+                .Build();
         }
     }
 }
