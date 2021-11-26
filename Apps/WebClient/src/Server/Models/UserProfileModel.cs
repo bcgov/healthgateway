@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text.Json.Serialization;
     using HealthGateway.Database.Models;
 
@@ -36,10 +37,12 @@ namespace HealthGateway.WebClient.Models
         /// Initializes a new instance of the <see cref="UserProfileModel"/> class.
         /// </summary>
         /// <param name="preferences">The dictionary of preferences.</param>
+        /// <param name="lastLoginDateTimes">List of last login date times.</param>
         [JsonConstructor]
-        public UserProfileModel(IDictionary<string, UserPreferenceModel> preferences)
+        public UserProfileModel(IDictionary<string, UserPreferenceModel> preferences, IList<DateTime> lastLoginDateTimes)
         {
             this.Preferences = preferences;
+            this.LastLoginDateTimes = lastLoginDateTimes;
         }
 
         /// <summary>
@@ -81,6 +84,11 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the value indicating the date when the user last logon.
         /// </summary>
         public DateTime? LastLoginDateTime { get; set; }
+
+        /// <summary>
+        /// Gets the list of recent login times.
+        /// </summary>
+        public IList<DateTime> LastLoginDateTimes { get; } = new List<DateTime>();
 
         /// <summary>
         /// Gets or sets the Closed datetime of the account.

@@ -27,6 +27,7 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
 
@@ -37,6 +38,8 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
     {
         private readonly UserProfileService userProfileService;
         private readonly Mock<IConfigurationService> emptyConfigServiceMock = new();
+        private readonly string webClientConfigSection = "WebClient";
+        private readonly string userProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
@@ -47,8 +50,12 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <param name="userProfileDbResult">user profile from DbResult.</param>
         /// <param name="readResult">read result.</param>
         /// <param name="termsOfService">terms of service.</param>
-        public UserProfileServiceMock(string hdId, DBStatusCode dbResultStatus, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, DBResult<IEnumerable<UserPreference>> readResult, LegalAgreement termsOfService)
+        /// <param name="configuration">configuration.</param>
+        /// <param name="userProfileHistoryDbResult">user profile history from DbResult.</param>
+        public UserProfileServiceMock(string hdId, DBStatusCode dbResultStatus, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, DBResult<IEnumerable<UserPreference>> readResult, LegalAgreement termsOfService, IConfiguration configuration, DBResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult)
         {
+            int limit = configuration.GetSection(this.webClientConfigSection).GetValue<int>(this.userProfileHistoryRecordLimitKey, 2);
+
             this.userProfileService = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 new Mock<IPatientService>().Object,
@@ -57,12 +64,13 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
                 this.emptyConfigServiceMock.Object,
                 new Mock<IEmailQueueService>().Object,
                 new NotificationSettingsServiceMock().Object,
-                new UserProfileDelegateMock(userProfileData, userProfileDbResult, hdId).Object,
+                new UserProfileDelegateMock(userProfileData, userProfileDbResult, hdId, userProfileHistoryDbResult, limit).Object,
                 new UserPreferenceDelegateMock(readResult, hdId).Object,
                 new LegalAgreementDelegateMock(termsOfService).Object,
                 new MessagingVerificationDelegateMock().Object,
                 new Mock<ICryptoDelegate>().Object,
-                new Mock<IHttpContextAccessor>().Object);
+                new Mock<IHttpContextAccessor>().Object,
+                configuration);
         }
 
         /// <summary>
@@ -72,7 +80,8 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <param name="userProfileData">user profile data.</param>
         /// <param name="userProfileDbResult">user profile from DbResult.</param>
         /// <param name="registrationStatus">registration status.</param>
-        public UserProfileServiceMock(string message,  UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, string registrationStatus)
+        /// <param name="configuration">configuration.</param>
+        public UserProfileServiceMock(string message,  UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, string registrationStatus, IConfiguration configuration)
         {
             var externalConfiguration = new ExternalConfiguration()
             {
@@ -96,7 +105,8 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
                 new Mock<ILegalAgreementDelegate>().Object,
                 new MessagingVerificationDelegateMock().Object,
                 new CryptoDelegateMock(message).Object,
-                new Mock<IHttpContextAccessor>().Object);
+                new Mock<IHttpContextAccessor>().Object,
+                configuration);
         }
 
         /// <summary>
@@ -105,7 +115,8 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <param name="hdid">hdid.</param>
         /// <param name="patientModel">patient model.</param>
         /// <param name="minPatientAge">minimum patient age.</param>
-        public UserProfileServiceMock(string hdid, PatientModel patientModel, int minPatientAge)
+        /// <param name="configuration">configuration.</param>
+        public UserProfileServiceMock(string hdid, PatientModel patientModel, int minPatientAge, IConfiguration configuration)
         {
             this.userProfileService = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
@@ -120,7 +131,8 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
                 new Mock<ILegalAgreementDelegate>().Object,
                 new MessagingVerificationDelegateMock().Object,
                 new Mock<ICryptoDelegate>().Object,
-                new Mock<IHttpContextAccessor>().Object);
+                new Mock<IHttpContextAccessor>().Object,
+                configuration);
         }
 
         /// <summary>
@@ -132,8 +144,9 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <param name="readResult">read result.</param>
         /// <param name="messagingVerification">messaging verification.</param>
         /// <param name="termsOfService">terms of service.</param>
+        /// <param name="configuration">configuration.</param>
         /// <param name="commit">commit.</param>
-        public UserProfileServiceMock(string hdId, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, DBResult<IEnumerable<UserPreference>> readResult, MessagingVerification messagingVerification, LegalAgreement termsOfService, bool commit = true)
+        public UserProfileServiceMock(string hdId, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, DBResult<IEnumerable<UserPreference>> readResult, MessagingVerification messagingVerification, LegalAgreement termsOfService, IConfiguration configuration, bool commit = true)
         {
             this.userProfileService = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
@@ -148,7 +161,8 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
                 new LegalAgreementDelegateMock(termsOfService).Object,
                 new MessagingVerificationDelegateMock(messagingVerification).Object,
                 new Mock<ICryptoDelegate>().Object,
-                new Mock<IHttpContextAccessor>().Object);
+                new Mock<IHttpContextAccessor>().Object,
+                configuration);
         }
 
         /// <summary>
@@ -156,7 +170,8 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// </summary>
         /// <param name="readResult">read result.</param>
         /// <param name="action">action.</param>
-        public UserProfileServiceMock(DBResult<UserPreference> readResult, string action)
+        /// <param name="configuration">configuration.</param>
+        public UserProfileServiceMock(DBResult<UserPreference> readResult, string action, IConfiguration configuration)
         {
             this.userProfileService = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
@@ -171,7 +186,8 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
                 new Mock<ILegalAgreementDelegate>().Object,
                 new Mock<IMessagingVerificationDelegate>().Object,
                 new Mock<ICryptoDelegate>().Object,
-                new Mock<IHttpContextAccessor>().Object);
+                new Mock<IHttpContextAccessor>().Object,
+                configuration);
         }
 
         /// <summary>
@@ -181,9 +197,10 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <param name="userProfileData">user profile data.</param>
         /// <param name="userProfileDbResult">user profile from DbResult.</param>
         /// <param name="headerDictionary">header dictionary.</param>
+        /// <param name="configuration">configuration.</param>
         /// <param name="shouldEmailCommit">should email commit.</param>
         /// <param name="shouldProfileCommit">should profile commit.</param>
-        public UserProfileServiceMock(string hdId, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, IHeaderDictionary headerDictionary, bool shouldEmailCommit, bool shouldProfileCommit = true)
+        public UserProfileServiceMock(string hdId, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, IHeaderDictionary headerDictionary, IConfiguration configuration, bool shouldEmailCommit, bool shouldProfileCommit = true)
         {
             this.userProfileService = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
@@ -198,7 +215,8 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
                 new Mock<ILegalAgreementDelegate>().Object,
                 new Mock<IMessagingVerificationDelegate>().Object,
                 new Mock<ICryptoDelegate>().Object,
-                new HttpContextAccessorMock(headerDictionary).Object);
+                new HttpContextAccessorMock(headerDictionary).Object,
+                configuration);
         }
 
         /// <summary>

@@ -116,10 +116,9 @@ describe("Report Filtering", () => {
                         expect(filteredBrandText).to.not.equal(brandText);
                     });
 
-                cy.get("[data-testid=advancedBtn]").click();
-
+                cy.get("[data-testid=advancedBtn]").click();         
                 cy.get(
-                    `[data-testid=medicationExclusionFilter] [title=${brandText}] button`
+                    `[data-testid=medicationExclusionFilter] [title="${brandText}"] button`
                 )
                     .should("be.enabled", "be.visible")
                     .click();
