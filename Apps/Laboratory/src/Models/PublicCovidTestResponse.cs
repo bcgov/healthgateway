@@ -30,6 +30,7 @@ namespace HealthGateway.Laboratory.Models
         /// </summary>
         public PublicCovidTestResponse()
         {
+            this.Records = new List<PublicCovidTestRecord>();
         }
 
         /// <summary>
