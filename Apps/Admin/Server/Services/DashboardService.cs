@@ -19,7 +19,7 @@ namespace HealthGateway.Admin.Server.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Server.Constants;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
