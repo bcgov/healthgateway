@@ -18,6 +18,7 @@ namespace HealthGateway.Laboratory.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -272,7 +273,7 @@ namespace HealthGateway.Laboratory.Delegates
                         {
                             retVal.ResultStatus = ResultType.Success;
                             retVal.ResourcePayload = phsaResult;
-                            retVal.TotalResultCount = 1;
+                            retVal.TotalResultCount = phsaResult.Result.Count();
                         }
                         else
                         {
