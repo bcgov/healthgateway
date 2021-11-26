@@ -47,8 +47,8 @@ namespace HealthGateway.LaboratoryTests
         [Fact]
         public void GetLabOrders()
         {
-            ILaboratoryService? service = GetLabServiceForLabOrdersTests(Common.Constants.ResultType.Success);
-            Task<RequestResult<IEnumerable<LaboratoryModel>>>? actualResult = service.GetLaboratoryOrders(BearerToken, HdId, 0);
+            ILaboratoryService service = GetLabServiceForLabOrdersTests(Common.Constants.ResultType.Success);
+            Task<RequestResult<IEnumerable<LaboratoryModel>>> actualResult = service.GetLaboratoryOrders(BearerToken, HdId, 0);
 
             Assert.True(actualResult.Result.ResultStatus == Common.Constants.ResultType.Success);
             int count = 0;
@@ -67,8 +67,8 @@ namespace HealthGateway.LaboratoryTests
         [Fact]
         public void GetLabOrdersWithError()
         {
-            ILaboratoryService? service = GetLabServiceForLabOrdersTests(Common.Constants.ResultType.Error);
-            Task<RequestResult<IEnumerable<LaboratoryModel>>>? actualResult = service.GetLaboratoryOrders(BearerToken, HdId, 0);
+            ILaboratoryService service = GetLabServiceForLabOrdersTests(Common.Constants.ResultType.Error);
+            Task<RequestResult<IEnumerable<LaboratoryModel>>> actualResult = service.GetLaboratoryOrders(BearerToken, HdId, 0);
             Assert.True(actualResult.Result.ResultStatus == Common.Constants.ResultType.Error);
         }
 
@@ -92,14 +92,14 @@ namespace HealthGateway.LaboratoryTests
                 ResourcePayload = labReport,
             };
 
-            Mock<ILaboratoryDelegate>? mockLaboratoryDelegate = new Mock<ILaboratoryDelegate>();
+            Mock<ILaboratoryDelegate> mockLaboratoryDelegate = new();
             mockLaboratoryDelegate.Setup(s => s.GetLabReport(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
-            Mock<ILaboratoryDelegateFactory>? mockLaboratoryDelegateFactory = new Mock<ILaboratoryDelegateFactory>();
+            Mock<ILaboratoryDelegateFactory> mockLaboratoryDelegateFactory = new();
             mockLaboratoryDelegateFactory.Setup(s => s.CreateInstance()).Returns(mockLaboratoryDelegate.Object);
 
-            Mock<IHttpContextAccessor>? mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-            DefaultHttpContext? context = new DefaultHttpContext()
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
+            DefaultHttpContext context = new()
             {
                 Connection =
                 {
@@ -116,7 +116,7 @@ namespace HealthGateway.LaboratoryTests
                 null!,
                 null!);
 
-            Task<RequestResult<LaboratoryReport>>? actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, BearerToken);
+            Task<RequestResult<LaboratoryReport>> actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, BearerToken);
 
             Assert.True(actualResult.Result.ResultStatus == Common.Constants.ResultType.Success);
             Assert.True(actualResult.Result!.ResourcePayload!.Report == MockedReportContent);
@@ -153,14 +153,14 @@ namespace HealthGateway.LaboratoryTests
                 ResourcePayload = labOrders,
             };
 
-            Mock<ILaboratoryDelegate>? mockLaboratoryDelegate = new Mock<ILaboratoryDelegate>();
+            Mock<ILaboratoryDelegate> mockLaboratoryDelegate = new();
             mockLaboratoryDelegate.Setup(s => s.GetLaboratoryOrders(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
 
-            Mock<ILaboratoryDelegateFactory>? mockLaboratoryDelegateFactory = new Mock<ILaboratoryDelegateFactory>();
+            Mock<ILaboratoryDelegateFactory> mockLaboratoryDelegateFactory = new();
             mockLaboratoryDelegateFactory.Setup(s => s.CreateInstance()).Returns(mockLaboratoryDelegate.Object);
 
-            Mock<IHttpContextAccessor>? mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-            DefaultHttpContext? context = new DefaultHttpContext()
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
+            DefaultHttpContext? context = new()
             {
                 Connection =
                 {

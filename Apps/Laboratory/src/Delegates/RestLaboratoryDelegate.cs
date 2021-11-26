@@ -89,7 +89,7 @@ namespace HealthGateway.Laboratory.Delegates
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
                 client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                Dictionary<string, string?>? query = new Dictionary<string, string?>
+                Dictionary<string, string?> query = new()
                 {
                     ["limit"] = this.labConfig.FetchSize,
                     ["subjectHdid"] = hdid,
@@ -167,7 +167,7 @@ namespace HealthGateway.Laboratory.Delegates
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
                 client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                Dictionary<string, string?>? query = new Dictionary<string, string?>
+                Dictionary<string, string?> query = new()
                 {
                     ["subjectHdid"] = hdid,
                 };
@@ -181,7 +181,7 @@ namespace HealthGateway.Laboratory.Delegates
                     switch (response.StatusCode)
                     {
                         case HttpStatusCode.OK:
-                            JsonSerializerOptions? options = new JsonSerializerOptions
+                            JsonSerializerOptions options = new()
                             {
                                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
