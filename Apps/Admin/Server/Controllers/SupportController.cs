@@ -15,7 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Controllers
 {
-    using HealthGateway.Admin.Server.Constants;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Server.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
