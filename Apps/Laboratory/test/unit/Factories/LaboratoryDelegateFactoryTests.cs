@@ -16,23 +16,13 @@
 namespace HealthGateway.LaboratoryTests
 {
     using System;
-    using System.Collections.Generic;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
-    using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Services;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Moq;
-    using Moq.Protected;
     using Xunit;
 
     /// <summary>
@@ -83,7 +73,9 @@ namespace HealthGateway.LaboratoryTests
             services.AddHttpClient<IHttpClientService, HttpClientService>();
             services.AddTransient<IHttpClientService, HttpClientService>();
 
-            var config = GetIConfigurationRoot();
+            services.AddHttpContextAccessor();
+
+            IConfigurationRoot config = GetIConfigurationRoot();
             services.AddSingleton<IConfiguration>(config);
 
             return services.BuildServiceProvider();
