@@ -1,0 +1,57 @@
+{
+    "resourcePayload": {
+        "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+        "acceptedTermsOfService": true,
+        "email": null,
+        "isEmailVerified": false,
+        "smsNumber": "2501234567",
+        "isSMSNumberVerified": true,
+        "hasTermsOfServiceUpdated": false,
+        "lastLoginDateTime": "2021-11-24T19:46:26Z",
+        "lastLoginDateTimes": [
+            "2021-11-24T19:46:26Z",
+            "2021-11-24T19:18:40Z",
+            "2021-11-24T18:04:08Z",
+            "2021-11-24T17:18:51Z",
+            "2021-11-24T17:18:16Z"
+        ],
+        "closedDateTime": null,
+        "preferences": {
+            "tutorialMenuNote": {
+                "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+                "preference": "tutorialMenuNote",
+                "value": "false",
+                "version": 17468603,
+                "createdDateTime": "2021-11-24T01:41:30.123405Z",
+                "createdBy": "System",
+                "updatedDateTime": "2021-11-24T01:41:30.123405Z",
+                "updatedBy": "System"
+            },
+            "tutorialMenuExport": {
+                "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+                "preference": "tutorialMenuExport",
+                "value": "false",
+                "version": 17468604,
+                "createdDateTime": "2021-11-24T01:41:30.124287Z",
+                "createdBy": "System",
+                "updatedDateTime": "2021-11-24T01:41:30.124287Z",
+                "updatedBy": "System"
+            },
+            "actionedCovidModalAt": {
+                "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+                "preference": "actionedCovidModalAt",
+                "value": "2021-11-24T01:46:17.944\u002B00:00",
+                "version": 17469227,
+                "createdDateTime": "2021-11-24T01:41:30.122385Z",
+                "createdBy": "System",
+                "updatedDateTime": "2021-11-24T01:46:18.047735Z",
+                "updatedBy": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A"
+            }
+        }
+    },
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 1,
+    "resultError": null
+}
