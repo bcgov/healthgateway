@@ -177,8 +177,8 @@ namespace HealthGateway.Laboratory.Services
                 return retVal;
             }
 
-            RequestResult<PHSAResult<IEnumerable<PublicCovidTestResult>>> result = await this.laboratoryDelegate.GetPublicTestResults(accessToken, phn, dateOfBirth, collectionDate).ConfigureAwait(true);
-            IEnumerable<PublicCovidTestResult> payload = result.ResourcePayload?.Result ?? Enumerable.Empty<PublicCovidTestResult>();
+            RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> result = await this.laboratoryDelegate.GetPublicTestResults(accessToken, phn, dateOfBirth, collectionDate).ConfigureAwait(true);
+            IEnumerable<CovidTestResult> payload = result.ResourcePayload?.Result ?? Enumerable.Empty<CovidTestResult>();
             PHSALoadState? loadState = result.ResourcePayload?.LoadState;
 
             retVal.ResultStatus = result.ResultStatus;

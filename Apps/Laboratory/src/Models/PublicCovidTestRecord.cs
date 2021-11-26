@@ -101,7 +101,7 @@ namespace HealthGateway.Laboratory.Models
         /// </summary>
         /// <param name="model">The result model.</param>
         /// <returns>The record model.</returns>
-        public static PublicCovidTestRecord FromModel(PublicCovidTestResult model)
+        public static PublicCovidTestRecord FromModel(CovidTestResult model)
         {
             return new PublicCovidTestRecord()
             {

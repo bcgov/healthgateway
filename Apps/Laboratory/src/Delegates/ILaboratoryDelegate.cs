@@ -54,6 +54,6 @@ namespace HealthGateway.Laboratory.Delegates
         /// <param name="dateOfBirth">The patient's date of birth.</param>
         /// <param name="collectionDate">The date the test was collected.</param>
         /// <returns>The COVID-19 test results result for the given patient.</returns>
-        Task<RequestResult<PHSAResult<IEnumerable<PublicCovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate);
+        Task<RequestResult<PHSAResult<IEnumerable<CovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate);
     }
 }

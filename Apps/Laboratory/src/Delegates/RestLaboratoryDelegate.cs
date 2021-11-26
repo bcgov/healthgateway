@@ -227,7 +227,7 @@ namespace HealthGateway.Laboratory.Delegates
 
         /// <inheritdoc/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
-        public async Task<RequestResult<PHSAResult<IEnumerable<PublicCovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate)
+        public async Task<RequestResult<PHSAResult<IEnumerable<CovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate)
         {
             using Activity? activity = Source.StartActivity("GetPublicTestResults");
             this.logger.LogDebug($"Getting public COVID-19 test results {phn} {dateOfBirth} {collectionDate}...");
@@ -235,7 +235,7 @@ namespace HealthGateway.Laboratory.Delegates
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
 
-            RequestResult<PHSAResult<IEnumerable<PublicCovidTestResult>>> retVal = new()
+            RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
@@ -267,7 +267,7 @@ namespace HealthGateway.Laboratory.Delegates
                 {
                     case HttpStatusCode.OK:
                         this.logger.LogTrace($"Response payload: {payload}");
-                        PHSAResult<IEnumerable<PublicCovidTestResult>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<IEnumerable<PublicCovidTestResult>>>(payload);
+                        PHSAResult<IEnumerable<CovidTestResult>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<IEnumerable<CovidTestResult>>>(payload);
                         if (phsaResult != null && phsaResult.Result != null)
                         {
                             retVal.ResultStatus = ResultType.Success;

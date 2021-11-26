@@ -19,9 +19,9 @@ namespace HealthGateway.Common.Models.PHSA
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The representation of a COVID-19 test result for public access.
+    /// The representation of a COVID-19 test result.
     /// </summary>
-    public class PublicCovidTestResult
+    public class CovidTestResult
     {
         /// <summary>
         /// Gets or sets the first name and last initial of the patient.
