@@ -232,7 +232,6 @@ namespace HealthGateway.Laboratory.Delegates
             using Activity? activity = Source.StartActivity("GetPublicTestResults");
             this.logger.LogDebug($"Getting public COVID-19 test results {phn} {dateOfBirth} {collectionDate}...");
 
-            HttpContent? content = null;
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
 
@@ -253,7 +252,7 @@ namespace HealthGateway.Laboratory.Delegates
 
                 string endpointString = $"{this.labConfig.BaseUrl}{this.labConfig.PublicCovidTestsEndPoint}";
                 Uri endpoint = new(endpointString);
-                content = new StringContent(json, null, MediaTypeNames.Application.Json);
+                using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
 
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
@@ -308,10 +307,6 @@ namespace HealthGateway.Laboratory.Delegates
             {
                 retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting public COVID-19 test results: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                 this.logger.LogError($"Unexpected exception retrieving public COVID-19 test results {e}");
-            }
-            finally
-            {
-                content?.Dispose();
             }
 
             this.logger.LogDebug($"Finished getting public COVID-19 test results {phn} {dateOfBirth} {collectionDate}...");
