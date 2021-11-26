@@ -138,8 +138,6 @@ namespace HealthGateway.Common.Auditing
             {
                 case "Configuration":
                     return ApplicationType.Configuration;
-                case "testhost":
-                    return ApplicationType.Configuration;
                 case "WebClient":
                     return ApplicationType.WebClient;
                 case "Immunization":
@@ -154,6 +152,8 @@ namespace HealthGateway.Common.Auditing
                     return ApplicationType.Laboratory;
                 case "Encounter":
                     return ApplicationType.Encounter;
+                case "ReSharperTestRunner":
+                case "testhost":
                 default:
                     throw new NotSupportedException($"Audit Error: Invalid application name '{assemblyName.Name}'");
             }
