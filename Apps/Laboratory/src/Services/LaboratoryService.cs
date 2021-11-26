@@ -38,7 +38,7 @@ namespace HealthGateway.Laboratory.Services
     /// <inheritdoc/>
     public class LaboratoryService : ILaboratoryService
     {
-        private const string PHSAConfigSectionKey = "PHSA";
+        private const string LabConfigSectionKey = "Laboratory";
         private const string AuthConfigSectionName = "ClientAuthentication";
         private const string TokenCacheKey = "TokenCacheKey";
 
@@ -47,7 +47,7 @@ namespace HealthGateway.Laboratory.Services
         private readonly IMemoryCache memoryCache;
         private readonly ILogger<LaboratoryService> logger;
         private readonly ClientCredentialsTokenRequest tokenRequest;
-        private readonly PHSAConfig phsaConfig;
+        private readonly LaboratoryConfig labConfig;
         private readonly Uri tokenUri;
         private readonly int tokenCacheMinutes;
 
@@ -75,8 +75,8 @@ namespace HealthGateway.Laboratory.Services
             this.tokenRequest = new ClientCredentialsTokenRequest();
             configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
 
-            this.phsaConfig = new();
-            configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
+            this.labConfig = new();
+            configuration.Bind(LabConfigSectionKey, this.labConfig);
 
             this.memoryCache = memoryCache;
             this.logger = logger;
@@ -209,7 +209,7 @@ namespace HealthGateway.Laboratory.Services
                 {
                     retVal.ResultStatus = ResultType.ActionRequired;
                     retVal.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
-                    retVal.ResourcePayload.RetryIn = Math.Max(loadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds);
+                    retVal.ResourcePayload.RetryIn = Math.Max(loadState.BackOffMilliseconds, this.labConfig.BackOffMilliseconds);
                 }
             }
 

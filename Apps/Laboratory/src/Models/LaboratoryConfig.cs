@@ -41,5 +41,10 @@ namespace HealthGateway.Laboratory.Models
         /// Gets or sets the total number of records to retrieve in one call.
         /// </summary>
         public string FetchSize { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the default time to wait for a new request.
+        /// </summary>
+        public int BackOffMilliseconds { get; set; }
     }
 }
