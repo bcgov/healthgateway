@@ -97,7 +97,7 @@ namespace HealthGateway.Laboratory.Models
         public string ResultLink { get; set; } = string.Empty;
 
         /// <summary>
-        /// Converts a PublicCovidTestResult to a PublicCovidTestRecord model.
+        /// Converts a PHSA CovidTestResult to a PublicCovidTestRecord model.
         /// </summary>
         /// <param name="model">The result model.</param>
         /// <returns>The record model.</returns>

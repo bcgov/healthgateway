@@ -59,7 +59,7 @@ namespace HealthGateway.Laboratory.Models
         /// <summary>
         /// Gets the COVID-19 test records.
         /// </summary>
-        [JsonPropertyName("responses")]
+        [JsonPropertyName("records")]
         public IList<PublicCovidTestRecord> Records { get; }
     }
 }
