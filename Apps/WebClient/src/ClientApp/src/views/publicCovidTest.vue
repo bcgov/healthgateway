@@ -256,11 +256,16 @@ export default class PublicCovidTestView extends Vue {
                     >
                         Your COVID-19 test result
                     </h2>
-                    <b-row>
-                        <b-col>
-                            <strong>Name: </strong> {{ patientDisplayName }}
-                        </b-col>
-                    </b-row>
+                    <div
+                        v-if="publicCovidTests.length"
+                        data-testid="public-display-name"
+                    >
+                        <b-row>
+                            <b-col>
+                                <strong>Name: </strong> {{ patientDisplayName }}
+                            </b-col>
+                        </b-row>
+                    </div>
                     <div
                         v-for="(publicCovidTest, index) in publicCovidTests"
                         :key="index"
