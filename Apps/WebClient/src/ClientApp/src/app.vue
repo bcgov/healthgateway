@@ -103,6 +103,7 @@ export default class App extends Vue {
 
     private windowWidth = 0;
     private vaccineCardPath = "/vaccinecard";
+    private covidTestCardPath = "/covidtest";
 
     constructor() {
         super();
@@ -146,16 +147,23 @@ export default class App extends Vue {
         }
     }
 
+    private get isPublicDestinationPath(): boolean {
+        return (
+            this.$route.path !== this.vaccineCardPath &&
+            this.$route.path !== this.covidTestCardPath
+        );
+    }
+
     private get isHeaderVisible(): boolean {
-        return this.$route.path !== this.vaccineCardPath;
+        return this.isPublicDestinationPath;
     }
 
     private get isFooterVisible(): boolean {
-        return this.$route.path !== this.vaccineCardPath;
+        return this.isPublicDestinationPath;
     }
 
     private get isCommunicationVisible(): boolean {
-        return this.$route.path !== this.vaccineCardPath;
+        return this.isPublicDestinationPath;
     }
 }
 </script>

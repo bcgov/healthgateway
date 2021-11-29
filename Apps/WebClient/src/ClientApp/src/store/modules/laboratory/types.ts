@@ -6,16 +6,29 @@ import {
     MutationTree,
 } from "vuex";
 
-import { LaboratoryOrder } from "@/models/laboratory";
+import BannerError from "@/models/bannerError";
+import { StringISODate } from "@/models/dateWrapper";
+import {
+    LaboratoryOrder,
+    PublicCovidTestResponseResult,
+} from "@/models/laboratory";
 import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";
 
 export interface LaboratoryState {
-    laboratoryOrders: LaboratoryOrder[];
-    statusMessage: string;
-    error?: ResultError;
-    status: LoadStatus;
+    public: {
+        publicCovidTestResponseResult?: PublicCovidTestResponseResult;
+        statusMessage: string;
+        error?: BannerError;
+        status: LoadStatus;
+    };
+    authenticated: {
+        laboratoryOrders: LaboratoryOrder[];
+        statusMessage: string;
+        error?: ResultError;
+        status: LoadStatus;
+    };
 }
 
 export interface LaboratoryGetters
@@ -23,6 +36,14 @@ export interface LaboratoryGetters
     laboratoryOrders(state: LaboratoryState): LaboratoryOrder[];
     laboratoryCount(state: LaboratoryState): number;
     isLoading(state: LaboratoryState): boolean;
+    publicCovidTestResponseResult(
+        state: LaboratoryState
+    ): PublicCovidTestResponseResult | undefined;
+    isPublicCovidTestResponseResultLoading(state: LaboratoryState): boolean;
+    publicCovidTestResponseResultError(
+        state: LaboratoryState
+    ): BannerError | undefined;
+    publicCovidTestResponseResultStatusMessage(state: LaboratoryState): string;
 }
 
 type StoreContext = ActionContext<LaboratoryState, RootState>;
@@ -33,6 +54,19 @@ export interface LaboratoryActions
         params: { hdid: string }
     ): Promise<RequestResult<LaboratoryOrder[]>>;
     handleError(context: StoreContext, error: ResultError): void;
+    retrievePublicCovidTests(
+        context: StoreContext,
+        params: {
+            phn: string;
+            dateOfBirth: StringISODate;
+            collectionDate: StringISODate;
+        }
+    ): Promise<PublicCovidTestResponseResult>;
+    handlePublicCovidTestsError(
+        context: StoreContext,
+        error: ResultError
+    ): void;
+    resetPublicCovidTestResponseResult(context: StoreContext): void;
 }
 
 export interface LaboratoryMutations extends MutationTree<LaboratoryState> {
@@ -42,6 +76,20 @@ export interface LaboratoryMutations extends MutationTree<LaboratoryState> {
         laboratoryOrders: LaboratoryOrder[]
     ): void;
     laboratoryError(state: LaboratoryState, error: Error): void;
+    setPublicCovidTestResponseResultRequested(state: LaboratoryState): void;
+    setPublicCovidTestResponseResult(
+        state: LaboratoryState,
+        publicCovidTestResponseResult: PublicCovidTestResponseResult
+    ): void;
+    setPublicCovidTestResponseResultError(
+        state: LaboratoryState,
+        error: BannerError
+    ): void;
+    setPublicCovidTestResponseResultStatusMessage(
+        state: LaboratoryState,
+        statusMessage: string
+    ): void;
+    resetPublicCovidTestResponseResult(state: LaboratoryState): void;
 }
 
 export interface LaboratoryModule extends Module<LaboratoryState, RootState> {

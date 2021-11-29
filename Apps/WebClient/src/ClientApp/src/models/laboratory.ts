@@ -36,6 +36,27 @@ export interface LaboratoryReport {
     data: string;
 }
 
+export interface PublicCovidTestRecord {
+    patientDisplayName: string | null;
+    lab: string | null;
+    reportId: string | null;
+    collectionDateTime: StringISODateTime | null;
+    resultDateTime: StringISODateTime | null;
+    testName: string | null;
+    testType: string | null;
+    testStatus: string | null;
+    testOutcome: string | null;
+    resultTitle: string | null;
+    resultDescription: string | null;
+    resultLink: string | null;
+}
+
+export interface PublicCovidTestResponseResult {
+    loaded: boolean;
+    retryin: number;
+    records: PublicCovidTestRecord[];
+}
+
 export abstract class LaboratoryUtil {
     public static isTestResultReady(testStatus: string | null): boolean {
         if (testStatus == null) {

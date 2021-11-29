@@ -15,6 +15,8 @@ const ProfileView = () =>
     import(/* webpackChunkName: "profile" */ "@/views/profile.vue");
 const LandingView = () =>
     import(/* webpackChunkName: "landing" */ "@/views/landing.vue");
+const PublicCovidTestView = () =>
+    import(/* webpackChunkName: "covidTest" */ "@/views/publicCovidTest.vue");
 const PublicVaccineCardView = () =>
     import(
         /* webpackChunkName: "vaccinationStatus" */ "@/views/publicVaccineCard.vue"
@@ -227,6 +229,18 @@ const routes = [
         meta: {
             validStates: [UserState.registered],
             requiredModules: [ClientModule.Dependent],
+        },
+    },
+    {
+        path: "/covidtest",
+        component: PublicCovidTestView,
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.registered,
+                UserState.pendingDeletion,
+            ],
+            requiredModules: [ClientModule.VaccinationStatus],
         },
     },
     {
