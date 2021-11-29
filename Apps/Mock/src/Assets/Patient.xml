@@ -70,7 +70,7 @@
 				</queryAck>
 				<queryByParameterPayload>
 					<person.id>
-						<value assigningAuthorityName="LCTZ_IAS" extension="RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ" root="2.16.840.1.113883.3.51.1.1.6"/>
+						<value assigningAuthorityName="LCTZ_IAS" extension="P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A" root="2.16.840.1.113883.3.51.1.1.6"/>
 					</person.id>
 				</queryByParameterPayload>
 			</controlActProcess>
