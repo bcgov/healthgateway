@@ -19,7 +19,7 @@ namespace HealthGateway.Common.Models.PHSA
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// TThe Vaccine Status model.
+    /// The Vaccine Status model.
     /// </summary>
     public class VaccineStatusResult
     {
