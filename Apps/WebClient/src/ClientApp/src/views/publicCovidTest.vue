@@ -28,6 +28,7 @@ import router from "@/router";
 import { ILogger } from "@/services/interfaces";
 import { Mask, phnMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
+import SnowPlow from "@/utility/snowPlow";
 
 library.add(faInfoCircle);
 
@@ -112,7 +113,7 @@ export default class PublicCovidTestView extends Vue {
     }
 
     private cancel() {
-        // Reset store module in case there are validation errors
+        // Reset store module in case there are errors
         this.resetPublicCovidTestResponseResult();
         router.push("/");
     }
@@ -148,6 +149,10 @@ export default class PublicCovidTestView extends Vue {
         this.$v.$touch();
         if (!this.$v.$invalid) {
             this.isLoadingCovidTests = true;
+            SnowPlow.trackEvent({
+                action: "view",
+                text: "public_covid_test",
+            });
             this.retrievePublicCovidTests({
                 phn: this.phn.replace(/ /g, ""),
                 dateOfBirth: this.dateOfBirth,
@@ -223,14 +228,13 @@ export default class PublicCovidTestView extends Vue {
     <div class="background flex-grow-1 d-flex flex-column">
         <loading :is-loading="isLoading" :text="loadingStatusMessage" />
         <div class="header d-print-none">
-            <router-link id="homeLink" to="/" aria-label="Return to home page">
-                <img
-                    class="img-fluid m-3"
-                    src="@/assets/images/gov/bcid-logo-rev-en.svg"
-                    width="152"
-                    alt="BC Mark"
-                />
-            </router-link>
+            <img
+                class="img-fluid m-3"
+                src="@/assets/images/gov/bcid-logo-rev-en.svg"
+                width="152"
+                alt="BC Mark"
+                @click.prevent="cancel"
+            />
         </div>
         <div
             v-if="displayResult"
