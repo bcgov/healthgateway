@@ -343,12 +343,7 @@ export default class PublicVaccineCardView extends Vue {
                 />
                 <div
                     v-if="downloadButtonShown"
-                    class="
-                        actions
-                        p-3
-                        d-flex d-print-none
-                        justify-content-center
-                    "
+                    class="actions p-3 d-flex d-print-none justify-content-center"
                 >
                     <hg-button
                         v-if="!saveExportPdfShown"
@@ -438,16 +433,7 @@ export default class PublicVaccineCardView extends Vue {
             class="flex-grow-1 d-flex flex-column justify-content-between"
         >
             <form
-                class="
-                    vaccine-card-form
-                    bg-white
-                    rounded
-                    shadow
-                    m-2 m-sm-3
-                    py-3
-                    px-3 px-sm-5
-                    align-self-center
-                "
+                class="vaccine-card-form bg-white rounded shadow m-2 m-sm-3 py-3 px-3 px-sm-5 align-self-center"
                 @submit.prevent="handleSubmit"
             >
                 <div class="my-2 my-sm-5 px-0 px-sm-5">
