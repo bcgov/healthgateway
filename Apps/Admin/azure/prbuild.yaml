@@ -19,6 +19,7 @@ extends:
   template: /Build/hg.yaml
   parameters:
     Application: Admin
+    WASMBuild: true
     DotNetTests: false
     NPMInstall: false
     NPMTests: false
