@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Client\" />
-    <Folder Include="Server\" />
-    <Folder Include="Shared\" />
+    <ProjectReference Include="..\Client\Admin.Client.csproj" />
+    <ProjectReference Include="..\Common\Admin.Common.csproj" />
+    <ProjectReference Include="..\Server\Admin.Server.csproj" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,32 @@
+name: 1.0.0$(Rev:.r) #Build number
+
+pr: none
+
+resources:
+  pipelines:
+    - pipeline: Common
+      source: Common
+      trigger:
+        branches:
+          - dev
+
+trigger:
+  batch: "true"
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - Apps/Admin
+
+pool:
+  name: "HealthGateway"
+
+extends:
+  template: /Build/hg.yaml
+  parameters:
+    Application: Admin
+    WASMBuild: true
+    DotNetTests: false
+    NPMInstall: false
+    NPMTests: false

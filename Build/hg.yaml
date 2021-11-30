@@ -3,6 +3,7 @@ parameters:
     type: string
     default: NotSpecified
     values:
+      - Admin
       - AdminWebClient
       - Common
       - Database
@@ -44,9 +45,14 @@ parameters:
     type: boolean
     default: true
 
+  - name: WASMBuild
+    type: boolean
+    default: false
+
 #Build variables
 variables:
   App.Name: ${{ parameters.Application }}
+  WASMBuild: ${{ parameters.WASMBuild }}
   NPMInstall: ${{ parameters.NPMInstall }}
   NPMTests: ${{ parameters.NPMTests }}
   UnitTests: ${{ parameters.DotNetTests }}
