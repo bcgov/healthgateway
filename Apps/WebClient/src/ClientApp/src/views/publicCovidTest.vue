@@ -241,16 +241,7 @@ export default class PublicCovidTestView extends Vue {
             class="flex-grow-1 d-flex flex-column justify-content-between"
         >
             <form
-                class="
-                    vaccine-card-form
-                    bg-white
-                    rounded
-                    shadow
-                    m-2 m-sm-3
-                    py-3
-                    px-3 px-sm-5
-                    align-self-center
-                "
+                class="vaccine-card-form bg-white rounded shadow m-2 m-sm-3 py-3 px-3 px-sm-5 align-self-center"
                 @submit.prevent="handleSubmit"
             >
                 <div class="my-2 my-sm-5 px-0 px-sm-5">
@@ -411,16 +402,7 @@ export default class PublicCovidTestView extends Vue {
         >
             <form
                 id="publicCovidTestForm"
-                class="
-                    vaccine-card-form
-                    bg-white
-                    rounded
-                    shadow
-                    m-2 m-sm-3
-                    py-3
-                    px-3 px-sm-5
-                    align-self-center
-                "
+                class="vaccine-card-form bg-white rounded shadow m-2 m-sm-3 py-3 px-3 px-sm-5 align-self-center"
                 @submit.prevent="handleSubmit"
             >
                 <div class="my-2 my-sm-5 px-0 px-sm-5">
