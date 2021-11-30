@@ -240,7 +240,7 @@ const routes = [
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
-            requiredModules: [ClientModule.VaccinationStatus],
+            requiredModules: [ClientModule.PublicLaboratoryResult],
         },
     },
     {

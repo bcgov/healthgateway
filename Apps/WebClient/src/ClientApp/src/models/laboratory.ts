@@ -37,18 +37,18 @@ export interface LaboratoryReport {
 }
 
 export interface PublicCovidTestRecord {
-    patientDisplayName: string | null;
-    lab: string | null;
-    reportId: string | null;
-    collectionDateTime: StringISODateTime | null;
-    resultDateTime: StringISODateTime | null;
-    testName: string | null;
-    testType: string | null;
-    testStatus: string | null;
-    testOutcome: string | null;
-    resultTitle: string | null;
-    resultDescription: string | null;
-    resultLink: string | null;
+    patientDisplayName: string;
+    lab: string;
+    reportId: string;
+    collectionDateTime: StringISODateTime;
+    resultDateTime: StringISODateTime;
+    testName: string;
+    testType: string;
+    testStatus: string;
+    testOutcome: string;
+    resultTitle: string;
+    resultDescription: string;
+    resultLink: string;
 }
 
 export interface PublicCovidTestResponseResult {
