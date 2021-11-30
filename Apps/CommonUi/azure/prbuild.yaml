@@ -6,7 +6,7 @@ pr:
       - dev
   paths:
     include:
-      - Apps/Common.Ui
+      - Apps/CommonUi
 
 trigger: none
 
@@ -16,7 +16,7 @@ pool:
 extends:
   template: /Build/hg.yaml
   parameters:
-    Application: Common.Ui
+    Application: CommonUi
     DotNetTests: true
     NPMInstall: false
     NPMTests: false

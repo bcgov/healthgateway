@@ -1,15 +1,14 @@
-name: 1.0.0$(Rev:.r) #Build number
+name: PR$(Rev:.r) #Build number
 
-pr: none
-
-trigger:
-  batch: "true"
+pr:
   branches:
     include:
       - dev
   paths:
     include:
-      - Apps/Common.Data
+      - Apps/CommonData
+
+trigger: none
 
 pool:
   name: "HealthGateway"
@@ -17,7 +16,7 @@ pool:
 extends:
   template: /Build/hg.yaml
   parameters:
-    Application: Common.Data
+    Application: CommonData
     DotNetTests: true
     NPMInstall: false
     NPMTests: false

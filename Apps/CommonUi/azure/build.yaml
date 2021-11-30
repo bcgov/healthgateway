@@ -17,7 +17,7 @@ trigger:
       - dev
   paths:
     include:
-      - Apps/Common.Ui
+      - Apps/CommonUi
 
 pool:
   name: "HealthGateway"
@@ -25,7 +25,7 @@ pool:
 extends:
   template: /Build/hg.yaml
   parameters:
-    Application: Common.Ui
+    Application: CommonUi
     DotNetTests: true
     NPMInstall: false
     NPMTests: false
