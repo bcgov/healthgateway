@@ -339,12 +339,7 @@ export default class Covid19View extends Vue {
                 />
                 <div
                     v-if="downloadButtonShown"
-                    class="
-                        actions
-                        p-3
-                        d-flex d-print-none
-                        justify-content-center
-                    "
+                    class="actions p-3 d-flex d-print-none justify-content-center"
                 >
                     <hg-button
                         v-if="saveCopyButtonShown"

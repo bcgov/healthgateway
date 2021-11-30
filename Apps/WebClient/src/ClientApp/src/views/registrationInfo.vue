@@ -142,13 +142,7 @@ export default class RegistrationInfoView extends Vue {
                                     <b-row>
                                         <b-col>
                                             <span
-                                                class="
-                                                    align-top
-                                                    bullet
-                                                    rounded-circle
-                                                    py-1
-                                                    px-2
-                                                "
+                                                class="align-top bullet rounded-circle py-1 px-2"
                                                 >1</span
                                             >
                                             <img
@@ -170,13 +164,7 @@ export default class RegistrationInfoView extends Vue {
                                     <b-row>
                                         <b-col>
                                             <span
-                                                class="
-                                                    align-top
-                                                    bullet
-                                                    rounded-circle
-                                                    py-1
-                                                    px-2
-                                                "
+                                                class="align-top bullet rounded-circle py-1 px-2"
                                                 >2</span
                                             >
                                             <img
@@ -199,13 +187,7 @@ export default class RegistrationInfoView extends Vue {
                                     <b-row>
                                         <b-col>
                                             <span
-                                                class="
-                                                    align-top
-                                                    bullet
-                                                    rounded-circle
-                                                    py-1
-                                                    px-2
-                                                "
+                                                class="align-top bullet rounded-circle py-1 px-2"
                                                 >3</span
                                             >
                                             <img

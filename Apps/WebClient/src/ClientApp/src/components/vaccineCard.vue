@@ -132,15 +132,7 @@ export default class VaccineCardComponent extends Vue {
             <b-col>
                 <div class="justify-content-between">
                     <div
-                        class="
-                            p-3
-                            flex-grow-1
-                            d-flex
-                            align-items-center
-                            justify-content-center
-                            flex-column
-                            text-center text-white
-                        "
+                        class="p-3 flex-grow-1 d-flex align-items-center justify-content-center flex-column text-center text-white"
                     >
                         <h2
                             v-if="isFullyVaccinated"
@@ -193,12 +185,7 @@ export default class VaccineCardComponent extends Vue {
                             />
                             <img
                                 :src="qrCodeUrl"
-                                class="
-                                    d-none d-sm-block
-                                    small-qr-code
-                                    img-fluid
-                                    m-2
-                                "
+                                class="d-none d-sm-block small-qr-code img-fluid m-2"
                             />
                             <p
                                 v-b-modal.big-qr

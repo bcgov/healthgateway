@@ -120,7 +120,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
             messagingVerificationDelegateMock
                 .Setup(
-                    s => s.Insert(It.IsAny<MessagingVerification>())).Returns(default(Guid));
+                    s => s.Insert(It.IsAny<MessagingVerification>())).Returns(Guid.Empty);
 
             IUserSMSService service = new UserSMSService(
                 new Mock<ILogger<UserSMSService>>().Object,

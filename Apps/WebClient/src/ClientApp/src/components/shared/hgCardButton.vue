@@ -14,17 +14,7 @@ export default class HgCardButtonComponent extends Vue {
 
 <template>
     <b-button
-        class="
-            hg-card-button
-            h-100
-            p-4
-            d-flex
-            flex-column
-            align-content-start
-            text-left
-            rounded
-            shadow
-        "
+        class="hg-card-button h-100 p-4 d-flex flex-column align-content-start text-left rounded shadow"
         v-bind="$attrs"
         v-on="$listeners"
     >
