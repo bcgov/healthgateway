@@ -27,6 +27,6 @@ extends:
   parameters:
     Application: Admin
     WASMBuild: true
-    DotNetTests: true
+    DotNetTests: false
     NPMInstall: false
     NPMTests: false
