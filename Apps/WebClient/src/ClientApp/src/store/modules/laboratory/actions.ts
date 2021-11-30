@@ -1,5 +1,11 @@
+import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
-import { LaboratoryOrder } from "@/models/laboratory";
+import BannerError from "@/models/bannerError";
+import { StringISODate } from "@/models/dateWrapper";
+import {
+    LaboratoryOrder,
+    PublicCovidTestResponseResult,
+} from "@/models/laboratory";
 import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import { EntryType } from "@/models/timelineEntry";
@@ -24,7 +30,7 @@ export const actions: LaboratoryActions = {
         return new Promise((resolve, reject) => {
             const laboratoryOrders: LaboratoryOrder[] =
                 context.getters.laboratoryOrders;
-            if (context.state.status === LoadStatus.LOADED) {
+            if (context.state.authenticated.status === LoadStatus.LOADED) {
                 logger.debug(`Laboratory found stored, not querying!`);
                 resolve({
                     pageIndex: 0,
@@ -72,5 +78,98 @@ export const actions: LaboratoryActions = {
             { message: "Fetch Laboratory Orders Error", error },
             { root: true }
         );
+    },
+
+    retrievePublicCovidTests(
+        context,
+        params: {
+            phn: string;
+            dateOfBirth: StringISODate;
+            collectionDate: StringISODate;
+        }
+    ): Promise<PublicCovidTestResponseResult> {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const laboratoryService: ILaboratoryService =
+            container.get<ILaboratoryService>(
+                SERVICE_IDENTIFIER.LaboratoryService
+            );
+
+        return new Promise((resolve, reject) => {
+            logger.debug(`Retrieving Public Covid Tests in store.`);
+            context.commit("setPublicCovidTestResponseResultRequested");
+            laboratoryService
+                .getCovidTests(
+                    params.phn,
+                    params.dateOfBirth,
+                    params.collectionDate
+                )
+                .then((result) => {
+                    const payload = result.resourcePayload;
+                    if (result.resultStatus === ResultType.Success) {
+                        context.commit(
+                            "setPublicCovidTestResponseResult",
+                            payload
+                        );
+                        resolve(payload);
+                    } else if (
+                        result.resultError?.actionCode === ActionType.Refresh &&
+                        !payload.loaded &&
+                        payload.retryin > 0
+                    ) {
+                        logger.info("Public Covid Tests not loaded in store.");
+                        context.commit(
+                            "setPublicCovidTestResponseResultStatusMessage",
+                            "We're busy but will continue to try to find the Public Covid Tests...."
+                        );
+                        setTimeout(() => {
+                            logger.info(
+                                "Re-querying for finding Public Covid Tests in store."
+                            );
+                            context.dispatch("retrievePublicCovidTests", {
+                                phn: params.phn,
+                                dateOfBirth: params.dateOfBirth,
+                                collectionDate: params.collectionDate,
+                            });
+                        }, payload.retryin);
+                        resolve(payload);
+                    } else {
+                        context.dispatch(
+                            "handlePublicCovidTestsError",
+                            result.resultError
+                        );
+                        reject(result.resultError);
+                    }
+                })
+                .catch((error) => {
+                    context.dispatch("handlePublicCovidTestsError", error);
+                    reject(error);
+                });
+        });
+    },
+    handlePublicCovidTestsError(context, error: ResultError) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
+        logger.error(`ERROR: ${JSON.stringify(error)}`);
+        const bannerError: BannerError = {
+            title: "Our Apologies",
+            description:
+                "We've found an issue and the Health Gateway team is working hard to fix it.",
+            detail: "",
+            errorCode: "",
+        };
+
+        if (error.actionCode === ActionType.DataMismatch) {
+            bannerError.title = "Data Mismatch";
+            bannerError.description = error.resultMessage;
+        }
+
+        context.commit("setPublicCovidTestResponseResultError", bannerError);
+    },
+    resetPublicCovidTestResponseResult(context) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        logger.debug(
+            `Re-setting Laboratory store module for Public Covid Test response result.`
+        );
+        context.commit("resetPublicCovidTestResponseResult");
     },
 };
