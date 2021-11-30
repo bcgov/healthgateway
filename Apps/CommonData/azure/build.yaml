@@ -18,7 +18,7 @@ extends:
   template: /Build/hg.yaml
   parameters:
     Application: CommonData
-    DotNetTests: true
+    DotNetTests: false
     NPMInstall: false
     NPMTests: false
     Library: true
