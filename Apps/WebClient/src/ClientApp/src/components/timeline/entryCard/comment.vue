@@ -177,12 +177,7 @@ export default class CommentComponent extends Vue {
                         </b-form>
                     </b-col>
                     <b-col
-                        class="
-                            px-2
-                            mt-1 mt-md-0 mt-lg-0
-                            col-12 col-md-auto col-lg-auto
-                            text-right
-                        "
+                        class="px-2 mt-1 mt-md-0 mt-lg-0 col-12 col-md-auto col-lg-auto text-right"
                     >
                         <b-button
                             data-testid="saveCommentBtn"

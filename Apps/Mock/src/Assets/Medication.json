@@ -2649,6 +2649,33 @@
                 "recordId": 4906316440,
                 "rxNumber": "9508808",
                 "dinpin": "66999990",
+                "dateDispensed": "2019-04-09",
+                "quantity": 360,
+                "refills": 4,
+                "directions": ".. SHAKE WELL .. 120 MLS DAILY MAY BE POISONOUS TO OTHERS  JUL 12 JUL 25",
+                "rxStatus": "F",
+                "practitioner": {
+                    "lastName": "PZVVPS",
+                    "firstName": "LQBU"
+                },
+                "dispensingPharmacy": {
+                    "pharmacyId": "BC00007912",
+                    "name": "DJOPXNCCHKDTAPPALZCDV",
+                    "phoneNumber": "250-5095824",
+                    "faxNumber": "250-5073852",
+                    "siteAddress": {
+                        "addrLine1": "GRRJJQOBCUUUHZW",
+                        "city": "KAMLOOPS",
+                        "postalCode": "JTAEKA",
+                        "province": "BC",
+                        "country": "CAN"
+                    }
+                }
+            },
+            {
+                "recordId": 4906316440,
+                "rxNumber": "9508808",
+                "dinpin": "66999990",
                 "dateDispensed": "2019-08-05",
                 "quantity": 360,
                 "refills": 4,
@@ -3441,6 +3468,33 @@
                     }
                 }
             },
+            {
+                "recordId": 4906316405,
+                "rxNumber": "9509864",
+                "dinpin": "66999990",
+                "dateDispensed": "2019-08-05",
+                "quantity": 360,
+                "refills": 2,
+                "directions": ".. SHAKE WELL .. 120 MLS DAILY MAY BE POISONOUS TO OTHERS   JUL 26 AUG 22",
+                "rxStatus": "F",
+                "practitioner": {
+                    "lastName": "PZVVPS",
+                    "firstName": "LQBU"
+                },
+                "dispensingPharmacy": {
+                    "pharmacyId": "BC00007912",
+                    "name": "DJOPXNCCHKDTAPPALZCDV",
+                    "phoneNumber": "250-5095824",
+                    "faxNumber": "250-5073852",
+                    "siteAddress": {
+                        "addrLine1": "GRRJJQOBCUUUHZW",
+                        "city": "KAMLOOPS",
+                        "postalCode": "JTAEKA",
+                        "province": "BC",
+                        "country": "CAN"
+                    }
+                }
+            },           
             {
                 "recordId": 4906316354,
                 "rxNumber": "9495060",

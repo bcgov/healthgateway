@@ -217,5 +217,17 @@ namespace HealthGateway.Database.Delegates
 
             return recurrentCount;
         }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<UserProfileHistory>> GetUserProfileHistories(string hdid, int limit)
+        {
+            DBResult<IEnumerable<UserProfileHistory>> result = new DBResult<IEnumerable<UserProfileHistory>>();
+            result.Payload = this.dbContext.UserProfileHistory
+                                .Where(p => p.HdId == hdid)
+                                .OrderByDescending(p => p.LastLoginDateTime)
+                                .Take(limit);
+            result.Status = DBStatusCode.Read;
+            return result;
+        }
     }
 }

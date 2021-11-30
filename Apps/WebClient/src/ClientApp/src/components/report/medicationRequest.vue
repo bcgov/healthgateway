@@ -58,11 +58,15 @@ export default class MedicationRequestReportComponent extends Vue {
             const firstDate = new DateWrapper(a.requestedDate);
             const secondDate = new DateWrapper(b.requestedDate);
 
-            return firstDate.isAfter(secondDate)
-                ? 1
-                : firstDate.isBefore(secondDate)
-                ? -1
-                : 0;
+            if (firstDate.isBefore(secondDate)) {
+                return 1;
+            }
+
+            if (firstDate.isAfter(secondDate)) {
+                return -1;
+            }
+
+            return 0;
         });
 
         return records;
@@ -142,6 +146,7 @@ export default class MedicationRequestReportComponent extends Vue {
             key: "date",
             thClass: this.headerClass,
             thStyle: { width: "10%" },
+            tdAttr: { "data-testid": "medicationRequestDateItem" },
         },
         {
             key: "requested_drug_name",

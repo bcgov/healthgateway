@@ -69,6 +69,7 @@ namespace HealthGateway.JobScheduler
         /// <param name="services">The passed in Service Collection.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyCaseInsensitiveDbParameters", true);
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureDatabaseServices(services);
             this.startupConfig.ConfigureHttpServices(services);
