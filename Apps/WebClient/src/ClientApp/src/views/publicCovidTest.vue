@@ -233,7 +233,7 @@ export default class PublicCovidTestView extends Vue {
                 src="@/assets/images/gov/bcid-logo-rev-en.svg"
                 width="152"
                 alt="BC Mark"
-                @click.prevent="cancel"
+                @mousedown="cancel"
             />
         </div>
         <div
@@ -577,7 +577,7 @@ export default class PublicCovidTestView extends Vue {
                                 aria-label="Cancel"
                                 data-testid="btnCancel"
                                 class="w-100"
-                                @click.prevent="cancel"
+                                @mousedown="cancel"
                             >
                                 Cancel
                             </hg-button>
