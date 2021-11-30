@@ -97,7 +97,7 @@ steps:
       modifyOutputPath: false
       command: "publish"
       publishWebProjects: false
-      projects: "$(App.Home)"
+      projects: "$(App.Home)/Server"
       arguments: "-o $(Build.BinariesDirectory)"
       zipAfterPublish: false
 
