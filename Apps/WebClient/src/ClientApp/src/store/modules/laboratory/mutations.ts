@@ -7,13 +7,6 @@ import { LoadStatus } from "@/models/storeOperations";
 
 import { LaboratoryMutations, LaboratoryState } from "./types";
 
-const initialPublicState = {
-    publicCovidTestResponseResult: undefined,
-    status: undefined,
-    statusMessage: "",
-    error: undefined,
-};
-
 export const mutations: LaboratoryMutations = {
     setRequested(state: LaboratoryState) {
         state.authenticated.status = LoadStatus.REQUESTED;
@@ -61,6 +54,11 @@ export const mutations: LaboratoryMutations = {
         state.public.statusMessage = statusMessage;
     },
     resetPublicCovidTestResponseResult(state: LaboratoryState) {
-        Object.assign(state.public, initialPublicState);
+        state.public = {
+            publicCovidTestResponseResult: undefined,
+            status: undefined,
+            statusMessage: "",
+            error: undefined,
+        };
     },
 };
