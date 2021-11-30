@@ -1,0 +1,32 @@
+name: 1.0.0$(Rev:.r) #Build number
+
+pr: none
+
+resources:
+  pipelines:
+    - pipeline: Common.Data
+      source: Common.Data
+      trigger:
+        branches:
+          - dev
+
+trigger:
+  batch: "true"
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - Apps/Common.Ui
+
+pool:
+  name: "HealthGateway"
+
+extends:
+  template: /Build/hg.yaml
+  parameters:
+    Application: Common.Ui
+    DotNetTests: true
+    NPMInstall: false
+    NPMTests: false
+    Library: true
