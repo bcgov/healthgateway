@@ -19,7 +19,6 @@ namespace HealthGateway.Immunization.Controllers
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -53,11 +52,11 @@ namespace HealthGateway.Immunization.Controllers
         }
 
         /// <summary>
-        /// Requests the vaccine status for the supplied PHN and Date of Birth.
+        /// Requests the vaccine status for the supplied PHN, date of birth, and date of vaccine.
         /// </summary>
         /// <param name="phn">The personal health number to query.</param>
         /// <param name="dateOfBirth">The date of birth (yyyy-MM-dd) for the supplied PHN.</param>
-        /// <param name="dateOfVaccine">The date of one of the vaccine doess (yyyy-MM-dd) for the supplied PHN.</param>
+        /// <param name="dateOfVaccine">The date of one of the vaccine doses (yyyy-MM-dd) for the supplied PHN.</param>
         /// <returns>The wrapped vaccine status.</returns>
         /// <response code="200">Returns the Vaccine status.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -75,11 +74,11 @@ namespace HealthGateway.Immunization.Controllers
         }
 
         /// <summary>
-        /// Requests the vaccine proof for the supplied PHN, Date of Birth, and Date of Vaccine.
+        /// Requests the vaccine proof for the supplied PHN, date of birth, and date of vaccine.
         /// </summary>
         /// <param name="phn">The personal health number to query.</param>
         /// <param name="dateOfBirth">The date of birth (yyyy-MM-dd) for the supplied PHN.</param>
-        /// <param name="dateOfVaccine">The date of one of the vaccine doess (yyyy-MM-dd) for the supplied PHN.</param>
+        /// <param name="dateOfVaccine">The date of one of the vaccine doses (yyyy-MM-dd) for the supplied PHN.</param>
         /// <returns>The wrapped vaccine proof.</returns>
         /// <response code="200">Returns the vaccine proof.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>

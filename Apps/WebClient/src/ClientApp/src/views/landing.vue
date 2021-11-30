@@ -21,6 +21,7 @@ import Image05 from "@/assets/images/landing/005_reduced-family.jpeg";
 import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
+import router from "@/router";
 
 library.add(
     faClipboardCheck,
@@ -65,6 +66,10 @@ export default class LandingView extends Vue {
 
     private get isVaccinationStatusEnabled(): boolean {
         return this.config.modules["VaccinationStatus"];
+    }
+
+    private get isPublicLaboratoryResultEnabled(): boolean {
+        return this.config.modules["PublicLaboratoryResult"];
     }
 
     private logo: string = Image00;
@@ -168,6 +173,11 @@ export default class LandingView extends Vue {
 
     private getTileClass(index: number): string {
         return index % 2 == 0 ? "order-md-1" : "order-md-2";
+    }
+
+    private covidTest() {
+        router.push("/covidtest");
+        window.scrollTo(0, 0);
     }
 }
 </script>
@@ -316,6 +326,21 @@ export default class LandingView extends Vue {
                         <hr class="pt-5" />
                     </b-col>
                 </b-row>
+            </b-col>
+        </b-row>
+        <b-row
+            v-if="isPublicLaboratoryResultEnabled"
+            class="covid19-section mb-3 mb-md-0 py-4 mx-n2"
+            data-testid="covidRecordLandingPage"
+        >
+            <b-col class="col-12 col-md-5 offset-md-1">
+                <h2>Get your COVID‑19 test result</h2>
+                <hg-button
+                    variant="secondary"
+                    class="my-2 text-center"
+                    @click="covidTest()"
+                    >Get Result</hg-button
+                >   
             </b-col>
         </b-row>
         <b-row class="tile-section my-0 my-md-1">
@@ -501,6 +526,9 @@ export default class LandingView extends Vue {
                 position: absolute;
             }
         }
+    }
+    .covid19-section {
+        background-color: #8bd5c7;
     }
 }
 </style>

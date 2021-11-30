@@ -17,7 +17,11 @@ import { StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
 import Encounter from "@/models/encounter";
 import type ImmunizationResult from "@/models/immunizationResult";
-import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
+import {
+    LaboratoryOrder,
+    LaboratoryReport,
+    PublicCovidTestResponseResult,
+} from "@/models/laboratory";
 import MedicationRequest from "@/models/MedicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import PatientData from "@/models/patientData";
@@ -102,6 +106,11 @@ export interface IEncounterService {
 
 export interface ILaboratoryService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
+    getCovidTests(
+        phn: string,
+        dateOfBirth: string,
+        collectionDate: string
+    ): Promise<RequestResult<PublicCovidTestResponseResult>>;
     getOrders(hdid: string): Promise<RequestResult<LaboratoryOrder[]>>;
     getReportDocument(
         reportId: string,
