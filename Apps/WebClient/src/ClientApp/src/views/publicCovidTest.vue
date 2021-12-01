@@ -128,6 +128,7 @@ export default class PublicCovidTestView extends Vue {
         this.$nextTick(() => {
             this.$v.$reset();
         });
+        // Depending on where button is clicked on page, we need to ensure that top of page is displayed on the changed DIV
         window.scrollTo(0, 0);
     }
 
@@ -185,7 +186,7 @@ export default class PublicCovidTestView extends Vue {
         }
     }
 
-    private isStringEmpty(param: string): boolean {
+    private isNotStringEmpty(param: string): boolean {
         if (param) {
             return true;
         }
@@ -336,7 +337,7 @@ export default class PublicCovidTestView extends Vue {
                             </b-col>
                         </b-row>
                         <b-row
-                            v-if="isStringEmpty(publicCovidTest.resultLink)"
+                            v-if="isNotStringEmpty(publicCovidTest.resultLink)"
                             class="px-2 pb-1"
                         >
                             <b-col>
