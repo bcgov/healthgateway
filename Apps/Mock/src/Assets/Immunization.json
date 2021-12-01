@@ -5,7 +5,7 @@
         "refreshInProgress": false
     },
     "result": {
-        "id": "42ad761e-9a71-47f4-1f9a-08d92ba03fd1",
+        "id": "8717f1f4-29cc-4f43-a31c-08d992a432e4",
         "sourceSystemId": "5588010_55897841",
         "name": "COVID-19 mRNA",
         "targetedDisease": "COVID19",
@@ -16,7 +16,7 @@
             {
                 "code": "1119349007",
                 "name": "COVID-19 mRNA",
-                "lotNumber": "EL0203",
+                "lotNumber": "EK4241HX",
                 "productName": "Pfizer mRNA BNT162b2"
             }
         ],

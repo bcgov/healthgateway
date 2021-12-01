@@ -7,8 +7,8 @@
     "result": {
         "immunizationViews": [
             {
-                "id": "42ad761e-9a71-47f4-1f9a-08d92ba03fd1",
-                "sourceSystemId": "5588010_55897841",
+                "id": "8717f1f4-29cc-4f43-a31c-08d992a432e4",
+                "sourceSystemId": "5588010_55905416",
                 "name": "COVID-19 mRNA",
                 "targetedDisease": "COVID19",
                 "status": "Completed",
@@ -18,7 +18,7 @@
                     {
                         "code": "1119349007",
                         "name": "COVID-19 mRNA",
-                        "lotNumber": "EL0203",
+                        "lotNumber": "EK4241HX",
                         "productName": "Pfizer mRNA BNT162b2"
                     }
                 ],
@@ -29,8 +29,9 @@
                     "vaccineCode": "1119349007",
                     "displayName": "COVID-19 mRNA",
                     "eligibleDate": "2021-03-04",
-                    "dueDate": "2021-05-13"
-                }
+                    "dueDate": "2021-08-01"
+                },
+                "valid": true
             },
             {
                 "id": "0a4cec0d-215e-4c08-1f9b-08d92ba03fd1",
