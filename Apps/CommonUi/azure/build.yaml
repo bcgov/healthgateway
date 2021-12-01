@@ -26,7 +26,7 @@ extends:
   template: /Build/hg.yaml
   parameters:
     Application: CommonUi
-    DotNetTests: false
+    DotNetTests: true
     NPMInstall: false
     NPMTests: false
     Library: true
