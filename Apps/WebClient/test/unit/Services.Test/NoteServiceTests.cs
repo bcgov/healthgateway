@@ -63,7 +63,7 @@ namespace HealthGateway.WebClient.Test.Services
             var actualResult = getNotesResult.Item1;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB"));
+            Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
         }
 
         /// <summary>

@@ -17,10 +17,10 @@ namespace HealthGateway.Common.Services
 {
     using System.Diagnostics;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -102,7 +102,7 @@ namespace HealthGateway.Common.Services
                         break;
                     case PatientIdentifierType.PHN:
                         this.logger.LogDebug("Performing Patient lookup by PHN");
-                        if (PHNValidator.IsValid(identifier))
+                        if (PhnValidator.IsValid(identifier))
                         {
                             requestResult = await this.patientDelegate.GetDemographicsByPHNAsync(identifier, disableIdValidation).ConfigureAwait(true);
                         }
