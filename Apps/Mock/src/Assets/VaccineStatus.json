@@ -8,7 +8,7 @@
     "result": {
         "dob": "1967-06-02T00:00:00",
         "firstName": "BONNET ThisIsaSecondNa ThisIsaThird",
-        "givenNames": null,
+        "givenNames": "BONNET",
         "lastName": "PROTERVITY",
         "doseCount": 1,
         "statusIndicator": "PartialDosesReceived",

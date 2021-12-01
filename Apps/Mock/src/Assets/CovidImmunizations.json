@@ -24,7 +24,7 @@
                 ],
                 "immunizationForecast": {
                     "immsId": "5588010_145352470",
-                    "forecastCreateDate": "2021-05-25",
+                    "forecastCreateDate": "2021-05-24",
                     "forecastStatus": "Overdue",
                     "vaccineCode": "1119349007",
                     "displayName": "COVID-19 mRNA",
