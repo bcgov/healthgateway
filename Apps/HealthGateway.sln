@@ -52,11 +52,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mock", "Mock\src\Mock.cspro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Data", "CommonData\src\Common.Data.csproj", "{17E4F0B0-6E54-4E5B-8FDF-53150A185CFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Data.Tests", "CommonData\test\unit\Common.Data.Tests.csproj", "{B197DE3E-9C29-4CA0-85D6-225D9D22E5A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Data.Tests", "CommonData\test\unit\CommonDataTests.csproj", "{B197DE3E-9C29-4CA0-85D6-225D9D22E5A2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Ui", "CommonUi\src\Common.Ui.csproj", "{6A5DB383-5971-4AFE-9B34-14610D5558CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Ui.Tests", "CommonUi\test\unit\Common.Ui.Tests.csproj", "{A339FDC0-7796-4F7C-A3A9-34261E83655B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Ui.Tests", "CommonUi\test\unit\CommonUiTests.csproj", "{A339FDC0-7796-4F7C-A3A9-34261E83655B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
