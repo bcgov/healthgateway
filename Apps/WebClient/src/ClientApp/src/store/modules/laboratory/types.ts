@@ -21,7 +21,7 @@ export interface LaboratoryState {
         publicCovidTestResponseResult?: PublicCovidTestResponseResult;
         statusMessage: string;
         error?: BannerError;
-        status: LoadStatus;
+        status?: LoadStatus;
     };
     authenticated: {
         laboratoryOrders: LaboratoryOrder[];
