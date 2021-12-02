@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,12 +24,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-#nullable disable
-
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20211118173135_AddFkInUserPreferenceTable")]
+    [Migration("20211202201731_AddFkInUserPreferenceTable")]
     partial class AddFkInUserPreferenceTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,10 +35,9 @@ namespace HealthGateway.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gateway")
-                .HasAnnotation("ProductVersion", "6.0.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
+                .HasAnnotation("ProductVersion", "5.0.11")
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.HasSequence("gateway.trace_seq")
                 .HasMin(1L)
@@ -67,7 +64,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("DosageUnit")
                         .HasMaxLength(40)
@@ -126,7 +123,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -139,7 +136,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("DrugProductId")
                         .IsUnique();
 
-                    b.ToTable("ActiveIngredient", "gateway");
+                    b.ToTable("ActiveIngredient");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.AdminTag", b =>
@@ -154,7 +151,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -167,7 +164,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -180,7 +177,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("AdminTag", "gateway");
+                    b.ToTable("AdminTag");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.ApplicationSetting", b =>
@@ -206,7 +203,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Key")
                         .IsRequired()
@@ -219,7 +216,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Value")
                         .HasColumnType("text");
@@ -235,7 +232,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("Application", "Component", "Key")
                         .IsUnique();
 
-                    b.ToTable("ApplicationSetting", "gateway");
+                    b.ToTable("ApplicationSetting");
 
                     b.HasData(
                         new
@@ -270,7 +267,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(10)");
 
                     b.Property<DateTime>("AuditEventDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("ClientIP")
                         .IsRequired()
@@ -283,7 +280,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Trace")
                         .HasMaxLength(200)
@@ -312,7 +309,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -326,7 +323,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasIndex("TransactionResultCode");
 
-                    b.ToTable("AuditEvent", "gateway");
+                    b.ToTable("AuditEvent");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.AuditTransactionResultCode", b =>
@@ -341,7 +338,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -354,7 +351,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -364,7 +361,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("ResultCode");
 
-                    b.ToTable("AuditTransactionResultCode", "gateway");
+                    b.ToTable("AuditTransactionResultCode");
 
                     b.HasData(
                         new
@@ -422,7 +419,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("EntryTypeCode")
                         .IsRequired()
@@ -444,7 +441,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UserProfileId")
                         .IsRequired()
@@ -463,7 +460,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("Comment", "gateway");
+                    b.ToTable("Comment");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.CommentEntryTypeCode", b =>
@@ -478,7 +475,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -491,7 +488,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -501,7 +498,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("CommentEntryCode");
 
-                    b.ToTable("CommentEntryTypeCode", "gateway");
+                    b.ToTable("CommentEntryTypeCode");
 
                     b.HasData(
                         new
@@ -579,19 +576,19 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("EffectiveDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("ExpiryDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("Priority")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ScheduledDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Subject")
                         .IsRequired()
@@ -609,7 +606,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -623,7 +620,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasIndex("CommunicationTypeCode");
 
-                    b.ToTable("Communication", "gateway");
+                    b.ToTable("Communication");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.CommunicationEmail", b =>
@@ -642,7 +639,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("EmailId")
                         .HasColumnType("uuid");
@@ -653,7 +650,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UserProfileHdId")
                         .IsRequired()
@@ -674,7 +671,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasIndex("UserProfileHdId");
 
-                    b.ToTable("CommunicationEmail", "gateway");
+                    b.ToTable("CommunicationEmail");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.CommunicationStatusCode", b =>
@@ -689,7 +686,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -702,7 +699,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -712,7 +709,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("StatusCode");
 
-                    b.ToTable("CommunicationStatusCode", "gateway");
+                    b.ToTable("CommunicationStatusCode");
 
                     b.HasData(
                         new
@@ -789,7 +786,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -802,7 +799,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -812,7 +809,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("StatusCode");
 
-                    b.ToTable("CommunicationTypeCode", "gateway");
+                    b.ToTable("CommunicationTypeCode");
 
                     b.HasData(
                         new
@@ -899,7 +896,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("DrugProductId")
                         .HasColumnType("uuid");
@@ -938,7 +935,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -951,7 +948,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("DrugProductId")
                         .IsUnique();
 
-                    b.ToTable("Company", "gateway");
+                    b.ToTable("Company");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.DrugProduct", b =>
@@ -984,7 +981,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Descriptor")
                         .HasMaxLength(150)
@@ -1016,7 +1013,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("LastUpdate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("NumberOfAis")
                         .HasMaxLength(10)
@@ -1036,7 +1033,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1048,7 +1045,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasIndex("FileDownloadId");
 
-                    b.ToTable("DrugProduct", "gateway");
+                    b.ToTable("DrugProduct");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Email", b =>
@@ -1071,7 +1068,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("EmailStatusCode")
                         .IsRequired()
@@ -1089,13 +1086,13 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(254)");
 
                     b.Property<DateTime?>("LastRetryDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("Priority")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("SentDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("SmtpStatusCode")
                         .HasColumnType("integer");
@@ -1116,7 +1113,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1130,7 +1127,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasIndex("FormatCode");
 
-                    b.ToTable("Email", "gateway");
+                    b.ToTable("Email");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.EmailFormatCode", b =>
@@ -1145,7 +1142,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -1153,7 +1150,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1163,7 +1160,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("FormatCode");
 
-                    b.ToTable("EmailFormatCode", "gateway");
+                    b.ToTable("EmailFormatCode");
 
                     b.HasData(
                         new
@@ -1198,7 +1195,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -1211,7 +1208,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1221,7 +1218,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("StatusCode");
 
-                    b.ToTable("EmailStatusCode", "gateway");
+                    b.ToTable("EmailStatusCode");
 
                     b.HasData(
                         new
@@ -1283,13 +1280,13 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("EffectiveDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("ExpiryDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("FormatCode")
                         .IsRequired()
@@ -1320,7 +1317,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1332,7 +1329,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasIndex("FormatCode");
 
-                    b.ToTable("EmailTemplate", "gateway");
+                    b.ToTable("EmailTemplate");
 
                     b.HasData(
                         new
@@ -1446,7 +1443,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("EventDescription")
                         .IsRequired()
@@ -1469,7 +1466,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1479,7 +1476,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventLog", "gateway");
+                    b.ToTable("EventLog");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.FileDownload", b =>
@@ -1495,7 +1492,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Hash")
                         .IsRequired()
@@ -1518,7 +1515,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1534,7 +1531,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("ProgramCode")
                         .IsUnique();
 
-                    b.ToTable("FileDownload", "gateway");
+                    b.ToTable("FileDownload");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Form", b =>
@@ -1550,7 +1547,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("DrugProductId")
                         .HasColumnType("uuid");
@@ -1572,7 +1569,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1585,7 +1582,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("DrugProductId")
                         .IsUnique();
 
-                    b.ToTable("Form", "gateway");
+                    b.ToTable("Form");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.GenericCache", b =>
@@ -1601,7 +1598,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Domain")
                         .IsRequired()
@@ -1610,7 +1607,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<DateTime?>("ExpiryDateTime")
                         .IsRequired()
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("HdId")
                         .IsRequired()
@@ -1631,7 +1628,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1644,7 +1641,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("HdId", "Domain")
                         .IsUnique();
 
-                    b.ToTable("GenericCache", "gateway");
+                    b.ToTable("GenericCache");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.LegalAgreement", b =>
@@ -1660,11 +1657,11 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("EffectiveDate")
                         .IsRequired()
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("LegalAgreementCode")
                         .IsRequired()
@@ -1681,7 +1678,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1693,7 +1690,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasIndex("LegalAgreementCode");
 
-                    b.ToTable("LegalAgreement", "gateway");
+                    b.ToTable("LegalAgreement");
 
                     b.HasData(
                         new
@@ -1758,7 +1755,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -1771,7 +1768,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1781,7 +1778,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("LegalAgreementCode");
 
-                    b.ToTable("LegalAgreementTypeCode", "gateway");
+                    b.ToTable("LegalAgreementTypeCode");
 
                     b.HasData(
                         new
@@ -1809,7 +1806,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
@@ -1818,7 +1815,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("ExpireDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("InviteKey")
                         .HasColumnType("uuid");
@@ -1837,7 +1834,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UserProfileId")
                         .IsRequired()
@@ -1870,7 +1867,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasIndex("VerificationType");
 
-                    b.ToTable("MessagingVerification", "gateway");
+                    b.ToTable("MessagingVerification");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.MessagingVerificationTypeCode", b =>
@@ -1885,7 +1882,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -1898,7 +1895,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1908,7 +1905,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("MessagingVerificationCode");
 
-                    b.ToTable("MessagingVerificationTypeCode", "gateway");
+                    b.ToTable("MessagingVerificationTypeCode");
 
                     b.HasData(
                         new
@@ -1951,10 +1948,10 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateOnly>("JournalDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("JournalDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Text")
                         .HasMaxLength(1344)
@@ -1970,7 +1967,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -1982,7 +1979,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasIndex("HdId");
 
-                    b.ToTable("Note", "gateway");
+                    b.ToTable("Note");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Packaging", b =>
@@ -1998,7 +1995,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("DrugProductId")
                         .HasColumnType("uuid");
@@ -2037,7 +2034,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -2050,7 +2047,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("DrugProductId")
                         .IsUnique();
 
-                    b.ToTable("Packaging", "gateway");
+                    b.ToTable("Packaging");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.PharmaCareDrug", b =>
@@ -2079,7 +2076,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("DINPIN")
                         .IsRequired()
@@ -2167,7 +2164,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -2179,7 +2176,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasIndex("FileDownloadId");
 
-                    b.ToTable("PharmaCareDrug", "gateway");
+                    b.ToTable("PharmaCareDrug");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.PharmaceuticalStd", b =>
@@ -2195,7 +2192,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("DrugProductId")
                         .HasColumnType("uuid");
@@ -2209,7 +2206,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -2222,7 +2219,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("DrugProductId")
                         .IsUnique();
 
-                    b.ToTable("PharmaceuticalStd", "gateway");
+                    b.ToTable("PharmaceuticalStd");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.ProgramTypeCode", b =>
@@ -2237,7 +2234,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -2250,7 +2247,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -2260,7 +2257,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("ProgramCode");
 
-                    b.ToTable("ProgramTypeCode", "gateway");
+                    b.ToTable("ProgramTypeCode");
 
                     b.HasData(
                         new
@@ -2418,7 +2415,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("RatingValue")
                         .HasColumnType("integer");
@@ -2432,7 +2429,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -2442,7 +2439,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Rating", "gateway");
+                    b.ToTable("Rating");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.ResourceDelegate", b =>
@@ -2465,7 +2462,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<JsonDocument>("ReasonObject")
                         .IsRequired()
@@ -2481,7 +2478,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -2495,7 +2492,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasIndex("ReasonCode");
 
-                    b.ToTable("ResourceDelegate", "gateway");
+                    b.ToTable("ResourceDelegate");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.ResourceDelegateHistory", b =>
@@ -2511,14 +2508,14 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Operation")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("OperationDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("ProfileHdid")
                         .IsRequired()
@@ -2549,7 +2546,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -2559,7 +2556,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ResourceDelegateHistory", "gateway");
+                    b.ToTable("ResourceDelegateHistory");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.ResourceDelegateReasonCode", b =>
@@ -2574,7 +2571,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -2587,7 +2584,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -2597,7 +2594,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("ReasonTypeCode");
 
-                    b.ToTable("ResourceDelegateReasonCode", "gateway");
+                    b.ToTable("ResourceDelegateReasonCode");
 
                     b.HasData(
                         new
@@ -2636,7 +2633,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("DrugProductId")
                         .HasColumnType("uuid");
@@ -2647,7 +2644,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -2660,7 +2657,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("DrugProductId")
                         .IsUnique();
 
-                    b.ToTable("Route", "gateway");
+                    b.ToTable("Route");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Schedule", b =>
@@ -2676,7 +2673,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("DrugProductId")
                         .HasColumnType("uuid");
@@ -2695,7 +2692,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -2705,7 +2702,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Schedule", "gateway");
+                    b.ToTable("Schedule");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Status", b =>
@@ -2721,7 +2718,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CurrentStatusFlag")
                         .HasMaxLength(1)
@@ -2731,10 +2728,10 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("ExpirationDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("HistoryDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("LotNumber")
                         .HasMaxLength(80)
@@ -2754,7 +2751,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -2766,7 +2763,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasIndex("DrugProductId");
 
-                    b.ToTable("Status", "gateway");
+                    b.ToTable("Status");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.TherapeuticClass", b =>
@@ -2806,7 +2803,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("DrugProductId")
                         .HasColumnType("uuid");
@@ -2817,7 +2814,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -2830,7 +2827,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("DrugProductId")
                         .IsUnique();
 
-                    b.ToTable("TherapeuticClass", "gateway");
+                    b.ToTable("TherapeuticClass");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.UserFeedback", b =>
@@ -2850,7 +2847,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("IsReviewed")
                         .HasColumnType("boolean");
@@ -2864,7 +2861,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UserProfileId")
                         .HasMaxLength(52)
@@ -2878,7 +2875,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserFeedback", "gateway");
+                    b.ToTable("UserFeedback");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.UserFeedbackTag", b =>
@@ -2896,7 +2893,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -2904,7 +2901,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("UserFeedbackId")
                         .HasColumnType("uuid");
@@ -2922,7 +2919,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("AdminTagId", "UserFeedbackId")
                         .IsUnique();
 
-                    b.ToTable("UserFeedbackTag", "gateway");
+                    b.ToTable("UserFeedbackTag");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.UserPreference", b =>
@@ -2941,7 +2938,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -2949,7 +2946,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Value")
                         .IsRequired()
@@ -2963,7 +2960,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("HdId", "Preference");
 
-                    b.ToTable("UserPreference", "gateway");
+                    b.ToTable("UserPreference");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.UserProfile", b =>
@@ -2977,7 +2974,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("ClosedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -2985,7 +2982,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Email")
                         .HasMaxLength(254)
@@ -2999,7 +2996,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("LastLoginDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("SMSNumber")
                         .HasMaxLength(10)
@@ -3011,7 +3008,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -3021,7 +3018,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("HdId");
 
-                    b.ToTable("UserProfile", "gateway");
+                    b.ToTable("UserProfile");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.UserProfileHistory", b =>
@@ -3035,7 +3032,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("ClosedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -3043,7 +3040,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Email")
                         .HasMaxLength(254)
@@ -3063,14 +3060,14 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("LastLoginDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Operation")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("OperationDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("SMSNumber")
                         .HasMaxLength(10)
@@ -3082,7 +3079,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -3092,7 +3089,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserProfileHistory", "gateway");
+                    b.ToTable("UserProfileHistory");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.VeterinarySpecies", b =>
@@ -3108,7 +3105,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("DrugProductId")
                         .HasColumnType("uuid");
@@ -3131,7 +3128,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -3144,7 +3141,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("DrugProductId")
                         .IsUnique();
 
-                    b.ToTable("VeterinarySpecies", "gateway");
+                    b.ToTable("VeterinarySpecies");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.ActiveIngredient", b =>
