@@ -9,11 +9,11 @@
     <PackageReference Include="Hangfire.MaximumConcurrentExecutions" Version="1.1.0" />
     <PackageReference Include="Hangfire.Postgresql" Version="1.8.6" />
     <PackageReference Include="mailkit" Version="2.15.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.0">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.11">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
@@ -27,7 +27,7 @@
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" />
     <None Include="appsettings.json" CopyToPublishDirectory="Always" />
-  </ItemGroup>  
+  </ItemGroup>
   <ItemGroup>
     <Folder Include="Context\" />
     <Folder Include="Utils\" />
