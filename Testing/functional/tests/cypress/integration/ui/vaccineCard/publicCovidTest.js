@@ -1,17 +1,4 @@
-const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-];
+const { monthNames } = require("../../../support/constants");
 
 const dobYearSelector =
     "[data-testid=dateOfBirthInput] [data-testid=formSelectYear]";
@@ -20,11 +7,11 @@ const dobMonthSelector =
 const dobDaySelector =
     "[data-testid=dateOfBirthInput] [data-testid=formSelectDay]";
 const dovYearSelector =
-    "[data-testid=dateOfVaccineInput] [data-testid=formSelectYear]";
+    "[data-testid=dateOfCollectionInput] [data-testid=formSelectYear]";
 const dovMonthSelector =
-    "[data-testid=dateOfVaccineInput] [data-testid=formSelectMonth]";
+    "[data-testid=dateOfCollectionInput] [data-testid=formSelectMonth]";
 const dovDaySelector =
-    "[data-testid=dateOfVaccineInput] [data-testid=formSelectDay]";
+    "[data-testid=dateOfCollectionInput] [data-testid=formSelectDay]";
 
 const feedbackPhnMustBeValidSelector = "[data-testid=feedbackPhnMustBeValid]";
 const feedbackPhnIsRequiredSelector = "[data-testid=feedbackPhnIsRequired]";
@@ -67,9 +54,9 @@ describe("Public User - Covid19 Test Result Page", () => {
         cy.visit(covidTestUrl);
     });
 
-    it("Public Vaccination Card - Cancel", () => {
+    it("Public Covid19 Test - Cancel", () => {
         cy.get("[data-testid=btnCancel]").should("be.visible").click();
-        cy.get("[data-testid=btnCovidTest]").should("exist");
+        cy.get("[data-testid=covid-test-button]").should("exist");
     });
 
     it("Public Covid19 Test - Login BC Services Card App", () => {
@@ -357,7 +344,7 @@ describe("Public User - Covid19 Test Result Page", () => {
         cy.get("[data-testid=error-text-description]").should("be.visible");
     });
 
-    it("Public Covid19 Test - Invalid Health Gateway Problem", () => {
+    it("Public Covid19 Test - Invalid", () => {
         const phn = "9735361219 ";
         const dobYear = "1994";
         const dobMonth = "June";

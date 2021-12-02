@@ -82,7 +82,7 @@ export default class PublicCovidTestView extends Vue {
 
     private phn = "";
     private dateOfBirth = "";
-    private dateOfVaccine = "";
+    private dateOfCollection = "";
 
     private get publicCovidTests(): PublicCovidTestRecord[] | undefined {
         return this.publicCovidTestResponseResult?.records;
@@ -122,7 +122,7 @@ export default class PublicCovidTestView extends Vue {
         this.displayResult = false;
         this.phn = "";
         this.dateOfBirth = "";
-        this.dateOfVaccine = "";
+        this.dateOfCollection = "";
 
         // Reset input components when changing between div tags
         this.$nextTick(() => {
@@ -157,7 +157,7 @@ export default class PublicCovidTestView extends Vue {
             this.retrievePublicCovidTests({
                 phn: this.phn.replace(/ /g, ""),
                 dateOfBirth: this.dateOfBirth,
-                collectionDate: this.dateOfVaccine,
+                collectionDate: this.dateOfCollection,
             })
                 .then(() => {
                     this.logger.debug(
@@ -208,7 +208,7 @@ export default class PublicCovidTestView extends Vue {
                 maxValue: (value: string) =>
                     new DateWrapper(value).isBefore(new DateWrapper()),
             },
-            dateOfVaccine: {
+            dateOfCollection: {
                 required: required,
                 maxValue: (value: string) =>
                     new DateWrapper(value).isBefore(new DateWrapper()),
@@ -515,40 +515,40 @@ export default class PublicCovidTestView extends Vue {
                     <b-row>
                         <b-col>
                             <b-form-group
-                                label="Date of Vaccine (Any Dose)"
-                                label-for="dateOfVaccine"
-                                :state="isValid($v.dateOfVaccine)"
+                                label="Date You Were Tested for COVID-19"
+                                label-for="dateOfCollection"
+                                :state="isValid($v.dateOfCollection)"
                             >
                                 <hg-date-dropdown
-                                    id="dateOfVaccine"
-                                    v-model="dateOfVaccine"
-                                    :state="isValid($v.dateOfVaccine)"
+                                    id="dateOfCollection"
+                                    v-model="dateOfCollection"
+                                    :state="isValid($v.dateOfCollection)"
                                     :allow-future="false"
                                     :min-year="2020"
-                                    data-testid="dateOfVaccineInput"
-                                    aria-label="Date of Vaccine (Any Dose)"
+                                    data-testid="dateOfCollectionInput"
+                                    aria-label="Date You Were Tested for COVID-19"
                                     @blur="$v.dateOfBirth.$touch()"
                                 />
                                 <b-form-invalid-feedback
                                     v-if="
-                                        $v.dateOfVaccine.$dirty &&
-                                        !$v.dateOfVaccine.required
+                                        $v.dateOfCollection.$dirty &&
+                                        !$v.dateOfCollection.required
                                     "
-                                    aria-label="Invalid Date of Vaccine"
+                                    aria-label="Invalid Collection Date"
                                     data-testid="feedbackDovIsRequired"
                                     force-show
                                 >
-                                    A valid date of vaccine is required.
+                                    A valid collection date is required.
                                 </b-form-invalid-feedback>
                                 <b-form-invalid-feedback
                                     v-else-if="
-                                        $v.dateOfVaccine.$dirty &&
-                                        !$v.dateOfVaccine.maxValue
+                                        $v.dateOfCollection.$dirty &&
+                                        !$v.dateOfCollection.maxValue
                                     "
-                                    aria-label="Invalid Date of Vaccine"
+                                    aria-label="Invalid Collection Date"
                                     force-show
                                 >
-                                    Date of vaccine must be in the past.
+                                    Collection Date must be in the past.
                                 </b-form-invalid-feedback>
                             </b-form-group>
                         </b-col>
