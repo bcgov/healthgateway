@@ -1,0 +1,27 @@
+{
+    "resourcePayload": {
+        "loaded": true,
+        "retryin": 0,
+        "records": [
+            {
+                "patientDisplayName": "BONNET PROTERVITY",
+                "lab": "Fha",
+                "reportId": 1,
+                "collectionDateTime": "2021-12-02T00:07:10Z",
+                "resultDateTime": "2021-12-02T00:07:10Z",
+                "testName": null,
+                "testType": "Nasal",
+                "testStatus": "Corrected",
+                "testOutcome": "NoOrderFound",
+                "resultTitle": "No Test Found",
+                "resultDescription": "No Covid results were found. Please confirm that the information you provided is correct.</p><p> It has been more than 48 hours since the date of testing provided. Please contact your primary care provider if you still have symptoms.",
+                "resultLink": null
+            }
+        ]
+    },
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 1,
+    "resultError": null
+}

@@ -309,7 +309,7 @@ export default class PublicCovidTestView extends Vue {
                             </b-col>
                         </b-row>
                         <b-row class="px-2 pt-1">
-                            <b-col>
+                            <b-col data-testid="test-status">
                                 <strong>Test Status: </strong>
                                 {{ publicCovidTest.testStatus }}
                             </b-col>
@@ -321,13 +321,13 @@ export default class PublicCovidTestView extends Vue {
                             </b-col>
                         </b-row>
                         <b-row class="px-2 pt-1">
-                            <b-col
+                            <b-col data-testid="reporting-lab"
                                 ><strong>Reporting Lab: </strong>
                                 {{ publicCovidTest.lab }}
                             </b-col>
                         </b-row>
                         <b-row class="px-2 pt-1">
-                            <b-col>
+                            <b-col data-testid="result-description">
                                 <strong>Result Description:</strong>
                             </b-col>
                         </b-row>
