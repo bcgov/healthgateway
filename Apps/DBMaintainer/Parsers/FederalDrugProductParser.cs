@@ -55,10 +55,6 @@ namespace HealthGateway.DrugMaintainer
             DrugProductMapper mapper = new DrugProductMapper(fileDownload);
             csv.Context.RegisterClassMap(mapper);
             List<DrugProduct> records = csv.GetRecords<DrugProduct>().ToList();
-            foreach (DrugProduct drugProduct in records)
-            {
-                drugProduct.LastUpdate = drugProduct.LastUpdate.ToUniversalTime();
-            }
 
             return records;
         }
@@ -108,12 +104,6 @@ namespace HealthGateway.DrugMaintainer
             StatusMapper mapper = new StatusMapper(drugProducts);
             csv.Context.RegisterClassMap(mapper);
             List<Status> records = csv.GetRecords<Status>().ToList();
-            foreach (Status status in records)
-            {
-                status.HistoryDate = status.HistoryDate?.ToUniversalTime();
-                status.ExpirationDate = status.ExpirationDate?.ToUniversalTime();
-            }
-
             return records;
         }
 
