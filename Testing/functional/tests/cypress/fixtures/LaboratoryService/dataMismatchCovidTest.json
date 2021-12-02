@@ -1,0 +1,32 @@
+{
+    "resourcePayload": {
+        "loaded": true,
+        "retryin": 0,
+        "records": [
+            {
+                "patientDisplayName": null,
+                "lab": "Fha",
+                "reportId": null,
+                "collectionDateTime": null,
+                "resultDateTime": null,
+                "testName": null,
+                "testType": null,
+                "testStatus": "NotSet",
+                "testOutcome": "NotSet",
+                "resultTitle": null,
+                "resultDescription": null,
+                "resultLink": null
+            }
+        ]
+    },
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 2,
+    "resultError": {
+        "resultMessage": "The information you entered does not match our records. Please try again.",
+        "errorCode": "LaboratoryServer-I",
+        "traceId": "b36b47a47ba33432d5596fd2bbe7701b",
+        "actionCode": "MISMATCH"
+    }
+}
