@@ -333,6 +333,10 @@ namespace HealthGateway.Database.Context
                 .HasIndex(p => p.Name)
                 .IsUnique(true);
 
+            // Create non-unique key for UserProfileHistory
+            modelBuilder.Entity<UserProfileHistory>()
+                .HasIndex(p => p.HdId);
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
