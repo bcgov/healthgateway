@@ -6,17 +6,18 @@ const dobMonthSelector =
     "[data-testid=dateOfBirthInput] [data-testid=formSelectMonth]";
 const dobDaySelector =
     "[data-testid=dateOfBirthInput] [data-testid=formSelectDay]";
-const dovYearSelector =
+const collectionDateYearSelector =
     "[data-testid=dateOfCollectionInput] [data-testid=formSelectYear]";
-const dovMonthSelector =
+const collectionDateMonthSelector =
     "[data-testid=dateOfCollectionInput] [data-testid=formSelectMonth]";
-const dovDaySelector =
+const collectionDateDaySelector =
     "[data-testid=dateOfCollectionInput] [data-testid=formSelectDay]";
 
 const feedbackPhnMustBeValidSelector = "[data-testid=feedbackPhnMustBeValid]";
 const feedbackPhnIsRequiredSelector = "[data-testid=feedbackPhnIsRequired]";
 const feedbackDobIsRequiredSelector = "[data-testid=feedbackDobIsRequired]";
-const feedbackDovIsRequiredSelector = "[data-testid=feedbackDovIsRequired]";
+const feedbackCollectionDateIsRequiredSelector =
+    "[data-testid=feedbackCollectionDateIsRequired]";
 
 const publicLaboratoryResultModule = "PublicLaboratoryResult";
 const laboratoryModule = "Laboratory";
@@ -81,29 +82,29 @@ describe("Public User - Covid19 Test Result Page", () => {
         cy.get(feedbackPhnMustBeValidSelector).should("be.visible");
     });
 
-    it("Public Covid19 Test - PHN, DOB and DOV not entered via Click Enter", () => {
+    it("Public Covid19 Test - PHN, DOB and Collection Date not entered via Click Enter", () => {
         clickCovidTestEnterButton();
         cy.get(feedbackPhnIsRequiredSelector).should("be.visible");
         cy.get(feedbackDobIsRequiredSelector).should("be.visible");
-        cy.get(feedbackDovIsRequiredSelector).should("be.visible");
+        cy.get(feedbackCollectionDateIsRequiredSelector).should("be.visible");
     });
 
-    it("Public Covid19 Test - DOB and DOV not entered with Invalid PHN via Click Enter", () => {
+    it("Public Covid19 Test - DOB and Collection Date not entered with Invalid PHN via Click Enter", () => {
         enterCovidTestPHN(Cypress.env("phn").replace(/.$/, ""));
         clickCovidTestEnterButton();
         cy.get(feedbackPhnMustBeValidSelector).should("be.visible");
         cy.get(feedbackDobIsRequiredSelector).should("be.visible");
-        cy.get(feedbackDovIsRequiredSelector).should("be.visible");
+        cy.get(feedbackCollectionDateIsRequiredSelector).should("be.visible");
     });
 
-    it("Public Covid19 Test - DOB and DOV not entered via Click Enter", () => {
+    it("Public Covid19 Test - DOB and Collection Date not entered via Click Enter", () => {
         enterCovidTestPHN(Cypress.env("phn"));
         clickCovidTestEnterButton();
         cy.get(feedbackDobIsRequiredSelector).should("be.visible");
-        cy.get(feedbackDovIsRequiredSelector).should("be.visible");
+        cy.get(feedbackCollectionDateIsRequiredSelector).should("be.visible");
     });
 
-    it("Public Covid19 Test - DOB and DOV cannot be future dated", () => {
+    it("Public Covid19 Test - DOB and Collection Date cannot be future dated", () => {
         const d = new Date();
         const year = d.getFullYear();
         const monthNumber = d.getMonth(); //Maps to monthNames constant array. Index starts at 0
@@ -137,11 +138,11 @@ describe("Public User - Covid19 Test Result Page", () => {
         // Test Future Year does not exist
         cy.log("Testing Future Year does not exist.");
         selectNotExist(dobYearSelector, nextYear.toString());
-        selectNotExist(dovYearSelector, nextYear.toString());
+        selectNotExist(collectionDateYearSelector, nextYear.toString());
 
         // Test Current Year
         select(dobYearSelector, year.toString());
-        select(dovYearSelector, year.toString());
+        select(collectionDateYearSelector, year.toString());
         cy.log("Testing Current Year.");
 
         if (nextMonth > 1) {
@@ -150,12 +151,12 @@ describe("Public User - Covid19 Test Result Page", () => {
                 "Current year has been set in dropdown, so if next month is 1 - January, it means current month is December. Test Future Month does not exist. Month can only be current or past month for current year."
             );
             selectNotExist(dobMonthSelector, nextMonth);
-            selectNotExist(dovMonthSelector, nextMonth);
+            selectNotExist(collectionDateMonthSelector, nextMonth);
         }
 
         cy.log("Test and set Current Month");
         select(dobMonthSelector, monthNames[monthNumber]);
-        select(dovMonthSelector, monthNames[monthNumber]);
+        select(collectionDateMonthSelector, monthNames[monthNumber]);
 
         if (nextDay > 1) {
             cy.log("Next Day: " + nextDay);
@@ -163,15 +164,15 @@ describe("Public User - Covid19 Test Result Page", () => {
                 "Current Year and Month have been set. If next day is 1, it means previous day was last day of current month. Next Day is associated with the current month. Test Future Day in current month does not exist."
             );
             selectNotExist(dobDaySelector, nextDay);
-            selectNotExist(dovDaySelector, nextDay);
+            selectNotExist(collectionDateDaySelector, nextDay);
         }
         //Test Current Day exists
         cy.log("Test Current Day exists.");
         selectExist(dobDaySelector, day);
-        selectExist(dovDaySelector, day);
+        selectExist(collectionDateDaySelector, day);
     });
 
-    it("Public Covid19 Test - DOB Year and DOV not entered via Click Enter", () => {
+    it("Public Covid19 Test - DOB Year and Collection Date not entered via Click Enter", () => {
         const dobMonth = "June";
         const dobDay = "15";
 
@@ -180,10 +181,10 @@ describe("Public User - Covid19 Test Result Page", () => {
         select(dobDaySelector, dobDay);
         clickCovidTestEnterButton();
         cy.get(feedbackDobIsRequiredSelector).should("be.visible");
-        cy.get(feedbackDovIsRequiredSelector).should("be.visible");
+        cy.get(feedbackCollectionDateIsRequiredSelector).should("be.visible");
     });
 
-    it("Public Covid19 Test - DOB Month and DOV not entered via Click Enter", () => {
+    it("Public Covid19 Test - DOB Month and Collection Date not entered via Click Enter", () => {
         const dobYear = "2021";
         const dobDay = "15";
 
@@ -192,10 +193,10 @@ describe("Public User - Covid19 Test Result Page", () => {
         select(dobDaySelector, dobDay);
         clickCovidTestEnterButton();
         cy.get(feedbackDobIsRequiredSelector).should("be.visible");
-        cy.get(feedbackDovIsRequiredSelector).should("be.visible");
+        cy.get(feedbackCollectionDateIsRequiredSelector).should("be.visible");
     });
 
-    it("Public Covid19 Test - DOB Day and DOV not entered via Click Enter", () => {
+    it("Public Covid19 Test - DOB Day and Collection Date not entered via Click Enter", () => {
         const dobYear = "2021";
         const dobMonth = "June";
 
@@ -204,31 +205,31 @@ describe("Public User - Covid19 Test Result Page", () => {
         select(dobMonthSelector, dobMonth);
         clickCovidTestEnterButton();
         cy.get(feedbackDobIsRequiredSelector).should("be.visible");
-        cy.get(feedbackDovIsRequiredSelector).should("be.visible");
+        cy.get(feedbackCollectionDateIsRequiredSelector).should("be.visible");
     });
 
-    it("Public Covid19 Test - DOV Month and DOB not entered via Click Enter", () => {
-        const dovYear = "2021";
-        const dovDay = "15";
+    it("Public Covid19 Test - Collection Date Month and DOB not entered via Click Enter", () => {
+        const collectionDateYear = "2021";
+        const collectionDateDay = "15";
 
         enterCovidTestPHN(Cypress.env("phn"));
-        select(dovYearSelector, dovYear);
-        select(dovDaySelector, dovDay);
+        select(collectionDateYearSelector, collectionDateYear);
+        select(collectionDateDaySelector, collectionDateDay);
         clickCovidTestEnterButton();
         cy.get(feedbackDobIsRequiredSelector).should("be.visible");
-        cy.get(feedbackDovIsRequiredSelector).should("be.visible");
+        cy.get(feedbackCollectionDateIsRequiredSelector).should("be.visible");
     });
 
-    it("Public Covid19 Test - DOV Day and DOB not entered via Click Enter", () => {
-        const dovYear = "2021";
-        const dovMonth = "June";
+    it("Public Covid19 Test - Collection Date Day and DOB not entered via Click Enter", () => {
+        const collectionDateYear = "2021";
+        const collectionDateMonth = "June";
 
         enterCovidTestPHN(Cypress.env("phn"));
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
+        select(collectionDateYearSelector, collectionDateYear);
+        select(collectionDateMonthSelector, collectionDateMonth);
         clickCovidTestEnterButton();
         cy.get(feedbackDobIsRequiredSelector).should("be.visible");
-        cy.get(feedbackDovIsRequiredSelector).should("be.visible");
+        cy.get(feedbackCollectionDateIsRequiredSelector).should("be.visible");
     });
 
     it("Public Covid19 Test Results - Click another test", () => {
@@ -236,9 +237,9 @@ describe("Public User - Covid19 Test Result Page", () => {
         const dobYear = "1994";
         const dobMonth = "June";
         const dobDay = "9";
-        const dovYear = "2021";
-        const dovMonth = "January";
-        const dovDay = "20";
+        const collectionDateYear = "2021";
+        const collectionDateMonth = "January";
+        const collectionDateDay = "20";
 
         cy.enableModules(["Laboratory", "PublicLaboratoryResult"]);
         cy.visit("/covidTest");
@@ -252,9 +253,9 @@ describe("Public User - Covid19 Test Result Page", () => {
         select(dobYearSelector, dobYear);
         select(dobMonthSelector, dobMonth);
         select(dobDaySelector, dobDay);
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
-        select(dovDaySelector, dovDay);
+        select(collectionDateYearSelector, collectionDateYear);
+        select(collectionDateMonthSelector, collectionDateMonth);
+        select(collectionDateDaySelector, collectionDateDay);
 
         clickCovidTestEnterButton();
         cy.get("[data-testid=public-covid-test-result-form-title]").should(
@@ -292,9 +293,9 @@ describe("Public User - Covid19 Test Result Page", () => {
         const dobYear = "1994";
         const dobMonth = "June";
         const dobDay = "9";
-        const dovYear = "2021";
-        const dovMonth = "January";
-        const dovDay = "20";
+        const collectionDateYear = "2021";
+        const collectionDateMonth = "January";
+        const collectionDateDay = "20";
 
         cy.intercept("GET", "**/v1/api/PublicLaboratory/CovidTests", (req) => {
             req.reply({
@@ -307,9 +308,9 @@ describe("Public User - Covid19 Test Result Page", () => {
         select(dobYearSelector, dobYear);
         select(dobMonthSelector, dobMonth);
         select(dobDaySelector, dobDay);
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
-        select(dovDaySelector, dovDay);
+        select(collectionDateYearSelector, collectionDateYear);
+        select(collectionDateMonthSelector, collectionDateMonth);
+        select(collectionDateDaySelector, collectionDateDay);
         clickCovidTestEnterButton();
         cy.get("[data-testid=public-covid-test-result-form-title]").should(
             "be.visible"
@@ -323,9 +324,9 @@ describe("Public User - Covid19 Test Result Page", () => {
         const dobYear = "1994";
         const dobMonth = "June";
         const dobDay = "9";
-        const dovYear = "2021";
-        const dovMonth = "January";
-        const dovDay = "20";
+        const collectionDateYear = "2021";
+        const collectionDateMonth = "January";
+        const collectionDateDay = "20";
 
         cy.intercept("GET", "**/v1/api/PublicLaboratory/CovidTests", (req) => {
             req.reply({
@@ -337,9 +338,9 @@ describe("Public User - Covid19 Test Result Page", () => {
         select(dobYearSelector, dobYear);
         select(dobMonthSelector, dobMonth);
         select(dobDaySelector, dobDay);
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
-        select(dovDaySelector, dovDay);
+        select(collectionDateYearSelector, collectionDateYear);
+        select(collectionDateMonthSelector, collectionDateMonth);
+        select(collectionDateDaySelector, collectionDateDay);
         clickCovidTestEnterButton();
         cy.get("[data-testid=error-text-description]").should("be.visible");
     });
@@ -349,9 +350,9 @@ describe("Public User - Covid19 Test Result Page", () => {
         const dobYear = "1994";
         const dobMonth = "June";
         const dobDay = "9";
-        const dovYear = "2021";
-        const dovMonth = "January";
-        const dovDay = "20";
+        const collectionDateYear = "2021";
+        const collectionDateMonth = "January";
+        const collectionDateDay = "20";
 
         cy.intercept("GET", "**/v1/api/PublicLaboratory/CovidTests", (req) => {
             req.reply({
@@ -363,9 +364,9 @@ describe("Public User - Covid19 Test Result Page", () => {
         select(dobYearSelector, dobYear);
         select(dobMonthSelector, dobMonth);
         select(dobDaySelector, dobDay);
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
-        select(dovDaySelector, dovDay);
+        select(collectionDateYearSelector, collectionDateYear);
+        select(collectionDateMonthSelector, collectionDateMonth);
+        select(collectionDateDaySelector, collectionDateDay);
         clickCovidTestEnterButton();
         cy.get("[data-testid=error-text-description]").should("be.visible");
     });
@@ -375,9 +376,9 @@ describe("Public User - Covid19 Test Result Page", () => {
         const dobYear = "1994";
         const dobMonth = "June";
         const dobDay = "9";
-        const dovYear = "2021";
-        const dovMonth = "January";
-        const dovDay = "20";
+        const collectionDateYear = "2021";
+        const collectionDateMonth = "January";
+        const collectionDateDay = "20";
 
         cy.intercept("GET", "**/v1/api/PublicLaboratory/CovidTests", (req) => {
             req.reply({
@@ -390,9 +391,9 @@ describe("Public User - Covid19 Test Result Page", () => {
         select(dobYearSelector, dobYear);
         select(dobMonthSelector, dobMonth);
         select(dobDaySelector, dobDay);
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
-        select(dovDaySelector, dovDay);
+        select(collectionDateYearSelector, collectionDateYear);
+        select(collectionDateMonthSelector, collectionDateMonth);
+        select(collectionDateDaySelector, collectionDateDay);
 
         clickCovidTestEnterButton();
         cy.get("[data-testid=public-covid-test-result-form-title]").should(

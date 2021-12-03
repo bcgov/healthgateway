@@ -535,7 +535,7 @@ export default class PublicCovidTestView extends Vue {
                                         !$v.dateOfCollection.required
                                     "
                                     aria-label="Invalid Collection Date"
-                                    data-testid="feedbackDovIsRequired"
+                                    data-testid="feedbackCollectionDateIsRequired"
                                     force-show
                                 >
                                     A valid collection date is required.
