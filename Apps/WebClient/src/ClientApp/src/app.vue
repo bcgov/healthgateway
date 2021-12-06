@@ -103,7 +103,7 @@ export default class App extends Vue {
 
     private windowWidth = 0;
     private vaccineCardPath = "/vaccinecard";
-    private covidTestCardPath = "/covidtest";
+    private covidTestPath = "/covidtest";
 
     constructor() {
         super();
@@ -148,9 +148,10 @@ export default class App extends Vue {
     }
 
     private get isPublicDestinationPath(): boolean {
+        const routePath = this.$route.path.toLowerCase();
         return (
-            this.$route.path !== this.vaccineCardPath &&
-            this.$route.path !== this.covidTestCardPath
+            routePath !== this.vaccineCardPath &&
+            routePath !== this.covidTestPath
         );
     }
 
