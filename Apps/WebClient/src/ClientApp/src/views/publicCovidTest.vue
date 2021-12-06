@@ -362,7 +362,7 @@ export default class PublicCovidTestView extends Vue {
                                     class="w-100"
                                     @click="checkAnotherTest()"
                                 >
-                                    Check another test
+                                    Check Another Test
                                 </hg-button>
                             </b-col>
                         </b-row>
