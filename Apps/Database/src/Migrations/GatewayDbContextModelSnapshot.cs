@@ -3413,15 +3413,6 @@ namespace HealthGateway.Database.Migrations
                     b.Navigation("UserFeedback");
                 });
 
-            modelBuilder.Entity("HealthGateway.Database.Models.UserPreference", b =>
-                {
-                    b.HasOne("HealthGateway.Database.Models.UserProfile", null)
-                        .WithMany()
-                        .HasForeignKey("HdId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("HealthGateway.Database.Models.VeterinarySpecies", b =>
                 {
                     b.HasOne("HealthGateway.Database.Models.DrugProduct", null)
