@@ -338,6 +338,7 @@ export default class LandingView extends Vue {
                 <hg-button
                     variant="secondary"
                     class="my-2 text-center"
+                    data-testid="covid-test-button"
                     @click="covidTest()"
                     >Get Result</hg-button
                 >   
