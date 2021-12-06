@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Macross.Json.Extensions" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.11" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
