@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,24 +26,13 @@ namespace HealthGateway.Database.Migrations
             string schema = "gateway";
             string constraint1 = @$"ALTER TABLE IF EXISTS {schema}.""UserPreference"" DROP CONSTRAINT IF EXISTS ""FK_UserPreference_UserProfile_UserProfileId"";";
             migrationBuilder.Sql(constraint1);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_UserPreference_UserProfile_UserProfileId",
-                schema: "gateway",
-                table: "UserPreference",
-                column: "UserProfileId",
-                principalSchema: "gateway",
-                principalTable: "UserProfile",
-                principalColumn: "UserProfileId",
-                onDelete: ReferentialAction.Cascade);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_UserPreference_UserProfile_UserProfileId",
-                schema: "gateway",
-                table: "UserPreference");
+            string schema = "gateway";
+            string constraint1 = @$"ALTER TABLE IF EXISTS {schema}.""UserPreference"" DROP CONSTRAINT IF EXISTS ""FK_UserPreference_UserProfile_UserProfileId"";";
+            migrationBuilder.Sql(constraint1);
         }
     }
 }
