@@ -53,7 +53,7 @@
         "prettier": "^2.5.0",
         "sass": "^1.43.5",
         "sass-loader": "^10.1.1",
-        "ts-jest": "^27.0.7",
+        "ts-jest": "^27.1.0",
         "typescript": "^4.5.2",
         "vue-eslint-parser": "^7.11.0",
         "vue-jest": "^3.0.7",
