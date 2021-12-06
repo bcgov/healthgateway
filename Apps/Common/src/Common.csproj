@@ -46,6 +46,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Database\src\Database.csproj" />
+    <ProjectReference Include="..\..\CommonData\src\Common.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>

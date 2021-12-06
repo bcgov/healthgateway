@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Utils
+namespace HealthGateway.Common.Data.Utils
 {
     using System;
     using System.Collections.Generic;
@@ -24,9 +24,9 @@ namespace HealthGateway.Common.Utils
     /// <summary>
     /// Validates a Personal Health Number.
     /// </summary>
-    public static class PHNValidator
+    public static class PhnValidator
     {
-        private static readonly int[] PHNsigDigits = { 2, 4, 8, 5, 10, 9, 7, 3 };
+        private static readonly int[] PhnSigDigits = { 2, 4, 8, 5, 10, 9, 7, 3 };
 
         /// <summary>
         /// Validates the supplied value is a proper Personal Health Number.
@@ -42,7 +42,7 @@ namespace HealthGateway.Common.Utils
                 for (int i = 1; i < 9; i++)
                 {
                     int digit = Convert.ToInt16(phn[i].ToString(), CultureInfo.InvariantCulture);
-                    checksum += (digit * PHNsigDigits[i - 1]) % 11;
+                    checksum += (digit * PhnSigDigits[i - 1]) % 11;
                 }
 
                 checksum = 11 - (checksum % 11);

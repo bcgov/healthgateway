@@ -55,6 +55,7 @@ namespace HealthGateway.LaboratoryTests
         /// <summary>
         /// ValidateGetLabOrders200.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         [Fact]
         public void ValidateGetLabOrders200()
         {
@@ -91,6 +92,7 @@ namespace HealthGateway.LaboratoryTests
         /// <summary>
         /// ValidateGetLabOrders200JsonError.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         [Fact]
         public void ValidateGetLabOrders200JsonError()
         {
@@ -310,6 +312,7 @@ namespace HealthGateway.LaboratoryTests
         /// <summary>
         /// ValidateGetLabReport400.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         [Fact]
         public void ValidateGetLabReport400()
         {

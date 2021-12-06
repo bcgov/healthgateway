@@ -157,7 +157,7 @@ namespace HealthGateway.WebClient.Test.Services
             if (dBStatus == DBStatusCode.Error)
             {
                 Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-                Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB"));
+                Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
             }
 
             if (dBStatus == DBStatusCode.NotFound)
