@@ -19,31 +19,23 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HealthGateway.Database.Migrations
 {
-    public partial class AddFkInUserPreferenceTable : Migration
+    public partial class AddIndexToUserProfileHistory : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            string schema = "gateway";
-            string constraint1 = @$"ALTER TABLE IF EXISTS {schema}.""UserPreference"" DROP CONSTRAINT IF EXISTS ""FK_UserPreference_UserProfile_UserProfileId"";";
-            migrationBuilder.Sql(constraint1);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_UserPreference_UserProfile_UserProfileId",
+            migrationBuilder.CreateIndex(
+                name: "IX_UserProfileHistory_UserProfileId",
                 schema: "gateway",
-                table: "UserPreference",
-                column: "UserProfileId",
-                principalSchema: "gateway",
-                principalTable: "UserProfile",
-                principalColumn: "UserProfileId",
-                onDelete: ReferentialAction.Cascade);
+                table: "UserProfileHistory",
+                column: "UserProfileId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_UserPreference_UserProfile_UserProfileId",
+            migrationBuilder.DropIndex(
+                name: "IX_UserProfileHistory_UserProfileId",
                 schema: "gateway",
-                table: "UserPreference");
+                table: "UserProfileHistory");
         }
     }
 }

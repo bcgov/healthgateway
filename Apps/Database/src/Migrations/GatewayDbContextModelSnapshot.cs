@@ -3071,6 +3071,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("HdId");
+
                     b.ToTable("UserProfileHistory");
                 });
 
@@ -3409,15 +3411,6 @@ namespace HealthGateway.Database.Migrations
                     b.Navigation("AdminTag");
 
                     b.Navigation("UserFeedback");
-                });
-
-            modelBuilder.Entity("HealthGateway.Database.Models.UserPreference", b =>
-                {
-                    b.HasOne("HealthGateway.Database.Models.UserProfile", null)
-                        .WithMany()
-                        .HasForeignKey("HdId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.VeterinarySpecies", b =>
