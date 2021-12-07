@@ -529,7 +529,7 @@ export default class LandingView extends Vue {
         }
     }
     .covid19-section {
-        background-color: #8bd5c7;
+        background-color: #e8eef5;
     }
 }
 </style>
