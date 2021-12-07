@@ -130,7 +130,11 @@ export default class ProfileView extends Vue {
             this.loginDateTimes.length > 0
         ) {
             this.loginDateTimes.forEach((item) =>
-                items.push(new DateWrapper(item).format("yyyy-MMM-dd, t"))
+                items.push(
+                    new DateWrapper(item, { hasTime: true }).format(
+                        "yyyy-MMM-dd, t"
+                    )
+                )
             );
         }
         return items;
