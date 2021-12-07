@@ -6,7 +6,9 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Admin' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Admin' ">
+    <ExternalConsole>true</ExternalConsole>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.1.5" />
     <PackageReference Include="Fluxor" Version="4.2.1" />
@@ -28,6 +30,12 @@
 
   <ItemGroup>
     <ProjectReference Include="../Common/Admin.Common.csproj" />
+    <ProjectReference Include="..\..\CommonUi\src\Common.Ui.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CommonData\src\Common.Data.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
