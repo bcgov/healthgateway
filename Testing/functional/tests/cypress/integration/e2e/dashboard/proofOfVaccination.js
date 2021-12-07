@@ -3,7 +3,7 @@ const { AuthMethod } = require("../../../support/constants");
 const dashboardUrl = "/dashboard";
 
 describe("Dashboard - Proof of Vaccination Card", () => {
-    beforeEach(() => {
+    it("Dashboard - Federal Card button - Spinner displayed and download confirmed", () => {
         deleteDownloadsFolder();
         let isLoading = false;
         cy.intercept(
@@ -23,9 +23,7 @@ describe("Dashboard - Proof of Vaccination Card", () => {
                 isLoading = !isLoading;
             }
         );
-    });
 
-    it("Dashboard - Federal Card button - Spinner displayed and download confirmed", () => {
         cy.enableModules(["Immunization", "FederalCardButton"]);
 
         cy.login(
