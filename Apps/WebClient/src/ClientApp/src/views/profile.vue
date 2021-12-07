@@ -131,7 +131,7 @@ export default class ProfileView extends Vue {
         ) {
             this.loginDateTimes.forEach((item) =>
                 items.push(
-                    new DateWrapper(item, { hasTime: true }).format(
+                    new DateWrapper(item, { isUtc: true }).format(
                         "yyyy-MMM-dd, t"
                     )
                 )
