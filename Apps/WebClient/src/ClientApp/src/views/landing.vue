@@ -21,6 +21,7 @@ import Image05 from "@/assets/images/landing/005_reduced-family.jpeg";
 import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
+import router from "@/router";
 
 library.add(
     faClipboardCheck,
@@ -65,6 +66,10 @@ export default class LandingView extends Vue {
 
     private get isVaccinationStatusEnabled(): boolean {
         return this.config.modules["VaccinationStatus"];
+    }
+
+    private get isPublicLaboratoryResultEnabled(): boolean {
+        return this.config.modules["PublicLaboratoryResult"];
     }
 
     private logo: string = Image00;
@@ -169,6 +174,11 @@ export default class LandingView extends Vue {
     private getTileClass(index: number): string {
         return index % 2 == 0 ? "order-md-1" : "order-md-2";
     }
+
+    private covidTest() {
+        router.push("/covidtest");
+        window.scrollTo(0, 0);
+    }
 }
 </script>
 
@@ -177,13 +187,7 @@ export default class LandingView extends Vue {
         <b-row
             v-if="isVaccinationStatusEnabled"
             no-gutters
-            class="
-                vaccine-card-banner
-                small-banner
-                d-flex
-                mx-n2
-                justify-content-center
-            "
+            class="vaccine-card-banner small-banner d-flex mx-n2 justify-content-center"
             :class="{ 'd-lg-none': !isSidebarShown }"
         >
             <b-col cols="auto">
@@ -208,13 +212,7 @@ export default class LandingView extends Vue {
         </b-row>
         <b-row
             v-if="isVaccinationStatusEnabled"
-            class="
-                vaccine-card-banner
-                large-banner
-                d-none
-                justify-content-end
-                mx-n2
-            "
+            class="vaccine-card-banner large-banner d-none justify-content-end mx-n2"
             :class="{ 'd-lg-flex': !isSidebarShown }"
         >
             <b-col cols="auto">
@@ -245,12 +243,7 @@ export default class LandingView extends Vue {
         </h3>
         <b-row
             v-if="!isOffline"
-            class="
-                devices-section
-                justify-content-center justify-content-lg-around
-                align-items-center
-                mx-0 mx-md-5
-            "
+            class="devices-section justify-content-center justify-content-lg-around align-items-center mx-0 mx-md-5"
         >
             <b-col class="d-none d-lg-block text-center col-6 col-xl-4">
                 <img
@@ -335,18 +328,28 @@ export default class LandingView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
+        <b-row
+            v-if="isPublicLaboratoryResultEnabled"
+            class="covid19-section mb-3 mb-md-0 py-4 mx-n2"
+            data-testid="covidRecordLandingPage"
+        >
+            <b-col class="col-12 col-md-5 offset-md-1">
+                <h2>Get your COVID‑19 test result</h2>
+                <hg-button
+                    variant="secondary"
+                    class="my-2 text-center"
+                    data-testid="covid-test-button"
+                    @click="covidTest()"
+                    >Get Result</hg-button
+                >   
+            </b-col>
+        </b-row>
         <b-row class="tile-section my-0 my-md-1">
             <b-col>
                 <b-row
                     v-for="(tile, index) in tiles"
                     :key="tile.title"
-                    class="
-                        d-flex
-                        justify-content-center
-                        align-content-around
-                        tile-row
-                        my-md-5 my-0
-                    "
+                    class="d-flex justify-content-center align-content-around tile-row my-md-5 my-0"
                 >
                     <b-col
                         class="col-12 col-md-5"
@@ -524,6 +527,9 @@ export default class LandingView extends Vue {
                 position: absolute;
             }
         }
+    }
+    .covid19-section {
+        background-color: #e8eef5;
     }
 }
 </style>

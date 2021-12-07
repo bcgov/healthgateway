@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Encounter.Test.Delegates
 {
+    using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
@@ -53,7 +54,7 @@ namespace HealthGateway.Encounter.Test.Delegates
         public void ShouldGetMSPVisits()
         {
             string content = @"
-                   { 
+                   {
                         ""uuid"": ""7c51465c-7a7d-489f-b186-8755ae094d09"",
                         ""hdid"": ""P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A"",
                         ""getMspVisitHistoryResponse"": {
@@ -211,7 +212,8 @@ namespace HealthGateway.Encounter.Test.Delegates
                 PHN = "123456789",
             };
             RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error && actualResult?.ResultError?.ErrorCode == "testhostServer-CE-ODR");
+            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error);
+            Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CE-ODR", StringComparison.InvariantCulture));
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

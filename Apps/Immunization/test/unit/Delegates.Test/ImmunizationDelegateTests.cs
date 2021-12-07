@@ -308,7 +308,7 @@ namespace HealthGateway.Immunization.Test.Delegates
             var actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
 
             Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error);
-            Assert.True(actualResult?.ResultError?.ErrorCode == "testhostServer-CE-PHSA");
+            Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CE-PHSA", StringComparison.InvariantCulture));
         }
 
         private static IHttpClientService GetHttpClientService(HttpResponseMessage httpResponseMessage)

@@ -226,13 +226,6 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<UserPreference>()
                 .HasKey(c => new { c.HdId, c.Preference });
 
-            // Create Foreign keys for UserPreference
-            modelBuilder.Entity<UserPreference>()
-                .HasOne<UserProfile>()
-                .WithMany()
-                .HasPrincipalKey(k => k.HdId)
-                .HasForeignKey(k => k.HdId);
-
             modelBuilder.Entity<Communication>()
                 .HasOne<CommunicationTypeCode>()
                 .WithMany()
@@ -332,6 +325,10 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<AdminTag>()
                 .HasIndex(p => p.Name)
                 .IsUnique(true);
+
+            // Create non-unique key for UserProfileHistory
+            modelBuilder.Entity<UserProfileHistory>()
+                .HasIndex(p => p.HdId);
 
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);

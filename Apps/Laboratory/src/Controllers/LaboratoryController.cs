@@ -30,7 +30,7 @@ namespace HealthGateway.Laboratory.Controllers
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// The Immunization controller.
+    /// The authenticated laboratory controller.
     /// </summary>
     [Authorize]
     [ApiVersion("1.0")]
@@ -55,7 +55,7 @@ namespace HealthGateway.Laboratory.Controllers
         /// Initializes a new instance of the <see cref="LaboratoryController"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="svc">The immunization data service.</param>
+        /// <param name="svc">The laboratory data service.</param>
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
         public LaboratoryController(
             ILogger<LaboratoryController> logger,

@@ -149,14 +149,7 @@ export default class FeedbackComponent extends Vue {
                 </b-col>
                 <b-col
                     v-show="isSidebarOpen"
-                    class="
-                        button-title
-                        text-left
-                        col-7 col-md-6
-                        p-0
-                        pl-4 pl-md-3
-                        py-2
-                    "
+                    class="button-title text-left col-7 col-md-6 p-0 pl-4 pl-md-3 py-2"
                 >
                     <span> Feedback </span>
                 </b-col>

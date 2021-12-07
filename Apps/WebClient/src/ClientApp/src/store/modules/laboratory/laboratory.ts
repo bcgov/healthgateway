@@ -6,10 +6,19 @@ import { mutations } from "./mutations";
 import { LaboratoryModule, LaboratoryState } from "./types";
 
 const state: LaboratoryState = {
-    statusMessage: "",
-    laboratoryOrders: [],
-    error: undefined,
-    status: LoadStatus.NONE,
+    public: {
+        publicCovidTestResponseResult: undefined,
+        error: undefined,
+        status: LoadStatus.NONE,
+        statusMessage: "",
+    },
+
+    authenticated: {
+        statusMessage: "",
+        laboratoryOrders: [],
+        error: undefined,
+        status: LoadStatus.NONE,
+    },
 };
 
 const namespaced = true;

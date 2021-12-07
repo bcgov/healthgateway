@@ -21,6 +21,7 @@ namespace HealthGateway.Laboratory.Delegates
     using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Models;
     using Microsoft.Extensions.Configuration;
 
@@ -96,6 +97,12 @@ namespace HealthGateway.Laboratory.Delegates
             };
             await Task.Delay(0).ConfigureAwait(true);
             return mockData;
+        }
+
+        /// <inheritdoc/>
+        public Task<RequestResult<PHSAResult<IEnumerable<CovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 namespace HealthGateway.Laboratory.Models
 {
     using System;
-    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Provides configuration data for the Laboratory Delegate.
@@ -24,13 +23,28 @@ namespace HealthGateway.Laboratory.Models
     public class LaboratoryConfig
     {
         /// <summary>
-        /// Gets or sets the Lab external endpoint.
+        /// Gets or sets the laboratory base endpoint.
         /// </summary>
-        public string Endpoint { get; set; } = string.Empty;
+        public Uri BaseUrl { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the lab orders endpoint.
+        /// </summary>
+        public string LabOrdersEndpoint { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the public COVID-19 tests endpoint.
+        /// </summary>
+        public string PublicCovidTestsEndPoint { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the total number of records to retrieve in one call.
         /// </summary>
         public string FetchSize { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the default time to wait for a new request.
+        /// </summary>
+        public int BackOffMilliseconds { get; set; }
     }
 }

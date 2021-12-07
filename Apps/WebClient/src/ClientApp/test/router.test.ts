@@ -19,6 +19,7 @@ import LandingComponent from "@/views/landing.vue";
 import LoginComponent from "@/views/login.vue";
 import LogoutComponent from "@/views/logout.vue";
 import ProfileComponent from "@/views/profile.vue";
+import PublicCovidTestComponent from "@/views/publicCovidTest.vue";
 import RegistrationComponent from "@/views/registration.vue";
 
 function flushPromises() {
@@ -85,6 +86,11 @@ describe("Router", () => {
     test("has landing route", () => {
         const actualComponent = router.getMatchedComponents("/")[0];
         expect(actualComponent.name).toBe(LandingComponent.name);
+    });
+
+    test("has covidtest route", () => {
+        const actualComponent = router.getMatchedComponents("/covidtest")[0];
+        expect(actualComponent.name).toBe(PublicCovidTestComponent.name);
     });
 
     test("has profile route", () => {

@@ -157,13 +157,13 @@ namespace HealthGateway.WebClient.Test.Services
             if (dBStatus == DBStatusCode.Error)
             {
                 Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-                Assert.Equal("testhostServer-CI-DB", actualResult.ResultError?.ErrorCode);
+                Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
             }
 
             if (dBStatus == DBStatusCode.NotFound)
             {
-                Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-                Assert.Null(actualResult.ResourcePayload?.HdId);
+                Assert.Equal(ResultType.Success, actualResult?.ResultStatus);
+                Assert.Null(actualResult?.ResourcePayload?.HdId);
             }
         }
 

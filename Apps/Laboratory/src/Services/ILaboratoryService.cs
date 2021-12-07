@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,5 +44,14 @@ namespace HealthGateway.Laboratory.Services
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <returns>A base64 encoded PDF.</returns>
         Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, string bearerToken);
+
+        /// <summary>
+        /// Gets a COVID-19 test response for the given patient info.
+        /// </summary>
+        /// <param name="phn">The patient's Personal Health Number.</param>
+        /// <param name="dateOfBirthString">The patient's date of birth in yyyy-MM-dd format.</param>
+        /// <param name="collectionDateString">The date the test was collected in yyyy-MM-dd format.</param>
+        /// <returns>Returns the COVID-19 test response.</returns>
+        Task<RequestResult<PublicCovidTestResponse>> GetPublicCovidTestsAsync(string phn, string dateOfBirthString, string collectionDateString);
     }
 }

@@ -3,24 +3,27 @@ const { AuthMethod } = require("../../../support/constants");
 const dashboardUrl = "/dashboard";
 
 describe("Dashboard - Proof of Vaccination Card", () => {
-    beforeEach(() => {
+    it("Dashboard - Federal Card button - Spinner displayed and download confirmed", () => {
         deleteDownloadsFolder();
         let isLoading = false;
-        cy.intercept("GET", "**/v1/api/PublicVaccineStatus/pdf", (req) => {
-            if (!isLoading) {
-                req.reply({
-                    fixture: "ImmunizationService/vaccineProofNotLoaded.json",
-                });
-            } else {
-                req.reply({
-                    fixture: "ImmunizationService/vaccineProofLoaded.json",
-                });
+        cy.intercept(
+            "GET",
+            "**/v1/api/AuthenticatedVaccineStatus/pdf?hdid*",
+            (req) => {
+                if (!isLoading) {
+                    req.reply({
+                        fixture:
+                            "ImmunizationService/vaccineProofNotLoaded.json",
+                    });
+                } else {
+                    req.reply({
+                        fixture: "ImmunizationService/vaccineProofLoaded.json",
+                    });
+                }
+                isLoading = !isLoading;
             }
-            isLoading = !isLoading;
-        });
-    });
+        );
 
-    it("Dashboard - Federal Card button - Spinner displayed and download confirmed", () => {
         cy.enableModules(["Immunization", "FederalCardButton"]);
 
         cy.login(
