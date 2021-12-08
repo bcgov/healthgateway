@@ -186,9 +186,24 @@ export default class PublicCovidTestView extends Vue {
         }
     }
 
+    private isLastRow(length: number, index: number): boolean {
+        const indexSize = length - 1;
+        if (indexSize == index) {
+            return true;
+        }
+        return false;
+    }
+
     private isNotStringEmpty(param: string): boolean {
         if (param) {
             return true;
+        }
+        return false;
+    }
+
+    private showLink(link: string, length: number, index: number): boolean {
+        if (this.isNotStringEmpty(link)) {
+            return this.isLastRow(length, index);
         }
         return false;
     }
@@ -326,29 +341,40 @@ export default class PublicCovidTestView extends Vue {
                                 {{ publicCovidTest.lab }}
                             </b-col>
                         </b-row>
-                        <b-row class="px-2 pt-1">
+                        <b-row class="px-2 pt-1 pb-2">
                             <b-col data-testid="result-description">
                                 <strong>Result Description:</strong>
                             </b-col>
                         </b-row>
-                        <b-row class="px-2 pb-1">
-                            <b-col>
-                                {{ publicCovidTest.resultDescription }}
-                            </b-col>
-                        </b-row>
-                        <b-row
-                            v-if="isNotStringEmpty(publicCovidTest.resultLink)"
-                            class="px-2 pb-1"
+                        <div
+                            v-for="(
+                                resultDescription, resultDescriptionIndex
+                            ) in publicCovidTest.resultDescription"
+                            :key="resultDescriptionIndex"
                         >
-                            <b-col>
-                                <a
-                                    :href="publicCovidTest.resultLink"
-                                    :data-testid="'result-link-' + (index + 1)"
-                                    target="blank_"
-                                    >More Information</a
-                                >
-                            </b-col>
-                        </b-row>
+                            <b-row class="px-2 pb-2">
+                                <b-col>
+                                    {{ resultDescription }}
+                                    <a
+                                        v-if="
+                                            showLink(
+                                                publicCovidTest.resultLink,
+                                                publicCovidTest
+                                                    .resultDescription.length,
+                                                resultDescriptionIndex
+                                            )
+                                        "
+                                        :href="publicCovidTest.resultLink"
+                                        :data-testid="
+                                            'result-link-' +
+                                            (resultDescriptionIndex + 1)
+                                        "
+                                        target="blank_"
+                                        >here.</a
+                                    >
+                                </b-col>
+                            </b-row>
+                        </div>
                     </div>
                 </div>
                 <div class="my-2 my-sm-5 px-0 px-sm-5">
@@ -357,7 +383,7 @@ export default class PublicCovidTestView extends Vue {
                             <b-col cols="8">
                                 <hg-button
                                     variant="secondary"
-                                    aria-label="Check another test"
+                                    aria-label="Check Another Test"
                                     data-testid="btnCheckAnotherTest"
                                     class="w-100"
                                     @click="checkAnotherTest()"
