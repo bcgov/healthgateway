@@ -47,7 +47,7 @@ export interface PublicCovidTestRecord {
     testStatus: string;
     testOutcome: string;
     resultTitle: string;
-    resultDescription: string;
+    resultDescription: string[];
     resultLink: string;
 }
 
