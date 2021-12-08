@@ -35,11 +35,10 @@ namespace HealthGateway.Admin.Test.Services
         [Fact]
         public void ShouldGetDependentCount()
         {
-            Dictionary<DateTime, int> expected = new Dictionary<DateTime, int>() { { default(DateTime), 3 } };
-            Mock<IDashboardService> mockService = new Mock<IDashboardService>();
+            Dictionary<DateTime, int> expected = new() { { default, 3 } };
+            Mock<IDashboardService> mockService = new();
             mockService.Setup(s => s.GetDailyDependentCount(It.IsAny<int>())).Returns(expected);
-            DashboardController controller = new DashboardController(
-                mockService.Object);
+            DashboardController controller = new(mockService.Object);
 
             IActionResult actualResult = controller.GetDependentCount(-480);
             Assert.IsType<JsonResult>(actualResult);

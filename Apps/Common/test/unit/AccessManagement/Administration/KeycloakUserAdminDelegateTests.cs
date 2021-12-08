@@ -22,6 +22,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Administration;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -53,7 +54,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<KeycloakUserAdminDelegate> logger = loggerFactory.CreateLogger<KeycloakUserAdminDelegate>();
             IUserAdminDelegate keycloakDelegate = new KeycloakUserAdminDelegate(logger, new Mock<IHttpClientService>().Object, this.configuration);
-            Assert.Throws<NotImplementedException>(() => keycloakDelegate.GetUser(Guid.NewGuid(), new Common.AccessManagement.Authentication.Models.JWTModel()));
+            Assert.Throws<NotImplementedException>(() => keycloakDelegate.GetUser(Guid.NewGuid(), new JWTModel()));
         }
 
         /// <summary>
@@ -66,12 +67,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             ILogger<KeycloakUserAdminDelegate> logger = loggerFactory.CreateLogger<KeycloakUserAdminDelegate>();
 
             string response = "Deleted";
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(response),
             };
-            var handlerMock = new Mock<HttpMessageHandler>();
+            Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
@@ -80,11 +81,11 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
                   ItExpr.IsAny<CancellationToken>())
                .ReturnsAsync(httpResponseMessage)
                .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IUserAdminDelegate keycloakDelegate = new KeycloakUserAdminDelegate(logger, mockHttpClientService.Object, this.configuration);
 
-            HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel jwt = new HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel()
+            JWTModel jwt = new()
             {
                 AccessToken = "Bearer Token",
             };
@@ -102,12 +103,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             ILogger<KeycloakUserAdminDelegate> logger = loggerFactory.CreateLogger<KeycloakUserAdminDelegate>();
 
             string response = "Did not delete!";
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.Unauthorized,
                 Content = new StringContent(response),
             };
-            var handlerMock = new Mock<HttpMessageHandler>();
+            Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
@@ -116,11 +117,11 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
                   ItExpr.IsAny<CancellationToken>())
                .ReturnsAsync(httpResponseMessage)
                .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IUserAdminDelegate keycloakDelegate = new KeycloakUserAdminDelegate(logger, mockHttpClientService.Object, this.configuration);
 
-            HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel jwt = new HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel()
+            JWTModel jwt = new()
             {
                 AccessToken = "Bearer Token",
             };
@@ -129,7 +130,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            var myConfiguration = new Dictionary<string, string>
+            Dictionary<string, string> myConfiguration = new()
             {
                 { "KeycloakAdmin:DeleteUserUrl", "https://localhost" },
             };

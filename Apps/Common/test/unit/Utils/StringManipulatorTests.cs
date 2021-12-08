@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,7 +45,7 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldReplaceDictionary()
         {
-            Dictionary<string, string> data = new Dictionary<string, string>()
+            Dictionary<string, string> data = new()
             {
                 { "PARM1", "PARM1" },
                 { "PARM2", "PARM2" },

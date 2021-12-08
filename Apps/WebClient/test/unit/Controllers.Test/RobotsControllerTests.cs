@@ -35,7 +35,7 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldGetRobotsCustom()
         {
-            ContentResult expectedResult = new ContentResult()
+            ContentResult expectedResult = new()
             {
                 StatusCode = StatusCodes.Status200OK,
                 ContentType = MediaTypeNames.Text.Plain,
@@ -44,15 +44,15 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             string key = "robots.txt";
             string robotsContent = expectedResult.Content;
-            var myConfiguration = new Dictionary<string, string>
+            Dictionary<string, string> myConfiguration = new()
             {
                 { key, robotsContent },
             };
-            var configuration = new ConfigurationBuilder()
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            using RobotsController controller = new RobotsController(configuration);
+            using RobotsController controller = new(configuration);
 
             IActionResult actualResult = controller.Robots();
             Assert.IsType<ContentResult>(actualResult);
@@ -65,21 +65,19 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldGetRobotsTxtDefaultConfig()
         {
-            ContentResult expectedResult = new ContentResult()
+            ContentResult expectedResult = new()
             {
                 StatusCode = StatusCodes.Status200OK,
                 ContentType = MediaTypeNames.Text.Plain,
                 Content = string.Empty,
             };
 
-            var myConfiguration = new Dictionary<string, string>
-            {
-            };
-            var configuration = new ConfigurationBuilder()
+            Dictionary<string, string> myConfiguration = new();
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            using RobotsController controller = new RobotsController(configuration);
+            using RobotsController controller = new(configuration);
 
             ContentResult actualResult = (ContentResult)controller.Robots();
             Assert.Equal(actualResult.StatusCode, expectedResult.StatusCode);

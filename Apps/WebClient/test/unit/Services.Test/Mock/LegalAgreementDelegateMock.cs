@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClientTests.Services.Test.Mock
 {
-    using System;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;

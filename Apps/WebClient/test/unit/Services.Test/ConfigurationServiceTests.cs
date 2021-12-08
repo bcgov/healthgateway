@@ -15,8 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Test.Services
 {
+    using System;
     using System.Collections.Generic;
     using DeepEqual.Syntax;
+    using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -53,23 +55,23 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void TestGetConfig()
         {
-            Models.ExternalConfiguration expectedResult = new Models.ExternalConfiguration()
+            ExternalConfiguration expectedResult = new()
             {
-                OpenIdConnect = new Models.OpenIdConnectConfiguration()
+                OpenIdConnect = new OpenIdConnectConfiguration()
                 {
                     Authority = "Authority",
                     ClientId = "ClientId",
                     ResponseType = "ResponseType",
                     Scope = "Scope",
-                    Callbacks = new Dictionary<string, System.Uri>
+                    Callbacks = new Dictionary<string, Uri>
                     {
-                        { "Logon", new System.Uri("https://localhost/logon") },
-                        { "Logout", new System.Uri("https://localhost/logout") },
+                        { "Logon", new Uri("https://localhost/logon") },
+                        { "Logout", new Uri("https://localhost/logout") },
                     },
                 },
-                IdentityProviders = new Models.IdentityProviderConfiguration[]
+                IdentityProviders = new IdentityProviderConfiguration[]
                 {
-                    new Models.IdentityProviderConfiguration()
+                    new IdentityProviderConfiguration()
                     {
                         Id = "Id",
                         Name = "Name",
@@ -78,29 +80,29 @@ namespace HealthGateway.WebClient.Test.Services
                         Disabled = true,
                     },
                 },
-                WebClient = new Models.WebClientConfiguration()
+                WebClient = new WebClientConfiguration()
                 {
                     LogLevel = "LogLevel",
-                    Timeouts = new Models.TimeOutsConfiguration()
+                    Timeouts = new TimeOutsConfiguration()
                     {
                         Idle = 10000,
                         LogoutRedirect = "LogoutRedirect",
                     },
-                    ExternalURLs = new Dictionary<string, System.Uri>
-                   {
+                    ExternalURLs = new Dictionary<string, Uri>
+                    {
                        {
-                           "External", new System.Uri("https://localhost/external")
+                           "External", new Uri("https://localhost/external")
                        },
-                   },
+                    },
                 },
-                ServiceEndpoints = new Dictionary<string, System.Uri>()
+                ServiceEndpoints = new Dictionary<string, Uri>()
                 {
                     {
-                        "Service", new System.Uri("https://localhost/service")
+                        "Service", new Uri("https://localhost/service")
                     },
                 },
             };
-            Models.ExternalConfiguration actualResult = this.service.GetConfiguration();
+            ExternalConfiguration actualResult = this.service.GetConfiguration();
             Assert.True(expectedResult.IsDeepEqual(actualResult));
         }
     }

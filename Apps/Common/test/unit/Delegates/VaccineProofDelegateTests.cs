@@ -20,7 +20,6 @@ namespace HealthGateway.CommonTests.Delegates
     using System.IO;
     using System.Net;
     using System.Net.Http;
-    using System.Text;
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
@@ -29,7 +28,6 @@ namespace HealthGateway.CommonTests.Delegates
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.BCMailPlus;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constants;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -47,7 +45,7 @@ namespace HealthGateway.CommonTests.Delegates
 
         private readonly string qrCodeData = string.Empty;
 
-        private readonly Address address = new(new List<string>() { "3815 HILLSPOINT STREET" })
+        private readonly Address address = new(new List<string> { "3815 HILLSPOINT STREET" })
         {
             City = "CHATHAM",
             Country = "CA",
@@ -102,7 +100,7 @@ namespace HealthGateway.CommonTests.Delegates
                 Content = new StringContent(JsonSerializer.Serialize(response)),
             };
 
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
@@ -137,7 +135,7 @@ namespace HealthGateway.CommonTests.Delegates
                 Content = new StringContent(response),
             };
 
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
@@ -169,7 +167,7 @@ namespace HealthGateway.CommonTests.Delegates
                 Content = null,
             };
 
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
@@ -222,7 +220,7 @@ namespace HealthGateway.CommonTests.Delegates
                 Content = new StringContent(JsonSerializer.Serialize(response)),
             };
 
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
@@ -257,7 +255,7 @@ namespace HealthGateway.CommonTests.Delegates
                 Content = new StringContent(response),
             };
 
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
@@ -289,7 +287,7 @@ namespace HealthGateway.CommonTests.Delegates
                 Content = null,
             };
 
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
@@ -331,7 +329,7 @@ namespace HealthGateway.CommonTests.Delegates
                 Content = new StreamContent(memoryStream),
             };
 
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
@@ -352,14 +350,14 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void ValidateGetAssetAsyncNotFound()
         {
-            Uri jobUri = new Uri($"https://localhost/{JobId}");
+            Uri jobUri = new($"https://localhost/{JobId}");
             using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.NotFound,
                 Content = new StringContent(string.Empty),
             };
 
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
@@ -388,7 +386,7 @@ namespace HealthGateway.CommonTests.Delegates
                 Content = new StreamContent(memoryStream),
             };
 
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
@@ -415,7 +413,7 @@ namespace HealthGateway.CommonTests.Delegates
                 Content = null,
             };
 
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
@@ -431,7 +429,7 @@ namespace HealthGateway.CommonTests.Delegates
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            var myConfiguration = new Dictionary<string, string>
+            Dictionary<string, string> myConfiguration = new()
             {
                 { "BCMailPlus:Endpoint", "https://${HOST}/${ENV}/auth=${TOKEN}/JSON/" },
                 { "BCMailPlus:Host", "bcmaildirect.gov.bc.ca" },
@@ -442,8 +440,6 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             return new ConfigurationBuilder()
-
-                // .SetBasePath(outputPath)
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("appsettings.Development.json", optional: true)
                 .AddJsonFile("appsettings.local.json", optional: true)
@@ -453,7 +449,7 @@ namespace HealthGateway.CommonTests.Delegates
 
         private static Mock<IHttpClientService> GetHttpClientServiceMock(HttpResponseMessage httpResponseMessage)
         {
-            var handlerMock = new Mock<HttpMessageHandler>();
+            Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
@@ -462,7 +458,7 @@ namespace HealthGateway.CommonTests.Delegates
                   ItExpr.IsAny<CancellationToken>())
                .ReturnsAsync(httpResponseMessage)
                .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
             return mockHttpClientService;

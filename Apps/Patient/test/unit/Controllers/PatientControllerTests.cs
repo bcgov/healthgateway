@@ -16,11 +16,12 @@
 namespace HealthGateway.Patient.Test.Controllers
 {
     using System;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Controllers;
-    using HealthGateway.Patient.Models;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
     using Xunit;
@@ -42,10 +43,10 @@ namespace HealthGateway.Patient.Test.Controllers
         [Fact]
         public void GetPatients()
         {
-            Mock<IPatientService> patientService = new Mock<IPatientService>();
-            var mockResult = new RequestResult<Common.Models.PatientModel>()
+            Mock<IPatientService> patientService = new();
+            RequestResult<PatientModel> mockResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new()
                 {
                     Birthdate = DateTime.Now,
@@ -62,9 +63,9 @@ namespace HealthGateway.Patient.Test.Controllers
                     },
                 },
             };
-            var expectedResult = new RequestResult<Models.PatientModel>()
+            RequestResult<Models.PatientModel> expectedResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new Models.PatientModel()
                 {
                     Birthdate = mockResult.ResourcePayload.Birthdate,
@@ -75,10 +76,10 @@ namespace HealthGateway.Patient.Test.Controllers
                     PersonalHealthNumber = mockResult.ResourcePayload.PersonalHealthNumber,
                 },
             };
-            patientService.Setup(x => x.GetPatient(It.IsAny<string>(), Common.Constants.PatientIdentifierType.HDID, false)).ReturnsAsync(mockResult);
+            patientService.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.HDID, false)).ReturnsAsync(mockResult);
 
-            PatientController patientController = new PatientController(patientService.Object);
-            var actualResult = patientController.GetPatient("123");
+            PatientController patientController = new(patientService.Object);
+            Task<IActionResult> actualResult = patientController.GetPatient("123");
             Assert.IsType<JsonResult>(actualResult.Result);
             Assert.True(((JsonResult)actualResult.Result).Value.IsDeepEqual(expectedResult));
         }

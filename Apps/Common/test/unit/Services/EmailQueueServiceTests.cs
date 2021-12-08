@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +26,6 @@ namespace HealthGateway.CommonTests.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -48,7 +47,7 @@ namespace HealthGateway.CommonTests.Services
             string environment = "mock environment";
             string bodyPrefix = "Mock Body for";
             string expectedBody = $"{bodyPrefix} {environment}";
-            EmailTemplate emailTemplate = new EmailTemplate()
+            EmailTemplate emailTemplate = new()
             {
                 Id = Guid.Parse("93895b38-cc48-47a3-b592-c02691521b28"),
                 CreatedBy = "Mocked Created By",
@@ -61,15 +60,17 @@ namespace HealthGateway.CommonTests.Services
             };
 
             Guid expectedEmailId = Guid.Parse("389425bc-0380-467f-b003-e03cfa871f83");
-            Dictionary<string, string> kv = new Dictionary<string, string>();
-            kv.Add("environment", environment);
-            var mockLogger = new Mock<ILogger<EmailQueueService>>();
-            var mockJobclient = new Mock<IBackgroundJobClient>();
-            var mockEmailDelegate = new Mock<IEmailDelegate>();
+            Dictionary<string, string> kv = new()
+            {
+                { "environment", environment },
+            };
+            Mock<ILogger<EmailQueueService>> mockLogger = new();
+            Mock<IBackgroundJobClient> mockJobclient = new();
+            Mock<IEmailDelegate> mockEmailDelegate = new();
             mockEmailDelegate.Setup(s => s.GetEmailTemplate(It.IsAny<string>())).Returns(emailTemplate);
             mockEmailDelegate.Setup(s => s.InsertEmail(It.IsAny<Email>(), true)).Callback<Email, bool>((email, b) => email.Id = expectedEmailId);
 
-            var mockWebHosting = new Mock<IWebHostEnvironment>();
+            Mock<IWebHostEnvironment> mockWebHosting = new();
 
             IEmailQueueService emailService = new EmailQueueService(
                         mockLogger.Object,
@@ -96,7 +97,7 @@ namespace HealthGateway.CommonTests.Services
         {
             DateTime now = DateTime.Now;
             string expectedEmail = "mock@mock.com";
-            EmailTemplate emailTemplate = new EmailTemplate()
+            EmailTemplate emailTemplate = new()
             {
                 Id = Guid.Parse("93895b38-cc48-47a3-b592-c02691521b28"),
                 CreatedBy = "Mocked Created By",
@@ -108,13 +109,13 @@ namespace HealthGateway.CommonTests.Services
                 From = "mock@mock.com",
             };
             Guid expectedEmailId = Guid.Parse("389425bc-0380-467f-b003-e03cfa871f83");
-            var mockLogger = new Mock<ILogger<EmailQueueService>>();
-            var mockJobclient = new Mock<IBackgroundJobClient>();
-            var mockEmailDelegate = new Mock<IEmailDelegate>();
+            Mock<ILogger<EmailQueueService>> mockLogger = new();
+            Mock<IBackgroundJobClient> mockJobclient = new();
+            Mock<IEmailDelegate> mockEmailDelegate = new();
             mockEmailDelegate.Setup(s => s.GetEmailTemplate(It.IsAny<string>())).Returns(emailTemplate);
             mockEmailDelegate.Setup(s => s.InsertEmail(It.IsAny<Email>(), true)).Callback<Email, bool>((email, b) => email.Id = expectedEmailId);
 
-            var mockWebHosting = new Mock<IWebHostEnvironment>();
+            Mock<IWebHostEnvironment> mockWebHosting = new();
             IEmailQueueService emailService = new EmailQueueService(
                         mockLogger.Object,
                         mockJobclient.Object,
@@ -143,7 +144,7 @@ namespace HealthGateway.CommonTests.Services
             string environment = "mock environment";
             string bodyPrefix = "Mock Body for";
             string expectedBody = $"{bodyPrefix} {environment}";
-            Email email = new Email()
+            Email email = new()
             {
                 Id = Guid.Parse("93895b38-cc48-47a3-b592-c02691521b28"),
                 CreatedBy = "Mocked Created By",
@@ -155,11 +156,11 @@ namespace HealthGateway.CommonTests.Services
                 From = "mock@mockfrom.com",
             };
             Guid emailId = Guid.Parse("389425bc-0380-467f-b003-e03cfa871f83");
-            var mockLogger = new Mock<ILogger<EmailQueueService>>();
-            var mockJobclient = new Mock<IBackgroundJobClient>();
-            var mockEmailDelegate = new Mock<IEmailDelegate>();
+            Mock<ILogger<EmailQueueService>> mockLogger = new();
+            Mock<IBackgroundJobClient> mockJobclient = new();
+            Mock<IEmailDelegate> mockEmailDelegate = new();
             mockEmailDelegate.Setup(s => s.GetEmail(It.IsAny<Guid>())).Returns(email);
-            var mockWebHosting = new Mock<IWebHostEnvironment>();
+            Mock<IWebHostEnvironment> mockWebHosting = new();
             IEmailQueueService emailService = new EmailQueueService(
                         mockLogger.Object,
                         mockJobclient.Object,
@@ -175,11 +176,11 @@ namespace HealthGateway.CommonTests.Services
         public void ShouldCloneandQueueThrowsNoEmail()
         {
             Guid emailId = Guid.Parse("389425bc-0380-467f-b003-e03cfa871f83");
-            var mockLogger = new Mock<ILogger<EmailQueueService>>();
-            var mockJobclient = new Mock<IBackgroundJobClient>();
-            var mockEmailDelegate = new Mock<IEmailDelegate>();
+            Mock<ILogger<EmailQueueService>> mockLogger = new();
+            Mock<IBackgroundJobClient> mockJobclient = new();
+            Mock<IEmailDelegate> mockEmailDelegate = new();
             mockEmailDelegate.Setup(s => s.GetEmail(It.IsAny<Guid>())).Returns<Email>(null);
-            var mockWebHosting = new Mock<IWebHostEnvironment>();
+            Mock<IWebHostEnvironment> mockWebHosting = new();
             IEmailQueueService emailService = new EmailQueueService(
                         mockLogger.Object,
                         mockJobclient.Object,
@@ -197,7 +198,7 @@ namespace HealthGateway.CommonTests.Services
             string environment = "mock environment";
             string bodyPrefix = "Mock Body for";
             string expectedBody = $"{bodyPrefix} {environment}";
-            Email expectedEmail = new Email()
+            Email expectedEmail = new()
             {
                 Id = Guid.Parse("93895b38-cc48-47a3-b592-c02691521b28"),
                 From = "mock@mockfrom.com",
@@ -206,14 +207,12 @@ namespace HealthGateway.CommonTests.Services
                 Body = expectedBody,
             };
             Guid expectedNewEmailId = Guid.Parse("389425bc-0380-467f-b003-e03cfa871f83");
-            Dictionary<string, string> kv = new Dictionary<string, string>();
-            kv.Add("environment", environment);
-            var mockLogger = new Mock<ILogger<EmailQueueService>>();
-            var mockJobclient = new Mock<IBackgroundJobClient>();
-            var mockEmailDelegate = new Mock<IEmailDelegate>();
+            Mock<ILogger<EmailQueueService>> mockLogger = new();
+            Mock<IBackgroundJobClient> mockJobclient = new();
+            Mock<IEmailDelegate> mockEmailDelegate = new();
             mockEmailDelegate.Setup(s => s.GetEmail(It.IsAny<Guid>())).Returns(expectedEmail);
             mockEmailDelegate.Setup(s => s.InsertEmail(It.IsAny<Email>(), true)).Callback<Email, bool>((email, b) => email.Id = expectedNewEmailId);
-            var mockWebHosting = new Mock<IWebHostEnvironment>();
+            Mock<IWebHostEnvironment> mockWebHosting = new();
             IEmailQueueService emailService = new EmailQueueService(
                         mockLogger.Object,
                         mockJobclient.Object,
@@ -240,19 +239,21 @@ namespace HealthGateway.CommonTests.Services
         public void ShouldProcessTemplate()
         {
             string emailTo = "test@test.com";
-            Dictionary<string, string> d = new Dictionary<string, string>();
-            d.Add("SUBJECT", "Test Subject");
-            d.Add("PARM1", "PARM1");
-            d.Add("PARM2", "PARM2");
-            d.Add("PARM3", "PARM3");
-            EmailTemplate template = new EmailTemplate()
+            Dictionary<string, string> d = new()
+            {
+                { "SUBJECT", "Test Subject" },
+                { "PARM1", "PARM1" },
+                { "PARM2", "PARM2" },
+                { "PARM3", "PARM3" },
+            };
+            EmailTemplate template = new()
             {
                 Subject = "Subject=${SUBJECT}",
                 Body = "PARM1=${PARM1}, PARM2=${PARM2}, PARM3=${PARM3}",
                 FormatCode = EmailFormat.Text,
                 Priority = EmailPriority.Standard,
             };
-            Email expected = new Email()
+            Email expected = new()
             {
                 To = emailTo,
                 Subject = "Subject=Test Subject",
@@ -278,15 +279,15 @@ namespace HealthGateway.CommonTests.Services
             string bodyPrefix = "Mock Body";
             string environment = string.Empty;
             string expectedBody = $"{bodyPrefix} {environment}";
-            EmailTemplate template = new EmailTemplate()
+            EmailTemplate template = new()
             {
                 Subject = "Mock Subject",
                 Body = $"{bodyPrefix} ${{Environment}}",
                 FormatCode = EmailFormat.Text,
                 Priority = EmailPriority.Standard,
             };
-            Dictionary<string, string> d = new Dictionary<string, string>();
-            var mockWebHosting = new Mock<IWebHostEnvironment>();
+            Dictionary<string, string> d = new();
+            Mock<IWebHostEnvironment> mockWebHosting = new();
             mockWebHosting.Setup(s => s.EnvironmentName).Returns(Environments.Production);
             IEmailQueueService emailService = new EmailQueueService(
                 new Mock<ILogger<EmailQueueService>>().Object,
@@ -307,15 +308,15 @@ namespace HealthGateway.CommonTests.Services
             string bodyPrefix = "Mock Body";
             string environment = "mock environment";
             string expectedBody = $"{bodyPrefix} {environment}";
-            EmailTemplate template = new EmailTemplate()
+            EmailTemplate template = new()
             {
                 Subject = "Mock Subject",
                 Body = $"{bodyPrefix} ${{Environment}}",
                 FormatCode = EmailFormat.Text,
                 Priority = EmailPriority.Standard,
             };
-            Dictionary<string, string> d = new Dictionary<string, string>();
-            var mockWebHosting = new Mock<IWebHostEnvironment>();
+            Dictionary<string, string> d = new();
+            Mock<IWebHostEnvironment> mockWebHosting = new();
 
             mockWebHosting.Setup(s => s.EnvironmentName).Returns(environment);
 

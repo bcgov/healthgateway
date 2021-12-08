@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,25 +37,25 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyConfigurationBinding()
         {
-            HMACHashDelegateConfig expectedConfig = new HMACHashDelegateConfig()
+            HMACHashDelegateConfig expectedConfig = new()
             {
-                PseudoRandomFunction = Microsoft.AspNetCore.Cryptography.KeyDerivation.KeyDerivationPrf.HMACSHA1,
+                PseudoRandomFunction = KeyDerivationPrf.HMACSHA1,
                 Iterations = 100,
                 SaltLength = 8,
             };
 
-            var myConfiguration = new Dictionary<string, string>
+            Dictionary<string, string> myConfiguration = new()
             {
                 { "HMACHash:PseudoRandomFunction", expectedConfig.PseudoRandomFunction.ToString() },
                 { "HMACHash:Iterations", expectedConfig.Iterations.ToString(CultureInfo.CurrentCulture) },
                 { "HMACHash:SaltLength", expectedConfig.SaltLength.ToString(CultureInfo.CurrentCulture) },
             };
 
-            var configuration = new ConfigurationBuilder()
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            HMACHashDelegate hashDelegate = new HMACHashDelegate(configuration);
+            HMACHashDelegate hashDelegate = new(configuration);
 
             Assert.True(expectedConfig.IsDeepEqual(hashDelegate.HashConfig));
         }
@@ -66,23 +66,21 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyDefaultConfigurationBinding()
         {
-            HMACHashDelegateConfig expectedConfig = new HMACHashDelegateConfig()
+            HMACHashDelegateConfig expectedConfig = new()
             {
                 PseudoRandomFunction = HMACHashDelegateConfig.DefaultPseudoRandomFunction,
                 Iterations = HMACHashDelegateConfig.DefaultIterations,
                 SaltLength = HMACHashDelegateConfig.DefaultSaltLength,
             };
 
-            var myConfiguration = new Dictionary<string, string>
-            {
-                // test empty configuration
-            };
+            // test empty configuration
+            Dictionary<string, string> myConfiguration = new();
 
-            var configuration = new ConfigurationBuilder()
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            HMACHashDelegate hashDelegate = new HMACHashDelegate(configuration);
+            HMACHashDelegate hashDelegate = new(configuration);
 
             Assert.True(expectedConfig.IsDeepEqual(hashDelegate.HashConfig));
         }
@@ -93,16 +91,14 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyHash()
         {
-            var myConfiguration = new Dictionary<string, string>
-            {
-                // default configuration
-            };
+            // default configuration
+            Dictionary<string, string> myConfiguration = new();
 
-            var configuration = new ConfigurationBuilder()
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            HMACHashDelegate hashDelegate = new HMACHashDelegate(configuration);
+            HMACHashDelegate hashDelegate = new(configuration);
             IHash hash = hashDelegate.Hash("qwerty");
 
             Assert.True(hashDelegate.Compare("qwerty", hash));
@@ -157,16 +153,15 @@ namespace HealthGateway.CommonTests.Delegates
         public void VerifyNullKey()
         {
             string? valueToHash = null;
-            var myConfiguration = new Dictionary<string, string>
-            {
-                // default configuration
-            };
 
-            var configuration = new ConfigurationBuilder()
+            // default configuration
+            Dictionary<string, string> myConfiguration = new();
+
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            HMACHashDelegate hashDelegate = new HMACHashDelegate(configuration);
+            HMACHashDelegate hashDelegate = new(configuration);
             IHash hash = hashDelegate.Hash(valueToHash);
 
             Assert.True(hashDelegate.Compare(valueToHash, hash));

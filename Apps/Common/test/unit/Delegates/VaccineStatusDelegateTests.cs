@@ -23,8 +23,10 @@ namespace HealthGateway.Immunization.Test.Delegates
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Delegates.PHSA;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authentication;
@@ -43,7 +45,7 @@ namespace HealthGateway.Immunization.Test.Delegates
     {
         private readonly IConfiguration configuration;
         private readonly string phn = "9735353315";
-        private readonly DateTime dob = new DateTime(1990, 01, 05);
+        private readonly DateTime dob = new(1990, 01, 05);
         private readonly string accessToken = "XXDDXX";
 
         /// <summary>
@@ -61,13 +63,13 @@ namespace HealthGateway.Immunization.Test.Delegates
         [Fact]
         public async Task GetVaccineStatus()
         {
-            VaccineStatusResult expectedVaccineStatus = new VaccineStatusResult()
+            VaccineStatusResult expectedVaccineStatus = new()
             {
                 FirstName = "Bob",
                 StatusIndicator = "Exempt",
             };
 
-            PHSAResult<VaccineStatusResult> phsaResponse = new PHSAResult<VaccineStatusResult>()
+            PHSAResult<VaccineStatusResult> phsaResponse = new()
             {
                 Result = expectedVaccineStatus,
             };
@@ -75,7 +77,7 @@ namespace HealthGateway.Immunization.Test.Delegates
             string json = JsonSerializer.Serialize(phsaResponse);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(json),
@@ -92,9 +94,9 @@ namespace HealthGateway.Immunization.Test.Delegates
                 PersonalHealthNumber = this.phn,
                 DateOfBirth = this.dob,
             };
-            var actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
+            RequestResult<PHSAResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
 
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
         }
 
@@ -105,12 +107,12 @@ namespace HealthGateway.Immunization.Test.Delegates
         [Fact]
         public async Task GetVaccineStatusNoContent()
         {
-            VaccineStatusResult expectedVaccineStatus = new VaccineStatusResult()
+            VaccineStatusResult expectedVaccineStatus = new()
             {
                 StatusIndicator = "NotFound",
             };
 
-            PHSAResult<VaccineStatusResult> phsaResponse = new PHSAResult<VaccineStatusResult>()
+            PHSAResult<VaccineStatusResult> phsaResponse = new()
             {
                 Result = expectedVaccineStatus,
             };
@@ -118,7 +120,7 @@ namespace HealthGateway.Immunization.Test.Delegates
             string json = JsonSerializer.Serialize(phsaResponse);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(json),
@@ -135,16 +137,16 @@ namespace HealthGateway.Immunization.Test.Delegates
                 PersonalHealthNumber = this.phn,
                 DateOfBirth = this.dob,
             };
-            var actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
+            RequestResult<PHSAResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
 
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Equal(VaccineState.NotFound.ToString(), actualResult.ResourcePayload!.Result!.StatusIndicator);
         }
 
         private static IHttpClientService GetHttpClientService(HttpResponseMessage httpResponseMessage)
         {
-            var handlerMock = new Mock<HttpMessageHandler>();
+            Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
@@ -153,20 +155,18 @@ namespace HealthGateway.Immunization.Test.Delegates
                   ItExpr.IsAny<CancellationToken>())
                .ReturnsAsync(httpResponseMessage)
                .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             return mockHttpClientService.Object;
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            var myConfiguration = new Dictionary<string, string>
+            Dictionary<string, string> myConfiguration = new()
             {
                 { "PHSA:BaseUrl", "https://some-test-url/" },
             };
             return new ConfigurationBuilder()
-
-                // .SetBasePath(outputPath)
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("appsettings.Development.json", optional: true)
                 .AddJsonFile("appsettings.local.json", optional: true)
@@ -187,25 +187,27 @@ namespace HealthGateway.Immunization.Test.Delegates
         private Mock<IHttpContextAccessor> GetHttpContextAccessor()
         {
             ClaimsPrincipal claimsPrincipal = GetClaimsPrincipal();
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", this.accessToken);
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            IHeaderDictionary headerDictionary = new HeaderDictionary
+            {
+                { "Authorization", this.accessToken },
+            };
+            Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+            Mock<HttpContext> httpContextMock = new();
             httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
             httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
-            Mock<ConnectionInfo> connectionMock = new Mock<ConnectionInfo>();
+            Mock<ConnectionInfo> connectionMock = new();
             connectionMock.Setup(c => c.RemoteIpAddress).Returns(new IPAddress(1000));
             httpContextMock.Setup(s => s.Connection).Returns(connectionMock.Object);
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
-            Mock<IAuthenticationService> authenticationMock = new Mock<IAuthenticationService>();
+            Mock<IAuthenticationService> authenticationMock = new();
             httpContextAccessorMock
                 .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
                 .Returns(authenticationMock.Object);
-            var authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
+            AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
             authResult.Properties.StoreTokens(new[]
             {
                 new AuthenticationToken { Name = "access_token", Value = this.accessToken },

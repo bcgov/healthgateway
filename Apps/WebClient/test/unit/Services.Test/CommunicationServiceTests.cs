@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Test.Services
 {
     using System;
     using DeepEqual.Syntax;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -41,10 +42,10 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldGetActiveCommunication()
         {
             Tuple<RequestResult<Communication>, Communication> result = ExecuteGetActiveCommunication(DBStatusCode.Read);
-            var actualResult = result.Item1;
-            var communication = result.Item2;
+            RequestResult<Communication> actualResult = result.Item1;
+            Communication communication = result.Item2;
 
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload?.IsDeepEqual(communication));
         }
 
@@ -55,41 +56,41 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldGetActiveCommunicationWithDBError()
         {
             Tuple<RequestResult<Communication>, Communication> result = ExecuteGetActiveCommunication(DBStatusCode.Error);
-            var actualResult = result.Item1;
+            RequestResult<Communication> actualResult = result.Item1;
 
-            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
         }
 
         private static Tuple<RequestResult<Communication>, Communication> ExecuteGetActiveCommunication(DBStatusCode dbResultStatus = DBStatusCode.Read)
         {
-            Communication communication = new Communication
+            Communication communication = new()
             {
                 Id = Guid.NewGuid(),
                 EffectiveDateTime = DateTime.UtcNow.AddDays(-1),
                 ExpiryDateTime = DateTime.UtcNow.AddDays(2),
             };
 
-            DBResult<Communication> dbResult = new DBResult<Communication>
+            DBResult<Communication> dbResult = new()
             {
                 Payload = communication,
                 Status = dbResultStatus,
             };
 
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             services.AddMemoryCache();
             ServiceProvider serviceProvider = services.BuildServiceProvider();
 
             IMemoryCache? memoryCache = serviceProvider.GetService<IMemoryCache>();
 
-            Mock<ICommunicationDelegate> communicationDelegateMock = new Mock<ICommunicationDelegate>();
-            communicationDelegateMock.Setup(s => s.GetActiveBanner(Database.Constants.CommunicationType.Banner)).Returns(dbResult);
+            Mock<ICommunicationDelegate> communicationDelegateMock = new();
+            communicationDelegateMock.Setup(s => s.GetActiveBanner(CommunicationType.Banner)).Returns(dbResult);
 
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,
                 communicationDelegateMock.Object,
                 memoryCache);
-            RequestResult<Communication> actualResult = service.GetActiveBanner(Database.Constants.CommunicationType.Banner);
+            RequestResult<Communication> actualResult = service.GetActiveBanner(CommunicationType.Banner);
 
             return new Tuple<RequestResult<Communication>, Communication>(actualResult, communication);
         }

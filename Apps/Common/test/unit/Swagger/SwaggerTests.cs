@@ -36,22 +36,22 @@ namespace HealthGateway.CommonTests.Swagger
         [Fact]
         public void ShouldApply()
         {
-            AuthenticationRequirementsOperationFilter filter = new AuthenticationRequirementsOperationFilter();
-            OpenApiOperation openApiOperation = new OpenApiOperation();
+            AuthenticationRequirementsOperationFilter filter = new();
+            OpenApiOperation openApiOperation = new();
             openApiOperation.Security = new List<OpenApiSecurityRequirement>();
 
-            var actionDescriptor = new ControllerActionDescriptor()
+            ControllerActionDescriptor actionDescriptor = new()
             {
                 ActionName = "index",
                 ControllerName = "swagger",
                 ControllerTypeInfo = typeof(MockMethodInfo).GetTypeInfo(),
                 MethodInfo = typeof(MockMethodInfo).GetMethod("MockMethod")!,
             };
-            ApiDescription apiDescription = new ApiDescription()
+            ApiDescription apiDescription = new()
             {
                 ActionDescriptor = actionDescriptor,
             };
-            OperationFilterContext filterContext = new OperationFilterContext(apiDescription, null, null, null);
+            OperationFilterContext filterContext = new(apiDescription, null, null, null);
             filter.Apply(openApiOperation, filterContext);
             Assert.Equal(1, openApiOperation.Security.Count);
         }
@@ -62,10 +62,10 @@ namespace HealthGateway.CommonTests.Swagger
         [Fact]
         public void ShouldNullControllerActionDescriptor()
         {
-            AuthenticationRequirementsOperationFilter filter = new AuthenticationRequirementsOperationFilter();
-            OpenApiOperation openApiOperation = new OpenApiOperation();
-            ApiDescription apiDescription = new ApiDescription();
-            OperationFilterContext filterContext = new OperationFilterContext(apiDescription, null, null, null);
+            AuthenticationRequirementsOperationFilter filter = new();
+            OpenApiOperation openApiOperation = new();
+            ApiDescription apiDescription = new();
+            OperationFilterContext filterContext = new(apiDescription, null, null, null);
             filter.Apply(openApiOperation, filterContext);
             Assert.Equal(0, openApiOperation.Security.Count);
         }

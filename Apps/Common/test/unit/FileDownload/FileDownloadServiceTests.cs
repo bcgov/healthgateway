@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 namespace HealthGateway.CommonTests.FileDownload
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Net;
     using System.Net.Http;
@@ -25,7 +24,6 @@ namespace HealthGateway.CommonTests.FileDownload
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Models;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Moq.Protected;
@@ -48,12 +46,12 @@ namespace HealthGateway.CommonTests.FileDownload
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<FileDownloadService> logger = loggerFactory.CreateLogger<FileDownloadService>();
 
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(response),
             };
-            var handlerMock = new Mock<HttpMessageHandler>();
+            Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
@@ -62,10 +60,10 @@ namespace HealthGateway.CommonTests.FileDownload
                   ItExpr.IsAny<CancellationToken>())
                .ReturnsAsync(httpResponseMessage)
                .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            FileDownloadService service = new FileDownloadService(logger, mockHttpClientService.Object);
-            FileDownload fd = Task.Run(async () => await service.GetFileFromUrl(new System.Uri("https://localhost/fake.txt"), targetFolder, true).ConfigureAwait(true)).Result;
+            FileDownloadService service = new(logger, mockHttpClientService.Object);
+            FileDownload fd = Task.Run(async () => await service.GetFileFromUrl(new Uri("https://localhost/fake.txt"), targetFolder, true).ConfigureAwait(true)).Result;
             string filename = Path.Combine(fd.LocalFilePath, fd.Name);
 
             // Clean up physical artifacts
@@ -84,9 +82,9 @@ namespace HealthGateway.CommonTests.FileDownload
             string targetFolder = "tmp";
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<FileDownloadService> logger = loggerFactory.CreateLogger<FileDownloadService>();
-            FileDownloadService service = new FileDownloadService(logger, new Mock<IHttpClientService>().Object);
-            Task.Run(async () => await service.GetFileFromUrl(new System.Uri("https://localhost/fake.txt"), "tmp", true).ConfigureAwait(true));
-            Assert.ThrowsAsync<AggregateException>(() => Task.Run(async () => await service.GetFileFromUrl(new System.Uri("https://localhost/fake.txt"), targetFolder, true).ConfigureAwait(true)));
+            FileDownloadService service = new(logger, new Mock<IHttpClientService>().Object);
+            Task.Run(async () => await service.GetFileFromUrl(new Uri("https://localhost/fake.txt"), "tmp", true).ConfigureAwait(true));
+            Assert.ThrowsAsync<AggregateException>(() => Task.Run(async () => await service.GetFileFromUrl(new Uri("https://localhost/fake.txt"), targetFolder, true).ConfigureAwait(true)));
             Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), targetFolder));
         }
     }

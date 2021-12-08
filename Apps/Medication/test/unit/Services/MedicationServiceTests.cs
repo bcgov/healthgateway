@@ -24,7 +24,6 @@ namespace HealthGateway.Medication.Services.Test
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -42,7 +41,7 @@ namespace HealthGateway.Medication.Services.Test
         {
             DateTime loadDate = DateTime.Parse("2020/09/29", CultureInfo.CurrentCulture);
             string din = "00000000";
-            List<DrugProduct> fedData = new List<DrugProduct>()
+            List<DrugProduct> fedData = new()
             {
                 new DrugProduct()
                 {
@@ -51,7 +50,7 @@ namespace HealthGateway.Medication.Services.Test
                 },
             };
 
-            List<PharmaCareDrug> provData = new List<PharmaCareDrug>()
+            List<PharmaCareDrug> provData = new()
             {
                 new PharmaCareDrug()
                 {
@@ -60,11 +59,11 @@ namespace HealthGateway.Medication.Services.Test
                 },
             };
 
-            Dictionary<string, Models.MedicationInformation> expected = new Dictionary<string, Models.MedicationInformation>()
+            Dictionary<string, MedicationInformation> expected = new()
             {
                 {
                     din,
-                    new Models.MedicationInformation()
+                    new MedicationInformation()
                     {
                         DIN = din,
                         FederalData = new FederalDrugSource()
@@ -81,15 +80,15 @@ namespace HealthGateway.Medication.Services.Test
                 },
             };
 
-            Mock<IDrugLookupDelegate> mockDelegate = new Mock<IDrugLookupDelegate>();
+            Mock<IDrugLookupDelegate> mockDelegate = new();
             mockDelegate.Setup(s => s.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(fedData);
             mockDelegate.Setup(s => s.GetPharmaCareDrugsByDIN(It.IsAny<List<string>>())).Returns(provData);
 
-            using Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<RestMedicationService> logger = loggerFactory.CreateLogger<RestMedicationService>();
 
             IMedicationService service = new RestMedicationService(logger, mockDelegate.Object);
-            var actual = service.GetMedications(new List<string>());
+            IDictionary<string, MedicationInformation> actual = service.GetMedications(new List<string>());
             Assert.True(actual.IsDeepEqual(expected));
         }
 
@@ -101,11 +100,9 @@ namespace HealthGateway.Medication.Services.Test
         {
             DateTime loadDate = DateTime.Parse("2020/09/29", CultureInfo.CurrentCulture);
             string din = "00000000";
-            List<DrugProduct> fedData = new List<DrugProduct>()
-            {
-            };
+            List<DrugProduct> fedData = new();
 
-            List<PharmaCareDrug> provData = new List<PharmaCareDrug>()
+            List<PharmaCareDrug> provData = new()
             {
                 new PharmaCareDrug()
                 {
@@ -114,11 +111,11 @@ namespace HealthGateway.Medication.Services.Test
                 },
             };
 
-            Dictionary<string, Models.MedicationInformation> expected = new Dictionary<string, Models.MedicationInformation>()
+            Dictionary<string, MedicationInformation> expected = new()
             {
                 {
                     din,
-                    new Models.MedicationInformation()
+                    new MedicationInformation()
                     {
                         DIN = din,
 
@@ -131,15 +128,15 @@ namespace HealthGateway.Medication.Services.Test
                 },
             };
 
-            Mock<IDrugLookupDelegate> mockDelegate = new Mock<IDrugLookupDelegate>();
+            Mock<IDrugLookupDelegate> mockDelegate = new();
             mockDelegate.Setup(s => s.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(fedData);
             mockDelegate.Setup(s => s.GetPharmaCareDrugsByDIN(It.IsAny<List<string>>())).Returns(provData);
 
-            using Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<RestMedicationService> logger = loggerFactory.CreateLogger<RestMedicationService>();
 
             IMedicationService service = new RestMedicationService(logger, mockDelegate.Object);
-            var actual = service.GetMedications(new List<string>());
+            IDictionary<string, MedicationInformation> actual = service.GetMedications(new List<string>());
             Assert.True(actual.IsDeepEqual(expected));
         }
     }

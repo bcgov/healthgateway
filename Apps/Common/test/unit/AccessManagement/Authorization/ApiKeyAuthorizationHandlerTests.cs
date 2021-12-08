@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,9 +40,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         [Fact]
         public void AuthSuccess()
         {
-            var requirements = new[] { new ApiKeyRequirement(GetIConfigurationRoot(ApiKey)) };
+            ApiKeyRequirement[] requirements = new[] { new ApiKeyRequirement(GetIConfigurationRoot(ApiKey)) };
             Mock<ClaimsPrincipal> mockClaimsPrincipal = new();
-            AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, mockClaimsPrincipal.Object, null);
+            AuthorizationHandlerContext context = new(requirements, mockClaimsPrincipal.Object, null);
             ApiKeyAuthorizationHandler authHandler = GetAuthorizationHandler(ApiKey);
             authHandler.HandleAsync(context);
             Assert.True(context.HasSucceeded);
@@ -54,9 +54,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         [Fact]
         public void AuthFailHeaderKeyWrong()
         {
-            var requirements = new[] { new ApiKeyRequirement(GetIConfigurationRoot(ApiKey)) };
+            ApiKeyRequirement[] requirements = new[] { new ApiKeyRequirement(GetIConfigurationRoot(ApiKey)) };
             Mock<ClaimsPrincipal> mockClaimsPrincipal = new();
-            AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, mockClaimsPrincipal.Object, null);
+            AuthorizationHandlerContext context = new(requirements, mockClaimsPrincipal.Object, null);
             ApiKeyAuthorizationHandler authHandler = GetAuthorizationHandler(InvalidApiKey);
             authHandler.HandleAsync(context);
 
@@ -69,9 +69,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         [Fact]
         public void AuthFailRequirementKeyBad()
         {
-            var requirements = new[] { new ApiKeyRequirement(GetIConfigurationRoot(string.Empty)) };
+            ApiKeyRequirement[] requirements = new[] { new ApiKeyRequirement(GetIConfigurationRoot(string.Empty)) };
             Mock<ClaimsPrincipal> mockClaimsPrincipal = new();
-            AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, mockClaimsPrincipal.Object, null);
+            AuthorizationHandlerContext context = new(requirements, mockClaimsPrincipal.Object, null);
             ApiKeyAuthorizationHandler authHandler = GetAuthorizationHandler(InvalidApiKey);
             authHandler.HandleAsync(context);
 
@@ -84,9 +84,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         [Fact]
         public void AuthFailHeaderNotFound()
         {
-            var requirements = new[] { new ApiKeyRequirement(GetIConfigurationRoot(ApiKey, "fakekey")) };
+            ApiKeyRequirement[] requirements = new[] { new ApiKeyRequirement(GetIConfigurationRoot(ApiKey, "fakekey")) };
             Mock<ClaimsPrincipal> mockClaimsPrincipal = new();
-            AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, mockClaimsPrincipal.Object, null);
+            AuthorizationHandlerContext context = new(requirements, mockClaimsPrincipal.Object, null);
             ApiKeyAuthorizationHandler authHandler = GetAuthorizationHandler(InvalidApiKey);
             authHandler.HandleAsync(context);
 
@@ -95,15 +95,17 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
 
         private static ApiKeyAuthorizationHandler GetAuthorizationHandler(string apiKey)
         {
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add(ApiKeyRequirement.ApiKeyHeaderNameDefault, apiKey);
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            IHeaderDictionary headerDictionary = new HeaderDictionary
+            {
+                { ApiKeyRequirement.ApiKeyHeaderNameDefault, apiKey },
+            };
+            Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
 
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+            Mock<HttpContext> httpContextMock = new();
             httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -114,15 +116,13 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
 
         private static IConfigurationRoot GetIConfigurationRoot(string requirementKey, string headerKeyName = ApiKeyRequirement.ApiKeyHeaderNameDefault)
         {
-            var myConfiguration = new Dictionary<string, string>
+            Dictionary<string, string> myConfiguration = new()
             {
                 { $"{ApiKeyRequirement.WebHookApiSectionKey}:{ApiKeyRequirement.WebHookApiKey}", requirementKey },
                 { $"{ApiKeyRequirement.WebHookApiSectionKey}:{ApiKeyRequirement.ApiKeyHeaderNameKey}", headerKeyName },
             };
 
             return new ConfigurationBuilder()
-
-                // .SetBasePath(outputPath)
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("appsettings.Development.json", optional: true)
                 .AddJsonFile("appsettings.local.json", optional: true)

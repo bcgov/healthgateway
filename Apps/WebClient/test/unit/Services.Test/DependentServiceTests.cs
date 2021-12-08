@@ -41,8 +41,8 @@ namespace HealthGateway.WebClient.Test.Services
         private readonly string mockPHN = "MockPHN";
         private readonly string mockFirstName = "MockFirstName";
         private readonly string mockLastName = "MockLastName";
-        private readonly DateTime mockTestDate = new DateTime(2020, 1, 10);
-        private readonly DateTime mockDateOfBirth = new DateTime(2010, 10, 10);
+        private readonly DateTime mockTestDate = new(2020, 1, 10);
+        private readonly DateTime mockDateOfBirth = new(2010, 10, 10);
         private readonly string mockGender = "Male";
         private readonly string mockHdId = "MockHdId";
         private readonly string mismatchedError = "The information you entered does not match our records. Please try again.";
@@ -73,7 +73,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void GetDependentsWithEmptyPatientResPayloadError()
         {
-            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>();
+            RequestResult<PatientModel> patientResult = new();
 
             IDependentService service = this.SetupMockForGetDependents(patientResult);
             RequestResult<IEnumerable<DependentModel>> actualResult = service.GetDependents(this.mockParentHdId, 0, 500);
@@ -103,7 +103,7 @@ namespace HealthGateway.WebClient.Test.Services
         public void ValidateDependentWithEmptyPatientResPayloadError()
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
-            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>();
+            RequestResult<PatientModel> patientResult = new();
 
             // Test Scenario - Happy Path: Found HdId for the PHN, Found Patient.
             IDependentService service = this.SetupMockDependentService(addDependentRequest, null, patientResult);
@@ -119,7 +119,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ValidateDependentWithDbError()
         {
-            DBResult<ResourceDelegate> insertResult = new DBResult<ResourceDelegate>
+            DBResult<ResourceDelegate> insertResult = new()
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 Payload = null,
@@ -130,7 +130,7 @@ namespace HealthGateway.WebClient.Test.Services
             IDependentService service = this.SetupMockDependentService(addDependentRequest, insertResult);
             RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            var serviceError = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database);
+            string serviceError = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database);
             Assert.Equal(serviceError, actualResult.ResultError!.ErrorCode);
         }
 
@@ -145,7 +145,7 @@ namespace HealthGateway.WebClient.Test.Services
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
             RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
 
-            var userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
+            RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
             Assert.Equal(userError.ErrorCode, actualResult.ResultError!.ErrorCode);
             Assert.Equal(this.mismatchedError, actualResult.ResultError.ResultMessage);
@@ -162,7 +162,7 @@ namespace HealthGateway.WebClient.Test.Services
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
             RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
 
-            var userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
+            RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
             Assert.Equal(userError.ErrorCode, actualResult.ResultError!.ErrorCode);
             Assert.Equal(this.mismatchedError, actualResult.ResultError.ResultMessage);
@@ -179,7 +179,7 @@ namespace HealthGateway.WebClient.Test.Services
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
             RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
 
-            var userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
+            RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
             Assert.Equal(userError.ErrorCode, actualResult.ResultError!.ErrorCode);
             Assert.Equal(this.mismatchedError, actualResult.ResultError.ResultMessage);
@@ -191,22 +191,24 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ValidateDependentWithNoHdId()
         {
-            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>();
-            patientResult.ResultStatus = ResultType.Success;
-            patientResult.ResourcePayload = new PatientModel()
+            RequestResult<PatientModel> patientResult = new()
             {
-                HdId = string.Empty,
-                PersonalHealthNumber = this.mockPHN,
-                FirstName = this.mockFirstName,
-                LastName = this.mockLastName,
-                Birthdate = this.mockDateOfBirth,
-                Gender = this.mockGender,
+                ResultStatus = ResultType.Success,
+                ResourcePayload = new PatientModel()
+                {
+                    HdId = string.Empty,
+                    PersonalHealthNumber = this.mockPHN,
+                    FirstName = this.mockFirstName,
+                    LastName = this.mockLastName,
+                    Birthdate = this.mockDateOfBirth,
+                    Gender = this.mockGender,
+                },
             };
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest, patientResult: patientResult);
             RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
 
-            var userError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId);
+            RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId);
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
             Assert.Equal(userError.ErrorCode, actualResult.ResultError!.ErrorCode);
             Assert.Equal(this.noHdIdError, actualResult.ResultError.ResultMessage);
@@ -218,18 +220,18 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ValidateRemove()
         {
-            DependentModel delegateModel = new DependentModel() { OwnerId = this.mockHdId, DelegateId = this.mockParentHdId };
-            Mock<IResourceDelegateDelegate> mockDependentDelegate = new Mock<IResourceDelegateDelegate>();
+            DependentModel delegateModel = new() { OwnerId = this.mockHdId, DelegateId = this.mockParentHdId };
+            Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
             mockDependentDelegate.Setup(s => s.Delete(It.Is<ResourceDelegate>(d => d.ResourceOwnerHdid == this.mockHdId && d.ProfileHdid == this.mockParentHdId), true)).Returns(new DBResult<ResourceDelegate>()
             {
                 Status = DBStatusCode.Deleted,
             });
 
-            Mock<IUserProfileDelegate> mockUserProfileDelegate = new Mock<IUserProfileDelegate>();
+            Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdId)).Returns(new DBResult<UserProfile>() { Payload = new UserProfile() });
-            Mock<INotificationSettingsService> mockNotificationSettingsService = new Mock<INotificationSettingsService>();
+            Mock<INotificationSettingsService> mockNotificationSettingsService = new();
             mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
-            Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
+            Mock<IConfigurationService> configServiceMock = new();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
             IDependentService service = new DependentService(
                 new Mock<ILogger<DependentService>>().Object,
@@ -245,9 +247,9 @@ namespace HealthGateway.WebClient.Test.Services
 
         private static IDependentService SetupCommonMocks(Mock<IResourceDelegateDelegate> mockDependentDelegate, Mock<IPatientService> mockPatientService)
         {
-            Mock<IUserProfileDelegate> mockUserProfileDelegate = new Mock<IUserProfileDelegate>();
-            Mock<INotificationSettingsService> mockNotificationSettingsService = new Mock<INotificationSettingsService>();
-            Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
+            Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
+            Mock<INotificationSettingsService> mockNotificationSettingsService = new();
+            Mock<IConfigurationService> configServiceMock = new();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
 
             return new DependentService(
@@ -261,7 +263,7 @@ namespace HealthGateway.WebClient.Test.Services
 
         private IEnumerable<ResourceDelegate> GenerateMockResourceDelegatesList()
         {
-            List<ResourceDelegate> resourceDelegates = new List<ResourceDelegate>();
+            List<ResourceDelegate> resourceDelegates = new();
 
             for (int i = 0; i < 10; i++)
             {
@@ -280,30 +282,32 @@ namespace HealthGateway.WebClient.Test.Services
             // (1) Setup ResourceDelegateDelegate's mock
             IEnumerable<ResourceDelegate> expectedResourceDelegates = this.GenerateMockResourceDelegatesList();
 
-            DBResult<IEnumerable<ResourceDelegate>> readResult = new DBResult<IEnumerable<ResourceDelegate>>
+            DBResult<IEnumerable<ResourceDelegate>> readResult = new()
             {
                 Status = DBStatusCode.Read,
             };
             readResult.Payload = expectedResourceDelegates;
 
-            Mock<IResourceDelegateDelegate> mockDependentDelegate = new Mock<IResourceDelegateDelegate>();
+            Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
             mockDependentDelegate.Setup(s => s.Get(this.mockParentHdId, 0, 500)).Returns(readResult);
 
             // (2) Setup PatientDelegate's mock
-            var mockPatientService = new Mock<IPatientService>();
+            Mock<IPatientService> mockPatientService = new();
 
             if (patientResult == null)
             {
-                patientResult = new RequestResult<PatientModel>();
-                patientResult.ResultStatus = ResultType.Success;
-                patientResult.ResourcePayload = new PatientModel()
+                patientResult = new RequestResult<PatientModel>
                 {
-                    HdId = this.mockHdId,
-                    PersonalHealthNumber = this.mockPHN,
-                    FirstName = this.mockFirstName,
-                    LastName = this.mockLastName,
-                    Birthdate = this.mockDateOfBirth,
-                    Gender = this.mockGender,
+                    ResultStatus = ResultType.Success,
+                    ResourcePayload = new PatientModel()
+                    {
+                        HdId = this.mockHdId,
+                        PersonalHealthNumber = this.mockPHN,
+                        FirstName = this.mockFirstName,
+                        LastName = this.mockLastName,
+                        Birthdate = this.mockDateOfBirth,
+                        Gender = this.mockGender,
+                    },
                 };
             }
 
@@ -320,9 +324,9 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<ResourceDelegate>? insertResult = null,
             RequestResult<PatientModel>? patientResult = null)
         {
-            var mockPatientService = new Mock<IPatientService>();
+            Mock<IPatientService> mockPatientService = new();
 
-            RequestResult<string> patientHdIdResult = new RequestResult<string>()
+            RequestResult<string> patientHdIdResult = new()
             {
                 ResultStatus = ResultType.Success,
                 ResourcePayload = this.mockHdId,
@@ -337,22 +341,24 @@ namespace HealthGateway.WebClient.Test.Services
             if (patientResult == null)
             {
                 // Test Scenario - Happy Path: Found HdId for the PHN, Found Patient.
-                patientResult = new RequestResult<PatientModel>();
-                patientResult.ResultStatus = ResultType.Success;
-                patientResult.ResourcePayload = new PatientModel()
+                patientResult = new RequestResult<PatientModel>
                 {
-                    HdId = this.mockHdId,
-                    PersonalHealthNumber = this.mockPHN,
-                    FirstName = this.mockFirstName,
-                    LastName = this.mockLastName,
-                    Birthdate = this.mockDateOfBirth,
-                    Gender = this.mockGender,
+                    ResultStatus = ResultType.Success,
+                    ResourcePayload = new PatientModel()
+                    {
+                        HdId = this.mockHdId,
+                        PersonalHealthNumber = this.mockPHN,
+                        FirstName = this.mockFirstName,
+                        LastName = this.mockLastName,
+                        Birthdate = this.mockDateOfBirth,
+                        Gender = this.mockGender,
+                    },
                 };
             }
 
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(patientResult));
 
-            ResourceDelegate expectedDbDependent = new ResourceDelegate() { ProfileHdid = this.mockParentHdId, ResourceOwnerHdid = this.mockHdId };
+            ResourceDelegate expectedDbDependent = new() { ProfileHdid = this.mockParentHdId, ResourceOwnerHdid = this.mockHdId };
 
             if (insertResult == null)
             {
@@ -364,14 +370,14 @@ namespace HealthGateway.WebClient.Test.Services
 
             insertResult.Payload = expectedDbDependent;
 
-            Mock<IResourceDelegateDelegate> mockDependentDelegate = new Mock<IResourceDelegateDelegate>();
+            Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
             mockDependentDelegate.Setup(s => s.Insert(It.Is<ResourceDelegate>(r => r.ProfileHdid == expectedDbDependent.ProfileHdid && r.ResourceOwnerHdid == expectedDbDependent.ResourceOwnerHdid), true)).Returns(insertResult);
 
-            Mock<IUserProfileDelegate> mockUserProfileDelegate = new Mock<IUserProfileDelegate>();
+            Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdId)).Returns(new DBResult<UserProfile>() { Payload = new UserProfile() });
-            Mock<INotificationSettingsService> mockNotificationSettingsService = new Mock<INotificationSettingsService>();
+            Mock<INotificationSettingsService> mockNotificationSettingsService = new();
             mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
-            Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
+            Mock<IConfigurationService> configServiceMock = new();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
             return new DependentService(
                 new Mock<ILogger<DependentService>>().Object,

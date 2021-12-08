@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Test.Services
 {
     using System.Text.Json;
     using DeepEqual.Syntax;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.CDogs;
@@ -37,23 +38,23 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldGetReport()
         {
-            RequestResult<ReportModel> expectedResult = new RequestResult<ReportModel>
+            RequestResult<ReportModel> expectedResult = new()
             {
                 ResourcePayload = new ReportModel()
                 {
                     Data = "base64data",
                 },
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
             };
 
-            ReportRequestModel reportRequest = new ReportRequestModel()
+            ReportRequestModel reportRequest = new()
             {
                 Data = JsonDocument.Parse("{}").RootElement,
                 Template = TemplateType.Medication,
                 Type = ReportFormatType.PDF,
             };
 
-            Mock<ICDogsDelegate> cdogsDelegateMock = new Mock<ICDogsDelegate>();
+            Mock<ICDogsDelegate> cdogsDelegateMock = new();
             cdogsDelegateMock.Setup(s => s.GenerateReportAsync(It.Is<CDogsRequestModel>(r => r.Options.ReportName == "HealthGatewayMedicationReport"))).ReturnsAsync(expectedResult);
 
             IReportService service = new ReportService(
@@ -61,7 +62,7 @@ namespace HealthGateway.WebClient.Test.Services
                 cdogsDelegateMock.Object);
             RequestResult<ReportModel> actualResult = service.GetReport(reportRequest);
 
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.IsDeepEqual(expectedResult));
         }
     }

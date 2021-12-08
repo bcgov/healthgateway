@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,37 +45,41 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
 
-            List<Claim> claims = new List<Claim>()
+            List<Claim> claims = new()
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(GatewayClaims.HDID, hdid),
             };
-            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
-            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+            ClaimsIdentity identity = new(claims, "TestAuth");
+            ClaimsPrincipal claimsPrincipal = new(identity);
 
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", token);
-            RouteValueDictionary routeValues = new RouteValueDictionary();
-            routeValues.Add("hdid", resourceHDID);
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            IHeaderDictionary headerDictionary = new HeaderDictionary
+            {
+                { "Authorization", token },
+            };
+            RouteValueDictionary routeValues = new()
+            {
+                { "hdid", resourceHDID },
+            };
+            Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
             httpRequestMock.Setup(s => s.RouteValues).Returns(routeValues);
 
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+            Mock<HttpContext> httpContextMock = new();
             httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
             httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<UserAuthorizationHandler> logger = loggerFactory.CreateLogger<UserAuthorizationHandler>();
 
-            UserAuthorizationHandler authHandler = new UserAuthorizationHandler(logger, httpContextAccessorMock.Object);
-            var requirements = new[] { new UserRequirement(true) };
+            UserAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
+            UserRequirement[] requirements = new[] { new UserRequirement(true) };
 
-            AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, claimsPrincipal, null);
+            AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
             authHandler.HandleAsync(context);
             Assert.True(context.HasSucceeded);
             Assert.False(context.HasFailed);
@@ -94,37 +98,41 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
 
-            List<Claim> claims = new List<Claim>()
+            List<Claim> claims = new()
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(GatewayClaims.HDID, hdid),
             };
-            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
-            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+            ClaimsIdentity identity = new(claims, "TestAuth");
+            ClaimsPrincipal claimsPrincipal = new(identity);
 
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", token);
-            RouteValueDictionary routeValues = new RouteValueDictionary();
-            routeValues.Add("hdid", resourceHDID);
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            IHeaderDictionary headerDictionary = new HeaderDictionary
+            {
+                { "Authorization", token },
+            };
+            RouteValueDictionary routeValues = new()
+            {
+                { "hdid", resourceHDID },
+            };
+            Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
             httpRequestMock.Setup(s => s.RouteValues).Returns(routeValues);
 
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+            Mock<HttpContext> httpContextMock = new();
             httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
             httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<UserAuthorizationHandler> logger = loggerFactory.CreateLogger<UserAuthorizationHandler>();
 
-            UserAuthorizationHandler authHandler = new UserAuthorizationHandler(logger, httpContextAccessorMock.Object);
-            var requirements = new[] { new UserRequirement(true) };
+            UserAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
+            UserRequirement[] requirements = new[] { new UserRequirement(true) };
 
-            AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, claimsPrincipal, null);
+            AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
             authHandler.HandleAsync(context);
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
@@ -143,37 +151,41 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
 
-            List<Claim> claims = new List<Claim>()
+            List<Claim> claims = new()
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(GatewayClaims.HDID, hdid),
             };
-            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
-            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+            ClaimsIdentity identity = new(claims, "TestAuth");
+            ClaimsPrincipal claimsPrincipal = new(identity);
 
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", token);
-            RouteValueDictionary routeValues = new RouteValueDictionary();
-            routeValues.Add("hdid", resourceHDID);
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            IHeaderDictionary headerDictionary = new HeaderDictionary
+            {
+                { "Authorization", token },
+            };
+            RouteValueDictionary routeValues = new()
+            {
+                { "hdid", resourceHDID },
+            };
+            Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
             httpRequestMock.Setup(s => s.RouteValues).Returns(routeValues);
 
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+            Mock<HttpContext> httpContextMock = new();
             httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
             httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<UserAuthorizationHandler> logger = loggerFactory.CreateLogger<UserAuthorizationHandler>();
 
-            UserAuthorizationHandler authHandler = new UserAuthorizationHandler(logger, httpContextAccessorMock.Object);
-            var requirements = new[] { new UserRequirement(false) };
+            UserAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
+            UserRequirement[] requirements = new[] { new UserRequirement(false) };
 
-            AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, claimsPrincipal, null);
+            AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
             authHandler.HandleAsync(context);
             Assert.True(context.HasSucceeded);
             Assert.False(context.HasFailed);
@@ -192,36 +204,40 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             string userId = "User ID";
             string username = "User Name";
 
-            List<Claim> claims = new List<Claim>()
+            List<Claim> claims = new()
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
             };
-            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
-            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+            ClaimsIdentity identity = new(claims, "TestAuth");
+            ClaimsPrincipal claimsPrincipal = new(identity);
 
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", token);
-            RouteValueDictionary routeValues = new RouteValueDictionary();
-            routeValues.Add("hdid", resourceHDID);
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            IHeaderDictionary headerDictionary = new HeaderDictionary
+            {
+                { "Authorization", token },
+            };
+            RouteValueDictionary routeValues = new()
+            {
+                { "hdid", resourceHDID },
+            };
+            Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
             httpRequestMock.Setup(s => s.RouteValues).Returns(routeValues);
 
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+            Mock<HttpContext> httpContextMock = new();
             httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
             httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<UserAuthorizationHandler> logger = loggerFactory.CreateLogger<UserAuthorizationHandler>();
 
-            UserAuthorizationHandler authHandler = new UserAuthorizationHandler(logger, httpContextAccessorMock.Object);
-            var requirements = new[] { new UserRequirement(false) };
+            UserAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
+            UserRequirement[] requirements = new[] { new UserRequirement(false) };
 
-            AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, claimsPrincipal, null);
+            AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
             authHandler.HandleAsync(context);
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);

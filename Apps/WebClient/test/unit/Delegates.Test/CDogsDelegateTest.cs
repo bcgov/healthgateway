@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Test.Delegates
 {
-    using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
@@ -54,18 +53,18 @@ namespace HealthGateway.WebClient.Test.Delegates
         [Fact]
         public void ShouldGenerateReport()
         {
-            var cdogsRequest = new CDogsRequestModel()
+            CDogsRequestModel cdogsRequest = new()
             {
                 Data = JsonDocument.Parse("{}").RootElement,
             };
 
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent("123"),
             };
 
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             ICDogsDelegate cdogsDelegate = new CDogsDelegate(
                 loggerFactory.CreateLogger<CDogsDelegate>(),
@@ -78,14 +77,12 @@ namespace HealthGateway.WebClient.Test.Delegates
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            var myConfiguration = new Dictionary<string, string>
+            Dictionary<string, string> myConfiguration = new()
             {
                 { "ServiceEndpoints:HGCDogs", "https://some-test-url/CDogs/" },
             };
 
             return new ConfigurationBuilder()
-
-                // .SetBasePath(outputPath)
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("appsettings.Development.json", optional: true)
                 .AddJsonFile("appsettings.local.json", optional: true)
@@ -95,7 +92,7 @@ namespace HealthGateway.WebClient.Test.Delegates
 
         private static Mock<IHttpClientService> GetHttpClientServiceMock(HttpResponseMessage httpResponseMessage)
         {
-            var handlerMock = new Mock<HttpMessageHandler>();
+            Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
@@ -104,7 +101,7 @@ namespace HealthGateway.WebClient.Test.Delegates
                   ItExpr.IsAny<CancellationToken>())
                .ReturnsAsync(httpResponseMessage)
                .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
             return mockHttpClientService;

@@ -47,8 +47,8 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldGetComments()
         {
             Tuple<RequestResult<IEnumerable<UserComment>>, List<UserComment>> getNotesResult = this.ExecuteGetComments("abc", DBStatusCode.Read);
-            var actualResult = getNotesResult.Item1;
-            var userCommentList = getNotesResult.Item2;
+            RequestResult<IEnumerable<UserComment>> actualResult = getNotesResult.Item1;
+            List<UserComment> userCommentList = getNotesResult.Item2;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload?.IsDeepEqual(userCommentList));
@@ -61,7 +61,7 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldGetCommentsWithDbError()
         {
             Tuple<RequestResult<IEnumerable<UserComment>>, List<UserComment>> getNotesResult = this.ExecuteGetComments("abc", DBStatusCode.Error);
-            var actualResult = getNotesResult.Item1;
+            RequestResult<IEnumerable<UserComment>> actualResult = getNotesResult.Item1;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
@@ -74,8 +74,8 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldInsertComment()
         {
             Tuple<RequestResult<UserComment>, UserComment> result = this.ExecuteInsertComment(DBStatusCode.Created);
-            var actualResult = result.Item1;
-            var createdRecord = result.Item2;
+            RequestResult<UserComment> actualResult = result.Item1;
+            UserComment createdRecord = result.Item2;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload?.IsDeepEqual(createdRecord));
@@ -88,7 +88,7 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldInsertCommentWithDBError()
         {
             Tuple<RequestResult<UserComment>, UserComment> result = this.ExecuteInsertComment(DBStatusCode.Error);
-            var actualResult = result.Item1;
+            RequestResult<UserComment> actualResult = result.Item1;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -101,8 +101,8 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldUpdateComment()
         {
             Tuple<RequestResult<UserComment>, UserComment> result = this.ExecuteUpdateComment(DBStatusCode.Updated);
-            var actualResult = result.Item1;
-            var updatedRecord = result.Item2;
+            RequestResult<UserComment> actualResult = result.Item1;
+            UserComment updatedRecord = result.Item2;
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload?.IsDeepEqual(updatedRecord));
         }
@@ -114,7 +114,7 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldUpdateCommentWithDBError()
         {
             Tuple<RequestResult<UserComment>, UserComment> result = this.ExecuteUpdateComment(DBStatusCode.Error);
-            var actualResult = result.Item1;
+            RequestResult<UserComment> actualResult = result.Item1;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -127,8 +127,8 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldDeleteComment()
         {
             Tuple<RequestResult<UserComment>, UserComment> result = this.ExecuteDeleteComment(DBStatusCode.Deleted);
-            var actualResult = result.Item1;
-            var deletedRecord = result.Item2;
+            RequestResult<UserComment> actualResult = result.Item1;
+            UserComment deletedRecord = result.Item2;
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload?.IsDeepEqual(deletedRecord));
         }
@@ -140,7 +140,7 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldDeleteCommentWithDBError()
         {
             Tuple<RequestResult<UserComment>, UserComment> result = this.ExecuteDeleteComment(DBStatusCode.Error);
-            var actualResult = result.Item1;
+            RequestResult<UserComment> actualResult = result.Item1;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -153,12 +153,12 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldGetCommentsWithNoKeyError()
         {
             string? encryptionKey = null;
-            DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
+            DBResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile() { EncryptionKey = encryptionKey },
             };
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
 
             ICommentService service = new CommentService(
@@ -178,15 +178,15 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldInsertCommentWithNoKeyError()
         {
             string? encryptionKey = null;
-            DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
+            DBResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile() { EncryptionKey = encryptionKey },
             };
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
 
-            UserComment userComment = new UserComment()
+            UserComment userComment = new()
             {
                 UserProfileId = this.hdid,
                 ParentEntryId = this.parentEntryId,
@@ -212,15 +212,15 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldUpdateCommentWithNoKeyError()
         {
             string? encryptionKey = null;
-            DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
+            DBResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile() { EncryptionKey = encryptionKey },
             };
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
 
-            UserComment userComment = new UserComment()
+            UserComment userComment = new()
             {
                 UserProfileId = this.hdid,
                 ParentEntryId = this.parentEntryId,
@@ -246,15 +246,15 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldDeleteCommentWithNoKeyError()
         {
             string? encryptionKey = null;
-            DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
+            DBResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile() { EncryptionKey = encryptionKey },
             };
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
 
-            UserComment userComment = new UserComment()
+            UserComment userComment = new()
             {
                 UserProfileId = this.hdid,
                 ParentEntryId = this.parentEntryId,
@@ -276,19 +276,19 @@ namespace HealthGateway.WebClient.Test.Services
         private Tuple<RequestResult<UserComment>, UserComment> ExecuteDeleteComment(DBStatusCode dBStatusCode = DBStatusCode.Deleted)
         {
             string encryptionKey = "abc";
-            DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
+            DBResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile() { EncryptionKey = encryptionKey },
             };
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
 
-            Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
+            Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
             cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
 
-            UserComment userComment = new UserComment()
+            UserComment userComment = new()
             {
                 UserProfileId = this.hdid,
                 ParentEntryId = this.parentEntryId,
@@ -298,13 +298,13 @@ namespace HealthGateway.WebClient.Test.Services
             };
             Comment comment = userComment.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
 
-            DBResult<Comment> deleteResult = new DBResult<Comment>
+            DBResult<Comment> deleteResult = new()
             {
                 Payload = comment,
                 Status = dBStatusCode,
             };
 
-            Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
+            Mock<ICommentDelegate> commentDelegateMock = new();
             commentDelegateMock.Setup(s => s.Delete(It.Is<Comment>(x => x.Text == comment.Text), true)).Returns(deleteResult);
 
             ICommentService service = new CommentService(
@@ -320,19 +320,19 @@ namespace HealthGateway.WebClient.Test.Services
         private Tuple<RequestResult<UserComment>, UserComment> ExecuteUpdateComment(DBStatusCode dBStatusCode = DBStatusCode.Updated)
         {
             string encryptionKey = "abc";
-            DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
+            DBResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile() { EncryptionKey = encryptionKey },
             };
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
 
-            Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
+            Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
             cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
 
-            UserComment userComment = new UserComment()
+            UserComment userComment = new()
             {
                 UserProfileId = this.hdid,
                 ParentEntryId = this.parentEntryId,
@@ -343,13 +343,13 @@ namespace HealthGateway.WebClient.Test.Services
 
             Comment comment = userComment.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
 
-            DBResult<Comment> updateResult = new DBResult<Comment>
+            DBResult<Comment> updateResult = new()
             {
                 Payload = comment,
                 Status = dBStatusCode,
             };
 
-            Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
+            Mock<ICommentDelegate> commentDelegateMock = new();
             commentDelegateMock.Setup(s => s.Update(It.Is<Comment>(x => x.Text == comment.Text), true)).Returns(updateResult);
 
             ICommentService service = new CommentService(
@@ -366,45 +366,46 @@ namespace HealthGateway.WebClient.Test.Services
             string? encryptionKey = null,
             DBStatusCode dbResultStatus = DBStatusCode.Read)
         {
-            DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
+            DBResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile() { EncryptionKey = encryptionKey },
             };
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
 
-            Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
+            Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
             cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
 
-            List<Comment> commentList = new List<Comment>();
-            commentList.Add(new Comment
+            List<Comment> commentList = new()
             {
-                UserProfileId = this.hdid,
-                ParentEntryId = this.parentEntryId,
-                Text = "First Comment",
-                EntryTypeCode = CommentEntryType.Medication,
-                CreatedDateTime = new DateTime(2020, 1, 1),
-            });
-
-            commentList.Add(new Comment
-            {
-                UserProfileId = this.hdid,
-                ParentEntryId = this.parentEntryId,
-                Text = "Second Comment",
-                EntryTypeCode = CommentEntryType.Medication,
-                CreatedDateTime = new DateTime(2020, 2, 2),
-            });
+                new Comment
+                {
+                    UserProfileId = this.hdid,
+                    ParentEntryId = this.parentEntryId,
+                    Text = "First Comment",
+                    EntryTypeCode = CommentEntryType.Medication,
+                    CreatedDateTime = new DateTime(2020, 1, 1),
+                },
+                new Comment
+                {
+                    UserProfileId = this.hdid,
+                    ParentEntryId = this.parentEntryId,
+                    Text = "Second Comment",
+                    EntryTypeCode = CommentEntryType.Medication,
+                    CreatedDateTime = new DateTime(2020, 2, 2),
+                },
+            };
             List<UserComment> userCommentList = UserComment.CreateListFromDbModel(commentList, cryptoDelegateMock.Object, encryptionKey).ToList();
 
-            DBResult<IEnumerable<Comment>> commentsDBResult = new DBResult<IEnumerable<Comment>>
+            DBResult<IEnumerable<Comment>> commentsDBResult = new()
             {
                 Payload = commentList,
                 Status = dbResultStatus,
             };
 
-            Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
+            Mock<ICommentDelegate> commentDelegateMock = new();
             commentDelegateMock.Setup(s => s.GetByParentEntry(this.hdid, this.parentEntryId)).Returns(commentsDBResult);
 
             ICommentService service = new CommentService(
@@ -421,19 +422,19 @@ namespace HealthGateway.WebClient.Test.Services
         private Tuple<RequestResult<UserComment>, UserComment> ExecuteInsertComment(DBStatusCode dBStatusCode = DBStatusCode.Created)
         {
             string encryptionKey = "abc";
-            DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
+            DBResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile() { EncryptionKey = encryptionKey },
             };
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
 
-            Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
+            Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
             cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
 
-            UserComment userComment = new UserComment()
+            UserComment userComment = new()
             {
                 UserProfileId = this.hdid,
                 ParentEntryId = this.parentEntryId,
@@ -443,13 +444,13 @@ namespace HealthGateway.WebClient.Test.Services
             };
             Comment comment = userComment.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
 
-            DBResult<Comment> insertResult = new DBResult<Comment>
+            DBResult<Comment> insertResult = new()
             {
                 Payload = comment,
                 Status = dBStatusCode,
             };
 
-            Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
+            Mock<ICommentDelegate> commentDelegateMock = new();
             commentDelegateMock.Setup(s => s.Add(It.Is<Comment>(x => x.Text == comment.Text), true)).Returns(insertResult);
 
             ICommentService service = new CommentService(

@@ -19,6 +19,7 @@ namespace HealthGateway.LaboratoryTests
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Laboratory.Controllers;
     using HealthGateway.Laboratory.Delegates;
@@ -41,14 +42,15 @@ namespace HealthGateway.LaboratoryTests
         private const string Hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
         private const string Token = "Fake Access Token";
         private const string UserId = "1001";
-        private readonly ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
-            new List<Claim>()
-            {
-                new Claim(ClaimTypes.Name, "username"),
-                new Claim(ClaimTypes.NameIdentifier, UserId),
-                new Claim("hdid", Hdid),
-            },
-            "TestAuth"));
+        private readonly ClaimsPrincipal claimsPrincipal = new(
+            new ClaimsIdentity(
+                new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, "username"),
+                    new Claim(ClaimTypes.NameIdentifier, UserId),
+                    new Claim("hdid", Hdid),
+                },
+                "TestAuth"));
 
         /// <summary>
         /// Test for GetLabOrders.
@@ -58,11 +60,11 @@ namespace HealthGateway.LaboratoryTests
         public async Task GetLabOrders()
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.SetupHttpContextAccessorMock();
-            Mock<IAuthenticationService> authenticationMock = new Mock<IAuthenticationService>();
+            Mock<IAuthenticationService> authenticationMock = new();
             httpContextAccessorMock
                 .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
                 .Returns(authenticationMock.Object);
-            var authResult = AuthenticateResult.Success(new AuthenticationTicket(this.claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
+            AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(this.claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
             authResult.Properties!.StoreTokens(new[]
             {
                 new AuthenticationToken { Name = "access_token", Value = Token, },
@@ -71,14 +73,14 @@ namespace HealthGateway.LaboratoryTests
                 .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object!.HttpContext!, It.IsAny<string>()))
                 .ReturnsAsync(authResult);
 
-            Mock<ILaboratoryService> svcMock = new Mock<ILaboratoryService>();
+            Mock<ILaboratoryService> svcMock = new();
             svcMock.Setup(s => s.GetLaboratoryOrders(Token, Hdid, 0)).ReturnsAsync(new RequestResult<IEnumerable<LaboratoryModel>>()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 TotalResultCount = 0,
                 ResourcePayload = new List<LaboratoryModel>(),
             });
-            LaboratoryController controller = new LaboratoryController(
+            LaboratoryController controller = new(
                 new Mock<ILogger<LaboratoryController>>().Object,
                 svcMock.Object,
                 httpContextAccessorMock.Object);
@@ -92,7 +94,7 @@ namespace HealthGateway.LaboratoryTests
             JsonResult? jsonResult = actual as JsonResult;
             Assert.IsType<RequestResult<IEnumerable<LaboratoryModel>>>(jsonResult?.Value);
             RequestResult<IEnumerable<LaboratoryModel>>? result = jsonResult?.Value as RequestResult<IEnumerable<LaboratoryModel>>;
-            Assert.True(result != null && result.ResultStatus == Common.Constants.ResultType.Success);
+            Assert.True(result != null && result.ResultStatus == ResultType.Success);
         }
 
         /// <summary>
@@ -103,15 +105,15 @@ namespace HealthGateway.LaboratoryTests
         public async Task GetLabOrderError()
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.SetupHttpContextAccessorMock();
-            Mock<ILaboratoryService> svcMock = new Mock<ILaboratoryService>();
+            Mock<ILaboratoryService> svcMock = new();
             svcMock.Setup(s => s.GetLaboratoryOrders(Token, Hdid, 0)).ReturnsAsync(new RequestResult<IEnumerable<LaboratoryModel>>()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = "Test Error" },
                 TotalResultCount = 0,
             });
 
-            LaboratoryController controller = new LaboratoryController(
+            LaboratoryController controller = new(
                 new Mock<ILogger<LaboratoryController>>().Object,
                 svcMock.Object,
                 httpContextAccessorMock.Object);
@@ -124,7 +126,7 @@ namespace HealthGateway.LaboratoryTests
 
             JsonResult? jsonResult = actual as JsonResult;
             RequestResult<IEnumerable<LaboratoryModel>>? result = jsonResult?.Value as RequestResult<IEnumerable<LaboratoryModel>>;
-            Assert.True(result != null && result.ResultStatus == Common.Constants.ResultType.Error);
+            Assert.True(result != null && result.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
@@ -135,12 +137,12 @@ namespace HealthGateway.LaboratoryTests
         public async Task GetLabReport()
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.SetupHttpContextAccessorMock();
-            Mock<ILaboratoryService> svcMock = new Mock<ILaboratoryService>();
+            Mock<ILaboratoryService> svcMock = new();
             Guid guid = Guid.NewGuid();
-            MockLaboratoryDelegate laboratoryDelegate = new MockLaboratoryDelegate();
+            MockLaboratoryDelegate laboratoryDelegate = new();
             svcMock.Setup(s => s.GetLabReport(guid, Hdid, Token)).ReturnsAsync(await laboratoryDelegate.GetLabReport(guid, Hdid, Token).ConfigureAwait(true));
 
-            LaboratoryController controller = new LaboratoryController(
+            LaboratoryController controller = new(
                 new Mock<ILogger<LaboratoryController>>().Object,
                 svcMock.Object,
                 httpContextAccessorMock.Object);
@@ -153,7 +155,7 @@ namespace HealthGateway.LaboratoryTests
 
             JsonResult? jsonResult = actual as JsonResult;
             RequestResult<LaboratoryReport>? result = jsonResult?.Value as RequestResult<LaboratoryReport>;
-            Assert.True(result != null && result.ResultStatus == Common.Constants.ResultType.Success);
+            Assert.True(result != null && result.ResultStatus == ResultType.Success);
         }
 
         /// <summary>
@@ -164,16 +166,16 @@ namespace HealthGateway.LaboratoryTests
         public async Task GetLabReportError()
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.SetupHttpContextAccessorMock();
-            Mock<ILaboratoryService> svcMock = new Mock<ILaboratoryService>();
+            Mock<ILaboratoryService> svcMock = new();
             Guid guid = Guid.NewGuid();
             svcMock.Setup(s => s.GetLabReport(guid, Hdid, Token)).ReturnsAsync(new RequestResult<LaboratoryReport>()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = "Test Error" },
                 TotalResultCount = 0,
             });
 
-            LaboratoryController controller = new LaboratoryController(
+            LaboratoryController controller = new(
                 new Mock<ILogger<LaboratoryController>>().Object,
                 svcMock.Object,
                 httpContextAccessorMock.Object);
@@ -186,29 +188,31 @@ namespace HealthGateway.LaboratoryTests
 
             JsonResult? jsonResult = (JsonResult)actual;
             RequestResult<LaboratoryReport>? result = jsonResult?.Value as RequestResult<LaboratoryReport>;
-            Assert.True(result != null && result.ResultStatus == Common.Constants.ResultType.Error);
+            Assert.True(result != null && result.ResultStatus == ResultType.Error);
         }
 
         private Mock<IHttpContextAccessor> SetupHttpContextAccessorMock()
         {
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", Token);
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            IHeaderDictionary headerDictionary = new HeaderDictionary
+            {
+                { "Authorization", Token },
+            };
+            Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
 
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+            Mock<HttpContext> httpContextMock = new();
             httpContextMock.Setup(s => s.User).Returns(this.claimsPrincipal);
             httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
-            Mock<IAuthenticationService> authenticationMock = new Mock<IAuthenticationService>();
+            Mock<IAuthenticationService> authenticationMock = new();
             httpContextAccessorMock
                 .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
                 .Returns(authenticationMock.Object);
 
-            var authResult = AuthenticateResult.Success(new AuthenticationTicket(this.claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
+            AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(this.claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
             authResult.Properties!.StoreTokens(new[]
             {
                 new AuthenticationToken { Name = "access_token", Value = Token, },
