@@ -109,7 +109,7 @@ export default class ProfileView extends Vue {
     private userProfileService!: IUserProfileService;
     private userProfile!: UserProfile;
 
-    private lastLoginDateString = "";
+    private loginDateTimes: string[] | undefined = [];
 
     private showCloseWarning = false;
 
@@ -121,6 +121,23 @@ export default class ProfileView extends Vue {
         return (
             this.email === null || this.email === undefined || this.email === ""
         );
+    }
+
+    private get formattedLoginDateTimes(): string[] {
+        let items: string[] = [];
+        if (
+            this.loginDateTimes !== undefined &&
+            this.loginDateTimes.length > 0
+        ) {
+            this.loginDateTimes.forEach((item) =>
+                items.push(
+                    new DateWrapper(item, { isUtc: true }).format(
+                        "yyyy-MMM-dd, t"
+                    )
+                )
+            );
+        }
+        return items;
     }
 
     private mounted() {
@@ -154,13 +171,7 @@ export default class ProfileView extends Vue {
                         `User Profile: ${JSON.stringify(this.userProfile)}`
                     );
                     this.userProfile = results[1];
-                    this.lastLoginDateString = new DateWrapper(
-                        this.userProfile.lastLoginDateTime,
-                        {
-                            isUtc: true,
-                        }
-                    ).format();
-
+                    this.loginDateTimes = this.userProfile.lastLoginDateTimes;
                     this.email = this.userProfile.email;
                     this.emailVerified = this.userProfile.isEmailVerified;
                     this.emailVerificationSent = this.emailVerified;
@@ -490,16 +501,6 @@ export default class ProfileView extends Vue {
                         </div>
                     </b-col>
                 </b-row>
-                <b-row class="mb-3">
-                    <b-col>
-                        <label for="lastLoginDate" class="hg-label"
-                            >Last Login Date</label
-                        >
-                        <div id="lastLoginDate">
-                            {{ lastLoginDateString }}
-                        </div>
-                    </b-col>
-                </b-row>
                 <b-row>
                     <b-col>
                         <b-row>
@@ -604,10 +605,7 @@ export default class ProfileView extends Vue {
                             data-testid="emailOptOutMessage"
                         >
                             <b-col
-                                class="
-                                    font-weight-bold
-                                    text-primary text-center
-                                "
+                                class="font-weight-bold text-primary text-center"
                             >
                                 <hg-icon
                                     icon="exclamation-triangle"
@@ -751,16 +749,33 @@ export default class ProfileView extends Vue {
                                 </b-form-group>
                             </b-col>
                         </b-row>
+                        <b-row class="mb-3">
+                            <b-col>
+                                <label for="lastLoginDate" class="hg-label"
+                                    >Login History</label
+                                >
+                                <div id="lastLoginDate">
+                                    <ul>
+                                        <li
+                                            v-for="(
+                                                item, index
+                                            ) in formattedLoginDateTimes"
+                                            :key="index"
+                                            data-testid="lastLoginDateItem"
+                                        >
+                                            {{ item }}
+                                        </li>
+                                    </ul>
+                                </div>
+                            </b-col>
+                        </b-row>
                         <b-row
                             v-if="!smsNumber && tempSMS"
                             data-testid="smsOptOutMessage"
                             class="mb-3"
                         >
                             <b-col
-                                class="
-                                    font-weight-bold
-                                    text-primary text-center
-                                "
+                                class="font-weight-bold text-primary text-center"
                             >
                                 <hg-icon
                                     icon="exclamation-triangle"

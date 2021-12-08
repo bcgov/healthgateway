@@ -24,6 +24,7 @@ namespace HealthGateway.WebClient
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Services;
+    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.WebClient.Listeners;
     using HealthGateway.WebClient.Services;
@@ -125,6 +126,11 @@ namespace HealthGateway.WebClient
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/dist";
+            });
+
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
             });
         }
 

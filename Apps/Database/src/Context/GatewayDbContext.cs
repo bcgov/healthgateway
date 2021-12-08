@@ -222,6 +222,7 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(k => k.VerificationType)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Create Composite Key for User Preference
             modelBuilder.Entity<UserPreference>()
                 .HasKey(c => new { c.HdId, c.Preference });
 
@@ -324,6 +325,10 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<AdminTag>()
                 .HasIndex(p => p.Name)
                 .IsUnique(true);
+
+            // Create non-unique key for UserProfileHistory
+            modelBuilder.Entity<UserProfileHistory>()
+                .HasIndex(p => p.HdId);
 
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);

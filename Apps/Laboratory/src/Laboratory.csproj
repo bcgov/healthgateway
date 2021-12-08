@@ -5,10 +5,13 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Hl7.Fhir.R4" Version="3.6.0" />
+    <PackageReference Include="Hl7.Fhir.R4" Version="3.7.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
+    <ProjectReference Include="..\..\CommonData\src\Common.Data.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <SonarQubeSetting Include="sonar.stylecop.projectFilePath">

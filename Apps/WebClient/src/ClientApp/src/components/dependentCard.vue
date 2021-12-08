@@ -422,12 +422,7 @@ export default class DependentCardComponent extends Vue {
                             <ul class="list-unstyled">
                                 <li
                                     role="presentation"
-                                    class="
-                                        ml-auto
-                                        mr-1
-                                        nav-item
-                                        align-self-center
-                                    "
+                                    class="ml-auto mr-1 nav-item align-self-center"
                                 >
                                     <b-nav-item-dropdown
                                         right

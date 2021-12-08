@@ -18,6 +18,7 @@ namespace HealthGateway.Laboratory.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -25,11 +26,14 @@ namespace HealthGateway.Laboratory.Delegates
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
+    using HealthGateway.Common.Utils;
     using HealthGateway.Laboratory.Models;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -43,6 +47,7 @@ namespace HealthGateway.Laboratory.Delegates
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
+        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly LaboratoryConfig labConfig;
 
         /// <summary>
@@ -50,14 +55,17 @@ namespace HealthGateway.Laboratory.Delegates
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClientService">The injected http client service.</param>
+        /// <param name="httpContextAccessor">The HTTP Context accessor.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         public RestLaboratoryDelegate(
             ILogger<RestLaboratoryDelegate> logger,
             IHttpClientService httpClientService,
+            IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
+            this.httpContextAccessor = httpContextAccessor;
             this.labConfig = new LaboratoryConfig();
             configuration.Bind(LabConfigSectionKey, this.labConfig);
         }
@@ -81,14 +89,15 @@ namespace HealthGateway.Laboratory.Delegates
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
                 client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                var query = new Dictionary<string, string?>
+                Dictionary<string, string?> query = new()
                 {
                     ["limit"] = this.labConfig.FetchSize,
                     ["subjectHdid"] = hdid,
                 };
                 try
                 {
-                    Uri endpoint = new Uri(QueryHelpers.AddQueryString(this.labConfig.Endpoint, query));
+                    string endpointString = $"{this.labConfig.BaseUrl}{this.labConfig.LabOrdersEndpoint}";
+                    Uri endpoint = new(QueryHelpers.AddQueryString(endpointString, query));
                     HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                     this.logger.LogTrace($"Response: {response}");
@@ -158,20 +167,21 @@ namespace HealthGateway.Laboratory.Delegates
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
                 client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                var query = new Dictionary<string, string?>
+                Dictionary<string, string?> query = new()
                 {
                     ["subjectHdid"] = hdid,
                 };
                 try
                 {
-                    Uri endpoint = new Uri(QueryHelpers.AddQueryString($"{this.labConfig.Endpoint}/{id}/LabReportDocument", query));
+                    string endpointString = $"{this.labConfig.BaseUrl}{this.labConfig.LabOrdersEndpoint}/{id}/LabReportDocument";
+                    Uri endpoint = new(QueryHelpers.AddQueryString(endpointString, query));
                     HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                     this.logger.LogTrace($"Get laboratory report response payload: {payload}");
                     switch (response.StatusCode)
                     {
                         case HttpStatusCode.OK:
-                            var options = new JsonSerializerOptions
+                            JsonSerializerOptions options = new()
                             {
                                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
@@ -213,6 +223,94 @@ namespace HealthGateway.Laboratory.Delegates
                 this.logger.LogDebug($"Finished getting Laboratory Report");
                 return retVal;
             }
+        }
+
+        /// <inheritdoc/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
+        public async Task<RequestResult<PHSAResult<IEnumerable<CovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate)
+        {
+            using Activity? activity = Source.StartActivity("GetPublicTestResults");
+            this.logger.LogDebug($"Getting public COVID-19 test results {phn} {dateOfBirth} {collectionDate}...");
+
+            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
+            string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+
+            RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> retVal = new()
+            {
+                ResultStatus = ResultType.Error,
+                PageIndex = 0,
+            };
+
+            try
+            {
+                JsonSerializerOptions serializerOptions = new()
+                {
+                    Converters = { new DateOnlyJsonConverter() },
+                };
+                string json = JsonSerializer.Serialize(new { phn, dateOfBirth, collectionDate }, serializerOptions);
+                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+
+                string endpointString = $"{this.labConfig.BaseUrl}{this.labConfig.PublicCovidTestsEndPoint}";
+                Uri endpoint = new(endpointString);
+                using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
+
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
+                client.DefaultRequestHeaders.Add("X-Forward-For", ipAddress);
+
+                HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
+                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                this.logger.LogTrace($"Response: {response}");
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                        this.logger.LogTrace($"Response payload: {payload}");
+                        PHSAResult<IEnumerable<CovidTestResult>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<IEnumerable<CovidTestResult>>>(payload);
+                        if (phsaResult != null && phsaResult.Result != null)
+                        {
+                            retVal.ResultStatus = ResultType.Success;
+                            retVal.ResourcePayload = phsaResult;
+                            retVal.TotalResultCount = phsaResult.Result.Count();
+                        }
+                        else
+                        {
+                            retVal.ResultError = new RequestResultError()
+                            {
+                                ResultMessage = "Error with JSON data",
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            };
+                        }
+
+                        break;
+                    case HttpStatusCode.Forbidden:
+                        retVal.ResultError = new RequestResultError()
+                        {
+                            ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
+                        break;
+                    default:
+                        retVal.ResultError = new RequestResultError()
+                        {
+                            ResultMessage = $"Unable to connect to Laboratory PublicCovidTestsEndPoint, HTTP Error {response.StatusCode}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
+                        this.logger.LogError($"Unable to connect to endpoint {endpointString}, HTTP Error {response.StatusCode}\n{payload}");
+                        break;
+                }
+            }
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
+            {
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting public COVID-19 test results: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                this.logger.LogError($"Unexpected exception retrieving public COVID-19 test results {e}");
+            }
+
+            this.logger.LogDebug($"Finished getting public COVID-19 test results {phn} {dateOfBirth} {collectionDate}...");
+            return retVal;
         }
     }
 }

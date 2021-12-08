@@ -22,6 +22,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -218,7 +219,7 @@ namespace HealthGateway.Immunization.Services
                 return retVal;
             }
 
-            if (!PHNValidator.IsValid(phn))
+            if (!PhnValidator.IsValid(phn))
             {
                 retVal.ResultStatus = ResultType.Error;
                 retVal.ResultError = new RequestResultError()

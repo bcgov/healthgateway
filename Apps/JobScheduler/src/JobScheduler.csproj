@@ -27,7 +27,7 @@
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" />
     <None Include="appsettings.json" CopyToPublishDirectory="Always" />
-  </ItemGroup>  
+  </ItemGroup>
   <ItemGroup>
     <Folder Include="Context\" />
     <Folder Include="Utils\" />

@@ -42,6 +42,7 @@ function createWrapper(options?: GatewayStoreOptions): Wrapper<TimelineView> {
             LoadingComponent: ChildComponentStub,
             "hg-icon": true,
             "hg-button": true,
+            "page-title": true,
         },
     });
 }

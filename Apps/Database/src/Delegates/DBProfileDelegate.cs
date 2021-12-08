@@ -202,7 +202,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public int GetRecurrentUserCount(int dayCount, DateTime startDate, DateTime endDate, TimeSpan offset)
+        public int GetRecurrentUserCount(int dayCount, DateTime startDate, DateTime endDate)
         {
             this.logger.LogTrace($"Retrieving recurring user count for {dayCount} days between {startDate} and {endDate}...");
 
@@ -210,13 +210,24 @@ namespace HealthGateway.Database.Delegates
                 .Select(x => new { x.HdId, x.LastLoginDateTime })
                 .Concat(
                     this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
-                .Select(x => new { x.HdId, lastLoginDate = x.LastLoginDateTime.AddMinutes(offset.TotalMinutes).Date })
-                .Where(x => x.lastLoginDate >= startDate && x.lastLoginDate <= endDate)
+                .Where(x => x.LastLoginDateTime >= startDate && x.LastLoginDateTime <= endDate)
                 .Distinct()
                 .GroupBy(x => x.HdId).Select(x => new { HdId = x.Key, count = x.Count() })
                 .Where(x => x.count >= dayCount).Count();
 
             return recurrentCount;
+        }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<UserProfileHistory>> GetUserProfileHistories(string hdid, int limit)
+        {
+            DBResult<IEnumerable<UserProfileHistory>> result = new DBResult<IEnumerable<UserProfileHistory>>();
+            result.Payload = this.dbContext.UserProfileHistory
+                                .Where(p => p.HdId == hdid)
+                                .OrderByDescending(p => p.LastLoginDateTime)
+                                .Take(limit);
+            result.Status = DBStatusCode.Read;
+            return result;
         }
     }
 }

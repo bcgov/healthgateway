@@ -32,11 +32,15 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.WebClient.Constants;
     using HealthGateway.WebClient.Models;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
     public class UserProfileService : IUserProfileService
     {
+        private readonly string webClientConfigSection = "WebClient";
+        private readonly string userProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
+        private readonly int userProfileHistoryRecordLimit;
         private readonly ILogger logger;
         private readonly IPatientService patientService;
         private readonly IUserEmailService userEmailService;
@@ -67,6 +71,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="messageVerificationDelegate">The message verification delegate.</param>
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
+        /// <param name="configuration">Configuration settings.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IPatientService patientService,
@@ -80,7 +85,8 @@ namespace HealthGateway.WebClient.Services
             ILegalAgreementDelegate legalAgreementDelegate,
             IMessagingVerificationDelegate messageVerificationDelegate,
             ICryptoDelegate cryptoDelegate,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration)
         {
             this.logger = logger;
             this.patientService = patientService;
@@ -95,6 +101,7 @@ namespace HealthGateway.WebClient.Services
             this.messageVerificationDelegate = messageVerificationDelegate;
             this.cryptoDelegate = cryptoDelegate;
             this.httpContextAccessor = httpContextAccessor;
+            this.userProfileHistoryRecordLimit = configuration.GetSection(this.webClientConfigSection).GetValue<int>(this.userProfileHistoryRecordLimitKey, 4);
         }
 
         /// <inheritdoc />
@@ -125,6 +132,15 @@ namespace HealthGateway.WebClient.Services
             RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
 
             UserProfileModel userProfile = UserProfileModel.CreateFromDbModel(retVal.Payload);
+            DBResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult = this.userProfileDelegate.GetUserProfileHistories(hdid, this.userProfileHistoryRecordLimit);
+
+            // Populate most recent login date time
+            userProfile.LastLoginDateTimes.Add(retVal.Payload.LastLoginDateTime);
+            foreach (UserProfileHistory userProfiileHistory in userProfileHistoryDbResult.Payload)
+            {
+                userProfile.LastLoginDateTimes.Add(userProfiileHistory.LastLoginDateTime);
+            }
+
             userProfile.HasTermsOfServiceUpdated = termsOfServiceResult.ResourcePayload?.EffectiveDate > previousLastLogin;
 
             if (!userProfile.IsEmailVerified)

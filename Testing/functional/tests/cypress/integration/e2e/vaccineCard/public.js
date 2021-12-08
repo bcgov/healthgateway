@@ -1,17 +1,4 @@
-const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-];
+const { monthNames } = require("../../../support/constants");
 
 const dobYearSelector =
     "[data-testid=dateOfBirthInput] [data-testid=formSelectYear]";
@@ -358,7 +345,7 @@ describe("Public User - Vaccine Card Page", () => {
     });
 
     it("Public Vaccination Card - Fully Vaccinated", () => {
-        const phn = "9735361219 ";
+        const phn = "9735361219";
         const dobYear = "1994";
         const dobMonth = "June";
         const dobDay = "9";

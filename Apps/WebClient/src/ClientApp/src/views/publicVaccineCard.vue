@@ -289,6 +289,8 @@ export default class PublicVaccineCardView extends Vue {
             phn: this.phn.replace(/ /g, ""),
             dateOfBirth: this.dateOfBirth,
             dateOfVaccine: this.dateOfVaccine,
+        }).catch((err) => {
+            this.logger.error(`Error loading public record data: ${err}`);
         });
     }
 
@@ -341,12 +343,7 @@ export default class PublicVaccineCardView extends Vue {
                 />
                 <div
                     v-if="downloadButtonShown"
-                    class="
-                        actions
-                        p-3
-                        d-flex d-print-none
-                        justify-content-center
-                    "
+                    class="actions p-3 d-flex d-print-none justify-content-center"
                 >
                     <hg-button
                         v-if="!saveExportPdfShown"
@@ -436,16 +433,7 @@ export default class PublicVaccineCardView extends Vue {
             class="flex-grow-1 d-flex flex-column justify-content-between"
         >
             <form
-                class="
-                    vaccine-card-form
-                    bg-white
-                    rounded
-                    shadow
-                    m-2 m-sm-3
-                    py-3
-                    px-3 px-sm-5
-                    align-self-center
-                "
+                class="vaccine-card-form bg-white rounded shadow m-2 m-sm-3 py-3 px-3 px-sm-5 align-self-center"
                 @submit.prevent="handleSubmit"
             >
                 <div class="my-2 my-sm-5 px-0 px-sm-5">
@@ -553,7 +541,7 @@ export default class PublicVaccineCardView extends Vue {
                     <b-row>
                         <b-col>
                             <b-form-group
-                                label="Date of Vaccine (Dose 1 or Dose 2)"
+                                label="Date of Vaccine (Any Dose)"
                                 label-for="dateOfVaccine"
                                 :state="isValid($v.dateOfVaccine)"
                             >
@@ -564,7 +552,7 @@ export default class PublicVaccineCardView extends Vue {
                                     :allow-future="false"
                                     :min-year="2020"
                                     data-testid="dateOfVaccineInput"
-                                    aria-label="Date of Vaccine (Dose 1 or Dose 2)"
+                                    aria-label="Date of Vaccine (Any Dose)"
                                     @blur="$v.dateOfBirth.$touch()"
                                 />
                                 <b-form-invalid-feedback

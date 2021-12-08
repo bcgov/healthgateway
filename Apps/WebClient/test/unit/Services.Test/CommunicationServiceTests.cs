@@ -58,7 +58,7 @@ namespace HealthGateway.WebClient.Test.Services
             var actualResult = result.Item1;
 
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
-            Assert.Equal("testhostServer-CI-DB", actualResult.ResultError!.ErrorCode);
+            Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
         }
 
         private static Tuple<RequestResult<Communication>, Communication> ExecuteGetActiveCommunication(DBStatusCode dbResultStatus = DBStatusCode.Read)

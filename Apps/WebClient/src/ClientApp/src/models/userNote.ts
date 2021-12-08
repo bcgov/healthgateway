@@ -13,8 +13,8 @@ export default interface UserNote {
     // Gets or sets the text of the note.
     text: string;
 
-    // Gets or sets the Note timeline datetime.
-    journalDateTime: StringISODate;
+    // Gets or sets the Note timeline date.
+    journalDate: StringISODate;
 
     // Gets or sets the note db version.
     version: number;

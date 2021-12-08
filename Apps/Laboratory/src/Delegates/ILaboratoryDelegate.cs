@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@ namespace HealthGateway.Laboratory.Delegates
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Models;
 
     /// <summary>
@@ -44,5 +45,15 @@ namespace HealthGateway.Laboratory.Delegates
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <returns>A base64 encoded PDF.</returns>
         Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, string bearerToken);
+
+        /// <summary>
+        /// Returns the public COVID-19 test results for the given patient.
+        /// </summary>
+        /// <param name="accessToken">The connection access token.</param>
+        /// <param name="phn">The patient's Personal Health Number.</param>
+        /// <param name="dateOfBirth">The patient's date of birth.</param>
+        /// <param name="collectionDate">The date the test was collected.</param>
+        /// <returns>The COVID-19 test results result for the given patient.</returns>
+        Task<RequestResult<PHSAResult<IEnumerable<CovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate);
     }
 }

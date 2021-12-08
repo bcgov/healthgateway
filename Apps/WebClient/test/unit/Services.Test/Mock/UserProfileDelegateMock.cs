@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClientTests.Services.Test.Mock
 {
     using System;
+    using System.Collections.Generic;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -33,10 +34,13 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <param name="userProfile">user profile.</param>
         /// <param name="userProfileData">user profile data.</param>
         /// <param name="hdid">hdid.</param>
-        public UserProfileDelegateMock(UserProfile userProfile, DBResult<UserProfile> userProfileData, string hdid)
+        /// <param name="userProfileHistoryData">user profile history.</param>
+        /// <param name="limit">limit.</param>
+        public UserProfileDelegateMock(UserProfile userProfile, DBResult<UserProfile> userProfileData, string hdid, DBResult<IEnumerable<UserProfileHistory>> userProfileHistoryData, int limit)
         {
             this.Setup(s => s.GetUserProfile(hdid)).Returns(userProfileData);
             this.Setup(s => s.Update(userProfile, true)).Returns(userProfileData);
+            this.Setup(s => s.GetUserProfileHistories(hdid, limit)).Returns(userProfileHistoryData);
         }
 
         /// <summary>
