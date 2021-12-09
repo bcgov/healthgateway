@@ -73,7 +73,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
 
             IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object);
             JWTModel actualModel = authDelegate.AuthenticateAsUser(tokenUri, tokenRequest);
-            Assert.True(actualModel.IsDeepEqual(expected));
+            expected.ShouldDeepEqual(actualModel);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
 
             IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object);
             JWTModel actualModel = authDelegate.AuthenticateAsSystem(tokenUri, tokenRequest);
-            Assert.True(actualModel.IsDeepEqual(expected));
+            expected.ShouldDeepEqual(actualModel);
         }
     }
 }

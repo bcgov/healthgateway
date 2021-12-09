@@ -67,8 +67,9 @@ namespace HealthGateway.Admin.Test.Services
 
             // Test if controller adds communication properly
             IActionResult actualResult = controller.Add(comm);
+
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(expected.IsDeepEqual(((JsonResult)actualResult).Value));
+            expected.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -110,8 +111,9 @@ namespace HealthGateway.Admin.Test.Services
 
             // Test if controller gets communications properly
             IActionResult actualResult = controller.GetAll();
+
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(expected.IsDeepEqual(((JsonResult)actualResult).Value));
+            expected.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -144,8 +146,9 @@ namespace HealthGateway.Admin.Test.Services
 
             // Test if controller adds communication properly
             IActionResult actualResult = controller.Update(comm);
+
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(expected.IsDeepEqual(((JsonResult)actualResult).Value));
+            expected.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
     }
 }

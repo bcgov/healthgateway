@@ -80,7 +80,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             UserRequirement[] requirements = new[] { new UserRequirement(true) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.True(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
@@ -133,7 +135,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             UserRequirement[] requirements = new[] { new UserRequirement(true) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
@@ -186,7 +190,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             UserRequirement[] requirements = new[] { new UserRequirement(false) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.True(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
@@ -238,7 +244,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             UserRequirement[] requirements = new[] { new UserRequirement(false) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }

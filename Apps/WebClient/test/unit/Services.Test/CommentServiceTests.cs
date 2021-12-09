@@ -51,7 +51,7 @@ namespace HealthGateway.WebClient.Test.Services
             List<UserComment> userCommentList = getNotesResult.Item2;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload?.IsDeepEqual(userCommentList));
+            userCommentList.ShouldDeepEqual(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserComment createdRecord = result.Item2;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload?.IsDeepEqual(createdRecord));
+            createdRecord.ShouldDeepEqual(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -103,8 +103,9 @@ namespace HealthGateway.WebClient.Test.Services
             Tuple<RequestResult<UserComment>, UserComment> result = this.ExecuteUpdateComment(DBStatusCode.Updated);
             RequestResult<UserComment> actualResult = result.Item1;
             UserComment updatedRecord = result.Item2;
+
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload?.IsDeepEqual(updatedRecord));
+            updatedRecord.ShouldDeepEqual(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -129,8 +130,9 @@ namespace HealthGateway.WebClient.Test.Services
             Tuple<RequestResult<UserComment>, UserComment> result = this.ExecuteDeleteComment(DBStatusCode.Deleted);
             RequestResult<UserComment> actualResult = result.Item1;
             UserComment deletedRecord = result.Item2;
+
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload?.IsDeepEqual(deletedRecord));
+            deletedRecord.ShouldDeepEqual(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -168,6 +170,7 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ICryptoDelegate>().Object);
 
             RequestResult<IEnumerable<UserComment>> actualResult = service.GetEntryComments(this.hdid, this.parentEntryId);
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
@@ -202,6 +205,7 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ICryptoDelegate>().Object);
 
             RequestResult<UserComment> actualResult = service.Add(userComment);
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
@@ -236,6 +240,7 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ICryptoDelegate>().Object);
 
             RequestResult<UserComment> actualResult = service.Update(userComment);
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
@@ -270,6 +275,7 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ICryptoDelegate>().Object);
 
             RequestResult<UserComment> actualResult = service.Delete(userComment);
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 

@@ -114,6 +114,7 @@ namespace HealthGateway.Encounter.Test.Service
                 mockMSPDelegate.Object);
 
             RequestResult<IEnumerable<EncounterModel>> actualResult = service.GetEncounters(hdid).Result;
+
             Assert.True(actualResult.ResultStatus == ResultType.Success);
             Assert.Equal(2, actualResult.ResourcePayload.Count()); // should return distint claims only.
         }
@@ -153,6 +154,7 @@ namespace HealthGateway.Encounter.Test.Service
                 mockMSPDelegate.Object);
 
             RequestResult<IEnumerable<EncounterModel>> actualResult = service.GetEncounters(hdid).Result;
+
             Assert.True(actualResult.ResultStatus == ResultType.Success);
             Assert.False(actualResult.ResourcePayload.Any());
         }
@@ -194,8 +196,9 @@ namespace HealthGateway.Encounter.Test.Service
                 mockMSPDelegate.Object);
 
             RequestResult<IEnumerable<EncounterModel>> actualResult = service.GetEncounters(hdid).Result;
-            Assert.True(actualResult.ResultStatus == ResultType.Error &&
-                        actualResult.ResultError.IsDeepEqual(errorPatientResult.ResultError));
+
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+            errorPatientResult.ResultError.ShouldDeepEqual(actualResult.ResultError);
         }
 
         private HttpContext GetHttpContext()

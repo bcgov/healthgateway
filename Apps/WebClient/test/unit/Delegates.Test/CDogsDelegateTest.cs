@@ -72,6 +72,7 @@ namespace HealthGateway.WebClient.Test.Delegates
                 this.configuration);
 
             RequestResult<ReportModel> actualResult = Task.Run(async () => await cdogsDelegate.GenerateReportAsync(cdogsRequest).ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
 

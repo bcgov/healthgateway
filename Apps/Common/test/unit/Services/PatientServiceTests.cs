@@ -45,6 +45,7 @@ namespace HealthGateway.CommonTests.Services
         public void ShouldGetPatientPHN()
         {
             RequestResult<string> actual = GetPatientPHN(new Dictionary<string, string>(), DBStatusCode.Created, false);
+
             Assert.Equal(Phn, actual.ResourcePayload);
         }
 

@@ -51,7 +51,7 @@ namespace HealthGateway.WebClient.Test.Services
             List<UserNote> userNoteList = getNotesResult.Item2;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload?.IsDeepEqual(userNoteList));
+            userNoteList.ShouldDeepEqual(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Null(actualResult.ResultError);
-            Assert.True(actualResult.ResourcePayload?.IsDeepEqual(userNote));
+            userNote.ShouldDeepEqual(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserNote userNote = getNotesResult.Item2;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload?.IsDeepEqual(userNote));
+            userNote.ShouldDeepEqual(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Null(actualResult.ResultError);
-            Assert.True(actualResult.ResourcePayload?.IsDeepEqual(userNote));
+            userNote.ShouldDeepEqual(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -193,6 +193,7 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ICryptoDelegate>().Object);
 
             RequestResult<UserNote> actualResult = service.CreateNote(userNote);
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
@@ -226,6 +227,7 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ICryptoDelegate>().Object);
 
             RequestResult<UserNote> actualResult = service.UpdateNote(userNote);
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
@@ -259,6 +261,7 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ICryptoDelegate>().Object);
 
             RequestResult<UserNote> actualResult = service.DeleteNote(userNote);
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 

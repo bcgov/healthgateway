@@ -83,7 +83,9 @@ namespace HealthGateway.CommonTests.FileDownload
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<FileDownloadService> logger = loggerFactory.CreateLogger<FileDownloadService>();
             FileDownloadService service = new(logger, new Mock<IHttpClientService>().Object);
+
             Task.Run(async () => await service.GetFileFromUrl(new Uri("https://localhost/fake.txt"), "tmp", true).ConfigureAwait(true));
+
             Assert.ThrowsAsync<AggregateException>(() => Task.Run(async () => await service.GetFileFromUrl(new Uri("https://localhost/fake.txt"), targetFolder, true).ConfigureAwait(true)));
             Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), targetFolder));
         }

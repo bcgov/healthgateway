@@ -68,7 +68,7 @@ namespace HealthGateway.Immunization.Test.Controllers
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
-            Assert.True(actual.IsDeepEqual(expectedRequestResult));
+            expectedRequestResult.ShouldDeepEqual(actual);
         }
     }
 }

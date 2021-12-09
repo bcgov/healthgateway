@@ -48,7 +48,9 @@ namespace HealthGateway.LaboratoryTests
         {
             IServiceProvider provider = GetServiceProvider();
             ILaboratoryDelegateFactory labDelegate = new LaboratoryDelegateFactory(this.configuration, provider);
+
             ILaboratoryDelegate instance = labDelegate.CreateInstance();
+
             Assert.NotNull(instance);
         }
 

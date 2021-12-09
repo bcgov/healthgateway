@@ -80,8 +80,9 @@ namespace HealthGateway.Patient.Test.Controllers
 
             PatientController patientController = new(patientService.Object);
             Task<IActionResult> actualResult = patientController.GetPatient("123");
+
             Assert.IsType<JsonResult>(actualResult.Result);
-            Assert.True(((JsonResult)actualResult.Result).Value.IsDeepEqual(expectedResult));
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult.Result).Value);
         }
     }
 }

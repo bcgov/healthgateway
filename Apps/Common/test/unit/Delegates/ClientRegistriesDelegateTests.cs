@@ -251,8 +251,8 @@ namespace HealthGateway.CommonTests.Delegates
             Assert.Equal(expectedLastName, actual.ResourcePayload?.LastName);
             Assert.Equal(expectedBirthDate, actual.ResourcePayload?.Birthdate);
             Assert.Equal(expectedGender, actual.ResourcePayload?.Gender);
-            Assert.True(actual.ResourcePayload?.PhysicalAddress.IsDeepEqual(expectedPhysicalAddr));
-            Assert.True(actual.ResourcePayload?.PostalAddress.IsDeepEqual(expectedPostalAddr));
+            expectedPhysicalAddr.ShouldDeepEqual(actual.ResourcePayload?.PhysicalAddress);
+            expectedPostalAddr.ShouldDeepEqual(actual.ResourcePayload?.PostalAddress);
         }
 
         /// <summary>

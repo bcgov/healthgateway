@@ -33,7 +33,9 @@ namespace HealthGateway.CommonTests.Utils
         {
             DateTime dt = DateTime.ParseExact("20200101", "yyyyMMdd", CultureInfo.InvariantCulture);
             string expectedDateStr = "2020-01-01";
+
             string actualDateStr = DateTimeFormatter.FormatDate(dt);
+
             Assert.True(actualDateStr == expectedDateStr);
         }
 
@@ -44,6 +46,7 @@ namespace HealthGateway.CommonTests.Utils
         public void ShouldNullReturnEmpty()
         {
             string result = DateTimeFormatter.FormatDate(null);
+
             Assert.True(string.IsNullOrEmpty(result));
         }
     }

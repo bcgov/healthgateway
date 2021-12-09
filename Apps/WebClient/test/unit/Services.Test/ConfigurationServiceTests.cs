@@ -103,7 +103,8 @@ namespace HealthGateway.WebClient.Test.Services
                 },
             };
             ExternalConfiguration actualResult = this.service.GetConfiguration();
-            Assert.True(expectedResult.IsDeepEqual(actualResult));
+
+            expectedResult.ShouldDeepEqual(actualResult);
         }
     }
 }

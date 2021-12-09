@@ -91,7 +91,7 @@ namespace HealthGateway.Admin.Test.Services
 
             // Check result
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(comm.IsDeepEqual(actualResult.ResourcePayload));
+            comm.ShouldDeepEqual(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace HealthGateway.Admin.Test.Services
 
             // Check result
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.True(comm.IsDeepEqual(actualResult?.ResourcePayload));
+            comm.ShouldDeepEqual(actualResult?.ResourcePayload);
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace HealthGateway.Admin.Test.Services
 
             // Check result
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(comm.IsDeepEqual(actualResult?.ResourcePayload));
+            comm.ShouldDeepEqual(actualResult?.ResourcePayload);
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace HealthGateway.Admin.Test.Services
             RequestResult<Communication> actualResult = DeleteCommunication(comm, DBStatusCode.Error);
 
             // Check result
-            Assert.True(expectedResult.IsDeepEqual(actualResult));
+            expectedResult.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace HealthGateway.Admin.Test.Services
 
             // Check result
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.True(comm.IsDeepEqual(actualResult?.ResourcePayload));
+            comm.ShouldDeepEqual(actualResult?.ResourcePayload);
         }
 
         private static RequestResult<Communication> UpdateCommunication(Communication comm, DBStatusCode dbStatusCode)
@@ -285,7 +285,7 @@ namespace HealthGateway.Admin.Test.Services
 
             // Check result
             Assert.Equal(expectedResultType, actualResult.ResultStatus);
-            Assert.True(comm.IsDeepEqual(actualResult?.ResourcePayload));
+            comm.ShouldDeepEqual(actualResult?.ResourcePayload);
         }
 
         private static void ShouldGetCommunicationsWithSpecifiedDBStatusCode(DBStatusCode dBStatusCode, ResultType expectedResultType)
@@ -327,7 +327,7 @@ namespace HealthGateway.Admin.Test.Services
             RequestResult<IEnumerable<Communication>> actualResult = service.GetAll();
 
             Assert.Equal(expectedResultType, actualResult.ResultStatus);
-            Assert.True(refCommsList.IsDeepEqual(actualResult?.ResourcePayload));
+            refCommsList.ShouldDeepEqual(actualResult?.ResourcePayload);
         }
     }
 }

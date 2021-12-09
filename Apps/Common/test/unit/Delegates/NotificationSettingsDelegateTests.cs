@@ -63,7 +63,8 @@ namespace HealthGateway.CommonTests.Delegates
             Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = this.GetNotificationSettings(HttpStatusCode.OK, expectedRequestResult);
             RequestResult<NotificationSettingsResponse> actualResult = response.Item1;
             RequestResult<NotificationSettingsResponse> expectedResult = response.Item2;
-            Assert.True(actualResult.IsDeepEqual(expectedResult));
+
+            expectedResult.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -96,6 +97,7 @@ namespace HealthGateway.CommonTests.Delegates
             };
             Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = this.GetNotificationSettings(HttpStatusCode.BadRequest, expectedRequestResult);
             RequestResult<NotificationSettingsResponse> actualResult = response.Item1;
+
             Assert.Equal($"Unable to connect to Notification Settings Endpoint, HTTP Error {HttpStatusCode.BadRequest}", actualResult?.ResultError?.ResultMessage);
         }
 
@@ -120,7 +122,8 @@ namespace HealthGateway.CommonTests.Delegates
             Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
             INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.GetNotificationSettings(string.Empty).ConfigureAwait(true)).Result;
-            Assert.True(actualResult.IsDeepEqual(expected));
+
+            actualResult.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -143,7 +146,8 @@ namespace HealthGateway.CommonTests.Delegates
             Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
             INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.GetNotificationSettings(string.Empty).ConfigureAwait(true)).Result;
-            Assert.True(actualResult.IsDeepEqual(expected));
+
+            expected.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -160,7 +164,8 @@ namespace HealthGateway.CommonTests.Delegates
             Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = this.SetNotificationSettings(HttpStatusCode.OK, expectedRequestResult);
             RequestResult<NotificationSettingsResponse> actualResult = response.Item1;
             RequestResult<NotificationSettingsResponse> expectedResult = response.Item2;
-            Assert.True(actualResult.IsDeepEqual(expectedResult));
+
+            expectedResult.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -193,6 +198,7 @@ namespace HealthGateway.CommonTests.Delegates
             };
             Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = this.SetNotificationSettings(HttpStatusCode.BadRequest, expectedRequestResult);
             RequestResult<NotificationSettingsResponse> actualResult = response.Item1;
+
             Assert.Contains("Bad Request, HTTP Error BadRequest", actualResult?.ResultError?.ResultMessage, StringComparison.CurrentCulture);
         }
 
@@ -237,7 +243,8 @@ namespace HealthGateway.CommonTests.Delegates
             Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
             INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.SetNotificationSettings(request, string.Empty).ConfigureAwait(true)).Result;
-            Assert.True(actualResult.IsDeepEqual(expected));
+
+            expected.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -276,7 +283,8 @@ namespace HealthGateway.CommonTests.Delegates
             Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
             INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.SetNotificationSettings(notificationSettings, string.Empty).ConfigureAwait(true)).Result;
-            Assert.True(actualResult.IsDeepEqual(expected));
+
+            expected.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -314,7 +322,8 @@ namespace HealthGateway.CommonTests.Delegates
             Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
             INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.SetNotificationSettings(notificationSettings, string.Empty).ConfigureAwait(true)).Result;
-            Assert.True(actualResult.IsDeepEqual(expected));
+
+            expected.ShouldDeepEqual(actualResult);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

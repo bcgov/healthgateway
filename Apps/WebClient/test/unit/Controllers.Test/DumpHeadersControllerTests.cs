@@ -31,7 +31,9 @@ namespace HealthGateway.WebClient.Test.Controllers
         public void ShouldCreateDumpHeadersController()
         {
             using DumpHeadersController controller = new();
+
             IActionResult actualResult = controller.Index();
+
             Assert.IsType<ViewResult>(actualResult);
         }
     }

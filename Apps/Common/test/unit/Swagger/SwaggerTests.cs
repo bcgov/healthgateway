@@ -52,7 +52,9 @@ namespace HealthGateway.CommonTests.Swagger
                 ActionDescriptor = actionDescriptor,
             };
             OperationFilterContext filterContext = new(apiDescription, null, null, null);
+
             filter.Apply(openApiOperation, filterContext);
+
             Assert.Equal(1, openApiOperation.Security.Count);
         }
 
@@ -66,7 +68,9 @@ namespace HealthGateway.CommonTests.Swagger
             OpenApiOperation openApiOperation = new();
             ApiDescription apiDescription = new();
             OperationFilterContext filterContext = new(apiDescription, null, null, null);
+
             filter.Apply(openApiOperation, filterContext);
+
             Assert.Equal(0, openApiOperation.Security.Count);
         }
     }

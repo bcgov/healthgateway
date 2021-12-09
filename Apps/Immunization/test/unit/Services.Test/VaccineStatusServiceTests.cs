@@ -124,12 +124,14 @@ namespace HealthGateway.Immunization.Test.Services
                 string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 RequestResult<VaccineStatus> actualResultPublic = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
-                Assert.True(expectedResult.IsDeepEqual(actualResultPublic));
+
+                expectedResult.ShouldDeepEqual(actualResultPublic);
             }
             else
             {
                 RequestResult<VaccineStatus> actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineStatus(this.hdid).ConfigureAwait(true)).Result;
-                Assert.True(expectedResult.IsDeepEqual(actualResultAuthenticated));
+
+                expectedResult.ShouldDeepEqual(actualResultAuthenticated);
             }
         }
 
@@ -199,13 +201,16 @@ namespace HealthGateway.Immunization.Test.Services
             {
                 string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+
                 RequestResult<VaccineStatus> actualResultPublic = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
+
                 Assert.Equal(ResultType.ActionRequired, actualResultPublic.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultPublic.ResultError?.ActionCode);
             }
             else
             {
                 RequestResult<VaccineStatus> actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineStatus(this.hdid).ConfigureAwait(true)).Result;
+
                 Assert.Equal(ResultType.ActionRequired, actualResultAuthenticated.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultAuthenticated.ResultError?.ActionCode);
             }
@@ -281,7 +286,9 @@ namespace HealthGateway.Immunization.Test.Services
             {
                 string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+
                 RequestResult<VaccineStatus> actualResultPublic = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
+
                 Assert.Equal(ResultType.ActionRequired, actualResultPublic.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultPublic.ResultError?.ActionCode);
                 Assert.Equal(expectedResult.ResourcePayload.RetryIn, actualResultPublic.ResourcePayload?.RetryIn);
@@ -289,6 +296,7 @@ namespace HealthGateway.Immunization.Test.Services
             else
             {
                 RequestResult<VaccineStatus> actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineStatus(this.hdid).ConfigureAwait(true)).Result;
+
                 Assert.Equal(ResultType.ActionRequired, actualResultAuthenticated.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultAuthenticated.ResultError?.ActionCode);
                 Assert.Equal(expectedResult.ResourcePayload.RetryIn, actualResultAuthenticated.ResourcePayload?.RetryIn);
@@ -365,13 +373,16 @@ namespace HealthGateway.Immunization.Test.Services
             {
                 string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+
                 RequestResult<VaccineStatus> actualResultPublic = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
+
                 Assert.Equal(ResultType.ActionRequired, actualResultPublic.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultPublic.ResultError?.ActionCode);
             }
             else
             {
                 RequestResult<VaccineStatus> actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineStatus(this.hdid).ConfigureAwait(true)).Result;
+
                 Assert.Equal(ResultType.ActionRequired, actualResultAuthenticated.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultAuthenticated.ResultError?.ActionCode);
             }
@@ -451,7 +462,9 @@ namespace HealthGateway.Immunization.Test.Services
             {
                 string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+
                 RequestResult<Models.VaccineProofDocument> actualResultPublic = Task.Run(async () => await service.GetPublicVaccineProof(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
+
                 Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actualResultPublic.ResourcePayload?.Document.Data);
                 Assert.NotNull(actualResultPublic.ResourcePayload?.Document.Data);
                 Assert.Equal(ResultType.Success, actualResultPublic.ResultStatus);
@@ -459,6 +472,7 @@ namespace HealthGateway.Immunization.Test.Services
             else
             {
                 RequestResult<Models.VaccineProofDocument> actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineProof(this.hdid).ConfigureAwait(true)).Result;
+
                 Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actualResultAuthenticated.ResourcePayload?.Document.Data);
                 Assert.NotNull(actualResultAuthenticated.ResourcePayload?.Document.Data);
                 Assert.Equal(ResultType.Success, actualResultAuthenticated.ResultStatus);
@@ -481,7 +495,9 @@ namespace HealthGateway.Immunization.Test.Services
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+
             RequestResult<VaccineStatus> actualResult = Task.Run(async () => await service.GetPublicVaccineStatus("123", dobString, dovString).ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
@@ -500,7 +516,9 @@ namespace HealthGateway.Immunization.Test.Services
                 this.GetHttpContextAccessor().Object);
 
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+
             RequestResult<VaccineStatus> actualResult = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, "yyyyMMddx", dovString).ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
@@ -519,7 +537,9 @@ namespace HealthGateway.Immunization.Test.Services
                 this.GetHttpContextAccessor().Object);
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+
             RequestResult<VaccineStatus> actualResult = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, "yyyyMMddx").ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 

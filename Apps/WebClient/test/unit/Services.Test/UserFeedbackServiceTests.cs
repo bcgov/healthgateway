@@ -68,7 +68,7 @@ namespace HealthGateway.WebClient.Test.Services
             RequestResult<Rating> actualResult = service.CreateRating(expectedRating);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload?.IsDeepEqual(expectedRating));
+            expectedRating.ShouldDeepEqual(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<UserFeedback> actualResult = service.CreateUserFeedback(expectedUserFeedback);
 
             Assert.Equal(DBStatusCode.Created, actualResult.Status);
-            Assert.True(actualResult.Payload?.IsDeepEqual(expectedUserFeedback));
+            expectedUserFeedback.ShouldDeepEqual(actualResult.Payload);
         }
     }
 }

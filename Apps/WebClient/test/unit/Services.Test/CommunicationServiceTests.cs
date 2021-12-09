@@ -46,7 +46,7 @@ namespace HealthGateway.WebClient.Test.Services
             Communication communication = result.Item2;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload?.IsDeepEqual(communication));
+            communication.ShouldDeepEqual(actualResult.ResourcePayload);
         }
 
         /// <summary>

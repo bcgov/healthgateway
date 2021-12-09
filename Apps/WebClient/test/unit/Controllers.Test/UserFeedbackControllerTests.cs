@@ -58,6 +58,7 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
             IActionResult actualResult = controller.CreateUserFeedback(Hdid, userFeedback);
+
             Assert.IsType<OkResult>(actualResult);
         }
 
@@ -85,6 +86,7 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
             IActionResult actualResult = controller.CreateUserFeedback(Hdid, userFeedback);
+
             Assert.IsType<ConflictResult>(actualResult);
         }
 
@@ -106,6 +108,7 @@ namespace HealthGateway.WebClient.Test.Controllers
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             IActionResult actualResult = controller.CreateUserFeedback(Hdid, null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
             Assert.IsType<BadRequestResult>(actualResult);
         }
 
@@ -132,7 +135,8 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
             IActionResult actualResult = controller.CreateRating(rating);
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
+
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
     }
 }

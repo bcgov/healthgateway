@@ -63,7 +63,7 @@ namespace HealthGateway.WebClient.Test.Services
             RequestResult<ReportModel> actualResult = service.GetReport(reportRequest);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.IsDeepEqual(expectedResult));
+            expectedResult.ShouldDeepEqual(actualResult);
         }
     }
 }

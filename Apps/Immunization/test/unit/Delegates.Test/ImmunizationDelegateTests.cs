@@ -93,6 +93,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 httpClientService,
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
+
             RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(0).Result;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -135,6 +136,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 httpClientService,
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
+
             RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(0).Result;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -177,7 +179,7 @@ namespace HealthGateway.Immunization.Test.Delegates
 
             RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(0).Result;
 
-            Assert.True(expectedResult.IsDeepEqual(actualResult));
+            expectedResult.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -199,6 +201,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 httpClientService,
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
+
             RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.Success && actualResult?.ResourcePayload?.Result == null);
@@ -235,9 +238,10 @@ namespace HealthGateway.Immunization.Test.Delegates
                 httpClientService,
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
+
             RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
 
-            Assert.True(actualResult.IsDeepEqual(expectedResult));
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -270,9 +274,10 @@ namespace HealthGateway.Immunization.Test.Delegates
                 httpClientService,
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
+
             RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
 
-            Assert.True(actualResult.IsDeepEqual(expectedResult));
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -306,6 +311,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 mockHttpClientService.Object,
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
+
             RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.Error);

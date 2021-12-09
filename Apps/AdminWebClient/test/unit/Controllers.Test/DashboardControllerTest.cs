@@ -41,8 +41,9 @@ namespace HealthGateway.Admin.Test.Services
             DashboardController controller = new(mockService.Object);
 
             IActionResult actualResult = controller.GetDependentCount(-480);
+
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected));
+            expected.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
     }
 }

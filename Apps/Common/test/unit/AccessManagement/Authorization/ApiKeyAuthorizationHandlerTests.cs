@@ -44,7 +44,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             Mock<ClaimsPrincipal> mockClaimsPrincipal = new();
             AuthorizationHandlerContext context = new(requirements, mockClaimsPrincipal.Object, null);
             ApiKeyAuthorizationHandler authHandler = GetAuthorizationHandler(ApiKey);
+
             authHandler.HandleAsync(context);
+
             Assert.True(context.HasSucceeded);
         }
 
@@ -58,6 +60,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             Mock<ClaimsPrincipal> mockClaimsPrincipal = new();
             AuthorizationHandlerContext context = new(requirements, mockClaimsPrincipal.Object, null);
             ApiKeyAuthorizationHandler authHandler = GetAuthorizationHandler(InvalidApiKey);
+
             authHandler.HandleAsync(context);
 
             Assert.False(context.HasSucceeded);
@@ -73,6 +76,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             Mock<ClaimsPrincipal> mockClaimsPrincipal = new();
             AuthorizationHandlerContext context = new(requirements, mockClaimsPrincipal.Object, null);
             ApiKeyAuthorizationHandler authHandler = GetAuthorizationHandler(InvalidApiKey);
+
             authHandler.HandleAsync(context);
 
             Assert.False(context.HasSucceeded);
@@ -88,6 +92,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             Mock<ClaimsPrincipal> mockClaimsPrincipal = new();
             AuthorizationHandlerContext context = new(requirements, mockClaimsPrincipal.Object, null);
             ApiKeyAuthorizationHandler authHandler = GetAuthorizationHandler(InvalidApiKey);
+
             authHandler.HandleAsync(context);
 
             Assert.False(context.HasSucceeded);

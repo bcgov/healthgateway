@@ -66,7 +66,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             IActionResult actualResult = dependentController.GetAll(this.hdid);
 
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(((JsonResult)actualResult).Value?.IsDeepEqual(expectedResult));
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 httpContextAccessorMock.Object);
             IActionResult actualResult = dependentController.AddDependent(new AddDependentRequest());
 
-            Assert.True(((JsonResult)actualResult).Value!.IsDeepEqual(expectedResult));
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             IActionResult actualResult = dependentController.Delete(delegateId, dependentId, dependentModel);
 
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(((JsonResult)actualResult).Value!.IsDeepEqual(expectedResult));
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -164,6 +164,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 httpContextAccessorMock.Object);
 
             IActionResult actualResult = dependentController.Delete("anotherId", "wrongId", dependentModel);
+
             Assert.IsType<BadRequestResult>(actualResult);
         }
 

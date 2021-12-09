@@ -83,7 +83,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             NameAuthorizationRequirement[] requirements = new[] { new NameAuthorizationRequirement(username) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
@@ -132,7 +134,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
@@ -185,7 +189,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read, supportsSystemDelegation: false) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
@@ -238,7 +244,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
@@ -289,7 +297,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
@@ -342,7 +352,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.True(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
@@ -395,7 +407,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read, fhirLookup: FhirResourceLookup.Parameter) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.True(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
@@ -448,7 +462,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
@@ -501,7 +517,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.True(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
@@ -555,7 +573,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
@@ -608,7 +628,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Write) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.True(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
@@ -661,7 +683,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Write) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.True(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
@@ -715,7 +739,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Write) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
@@ -768,7 +794,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Write) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
+
             authHandler.HandleAsync(context);
+
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }

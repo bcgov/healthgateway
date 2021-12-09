@@ -94,6 +94,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 PersonalHealthNumber = this.phn,
                 DateOfBirth = this.dob,
             };
+
             RequestResult<PHSAResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -137,6 +138,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 PersonalHealthNumber = this.phn,
                 DateOfBirth = this.dob,
             };
+
             RequestResult<PHSAResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);

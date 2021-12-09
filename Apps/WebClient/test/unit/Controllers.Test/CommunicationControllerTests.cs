@@ -53,7 +53,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             CommunicationController controller = new(communicationServiceMock.Object);
             IActionResult actualResult = controller.Get();
 
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
     }
 }

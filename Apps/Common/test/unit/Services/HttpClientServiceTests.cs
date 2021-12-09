@@ -46,6 +46,7 @@ namespace HealthGateway.CommonTests.Services
                                         .AddInMemoryCollection(configDictionary)
                                         .Build();
             HttpClientService service = new(mockHttpClientFactory.Object, config);
+
             using HttpClient client = service.CreateDefaultHttpClient();
 
             Assert.IsType<HttpClient>(client);

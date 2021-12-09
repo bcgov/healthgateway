@@ -73,6 +73,7 @@ namespace HealthGateway.CommonTests.Services
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 IClientMessageInspector service = new LoggingMessageInspector(null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
                 Assert.Null(service);
             }
             catch (ArgumentNullException argumentNullException)

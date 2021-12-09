@@ -53,7 +53,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
         {
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<KeycloakUserAdminDelegate> logger = loggerFactory.CreateLogger<KeycloakUserAdminDelegate>();
+
             IUserAdminDelegate keycloakDelegate = new KeycloakUserAdminDelegate(logger, new Mock<IHttpClientService>().Object, this.configuration);
+
             Assert.Throws<NotImplementedException>(() => keycloakDelegate.GetUser(Guid.NewGuid(), new JWTModel()));
         }
 
@@ -89,7 +91,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             {
                 AccessToken = "Bearer Token",
             };
+
             bool deleted = keycloakDelegate.DeleteUser(Guid.NewGuid(), jwt);
+
             Assert.True(deleted);
         }
 
@@ -125,6 +129,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             {
                 AccessToken = "Bearer Token",
             };
+
             Assert.Throws<AggregateException>(() => keycloakDelegate.DeleteUser(Guid.NewGuid(), jwt));
         }
 

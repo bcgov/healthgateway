@@ -55,6 +55,7 @@ namespace HealthGateway.WebClient.Test.Services
         public void GetDependents()
         {
             IDependentService service = this.SetupMockForGetDependents();
+
             RequestResult<IEnumerable<DependentModel>> actualResult = service.GetDependents(this.mockParentHdId, 0, 500);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -74,8 +75,8 @@ namespace HealthGateway.WebClient.Test.Services
         public void GetDependentsWithEmptyPatientResPayloadError()
         {
             RequestResult<PatientModel> patientResult = new();
-
             IDependentService service = this.SetupMockForGetDependents(patientResult);
+
             RequestResult<IEnumerable<DependentModel>> actualResult = service.GetDependents(this.mockParentHdId, 0, 500);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -91,6 +92,7 @@ namespace HealthGateway.WebClient.Test.Services
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
+
             RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -107,6 +109,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             // Test Scenario - Happy Path: Found HdId for the PHN, Found Patient.
             IDependentService service = this.SetupMockDependentService(addDependentRequest, null, patientResult);
+
             RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -128,7 +131,9 @@ namespace HealthGateway.WebClient.Test.Services
             };
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest, insertResult);
+
             RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             string serviceError = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database);
             Assert.Equal(serviceError, actualResult.ResultError!.ErrorCode);
@@ -143,6 +148,7 @@ namespace HealthGateway.WebClient.Test.Services
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             addDependentRequest.FirstName = "wrong";
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
+
             RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
 
             RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
@@ -160,6 +166,7 @@ namespace HealthGateway.WebClient.Test.Services
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             addDependentRequest.LastName = "wrong";
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
+
             RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
 
             RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
@@ -177,6 +184,7 @@ namespace HealthGateway.WebClient.Test.Services
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             addDependentRequest.DateOfBirth = DateTime.Now;
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
+
             RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
 
             RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
@@ -206,6 +214,7 @@ namespace HealthGateway.WebClient.Test.Services
             };
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest, patientResult: patientResult);
+
             RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
 
             RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId);
@@ -240,6 +249,7 @@ namespace HealthGateway.WebClient.Test.Services
                 mockNotificationSettingsService.Object,
                 mockDependentDelegate.Object,
                 configServiceMock.Object);
+
             RequestResult<DependentModel> actualResult = service.Remove(delegateModel);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);

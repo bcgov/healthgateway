@@ -58,7 +58,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             ReportController controller = new(reportServiceMock.Object);
             IActionResult actualResult = controller.GenerateReport(request);
 
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
     }
 }

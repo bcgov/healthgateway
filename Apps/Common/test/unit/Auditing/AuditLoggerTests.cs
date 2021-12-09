@@ -55,7 +55,7 @@ namespace HealthGateway.CommonTests.Auditing
             AuditEvent actual = new();
             auditLogger.PopulateWithHttpContext(ctx, actual);
 
-            Assert.True(expected.IsDeepEqual(actual));
+            expected.ShouldDeepEqual(actual);
         }
     }
 }

@@ -161,8 +161,9 @@ namespace HealthGateway.Medication.Delegates.Test
                     string.Empty,
                     string.Empty,
                     string.Empty).ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Success, response.ResultStatus);
-            Assert.True(medicationHistory.Response.IsDeepEqual(response.ResourcePayload));
+            medicationHistory.Response.ShouldDeepEqual(response.ResourcePayload);
         }
 
         /// <summary>
@@ -221,8 +222,9 @@ namespace HealthGateway.Medication.Delegates.Test
                     string.Empty,
                     string.Empty,
                     string.Empty).ConfigureAwait(true)).Result;
-            Assert.True(response.ResultStatus == ResultType.Success &&
-                        medicationHistory.Response.IsDeepEqual(response.ResourcePayload));
+
+            Assert.Equal(ResultType.Success, response.ResultStatus);
+            medicationHistory.Response.ShouldDeepEqual(response.ResourcePayload);
         }
 
         /// <summary>
@@ -262,6 +264,7 @@ namespace HealthGateway.Medication.Delegates.Test
                     string.Empty,
                     string.Empty,
                     string.Empty).ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.ActionRequired, response.ResultStatus);
             Assert.Equal(ActionType.Protected, response?.ResultError?.ActionCode);
             Assert.Equal(ErrorMessages.ProtectiveWordErrorMessage, response?.ResultError?.ResultMessage);
@@ -309,6 +312,7 @@ namespace HealthGateway.Medication.Delegates.Test
                     string.Empty,
                     string.Empty,
                     string.Empty).ConfigureAwait(true)).Result;
+
             Assert.True(response.ResultStatus == ResultType.Error);
         }
 
@@ -358,6 +362,7 @@ namespace HealthGateway.Medication.Delegates.Test
                     string.Empty,
                     string.Empty,
                     string.Empty).ConfigureAwait(true)).Result;
+
             Assert.True(response.ResultStatus == ResultType.Error);
         }
 
@@ -394,6 +399,7 @@ namespace HealthGateway.Medication.Delegates.Test
                     string.Empty,
                     string.Empty,
                     string.Empty).ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Error, response.ResultStatus);
         }
 
@@ -427,6 +433,7 @@ namespace HealthGateway.Medication.Delegates.Test
                     string.Empty,
                     string.Empty,
                     string.Empty).ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Error, response.ResultStatus);
         }
 
@@ -466,6 +473,7 @@ namespace HealthGateway.Medication.Delegates.Test
                     string.Empty,
                     string.Empty,
                     string.Empty).ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Error, response.ResultStatus);
         }
 
@@ -484,6 +492,7 @@ namespace HealthGateway.Medication.Delegates.Test
                 this.configuration,
                 mockCacheDelegate.Object,
                 mockHashDelegate.Object);
+
             Assert.ThrowsAsync<NotImplementedException>(async () => await
                 medStatementDelegate.SetProtectiveWord(
                     string.Empty,
@@ -508,6 +517,7 @@ namespace HealthGateway.Medication.Delegates.Test
                 this.configuration,
                 mockCacheDelegate.Object,
                 mockHashDelegate.Object);
+
             Assert.ThrowsAsync<NotImplementedException>(async () => await
                 medStatementDelegate.DeleteProtectiveWord(
                     string.Empty,

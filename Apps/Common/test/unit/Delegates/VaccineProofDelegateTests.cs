@@ -109,6 +109,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address);
             RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
+
             Assert.Equal(expectedRequestResult.ResultStatus, actualResult.ResultStatus);
             Assert.Equal(expectedRequestResult.ResultError, actualResult.ResultError);
             Assert.Equal(expectedRequestResult.ResourcePayload.Id, actualResult.ResourcePayload?.Id);
@@ -144,6 +145,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address);
             RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
             Assert.Null(actualResult.ResourcePayload);
@@ -176,6 +178,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address);
             RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
             Assert.Null(actualResult.ResourcePayload);
@@ -229,6 +232,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.GenerateAsync(VaccineProofTemplate.Provincial, request);
             RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
+
             Assert.Equal(expectedRequestResult.ResultStatus, actualResult.ResultStatus);
             Assert.Equal(expectedRequestResult.ResultError, actualResult.ResultError);
             Assert.Equal(expectedRequestResult.ResourcePayload.Id, actualResult.ResourcePayload?.Id);
@@ -264,6 +268,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.GenerateAsync(VaccineProofTemplate.Provincial, request);
             RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
             Assert.Null(actualResult.ResourcePayload);
@@ -296,6 +301,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.GenerateAsync(VaccineProofTemplate.Provincial, request);
             RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
             Assert.Null(actualResult.ResourcePayload);
@@ -338,6 +344,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Task<RequestResult<ReportModel>> task = vaccineProofDelegate.GetAssetAsync(jobUri);
             RequestResult<ReportModel> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
+
             Assert.Equal(expectedRequestResult.ResultStatus, actualResult.ResultStatus);
             Assert.Equal(expectedRequestResult.ResultError, actualResult.ResultError);
             Assert.Equal(expectedRequestResult.ResourcePayload.FileName, actualResult.ResourcePayload?.FileName);
@@ -366,6 +373,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Task<RequestResult<ReportModel>> task = vaccineProofDelegate.GetAssetAsync(jobUri);
             RequestResult<ReportModel> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
             Assert.Null(actualResult.ResourcePayload);
@@ -395,6 +403,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Task<RequestResult<ReportModel>> task = vaccineProofDelegate.GetAssetAsync(jobUri);
             RequestResult<ReportModel> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
             Assert.Null(actualResult.ResourcePayload);
@@ -422,6 +431,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Task<RequestResult<ReportModel>> task = vaccineProofDelegate.GetAssetAsync(jobUri);
             RequestResult<ReportModel> actualResult = Task.Run(async () => await task.ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
             Assert.Null(actualResult.ResourcePayload);

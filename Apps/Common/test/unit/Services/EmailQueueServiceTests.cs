@@ -166,6 +166,7 @@ namespace HealthGateway.CommonTests.Services
                         mockJobclient.Object,
                         mockEmailDelegate.Object,
                         mockWebHosting.Object);
+
             Assert.Throws<ArgumentNullException>(() => emailService.CloneAndQueue(emailId, true));
         }
 
@@ -186,6 +187,7 @@ namespace HealthGateway.CommonTests.Services
                         mockJobclient.Object,
                         mockEmailDelegate.Object,
                         mockWebHosting.Object);
+
             Assert.Throws<ArgumentException>(() => emailService.CloneAndQueue(emailId, true));
         }
 
@@ -218,7 +220,9 @@ namespace HealthGateway.CommonTests.Services
                         mockJobclient.Object,
                         mockEmailDelegate.Object,
                         mockWebHosting.Object);
+
             emailService.CloneAndQueue(expectedEmail.Id, true);
+
             mockJobclient.Verify(x => x.Create(
                 It.Is<Job>(job => job.Method.Name == "SendEmail" && job.Args[0] is Guid),
                 It.IsAny<EnqueuedState>()));
@@ -264,9 +268,11 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<IBackgroundJobClient>().Object,
                 new Mock<IEmailDelegate>().Object,
                 new Mock<IWebHostEnvironment>().Object);
+
             Email actual = emailService.ProcessTemplate(emailTo, template, d);
             expected.Id = actual.Id;
-            Assert.True(expected.IsDeepEqual(actual));
+
+            expected.ShouldDeepEqual(actual);
         }
 
         /// <summary>
@@ -294,7 +300,9 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<IBackgroundJobClient>().Object,
                 new Mock<IEmailDelegate>().Object,
                 mockWebHosting.Object);
+
             Email actual = emailService.ProcessTemplate(emailTo, template, d);
+
             Assert.True(actual.Body == expectedBody);
         }
 
@@ -325,8 +333,10 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<IBackgroundJobClient>().Object,
                 new Mock<IEmailDelegate>().Object,
                 mockWebHosting.Object);
+
             Email actual = emailService.ProcessTemplate(emailTo, template, d);
-            Assert.True(actual.Body == expectedBody);
+
+            Assert.Equal(expectedBody, actual.Body);
         }
     }
 }

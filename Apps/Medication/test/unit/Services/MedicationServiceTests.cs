@@ -89,7 +89,7 @@ namespace HealthGateway.Medication.Services.Test
 
             IMedicationService service = new RestMedicationService(logger, mockDelegate.Object);
             IDictionary<string, MedicationInformation> actual = service.GetMedications(new List<string>());
-            Assert.True(actual.IsDeepEqual(expected));
+            actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace HealthGateway.Medication.Services.Test
 
             IMedicationService service = new RestMedicationService(logger, mockDelegate.Object);
             IDictionary<string, MedicationInformation> actual = service.GetMedications(new List<string>());
-            Assert.True(actual.IsDeepEqual(expected));
+            actual.ShouldDeepEqual(expected);
         }
     }
 }

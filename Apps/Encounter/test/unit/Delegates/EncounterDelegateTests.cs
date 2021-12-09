@@ -110,7 +110,9 @@ namespace HealthGateway.Encounter.Test.Delegates
             {
                 PHN = "123456789",
             };
+
             RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Single(actualResult?.ResourcePayload?.Claims);
             Assert.Equal(1, actualResult?.TotalResultCount);
@@ -147,8 +149,10 @@ namespace HealthGateway.Encounter.Test.Delegates
             {
                 PHN = "123456789",
             };
+
             RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () =>
                 await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
@@ -182,7 +186,9 @@ namespace HealthGateway.Encounter.Test.Delegates
             {
                 PHN = "123456789",
             };
+
             RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
@@ -212,7 +218,9 @@ namespace HealthGateway.Encounter.Test.Delegates
             {
                 PHN = "123456789",
             };
+
             RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
+
             Assert.True(actualResult.ResultStatus == ResultType.Error);
             Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CE-ODR", StringComparison.InvariantCulture));
         }

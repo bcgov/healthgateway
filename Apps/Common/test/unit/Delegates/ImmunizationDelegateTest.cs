@@ -106,6 +106,7 @@ namespace HealthGateway.CommonTests.Delegates
                 CreateValidHttpContext(token, userId, hdid).Object);
 
             RequestResult<ImmunizationEvent> actualResult = Task.Run(async () => await immunizationDelegate.GetImmunization(hdid, immunizationId).ConfigureAwait(true)).Result;
+
             Assert.Equal(expectedRequestResult.ResourcePayload.Id, actualResult.ResourcePayload?.Id);
             Assert.Equal(expectedRequestResult.ResourcePayload.Immunization.Name, actualResult.ResourcePayload?.Immunization.Name);
         }
@@ -146,6 +147,7 @@ namespace HealthGateway.CommonTests.Delegates
                 CreateValidHttpContext(token, userId, hdid).Object);
 
             RequestResult<ImmunizationEvent> actualResult = Task.Run(async () => await immunizationDelegate.GetImmunization(hdid, immunizationId).ConfigureAwait(true)).Result;
+
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
@@ -175,6 +177,7 @@ namespace HealthGateway.CommonTests.Delegates
                 CreateValidHttpContext(token, userId, hdid).Object);
 
             RequestResult<ImmunizationEvent> actualResult = Task.Run(async () => await immunizationDelegate.GetImmunization(hdid, immunizationId).ConfigureAwait(true)).Result;
+
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
@@ -204,6 +207,7 @@ namespace HealthGateway.CommonTests.Delegates
                 CreateValidHttpContext(token, userId, hdid).Object);
 
             RequestResult<ImmunizationEvent> actualResult = Task.Run(async () => await immunizationDelegate.GetImmunization(hdid, immunizationId).ConfigureAwait(true)).Result;
+
             Assert.True(actualResult.ResultStatus == ResultType.Success && actualResult.TotalResultCount == 0);
         }
 
@@ -233,6 +237,7 @@ namespace HealthGateway.CommonTests.Delegates
                 CreateValidHttpContext(token, userId, hdid).Object);
 
             RequestResult<ImmunizationEvent> actualResult = Task.Run(async () => await immunizationDelegate.GetImmunization(hdid, immunizationId).ConfigureAwait(true)).Result;
+
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
@@ -258,6 +263,7 @@ namespace HealthGateway.CommonTests.Delegates
                 httpContextAccessorMock.Object);
 
             RequestResult<ImmunizationEvent> actualResult = Task.Run(async () => await immunizationDelegate.GetImmunization(string.Empty, string.Empty).ConfigureAwait(true)).Result;
+
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
