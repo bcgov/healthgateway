@@ -28,6 +28,14 @@ namespace HealthGateway.Laboratory.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="PublicCovidTestRecord"/> class.
         /// </summary>
+        public PublicCovidTestRecord()
+        {
+            this.ResultDescription = new List<string>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PublicCovidTestRecord"/> class.
+        /// </summary>
         /// <param name="resultDescription">The list of result descriptions.</param>
         [JsonConstructor]
         public PublicCovidTestRecord(

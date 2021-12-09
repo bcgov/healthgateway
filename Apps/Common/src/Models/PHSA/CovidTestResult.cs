@@ -27,10 +27,17 @@ namespace HealthGateway.Common.Models.PHSA
         /// <summary>
         /// Initializes a new instance of the <see cref="CovidTestResult"/> class.
         /// </summary>
+        public CovidTestResult()
+        {
+            this.ResultDescription = new List<string>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CovidTestResult"/> class.
+        /// </summary>
         /// <param name="resultDescription">The list of result descriptions.</param>
         [JsonConstructor]
-        public CovidTestResult(
-            IList<string> resultDescription)
+        public CovidTestResult(IList<string> resultDescription)
         {
             this.ResultDescription = resultDescription;
         }
