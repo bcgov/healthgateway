@@ -46,9 +46,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldGetComments()
         {
-            Tuple<RequestResult<IEnumerable<UserComment>>, List<UserComment>> getNotesResult = this.ExecuteGetComments("abc", DBStatusCode.Read);
-            RequestResult<IEnumerable<UserComment>> actualResult = getNotesResult.Item1;
-            List<UserComment> userCommentList = getNotesResult.Item2;
+            (RequestResult<IEnumerable<UserComment>> actualResult, List<UserComment> userCommentList) = this.ExecuteGetComments("abc", DBStatusCode.Read);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             userCommentList.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -60,8 +58,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldGetCommentsWithDbError()
         {
-            Tuple<RequestResult<IEnumerable<UserComment>>, List<UserComment>> getNotesResult = this.ExecuteGetComments("abc", DBStatusCode.Error);
-            RequestResult<IEnumerable<UserComment>> actualResult = getNotesResult.Item1;
+            (RequestResult<IEnumerable<UserComment>> actualResult, _) = this.ExecuteGetComments("abc", DBStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
@@ -73,9 +70,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldInsertComment()
         {
-            Tuple<RequestResult<UserComment>, UserComment> result = this.ExecuteInsertComment(DBStatusCode.Created);
-            RequestResult<UserComment> actualResult = result.Item1;
-            UserComment createdRecord = result.Item2;
+            (RequestResult<UserComment> actualResult, UserComment createdRecord) = this.ExecuteInsertComment(DBStatusCode.Created);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             createdRecord.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -87,8 +82,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldInsertCommentWithDBError()
         {
-            Tuple<RequestResult<UserComment>, UserComment> result = this.ExecuteInsertComment(DBStatusCode.Error);
-            RequestResult<UserComment> actualResult = result.Item1;
+            (RequestResult<UserComment> actualResult, _) = this.ExecuteInsertComment(DBStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -100,9 +94,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldUpdateComment()
         {
-            Tuple<RequestResult<UserComment>, UserComment> result = this.ExecuteUpdateComment(DBStatusCode.Updated);
-            RequestResult<UserComment> actualResult = result.Item1;
-            UserComment updatedRecord = result.Item2;
+            (RequestResult<UserComment> actualResult, UserComment updatedRecord) = this.ExecuteUpdateComment(DBStatusCode.Updated);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             updatedRecord.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -114,8 +106,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldUpdateCommentWithDBError()
         {
-            Tuple<RequestResult<UserComment>, UserComment> result = this.ExecuteUpdateComment(DBStatusCode.Error);
-            RequestResult<UserComment> actualResult = result.Item1;
+            (RequestResult<UserComment> actualResult, _) = this.ExecuteUpdateComment(DBStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -127,9 +118,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldDeleteComment()
         {
-            Tuple<RequestResult<UserComment>, UserComment> result = this.ExecuteDeleteComment(DBStatusCode.Deleted);
-            RequestResult<UserComment> actualResult = result.Item1;
-            UserComment deletedRecord = result.Item2;
+            (RequestResult<UserComment> actualResult, UserComment deletedRecord) = this.ExecuteDeleteComment(DBStatusCode.Deleted);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             deletedRecord.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -141,8 +130,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldDeleteCommentWithDBError()
         {
-            Tuple<RequestResult<UserComment>, UserComment> result = this.ExecuteDeleteComment(DBStatusCode.Error);
-            RequestResult<UserComment> actualResult = result.Item1;
+            (RequestResult<UserComment> actualResult, _) = this.ExecuteDeleteComment(DBStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -279,7 +267,7 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
-        private Tuple<RequestResult<UserComment>, UserComment> ExecuteDeleteComment(DBStatusCode dBStatusCode = DBStatusCode.Deleted)
+        private (RequestResult<UserComment> ActualResult, UserComment UserComment) ExecuteDeleteComment(DBStatusCode dBStatusCode = DBStatusCode.Deleted)
         {
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new()
@@ -320,10 +308,10 @@ namespace HealthGateway.WebClient.Test.Services
                 cryptoDelegateMock.Object);
 
             RequestResult<UserComment> actualResult = service.Delete(userComment);
-            return new Tuple<RequestResult<UserComment>, UserComment>(actualResult, userComment);
+            return (actualResult, userComment);
         }
 
-        private Tuple<RequestResult<UserComment>, UserComment> ExecuteUpdateComment(DBStatusCode dBStatusCode = DBStatusCode.Updated)
+        private (RequestResult<UserComment> ActualResult, UserComment UserComment) ExecuteUpdateComment(DBStatusCode dBStatusCode = DBStatusCode.Updated)
         {
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new()
@@ -365,10 +353,10 @@ namespace HealthGateway.WebClient.Test.Services
                 cryptoDelegateMock.Object);
 
             RequestResult<UserComment> actualResult = service.Update(userComment);
-            return new Tuple<RequestResult<UserComment>, UserComment>(actualResult, userComment);
+            return (actualResult, userComment);
         }
 
-        private Tuple<RequestResult<IEnumerable<UserComment>>, List<UserComment>> ExecuteGetComments(
+        private (RequestResult<IEnumerable<UserComment>> ActualResult, List<UserComment> UserCommentList) ExecuteGetComments(
             string? encryptionKey = null,
             DBStatusCode dbResultStatus = DBStatusCode.Read)
         {
@@ -422,10 +410,10 @@ namespace HealthGateway.WebClient.Test.Services
 
             RequestResult<IEnumerable<UserComment>> actualResult = service.GetEntryComments(this.hdid, this.parentEntryId);
 
-            return new Tuple<RequestResult<IEnumerable<UserComment>>, List<UserComment>>(actualResult, userCommentList);
+            return (actualResult, userCommentList);
         }
 
-        private Tuple<RequestResult<UserComment>, UserComment> ExecuteInsertComment(DBStatusCode dBStatusCode = DBStatusCode.Created)
+        private (RequestResult<UserComment> ActualResult, UserComment UserComment) ExecuteInsertComment(DBStatusCode dBStatusCode = DBStatusCode.Created)
         {
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new()
@@ -466,7 +454,7 @@ namespace HealthGateway.WebClient.Test.Services
                 cryptoDelegateMock.Object);
 
             RequestResult<UserComment> actualResult = service.Add(userComment);
-            return new Tuple<RequestResult<UserComment>, UserComment>(actualResult, userComment);
+            return (actualResult, userComment);
         }
     }
 }

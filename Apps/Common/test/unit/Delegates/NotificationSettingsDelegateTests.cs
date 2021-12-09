@@ -60,9 +60,9 @@ namespace HealthGateway.CommonTests.Delegates
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 1,
             };
-            Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = this.GetNotificationSettings(HttpStatusCode.OK, expectedRequestResult);
-            RequestResult<NotificationSettingsResponse> actualResult = response.Item1;
-            RequestResult<NotificationSettingsResponse> expectedResult = response.Item2;
+
+            (RequestResult<NotificationSettingsResponse> actualResult, RequestResult<NotificationSettingsResponse> expectedResult)
+                = this.GetNotificationSettings(HttpStatusCode.OK, expectedRequestResult);
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
@@ -77,9 +77,9 @@ namespace HealthGateway.CommonTests.Delegates
             {
                 ResultStatus = ResultType.Error,
             };
-            Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = this.GetNotificationSettings(HttpStatusCode.OK, expectedRequestResult, true);
-            RequestResult<NotificationSettingsResponse> actualResult = response.Item1;
-            RequestResult<NotificationSettingsResponse> expectedResult = response.Item2;
+
+            (RequestResult<NotificationSettingsResponse> actualResult, RequestResult<NotificationSettingsResponse> expectedResult)
+                = this.GetNotificationSettings(HttpStatusCode.OK, expectedRequestResult, true);
 
             Assert.Equal(expectedResult.ResultStatus, actualResult.ResultStatus);
             Assert.Contains("Exception getting Notification Settings:", actualResult?.ResultError?.ResultMessage, StringComparison.CurrentCulture);
@@ -95,8 +95,8 @@ namespace HealthGateway.CommonTests.Delegates
             {
                 ResultStatus = ResultType.Error,
             };
-            Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = this.GetNotificationSettings(HttpStatusCode.BadRequest, expectedRequestResult);
-            RequestResult<NotificationSettingsResponse> actualResult = response.Item1;
+
+            (RequestResult<NotificationSettingsResponse> actualResult, _) = this.GetNotificationSettings(HttpStatusCode.BadRequest, expectedRequestResult);
 
             Assert.Equal($"Unable to connect to Notification Settings Endpoint, HTTP Error {HttpStatusCode.BadRequest}", actualResult?.ResultError?.ResultMessage);
         }
@@ -161,9 +161,9 @@ namespace HealthGateway.CommonTests.Delegates
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 1,
             };
-            Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = this.SetNotificationSettings(HttpStatusCode.OK, expectedRequestResult);
-            RequestResult<NotificationSettingsResponse> actualResult = response.Item1;
-            RequestResult<NotificationSettingsResponse> expectedResult = response.Item2;
+
+            (RequestResult<NotificationSettingsResponse> actualResult, RequestResult<NotificationSettingsResponse> expectedResult)
+                = this.SetNotificationSettings(HttpStatusCode.OK, expectedRequestResult);
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
@@ -178,9 +178,9 @@ namespace HealthGateway.CommonTests.Delegates
             {
                 ResultStatus = ResultType.Error,
             };
-            Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = this.SetNotificationSettings(HttpStatusCode.OK, expectedRequestResult, true);
-            RequestResult<NotificationSettingsResponse> actualResult = response.Item1;
-            RequestResult<NotificationSettingsResponse> expectedResult = response.Item2;
+
+            (RequestResult<NotificationSettingsResponse> actualResult, RequestResult<NotificationSettingsResponse> expectedResult)
+                = this.SetNotificationSettings(HttpStatusCode.OK, expectedRequestResult, true);
 
             Assert.Equal(expectedResult.ResultStatus, actualResult.ResultStatus);
             Assert.Contains("Exception getting Notification Settings:", actualResult?.ResultError?.ResultMessage, StringComparison.CurrentCulture);
@@ -196,8 +196,8 @@ namespace HealthGateway.CommonTests.Delegates
             {
                 ResultStatus = ResultType.Error,
             };
-            Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = this.SetNotificationSettings(HttpStatusCode.BadRequest, expectedRequestResult);
-            RequestResult<NotificationSettingsResponse> actualResult = response.Item1;
+
+            (RequestResult<NotificationSettingsResponse> actualResult, _) = this.SetNotificationSettings(HttpStatusCode.BadRequest, expectedRequestResult);
 
             Assert.Contains("Bad Request, HTTP Error BadRequest", actualResult?.ResultError?.ResultMessage, StringComparison.CurrentCulture);
         }
@@ -365,7 +365,7 @@ namespace HealthGateway.CommonTests.Delegates
         /// <param name="expectedRequestResult">expectedRequestResult.</param>
         /// <param name="throwException">Throw exception indicator.</param>
         /// <returns>The notification settings.</returns>
-        private Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> GetNotificationSettings(
+        private (RequestResult<NotificationSettingsResponse> ActualResult, RequestResult<NotificationSettingsResponse> ExpectedRequestResult) GetNotificationSettings(
             HttpStatusCode expectedResponseStatusCode,
             RequestResult<NotificationSettingsResponse> expectedRequestResult,
             bool throwException = false)
@@ -382,7 +382,7 @@ namespace HealthGateway.CommonTests.Delegates
             Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
             INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.GetNotificationSettings(string.Empty).ConfigureAwait(true)).Result;
-            return new Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>>(actualResult, expectedRequestResult);
+            return (actualResult, expectedRequestResult);
         }
 
         /// <summary>
@@ -392,7 +392,7 @@ namespace HealthGateway.CommonTests.Delegates
         /// <param name="expectedRequestResult">expectedRequestResult.</param>
         /// <param name="throwException">Throw exception indicator.</param>
         /// <returns>Mocked notification settings.</returns>
-        private Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> SetNotificationSettings(
+        private (RequestResult<NotificationSettingsResponse> ActualResult, RequestResult<NotificationSettingsResponse> ExpectedRequestResult) SetNotificationSettings(
             HttpStatusCode expectedResponseStatusCode,
             RequestResult<NotificationSettingsResponse> expectedRequestResult,
             bool throwException = false)
@@ -427,7 +427,7 @@ namespace HealthGateway.CommonTests.Delegates
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.SetNotificationSettings(request, string.Empty).ConfigureAwait(true)).Result;
-            return new Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>>(actualResult, expectedRequestResult);
+            return (actualResult, expectedRequestResult);
         }
     }
 }

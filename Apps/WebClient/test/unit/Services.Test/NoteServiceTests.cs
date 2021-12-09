@@ -46,9 +46,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldGetNotes()
         {
-            Tuple<RequestResult<IEnumerable<UserNote>>, List<UserNote>> getNotesResult = this.ExecuteGetNotes("abc", DBStatusCode.Read);
-            RequestResult<IEnumerable<UserNote>> actualResult = getNotesResult.Item1;
-            List<UserNote> userNoteList = getNotesResult.Item2;
+            (RequestResult<IEnumerable<UserNote>> actualResult, List<UserNote>? userNoteList) = this.ExecuteGetNotes("abc", DBStatusCode.Read);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             userNoteList.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -60,8 +58,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldGetNotesWithDbError()
         {
-            Tuple<RequestResult<IEnumerable<UserNote>>, List<UserNote>> getNotesResult = this.ExecuteGetNotes("abc", DBStatusCode.Error);
-            RequestResult<IEnumerable<UserNote>> actualResult = getNotesResult.Item1;
+            (RequestResult<IEnumerable<UserNote>> actualResult, _) = this.ExecuteGetNotes("abc", DBStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
@@ -73,8 +70,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldGetNotesWithProfileKeyNotSetError()
         {
-            Tuple<RequestResult<IEnumerable<UserNote>>, List<UserNote>> getNotesResult = this.ExecuteGetNotes(null);
-            RequestResult<IEnumerable<UserNote>> actualResult = getNotesResult.Item1;
+            (RequestResult<IEnumerable<UserNote>> actualResult, _) = this.ExecuteGetNotes(null);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal("Profile Key not set", actualResult.ResultError?.ResultMessage);
@@ -86,9 +82,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldInsertNote()
         {
-            Tuple<RequestResult<UserNote>, UserNote> getNotesResult = this.ExecuteCreateNote(DBStatusCode.Created);
-            RequestResult<UserNote> actualResult = getNotesResult.Item1;
-            UserNote userNote = getNotesResult.Item2;
+            (RequestResult<UserNote> actualResult, UserNote userNote) = this.ExecuteCreateNote(DBStatusCode.Created);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Null(actualResult.ResultError);
@@ -101,8 +95,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldInsertNoteWithDBError()
         {
-            Tuple<RequestResult<UserNote>, UserNote> deleteNotesResult = this.ExecuteCreateNote(DBStatusCode.Error);
-            RequestResult<UserNote> actualResult = deleteNotesResult.Item1;
+            (RequestResult<UserNote> actualResult, _) = this.ExecuteCreateNote(DBStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);
@@ -114,9 +107,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldUpdateNote()
         {
-            Tuple<RequestResult<UserNote>, UserNote> getNotesResult = this.ExecuteUpdateNote(DBStatusCode.Updated);
-            RequestResult<UserNote> actualResult = getNotesResult.Item1;
-            UserNote userNote = getNotesResult.Item2;
+            (RequestResult<UserNote> actualResult, UserNote userNote) = this.ExecuteUpdateNote(DBStatusCode.Updated);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             userNote.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -128,8 +119,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldUpdateNoteWithDBError()
         {
-            Tuple<RequestResult<UserNote>, UserNote> getNotesResult = this.ExecuteUpdateNote(DBStatusCode.Error);
-            RequestResult<UserNote> actualResult = getNotesResult.Item1;
+            (RequestResult<UserNote> actualResult, _) = this.ExecuteUpdateNote(DBStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);
@@ -141,9 +131,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldDeleteNote()
         {
-            Tuple<RequestResult<UserNote>, UserNote> deleteNotesResult = this.ExecuteDeleteNote(DBStatusCode.Deleted);
-            RequestResult<UserNote> actualResult = deleteNotesResult.Item1;
-            UserNote userNote = deleteNotesResult.Item2;
+            (RequestResult<UserNote> actualResult, UserNote userNote) = this.ExecuteDeleteNote(DBStatusCode.Deleted);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Null(actualResult.ResultError);
@@ -156,8 +144,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldDeleteNoteWithDBError()
         {
-            Tuple<RequestResult<UserNote>, UserNote> getNotesResult = this.ExecuteDeleteNote(DBStatusCode.Error);
-            RequestResult<UserNote> actualResult = getNotesResult.Item1;
+            (RequestResult<UserNote> actualResult, _) = this.ExecuteDeleteNote(DBStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -265,7 +252,7 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
-        private Tuple<RequestResult<IEnumerable<UserNote>>, List<UserNote>> ExecuteGetNotes(string? encryptionKey = null, DBStatusCode notesDBResultStatus = DBStatusCode.Read)
+        private (RequestResult<IEnumerable<UserNote>> ActualResult, List<UserNote>? UserNoteList) ExecuteGetNotes(string? encryptionKey = null, DBStatusCode notesDBResultStatus = DBStatusCode.Read)
         {
             DBResult<UserProfile> profileDBResult = new()
             {
@@ -317,12 +304,12 @@ namespace HealthGateway.WebClient.Test.Services
                 profileDelegateMock.Object,
                 cryptoDelegateMock.Object);
 
-            RequestResult<IEnumerable<UserNote>> userNoteResult = service.GetNotes(this.hdid, 0, 500);
+            RequestResult<IEnumerable<UserNote>> actualResult = service.GetNotes(this.hdid, 0, 500);
 
-            return new Tuple<RequestResult<IEnumerable<UserNote>>, List<UserNote>>(userNoteResult, userNoteList);
+            return (actualResult, userNoteList);
         }
 
-        private Tuple<RequestResult<UserNote>, UserNote> ExecuteCreateNote(DBStatusCode dBStatusCode = DBStatusCode.Created)
+        private (RequestResult<UserNote> ActualResult, UserNote UserNote) ExecuteCreateNote(DBStatusCode dBStatusCode = DBStatusCode.Created)
         {
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new()
@@ -362,10 +349,10 @@ namespace HealthGateway.WebClient.Test.Services
                 cryptoDelegateMock.Object);
 
             RequestResult<UserNote> actualResult = service.CreateNote(userNote);
-            return new Tuple<RequestResult<UserNote>, UserNote>(actualResult, userNote);
+            return (actualResult, userNote);
         }
 
-        private Tuple<RequestResult<UserNote>, UserNote> ExecuteUpdateNote(DBStatusCode dBStatusCode = DBStatusCode.Updated)
+        private (RequestResult<UserNote> ActualResult, UserNote UserNote) ExecuteUpdateNote(DBStatusCode dBStatusCode = DBStatusCode.Updated)
         {
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new()
@@ -406,10 +393,10 @@ namespace HealthGateway.WebClient.Test.Services
                 cryptoDelegateMock.Object);
 
             RequestResult<UserNote> actualResult = service.UpdateNote(userNote);
-            return new Tuple<RequestResult<UserNote>, UserNote>(actualResult, userNote);
+            return (actualResult, userNote);
         }
 
-        private Tuple<RequestResult<UserNote>, UserNote> ExecuteDeleteNote(DBStatusCode dBStatusCode = DBStatusCode.Deleted)
+        private (RequestResult<UserNote> ActualResult, UserNote UserNote) ExecuteDeleteNote(DBStatusCode dBStatusCode = DBStatusCode.Deleted)
         {
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new()
@@ -449,7 +436,7 @@ namespace HealthGateway.WebClient.Test.Services
                 cryptoDelegateMock.Object);
 
             RequestResult<UserNote> actualResult = service.DeleteNote(userNote);
-            return new Tuple<RequestResult<UserNote>, UserNote>(actualResult, userNote);
+            return (actualResult, userNote);
         }
     }
 }

@@ -41,9 +41,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldGetActiveCommunication()
         {
-            Tuple<RequestResult<Communication>, Communication> result = ExecuteGetActiveCommunication(DBStatusCode.Read);
-            RequestResult<Communication> actualResult = result.Item1;
-            Communication communication = result.Item2;
+            (RequestResult<Communication> actualResult, Communication communication) = ExecuteGetActiveCommunication(DBStatusCode.Read);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             communication.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -55,14 +53,13 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldGetActiveCommunicationWithDBError()
         {
-            Tuple<RequestResult<Communication>, Communication> result = ExecuteGetActiveCommunication(DBStatusCode.Error);
-            RequestResult<Communication> actualResult = result.Item1;
+            (RequestResult<Communication> actualResult, _) = ExecuteGetActiveCommunication(DBStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
         }
 
-        private static Tuple<RequestResult<Communication>, Communication> ExecuteGetActiveCommunication(DBStatusCode dbResultStatus = DBStatusCode.Read)
+        private static (RequestResult<Communication> ActualResult, Communication Communication) ExecuteGetActiveCommunication(DBStatusCode dbResultStatus = DBStatusCode.Read)
         {
             Communication communication = new()
             {
@@ -92,7 +89,7 @@ namespace HealthGateway.WebClient.Test.Services
                 memoryCache);
             RequestResult<Communication> actualResult = service.GetActiveBanner(CommunicationType.Banner);
 
-            return new Tuple<RequestResult<Communication>, Communication>(actualResult, communication);
+            return (actualResult, communication);
         }
     }
 }
