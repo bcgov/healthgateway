@@ -19,8 +19,10 @@ namespace HealthGateway.WebClient.Test.Services
     using System.Linq;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
     using HealthGateway.WebClient.Services;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -39,8 +41,8 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldValidateSMS()
         {
-            var smsValidationCode = "SMSValidationCodeMock";
-            MessagingVerification expectedResult = new MessagingVerification
+            string smsValidationCode = "SMSValidationCodeMock";
+            MessagingVerification expectedResult = new()
             {
                 UserProfileId = HdIdMock,
                 VerificationAttempts = 0,
@@ -48,17 +50,17 @@ namespace HealthGateway.WebClient.Test.Services
                 ExpireDate = DateTime.Now.AddDays(1),
             };
 
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new Mock<IMessagingVerificationDelegate>();
+            Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new();
             messagingVerificationDelegate.Setup(s => s.GetLastForUser(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
 
-            Mock<IUserProfileDelegate> userProfileDelegate = new Mock<IUserProfileDelegate>();
-            var userProfileMock = new Database.Wrapper.DBResult<UserProfile>()
+            Mock<IUserProfileDelegate> userProfileDelegate = new();
+            DBResult<UserProfile> userProfileMock = new()
             {
                 Payload = new UserProfile(),
-                Status = Database.Constants.DBStatusCode.Read,
+                Status = DBStatusCode.Read,
             };
             userProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(userProfileMock);
-            userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new Database.Wrapper.DBResult<UserProfile>());
+            userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new DBResult<UserProfile>());
 
             IUserSMSService service = new UserSMSService(
                 new Mock<ILogger<UserSMSService>>().Object,
@@ -77,8 +79,8 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldValidateSMSWithInvalidInvite()
         {
-            var smsValidationCode = "SMSValidationCodeMock";
-            MessagingVerification expectedResult = new MessagingVerification
+            string smsValidationCode = "SMSValidationCodeMock";
+            MessagingVerification expectedResult = new()
             {
                 UserProfileId = "invalid" + HdIdMock,
                 VerificationAttempts = 0,
@@ -86,17 +88,17 @@ namespace HealthGateway.WebClient.Test.Services
                 ExpireDate = DateTime.Now.AddDays(1),
             };
 
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new Mock<IMessagingVerificationDelegate>();
+            Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new();
             messagingVerificationDelegate.Setup(s => s.GetLastForUser(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
 
-            Mock<IUserProfileDelegate> userProfileDelegate = new Mock<IUserProfileDelegate>();
-            var userProfileMock = new Database.Wrapper.DBResult<UserProfile>()
+            Mock<IUserProfileDelegate> userProfileDelegate = new();
+            DBResult<UserProfile> userProfileMock = new()
             {
                 Payload = new UserProfile(),
-                Status = Database.Constants.DBStatusCode.Read,
+                Status = DBStatusCode.Read,
             };
             userProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(userProfileMock);
-            userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new Database.Wrapper.DBResult<UserProfile>());
+            userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new DBResult<UserProfile>());
 
             IUserSMSService service = new UserSMSService(
                 new Mock<ILogger<UserSMSService>>().Object,

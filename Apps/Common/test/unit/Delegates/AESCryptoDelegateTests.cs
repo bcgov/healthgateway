@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,8 +23,6 @@ namespace HealthGateway.CommonTests.Delegates
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
-    using Moq;
     using Xunit;
 
     /// <summary>
@@ -38,25 +36,25 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyConfigurationBinding()
         {
-            AESCryptoDelegateConfig expectedConfig = new AESCryptoDelegateConfig()
+            AESCryptoDelegateConfig expectedConfig = new()
             {
                 KeySize = 256,
                 IV = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF")),
             };
 
-            var myConfiguration = new Dictionary<string, string>
+            Dictionary<string, string> myConfiguration = new()
             {
                 { "AESCrypto:KeySize", expectedConfig.KeySize.ToString(CultureInfo.CurrentCulture) },
                 { "AESCrypto:IV", Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF")) },
             };
 
-            var configuration = new ConfigurationBuilder()
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(configuration);
+            AESCryptoDelegate aesDelegate = new(configuration);
 
-            Assert.True(expectedConfig.IsDeepEqual(aesDelegate.AESConfig));
+            expectedConfig.ShouldDeepEqual(aesDelegate.AESConfig);
         }
 
         /// <summary>
@@ -65,23 +63,21 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyDefaultConfigurationBinding()
         {
-            AESCryptoDelegateConfig expectedConfig = new AESCryptoDelegateConfig()
+            AESCryptoDelegateConfig expectedConfig = new()
             {
                 KeySize = AESCryptoDelegateConfig.DefaultKeySize,
             };
 
-            var myConfiguration = new Dictionary<string, string>
-            {
-                // test empty configuration
-            };
+            // test empty configuration
+            Dictionary<string, string> myConfiguration = new();
 
-            var configuration = new ConfigurationBuilder()
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(configuration);
+            AESCryptoDelegate aesDelegate = new(configuration);
 
-            Assert.True(expectedConfig.IsDeepEqual(aesDelegate.AESConfig));
+            expectedConfig.ShouldDeepEqual(aesDelegate.AESConfig);
         }
 
         /// <summary>
@@ -90,16 +86,16 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyKeyGeneration()
         {
-            var myConfiguration = new Dictionary<string, string>
+            Dictionary<string, string> myConfiguration = new()
             {
                 { "AESCrypto:KeySize", "128" },
             };
 
-            var configuration = new ConfigurationBuilder()
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(configuration);
+            AESCryptoDelegate aesDelegate = new(configuration);
 
             string key = aesDelegate.GenerateKey();
             byte[] keyBytes = Convert.FromBase64String(key);
@@ -113,15 +109,13 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyEncryption()
         {
-            var myConfiguration = new Dictionary<string, string>
-            {
-            };
+            Dictionary<string, string> myConfiguration = new();
 
-            var configuration = new ConfigurationBuilder()
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(configuration);
+            AESCryptoDelegate aesDelegate = new(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
 
@@ -138,15 +132,13 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyEncrypedStringLength100()
         {
-            var myConfiguration = new Dictionary<string, string>
-            {
-            };
+            Dictionary<string, string> myConfiguration = new();
 
-            var configuration = new ConfigurationBuilder()
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(configuration);
+            AESCryptoDelegate aesDelegate = new(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
 
@@ -167,15 +159,13 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyEncrypedStringLength1000()
         {
-            var myConfiguration = new Dictionary<string, string>
-            {
-            };
+            Dictionary<string, string> myConfiguration = new();
 
-            var configuration = new ConfigurationBuilder()
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(configuration);
+            AESCryptoDelegate aesDelegate = new(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
 
@@ -206,15 +196,13 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyDecryption()
         {
-            var myConfiguration = new Dictionary<string, string>
-            {
-            };
+            Dictionary<string, string> myConfiguration = new();
 
-            var configuration = new ConfigurationBuilder()
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(configuration);
+            AESCryptoDelegate aesDelegate = new(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
 
@@ -231,15 +219,13 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyEncryptionWithIV()
         {
-            var myConfiguration = new Dictionary<string, string>
-            {
-            };
+            Dictionary<string, string> myConfiguration = new();
 
-            var configuration = new ConfigurationBuilder()
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(configuration);
+            AESCryptoDelegate aesDelegate = new(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
             string iv = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF"));
@@ -264,15 +250,13 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyDecryptionWithIV()
         {
-            var myConfiguration = new Dictionary<string, string>
-            {
-            };
+            Dictionary<string, string> myConfiguration = new();
 
-            var configuration = new ConfigurationBuilder()
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(configuration);
+            AESCryptoDelegate aesDelegate = new(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
             string iv = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF"));

@@ -43,7 +43,7 @@ namespace HealthGateway.CommonTests.Services
         [Fact]
         public void ShouldQueue()
         {
-            NotificationSettingsRequest nsr = new NotificationSettingsRequest()
+            NotificationSettingsRequest nsr = new()
             {
                 EmailEnabled = true,
                 EmailAddress = "mock@mock.com",
@@ -54,10 +54,10 @@ namespace HealthGateway.CommonTests.Services
                 SMSVerified = false,
             };
 
-            var mockLogger = new Mock<ILogger<NotificationSettingsService>>();
-            var mockJobClient = new Mock<IBackgroundJobClient>();
-            var mockResourceDelegateDelegate = new Mock<IResourceDelegateDelegate>();
-            var dbResult = new DBResult<IEnumerable<ResourceDelegate>>();
+            Mock<ILogger<NotificationSettingsService>> mockLogger = new();
+            Mock<IBackgroundJobClient> mockJobClient = new();
+            Mock<IResourceDelegateDelegate> mockResourceDelegateDelegate = new();
+            DBResult<IEnumerable<ResourceDelegate>> dbResult = new();
             dbResult.Payload = new List<ResourceDelegate>();
             mockResourceDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 0, 500)).Returns(dbResult);
             INotificationSettingsService service = new NotificationSettingsService(
@@ -79,7 +79,7 @@ namespace HealthGateway.CommonTests.Services
         [Fact]
         public void ShouldThrowIfNoVerification()
         {
-            NotificationSettingsRequest nsr = new NotificationSettingsRequest()
+            NotificationSettingsRequest nsr = new()
             {
                 EmailEnabled = true,
                 EmailAddress = "mock@mock.com",
@@ -89,11 +89,11 @@ namespace HealthGateway.CommonTests.Services
                 SMSVerified = false,
             };
 
-            var mockLogger = new Mock<ILogger<NotificationSettingsService>>();
-            var mockJobClient = new Mock<IBackgroundJobClient>();
-            var mockResourceDelegateDelegate = new Mock<IResourceDelegateDelegate>();
-            var dbResult = new DBResult<IEnumerable<ResourceDelegate>>();
-            dbResult.Payload = new List<ResourceDelegate>()
+            Mock<ILogger<NotificationSettingsService>> mockLogger = new();
+            Mock<IBackgroundJobClient> mockJobClient = new();
+            Mock<IResourceDelegateDelegate> mockResourceDelegateDelegate = new();
+            DBResult<IEnumerable<ResourceDelegate>> dbResult = new();
+            dbResult.Payload = new List<ResourceDelegate>
             {
                 new ResourceDelegate()
                 {
@@ -119,7 +119,7 @@ namespace HealthGateway.CommonTests.Services
         public void ShouldQueueVerifications()
         {
             string verificationCode = "123456";
-            NotificationSettingsRequest nsr = new NotificationSettingsRequest()
+            NotificationSettingsRequest nsr = new()
             {
                 EmailEnabled = true,
                 EmailAddress = "mock@mock.com",
@@ -130,11 +130,11 @@ namespace HealthGateway.CommonTests.Services
                 SMSVerified = false,
             };
 
-            var mockLogger = new Mock<ILogger<NotificationSettingsService>>();
-            var mockJobClient = new Mock<IBackgroundJobClient>();
-            var mockResourceDelegateDelegate = new Mock<IResourceDelegateDelegate>();
-            var dbResult = new DBResult<IEnumerable<ResourceDelegate>>();
-            dbResult.Payload = new List<ResourceDelegate>()
+            Mock<ILogger<NotificationSettingsService>> mockLogger = new();
+            Mock<IBackgroundJobClient> mockJobClient = new();
+            Mock<IResourceDelegateDelegate> mockResourceDelegateDelegate = new();
+            DBResult<IEnumerable<ResourceDelegate>> dbResult = new();
+            dbResult.Payload = new List<ResourceDelegate>
             {
                 new ResourceDelegate()
                 {

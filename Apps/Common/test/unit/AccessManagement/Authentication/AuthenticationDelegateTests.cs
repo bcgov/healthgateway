@@ -19,7 +19,6 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
     using System.Net;
     using System.Net.Http;
     using System.Text.Json;
-    using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
@@ -42,8 +41,8 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
         [Fact]
         public void ShouldAuthenticateAsUser()
         {
-            Uri tokenUri = new Uri("http://testsite");
-            ClientCredentialsTokenRequest tokenRequest = new ClientCredentialsTokenRequest()
+            Uri tokenUri = new("http://testsite");
+            ClientCredentialsTokenRequest tokenRequest = new()
             {
                 ClientId = "CLIENT_ID",
                 ClientSecret = "SOME_SECRET",
@@ -55,8 +54,8 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             JWTModel? expected = JsonSerializer.Deserialize<JWTModel>(json);
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<IAuthenticationDelegate> logger = loggerFactory.CreateLogger<IAuthenticationDelegate>();
-            var handlerMock = new Mock<HttpMessageHandler>();
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            Mock<HttpMessageHandler> handlerMock = new();
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(json),
@@ -69,12 +68,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
                   ItExpr.IsAny<CancellationToken>())
                .ReturnsAsync(httpResponseMessage)
                .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
             IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object);
             JWTModel actualModel = authDelegate.AuthenticateAsUser(tokenUri, tokenRequest);
-            Assert.True(actualModel.IsDeepEqual(expected));
+            expected.ShouldDeepEqual(actualModel);
         }
 
         /// <summary>
@@ -83,8 +82,8 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
         [Fact]
         public void ShouldAuthenticateAsSystem()
         {
-            Uri tokenUri = new Uri("http://testsite");
-            ClientCredentialsTokenRequest tokenRequest = new ClientCredentialsTokenRequest()
+            Uri tokenUri = new("http://testsite");
+            ClientCredentialsTokenRequest tokenRequest = new()
             {
                 ClientId = "CLIENT_ID",
                 ClientSecret = "SOME_SECRET",
@@ -93,8 +92,8 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             JWTModel? expected = JsonSerializer.Deserialize<JWTModel>(json);
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<IAuthenticationDelegate> logger = loggerFactory.CreateLogger<IAuthenticationDelegate>();
-            var handlerMock = new Mock<HttpMessageHandler>();
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            Mock<HttpMessageHandler> handlerMock = new();
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(json),
@@ -108,12 +107,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
                   ItExpr.IsAny<CancellationToken>())
                .ReturnsAsync(httpResponseMessage)
                .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
             IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object);
             JWTModel actualModel = authDelegate.AuthenticateAsSystem(tokenUri, tokenRequest);
-            Assert.True(actualModel.IsDeepEqual(expected));
+            expected.ShouldDeepEqual(actualModel);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace HealthGateway.CommonTests.Utils
     /// <summary>
     /// Mock Method Info.
     /// </summary>
-    [AuthorizeAttribute]
+    [Authorize]
     public static class MockMethodInfo
     {
         /// <summary>

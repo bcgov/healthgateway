@@ -18,6 +18,7 @@ namespace HealthGateway.WebClient.Test.Services
     using System;
     using DeepEqual.Syntax;
     using Hangfire;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -39,19 +40,19 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldCreateRating()
         {
-            Rating expectedRating = new Rating
+            Rating expectedRating = new()
             {
                 RatingValue = 5,
                 Skip = false,
             };
 
-            DBResult<Rating> insertResult = new DBResult<Rating>
+            DBResult<Rating> insertResult = new()
             {
                 Payload = expectedRating,
                 Status = DBStatusCode.Created,
             };
 
-            Mock<IRatingDelegate> ratingDelegateMock = new Mock<IRatingDelegate>();
+            Mock<IRatingDelegate> ratingDelegateMock = new();
             ratingDelegateMock.Setup(s => s.InsertRating(It.Is<Rating>(r => r.RatingValue == expectedRating.RatingValue && r.Skip == expectedRating.Skip))).Returns(insertResult);
 
             Mock<IBackgroundJobClient> mockJobclient = new();
@@ -66,8 +67,8 @@ namespace HealthGateway.WebClient.Test.Services
 
             RequestResult<Rating> actualResult = service.CreateRating(expectedRating);
 
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload?.IsDeepEqual(expectedRating));
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            expectedRating.ShouldDeepEqual(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -76,19 +77,19 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldCreateRatingWithError()
         {
-            Rating expectedRating = new Rating
+            Rating expectedRating = new()
             {
                 RatingValue = 5,
                 Skip = false,
             };
 
-            DBResult<Rating> insertResult = new DBResult<Rating>
+            DBResult<Rating> insertResult = new()
             {
                 Payload = expectedRating,
                 Status = DBStatusCode.Error,
             };
 
-            Mock<IRatingDelegate> ratingDelegateMock = new Mock<IRatingDelegate>();
+            Mock<IRatingDelegate> ratingDelegateMock = new();
             ratingDelegateMock.Setup(s => s.InsertRating(It.Is<Rating>(r => r.RatingValue == expectedRating.RatingValue && r.Skip == expectedRating.Skip))).Returns(insertResult);
 
             Mock<IBackgroundJobClient> mockJobclient = new();
@@ -103,7 +104,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             RequestResult<Rating> actualResult = service.CreateRating(expectedRating);
 
-            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
         /// <summary>
@@ -112,7 +113,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldCreateUserFeedback()
         {
-            UserFeedback expectedUserFeedback = new UserFeedback
+            UserFeedback expectedUserFeedback = new()
             {
                 Comment = "Mocked Comment",
                 Id = Guid.NewGuid(),
@@ -121,7 +122,7 @@ namespace HealthGateway.WebClient.Test.Services
                 IsReviewed = true,
             };
 
-            DBResult<UserFeedback> insertResult = new DBResult<UserFeedback>
+            DBResult<UserFeedback> insertResult = new()
             {
                 Payload = expectedUserFeedback,
                 Status = DBStatusCode.Created,
@@ -138,7 +139,7 @@ namespace HealthGateway.WebClient.Test.Services
                 Status = DBStatusCode.Read,
             };
 
-            Mock<IFeedbackDelegate> userFeedbackDelegateMock = new Mock<IFeedbackDelegate>();
+            Mock<IFeedbackDelegate> userFeedbackDelegateMock = new();
             userFeedbackDelegateMock.Setup(s => s.InsertUserFeedback(It.Is<UserFeedback>(r => r.Comment == expectedUserFeedback.Comment && r.Id == expectedUserFeedback.Id && r.UserProfileId == expectedUserFeedback.UserProfileId && r.IsSatisfied == expectedUserFeedback.IsSatisfied && r.IsReviewed == expectedUserFeedback.IsReviewed))).Returns(insertResult);
 
             Mock<IBackgroundJobClient> mockJobclient = new();
@@ -155,7 +156,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<UserFeedback> actualResult = service.CreateUserFeedback(expectedUserFeedback);
 
             Assert.Equal(DBStatusCode.Created, actualResult.Status);
-            Assert.True(actualResult.Payload?.IsDeepEqual(expectedUserFeedback));
+            expectedUserFeedback.ShouldDeepEqual(actualResult.Payload);
         }
     }
 }

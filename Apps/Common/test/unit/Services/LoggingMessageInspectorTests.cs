@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.CommonTests.Services
 {
+    using System;
     using System.ServiceModel.Channels;
     using System.ServiceModel.Dispatcher;
     using HealthGateway.Common.Services;
@@ -72,9 +73,10 @@ namespace HealthGateway.CommonTests.Services
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 IClientMessageInspector service = new LoggingMessageInspector(null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
                 Assert.Null(service);
             }
-            catch (System.ArgumentNullException argumentNullException)
+            catch (ArgumentNullException argumentNullException)
             {
                 Assert.Equal("Value cannot be null. (Parameter 'logger')", argumentNullException.Message);
             }

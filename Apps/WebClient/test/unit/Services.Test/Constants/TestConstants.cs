@@ -18,7 +18,7 @@ namespace HealthGateway.WebClientTests.Services.Test.Constants
     /// <summary>
     /// Class that have all constants.
     /// </summary>
-   public static class TestConstants
+    public static class TestConstants
     {
         /// <summary>
         /// Constants to use when action is update.

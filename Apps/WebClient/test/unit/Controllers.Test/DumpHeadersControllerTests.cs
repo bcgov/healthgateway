@@ -15,18 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Test.Controllers
 {
-    using System.Collections.Generic;
-    using System.Security.Claims;
-    using DeepEqual.Syntax;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Controllers;
-    using HealthGateway.WebClient.Services;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Moq;
     using Xunit;
 
     /// <summary>
@@ -40,8 +30,10 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldCreateDumpHeadersController()
         {
-            using var controller = new DumpHeadersController();
-            var actualResult = controller.Index();
+            using DumpHeadersController controller = new();
+
+            IActionResult actualResult = controller.Index();
+
             Assert.IsType<ViewResult>(actualResult);
         }
     }
