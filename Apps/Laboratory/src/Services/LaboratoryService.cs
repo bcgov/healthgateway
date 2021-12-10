@@ -28,7 +28,6 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Common.Utils;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
@@ -187,8 +186,12 @@ namespace HealthGateway.Laboratory.Services
 
             if (payload.Any())
             {
-                retVal.ResourcePayload = new PublicCovidTestResponse(payload.Select(PublicCovidTestRecord.FromModel).ToList());
                 LabIndicatorType labIndicatorType = Enum.Parse<LabIndicatorType>(payload.Select(x => x.StatusIndicator).First());
+
+                if (labIndicatorType == LabIndicatorType.Found)
+                {
+                    retVal.ResourcePayload = new PublicCovidTestResponse(payload.Select(PublicCovidTestRecord.FromModel).ToList());
+                }
 
                 if (labIndicatorType == LabIndicatorType.DataMismatch || labIndicatorType == LabIndicatorType.NotFound)
                 {
