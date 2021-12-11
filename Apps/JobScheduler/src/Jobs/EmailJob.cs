@@ -19,6 +19,7 @@ namespace Healthgateway.JobScheduler.Jobs
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using Hangfire;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;

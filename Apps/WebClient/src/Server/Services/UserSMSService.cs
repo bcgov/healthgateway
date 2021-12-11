@@ -20,9 +20,9 @@ namespace HealthGateway.WebClient.Services
     using System.Security.Cryptography;
     using System.Text.RegularExpressions;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;

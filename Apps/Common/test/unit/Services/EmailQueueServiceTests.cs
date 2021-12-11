@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,12 +21,11 @@ namespace HealthGateway.CommonTests.Services
     using Hangfire;
     using Hangfire.Common;
     using Hangfire.States;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Moq;
