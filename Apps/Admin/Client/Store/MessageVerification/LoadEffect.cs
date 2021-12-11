@@ -14,22 +14,21 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-namespace HealthGateway.Admin.Client.Store.Configuration
+namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
-    using HealthGateway.Admin.Client.Store.Shared;
+    using System.Threading.Tasks;
+    using Fluxor;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// The action representing a failed load.
+    /// The effect for the Load Action.
     /// </summary>
-    public class LoadFailAction : BaseFailAction
+    public class LoadEffect : Effect<LoadAction>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailAction"/> class.
-        /// </summary>
-        /// <param name="errorMessage">The error.</param>
-        public LoadFailAction(string errorMessage)
-            : base(errorMessage)
+        /// <inheritdoc/>
+        public override Task HandleAsync(LoadAction action, IDispatcher dispatcher)
         {
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -45,8 +45,6 @@
   <ItemGroup>
     <Folder Include="wwwroot\fonts\" />
     <Folder Include="Authorization\" />
-    <Folder Include="Services\" />
-    <Folder Include="Store\" />
     <Folder Include="Theme\" />
   </ItemGroup>
   <ItemGroup>

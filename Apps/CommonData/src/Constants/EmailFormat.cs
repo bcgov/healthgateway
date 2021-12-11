@@ -1,6 +1,3 @@
-// -------------------------------------------------------------------------
-//  Copyright © 2019 Province of British Columbia
-//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
@@ -13,31 +10,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Constants
+namespace HealthGateway.Common.Data.Constants
 {
     /// <summary>
-    /// Represents the status of an email.
+    /// Represents the format of emails.
     /// </summary>
-    public enum EmailStatus
+    public enum EmailFormat
     {
         /// <summary>
-        /// Constant value to a new Email.
+        /// Constant value to represent Text email.
         /// </summary>
-        New,
+        Text,
 
         /// <summary>
-        /// Constant value to represent a Pending email.
+        /// Constant value to represent HTML email.
         /// </summary>
-        Pending,
-
-        /// <summary>
-        /// Constant value to represent an email that has errored out.
-        /// </summary>
-        Error,
-
-        /// <summary>
-        /// Constant value to represent an email that has been sent.
-        /// </summary>
-        Processed,
+        HTML,
     }
 }

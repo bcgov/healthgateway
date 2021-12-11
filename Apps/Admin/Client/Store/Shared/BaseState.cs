@@ -13,23 +13,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-
-namespace HealthGateway.Admin.Client.Store.Configuration
+namespace HealthGateway.Admin.Client.Store.Shared
 {
-    using HealthGateway.Admin.Client.Store.Shared;
-
     /// <summary>
-    /// The action representing a failed load.
+    /// State for base class.
     /// </summary>
-    public class LoadFailAction : BaseFailAction
+    public abstract class BaseState
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailAction"/> class.
+        /// Initializes a new instance of the <see cref="BaseState"/> class.
         /// </summary>
-        /// <param name="errorMessage">The error.</param>
-        public LoadFailAction(string errorMessage)
-            : base(errorMessage)
-        {
-        }
+        /// <param name="isLoading">isLoading.</param>
+        /// <param name="errorMessage">errorMessage.</param>
+        protected BaseState(bool isLoading, string? errorMessage) =>
+          (this.IsLoading, this.ErrorMessage) = (isLoading, errorMessage);
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the state is loading.
+        /// </summary>
+        public bool IsLoading { get; set; }
+
+        /// <summary>
+        /// Gets the error message if available.
+        /// </summary>
+        public string? ErrorMessage { get; init; }
     }
 }

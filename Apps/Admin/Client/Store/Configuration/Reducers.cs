@@ -38,7 +38,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// <param name="action">The load success action.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod]
-        public static State ReduceLoadConfigurationSuccessAction(State state, LoadSuccessAction action) => new(action.Configuration, false);
+        public static State ReduceLoadConfigurationSuccessAction(State state, LoadSuccessAction action) => new(action.State, false);
 
         /// <summary>
         /// The Reducer for the fail action.

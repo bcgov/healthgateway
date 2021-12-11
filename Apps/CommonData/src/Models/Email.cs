@@ -13,30 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Models
+namespace HealthGateway.Common.Data.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
     using HealthGateway.Common.Data.Constants;
 
     /// <summary>
     /// Represents an Email to send from the system.
     /// </summary>
-    public class Email : AuditableEntity
+    public class Email
     {
         /// <summary>
         /// Gets or sets the primary key of this Email entity.
         /// </summary>
-        [Key]
-        [Column("EmailId")]
         public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the From address for sending the email.
         /// </summary>
         [Required]
-        [MaxLength(254)]
         public string? From { get; set; }
 
         /// <summary>
@@ -57,7 +53,6 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the Body of the email.
         /// </summary>
         [Required]
-        [Column(TypeName = "text")]
         public string? Body { get; set; }
 
         /// <summary>

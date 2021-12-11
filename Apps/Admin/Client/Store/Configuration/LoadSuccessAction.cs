@@ -15,22 +15,21 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Configuration
 {
+    using HealthGateway.Admin.Client.Store.Shared;
     using HealthGateway.Admin.Common.Models;
 
     /// <summary>
     /// The action representing a successful load.
     /// </summary>
-    public class LoadSuccessAction
+    public class LoadSuccessAction : BaseLoadSuccessAction<ExternalConfiguration>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
         /// </summary>
-        /// <param name="configuration">The successfully loaded configuration.</param>
-        public LoadSuccessAction(ExternalConfiguration configuration) => this.Configuration = configuration;
-
-        /// <summary>
-        /// Gets the configuration.
-        /// </summary>
-        public ExternalConfiguration Configuration { get; }
+        /// <param name="state">ExternalConfiguration state.</param>
+        public LoadSuccessAction(ExternalConfiguration state)
+            : base(state)
+        {
+        }
     }
 }

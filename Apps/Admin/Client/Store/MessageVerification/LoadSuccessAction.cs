@@ -14,21 +14,22 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-namespace HealthGateway.Admin.Client.Store.Configuration
+namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
     using HealthGateway.Admin.Client.Store.Shared;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
-    /// The action representing a failed load.
+    /// The action representing a successful load.
     /// </summary>
-    public class LoadFailAction : BaseFailAction
+    public class LoadSuccessAction : BaseLoadSuccessAction<MessagingVerification>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailAction"/> class.
+        /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
         /// </summary>
-        /// <param name="errorMessage">The error.</param>
-        public LoadFailAction(string errorMessage)
-            : base(errorMessage)
+        /// <param name="state">messaging verification state.</param>
+        public LoadSuccessAction(MessagingVerification state)
+            : base(state)
         {
         }
     }

@@ -13,34 +13,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.Configuration
+
+namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
-    using Fluxor;
     using HealthGateway.Admin.Client.Store.Shared;
-    using Microsoft.Extensions.Logging;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
-    /// The state facade.
+    /// MessageVerificationState.
     /// </summary>
-    public class StateFacade : BaseStateFacade<LoadEffect>
+    public class State : BaseState
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="StateFacade"/> class.
-        /// </summary>
-        /// <param name="logger">The logger to use.</param>
-        /// <param name="dispatcher">The dispatcher to use.</param>
-        public StateFacade(ILogger<LoadEffect> logger, IDispatcher dispatcher)
-              : base(logger, dispatcher)
+        /// Initializes a new instance of the <see cref="State"/> class.
+        /// </summary> 
+        /// <param name="messagingVerification">messagingVerification.</param>
+        /// <param name="isLoading">True if the data is being loaded.</param>
+        /// <param name="errorMessage">An error message if the state was not loaded.</param>
+        public State(MessagingVerification? messagingVerification = null, bool isLoading = false, string? errorMessage = null)
+            : base(isLoading, errorMessage)
         {
+            this.MessagingVerification = messagingVerification;
         }
 
         /// <summary>
-        /// Requests that the load action is dispatched.
+        /// Gets or sets messagingVerification.
         /// </summary>
-        public void LoadConfiguration()
-        {
-            this.Logger.LogInformation("Issuing action to load Configuration");
-            this.Dispatcher.Dispatch(new LoadAction());
-        }
+        public MessagingVerification? MessagingVerification { get; set; }
     }
 }

@@ -13,23 +13,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-
-namespace HealthGateway.Admin.Client.Store.Configuration
+namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
-    using HealthGateway.Admin.Client.Store.Shared;
+    using Fluxor;
 
     /// <summary>
-    /// The action representing a failed load.
+    /// Configuration Feature.
     /// </summary>
-    public class LoadFailAction : BaseFailAction
+    public class Feature : Feature<State>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailAction"/> class.
-        /// </summary>
-        /// <param name="errorMessage">The error.</param>
-        public LoadFailAction(string errorMessage)
-            : base(errorMessage)
-        {
-        }
+        /// <inheritdoc />
+        public override string GetName() => "MessageVerification";
+
+        /// <inheritdoc />
+        protected override State GetInitialState() => new();
     }
 }

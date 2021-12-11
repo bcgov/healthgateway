@@ -13,23 +13,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-
-namespace HealthGateway.Admin.Client.Store.Configuration
+namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
+    using Fluxor;
     using HealthGateway.Admin.Client.Store.Shared;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// The action representing a failed load.
+    /// StateFacade.
     /// </summary>
-    public class LoadFailAction : BaseFailAction
+    public class StateFacade : BaseStateFacade<LoadEffect>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailAction"/> class.
+        /// Initializes a new instance of the <see cref="StateFacade"/> class.
         /// </summary>
-        /// <param name="errorMessage">The error.</param>
-        public LoadFailAction(string errorMessage)
-            : base(errorMessage)
+        /// <param name="logger">The logger to use.</param>
+        /// <param name="dispatcher">The dispatcher to use.</param>
+        public StateFacade(ILogger<LoadEffect> logger, IDispatcher dispatcher)
+            : base(logger, dispatcher)
         {
+        }
+
+        /// <summary>
+        /// Requests that the load message verification action is dispatched.
+        /// </summary>
+        public void LoadMessageVerification()
+        {
+            this.Logger.LogInformation("Issuing action to load message verification");
+            this.Dispatcher.Dispatch(new LoadAction());
         }
     }
 }
