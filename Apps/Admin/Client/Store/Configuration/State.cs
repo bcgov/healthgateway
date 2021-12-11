@@ -15,12 +15,15 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Configuration
 {
+    using Fluxor;
     using HealthGateway.Admin.Client.Store.Shared;
     using HealthGateway.Admin.Common.Models;
 
     /// <summary>
     /// State for Configuration.
+    /// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
     /// </summary>
+    [FeatureState]
     public class State : BaseState
     {
         /// <summary>
@@ -29,10 +32,19 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// <param name="configuration">The configuration to store.</param>
         /// <param name="isLoading">True if the data is being loaded.</param>
         /// <param name="errorMessage">An error message if the state was not loaded.</param>
-        public State(ExternalConfiguration? configuration = null, bool isLoading = false, string? errorMessage = null)
+        public State(ExternalConfiguration configuration, bool isLoading = false, string? errorMessage = null)
             : base(isLoading, errorMessage)
         {
             this.Configuration = configuration;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="State"/> class.
+        /// A parameterless constructor is required on state for determining the initial state, and can be private or public.
+        /// </summary>
+        public State()
+       : base(false, null)
+        {
         }
 
         /// <summary>

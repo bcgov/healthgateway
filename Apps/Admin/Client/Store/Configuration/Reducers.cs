@@ -26,10 +26,9 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// The Reducer for loading the configuration.
         /// </summary>
         /// <param name="state">The configuration state.</param>
-        /// <param name="action">The load action.</param>
         /// <returns>The new state.</returns>
-        [ReducerMethod]
-        public static State ReduceLoadConfigurationAction(State state, LoadAction action) => new(state.Configuration, true);
+        [ReducerMethod(typeof(LoadAction))]
+        public static State ReduceLoadConfigurationAction(State state) => new(state.Configuration, true);
 
         /// <summary>
         /// The Reducer for the load success action.
