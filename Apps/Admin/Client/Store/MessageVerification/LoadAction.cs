@@ -15,6 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
+    /// <summary>
+    /// The action for a load.
+    /// </summary>
     public class LoadAction
     {
     }

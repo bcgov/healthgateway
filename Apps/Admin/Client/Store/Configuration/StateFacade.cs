@@ -16,7 +16,7 @@
 namespace HealthGateway.Admin.Client.Store.Configuration
 {
     using Fluxor;
-    using HealthGateway.Admin.Client.Store.Shared;
+    using HealthGateway.Admin.Client.Store.Common;
     using Microsoft.Extensions.Logging;
 
     /// <summary>

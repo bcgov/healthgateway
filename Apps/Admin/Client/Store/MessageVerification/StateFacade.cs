@@ -16,7 +16,7 @@
 namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
     using Fluxor;
-    using HealthGateway.Admin.Client.Store.Shared;
+    using HealthGateway.Admin.Client.Store.Common;
     using Microsoft.Extensions.Logging;
 
     /// <summary>

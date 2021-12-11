@@ -16,7 +16,7 @@
 
 namespace HealthGateway.Admin.Client.Store.Configuration
 {
-    using HealthGateway.Admin.Client.Store.Shared;
+    using HealthGateway.Admin.Client.Store.Common;
 
     /// <summary>
     /// The action representing a failed load.

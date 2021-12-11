@@ -28,7 +28,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// <param name="state">The configuration state.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod(typeof(LoadAction))]
-        public static State ReduceLoadConfigurationAction(State state) => new(state.Configuration, true);
+        public static State ReduceLoadAction(State state) => new(state.Configuration, true);
 
         /// <summary>
         /// The Reducer for the load success action.
@@ -37,7 +37,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// <param name="action">The load success action.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod]
-        public static State ReduceLoadConfigurationSuccessAction(State state, LoadSuccessAction action) => new(action.State, false);
+        public static State ReduceLoadSuccessAction(State state, LoadSuccessAction action) => new(action.State, false);
 
         /// <summary>
         /// The Reducer for the fail action.
@@ -46,6 +46,6 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// <param name="action">The load fail action.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod]
-        public static State ReduceLoadConfigurationFailAction(State state, LoadFailAction action) => new(state.Configuration, false, action.ErrorMessage);
+        public static State ReduceLoadFailAction(State state, LoadFailAction action) => new(state.Configuration, false, action.ErrorMessage);
     }
 }

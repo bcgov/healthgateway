@@ -15,7 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Configuration
 {
-    using HealthGateway.Admin.Client.Store.Shared;
+    using HealthGateway.Admin.Client.Store.Common;
     using HealthGateway.Admin.Common.Models;
 
     /// <summary>

@@ -14,7 +14,7 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-namespace HealthGateway.Admin.Client.Store.Shared
+namespace HealthGateway.Admin.Client.Store.Common
 {
     /// <summary>
     /// The base load success action facade.

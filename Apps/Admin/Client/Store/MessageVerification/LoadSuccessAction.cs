@@ -16,7 +16,7 @@
 
 namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
-    using HealthGateway.Admin.Client.Store.Shared;
+    using HealthGateway.Admin.Client.Store.Common;
     using HealthGateway.Common.Data.Models;
 
     /// <summary>

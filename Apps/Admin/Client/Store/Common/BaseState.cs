@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.Shared
+namespace HealthGateway.Admin.Client.Store.Common
 {
     /// <summary>
     /// State for base class.

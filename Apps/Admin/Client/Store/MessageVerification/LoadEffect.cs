@@ -18,17 +18,49 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
     using System.Threading.Tasks;
     using Fluxor;
+    using HealthGateway.Admin.Client.Services;
+    using HealthGateway.Common.Data.Models;
+    using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.Logging;
+    using Refit;
 
     /// <summary>
     /// The effect for the Load Action.
     /// </summary>
     public class LoadEffect : Effect<LoadAction>
     {
-        /// <inheritdoc/>
-        public override Task HandleAsync(LoadAction action, IDispatcher dispatcher)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoadEffect"/> class.
+        /// </summary>
+        /// <param name="logger">The injected logger.</param>
+        /// <param name="supportApi">the injected api to query the support. </param>
+        public LoadEffect(ILogger<LoadEffect> logger, ISupportApi supportApi)
         {
-            throw new System.NotImplementedException();
+            this.Logger = logger;
+            this.SupportApi = supportApi;
+        }
+
+        [Inject]
+        private ILogger<LoadEffect> Logger { get; set; }
+
+        [Inject]
+        private ISupportApi SupportApi { get; set; }
+
+        /// <inheritdoc/>
+        public override async Task HandleAsync(LoadAction action, IDispatcher dispatcher)
+        {
+            this.Logger.LogInformation("Loading Messaging Verification");
+            ApiResponse<MessagingVerification> response = await this.SupportApi.GetMedicationVerification(0, string.Empty).ConfigureAwait(true);
+            if (response.IsSuccessStatusCode)
+            {
+                this.Logger.LogInformation("Messaging Verification loaded successfully!");
+                dispatcher.Dispatch(new LoadSuccessAction(response.Content));
+            }
+            else
+            {
+                this.Logger.LogError($"Error loading Messaging Verification, reason: {response.Error?.Message}");
+                dispatcher.Dispatch(new LoadFailAction(response.Error?.Message));
+            }
         }
     }
 }
