@@ -37,10 +37,12 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <summary>
         /// Requests that the load message verification action is dispatched.
         /// </summary>
-        public void LoadMessageVerification()
+        /// <param name="queryType">Represents the type of query being performed.</param>
+        /// <param name="queryString">Represents the query string being performed.</param>
+        public void LoadMessagingVerification(int queryType, string queryString)
         {
             this.Logger.LogInformation("Issuing action to load message verification");
-            this.Dispatcher.Dispatch(new LoadAction());
+            this.Dispatcher.Dispatch(new LoadAction(queryType, queryString));
         }
     }
 }

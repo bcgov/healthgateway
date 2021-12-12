@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Pages
 {
+    using System;
     using System.Collections.Generic;
     using HealthGateway.Admin.Common.Constants;
     using Microsoft.AspNetCore.Components;
@@ -29,5 +30,10 @@ namespace HealthGateway.Admin.Client.Pages
         private UserQueryType SelectedQueryType { get; set; } = UserQueryType.PHN;
 
         private string QueryParameter { get; set; } = string.Empty;
+
+        private void Search()
+        {
+            this.Facade.LoadMessagingVerification((int)this.SelectedQueryType, this.QueryParameter);
+        }
     }
 }

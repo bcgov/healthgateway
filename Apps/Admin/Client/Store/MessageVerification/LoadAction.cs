@@ -20,5 +20,25 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     /// </summary>
     public class LoadAction
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoadAction"/> class.
+        /// </summary>
+        /// <param name="queryType">Represents the type of query being performed.</param>
+        /// <param name="queryString">Represents the query string being performed.</param>
+        public LoadAction(int queryType, string queryString)
+        {
+            this.QueryString = queryString;
+            this.QueryType = queryType;
+        }
+
+        /// <summary>
+        /// Gets or sets query type.
+        /// </summary>
+        public int QueryType { get; set; }
+
+        /// <summary>
+        /// Gets or sets query string.
+        /// </summary>
+        public string QueryString { get; set; }
     }
 }

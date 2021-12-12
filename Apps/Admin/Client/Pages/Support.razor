@@ -2,7 +2,6 @@
 @attribute [Authorize(Roles = Roles.Admin)]
 @using Fluxor
 @using HealthGateway.Admin.Client.Store.MessageVerification
-@inject IState<State> State
 @inject StateFacade Facade
 
 <PageTitle>Support</PageTitle>
@@ -21,8 +20,8 @@
         <MudItem xs="12" sm="9">
             <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@SelectedQueryType.ToString()" @bind-Value="QueryParameter" />
         </MudItem>
-        <MudItem Class="d-flex justify-end" xs="12">
-            <HgButton TopMargin="Breakpoint.Always" EndIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="Color.Primary">Search</HgButton>
+        <MudItem Class="d-flex justify-end" xs="12">          
+            <HgButton TopMargin="Breakpoint.Always" EndIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="Color.Primary" @onclick="Search">Search</HgButton>
         </MudItem>
     </MudGrid>
 </MudForm>
@@ -50,14 +49,4 @@
     </PagerContent>
 </MudTable>
 
-@code{
-    protected override void OnInitialized()
-    {
-         if (State.Value.MessagingVerification is null)
-        {
-             Facade.LoadMessageVerification();
-        }
 
-        base.OnInitialized();
-    }
-}
