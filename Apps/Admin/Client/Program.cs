@@ -52,23 +52,9 @@ namespace HealthGateway.Admin.Client
 
             // Configure HTTP Services
             string baseAddress = builder.HostEnvironment.BaseAddress;
-            string configAddress = builder.Configuration.GetSection("Services").GetValue<string>("Configuration", baseAddress);
-            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(baseAddress) });
-            string supportAddress = builder.Configuration.GetSection("Services").GetValue<string>("Support", baseAddress);
 
-            builder.Services.AddRefitClient<ISupportApi>()
-                              .ConfigureHttpClient(c => { c.BaseAddress = new Uri(supportAddress); })
-                              .AddHttpMessageHandler(sp => sp.GetRequiredService<AuthorizationMessageHandler>()
-                        .ConfigureHandler(new[] { supportAddress }));
-
-            builder.Services.AddRefitClient<IConfigurationApi>()
-                           .ConfigureHttpClient(c => { c.BaseAddress = new Uri(configAddress); });
-
-            string exportCsvAddress = builder.Configuration.GetSection("Services").GetValue<string>("CsvExport", baseAddress);
-            builder.Services.AddRefitClient<ICsvExportApi>()
-                    .ConfigureHttpClient(c => { c.BaseAddress = new Uri(exportCsvAddress); })
-                    .AddHttpMessageHandler(sp => sp.GetRequiredService<AuthorizationMessageHandler>()
-                        .ConfigureHandler(new[] { exportCsvAddress }));
+            // Register Refit Clients
+            RegisterRefitClients(builder, baseAddress);
 
             // Configure Logging
             IConfigurationSection loggerConfig = builder.Configuration.GetSection("Logging");
@@ -103,6 +89,41 @@ namespace HealthGateway.Admin.Client
             builder.Services.AddBlazoredLocalStorage();
 
             await builder.Build().RunAsync().ConfigureAwait(true);
+        }
+
+        private static void RegisterRefitClients(WebAssemblyHostBuilder builder, string baseAddress)
+        {
+            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(baseAddress) });
+
+            string configAddress = GetConfigAddress(builder, "Configuration", baseAddress);
+            builder.Services.AddRefitClient<IConfigurationApi>()
+                      .ConfigureHttpClient(c => ConfigureHttpClient(c, configAddress));
+
+            string supportAddress = GetConfigAddress(builder, "Support", baseAddress);
+            builder.Services.AddRefitClient<ISupportApi>()
+                           .ConfigureHttpClient(c => ConfigureHttpClient(c, supportAddress))
+                           .AddHttpMessageHandler(sp => ConfigureAuthorization(sp, supportAddress));
+
+            string exportCsvAddress = GetConfigAddress(builder, "CsvExport", baseAddress);
+            builder.Services.AddRefitClient<ICsvExportApi>()
+                    .ConfigureHttpClient(c => ConfigureHttpClient(c, exportCsvAddress))
+                    .AddHttpMessageHandler(sp => ConfigureAuthorization(sp, exportCsvAddress));
+        }
+
+        private static void ConfigureHttpClient(HttpClient client, string address)
+        {
+            client.BaseAddress = new Uri(address);
+        }
+
+        private static string GetConfigAddress(WebAssemblyHostBuilder builder, string key, string baseAddress)
+        {
+            return builder.Configuration.GetSection("Services").GetValue<string>(key, baseAddress);
+        }
+
+        private static DelegatingHandler ConfigureAuthorization(IServiceProvider serviceProvider, string configAddress)
+        {
+            return serviceProvider.GetRequiredService<AuthorizationMessageHandler>()
+                .ConfigureHandler(new[] { configAddress });
         }
     }
 }
