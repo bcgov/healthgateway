@@ -21,10 +21,8 @@ namespace HealthGateway.Admin.Client
     using System.Threading.Tasks;
     using Blazored.LocalStorage;
     using Fluxor;
-    using HealthGateway.Admin.Client;
     using HealthGateway.Admin.Client.Authorization;
     using HealthGateway.Admin.Client.Services;
-    using HealthGateway.Admin.Client.Store.Configuration;
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
     using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -56,8 +54,15 @@ namespace HealthGateway.Admin.Client
             string baseAddress = builder.HostEnvironment.BaseAddress;
             string configAddress = builder.Configuration.GetSection("Services").GetValue<string>("Configuration", baseAddress);
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(baseAddress) });
+            string supportAddress = builder.Configuration.GetSection("Services").GetValue<string>("Support", baseAddress);
+
+            builder.Services.AddRefitClient<ISupportApi>()
+                              .ConfigureHttpClient(c => { c.BaseAddress = new Uri(supportAddress); })
+                              .AddHttpMessageHandler(sp => sp.GetRequiredService<AuthorizationMessageHandler>()
+                        .ConfigureHandler(new[] { supportAddress }));
+
             builder.Services.AddRefitClient<IConfigurationApi>()
-                                .ConfigureHttpClient(c => { c.BaseAddress = new Uri(configAddress); });
+                           .ConfigureHttpClient(c => { c.BaseAddress = new Uri(configAddress); });
 
             string exportCsvAddress = builder.Configuration.GetSection("Services").GetValue<string>("CsvExport", baseAddress);
             builder.Services.AddRefitClient<ICsvExportApi>()
@@ -93,6 +98,7 @@ namespace HealthGateway.Admin.Client
                                         rdt.Name = "Health Gateway Admin";
                                     }));
             builder.Services.AddScoped<Admin.Client.Store.Configuration.StateFacade>();
+            builder.Services.AddScoped<Admin.Client.Store.MessageVerification.StateFacade>();
 
             builder.Services.AddBlazoredLocalStorage();
 

@@ -1,5 +1,9 @@
 @page "/support"
 @attribute [Authorize(Roles = Roles.Admin)]
+@using Fluxor
+@using HealthGateway.Admin.Client.Store.MessageVerification
+@inject IState<State> State
+@inject StateFacade Facade
 
 <PageTitle>Support</PageTitle>
 <HgPageHeading>Support</HgPageHeading>
@@ -45,3 +49,15 @@
         <MudTablePager />
     </PagerContent>
 </MudTable>
+
+@code{
+    protected override void OnInitialized()
+    {
+         if (State.Value.MessagingVerification is null)
+        {
+             Facade.LoadMessageVerification();
+        }
+
+        base.OnInitialized();
+    }
+}
