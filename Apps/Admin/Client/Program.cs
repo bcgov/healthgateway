@@ -83,8 +83,9 @@ namespace HealthGateway.Admin.Client
                                     {
                                         rdt.Name = "Health Gateway Admin";
                                     }));
-            builder.Services.AddScoped<Admin.Client.Store.Configuration.StateFacade>();
-            builder.Services.AddScoped<Admin.Client.Store.MessageVerification.StateFacade>();
+
+            // Register all the state facade
+            AddStateFacadeScope(builder);
 
             builder.Services.AddBlazoredLocalStorage();
 
@@ -124,6 +125,12 @@ namespace HealthGateway.Admin.Client
         {
             return serviceProvider.GetRequiredService<AuthorizationMessageHandler>()
                 .ConfigureHandler(new[] { configAddress });
+        }
+
+        private static void AddStateFacadeScope(WebAssemblyHostBuilder builder)
+        {
+            builder.Services.AddScoped<Admin.Client.Store.Configuration.StateFacade>();
+            builder.Services.AddScoped<Admin.Client.Store.MessageVerification.StateFacade>();
         }
     }
 }

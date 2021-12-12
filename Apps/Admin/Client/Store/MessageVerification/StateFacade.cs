@@ -42,7 +42,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         public void LoadMessagingVerification(int queryType, string queryString)
         {
             this.Logger.LogInformation("Issuing action to load message verification");
-            this.Dispatcher.Dispatch(new LoadAction(queryType, queryString));
+            this.Dispatcher.Dispatch(new LoadAction(queryType, queryString.Trim()));
         }
     }
 }
