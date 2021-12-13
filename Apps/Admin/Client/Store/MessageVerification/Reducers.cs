@@ -37,7 +37,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <param name="action">The load success action.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod]
-        public static State ReduceLoadSuccessAction(State state, LoadSuccessAction action) => new(action.State, false);
+        public static State ReduceLoadSuccessAction(State state, LoadSuccessAction action) => new(action.State, true, null);
 
         /// <summary>
         /// The Reducer for the fail action.

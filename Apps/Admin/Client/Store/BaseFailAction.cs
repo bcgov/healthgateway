@@ -13,34 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.Configuration
+namespace HealthGateway.Admin.Client.Store
 {
-    using Fluxor;
-    using HealthGateway.Admin.Client.Store;
-    using Microsoft.Extensions.Logging;
-
     /// <summary>
-    /// The state facade.
+    /// Base class for fail action.
     /// </summary>
-    public class StateFacade : BaseStateFacade<LoadEffect>
+    public abstract class BaseFailAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="StateFacade"/> class.
+        /// Initializes a new instance of the <see cref="BaseFailAction"/> class.
         /// </summary>
-        /// <param name="logger">The logger to use.</param>
-        /// <param name="dispatcher">The dispatcher to use.</param>
-        public StateFacade(ILogger<LoadEffect> logger, IDispatcher dispatcher)
-              : base(logger, dispatcher)
-        {
-        }
+        /// <param name="errorMessage">The error.</param>
+        protected BaseFailAction(string errorMessage) => this.ErrorMessage = errorMessage;
 
         /// <summary>
-        /// Requests that the load action is dispatched.
+        /// Gets the error message associated with the failed action.
         /// </summary>
-        public void LoadConfiguration()
-        {
-            this.Logger.LogInformation("Issuing action to load Configuration");
-            this.Dispatcher.Dispatch(new LoadAction());
-        }
+        public string ErrorMessage { get; }
     }
 }

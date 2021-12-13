@@ -13,34 +13,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.Configuration
+namespace HealthGateway.Admin.Client.Store
 {
-    using Fluxor;
-    using HealthGateway.Admin.Client.Store;
-    using Microsoft.Extensions.Logging;
-
     /// <summary>
-    /// The state facade.
+    /// State for base class.
     /// </summary>
-    public class StateFacade : BaseStateFacade<LoadEffect>
+    public abstract class BaseState
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="StateFacade"/> class.
+        /// Initializes a new instance of the <see cref="BaseState"/> class.
         /// </summary>
-        /// <param name="logger">The logger to use.</param>
-        /// <param name="dispatcher">The dispatcher to use.</param>
-        public StateFacade(ILogger<LoadEffect> logger, IDispatcher dispatcher)
-              : base(logger, dispatcher)
-        {
-        }
+        /// <param name="isLoading">isLoading.</param>
+        /// <param name="errorMessage">errorMessage.</param>
+        protected BaseState(bool isLoading, string? errorMessage) =>
+          (this.IsLoading, this.ErrorMessage) = (isLoading, errorMessage);
 
         /// <summary>
-        /// Requests that the load action is dispatched.
+        /// Gets or sets a value indicating whether the state is loading.
         /// </summary>
-        public void LoadConfiguration()
-        {
-            this.Logger.LogInformation("Issuing action to load Configuration");
-            this.Dispatcher.Dispatch(new LoadAction());
-        }
+        public bool IsLoading { get; set; }
+
+        /// <summary>
+        /// Gets the error message if available.
+        /// </summary>
+        public string? ErrorMessage { get; init; }
     }
 }

@@ -52,9 +52,14 @@ namespace HealthGateway.Admin.Client
 
             // Configure HTTP Services
             string baseAddress = builder.HostEnvironment.BaseAddress;
+            IConfiguration configuration = builder.Configuration;
+            IServiceCollection services = builder.Services;
+
+            // Register all the state facade
+            AddStateFacadeScope(services);
 
             // Register Refit Clients
-            RegisterRefitClients(builder, baseAddress);
+            RegisterRefitClients(services, configuration, baseAddress);
 
             // Configure Logging
             IConfigurationSection loggerConfig = builder.Configuration.GetSection("Logging");
@@ -84,29 +89,26 @@ namespace HealthGateway.Admin.Client
                                         rdt.Name = "Health Gateway Admin";
                                     }));
 
-            // Register all the state facade
-            AddStateFacadeScope(builder);
-
             builder.Services.AddBlazoredLocalStorage();
 
             await builder.Build().RunAsync().ConfigureAwait(true);
         }
 
-        private static void RegisterRefitClients(WebAssemblyHostBuilder builder, string baseAddress)
+        private static void RegisterRefitClients(IServiceCollection services, IConfiguration configuration, string baseAddress)
         {
-            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(baseAddress) });
+            services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(baseAddress) });
 
-            string configAddress = GetConfigAddress(builder, "Configuration", baseAddress);
-            builder.Services.AddRefitClient<IConfigurationApi>()
+            string configAddress = GetConfigAddress(configuration, "Configuration", baseAddress);
+            services.AddRefitClient<IConfigurationApi>()
                       .ConfigureHttpClient(c => ConfigureHttpClient(c, configAddress));
 
-            string supportAddress = GetConfigAddress(builder, "Support", baseAddress);
-            builder.Services.AddRefitClient<ISupportApi>()
+            string supportAddress = GetConfigAddress(configuration, "Support", baseAddress);
+            services.AddRefitClient<ISupportApi>()
                            .ConfigureHttpClient(c => ConfigureHttpClient(c, supportAddress))
                            .AddHttpMessageHandler(sp => ConfigureAuthorization(sp, supportAddress));
 
-            string exportCsvAddress = GetConfigAddress(builder, "CsvExport", baseAddress);
-            builder.Services.AddRefitClient<ICsvExportApi>()
+            string exportCsvAddress = GetConfigAddress(configuration, "CsvExport", baseAddress);
+            services.AddRefitClient<ICsvExportApi>()
                     .ConfigureHttpClient(c => ConfigureHttpClient(c, exportCsvAddress))
                     .AddHttpMessageHandler(sp => ConfigureAuthorization(sp, exportCsvAddress));
         }
@@ -116,9 +118,9 @@ namespace HealthGateway.Admin.Client
             client.BaseAddress = new Uri(address);
         }
 
-        private static string GetConfigAddress(WebAssemblyHostBuilder builder, string key, string baseAddress)
+        private static string GetConfigAddress(IConfiguration configuration, string key, string baseAddress)
         {
-            return builder.Configuration.GetSection("Services").GetValue<string>(key, baseAddress);
+            return configuration.GetSection("Services").GetValue<string>(key, baseAddress);
         }
 
         private static DelegatingHandler ConfigureAuthorization(IServiceProvider serviceProvider, string configAddress)
@@ -127,10 +129,10 @@ namespace HealthGateway.Admin.Client
                 .ConfigureHandler(new[] { configAddress });
         }
 
-        private static void AddStateFacadeScope(WebAssemblyHostBuilder builder)
+        private static void AddStateFacadeScope(this IServiceCollection services)
         {
-            builder.Services.AddScoped<Admin.Client.Store.Configuration.StateFacade>();
-            builder.Services.AddScoped<Admin.Client.Store.MessageVerification.StateFacade>();
+            services.AddScoped<Admin.Client.Store.Configuration.StateFacade>();
+            services.AddScoped<Admin.Client.Store.MessageVerification.StateFacade>();
         }
     }
 }

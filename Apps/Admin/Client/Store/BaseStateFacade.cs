@@ -13,34 +13,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.Configuration
+
+namespace HealthGateway.Admin.Client.Store
 {
     using Fluxor;
-    using HealthGateway.Admin.Client.Store;
+    using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// The state facade.
+    /// The base state facade.
     /// </summary>
-    public class StateFacade : BaseStateFacade<LoadEffect>
+    /// <typeparam name="T">generic state facade class.</typeparam>
+    public abstract class BaseStateFacade<T>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="StateFacade"/> class.
+        /// Initializes a new instance of the <see cref="BaseStateFacade{T}"/> class.
         /// </summary>
         /// <param name="logger">The logger to use.</param>
         /// <param name="dispatcher">The dispatcher to use.</param>
-        public StateFacade(ILogger<LoadEffect> logger, IDispatcher dispatcher)
-              : base(logger, dispatcher)
+        protected BaseStateFacade(ILogger<T> logger, IDispatcher dispatcher)
         {
+            this.Logger = logger;
+            this.Dispatcher = dispatcher;
         }
 
         /// <summary>
-        /// Requests that the load action is dispatched.
+        /// Gets or sets dispatcher.
         /// </summary>
-        public void LoadConfiguration()
-        {
-            this.Logger.LogInformation("Issuing action to load Configuration");
-            this.Dispatcher.Dispatch(new LoadAction());
-        }
+        [Inject]
+        protected IDispatcher Dispatcher { get; set; }
+
+        /// <summary>
+        /// Gets or sets logger.
+        /// </summary>
+        [Inject]
+        protected ILogger<T> Logger { get; set; }
     }
 }

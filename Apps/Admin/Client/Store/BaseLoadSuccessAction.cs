@@ -13,34 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.Configuration
-{
-    using Fluxor;
-    using HealthGateway.Admin.Client.Store;
-    using Microsoft.Extensions.Logging;
 
+namespace HealthGateway.Admin.Client.Store
+{
     /// <summary>
-    /// The state facade.
+    /// The base load success action facade.
     /// </summary>
-    public class StateFacade : BaseStateFacade<LoadEffect>
+    /// <typeparam name="TCollection">generic state class.</typeparam>
+    public abstract class BaseLoadSuccessAction<TCollection>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="StateFacade"/> class.
+        /// Initializes a new instance of the <see cref="BaseLoadSuccessAction{TCollection}"/> class.
         /// </summary>
-        /// <param name="logger">The logger to use.</param>
-        /// <param name="dispatcher">The dispatcher to use.</param>
-        public StateFacade(ILogger<LoadEffect> logger, IDispatcher dispatcher)
-              : base(logger, dispatcher)
+        /// <param name="state">The successfully loaded messaging verification.</param>
+        protected BaseLoadSuccessAction(TCollection state)
         {
+            this.State = state;
         }
 
         /// <summary>
-        /// Requests that the load action is dispatched.
+        /// Gets the messaging verification.
         /// </summary>
-        public void LoadConfiguration()
-        {
-            this.Logger.LogInformation("Issuing action to load Configuration");
-            this.Dispatcher.Dispatch(new LoadAction());
-        }
+        public TCollection State { get; }
     }
 }
