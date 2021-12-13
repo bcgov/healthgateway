@@ -15,7 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Services
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Data.Models;
     using Refit;
 
@@ -31,6 +33,6 @@ namespace HealthGateway.Admin.Client.Services
         /// <param name="queryString">queryString.</param>
         /// <returns>The MessagingVerification object.</returns>
         [Get("/Users?queryType={queryType}&queryString={queryString}")]
-        Task<ApiResponse<MessagingVerification>> GetMedicationVerification(int queryType, string queryString);
+        Task<ApiResponse<IList<MessagingVerification>>> GetMedicationVerifications(UserQueryType queryType, string queryString);
     }
 }

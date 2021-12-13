@@ -28,7 +28,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <param name="state">The message verification state.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod(typeof(LoadAction))]
-        public static State ReduceLoadAction(State state) => new(state.MessagingVerification, true);
+        public static State ReduceLoadAction(State state) => new(state.MessagingVerifications, true);
 
         /// <summary>
         /// The Reducer for the load success action.
@@ -46,6 +46,6 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <param name="action">The load fail action.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod]
-        public static State ReduceLoadFailAction(State state, LoadFailAction action) => new(state.MessagingVerification, false, action.ErrorMessage);
+        public static State ReduceLoadFailAction(State state, LoadFailAction action) => new(state.MessagingVerifications, false, action.ErrorMessage);
     }
 }

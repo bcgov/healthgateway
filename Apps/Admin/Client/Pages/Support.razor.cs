@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Pages
 {
-    using System;
     using System.Collections.Generic;
     using HealthGateway.Admin.Common.Constants;
     using Microsoft.AspNetCore.Components;
@@ -33,7 +32,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private void Search()
         {
-            this.Facade.LoadMessagingVerification((int)this.SelectedQueryType, this.QueryParameter);
+            this.Facade.LoadMessagingVerification(this.SelectedQueryType, this.QueryParameter);
         }
     }
 }

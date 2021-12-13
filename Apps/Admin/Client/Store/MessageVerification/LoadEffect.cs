@@ -16,6 +16,7 @@
 
 namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Fluxor;
     using HealthGateway.Admin.Client.Services;
@@ -50,7 +51,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         public override async Task HandleAsync(LoadAction action, IDispatcher dispatcher)
         {
             this.Logger.LogInformation("Loading Messaging Verification");
-            ApiResponse<MessagingVerification> response = await this.SupportApi.GetMedicationVerification(action.QueryType, action.QueryString).ConfigureAwait(true);
+            ApiResponse<IList<MessagingVerification>> response = await this.SupportApi.GetMedicationVerifications(action.QueryType, action.QueryString).ConfigureAwait(true);
             if (response.IsSuccessStatusCode)
             {
                 this.Logger.LogInformation("Messaging Verification loaded successfully!");

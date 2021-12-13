@@ -16,19 +16,20 @@
 
 namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
+    using System.Collections.Generic;
     using HealthGateway.Admin.Client.Store.Common;
     using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// The action representing a successful load.
     /// </summary>
-    public class LoadSuccessAction : BaseLoadSuccessAction<MessagingVerification>
+    public class LoadSuccessAction : BaseLoadSuccessAction<IList<MessagingVerification>>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
         /// </summary>
         /// <param name="state">messaging verification state.</param>
-        public LoadSuccessAction(MessagingVerification state)
+        public LoadSuccessAction(IList<MessagingVerification> state)
             : base(state)
         {
         }

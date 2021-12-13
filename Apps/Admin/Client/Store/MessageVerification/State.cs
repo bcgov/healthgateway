@@ -16,8 +16,10 @@
 
 namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
+    using System.Collections.Generic;
     using Fluxor;
     using HealthGateway.Admin.Client.Store.Common;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Data.Models;
 
     /// <summary>
@@ -30,13 +32,13 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <summary>
         /// Initializes a new instance of the <see cref="State"/> class.
         /// </summary>
-        /// <param name="messagingVerification">messagingVerification.</param>
+        /// <param name="messagingVerifications">list of messagingVerifications.</param>
         /// <param name="isLoading">True if the data is being loaded.</param>
         /// <param name="errorMessage">An error message if the state was not loaded.</param>
-        public State(MessagingVerification messagingVerification, bool isLoading = false, string? errorMessage = null)
+        public State(IList<MessagingVerification> messagingVerifications, bool isLoading = false, string? errorMessage = null)
             : base(isLoading, errorMessage)
         {
-            this.MessagingVerification = messagingVerification;
+            this.MessagingVerifications = messagingVerifications;
         }
 
         /// <summary>
@@ -49,8 +51,8 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         }
 
         /// <summary>
-        /// Gets or sets messagingVerification.
+        /// Gets messagingVerification.
         /// </summary>
-        public MessagingVerification? MessagingVerification { get; set; }
+        public IList<MessagingVerification>? MessagingVerifications { get; init; }
     }
 }

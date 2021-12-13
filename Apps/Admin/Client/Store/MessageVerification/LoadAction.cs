@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
+    using HealthGateway.Admin.Common.Constants;
+
     /// <summary>
     /// The action for a load.
     /// </summary>
@@ -25,7 +27,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// </summary>
         /// <param name="queryType">Represents the type of query being performed.</param>
         /// <param name="queryString">Represents the query string being performed.</param>
-        public LoadAction(int queryType, string queryString)
+        public LoadAction(UserQueryType queryType, string queryString)
         {
             this.QueryString = queryString;
             this.QueryType = queryType;
@@ -34,7 +36,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <summary>
         /// Gets or sets query type.
         /// </summary>
-        public int QueryType { get; set; }
+        public UserQueryType QueryType { get; set; }
 
         /// <summary>
         /// Gets or sets query string.

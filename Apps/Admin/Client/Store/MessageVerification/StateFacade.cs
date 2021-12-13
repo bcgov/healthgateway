@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
     using Fluxor;
     using HealthGateway.Admin.Client.Store.Common;
+    using HealthGateway.Admin.Common.Constants;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -39,7 +40,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// </summary>
         /// <param name="queryType">Represents the type of query being performed.</param>
         /// <param name="queryString">Represents the query string being performed.</param>
-        public void LoadMessagingVerification(int queryType, string queryString)
+        public void LoadMessagingVerification(UserQueryType queryType, string queryString)
         {
             this.Logger.LogInformation("Issuing action to load message verification");
             this.Dispatcher.Dispatch(new LoadAction(queryType, queryString.Trim()));
