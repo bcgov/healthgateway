@@ -2,7 +2,7 @@
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
         <page-title title="Frequently Asked Questions" />
         <b-row class="mb-3 fluid text-right">
-            <b-col>Last updated: <strong>2021-November-4</strong></b-col>
+            <b-col>Last updated: <strong>2021-December-14</strong></b-col>
         </b-row>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
