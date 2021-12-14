@@ -65,6 +65,7 @@ export default class HealthInsightsView extends Vue {
             text: "Health Insights",
             to: "/healthInsights",
             active: true,
+            dataTestId: "breadcrumb-health-insights",
         },
     ];
 

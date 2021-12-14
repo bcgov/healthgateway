@@ -18,6 +18,7 @@ export default class ReleaseNotesView extends Vue {
             text: "Release Notes",
             to: "/release-notes",
             active: true,
+            dataTestId: "breadcrumb-release-notes",
         },
     ];
 }

@@ -163,6 +163,7 @@ export default class TimelineView extends Vue {
             text: "Timeline",
             to: "/timeline",
             active: true,
+            dataTestId: "breadcrumb-timeline",
         },
     ];
 

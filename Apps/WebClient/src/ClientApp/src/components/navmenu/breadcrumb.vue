@@ -20,6 +20,7 @@ export default class BreadcrumbComponent extends Vue {
     private baseBreadcrumbItem: BreadcrumbItem = {
         text: "Home",
         to: "/home",
+        dataTestId: "breadcrumb-home",
     };
 
     private created() {
@@ -33,7 +34,17 @@ export default class BreadcrumbComponent extends Vue {
 </script>
 
 <template>
-    <b-breadcrumb v-if="isAuthenticated" :items="allBreadcrumbItems">
+    <b-breadcrumb v-if="isAuthenticated" data-testid="breadcrumbs">
+        <b-breadcrumb-item
+            v-for="item in allBreadcrumbItems"
+            :key="item.text"
+            :to="item.to"
+            :href="item.href"
+            :active="item.active"
+            :data-testid="item.dataTestId"
+        >
+            {{ item.text }}
+        </b-breadcrumb-item>
     </b-breadcrumb>
 </template>
 

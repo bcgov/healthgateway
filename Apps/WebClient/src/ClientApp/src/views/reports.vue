@@ -99,6 +99,7 @@ export default class ReportsView extends Vue {
             text: "Export Records",
             to: "/reports",
             active: true,
+            dataTestId: "breadcrumb-export-records",
         },
     ];
 

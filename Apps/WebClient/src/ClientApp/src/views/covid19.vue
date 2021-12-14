@@ -125,6 +125,7 @@ export default class Covid19View extends Vue {
             text: "COVID-19",
             to: "/covid19",
             active: true,
+            dataTestId: "breadcrumb-covid-19",
         },
     ];
 

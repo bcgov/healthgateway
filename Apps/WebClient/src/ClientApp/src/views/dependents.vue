@@ -54,6 +54,7 @@ export default class DependentsView extends Vue {
             text: "Dependents",
             to: "/dependents",
             active: true,
+            dataTestId: "breadcrumb-dependents",
         },
     ];
 

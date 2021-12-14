@@ -18,6 +18,7 @@ export default class ContactUsView extends Vue {
             text: "Contact Us",
             to: "/contact-us",
             active: true,
+            dataTestId: "breadcrumb-contact-us",
         },
     ];
 }

@@ -3,4 +3,5 @@ export default interface BreadcrumbItem {
     to?: string;
     href?: string;
     active?: boolean;
+    dataTestId?: string;
 }

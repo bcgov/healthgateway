@@ -16,6 +16,7 @@ export default class FaqView extends Vue {
             text: "FAQ",
             to: "/faq",
             active: true,
+            dataTestId: "breadcrumb-faq",
         },
     ];
 }

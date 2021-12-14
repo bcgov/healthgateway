@@ -32,6 +32,7 @@ export default class TermsOfServiceView extends Vue {
             text: "Terms of Service",
             to: "/termsOfService",
             active: true,
+            dataTestId: "breadcrumb-terms-of-service",
         },
     ];
 
