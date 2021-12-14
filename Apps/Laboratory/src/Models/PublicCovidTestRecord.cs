@@ -134,6 +134,8 @@ namespace HealthGateway.Laboratory.Models
                 TestOutcome = model.TestOutcome,
                 ResultTitle = model.ResultTitle,
                 ResultLink = model.ResultLink,
+                CollectionDateTime = model.CollectionDateTime,
+                ResultDateTime = model.ResultDateTime,
             };
         }
     }
