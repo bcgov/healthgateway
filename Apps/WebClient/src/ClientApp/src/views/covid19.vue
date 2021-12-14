@@ -334,8 +334,11 @@ export default class Covid19View extends Vue {
 </script>
 
 <template>
-    <div class="m-3 background flex-grow-1 d-flex flex-column">
-        <BreadcrumbComponent :items="breadcrumbItems" />
+    <div class="background flex-grow-1 d-flex flex-column">
+        <BreadcrumbComponent
+            class="mt-3 mt-md-4 ml-3 ml-md-4"
+            :items="breadcrumbItems"
+        />
         <loading :is-loading="isLoading" :text="loadingStatusMessage" />
         <div
             v-if="!isVaccineCardLoading && !vaccinationStatusError"
