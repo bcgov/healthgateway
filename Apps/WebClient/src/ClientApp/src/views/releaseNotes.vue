@@ -18,7 +18,7 @@ export default class ReleaseNotesView extends Vue {}
         <release-note
             date="December 15, 2021"
             version="v1.4.17"
-            title="Breadcrumb navigation"
+            title="Breadcrumb Navigation"
         >
             <ul>
                 <li>
@@ -30,7 +30,7 @@ export default class ReleaseNotesView extends Vue {}
         <release-note
             date="December 7, 2021"
             version="v1.4.16"
-            title="Login history, exports sorting, dashboard tiles"
+            title="Login History, Exports Sorting, Dashboard Tiles"
         >
             <ul>
                 <li>
