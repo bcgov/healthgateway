@@ -8,7 +8,6 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
-import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -19,7 +18,6 @@ library.add(faSearch, faCheckCircle);
 
 @Component({
     components: {
-        BreadcrumbComponent,
         LoadingComponent,
         MessageModalComponent,
     },
@@ -198,7 +196,6 @@ export default class HomeView extends Vue {
                 Pacific Time.
             </span>
         </b-alert>
-        <BreadcrumbComponent :items="[]" />
         <page-title title="Home" />
         <h2>What do you want to focus on today?</h2>
         <b-row>
