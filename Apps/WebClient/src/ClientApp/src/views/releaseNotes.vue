@@ -15,6 +15,38 @@ export default class ReleaseNotesView extends Vue {}
 <template>
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
         <page-title title="Health Gateway Release Notes" />
+         <release-note
+            date="December 15, 2021"
+            version="v1.4.17"
+            title="Breadcrumb navigation"
+        >
+            <ul>
+                <li>
+                    We added breadcrumb navigation to assist in
+                    moving around the application. 
+                </li>
+            </ul>
+        </release-note> 
+        <release-note
+            date="December 7, 2021"
+            version="v1.4.16"
+            title="Login history, exports sorting, dashboard tiles"
+        >
+            <ul>
+                <li>
+                    We added login history in the profile page to show
+                    the last five logins. 
+                </li>
+                <li>
+                    We updated the sort order on record exports to default
+                    to most recent first. 
+                </li>
+                <li>
+                    We updated the dashboard tile order so the health records 
+                    link is first.                   
+                </li>
+            </ul>
+        </release-note>
         <release-note
             date="October 29, 2021"
             version="v1.4.14"
