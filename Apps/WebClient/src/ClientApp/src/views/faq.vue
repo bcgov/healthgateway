@@ -71,7 +71,7 @@
                                     <div>
                                         View the status of your
                                         <a
-                                            href="https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/what-we-cover/drug-coverage/drugs-requiring-pre-approval"
+                                            href="https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/prescribers/special-authority/sa-drug-list"
                                             target="_blank"
                                             >Special Authority</a
                                         >
