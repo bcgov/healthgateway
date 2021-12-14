@@ -2,18 +2,30 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 
+import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import ReleaseNoteComponent from "@/components/releaseNote.vue";
+import BreadcrumbItem from "@/models/breadcrumbItem";
 
 @Component({
     components: {
+        BreadcrumbComponent,
         "release-note": ReleaseNoteComponent,
     },
 })
-export default class ReleaseNotesView extends Vue {}
+export default class ReleaseNotesView extends Vue {
+    private breadcrumbItems: BreadcrumbItem[] = [
+        {
+            text: "Release Notes",
+            to: "/release-notes",
+            active: true,
+        },
+    ];
+}
 </script>
 
 <template>
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
         <release-note
             date="December 15, 2021"

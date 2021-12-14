@@ -10,12 +10,14 @@ import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import MultiSelectComponent, {
     SelectOption,
 } from "@/components/multiSelect.vue";
+import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import COVID19ReportComponent from "@/components/report/covid19.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MedicationRequestReportComponent from "@/components/report/medicationRequest.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
 import ResourceCentreComponent from "@/components/resourceCentre.vue";
+import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
@@ -39,6 +41,7 @@ const medicationRequestReport = "medication-request-report";
 
 @Component({
     components: {
+        BreadcrumbComponent,
         LoadingComponent,
         "message-modal": MessageModalComponent,
         medicationReport: MedicationHistoryReportComponent,
@@ -90,6 +93,14 @@ export default class ReportsView extends Vue {
     private reportFilter: ReportFilter = ReportFilterBuilder.create().build();
 
     private logger!: ILogger;
+
+    private breadcrumbItems: BreadcrumbItem[] = [
+        {
+            text: "Export Records",
+            to: "/reports",
+            active: true,
+        },
+    ];
 
     private get headerData(): ReportHeader {
         return {
@@ -295,6 +306,7 @@ export default class ReportsView extends Vue {
 
 <template>
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Export Records" />
         <div class="my-3 px-3 py-4 form">
             <b-row>

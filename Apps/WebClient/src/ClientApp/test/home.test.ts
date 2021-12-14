@@ -11,11 +11,11 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions, RootState } from "@/store/types";
-import DashboardView from "@/views/dashboard.vue";
+import HomeView from "@/views/home.vue";
 
 let store: Store<RootState>;
 
-function createWrapper(options?: GatewayStoreOptions): Wrapper<DashboardView> {
+function createWrapper(options?: GatewayStoreOptions): Wrapper<HomeView> {
     const localVue = createLocalVue();
     localVue.use(Vuex);
     localVue.use(VueRouter);
@@ -34,7 +34,7 @@ function createWrapper(options?: GatewayStoreOptions): Wrapper<DashboardView> {
         props: ["isLoading"],
     };
 
-    return shallowMount(DashboardView, {
+    return shallowMount(HomeView, {
         localVue,
         store: store,
         stubs: {
@@ -47,7 +47,7 @@ function createWrapper(options?: GatewayStoreOptions): Wrapper<DashboardView> {
     });
 }
 
-describe("Dashboard view", () => {
+describe("Home view", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     logger.initialize("info");
 

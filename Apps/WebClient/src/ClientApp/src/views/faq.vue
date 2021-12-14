@@ -1,5 +1,28 @@
+<script lang="ts">
+import Vue from "vue";
+import { Component } from "vue-property-decorator";
+
+import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
+import BreadcrumbItem from "@/models/breadcrumbItem";
+
+@Component({
+    components: {
+        BreadcrumbComponent,
+    },
+})
+export default class FaqView extends Vue {
+    private breadcrumbItems: BreadcrumbItem[] = [
+        {
+            text: "FAQ",
+            to: "/faq",
+            active: true,
+        },
+    ];
+}
+</script>
 <template>
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Frequently Asked Questions" />
         <b-row class="mb-3 fluid text-right">
             <b-col>Last updated: <strong>2021-November-4</strong></b-col>
