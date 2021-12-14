@@ -151,7 +151,7 @@ namespace HealthGateway.LaboratoryTests
             {
                 ResultStatus = ResultType.Success,
                 ResultError = null,
-                ResourcePayload = new PublicCovidTestResponse(new List<PublicCovidTestRecord> { new PublicCovidTestRecord { StatusIndicator = "Found" }, new PublicCovidTestRecord { StatusIndicator = "Found" } })
+                ResourcePayload = new PublicCovidTestResponse(new List<PublicCovidTestRecord> { new(), new() })
                 {
                     Loaded = true,
                 },

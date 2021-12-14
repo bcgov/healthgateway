@@ -117,12 +117,6 @@ namespace HealthGateway.Laboratory.Models
         public string ResultLink { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the state of the response.
-        /// </summary>
-        [JsonPropertyName("statusIndicator")]
-        public string StatusIndicator { get; set; } = string.Empty;
-
-        /// <summary>
         /// Converts a PHSA CovidTestResult to a PublicCovidTestRecord model.
         /// </summary>
         /// <param name="model">The result model.</param>
@@ -142,7 +136,6 @@ namespace HealthGateway.Laboratory.Models
                 ResultLink = model.ResultLink,
                 CollectionDateTime = model.CollectionDateTime,
                 ResultDateTime = model.ResultDateTime,
-                StatusIndicator = model.StatusIndicator,
             };
         }
     }
