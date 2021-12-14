@@ -2,7 +2,7 @@
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
         <page-title title="Frequently Asked Questions" />
         <b-row class="mb-3 fluid text-right">
-            <b-col>Last updated: <strong>2021-November-4</strong></b-col>
+            <b-col>Last updated: <strong>2021-December-14</strong></b-col>
         </b-row>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
@@ -71,8 +71,8 @@
                                     <div>
                                         View the status of your
                                         <a
-                                            href="https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/what-we-cover/drug-coverage/drugs-requiring-pre-approval"
-                                            target="blank_"
+                                            href="https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/prescribers/special-authority/sa-drug-list"
+                                            target="_blank"
                                             >Special Authority</a
                                         >
                                         drug coverage requests made since March
@@ -119,7 +119,7 @@
                                 online form at
                                 <a
                                     href="https://immunizationrecord.gov.bc.ca"
-                                    target="blank_"
+                                    target="_blank"
                                     >immunizationrecord.gov.bc.ca</a
                                 >.
                             </p>
@@ -161,7 +161,7 @@
                                 Please complete the online form at
                                 <a
                                     href="https://www.gov.bc.ca/vaccinerecord"
-                                    target="blank_"
+                                    target="_blank"
                                     >immunizationrecord.gov.bc.ca</a
                                 >.
                             </p>
@@ -348,7 +348,7 @@
                                 for regular requests. Visit the
                                 <a
                                     href="https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/prescribers/special-authority "
-                                    target="blank_"
+                                    target="_blank"
                                     >Special Authority site</a
                                 >. for more information. If you have any
                                 questions, talk to your prescriber or
@@ -465,6 +465,65 @@
                                 e-mailing
                                 <a href="mailto:HealthGateway@gov.bc.ca"
                                     >HealthGateway@gov.bc.ca</a
+                                >.
+                            </p>
+                        </div></b-card-text
+                    >
+                </b-card-body>
+            </b-collapse>
+        </b-card>
+        <b-card no-body class="mb-1 border-0">
+            <b-card-header
+                header-tag="header"
+                class="p-1 faq-header"
+                role="tab"
+            >
+                <b-button
+                    v-b-toggle.accordion-faqAnswer12
+                    data-testid="questionBtn"
+                    block
+                    variant="info"
+                    class="text-left"
+                    >When can I get my COVID-19 booster dose?</b-button
+                >
+            </b-card-header>
+            <b-collapse id="accordion-faqAnswer12" role="tabpanel">
+                <b-card-body>
+                    <b-card-text
+                        ><div data-testid="answerTxt">
+                            <p>
+                                The timing of your booster dose is based on your
+                                age and how long it has been since your second
+                                dose. Visit
+                                <a
+                                    href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/booster"
+                                    target="_blank"
+                                    >www.gov.bc.ca/booster</a
+                                >
+                                to learn about the priority groups currently
+                                receiving invitations to book their booster shot
+                                appointment. Starting in January 2022, those 18
+                                years and older will get a booking invitation
+                                between 6 to 8 months after the date of their
+                                second dose.
+                            </p>
+                            <p>
+                                If you received your previous COVID-19 doses in
+                                BC, you don’t need to do anything. You’ll get a
+                                booster invitation when it’s your turn. If you
+                                got your previous doses outside of BC, you can
+                                register for your booster at
+                                <a
+                                    href="https://www.getvaccinated.gov.bc.ca"
+                                    target="_blank"
+                                    >www.getvaccinated.gov.bc.ca</a
+                                >
+                                and submit your out-of-province immunization
+                                records at
+                                <a
+                                    href="https://immunizationrecord.gov.bc.ca/"
+                                    target="_blank"
+                                    >www.immunizationrecord.gov.bc.ca</a
                                 >.
                             </p>
                         </div></b-card-text
