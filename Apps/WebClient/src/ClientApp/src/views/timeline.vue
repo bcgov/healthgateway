@@ -10,12 +10,14 @@ import LoadingComponent from "@/components/loading.vue";
 import CovidTestModalComponent from "@/components/modal/covidTestModal.vue";
 import NoteEditComponent from "@/components/modal/noteEdit.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
+import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import ResourceCentreComponent from "@/components/resourceCentre.vue";
 import AddNoteButtonComponent from "@/components/timeline/addNoteButton.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
 import EntryDetailsComponent from "@/components/timeline/entryCard/entryDetails.vue";
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
+import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import Encounter from "@/models/encounter";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
@@ -41,6 +43,7 @@ library.add(faSearch, faCheckCircle);
 
 @Component({
     components: {
+        BreadcrumbComponent,
         LoadingComponent,
         ProtectiveWordComponent,
         CovidTestModalComponent,
@@ -154,6 +157,15 @@ export default class TimelineView extends Vue {
     private readonly dismissImmunizationBannerSeconds = 5;
     private dismissImmunizationBannerCountdown = 0;
     private initialImmunizationCount = 0;
+
+    private breadcrumbItems: BreadcrumbItem[] = [
+        {
+            text: "Timeline",
+            to: "/timeline",
+            active: true,
+            dataTestId: "breadcrumb-timeline",
+        },
+    ];
 
     @Watch("filterText")
     private onFilterTextChanged() {
@@ -299,6 +311,7 @@ export default class TimelineView extends Vue {
 
 <template>
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-custom="true" :is-loading="isLoading" />
         <b-row>
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">

@@ -30,7 +30,7 @@ describe("User Email Verification", () => {
         cy.wait("@getUserProfile").then((interception) => {
             assert.equal(interception.response.statusCode, 200);
         });
-        cy.url().should("include", "/dashboard");
+        cy.url().should("include", "/home");
     });
 
     it("Check already verified email invite", () => {
@@ -43,7 +43,7 @@ describe("User Email Verification", () => {
         cy.get("[data-testid=verifingInvite]").should("not.exist");
         cy.get("[data-testid=alreadyVerifiedInvite]").should("be.visible");
         cy.get("[data-testid=continueButton]").click();
-        cy.url().should("include", "/dashboard");
+        cy.url().should("include", "/home");
     });
 
     it("Check expired email invite", () => {

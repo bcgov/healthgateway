@@ -10,6 +10,8 @@ import "@/plugins/registerComponentHooks";
 
 import {
     BBadge,
+    BBreadcrumb,
+    BBreadcrumbItem,
     BCard,
     BDropdown,
     BDropdownDivider,
@@ -67,6 +69,8 @@ import {
 
 import { RootState } from "./store/types";
 
+Vue.component("BBreadcrumb", BBreadcrumb);
+Vue.component("BBreadcrumbItem", BBreadcrumbItem);
 Vue.component("BPopover", BPopover);
 Vue.component("BBadge", BBadge);
 Vue.component("BCard", BCard);

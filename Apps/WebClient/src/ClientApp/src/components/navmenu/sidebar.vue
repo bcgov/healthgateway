@@ -175,8 +175,8 @@ export default class SidebarComponent extends Vue {
         return this.isOpen && this.isMobileWidth;
     }
 
-    private get isDashboard(): boolean {
-        return this.$route.path == "/dashboard";
+    private get isHome(): boolean {
+        return this.$route.path == "/home";
     }
 
     private get isTimeline(): boolean {
@@ -223,29 +223,26 @@ export default class SidebarComponent extends Vue {
         <nav id="sidebar" data-testid="sidebar" :class="{ collapsed: !isOpen }">
             <b-row class="row-container">
                 <b-col>
-                    <!-- Dashboard button -->
+                    <!-- Home button -->
                     <hg-button
                         v-show="isActiveProfile"
-                        id="menuBtnDashboard"
-                        data-testid="menuBtnDashboardLink"
-                        to="/dashboard"
+                        id="menuBtnHome"
+                        data-testid="menu-btn-home-link"
+                        to="/home"
                         variant="nav"
                         class="my-3"
-                        :class="{ selected: isDashboard }"
+                        :class="{ selected: isHome }"
                     >
                         <b-row class="align-items-center">
-                            <b-col
-                                title="Dashboard"
-                                :class="{ 'col-3': isOpen }"
-                            >
+                            <b-col title="Home" :class="{ 'col-3': isOpen }">
                                 <hg-icon icon="home" size="large" />
                             </b-col>
                             <b-col
                                 v-show="isOpen"
-                                data-testid="dashboardLabel"
+                                data-testid="homeLabel"
                                 class="button-text"
                             >
-                                <span>Dashboard</span>
+                                <span>Home</span>
                             </b-col>
                         </b-row>
                     </hg-button>
@@ -253,7 +250,7 @@ export default class SidebarComponent extends Vue {
                     <hg-button
                         v-show="isActiveProfile"
                         id="menuBtnTimeline"
-                        data-testid="menuBtnTimelineLink"
+                        data-testid="menu-btn-time-line-link"
                         to="/timeline"
                         variant="nav"
                         class="my-3"
@@ -279,7 +276,7 @@ export default class SidebarComponent extends Vue {
                     <hg-button
                         v-show="isVaccinationStatusEnabled && isActiveProfile"
                         id="menuBtnCovid19"
-                        data-testid="menuBtnCovid19Link"
+                        data-testid="menu-btn-covid19-link"
                         to="/covid19"
                         variant="nav"
                         class="my-3"
@@ -305,7 +302,7 @@ export default class SidebarComponent extends Vue {
                     <hg-button
                         v-show="isDependentEnabled && isActiveProfile"
                         id="menuBtnDependents"
-                        data-testid="menuBtnDependentsLink"
+                        data-testid="menu-btn-dependents-link"
                         to="/dependents"
                         variant="nav"
                         class="my-3"
@@ -324,7 +321,7 @@ export default class SidebarComponent extends Vue {
                     <hg-button
                         v-show="isActiveProfile"
                         id="menuBtnReports"
-                        data-testid="menuBtnReportsLink"
+                        data-testid="menu-btn-reports-link"
                         to="/reports"
                         variant="nav"
                         class="my-3"
@@ -386,7 +383,7 @@ export default class SidebarComponent extends Vue {
                     <hg-button
                         v-show="isActiveProfile"
                         id="menuBtnHealthInsights"
-                        data-testid="menuBtnHealthInsightsLink"
+                        data-testid="menu-btn-health-insights-link"
                         to="/healthInsights"
                         variant="nav"
                         class="my-3"
