@@ -226,9 +226,7 @@ export default class PublicCovidTestView extends Vue {
             dateOfCollection: {
                 required: required,
                 maxValue: (value: string) =>
-                    new DateWrapper(value, { isUtc: true }).isBefore(
-                        new DateWrapper()
-                    ),
+                    new DateWrapper(value).isBefore(new DateWrapper()),
             },
         };
     }
