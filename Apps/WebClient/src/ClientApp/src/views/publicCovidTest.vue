@@ -265,7 +265,7 @@ export default class PublicCovidTestView extends Vue {
                         data-testid="public-covid-test-result-form-title"
                         class="vaccine-card-form-title text-center pb-3 mb-4"
                     >
-                        Your COVID-19 test result
+                        Your COVID-19 Test Result
                     </h2>
                     <div
                         v-if="publicCovidTests.length"
@@ -459,7 +459,7 @@ export default class PublicCovidTestView extends Vue {
                         data-testid="public-covid-test-form-title"
                         class="vaccine-card-form-title text-center pb-3 mb-4"
                     >
-                        Get your COVID-19 test result
+                        Get Your COVID-19 Test Result
                     </h2>
                     <p class="mb-4">
                         To get your COVID-19 test result, please provide:
@@ -541,7 +541,7 @@ export default class PublicCovidTestView extends Vue {
                     <b-row>
                         <b-col>
                             <b-form-group
-                                label="Date You Were Tested for COVID-19"
+                                label="Date of COVID-19 Test"
                                 label-for="dateOfCollection"
                                 :state="isValid($v.dateOfCollection)"
                             >
@@ -552,7 +552,7 @@ export default class PublicCovidTestView extends Vue {
                                     :allow-future="false"
                                     :min-year="2020"
                                     data-testid="dateOfCollectionInput"
-                                    aria-label="Date You Were Tested for COVID-19"
+                                    aria-label="Date of COVID-19 Test"
                                     @blur="$v.dateOfBirth.$touch()"
                                 />
                                 <b-form-invalid-feedback
