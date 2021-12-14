@@ -514,7 +514,7 @@
                                 got your previous doses outside of BC, you can
                                 register for your booster at
                                 <a
-                                    href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/booster"
+                                    href="https://www.getvaccinated.gov.bc.ca"
                                     target="_blank"
                                     >www.getvaccinated.gov.bc.ca</a
                                 >
