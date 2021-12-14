@@ -138,7 +138,7 @@ export default class PublicCovidTestView extends Vue {
 
     private formatDate(date: StringISODateTime): string {
         if (date) {
-            const dateWrapper = new DateWrapper(date, { isUtc: true });
+            const dateWrapper = new DateWrapper(date);
             const dateString = dateWrapper.format("yyyy-MMM-dd");
             const timeString = dateWrapper.format("t").replace(" ", "\u00A0");
             return `${dateString}, ${timeString}`;
