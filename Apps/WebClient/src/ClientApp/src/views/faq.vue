@@ -72,7 +72,7 @@
                                         View the status of your
                                         <a
                                             href="https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/what-we-cover/drug-coverage/drugs-requiring-pre-approval"
-                                            target="blank_"
+                                            target="_blank"
                                             >Special Authority</a
                                         >
                                         drug coverage requests made since March
@@ -119,7 +119,7 @@
                                 online form at
                                 <a
                                     href="https://immunizationrecord.gov.bc.ca"
-                                    target="blank_"
+                                    target="_blank"
                                     >immunizationrecord.gov.bc.ca</a
                                 >.
                             </p>
@@ -161,7 +161,7 @@
                                 Please complete the online form at
                                 <a
                                     href="https://www.gov.bc.ca/vaccinerecord"
-                                    target="blank_"
+                                    target="_blank"
                                     >immunizationrecord.gov.bc.ca</a
                                 >.
                             </p>
@@ -348,7 +348,7 @@
                                 for regular requests. Visit the
                                 <a
                                     href="https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/prescribers/special-authority "
-                                    target="blank_"
+                                    target="_blank"
                                     >Special Authority site</a
                                 >. for more information. If you have any
                                 questions, talk to your prescriber or
@@ -497,7 +497,7 @@
                                 dose. Visit
                                 <a
                                     href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/booster"
-                                    target="blank_"
+                                    target="_blank"
                                     >www.gov.bc.ca/booster</a
                                 >
                                 to learn about the priority groups currently
@@ -515,14 +515,14 @@
                                 register for your booster at
                                 <a
                                     href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/booster"
-                                    target="blank_"
+                                    target="_blank"
                                     >www.getvaccinated.gov.bc.ca</a
                                 >
                                 and submit your out-of-province immunization
                                 records at
                                 <a
                                     href="https://immunizationrecord.gov.bc.ca/"
-                                    target="blank_"
+                                    target="_blank"
                                     >www.immunizationrecord.gov.bc.ca</a
                                 >.
                             </p>
