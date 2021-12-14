@@ -472,6 +472,57 @@
                 </b-card-body>
             </b-collapse>
         </b-card>
+         <b-card no-body class="mb-1 border-0">
+            <b-card-header
+                header-tag="header"
+                class="p-1 faq-header"
+                role="tab"
+            >
+                <b-button
+                    v-b-toggle.accordion-faqAnswer12
+                    data-testid="questionBtn"
+                    block
+                    variant="info"
+                    class="text-left"
+                    >When can I get my COVID-19 booster dose?</b-button
+                >
+            </b-card-header>
+            <b-collapse id="accordion-faqAnswer12" role="tabpanel">
+                <b-card-body>
+                    <b-card-text
+                        ><div data-testid="answerTxt">
+                            <p>
+                                The timing of your booster dose is based 
+                                on your age and how long it has been since 
+                                your second dose. Visit <a href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/booster"
+                                target="blank_"
+                                    >www.gov.bc.ca/booster</a
+                                >
+                                to learn about the priority groups currently 
+                                receiving invitations to book their booster 
+                                shot appointment. Starting in January 2022, those 
+                                18 years and older will get a booking invitation 
+                                between 6 to 8 months after the date of their second dose. 
+                            </p>
+                            <p>
+                                If you received your previous COVID-19 doses in BC, 
+                                you don’t need to do anything. You’ll get a booster 
+                                invitation when it’s your turn. If you got your previous 
+                                doses outside of BC, you can register for your booster 
+                                at <a href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/booster"
+                                target="blank_"
+                                    >www.getvaccinated.gov.bc.ca</a
+                                > and submit your 
+                                out-of-province immunization records at <a href="https://immunizationrecord.gov.bc.ca/"
+                                target="blank_"
+                                    >www.immunizationrecord.gov.bc.ca</a
+                                >. 
+                            </p>
+                        </div></b-card-text
+                    >
+                </b-card-body>
+            </b-collapse>
+        </b-card>
     </div>
 </template>
 
