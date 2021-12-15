@@ -34,7 +34,7 @@ export default class BreadcrumbComponent extends Vue {
 </script>
 
 <template>
-    <b-breadcrumb v-if="isAuthenticated" data-testid="breadcrumbs">
+    <b-breadcrumb v-if="isAuthenticated" data-testid="breadcrumbs" class="pt-0">
         <b-breadcrumb-item
             v-for="item in allBreadcrumbItems"
             :key="item.text"
