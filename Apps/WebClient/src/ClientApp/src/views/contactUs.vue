@@ -2,20 +2,33 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 
+import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
+import BreadcrumbItem from "@/models/breadcrumbItem";
 
 @Component({
     components: {
+        BreadcrumbComponent,
         HealthlinkComponent: HealthlinkSidebarComponent,
     },
 })
-export default class ContactUsView extends Vue {}
+export default class ContactUsView extends Vue {
+    private breadcrumbItems: BreadcrumbItem[] = [
+        {
+            text: "Contact Us",
+            to: "/contact-us",
+            active: true,
+            dataTestId: "breadcrumb-contact-us",
+        },
+    ];
+}
 </script>
 
 <template>
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
         <b-row>
             <b-col>
+                <BreadcrumbComponent :items="breadcrumbItems" />
                 <page-title title="Contact Us" />
                 <b-row>
                     <b-col>

@@ -4,12 +4,15 @@ import { Component } from "vue-property-decorator";
 
 import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
 import LoadingComponent from "@/components/loading.vue";
+import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
+import BreadcrumbItem from "@/models/breadcrumbItem";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 
 @Component({
     components: {
+        BreadcrumbComponent,
         LoadingComponent,
         HtmlTextAreaComponent,
     },
@@ -23,6 +26,15 @@ export default class TermsOfServiceView extends Vue {
     private errorMessage = "";
 
     private termsOfService = "";
+
+    private breadcrumbItems: BreadcrumbItem[] = [
+        {
+            text: "Terms of Service",
+            to: "/termsOfService",
+            active: true,
+            dataTestId: "breadcrumb-terms-of-service",
+        },
+    ];
 
     private mounted() {
         this.userProfileService = container.get(
@@ -60,6 +72,7 @@ export default class TermsOfServiceView extends Vue {
 
 <template>
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
         <b-row>
             <b-col class="col-12 col-lg-9 column-wrapper">
