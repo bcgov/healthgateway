@@ -48,7 +48,9 @@ namespace HealthGateway.LaboratoryTests
         {
             IServiceProvider provider = GetServiceProvider();
             ILaboratoryDelegateFactory labDelegate = new LaboratoryDelegateFactory(this.configuration, provider);
+
             ILaboratoryDelegate instance = labDelegate.CreateInstance();
+
             Assert.NotNull(instance);
         }
 
@@ -63,7 +65,7 @@ namespace HealthGateway.LaboratoryTests
 
         private static IServiceProvider GetServiceProvider()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             services.AddSingleton<ILaboratoryDelegateFactory, LaboratoryDelegateFactory>();
             services.AddTransient<ILaboratoryService, LaboratoryService>();
 

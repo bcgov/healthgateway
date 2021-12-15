@@ -6,8 +6,10 @@ import { Action, Getter } from "vuex-class";
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
+import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import LineChartComponent from "@/components/plot/lineChart.vue";
 import ResourceCentreComponent from "@/components/resourceCentre.vue";
+import BreadcrumbItem from "@/models/breadcrumbItem";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
@@ -20,6 +22,7 @@ import { ILogger } from "@/services/interfaces";
 
 @Component({
     components: {
+        BreadcrumbComponent,
         LoadingComponent,
         ProtectiveWordComponent,
         ErrorCard: ErrorCardComponent,
@@ -56,6 +59,15 @@ export default class HealthInsightsView extends Vue {
         responsive: true,
         maintainAspectRatio: false,
     };
+
+    private breadcrumbItems: BreadcrumbItem[] = [
+        {
+            text: "Health Insights",
+            to: "/healthInsights",
+            active: true,
+            dataTestId: "breadcrumb-health-insights",
+        },
+    ];
 
     private get timelineEntries(): TimelineEntry[] {
         let timelineEntries: TimelineEntry[] = [];
@@ -179,6 +191,7 @@ export default class HealthInsightsView extends Vue {
 
 <template>
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent v-if="isLoading" :is-custom="true" />
         <b-row>
             <b-col id="healthInsights" class="col-12 col-md-10 col-lg-9">

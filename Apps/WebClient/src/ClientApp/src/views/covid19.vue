@@ -13,9 +13,11 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
+import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -41,6 +43,7 @@ interface Dose {
 
 @Component({
     components: {
+        BreadcrumbComponent,
         loading: LoadingComponent,
         "vaccine-card": VaccineCardComponent,
         "message-modal": MessageModalComponent,
@@ -116,6 +119,15 @@ export default class Covid19View extends Vue {
     private logger!: ILogger;
     private isDownloading = false;
     private isImmunizationHistoryShown = false;
+
+    private breadcrumbItems: BreadcrumbItem[] = [
+        {
+            text: "COVID-19",
+            to: "/covid19",
+            active: true,
+            dataTestId: "breadcrumb-covid-19",
+        },
+    ];
 
     private get doses(): Dose[] {
         return this.covidImmunizations.map((element) => {
@@ -324,6 +336,10 @@ export default class Covid19View extends Vue {
 
 <template>
     <div class="background flex-grow-1 d-flex flex-column">
+        <BreadcrumbComponent
+            class="mt-3 mt-md-4 ml-3 ml-md-4"
+            :items="breadcrumbItems"
+        />
         <loading :is-loading="isLoading" :text="loadingStatusMessage" />
         <div
             v-if="!isVaccineCardLoading && !vaccinationStatusError"

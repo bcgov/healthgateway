@@ -22,7 +22,7 @@ library.add(faSearch, faCheckCircle);
         MessageModalComponent,
     },
 })
-export default class DashboardView extends Vue {
+export default class HomeView extends Vue {
     @Action("retrieveAuthenticatedVaccineRecord", {
         namespace: "vaccinationStatus",
     })
@@ -196,7 +196,7 @@ export default class DashboardView extends Vue {
                 Pacific Time.
             </span>
         </b-alert>
-        <page-title title="Dashboard" />
+        <page-title title="Home" />
         <h2>What do you want to focus on today?</h2>
         <b-row>
             <b-col cols="12" :lg="cardColumnSize" class="p-3">

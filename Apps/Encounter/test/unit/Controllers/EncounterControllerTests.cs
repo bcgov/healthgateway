@@ -18,14 +18,9 @@ namespace HealthGateway.EncounterTests
     using System;
     using System.Collections.Generic;
     using HealthGateway.Common.Models;
-    using HealthGateway.Encounter.Controllers;
     using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Services;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
     using Moq;
-    using Xunit;
 
     /// <summary>
     /// EncounterController's Unit Tests.
@@ -45,30 +40,32 @@ namespace HealthGateway.EncounterTests
 
         private static RequestResult<IEnumerable<EncounterModel>> GetEncounters()
         {
-            RequestResult<IEnumerable<EncounterModel>> result = new RequestResult<IEnumerable<EncounterModel>>();
-            var encounters = new List<EncounterModel>();
-            encounters.Add(new EncounterModel()
+            RequestResult<IEnumerable<EncounterModel>> result = new();
+            List<EncounterModel> encounters = new()
             {
-                Id = "1",
-                EncounterDate = new DateTime(2020 - 05 - 27),
-                SpecialtyDescription = "LABORATORY MEDICINE",
-                PractitionerName = "PRACTITIONER NAME",
-                Clinic = new Clinic()
+                new EncounterModel()
                 {
-                    Name = "LOCATION NAME",
+                    Id = "1",
+                    EncounterDate = new DateTime(2020 - 05 - 27),
+                    SpecialtyDescription = "LABORATORY MEDICINE",
+                    PractitionerName = "PRACTITIONER NAME",
+                    Clinic = new Clinic()
+                    {
+                        Name = "LOCATION NAME",
+                    },
                 },
-            });
-            encounters.Add(new EncounterModel()
-            {
-                Id = "2",
-                EncounterDate = new DateTime(2020 - 06 - 27),
-                SpecialtyDescription = "LABORATORY MEDICINE",
-                PractitionerName = "PRACTITIONER NAME",
-                Clinic = new Clinic()
+                new EncounterModel()
                 {
-                    Name = "LOCATION NAME",
+                    Id = "2",
+                    EncounterDate = new DateTime(2020 - 06 - 27),
+                    SpecialtyDescription = "LABORATORY MEDICINE",
+                    PractitionerName = "PRACTITIONER NAME",
+                    Clinic = new Clinic()
+                    {
+                        Name = "LOCATION NAME",
+                    },
                 },
-            });
+            };
             result.ResourcePayload = encounters;
             return result;
         }

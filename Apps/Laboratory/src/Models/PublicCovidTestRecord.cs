@@ -16,6 +16,7 @@
 namespace HealthGateway.Laboratory.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Models.PHSA;
 
@@ -24,6 +25,25 @@ namespace HealthGateway.Laboratory.Models
     /// </summary>
     public class PublicCovidTestRecord
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PublicCovidTestRecord"/> class.
+        /// </summary>
+        public PublicCovidTestRecord()
+        {
+            this.ResultDescription = new List<string>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PublicCovidTestRecord"/> class.
+        /// </summary>
+        /// <param name="resultDescription">The list of result descriptions.</param>
+        [JsonConstructor]
+        public PublicCovidTestRecord(
+            IList<string> resultDescription)
+        {
+            this.ResultDescription = resultDescription;
+        }
+
         /// <summary>
         /// Gets or sets the first name and last initial of the patient.
         /// </summary>
@@ -85,10 +105,10 @@ namespace HealthGateway.Laboratory.Models
         public string ResultTitle { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the result description.
+        /// Gets the result description.
         /// </summary>
         [JsonPropertyName("resultDescription")]
-        public string ResultDescription { get; set; } = string.Empty;
+        public IList<string> ResultDescription { get; }
 
         /// <summary>
         /// Gets or sets the result link.
@@ -103,7 +123,7 @@ namespace HealthGateway.Laboratory.Models
         /// <returns>The record model.</returns>
         public static PublicCovidTestRecord FromModel(CovidTestResult model)
         {
-            return new PublicCovidTestRecord()
+            return new PublicCovidTestRecord(model.ResultDescription)
             {
                 PatientDisplayName = model.PatientDisplayName,
                 Lab = model.Lab,
@@ -113,8 +133,9 @@ namespace HealthGateway.Laboratory.Models
                 TestStatus = model.TestStatus,
                 TestOutcome = model.TestOutcome,
                 ResultTitle = model.ResultTitle,
-                ResultDescription = model.ResultDescription,
                 ResultLink = model.ResultLink,
+                CollectionDateTime = model.CollectionDateTime,
+                ResultDateTime = model.ResultDateTime,
             };
         }
     }

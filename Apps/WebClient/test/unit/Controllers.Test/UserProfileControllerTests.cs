@@ -28,7 +28,6 @@ namespace HealthGateway.WebClient.Test.Controllers
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -54,7 +53,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             IActionResult actualResult = this.GetUserProfile(expected, new Dictionary<string, UserPreferenceModel>() { });
 
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(((JsonResult)actualResult)?.Value?.IsDeepEqual(expected));
+            expected.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -64,12 +63,15 @@ namespace HealthGateway.WebClient.Test.Controllers
         public void ShouldGetUserProfileWithoutUserPreference()
         {
             RequestResult<UserProfileModel> expected = this.GetUserProfileExpectedRequestResultMock(ResultType.Success);
+
             IActionResult actualResult = this.GetUserProfile(expected, null);
 
             Assert.IsType<JsonResult>(actualResult);
-            var jsonResult = actualResult as JsonResult;
-            var reqResult = jsonResult?.Value as RequestResult<UserProfileModel>;
-            Assert.True(reqResult != null && reqResult.ResultStatus == ResultType.Success && reqResult.ResourcePayload != null);
+            JsonResult? jsonResult = actualResult as JsonResult;
+            RequestResult<UserProfileModel>? reqResult = jsonResult?.Value as RequestResult<UserProfileModel>;
+            Assert.NotNull(reqResult);
+            Assert.Equal(ResultType.Success, reqResult?.ResultStatus);
+            Assert.NotNull(reqResult?.ResourcePayload);
             Assert.Empty(reqResult?.ResourcePayload?.Preferences);
         }
 
@@ -80,18 +82,18 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public async Task ShouldCreateUserProfile()
         {
-            UserProfile userProfile = new UserProfile
+            UserProfile userProfile = new()
             {
                 HdId = this.hdid,
                 AcceptedTermsOfService = true,
             };
 
-            CreateUserRequest createUserRequest = new CreateUserRequest
+            CreateUserRequest createUserRequest = new()
             {
                 Profile = userProfile,
             };
 
-            RequestResult<UserProfileModel> expected = new RequestResult<UserProfileModel>
+            RequestResult<UserProfileModel> expected = new()
             {
                 ResourcePayload = UserProfileModel.CreateFromDbModel(userProfile),
                 ResultStatus = ResultType.Success,
@@ -99,21 +101,22 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
-            Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
+            Mock<IUserProfileService> userProfileServiceMock = new();
             userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<DateTime>(), It.IsAny<string>())).ReturnsAsync(expected);
-            Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
-            Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
+            Mock<IUserEmailService> emailServiceMock = new();
+            Mock<IUserSMSService> smsServiceMock = new();
 
-            UserProfileController service = new UserProfileController(
+            UserProfileController service = new(
                 new Mock<ILogger<UserProfileController>>().Object,
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 smsServiceMock.Object);
+
             IActionResult actualResult = await service.CreateUserProfile(this.hdid, createUserRequest).ConfigureAwait(true);
 
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(((JsonResult)actualResult).Value?.IsDeepEqual(expected));
+            expected.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -123,18 +126,19 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public async Task ShouldValidateAge()
         {
-            PrimitiveRequestResult<bool> expected = new PrimitiveRequestResult<bool>() { ResultStatus = ResultType.Success, ResourcePayload = true };
+            PrimitiveRequestResult<bool> expected = new() { ResultStatus = ResultType.Success, ResourcePayload = true };
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
-            Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
+            Mock<IUserProfileService> userProfileServiceMock = new();
             userProfileServiceMock.Setup(s => s.ValidateMinimumAge(this.hdid)).ReturnsAsync(expected);
 
-            UserProfileController controller = new UserProfileController(
+            UserProfileController controller = new(
                 new Mock<ILogger<UserProfileController>>().Object,
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object);
+
             IActionResult actualResult = await controller.Validate(this.hdid).ConfigureAwait(true);
 
             Assert.IsType<JsonResult>(actualResult);
@@ -147,12 +151,13 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldCreateUserPreference()
         {
-            var userPref = new UserPreferenceModel()
+            UserPreferenceModel userPref = new()
             {
                 HdId = this.hdid,
                 Preference = "actionedCovidModalAt",
                 Value = "Body value",
             };
+
             IActionResult actualResult = this.CreateUserPreference(userPref);
 
             Assert.IsType<JsonResult>(actualResult);
@@ -181,12 +186,13 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldUpdateUserPreference()
         {
-            var userPref = new UserPreferenceModel()
+            UserPreferenceModel userPref = new()
             {
                 HdId = this.hdid,
                 Preference = "actionedCovidModalAt",
                 Value = "Body value",
             };
+
             IActionResult actualResult = this.UpdateUserPreference(userPref);
 
             Assert.IsType<JsonResult>(actualResult);
@@ -212,7 +218,7 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldUpdateUserPreferenceWithEmptyPreferenceError()
         {
-            var userPref = new UserPreferenceModel()
+            UserPreferenceModel userPref = new()
             {
                 HdId = this.hdid,
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -220,6 +226,7 @@ namespace HealthGateway.WebClient.Test.Controllers
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 Value = "Body value",
             };
+
             IActionResult actualResult = this.UpdateUserPreference(userPref);
 
             Assert.IsType<BadRequestResult>(actualResult);
@@ -231,12 +238,13 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldUpdateUserPreferenceWithForbidResultError()
         {
-            var userPref = new UserPreferenceModel()
+            UserPreferenceModel userPref = new()
             {
                 HdId = this.hdid + "dif.",
                 Preference = "valid pref name",
                 Value = "Body value",
             };
+
             IActionResult actualResult = this.UpdateUserPreference(userPref);
 
             Assert.IsType<ForbidResult>(actualResult);
@@ -249,36 +257,36 @@ namespace HealthGateway.WebClient.Test.Controllers
         public void ShouldGetLastTermsOfService()
         {
             // Setup
-            var termsOfService = new TermsOfServiceModel()
+            TermsOfServiceModel termsOfService = new()
             {
                 Id = Guid.NewGuid(),
                 Content = "abc",
                 EffectiveDate = DateTime.Today,
             };
-            RequestResult<TermsOfServiceModel> expectedResult = new RequestResult<TermsOfServiceModel>()
+            RequestResult<TermsOfServiceModel> expectedResult = new()
             {
                 ResultStatus = ResultType.Success,
                 ResourcePayload = termsOfService,
             };
 
-            Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
+            Mock<IUserProfileService> userProfileServiceMock = new();
             userProfileServiceMock.Setup(s => s.GetActiveTermsOfService()).Returns(expectedResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
-            Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
-            Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
+            Mock<IUserEmailService> emailServiceMock = new();
+            Mock<IUserSMSService> smsServiceMock = new();
 
-            UserProfileController service = new UserProfileController(
+            UserProfileController service = new(
                 new Mock<ILogger<UserProfileController>>().Object,
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 smsServiceMock.Object);
 
-            var actualResult = service.GetLastTermsOfService();
+            IActionResult actualResult = service.GetLastTermsOfService();
 
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(((JsonResult)actualResult).Value?.IsDeepEqual(expectedResult));
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -287,18 +295,20 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldUpdateUserEmail()
         {
-            Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
+            Mock<IUserEmailService> emailServiceMock = new();
             emailServiceMock.Setup(s => s.UpdateUserEmail(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
-            UserProfileController controller = new UserProfileController(
+            UserProfileController controller = new(
                 new Mock<ILogger<UserProfileController>>().Object,
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 new Mock<IUserSMSService>().Object);
+
             IActionResult actualResult = controller.UpdateUserEmail(this.hdid, "emailadd@hgw.ca");
-            var userUpdated = (actualResult as JsonResult)?.Value;
+
+            object? userUpdated = (actualResult as JsonResult)?.Value;
             Assert.True(userUpdated != null && (bool)userUpdated);
         }
 
@@ -309,26 +319,27 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public async Task ShouldValidateEmail()
         {
-            PrimitiveRequestResult<bool> primitiveRequestResult = new PrimitiveRequestResult<bool>()
+            PrimitiveRequestResult<bool> primitiveRequestResult = new()
             {
                 ResourcePayload = true,
                 ResultStatus = ResultType.Success,
                 ResultError = null,
             };
 
-            Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
+            Mock<IUserEmailService> emailServiceMock = new();
             emailServiceMock.Setup(s => s.ValidateEmail(It.IsAny<string>(), It.IsAny<Guid>())).Returns(primitiveRequestResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
-            UserProfileController controller = new UserProfileController(
+            UserProfileController controller = new(
                 new Mock<ILogger<UserProfileController>>().Object,
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 new Mock<IUserSMSService>().Object);
-            IActionResult actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
-            var result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
 
+            IActionResult actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
+
+            PrimitiveRequestResult<bool>? result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
             Assert.Equal(ResultType.Success, result?.ResultStatus);
         }
 
@@ -339,25 +350,26 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public async Task ShouldValidateEmailWithEmailNotFound()
         {
-            PrimitiveRequestResult<bool> primitiveRequestResult = new PrimitiveRequestResult<bool>()
+            PrimitiveRequestResult<bool> primitiveRequestResult = new()
             {
                 ResourcePayload = false,
                 ResultStatus = ResultType.Error,
                 ResultError = null,
             };
-            Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
+            Mock<IUserEmailService> emailServiceMock = new();
             emailServiceMock.Setup(s => s.ValidateEmail(It.IsAny<string>(), It.IsAny<Guid>())).Returns(primitiveRequestResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
-            UserProfileController controller = new UserProfileController(
+            UserProfileController controller = new(
                 new Mock<ILogger<UserProfileController>>().Object,
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 new Mock<IUserSMSService>().Object);
-            IActionResult actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
-            var result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
 
+            IActionResult actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
+
+            PrimitiveRequestResult<bool>? result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
             Assert.Equal(ResultType.Error, result!.ResultStatus);
         }
 
@@ -367,18 +379,20 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldUpdateUserSMSNumber()
         {
-            Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
+            Mock<IUserSMSService> smsServiceMock = new();
             smsServiceMock.Setup(s => s.UpdateUserSMS(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
-            UserProfileController controller = new UserProfileController(
+            UserProfileController controller = new(
                 new Mock<ILogger<UserProfileController>>().Object,
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object);
+
             IActionResult actualResult = controller.UpdateUserSMSNumber(this.hdid, "250 123 456");
-            var smsUpdated = (actualResult as JsonResult)?.Value;
+
+            object? smsUpdated = (actualResult as JsonResult)?.Value;
             Assert.True(smsUpdated != null && (bool)smsUpdated);
         }
 
@@ -388,25 +402,26 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldValidateSms()
         {
-            PrimitiveRequestResult<bool> primitiveRequestResult = new PrimitiveRequestResult<bool>()
+            PrimitiveRequestResult<bool> primitiveRequestResult = new()
             {
                 ResourcePayload = true,
                 ResultStatus = ResultType.Success,
                 ResultError = null,
             };
-            Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
+            Mock<IUserSMSService> smsServiceMock = new();
             smsServiceMock.Setup(s => s.ValidateSMS(It.IsAny<string>(), It.IsAny<string>())).Returns(primitiveRequestResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
-            UserProfileController controller = new UserProfileController(
+            UserProfileController controller = new(
                 new Mock<ILogger<UserProfileController>>().Object,
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object);
+
             IActionResult actualResult = Task.Run(async () => await controller.ValidateSMS(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
 
-            var result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
+            PrimitiveRequestResult<bool>? result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
             Assert.Equal(ResultType.Success, result?.ResultStatus);
             Assert.Equal(true, result?.ResourcePayload);
         }
@@ -417,38 +432,41 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldValidateSmsNotFoundResult()
         {
-            PrimitiveRequestResult<bool> primitiveRequestResult = new PrimitiveRequestResult<bool>()
+            PrimitiveRequestResult<bool> primitiveRequestResult = new()
             {
                 ResourcePayload = false,
                 ResultStatus = ResultType.Success,
                 ResultError = null,
             };
-            Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
+            Mock<IUserSMSService> smsServiceMock = new();
             smsServiceMock.Setup(s => s.ValidateSMS(It.IsAny<string>(), It.IsAny<string>())).Returns(primitiveRequestResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
-            UserProfileController controller = new UserProfileController(
+            UserProfileController controller = new(
                 new Mock<ILogger<UserProfileController>>().Object,
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object);
+
             IActionResult actualResult = Task.Run(async () => await controller.ValidateSMS(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
 
-            var result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
+            PrimitiveRequestResult<bool>? result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
             Assert.Equal(ResultType.Success, result?.ResultStatus);
             Assert.Equal(false, result?.ResourcePayload);
         }
 
         private static Mock<IHttpContextAccessor> CreateValidHttpContext(string token, string userId, string hdid)
         {
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", token);
-            headerDictionary.Add("referer", "http://localhost/");
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            IHeaderDictionary headerDictionary = new HeaderDictionary
+            {
+                { "Authorization", token },
+                { "referer", "http://localhost/" },
+            };
+            Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
 
-            List<Claim> claims = new List<Claim>()
+            List<Claim> claims = new()
             {
                 new Claim(ClaimTypes.Name, "username"),
                 new Claim(ClaimTypes.NameIdentifier, userId),
@@ -456,16 +474,16 @@ namespace HealthGateway.WebClient.Test.Controllers
                 new Claim("auth_time", "123"),
                 new Claim("access_token", token),
             };
-            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
-            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+            ClaimsIdentity identity = new(claims, "TestAuth");
+            ClaimsPrincipal claimsPrincipal = new(identity);
 
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+            Mock<HttpContext> httpContextMock = new();
             httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
             httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
-            Mock<IAuthenticationService> authenticationMock = new Mock<IAuthenticationService>();
-            var authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
+            Mock<IAuthenticationService> authenticationMock = new();
+            AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
             authResult.Properties.StoreTokens(new[]
             {
                 new AuthenticationToken { Name = "access_token", Value = token },
@@ -482,7 +500,7 @@ namespace HealthGateway.WebClient.Test.Controllers
 
         private RequestResult<UserProfileModel> GetUserProfileExpectedRequestResultMock(ResultType resultType)
         {
-            UserProfile userProfile = new UserProfile
+            UserProfile userProfile = new()
             {
                 HdId = this.hdid,
                 AcceptedTermsOfService = true,
@@ -502,15 +520,15 @@ namespace HealthGateway.WebClient.Test.Controllers
             // Setup
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
-            Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
+            Mock<IUserProfileService> userProfileServiceMock = new();
             userProfileServiceMock.Setup(s => s.GetUserProfile(this.hdid, It.IsAny<DateTime>())).Returns(expected);
             userProfileServiceMock.Setup(s => s.GetActiveTermsOfService()).Returns(new RequestResult<TermsOfServiceModel>());
             userProfileServiceMock.Setup(s => s.GetUserPreferences(this.hdid)).Returns(new RequestResult<Dictionary<string, UserPreferenceModel>>() { ResourcePayload = userPreferencePayloadMock });
 
-            Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
-            Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
+            Mock<IUserEmailService> emailServiceMock = new();
+            Mock<IUserSMSService> smsServiceMock = new();
 
-            UserProfileController service = new UserProfileController(
+            UserProfileController service = new(
                 new Mock<ILogger<UserProfileController>>().Object,
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
@@ -524,8 +542,8 @@ namespace HealthGateway.WebClient.Test.Controllers
             // Setup
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
-            Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
-            RequestResult<UserPreferenceModel> result = new RequestResult<UserPreferenceModel>()
+            Mock<IUserProfileService> userProfileServiceMock = new();
+            RequestResult<UserPreferenceModel> result = new()
             {
                 ResourcePayload = userPref,
                 ResultStatus = ResultType.Success,
@@ -533,10 +551,10 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             userProfileServiceMock.Setup(s => s.UpdateUserPreference(userPref)).Returns(result);
 
-            Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
-            Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
+            Mock<IUserEmailService> emailServiceMock = new();
+            Mock<IUserSMSService> smsServiceMock = new();
 
-            UserProfileController service = new UserProfileController(
+            UserProfileController service = new(
                 new Mock<ILogger<UserProfileController>>().Object,
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
@@ -550,8 +568,8 @@ namespace HealthGateway.WebClient.Test.Controllers
             // Setup
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
-            Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
-            RequestResult<UserPreferenceModel> result = new RequestResult<UserPreferenceModel>()
+            Mock<IUserProfileService> userProfileServiceMock = new();
+            RequestResult<UserPreferenceModel> result = new()
             {
                 ResourcePayload = userPref,
                 ResultStatus = ResultType.Success,
@@ -559,10 +577,10 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             userProfileServiceMock.Setup(s => s.CreateUserPreference(userPref)).Returns(result);
 
-            Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
-            Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
+            Mock<IUserEmailService> emailServiceMock = new();
+            Mock<IUserSMSService> smsServiceMock = new();
 
-            UserProfileController service = new UserProfileController(
+            UserProfileController service = new(
                 new Mock<ILogger<UserProfileController>>().Object,
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,

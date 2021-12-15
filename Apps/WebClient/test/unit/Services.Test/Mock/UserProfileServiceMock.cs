@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClientTests.Services.Test.Mock
 {
-    using System;
     using System.Collections.Generic;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
@@ -54,7 +53,7 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <param name="userProfileHistoryDbResult">user profile history from DbResult.</param>
         public UserProfileServiceMock(string hdId, DBStatusCode dbResultStatus, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, DBResult<IEnumerable<UserPreference>> readResult, LegalAgreement termsOfService, IConfiguration configuration, DBResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult)
         {
-            int limit = configuration.GetSection(this.webClientConfigSection).GetValue<int>(this.userProfileHistoryRecordLimitKey, 2);
+            int limit = configuration.GetSection(this.webClientConfigSection).GetValue(this.userProfileHistoryRecordLimitKey, 2);
 
             this.userProfileService = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
@@ -81,9 +80,9 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// <param name="userProfileDbResult">user profile from DbResult.</param>
         /// <param name="registrationStatus">registration status.</param>
         /// <param name="configuration">configuration.</param>
-        public UserProfileServiceMock(string message,  UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, string registrationStatus, IConfiguration configuration)
+        public UserProfileServiceMock(string message, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, string registrationStatus, IConfiguration configuration)
         {
-            var externalConfiguration = new ExternalConfiguration()
+            ExternalConfiguration externalConfiguration = new()
             {
                 WebClient = new WebClientConfiguration()
                 {

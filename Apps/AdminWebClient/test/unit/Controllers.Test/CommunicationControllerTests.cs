@@ -21,6 +21,7 @@ namespace HealthGateway.Admin.Test.Services
     using HealthGateway.Admin.Controllers;
     using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using Microsoft.AspNetCore.Mvc;
@@ -43,7 +44,7 @@ namespace HealthGateway.Admin.Test.Services
         public void ShouldAddCommunication(CommunicationType communicationType)
         {
             // Sample communications to test
-            Communication comm = new Communication()
+            Communication comm = new()
             {
                 Text = "Test communication",
                 Subject = "Testing communication",
@@ -52,23 +53,23 @@ namespace HealthGateway.Admin.Test.Services
                 CommunicationTypeCode = communicationType,
             };
 
-            RequestResult<Communication> expected = new RequestResult<Communication>
+            RequestResult<Communication> expected = new()
             {
                 ResourcePayload = comm,
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
             };
 
-            Mock<ICommunicationService> mockCommunicationService = new Mock<ICommunicationService>();
+            Mock<ICommunicationService> mockCommunicationService = new();
             mockCommunicationService.Setup(s => s.Add(It.Is<Communication>(x => x.Text == comm.Text))).Returns(expected);
 
             // Initialize controller
-            CommunicationController controller = new CommunicationController(
-                mockCommunicationService.Object);
+            CommunicationController controller = new(mockCommunicationService.Object);
 
             // Test if controller adds communication properly
             IActionResult actualResult = controller.Add(comm);
+
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(expected.IsDeepEqual(((JsonResult)actualResult).Value));
+            expected.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -78,40 +79,41 @@ namespace HealthGateway.Admin.Test.Services
         public void ShouldGetCommunications()
         {
             // Sample communications to test
-            List<Communication> commsList = new List<Communication>();
-            commsList.Add(new Communication()
+            List<Communication> commsList = new()
             {
-                Text = "Test communication",
-                Subject = "Testing communication",
-                EffectiveDateTime = new DateTime(2020, 04, 04),
-                ExpiryDateTime = new DateTime(2020, 05, 13),
-            });
-
-            commsList.Add(new Communication()
-            {
-                Text = "Test communication 2",
-                Subject = "Testing communication 2",
-                EffectiveDateTime = new DateTime(2021, 04, 04),
-                ExpiryDateTime = new DateTime(2021, 05, 13),
-            });
-
-            RequestResult<IEnumerable<Communication>> expected = new RequestResult<IEnumerable<Communication>>
-            {
-                ResourcePayload = commsList,
-                ResultStatus = Common.Constants.ResultType.Success,
+                new Communication()
+                {
+                    Text = "Test communication",
+                    Subject = "Testing communication",
+                    EffectiveDateTime = new DateTime(2020, 04, 04),
+                    ExpiryDateTime = new DateTime(2020, 05, 13),
+                },
+                new Communication()
+                {
+                    Text = "Test communication 2",
+                    Subject = "Testing communication 2",
+                    EffectiveDateTime = new DateTime(2021, 04, 04),
+                    ExpiryDateTime = new DateTime(2021, 05, 13),
+                },
             };
 
-            Mock<ICommunicationService> mockCommunicationService = new Mock<ICommunicationService>();
+            RequestResult<IEnumerable<Communication>> expected = new()
+            {
+                ResourcePayload = commsList,
+                ResultStatus = ResultType.Success,
+            };
+
+            Mock<ICommunicationService> mockCommunicationService = new();
             mockCommunicationService.Setup(s => s.GetAll()).Returns(expected);
 
             // Initialize controller
-            CommunicationController controller = new CommunicationController(
-                mockCommunicationService.Object);
+            CommunicationController controller = new(mockCommunicationService.Object);
 
             // Test if controller gets communications properly
             IActionResult actualResult = controller.GetAll();
+
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(expected.IsDeepEqual(((JsonResult)actualResult).Value));
+            expected.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -121,7 +123,7 @@ namespace HealthGateway.Admin.Test.Services
         public void ShouldUpdateCommunication()
         {
             // Sample communications to test
-            Communication comm = new Communication()
+            Communication comm = new()
             {
                 Id = Guid.NewGuid(),
                 Text = "Test update communication",
@@ -130,23 +132,23 @@ namespace HealthGateway.Admin.Test.Services
                 ExpiryDateTime = new DateTime(2020, 07, 07),
             };
 
-            RequestResult<Communication> expected = new RequestResult<Communication>
+            RequestResult<Communication> expected = new()
             {
                 ResourcePayload = comm,
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
             };
 
-            Mock<ICommunicationService> mockCommunicationService = new Mock<ICommunicationService>();
+            Mock<ICommunicationService> mockCommunicationService = new();
             mockCommunicationService.Setup(s => s.Update(It.Is<Communication>(x => x.Text == comm.Text))).Returns(expected);
 
             // Initialize controller
-            CommunicationController controller = new CommunicationController(
-                mockCommunicationService.Object);
+            CommunicationController controller = new(mockCommunicationService.Object);
 
             // Test if controller adds communication properly
             IActionResult actualResult = controller.Update(comm);
+
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(expected.IsDeepEqual(((JsonResult)actualResult).Value));
+            expected.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
     }
 }

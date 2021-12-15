@@ -16,7 +16,9 @@
 namespace HealthGateway.WebClient.Test.Controllers
 {
     using DeepEqual.Syntax;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Controllers;
     using HealthGateway.WebClient.Services;
@@ -35,23 +37,23 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldGetCommunication()
         {
-            RequestResult<Communication> expectedResult = new RequestResult<Communication>()
+            RequestResult<Communication> expectedResult = new()
             {
                 ResourcePayload = new Communication()
                 {
                     Subject = "Mocked Subject",
                     Text = "Mocked Text",
                 },
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
             };
 
-            Mock<ICommunicationService> communicationServiceMock = new Mock<ICommunicationService>();
-            communicationServiceMock.Setup(s => s.GetActiveBanner(Database.Constants.CommunicationType.Banner)).Returns(expectedResult);
+            Mock<ICommunicationService> communicationServiceMock = new();
+            communicationServiceMock.Setup(s => s.GetActiveBanner(CommunicationType.Banner)).Returns(expectedResult);
 
-            CommunicationController controller = new CommunicationController(communicationServiceMock.Object);
-            var actualResult = controller.Get();
+            CommunicationController controller = new(communicationServiceMock.Object);
+            IActionResult actualResult = controller.Get();
 
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
     }
 }

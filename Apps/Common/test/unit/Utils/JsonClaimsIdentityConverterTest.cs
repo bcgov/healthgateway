@@ -33,8 +33,10 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldCanConvertClaimsIdentity()
         {
-            JsonClaimsIdentityConverter jsonClaimsIdentityConverter = new JsonClaimsIdentityConverter();
-            var actualResult = jsonClaimsIdentityConverter.CanConvert(typeof(ClaimsIdentity));
+            JsonClaimsIdentityConverter jsonClaimsIdentityConverter = new();
+
+            bool actualResult = jsonClaimsIdentityConverter.CanConvert(typeof(ClaimsIdentity));
+
             Assert.True(actualResult);
         }
 
@@ -44,8 +46,10 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldCanConvertNotClaimsIdentity()
         {
-            JsonClaimsIdentityConverter jsonClaimsIdentityConverter = new JsonClaimsIdentityConverter();
-            var actualResult = jsonClaimsIdentityConverter.CanConvert(typeof(string));
+            JsonClaimsIdentityConverter jsonClaimsIdentityConverter = new();
+
+            bool actualResult = jsonClaimsIdentityConverter.CanConvert(typeof(string));
+
             Assert.False(actualResult);
         }
 
@@ -55,16 +59,14 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldWriteJson()
         {
-            StringBuilder sb = new StringBuilder();
-            StringWriter sw = new StringWriter(sb);
-            using (JsonWriter writer = new JsonTextWriter(sw))
-            {
-                ClaimsIdentity claimsIdentity = new ClaimsIdentity("mockAuthenticationType", "mockNameType", "mockRoleType");
-                JsonSerializer jsonSerializer = new JsonSerializer();
+            StringBuilder sb = new();
+            StringWriter sw = new(sb);
+            using JsonWriter writer = new JsonTextWriter(sw);
+            ClaimsIdentity claimsIdentity = new("mockAuthenticationType", "mockNameType", "mockRoleType");
+            JsonSerializer jsonSerializer = new();
+            JsonClaimsIdentityConverter jsonClaimsIdentityConverter = new();
 
-                JsonClaimsIdentityConverter jsonClaimsIdentityConverter = new JsonClaimsIdentityConverter();
-                jsonClaimsIdentityConverter.WriteJson(writer, claimsIdentity, jsonSerializer);
-            }
+            jsonClaimsIdentityConverter.WriteJson(writer, claimsIdentity, jsonSerializer);
 
             Assert.NotEmpty(sb.ToString());
         }

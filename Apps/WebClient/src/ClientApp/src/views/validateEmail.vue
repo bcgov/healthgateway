@@ -82,7 +82,7 @@ export default class ValidateEmailView extends Vue {
                     <hg-button
                         data-testid="continueButton"
                         variant="primary"
-                        to="/dashboard"
+                        to="/home"
                     >
                         Continue
                     </hg-button>
@@ -100,7 +100,7 @@ export default class ValidateEmailView extends Vue {
                     <hg-button
                         data-testid="continueButton"
                         variant="primary"
-                        to="/dashboard"
+                        to="/home"
                     >
                         Continue
                     </hg-button>

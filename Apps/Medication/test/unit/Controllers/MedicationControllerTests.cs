@@ -37,12 +37,12 @@ namespace HealthGateway.Medication.Controllers.Test
         public void ShouldNotGetSingleMedication()
         {
             // Setup
-            Mock<IMedicationService> serviceMock = new Mock<IMedicationService>();
+            Mock<IMedicationService> serviceMock = new();
             serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(new Dictionary<string, MedicationInformation>());
 
             string drugIdentifier = "000001";
             string paddedDin = drugIdentifier.PadLeft(8, '0');
-            MedicationController controller = new MedicationController(serviceMock.Object);
+            MedicationController controller = new(serviceMock.Object);
 
             // Act
             RequestResult<MedicationInformation> actual = controller.GetMedication(drugIdentifier);
@@ -60,7 +60,7 @@ namespace HealthGateway.Medication.Controllers.Test
         {
             // Setup
             string drugIdentifier = "00000001";
-            Dictionary<string, MedicationInformation> expectedResult = new Dictionary<string, MedicationInformation>()
+            Dictionary<string, MedicationInformation> expectedResult = new()
             {
                 {
                     drugIdentifier,
@@ -78,11 +78,11 @@ namespace HealthGateway.Medication.Controllers.Test
                 },
             };
 
-            Mock<IMedicationService> serviceMock = new Mock<IMedicationService>();
+            Mock<IMedicationService> serviceMock = new();
             serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(expectedResult);
 
             string paddedDin = drugIdentifier.PadLeft(8, '0');
-            MedicationController controller = new MedicationController(serviceMock.Object);
+            MedicationController controller = new(serviceMock.Object);
 
             // Act
             RequestResult<MedicationInformation> actual = controller.GetMedication(drugIdentifier);
@@ -99,12 +99,12 @@ namespace HealthGateway.Medication.Controllers.Test
         public void ShouldGetMultipleMedications()
         {
             // Setup
-            Mock<IMedicationService> serviceMock = new Mock<IMedicationService>();
+            Mock<IMedicationService> serviceMock = new();
             serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(new Dictionary<string, MedicationInformation>());
 
-            List<string> drugIdentifiers = new List<string>() { "000001", "000003", "000003" };
+            List<string> drugIdentifiers = new() { "000001", "000003", "000003" };
             List<string> paddedDinList = drugIdentifiers.Select(x => x.PadLeft(8, '0')).ToList();
-            MedicationController controller = new MedicationController(serviceMock.Object);
+            MedicationController controller = new(serviceMock.Object);
 
             // Act
             RequestResult<IDictionary<string, MedicationInformation>> actual = controller.GetMedications(drugIdentifiers);

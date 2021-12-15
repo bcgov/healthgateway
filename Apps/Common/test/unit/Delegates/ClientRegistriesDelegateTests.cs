@@ -22,7 +22,6 @@ namespace HealthGateway.CommonTests.Delegates
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using ServiceReference;
@@ -65,154 +64,153 @@ namespace HealthGateway.CommonTests.Delegates
             };
             DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
 
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget =
-                new HCIM_IN_GetDemographicsResponseIdentifiedPerson()
+            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
+            {
+                id = new II[]
+                    {
+                        new II()
+                        {
+                            root = "2.16.840.1.113883.3.51.1.1.6",
+                            extension = expectedHdId,
+                        },
+                    },
+                addr = new AD[]
+                {
+                    new()
+                    {
+                        use = new cs_PostalAddressUse[]
+                        {
+                            cs_PostalAddressUse.PHYS,
+                        },
+                        Items = new ADXP[]
+                        {
+                            new ADStreetAddressLine
+                            {
+                                Text = new string[]
+                                {
+                                    expectedPhysicalAddr.StreetLines[0],
+                                    expectedPhysicalAddr.StreetLines[1],
+                                    expectedPhysicalAddr.StreetLines[2],
+                                },
+                            },
+                            new ADCity
+                            {
+                                Text = new string[]
+                                {
+                                    expectedPhysicalAddr.City,
+                                },
+                            },
+                            new ADState
+                            {
+                                Text = new string[]
+                                {
+                                    expectedPhysicalAddr.State,
+                                },
+                            },
+                            new ADPostalCode
+                            {
+                                Text = new string[]
+                                {
+                                    expectedPhysicalAddr.PostalCode,
+                                },
+                            },
+                            new ADCountry
+                            {
+                                Text = new string[]
+                                {
+                                    expectedPhysicalAddr.Country,
+                                },
+                            },
+                        },
+                    },
+                    new()
+                    {
+                        use = new cs_PostalAddressUse[]
+                        {
+                            cs_PostalAddressUse.PST,
+                        },
+                        Items = new ADXP[]
+                        {
+                            new ADStreetAddressLine
+                            {
+                                Text = new string[]
+                                {
+                                    expectedPostalAddr.StreetLines[0],
+                                    expectedPostalAddr.StreetLines[1],
+                                    expectedPostalAddr.StreetLines[2],
+                                },
+                            },
+                            new ADCity
+                            {
+                                Text = new string[]
+                                {
+                                    expectedPostalAddr.City,
+                                },
+                            },
+                            new ADState
+                            {
+                                Text = new string[]
+                                {
+                                    expectedPostalAddr.State,
+                                },
+                            },
+                            new ADPostalCode
+                            {
+                                Text = new string[]
+                                {
+                                    expectedPostalAddr.PostalCode,
+                                },
+                            },
+                            new ADCountry
+                            {
+                                Text = new string[]
+                                {
+                                    expectedPostalAddr.Country,
+                                },
+                            },
+                        },
+                    },
+                },
+                identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
                 {
                     id = new II[]
-                        {
-                            new II()
-                            {
-                                root = "2.16.840.1.113883.3.51.1.1.6",
-                                extension = expectedHdId,
-                            },
-                        },
-                    addr = new AD[]
                     {
-                        new()
+                        new II()
                         {
-                            use = new cs_PostalAddressUse[]
-                            {
-                                cs_PostalAddressUse.PHYS,
-                            },
-                            Items = new ADXP[]
-                            {
-                                new ADStreetAddressLine
-                                {
-                                    Text = new string[]
-                                    {
-                                        expectedPhysicalAddr.StreetLines[0],
-                                        expectedPhysicalAddr.StreetLines[1],
-                                        expectedPhysicalAddr.StreetLines[2],
-                                    },
-                                },
-                                new ADCity
-                                {
-                                    Text = new string[]
-                                    {
-                                        expectedPhysicalAddr.City,
-                                    },
-                                },
-                                new ADState
-                                {
-                                    Text = new string[]
-                                    {
-                                        expectedPhysicalAddr.State,
-                                    },
-                                },
-                                new ADPostalCode
-                                {
-                                    Text = new string[]
-                                    {
-                                        expectedPhysicalAddr.PostalCode,
-                                    },
-                                },
-                                new ADCountry
-                                {
-                                    Text = new string[]
-                                    {
-                                        expectedPhysicalAddr.Country,
-                                    },
-                                },
-                            },
-                        },
-                        new()
-                        {
-                            use = new cs_PostalAddressUse[]
-                            {
-                                cs_PostalAddressUse.PST,
-                            },
-                            Items = new ADXP[]
-                            {
-                                new ADStreetAddressLine
-                                {
-                                    Text = new string[]
-                                    {
-                                        expectedPostalAddr.StreetLines[0],
-                                        expectedPostalAddr.StreetLines[1],
-                                        expectedPostalAddr.StreetLines[2],
-                                    },
-                                },
-                                new ADCity
-                                {
-                                    Text = new string[]
-                                    {
-                                        expectedPostalAddr.City,
-                                    },
-                                },
-                                new ADState
-                                {
-                                    Text = new string[]
-                                    {
-                                        expectedPostalAddr.State,
-                                    },
-                                },
-                                new ADPostalCode
-                                {
-                                    Text = new string[]
-                                    {
-                                        expectedPostalAddr.PostalCode,
-                                    },
-                                },
-                                new ADCountry
-                                {
-                                    Text = new string[]
-                                    {
-                                        expectedPostalAddr.Country,
-                                    },
-                                },
-                            },
+                            root = "2.16.840.1.113883.3.51.1.1.6.1",
+                            extension = expectedPhn,
                         },
                     },
-                    identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
+                    name = new PN[]
                     {
-                        id = new II[]
+                        new PN()
                         {
-                            new II()
+                            Items = new ENXP[]
                             {
-                                root = "2.16.840.1.113883.3.51.1.1.6.1",
-                                extension = expectedPhn,
-                            },
-                        },
-                        name = new PN[]
-                        {
-                            new PN()
-                            {
-                                Items = new ENXP[]
+                                new engiven()
                                 {
-                                    new engiven()
-                                    {
-                                        Text = new string[] { expectedFirstName },
-                                    },
-                                    new enfamily()
-                                    {
-                                        Text = new string[] { expectedLastName },
-                                    },
+                                    Text = new string[] { expectedFirstName },
                                 },
-                                use = new cs_EntityNameUse[] { cs_EntityNameUse.C },
+                                new enfamily()
+                                {
+                                    Text = new string[] { expectedLastName },
+                                },
                             },
-                        },
-                        birthTime = new TS()
-                        {
-                            value = "20001231",
-                        },
-                        administrativeGenderCode = new CE()
-                        {
-                            code = "F",
+                            use = new cs_EntityNameUse[] { cs_EntityNameUse.C },
                         },
                     },
-                };
+                    birthTime = new TS()
+                    {
+                        value = "20001231",
+                    },
+                    administrativeGenderCode = new CE()
+                    {
+                        code = "F",
+                    },
+                },
+            };
 
-            Mock<QUPA_AR101102_PortType> clientMock = new Mock<QUPA_AR101102_PortType>();
+            Mock<QUPA_AR101102_PortType> clientMock = new();
             clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
                 new HCIM_IN_GetDemographicsResponse1()
                 {
@@ -237,7 +235,7 @@ namespace HealthGateway.CommonTests.Delegates
                         },
                     },
                 });
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
                 clientMock.Object);
@@ -253,8 +251,8 @@ namespace HealthGateway.CommonTests.Delegates
             Assert.Equal(expectedLastName, actual.ResourcePayload?.LastName);
             Assert.Equal(expectedBirthDate, actual.ResourcePayload?.Birthdate);
             Assert.Equal(expectedGender, actual.ResourcePayload?.Gender);
-            Assert.True(actual.ResourcePayload?.PhysicalAddress.IsDeepEqual(expectedPhysicalAddr));
-            Assert.True(actual.ResourcePayload?.PostalAddress.IsDeepEqual(expectedPostalAddr));
+            expectedPhysicalAddr.ShouldDeepEqual(actual.ResourcePayload?.PhysicalAddress);
+            expectedPostalAddr.ShouldDeepEqual(actual.ResourcePayload?.PostalAddress);
         }
 
         /// <summary>
@@ -271,57 +269,56 @@ namespace HealthGateway.CommonTests.Delegates
             string expectedFirstName = "John";
             string expectedLastName = "Doe";
 
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget =
-                new HCIM_IN_GetDemographicsResponseIdentifiedPerson()
-                {
-                    id = new II[]
-                        {
-                            new II()
-                            {
-                                root = "2.16.840.1.113883.3.51.1.1.6",
-                                extension = hdid,
-                            },
-                        },
-                    identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
+            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
+            {
+                id = new II[]
                     {
-                        id = new II[]
+                        new II()
                         {
-                            new II()
-                            {
-                                root = "01010101010",
-                                extension = expectedPhn,
-                            },
-                        },
-                        name = new PN[]
-                        {
-                            new PN()
-                            {
-                                Items = new ENXP[]
-                                {
-                                    new engiven()
-                                    {
-                                        Text = new string[] { expectedFirstName },
-                                    },
-                                    new enfamily()
-                                    {
-                                        Text = new string[] { expectedLastName },
-                                    },
-                                },
-                                use = new cs_EntityNameUse[] { cs_EntityNameUse.C },
-                            },
-                        },
-                        birthTime = new TS()
-                        {
-                            value = "20001231",
-                        },
-                        administrativeGenderCode = new CE()
-                        {
-                            code = "F",
+                            root = "2.16.840.1.113883.3.51.1.1.6",
+                            extension = hdid,
                         },
                     },
-                };
+                identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
+                {
+                    id = new II[]
+                    {
+                        new II()
+                        {
+                            root = "01010101010",
+                            extension = expectedPhn,
+                        },
+                    },
+                    name = new PN[]
+                    {
+                        new PN()
+                        {
+                            Items = new ENXP[]
+                            {
+                                new engiven()
+                                {
+                                    Text = new string[] { expectedFirstName },
+                                },
+                                new enfamily()
+                                {
+                                    Text = new string[] { expectedLastName },
+                                },
+                            },
+                            use = new cs_EntityNameUse[] { cs_EntityNameUse.C },
+                        },
+                    },
+                    birthTime = new TS()
+                    {
+                        value = "20001231",
+                    },
+                    administrativeGenderCode = new CE()
+                    {
+                        code = "F",
+                    },
+                },
+            };
 
-            Mock<QUPA_AR101102_PortType> clientMock = new Mock<QUPA_AR101102_PortType>();
+            Mock<QUPA_AR101102_PortType> clientMock = new();
             clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
                 new HCIM_IN_GetDemographicsResponse1()
                 {
@@ -346,7 +343,7 @@ namespace HealthGateway.CommonTests.Delegates
                         },
                     },
                 });
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
                 clientMock.Object);
@@ -375,72 +372,71 @@ namespace HealthGateway.CommonTests.Delegates
             string expectedGender = "Female";
             DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
 
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget =
-                new HCIM_IN_GetDemographicsResponseIdentifiedPerson()
-                {
-                    id = new II[]
-                        {
-                            new II()
-                            {
-                                root = "2.16.840.1.113883.3.51.1.1.6",
-                                extension = expectedHdId,
-                            },
-                        },
-                    identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
+            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
+            {
+                id = new II[]
                     {
-                        id = new II[]
+                        new II()
                         {
-                            new II()
-                            {
-                                root = "2.16.840.1.113883.3.51.1.1.6.1",
-                                extension = expectedPhn,
-                            },
-                        },
-                        name = new PN[]
-                        {
-                            new PN()
-                            {
-                                Items = new ENXP[]
-                                {
-                                    new engiven()
-                                    {
-                                        Text = new string[] { "Wrong Given Name" },
-                                    },
-                                    new enfamily()
-                                    {
-                                        Text = new string[] { "Wrong Family Name" },
-                                    },
-                                },
-                                use = new cs_EntityNameUse[] { cs_EntityNameUse.L },
-                            },
-                            new PN()
-                            {
-                                Items = new ENXP[]
-                                {
-                                    new engiven()
-                                    {
-                                        Text = new string[] { expectedFirstName },
-                                    },
-                                    new enfamily()
-                                    {
-                                        Text = new string[] { expectedLastName },
-                                    },
-                                },
-                                use = new cs_EntityNameUse[] { cs_EntityNameUse.C, },
-                            },
-                        },
-                        birthTime = new TS()
-                        {
-                            value = "20001231",
-                        },
-                        administrativeGenderCode = new CE()
-                        {
-                            code = "F",
+                            root = "2.16.840.1.113883.3.51.1.1.6",
+                            extension = expectedHdId,
                         },
                     },
-                };
+                identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
+                {
+                    id = new II[]
+                    {
+                        new II()
+                        {
+                            root = "2.16.840.1.113883.3.51.1.1.6.1",
+                            extension = expectedPhn,
+                        },
+                    },
+                    name = new PN[]
+                    {
+                        new PN()
+                        {
+                            Items = new ENXP[]
+                            {
+                                new engiven()
+                                {
+                                    Text = new string[] { "Wrong Given Name" },
+                                },
+                                new enfamily()
+                                {
+                                    Text = new string[] { "Wrong Family Name" },
+                                },
+                            },
+                            use = new cs_EntityNameUse[] { cs_EntityNameUse.L },
+                        },
+                        new PN()
+                        {
+                            Items = new ENXP[]
+                            {
+                                new engiven()
+                                {
+                                    Text = new string[] { expectedFirstName },
+                                },
+                                new enfamily()
+                                {
+                                    Text = new string[] { expectedLastName },
+                                },
+                            },
+                            use = new cs_EntityNameUse[] { cs_EntityNameUse.C, },
+                        },
+                    },
+                    birthTime = new TS()
+                    {
+                        value = "20001231",
+                    },
+                    administrativeGenderCode = new CE()
+                    {
+                        code = "F",
+                    },
+                },
+            };
 
-            Mock<QUPA_AR101102_PortType> clientMock = new Mock<QUPA_AR101102_PortType>();
+            Mock<QUPA_AR101102_PortType> clientMock = new();
             clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
                 new HCIM_IN_GetDemographicsResponse1()
                 {
@@ -465,7 +461,7 @@ namespace HealthGateway.CommonTests.Delegates
                         },
                     },
                 });
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
                 clientMock.Object);
@@ -499,96 +495,95 @@ namespace HealthGateway.CommonTests.Delegates
             string expectedGender = "Female";
             DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
 
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget =
-                new HCIM_IN_GetDemographicsResponseIdentifiedPerson()
-                {
-                    id = new II[]
-                        {
-                            new II()
-                            {
-                                root = "2.16.840.1.113883.3.51.1.1.6",
-                                extension = expectedHdId,
-                            },
-                        },
-                    identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
+            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
+            {
+                id = new II[]
                     {
-                        id = new II[]
+                        new II()
                         {
-                            new II()
-                            {
-                                root = "2.16.840.1.113883.3.51.1.1.6.1",
-                                extension = expectedPhn,
-                            },
-                        },
-                        name = new PN[]
-                        {
-                            new PN()
-                            {
-                                Items = new ENXP[]
-                                {
-                                    new engiven()
-                                    {
-                                        Text = new string[] { "Wrong Given Name" },
-                                    },
-                                    new enfamily()
-                                    {
-                                        Text = new string[] { "Wrong Family Name" },
-                                    },
-                                },
-                                use = new cs_EntityNameUse[] { cs_EntityNameUse.L },
-                            },
-                            new PN()
-                            {
-                                Items = new ENXP[]
-                                {
-                                    new engiven()
-                                    {
-                                        Text = new string[] { expectedFirstName },
-                                        qualifier = new cs_EntityNamePartQualifier[]
-                                        {
-                                            cs_EntityNamePartQualifier.AC,
-                                        },
-                                    },
-                                    new engiven()
-                                    {
-                                        qualifier = new cs_EntityNamePartQualifier[]
-                                        {
-                                            cs_EntityNamePartQualifier.CL,
-                                        },
-                                        Text = new string[] { "Bad First Name" },
-                                    },
-                                    new enfamily()
-                                    {
-                                        Text = new string[] { expectedLastName },
-                                        qualifier = new cs_EntityNamePartQualifier[]
-                                        {
-                                            cs_EntityNamePartQualifier.IN,
-                                        },
-                                    },
-                                    new enfamily()
-                                    {
-                                        qualifier = new cs_EntityNamePartQualifier[]
-                                        {
-                                            cs_EntityNamePartQualifier.CL,
-                                        },
-                                        Text = new string[] { "Bad Last Name" },
-                                    },
-                                },
-                                use = new cs_EntityNameUse[] { cs_EntityNameUse.C },
-                            },
-                        },
-                        birthTime = new TS()
-                        {
-                            value = "20001231",
-                        },
-                        administrativeGenderCode = new CE()
-                        {
-                            code = "F",
+                            root = "2.16.840.1.113883.3.51.1.1.6",
+                            extension = expectedHdId,
                         },
                     },
-                };
+                identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
+                {
+                    id = new II[]
+                    {
+                        new II()
+                        {
+                            root = "2.16.840.1.113883.3.51.1.1.6.1",
+                            extension = expectedPhn,
+                        },
+                    },
+                    name = new PN[]
+                    {
+                        new PN()
+                        {
+                            Items = new ENXP[]
+                            {
+                                new engiven()
+                                {
+                                    Text = new string[] { "Wrong Given Name" },
+                                },
+                                new enfamily()
+                                {
+                                    Text = new string[] { "Wrong Family Name" },
+                                },
+                            },
+                            use = new cs_EntityNameUse[] { cs_EntityNameUse.L },
+                        },
+                        new PN()
+                        {
+                            Items = new ENXP[]
+                            {
+                                new engiven()
+                                {
+                                    Text = new string[] { expectedFirstName },
+                                    qualifier = new cs_EntityNamePartQualifier[]
+                                    {
+                                        cs_EntityNamePartQualifier.AC,
+                                    },
+                                },
+                                new engiven()
+                                {
+                                    qualifier = new cs_EntityNamePartQualifier[]
+                                    {
+                                        cs_EntityNamePartQualifier.CL,
+                                    },
+                                    Text = new string[] { "Bad First Name" },
+                                },
+                                new enfamily()
+                                {
+                                    Text = new string[] { expectedLastName },
+                                    qualifier = new cs_EntityNamePartQualifier[]
+                                    {
+                                        cs_EntityNamePartQualifier.IN,
+                                    },
+                                },
+                                new enfamily()
+                                {
+                                    qualifier = new cs_EntityNamePartQualifier[]
+                                    {
+                                        cs_EntityNamePartQualifier.CL,
+                                    },
+                                    Text = new string[] { "Bad Last Name" },
+                                },
+                            },
+                            use = new cs_EntityNameUse[] { cs_EntityNameUse.C },
+                        },
+                    },
+                    birthTime = new TS()
+                    {
+                        value = "20001231",
+                    },
+                    administrativeGenderCode = new CE()
+                    {
+                        code = "F",
+                    },
+                },
+            };
 
-            Mock<QUPA_AR101102_PortType> clientMock = new Mock<QUPA_AR101102_PortType>();
+            Mock<QUPA_AR101102_PortType> clientMock = new();
             clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
                 new HCIM_IN_GetDemographicsResponse1()
                 {
@@ -613,7 +608,7 @@ namespace HealthGateway.CommonTests.Delegates
                         },
                     },
                 });
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
                 clientMock.Object);
