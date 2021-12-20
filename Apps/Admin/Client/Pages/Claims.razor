@@ -11,7 +11,6 @@
 @inject IAccessTokenProvider TokenProvider
 @inject ICsvExportApi exportApi;
 @inject IState<State> configState;
-@inject StateFacade configFacade;
 @inject IJSRuntime jsRuntime
 
 <PageTitle>User Info</PageTitle>
@@ -46,10 +45,12 @@
     private string? _token;
     private IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
 
+    private IDispatcher? Dispatcher { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         await GetClaimsPrincipalData().ConfigureAwait(true);
-        configFacade.LoadConfiguration();
+        this.Dispatcher?.Dispatch(new Actions.LoadAction());
         this.CreateCookie("HGAdmin", "dark mode", 365);
     }
 

@@ -20,6 +20,8 @@ namespace HealthGateway.CommonTests.Delegates
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using Microsoft.Extensions.Configuration;
@@ -212,7 +214,7 @@ namespace HealthGateway.CommonTests.Delegates
                     },
                 };
 
-            Mock<QUPA_AR101102_PortType> clientMock = new Mock<QUPA_AR101102_PortType>();
+            Mock<QUPA_AR101102_PortType> clientMock = new();
             clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
                 new HCIM_IN_GetDemographicsResponse1()
                 {
@@ -321,7 +323,7 @@ namespace HealthGateway.CommonTests.Delegates
                     },
                 };
 
-            Mock<QUPA_AR101102_PortType> clientMock = new Mock<QUPA_AR101102_PortType>();
+            Mock<QUPA_AR101102_PortType> clientMock = new();
             clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
                 new HCIM_IN_GetDemographicsResponse1()
                 {
@@ -440,7 +442,7 @@ namespace HealthGateway.CommonTests.Delegates
                     },
                 };
 
-            Mock<QUPA_AR101102_PortType> clientMock = new Mock<QUPA_AR101102_PortType>();
+            Mock<QUPA_AR101102_PortType> clientMock = new();
             clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
                 new HCIM_IN_GetDemographicsResponse1()
                 {
@@ -588,7 +590,7 @@ namespace HealthGateway.CommonTests.Delegates
                     },
                 };
 
-            Mock<QUPA_AR101102_PortType> clientMock = new Mock<QUPA_AR101102_PortType>();
+            Mock<QUPA_AR101102_PortType> clientMock = new();
             clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
                 new HCIM_IN_GetDemographicsResponse1()
                 {

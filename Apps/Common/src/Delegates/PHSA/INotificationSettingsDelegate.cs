@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Delegates.PHSA
 {
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
 
     /// <summary>

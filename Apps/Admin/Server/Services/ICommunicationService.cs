@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System.Collections.Generic;
     using HealthGateway.Admin.Server.Models;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
 
     /// <summary>

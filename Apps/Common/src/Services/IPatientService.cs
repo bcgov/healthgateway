@@ -17,6 +17,7 @@ namespace HealthGateway.Common.Services
 {
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
 
     /// <summary>

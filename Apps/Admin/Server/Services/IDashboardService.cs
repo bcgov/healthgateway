@@ -18,8 +18,7 @@ namespace HealthGateway.Admin.Server.Services
     using System;
     using System.Collections.Generic;
     using HealthGateway.Admin.Common.Constants;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// Service that provides functionality to the admin dashboard.
@@ -63,7 +62,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="queryType">The type of query to perform.</param>
         /// <param name="queryString">The value to query on.</param>
         /// <returns>A list of users matching the query.</returns>
-        RequestResult<IEnumerable<MessagingVerification>> GetMessageVerifications(UserQueryType queryType, string queryString);
+        RequestResult<IList<MessagingVerificationModel>> GetMessageVerifications(UserQueryType queryType, string queryString);
 
         /// <summary>
         /// Retrieves the ratings summary.

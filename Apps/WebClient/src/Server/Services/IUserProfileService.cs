@@ -18,6 +18,7 @@ namespace HealthGateway.WebClient.Services
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.WebClient.Models;
 

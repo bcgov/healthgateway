@@ -16,7 +16,7 @@
 namespace HealthGateway.Database.Models
 {
     using System.ComponentModel.DataAnnotations;
-    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Database.Constants;
 
 #pragma warning disable CS1591 // self explanatory simple model
 #pragma warning disable SA1600 // self explanatory simple model

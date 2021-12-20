@@ -21,6 +21,7 @@ namespace HealthGateway.WebClient.Services
     using System.Reflection;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.CDogs;

@@ -2,7 +2,7 @@
 @attribute [Authorize(Roles = Roles.Admin)]
 @using Fluxor
 @using HealthGateway.Admin.Client.Store.MessageVerification
-@inject StateFacade Facade
+@inject IState<State> RequestResultState
 
 <PageTitle>Support</PageTitle>
 <HgPageHeading>Support</HgPageHeading>
@@ -25,7 +25,7 @@
         </MudItem>
     </MudGrid>
 </MudForm>
-<MudTable Class="mt-3" T="string" Items="new List<string> { string.Empty }"  Breakpoint="Breakpoint.Md" HorizontalScrollbar="true">
+<MudTable Class="mt-3" Items="MessagingVerificationsList()"  Breakpoint="Breakpoint.Md" HorizontalScrollbar="true">
     <HeaderContent>
         <MudTh>HDID</MudTh>
         <MudTh>Email</MudTh>
@@ -36,17 +36,16 @@
         <MudTh>SMS Verified Date</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="HDID">P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A</MudTd>
+        <MudTd DataLabel="HDID">@context.UserProfileId</MudTd>
         <MudTd DataLabel="Email">test@example.com</MudTd>
         <MudTd DataLabel="Email Verified">false</MudTd>
         <MudTd DataLabel="Email Verified Date">31/12/2020 11:59 PM</MudTd>
         <MudTd DataLabel="SMS">250‑867‑5309</MudTd>
-        <MudTd DataLabel="SMS Verified">true</MudTd>
+        <MudTd DataLabel="SMS Verified">@context.SMSNumber</MudTd>
         <MudTd DataLabel="SMS Verified Date">01/01/2021 12:01 AM</MudTd>
     </RowTemplate>
     <PagerContent>
         <MudTablePager />
     </PagerContent>
 </MudTable>
-
 

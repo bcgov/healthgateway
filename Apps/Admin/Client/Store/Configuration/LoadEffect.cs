@@ -27,7 +27,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
     /// <summary>
     /// The effect for the Load Action.
     /// </summary>
-    public class LoadEffect : Effect<LoadAction>
+    public class LoadEffect : Effect<Actions.LoadAction>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadEffect"/> class.
@@ -47,19 +47,19 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         private IConfigurationApi ConfigApi { get; set; }
 
         /// <inheritdoc/>
-        public override async Task HandleAsync(LoadAction action, IDispatcher dispatcher)
+        public override async Task HandleAsync(Actions.LoadAction action, IDispatcher dispatcher)
         {
             this.Logger.LogInformation("Loading External Configuration");
             ApiResponse<ExternalConfiguration> response = await this.ConfigApi.GetConfiguration().ConfigureAwait(true);
             if (response.IsSuccessStatusCode)
             {
                 this.Logger.LogInformation("External Configuration loaded successfully!");
-                dispatcher.Dispatch(new LoadSuccessAction(response.Content));
+                dispatcher.Dispatch(new Actions.LoadSuccessAction(response.Content));
             }
             else
             {
                 this.Logger.LogError($"Error loading External Configuration, reason: {response.Error?.Message}");
-                dispatcher.Dispatch(new LoadFailAction(response.Error?.Message));
+                dispatcher.Dispatch(new Actions.LoadFailAction(response.Error?.Message));
             }
         }
     }

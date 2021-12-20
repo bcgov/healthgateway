@@ -15,8 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.CDogs;
     using HealthGateway.WebClient.Models;
 
     /// <summary>

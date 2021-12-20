@@ -18,12 +18,13 @@ namespace HealthGateway.Medication.Services.Test
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -43,14 +44,14 @@ namespace HealthGateway.Medication.Services.Test
             string phn = "91985198";
 
             // Setup Patient result
-            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>()
+            RequestResult<PatientModel> patientResult = new()
             {
                 ResourcePayload = new PatientModel() { PersonalHealthNumber = phn },
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
             };
             Mock<IPatientService> mockPatientService = CreatePatientService(hdid, patientResult);
 
-            RequestResult<IList<MedicationRequest>> expectedDelegateResult = new RequestResult<IList<MedicationRequest>>()
+            RequestResult<IList<MedicationRequest>> expectedDelegateResult = new()
             {
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new List<MedicationRequest>()
@@ -61,7 +62,7 @@ namespace HealthGateway.Medication.Services.Test
                 TotalResultCount = 2,
             };
 
-            Mock<IMedicationRequestDelegate> mockDelegate = new Mock<IMedicationRequestDelegate>();
+            Mock<IMedicationRequestDelegate> mockDelegate = new();
             mockDelegate
                 .Setup(s => s.GetMedicationRequestsAsync(phn))
                     .ReturnsAsync(expectedDelegateResult);
@@ -90,9 +91,9 @@ namespace HealthGateway.Medication.Services.Test
             string hdid = "123912390123012";
 
             // Setup Patient result
-            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>()
+            RequestResult<PatientModel> patientResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
             };
             Mock<IPatientService> mockPatientService = CreatePatientService(hdid, patientResult);
 
@@ -119,19 +120,19 @@ namespace HealthGateway.Medication.Services.Test
             string phn = "91985198";
 
             // Setup Patient result
-            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>()
+            RequestResult<PatientModel> patientResult = new()
             {
                 ResourcePayload = new PatientModel() { PersonalHealthNumber = phn },
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
             };
             Mock<IPatientService> mockPatientService = CreatePatientService(hdid, patientResult);
 
             // Setup Medication Request
-            RequestResult<IList<MedicationRequest>> expectedDelegateResult = new RequestResult<IList<MedicationRequest>>()
+            RequestResult<IList<MedicationRequest>> expectedDelegateResult = new()
             {
                 ResultStatus = ResultType.Error,
             };
-            Mock<IMedicationRequestDelegate> mockDelegate = new Mock<IMedicationRequestDelegate>();
+            Mock<IMedicationRequestDelegate> mockDelegate = new();
             mockDelegate
                 .Setup(s => s.GetMedicationRequestsAsync(phn))
                     .ReturnsAsync(expectedDelegateResult);
@@ -150,7 +151,7 @@ namespace HealthGateway.Medication.Services.Test
 
         private static Mock<IPatientService> CreatePatientService(string hdid, RequestResult<PatientModel> response)
         {
-            Mock<IPatientService> mockPatientService = new Mock<IPatientService>();
+            Mock<IPatientService> mockPatientService = new();
             mockPatientService.Setup(s => s.GetPatient(hdid, It.IsAny<PatientIdentifierType>(), false)).ReturnsAsync(response);
             return mockPatientService;
         }

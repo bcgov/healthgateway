@@ -21,8 +21,8 @@ namespace HealthGateway.Medication.Controllers.Test
     using System.Threading.Tasks;
 
     using DeepEqual.Syntax;
-
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Medication.Controllers;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
@@ -49,7 +49,7 @@ namespace HealthGateway.Medication.Controllers.Test
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             RequestResult<IList<MedicationStatementHistory>> expectedResult = new RequestResult<IList<MedicationStatementHistory>>()
             {
-                ResultStatus = HealthGateway.Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new List<MedicationStatementHistory>()
                     {
                         new MedicationStatementHistory()

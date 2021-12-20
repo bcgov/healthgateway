@@ -21,6 +21,8 @@ namespace HealthGateway.Admin.Server.Services
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -95,12 +97,13 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<IEnumerable<Database.Models.MessagingVerification>> GetMessageVerifications(UserQueryType queryType, string queryString)
+        public RequestResult<IList<MessagingVerificationModel>> GetMessageVerifications(UserQueryType queryType, string queryString)
         {
-            RequestResult<IEnumerable<Database.Models.MessagingVerification>> retVal = new()
+            List<MessagingVerificationModel> messagingVerificationModel = new();
+            RequestResult<IList<MessagingVerificationModel>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
-                ResourcePayload = new List<Database.Models.MessagingVerification>(),
+                ResourcePayload = messagingVerificationModel,
             };
 
             DBResult<IEnumerable<Database.Models.MessagingVerification>>? dbResult = null;
@@ -133,7 +136,16 @@ namespace HealthGateway.Admin.Server.Services
             if (dbResult != null && dbResult.Status == Database.Constants.DBStatusCode.Read)
             {
                 retVal.ResultStatus = ResultType.Success;
-                retVal.ResourcePayload = dbResult.Payload ?? retVal.ResourcePayload;
+                retVal.ResultStatus = ResultType.Success;
+                if (dbResult.Payload != null)
+                {
+                    foreach (var item in dbResult.Payload)
+                    {
+                        messagingVerificationModel.Add(MessagingVerificationModel.CreateFromDbModel(item));
+                    }
+                }
+
+                retVal.ResourcePayload = messagingVerificationModel;
             }
 
             return retVal;

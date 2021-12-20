@@ -21,6 +21,8 @@ namespace Healthgateway.JobScheduler.Jobs
     using Hangfire;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
@@ -93,7 +95,7 @@ namespace Healthgateway.JobScheduler.Jobs
                     {
                         RequestResult<NotificationSettingsResponse> retVal = Task.Run(async () => await
                                         this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
-                        if (retVal.ResultStatus == HealthGateway.Common.Constants.ResultType.ActionRequired)
+                        if (retVal.ResultStatus == ResultType.ActionRequired)
                         {
                             EventLog eventLog = new()
                             {
@@ -105,7 +107,7 @@ namespace Healthgateway.JobScheduler.Jobs
                         }
                         else
                         {
-                            if (retVal.ResultStatus != HealthGateway.Common.Constants.ResultType.Success)
+                            if (retVal.ResultStatus != ResultType.Success)
                             {
                                 this.logger.LogError($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
                                 throw new FormatException($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");

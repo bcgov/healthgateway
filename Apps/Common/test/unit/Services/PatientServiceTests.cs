@@ -18,6 +18,8 @@ namespace HealthGateway.CommonTests.Services
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -62,8 +64,10 @@ namespace HealthGateway.CommonTests.Services
         [Fact]
         public void ShouldGetPatientFromCache()
         {
-            var configDictionary = new Dictionary<string, string>();
-            configDictionary.Add("PatientService:CacheTTL", "90");
+            var configDictionary = new Dictionary<string, string>
+            {
+                { "PatientService:CacheTTL", "90" }
+            };
             GetPatient(PatientIdentifierType.HDID, configDictionary, Database.Constants.DBStatusCode.Created, true);
         }
 
@@ -73,8 +77,10 @@ namespace HealthGateway.CommonTests.Services
         [Fact]
         public void ShouldGetPatientFromCacheWithPHN()
         {
-            var configDictionary = new Dictionary<string, string>();
-            configDictionary.Add("PatientService:CacheTTL", "90");
+            var configDictionary = new Dictionary<string, string>
+            {
+                { "PatientService:CacheTTL", "90" }
+            };
             GetPatient(PatientIdentifierType.PHN, configDictionary, Database.Constants.DBStatusCode.Created);
         }
 
@@ -84,8 +90,10 @@ namespace HealthGateway.CommonTests.Services
         [Fact]
         public void ShouldGetPatientFromCacheWithDBError()
         {
-            var configDictionary = new Dictionary<string, string>();
-            configDictionary.Add("PatientService:CacheTTL", "90");
+            var configDictionary = new Dictionary<string, string>
+            {
+                { "PatientService:CacheTTL", "90" },
+            };
             GetPatient(PatientIdentifierType.HDID, configDictionary, Database.Constants.DBStatusCode.Error);
         }
 
@@ -95,9 +103,9 @@ namespace HealthGateway.CommonTests.Services
         [Fact]
         public void ShouldSearchByValidIdentifier()
         {
-            RequestResult<PatientModel> requestResult = new RequestResult<PatientModel>()
+            RequestResult<PatientModel> requestResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 TotalResultCount = 1,
                 PageSize = 1,
                 ResourcePayload = new PatientModel()
@@ -108,7 +116,7 @@ namespace HealthGateway.CommonTests.Services
                 },
             };
 
-            Mock<IClientRegistriesDelegate> patientDelegateMock = new Mock<IClientRegistriesDelegate>();
+            Mock<IClientRegistriesDelegate> patientDelegateMock = new();
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>())
                 .Build();
@@ -134,9 +142,9 @@ namespace HealthGateway.CommonTests.Services
         [Fact]
         public void ShouldFailModCheck()
         {
-            RequestResult<PatientModel> requestResult = new RequestResult<PatientModel>()
+            RequestResult<PatientModel> requestResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 TotalResultCount = 1,
                 PageSize = 1,
                 ResourcePayload = new PatientModel()
@@ -147,7 +155,7 @@ namespace HealthGateway.CommonTests.Services
                 },
             };
 
-            Mock<IClientRegistriesDelegate> patientDelegateMock = new Mock<IClientRegistriesDelegate>();
+            Mock<IClientRegistriesDelegate> patientDelegateMock = new();
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>())
                 .Build();
@@ -174,9 +182,9 @@ namespace HealthGateway.CommonTests.Services
         {
             string phn = "abc123";
 
-            RequestResult<PatientModel> requestResult = new RequestResult<PatientModel>()
+            RequestResult<PatientModel> requestResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 TotalResultCount = 1,
                 PageSize = 1,
                 ResourcePayload = new PatientModel()
@@ -187,7 +195,7 @@ namespace HealthGateway.CommonTests.Services
                 },
             };
 
-            Mock<IClientRegistriesDelegate> patientDelegateMock = new Mock<IClientRegistriesDelegate>();
+            Mock<IClientRegistriesDelegate> patientDelegateMock = new();
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>())
                 .Build();
@@ -203,14 +211,14 @@ namespace HealthGateway.CommonTests.Services
             RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient("abc123", (PatientIdentifierType)23).ConfigureAwait(true)).Result;
 
             // Verify
-            Assert.Equal(Common.Constants.ResultType.Error, actual.ResultStatus);
+            Assert.Equal(ResultType.Error, actual.ResultStatus);
         }
 
         private static RequestResult<string> GetPatientPHN(Dictionary<string, string> configDictionary, Database.Constants.DBStatusCode mockDBStatusCode, bool returnNullPatientResult)
         {
-            RequestResult<PatientModel> requestResult = new RequestResult<PatientModel>()
+            RequestResult<PatientModel> requestResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 TotalResultCount = 1,
                 PageSize = 1,
                 ResourcePayload = new PatientModel()
@@ -221,7 +229,7 @@ namespace HealthGateway.CommonTests.Services
                     PersonalHealthNumber = Phn,
                 },
             };
-            Mock<IClientRegistriesDelegate> patientDelegateMock = new Mock<IClientRegistriesDelegate>();
+            Mock<IClientRegistriesDelegate> patientDelegateMock = new();
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection(configDictionary)
                 .Build();
@@ -232,7 +240,7 @@ namespace HealthGateway.CommonTests.Services
             {
                 Status = mockDBStatusCode,
             };
-            Mock<IGenericCacheDelegate> genericCacheDelegateMock = new Mock<IGenericCacheDelegate>();
+            Mock<IGenericCacheDelegate> genericCacheDelegateMock = new();
             genericCacheDelegateMock.Setup(p => p.CacheObject(It.IsAny<object>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), true)).Returns(dbResult);
 
             genericCacheDelegateMock.Setup(p => p.GetCacheObject<PatientModel>(It.IsAny<string>(), It.IsAny<string>())).Returns(returnNullPatientResult ? null : requestResult.ResourcePayload);
@@ -250,9 +258,9 @@ namespace HealthGateway.CommonTests.Services
 
         private static void GetPatient(PatientIdentifierType identifierType, Dictionary<string, string> configDictionary, Database.Constants.DBStatusCode mockDBStatusCode, bool returnValidCache = false)
         {
-            RequestResult<PatientModel> requestResult = new RequestResult<PatientModel>()
+            RequestResult<PatientModel> requestResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 TotalResultCount = 1,
                 PageSize = 1,
                 ResourcePayload = new PatientModel()
@@ -264,7 +272,7 @@ namespace HealthGateway.CommonTests.Services
                 },
             };
 
-            Mock<IClientRegistriesDelegate> patientDelegateMock = new Mock<IClientRegistriesDelegate>();
+            Mock<IClientRegistriesDelegate> patientDelegateMock = new();
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection(configDictionary)
                 .Build();
@@ -276,7 +284,7 @@ namespace HealthGateway.CommonTests.Services
             {
                 Status = mockDBStatusCode,
             };
-            Mock<IGenericCacheDelegate> genericCacheDelegateMock = new Mock<IGenericCacheDelegate>();
+            Mock<IGenericCacheDelegate> genericCacheDelegateMock = new();
             genericCacheDelegateMock.Setup(p => p.CacheObject(It.IsAny<object>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), true)).Returns(dbResult);
             if (returnValidCache)
             {

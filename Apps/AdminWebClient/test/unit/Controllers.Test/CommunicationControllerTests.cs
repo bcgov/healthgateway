@@ -21,7 +21,8 @@ namespace HealthGateway.Admin.Test.Services
     using HealthGateway.Admin.Controllers;
     using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
@@ -52,17 +53,17 @@ namespace HealthGateway.Admin.Test.Services
                 CommunicationTypeCode = communicationType,
             };
 
-            RequestResult<Communication> expected = new RequestResult<Communication>
+            RequestResult<Communication> expected = new()
             {
                 ResourcePayload = comm,
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
             };
 
-            Mock<ICommunicationService> mockCommunicationService = new Mock<ICommunicationService>();
+            Mock<ICommunicationService> mockCommunicationService = new();
             mockCommunicationService.Setup(s => s.Add(It.Is<Communication>(x => x.Text == comm.Text))).Returns(expected);
 
             // Initialize controller
-            CommunicationController controller = new CommunicationController(
+            CommunicationController controller = new(
                 mockCommunicationService.Object);
 
             // Test if controller adds communication properly
@@ -78,7 +79,7 @@ namespace HealthGateway.Admin.Test.Services
         public void ShouldGetCommunications()
         {
             // Sample communications to test
-            List<Communication> commsList = new List<Communication>();
+            List<Communication> commsList = new();
             commsList.Add(new Communication()
             {
                 Text = "Test communication",
@@ -95,17 +96,17 @@ namespace HealthGateway.Admin.Test.Services
                 ExpiryDateTime = new DateTime(2021, 05, 13),
             });
 
-            RequestResult<IEnumerable<Communication>> expected = new RequestResult<IEnumerable<Communication>>
+            RequestResult<IEnumerable<Communication>> expected = new()
             {
                 ResourcePayload = commsList,
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
             };
 
-            Mock<ICommunicationService> mockCommunicationService = new Mock<ICommunicationService>();
+            Mock<ICommunicationService> mockCommunicationService = new();
             mockCommunicationService.Setup(s => s.GetAll()).Returns(expected);
 
             // Initialize controller
-            CommunicationController controller = new CommunicationController(
+            CommunicationController controller = new(
                 mockCommunicationService.Object);
 
             // Test if controller gets communications properly
@@ -121,7 +122,7 @@ namespace HealthGateway.Admin.Test.Services
         public void ShouldUpdateCommunication()
         {
             // Sample communications to test
-            Communication comm = new Communication()
+            Communication comm = new()
             {
                 Id = Guid.NewGuid(),
                 Text = "Test update communication",
@@ -130,17 +131,17 @@ namespace HealthGateway.Admin.Test.Services
                 ExpiryDateTime = new DateTime(2020, 07, 07),
             };
 
-            RequestResult<Communication> expected = new RequestResult<Communication>
+            RequestResult<Communication> expected = new()
             {
                 ResourcePayload = comm,
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
             };
 
-            Mock<ICommunicationService> mockCommunicationService = new Mock<ICommunicationService>();
+            Mock<ICommunicationService> mockCommunicationService = new();
             mockCommunicationService.Setup(s => s.Update(It.Is<Communication>(x => x.Text == comm.Text))).Returns(expected);
 
             // Initialize controller
-            CommunicationController controller = new CommunicationController(
+            CommunicationController controller = new(
                 mockCommunicationService.Object);
 
             // Test if controller adds communication properly

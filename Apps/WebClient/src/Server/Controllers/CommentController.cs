@@ -17,11 +17,10 @@ namespace HealthGateway.WebClient.Controllers
 {
     using System.Collections.Generic;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>

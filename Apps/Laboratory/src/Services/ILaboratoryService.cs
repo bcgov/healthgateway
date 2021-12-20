@@ -18,7 +18,7 @@ namespace HealthGateway.Laboratory.Services
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Laboratory.Models;
 
     /// <summary>

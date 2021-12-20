@@ -17,6 +17,8 @@ namespace HealthGateway.Common.Services
 {
     using System.Diagnostics;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
@@ -69,14 +71,14 @@ namespace HealthGateway.Common.Services
             RequestResult<string> retVal = new RequestResult<string>()
             {
                 ResultError = new RequestResultError() { ResultMessage = "Error during PHN retrieval", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
-                ResultStatus = Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
             };
             RequestResult<PatientModel> patientResult = await this.GetPatient(hdid).ConfigureAwait(true);
             if (patientResult != null)
             {
                 retVal.ResultError = patientResult.ResultError;
                 retVal.ResultStatus = patientResult.ResultStatus;
-                if (patientResult.ResultStatus == Constants.ResultType.Success && patientResult.ResourcePayload != null)
+                if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                 {
                     retVal.ResourcePayload = patientResult.ResourcePayload.PersonalHealthNumber;
                 }

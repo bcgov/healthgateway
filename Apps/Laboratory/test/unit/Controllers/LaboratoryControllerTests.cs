@@ -19,7 +19,8 @@ namespace HealthGateway.LaboratoryTests
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Laboratory.Controllers;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Models;
@@ -74,7 +75,7 @@ namespace HealthGateway.LaboratoryTests
             Mock<ILaboratoryService> svcMock = new Mock<ILaboratoryService>();
             svcMock.Setup(s => s.GetLaboratoryOrders(Token, Hdid, 0)).ReturnsAsync(new RequestResult<IEnumerable<LaboratoryModel>>()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 TotalResultCount = 0,
                 ResourcePayload = new List<LaboratoryModel>(),
             });
@@ -92,7 +93,7 @@ namespace HealthGateway.LaboratoryTests
             JsonResult? jsonResult = actual as JsonResult;
             Assert.IsType<RequestResult<IEnumerable<LaboratoryModel>>>(jsonResult?.Value);
             RequestResult<IEnumerable<LaboratoryModel>>? result = jsonResult?.Value as RequestResult<IEnumerable<LaboratoryModel>>;
-            Assert.True(result != null && result.ResultStatus == Common.Constants.ResultType.Success);
+            Assert.True(result != null && result.ResultStatus == ResultType.Success);
         }
 
         /// <summary>
@@ -106,7 +107,7 @@ namespace HealthGateway.LaboratoryTests
             Mock<ILaboratoryService> svcMock = new Mock<ILaboratoryService>();
             svcMock.Setup(s => s.GetLaboratoryOrders(Token, Hdid, 0)).ReturnsAsync(new RequestResult<IEnumerable<LaboratoryModel>>()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = "Test Error" },
                 TotalResultCount = 0,
             });
@@ -124,7 +125,7 @@ namespace HealthGateway.LaboratoryTests
 
             JsonResult? jsonResult = actual as JsonResult;
             RequestResult<IEnumerable<LaboratoryModel>>? result = jsonResult?.Value as RequestResult<IEnumerable<LaboratoryModel>>;
-            Assert.True(result != null && result.ResultStatus == Common.Constants.ResultType.Error);
+            Assert.True(result != null && result.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
@@ -153,7 +154,7 @@ namespace HealthGateway.LaboratoryTests
 
             JsonResult? jsonResult = actual as JsonResult;
             RequestResult<LaboratoryReport>? result = jsonResult?.Value as RequestResult<LaboratoryReport>;
-            Assert.True(result != null && result.ResultStatus == Common.Constants.ResultType.Success);
+            Assert.True(result != null && result.ResultStatus == ResultType.Success);
         }
 
         /// <summary>
@@ -168,7 +169,7 @@ namespace HealthGateway.LaboratoryTests
             Guid guid = Guid.NewGuid();
             svcMock.Setup(s => s.GetLabReport(guid, Hdid, Token)).ReturnsAsync(new RequestResult<LaboratoryReport>()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = "Test Error" },
                 TotalResultCount = 0,
             });
@@ -186,7 +187,7 @@ namespace HealthGateway.LaboratoryTests
 
             JsonResult? jsonResult = (JsonResult)actual;
             RequestResult<LaboratoryReport>? result = jsonResult?.Value as RequestResult<LaboratoryReport>;
-            Assert.True(result != null && result.ResultStatus == Common.Constants.ResultType.Error);
+            Assert.True(result != null && result.ResultStatus == ResultType.Error);
         }
 
         private Mock<IHttpContextAccessor> SetupHttpContextAccessorMock()

@@ -16,6 +16,8 @@
 namespace HealthGateway.WebClientTests.Services.Test.Mock
 {
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using Moq;

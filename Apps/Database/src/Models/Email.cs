@@ -18,7 +18,7 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// Represents an Email to send from the system.

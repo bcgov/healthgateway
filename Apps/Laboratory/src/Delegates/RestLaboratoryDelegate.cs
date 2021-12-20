@@ -27,6 +27,8 @@ namespace HealthGateway.Laboratory.Delegates
     using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
@@ -79,7 +81,7 @@ namespace HealthGateway.Laboratory.Delegates
             {
                 RequestResult<IEnumerable<LaboratoryOrder>> retVal = new RequestResult<IEnumerable<LaboratoryOrder>>()
                 {
-                    ResultStatus = Common.Constants.ResultType.Error,
+                    ResultStatus = ResultType.Error,
                     PageIndex = pageIndex,
                 };
 
@@ -108,7 +110,7 @@ namespace HealthGateway.Laboratory.Delegates
                             PHSAResult<List<LaboratoryOrder>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<List<LaboratoryOrder>>>(payload);
                             if (phsaResult != null && phsaResult.Result != null)
                             {
-                                retVal.ResultStatus = Common.Constants.ResultType.Success;
+                                retVal.ResultStatus = ResultType.Success;
                                 retVal.ResourcePayload = phsaResult.Result;
                                 retVal.TotalResultCount = phsaResult.Result.Count;
 #pragma warning disable CA1305 // Specify IFormatProvider
@@ -122,7 +124,7 @@ namespace HealthGateway.Laboratory.Delegates
 
                             break;
                         case HttpStatusCode.NoContent: // No Lab exits for this user
-                            retVal.ResultStatus = Common.Constants.ResultType.Success;
+                            retVal.ResultStatus = ResultType.Success;
                             retVal.ResourcePayload = new List<LaboratoryOrder>();
                             retVal.TotalResultCount = 0;
 #pragma warning disable CA1305 // Specify IFormatProvider
@@ -158,7 +160,7 @@ namespace HealthGateway.Laboratory.Delegates
             {
                 RequestResult<LaboratoryReport> retVal = new RequestResult<LaboratoryReport>()
                 {
-                    ResultStatus = Common.Constants.ResultType.Error,
+                    ResultStatus = ResultType.Error,
                 };
 
                 this.logger.LogTrace($"Getting laboratory report... {id}");
@@ -190,7 +192,7 @@ namespace HealthGateway.Laboratory.Delegates
                             LaboratoryReport? report = JsonSerializer.Deserialize<LaboratoryReport>(payload, options);
                             if (report != null)
                             {
-                                retVal.ResultStatus = Common.Constants.ResultType.Success;
+                                retVal.ResultStatus = ResultType.Success;
                                 retVal.ResourcePayload = report;
                                 retVal.TotalResultCount = 1;
                             }

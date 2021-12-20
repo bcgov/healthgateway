@@ -16,7 +16,12 @@
 namespace HealthGateway.Admin.Client.Pages
 {
     using System.Collections.Generic;
+    using Fluxor;
+    using Fluxor.Blazor.Web.Components;
+    using HealthGateway.Admin.Client.Services;
+    using HealthGateway.Admin.Client.Store.MessageVerification;
     using HealthGateway.Admin.Common.Constants;
+    using HealthGateway.Common.Data.Models;
     using Microsoft.AspNetCore.Components;
 
     /// <summary>
@@ -30,9 +35,26 @@ namespace HealthGateway.Admin.Client.Pages
 
         private string QueryParameter { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Gets or sets dispatcher.
+        /// </summary>
+        [Inject]
+        private IDispatcher? Dispatcher { get; set; }
+
         private void Search()
         {
-            this.Facade.LoadMessagingVerification(this.SelectedQueryType, this.QueryParameter);
+            this.Dispatcher?.Dispatch(new Actions.LoadAction(this.SelectedQueryType, this.QueryParameter.Trim()));
         }
+
+        private List<MessagingVerificationModel> MessagingVerificationsList()
+        {
+            List<MessagingVerificationModel> verifications = new();
+            if (this.RequestResultState.Value != null && this.RequestResultState.Value.RequestResult?.ResourcePayload != null)
+            {
+                verifications.AddRange(this.RequestResultState?.Value?.RequestResult?.ResourcePayload);
+            }
+
+            return verifications;
+       }
     }
 }

@@ -26,6 +26,8 @@ namespace HealthGateway.Immunization.Delegates
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
@@ -167,7 +169,7 @@ namespace HealthGateway.Immunization.Delegates
 
                                 break;
                             case HttpStatusCode.NoContent: // No Immunizations exits for this user
-                                retVal.ResultStatus = Common.Constants.ResultType.Success;
+                                retVal.ResultStatus = ResultType.Success;
                                 retVal.ResourcePayload = new PHSAResult<T>();
                                 retVal.TotalResultCount = 0;
                                 retVal.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);

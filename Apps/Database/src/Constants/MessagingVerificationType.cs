@@ -13,21 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.Constants
+namespace HealthGateway.Database.Constants
 {
     /// <summary>
-    /// Represents the priority when sending emails.
-    /// These values represent priorities that the application will use.
-    /// The email priority is stored in the model and the DB as an integer
-    /// without any constraints.  When writing batch jobs or other items ranges
-    /// should be utilized to ensure that non-compliant priorities are processed.
+    /// The set of messaging verification types.
     /// </summary>
-    public static class EmailPriority
+    public static class MessagingVerificationType
     {
-#pragma warning disable CS1591, SA1600
-        public const int Low = 1;
-        public const int Standard = 10;
-        public const int High = 100;
-        public const int Urgent = 1000;
+        /// <summary>
+        /// The email type code.
+        /// </summary>
+        public const string Email = "Email";
+
+        /// <summary>
+        /// The SMS type code.
+        /// </summary>
+        public const string SMS = "SMS";
     }
 }

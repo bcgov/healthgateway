@@ -15,7 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 

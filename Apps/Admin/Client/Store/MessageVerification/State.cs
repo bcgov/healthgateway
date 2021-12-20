@@ -18,8 +18,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
     using System.Collections.Generic;
     using Fluxor;
-    using HealthGateway.Admin.Client.Store.Common;
-    using HealthGateway.Admin.Common.Constants;
+    using HealthGateway.Admin.Client.Store;
     using HealthGateway.Common.Data.Models;
 
     /// <summary>
@@ -27,23 +26,23 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     /// State should be decorated with [FeatureState] for automatic discovery when services. AddFluxor is called.
     /// </summary>
     [FeatureState]
-    public class State : BaseState
+    public record State : BaseState
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="State"/> class.
         /// </summary>
-        /// <param name="messagingVerifications">list of messagingVerifications.</param>
+        /// <param name="requestResult">Class that returns from service.</param>
         /// <param name="isLoading">True if the data is being loaded.</param>
         /// <param name="errorMessage">An error message if the state was not loaded.</param>
-        public State(IList<MessagingVerification> messagingVerifications, bool isLoading = false, string? errorMessage = null)
+        public State(RequestResult<IList<MessagingVerificationModel>> requestResult, bool isLoading = false, string? errorMessage = null)
             : base(isLoading, errorMessage)
         {
-            this.MessagingVerifications = messagingVerifications;
+            this.RequestResult = requestResult;
         }
 
+        /// A parameterless constructor is required on state for determining the initial state, and can be private or public.
         /// <summary>
         /// Initializes a new instance of the <see cref="State"/> class.
-        /// A parameterless constructor is required on state for determining the initial state, and can be private or public.
         /// </summary>
         public State()
         : base(false, null)
@@ -53,6 +52,6 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <summary>
         /// Gets messagingVerification.
         /// </summary>
-        public IList<MessagingVerification>? MessagingVerifications { get; init; }
+        public RequestResult<IList<MessagingVerificationModel>>? RequestResult { get; init; }
     }
 }

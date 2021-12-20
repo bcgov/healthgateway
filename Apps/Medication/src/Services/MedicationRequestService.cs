@@ -18,14 +18,12 @@ namespace HealthGateway.Medication.Services
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The Medication data service.

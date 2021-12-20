@@ -50,16 +50,8 @@ namespace HealthGateway.Admin.Client
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
-            // Configure HTTP Services
-            string baseAddress = builder.HostEnvironment.BaseAddress;
-            IConfiguration configuration = builder.Configuration;
-            IServiceCollection services = builder.Services;
-
-            // Register all the state facade
-            AddStateFacadeScope(services);
-
             // Register Refit Clients
-            RegisterRefitClients(services, configuration, baseAddress);
+            RegisterRefitClients(builder);
 
             // Configure Logging
             IConfigurationSection loggerConfig = builder.Configuration.GetSection("Logging");
@@ -94,45 +86,30 @@ namespace HealthGateway.Admin.Client
             await builder.Build().RunAsync().ConfigureAwait(true);
         }
 
-        private static void RegisterRefitClients(IServiceCollection services, IConfiguration configuration, string baseAddress)
+        private static void RegisterRefitClients(this WebAssemblyHostBuilder builder)
         {
-            services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(baseAddress) });
-
-            string configAddress = GetConfigAddress(configuration, "Configuration", baseAddress);
-            services.AddRefitClient<IConfigurationApi>()
-                      .ConfigureHttpClient(c => ConfigureHttpClient(c, configAddress));
-
-            string supportAddress = GetConfigAddress(configuration, "Support", baseAddress);
-            services.AddRefitClient<ISupportApi>()
-                           .ConfigureHttpClient(c => ConfigureHttpClient(c, supportAddress))
-                           .AddHttpMessageHandler(sp => ConfigureAuthorization(sp, supportAddress));
-
-            string exportCsvAddress = GetConfigAddress(configuration, "CsvExport", baseAddress);
-            services.AddRefitClient<ICsvExportApi>()
-                    .ConfigureHttpClient(c => ConfigureHttpClient(c, exportCsvAddress))
-                    .AddHttpMessageHandler(sp => ConfigureAuthorization(sp, exportCsvAddress));
+            RegisterRefitClient<IConfigurationApi>(builder, "Support");
+            RegisterRefitClient<ISupportApi>(builder, "Support");
+            RegisterRefitClient<ICsvExportApi>(builder, "CsvExport");
         }
 
-        private static void ConfigureHttpClient(HttpClient client, string address)
+        private static void RegisterRefitClient<T>(WebAssemblyHostBuilder builder, string configKey)
+            where T : class
         {
-            client.BaseAddress = new Uri(address);
+            string baseAddress = builder.HostEnvironment.BaseAddress;
+
+            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(baseAddress) });
+
+            string address = builder.Configuration.GetSection("Services").GetValue<string>(configKey, baseAddress);
+            builder.Services.AddRefitClient<T>()
+                       .ConfigureHttpClient(c => { c.BaseAddress = new Uri(address); })
+                       .AddHttpMessageHandler(sp => ConfigureAuthorization(sp, address));
         }
 
-        private static string GetConfigAddress(IConfiguration configuration, string key, string baseAddress)
-        {
-            return configuration.GetSection("Services").GetValue<string>(key, baseAddress);
-        }
-
-        private static DelegatingHandler ConfigureAuthorization(IServiceProvider serviceProvider, string configAddress)
+        private static DelegatingHandler ConfigureAuthorization(IServiceProvider serviceProvider, string address)
         {
             return serviceProvider.GetRequiredService<AuthorizationMessageHandler>()
-                .ConfigureHandler(new[] { configAddress });
-        }
-
-        private static void AddStateFacadeScope(this IServiceCollection services)
-        {
-            services.AddScoped<Admin.Client.Store.Configuration.StateFacade>();
-            services.AddScoped<Admin.Client.Store.MessageVerification.StateFacade>();
+                .ConfigureHandler(new[] { address });
         }
     }
 }

@@ -22,6 +22,9 @@ namespace HealthGateway.WebClient.Services
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;

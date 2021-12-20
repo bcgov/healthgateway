@@ -20,9 +20,9 @@ namespace HealthGateway.Admin.Test.Services
     using DeepEqual.Syntax;
     using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
-    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Wrapper;
@@ -78,7 +78,7 @@ namespace HealthGateway.Admin.Test.Services
         public void ShouldUpdateCommunication()
         {
             // Sample communication to test
-            Communication comm = new Communication()
+            Communication comm = new()
             {
                 Id = Guid.NewGuid(),
                 Text = "Test update communication",
@@ -101,7 +101,7 @@ namespace HealthGateway.Admin.Test.Services
         public void ShouldUpdateCommunicationWithDBError()
         {
             // Sample communication to test
-            Communication comm = new Communication()
+            Communication comm = new()
             {
                 Id = Guid.NewGuid(),
                 Text = "Test update communication",
@@ -124,7 +124,7 @@ namespace HealthGateway.Admin.Test.Services
         public void ShouldEffectiveDateBeforeExpiryDateWhenUpdateCommunication()
         {
             // Sample communication to test
-            Communication comm = new Communication()
+            Communication comm = new()
             {
                 Id = Guid.NewGuid(),
                 Text = "Test update communication",
@@ -136,7 +136,7 @@ namespace HealthGateway.Admin.Test.Services
             RequestResult<Communication> actualResult = UpdateCommunication(comm, DBStatusCode.Updated);
 
             // Check result
-            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal("Effective Date should be before Expiry Date.", actualResult?.ResultError?.ResultMessage);
         }
 
@@ -147,7 +147,7 @@ namespace HealthGateway.Admin.Test.Services
         public void ShouldDeleteCommunication()
         {
             // Sample communication to test
-            Communication comm = new Communication()
+            Communication comm = new()
             {
                 Id = Guid.NewGuid(),
                 Text = "Test update communication",
@@ -170,7 +170,7 @@ namespace HealthGateway.Admin.Test.Services
         public void ShouldDeleteProcessedCommunicationReturnError()
         {
             // Sample communication to test
-            Communication comm = new Communication()
+            Communication comm = new()
             {
                 Id = Guid.NewGuid(),
                 CommunicationStatusCode = CommunicationStatus.Processed,
@@ -199,7 +199,7 @@ namespace HealthGateway.Admin.Test.Services
         public void ShouldDeleteCommunicationWithDBError()
         {
             // Sample communication to test
-            Communication comm = new Communication()
+            Communication comm = new()
             {
                 Id = Guid.NewGuid(),
                 Text = "Test update communication",
@@ -218,13 +218,13 @@ namespace HealthGateway.Admin.Test.Services
         private static RequestResult<Communication> UpdateCommunication(Communication comm, DBStatusCode dbStatusCode)
         {
             // Set up delegate
-            DBResult<HealthGateway.Database.Models.Communication> insertResult = new DBResult<HealthGateway.Database.Models.Communication>
+            DBResult<HealthGateway.Database.Models.Communication> insertResult = new()
             {
                 Payload = comm.ToDbModel(),
                 Status = dbStatusCode,
             };
 
-            Mock<ICommunicationDelegate> communicationDelegateMock = new Mock<ICommunicationDelegate>();
+            Mock<ICommunicationDelegate> communicationDelegateMock = new();
             communicationDelegateMock.Setup(s => s.Update(It.Is<HealthGateway.Database.Models.Communication>(x => x.Text == comm.Text), true)).Returns(insertResult);
 
             // Set up service
@@ -255,10 +255,10 @@ namespace HealthGateway.Admin.Test.Services
             return service.Delete(comm);
         }
 
-        private static void ShouldAddCommunicationWithSpecifiedDBStatusCode(DBStatusCode dBStatusCode, Common.Constants.ResultType expectedResultType)
+        private static void ShouldAddCommunicationWithSpecifiedDBStatusCode(DBStatusCode dBStatusCode, ResultType expectedResultType)
         {
             // Sample communication to test
-            Communication comm = new Communication()
+            Communication comm = new()
             {
                 Text = "Test communication",
                 Subject = "Testing communication",
@@ -316,7 +316,7 @@ namespace HealthGateway.Admin.Test.Services
                 Status = dBStatusCode,
             };
 
-            Mock<ICommunicationDelegate> commsDelegateMock = new Mock<ICommunicationDelegate>();
+            Mock<ICommunicationDelegate> commsDelegateMock = new();
             commsDelegateMock.Setup(s => s.GetAll()).Returns(commsDBResult);
 
             ICommunicationService service = new CommunicationService(

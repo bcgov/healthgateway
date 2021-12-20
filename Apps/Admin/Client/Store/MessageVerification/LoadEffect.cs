@@ -28,7 +28,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     /// <summary>
     /// The effect for the Load Action.
     /// </summary>
-    public class LoadEffect : Effect<LoadAction>
+    public class LoadEffect : Effect<Actions.LoadAction>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadEffect"/> class.
@@ -48,19 +48,19 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         private ISupportApi SupportApi { get; set; }
 
         /// <inheritdoc/>
-        public override async Task HandleAsync(LoadAction action, IDispatcher dispatcher)
+        public override async Task HandleAsync(Actions.LoadAction action, IDispatcher dispatcher)
         {
             this.Logger.LogInformation("Loading Messaging Verification");
-            ApiResponse<IList<MessagingVerification>> response = await this.SupportApi.GetMedicationVerifications(action.QueryType, action.QueryString).ConfigureAwait(true);
+            ApiResponse<RequestResult<IList<MessagingVerificationModel>>> response = await this.SupportApi.GetMedicationVerifications(action.QueryType, action.QueryString).ConfigureAwait(true);
             if (response.IsSuccessStatusCode)
             {
                 this.Logger.LogInformation("Messaging Verification loaded successfully!");
-                dispatcher.Dispatch(new LoadSuccessAction(response.Content));
+                dispatcher.Dispatch(new Actions.LoadSuccessAction(response.Content));
             }
             else
             {
                 this.Logger.LogError($"Error loading Messaging Verification, reason: {response.Error?.Message}");
-                dispatcher.Dispatch(new LoadFailAction(response.Error?.Message));
+                dispatcher.Dispatch(new Actions.LoadFailAction(response.Error?.Message));
             }
         }
     }

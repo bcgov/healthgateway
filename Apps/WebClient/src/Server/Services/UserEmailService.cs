@@ -20,6 +20,8 @@ namespace HealthGateway.WebClient.Services
     using System.Globalization;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -29,7 +31,6 @@ namespace HealthGateway.WebClient.Services
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class UserEmailService : IUserEmailService
@@ -226,7 +227,7 @@ namespace HealthGateway.WebClient.Services
                 [EmailTemplateVariable.ExpiryHours] = verificationExpiryHours.ToString("0", CultureInfo.CurrentCulture),
             };
 
-            MessagingVerification messageVerification = new()
+            Database.Models.MessagingVerification messageVerification = new()
             {
                 InviteKey = inviteKey,
                 UserProfileId = hdid,

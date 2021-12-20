@@ -17,7 +17,8 @@ namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
     using System.Linq;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Cors;
@@ -64,7 +65,7 @@ namespace HealthGateway.Medication.Controllers
 
             RequestResult<MedicationInformation> result = new RequestResult<MedicationInformation>()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = medications.ContainsKey(paddedDin) ? medications[paddedDin] : null,
                 TotalResultCount = medications.Count,
                 PageIndex = 0,
@@ -90,7 +91,7 @@ namespace HealthGateway.Medication.Controllers
 
             RequestResult<IDictionary<string, MedicationInformation>> result = new RequestResult<IDictionary<string, MedicationInformation>>()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = medications,
                 TotalResultCount = medications.Count,
                 PageIndex = 0,

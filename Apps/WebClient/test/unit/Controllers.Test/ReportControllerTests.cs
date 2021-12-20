@@ -16,8 +16,9 @@
 namespace HealthGateway.WebClient.Test.Controllers
 {
     using DeepEqual.Syntax;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.CDogs;
     using HealthGateway.WebClient.Controllers;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
@@ -36,26 +37,26 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldGetReport()
         {
-            ReportRequestModel request = new ReportRequestModel()
+            ReportRequestModel request = new()
             {
                 Data = default(System.Text.Json.JsonElement),
                 Template = TemplateType.Medication,
                 Type = ReportFormatType.PDF,
             };
 
-            RequestResult<ReportModel> expectedResult = new RequestResult<ReportModel>()
+            RequestResult<ReportModel> expectedResult = new()
             {
                 ResourcePayload = new ReportModel()
                 {
                     Data = "123",
                 },
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
             };
 
-            Mock<IReportService> reportServiceMock = new Mock<IReportService>();
+            Mock<IReportService> reportServiceMock = new();
             reportServiceMock.Setup(s => s.GetReport(request)).Returns(expectedResult);
 
-            ReportController controller = new ReportController(reportServiceMock.Object);
+            ReportController controller = new(reportServiceMock.Object);
             var actualResult = controller.GenerateReport(request);
 
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));

@@ -23,6 +23,8 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Admin.Server.Models.CovidSupport;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.ErrorHandling;

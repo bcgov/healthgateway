@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 namespace HealthGateway.WebClient.Services
 {
     using System.Collections.Generic;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.WebClient.Models;
 
     /// <summary>

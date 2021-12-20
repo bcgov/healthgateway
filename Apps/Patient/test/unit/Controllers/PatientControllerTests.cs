@@ -17,6 +17,8 @@ namespace HealthGateway.Patient.Test.Controllers
 {
     using System;
     using DeepEqual.Syntax;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Controllers;
@@ -45,7 +47,7 @@ namespace HealthGateway.Patient.Test.Controllers
             Mock<IPatientService> patientService = new Mock<IPatientService>();
             var mockResult = new RequestResult<Common.Models.PatientModel>()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new()
                 {
                     Birthdate = DateTime.Now,
@@ -64,7 +66,7 @@ namespace HealthGateway.Patient.Test.Controllers
             };
             var expectedResult = new RequestResult<Models.PatientModel>()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new Models.PatientModel()
                 {
                     Birthdate = mockResult.ResourcePayload.Birthdate,

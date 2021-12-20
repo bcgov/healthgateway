@@ -19,7 +19,8 @@ namespace HealthGateway.LaboratoryTests
     using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
@@ -47,10 +48,10 @@ namespace HealthGateway.LaboratoryTests
         [Fact]
         public void GetLabOrders()
         {
-            ILaboratoryService service = GetLabServiceForLabOrdersTests(Common.Constants.ResultType.Success);
+            ILaboratoryService service = GetLabServiceForLabOrdersTests(ResultType.Success);
             Task<RequestResult<IEnumerable<LaboratoryModel>>> actualResult = service.GetLaboratoryOrders(BearerToken, HdId, 0);
 
-            Assert.True(actualResult.Result.ResultStatus == Common.Constants.ResultType.Success);
+            Assert.True(actualResult.Result.ResultStatus == ResultType.Success);
             int count = 0;
             foreach (LaboratoryModel model in actualResult.Result!.ResourcePayload!)
             {
@@ -67,9 +68,9 @@ namespace HealthGateway.LaboratoryTests
         [Fact]
         public void GetLabOrdersWithError()
         {
-            ILaboratoryService service = GetLabServiceForLabOrdersTests(Common.Constants.ResultType.Error);
+            ILaboratoryService service = GetLabServiceForLabOrdersTests(ResultType.Error);
             Task<RequestResult<IEnumerable<LaboratoryModel>>> actualResult = service.GetLaboratoryOrders(BearerToken, HdId, 0);
-            Assert.True(actualResult.Result.ResultStatus == Common.Constants.ResultType.Error);
+            Assert.True(actualResult.Result.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
@@ -86,7 +87,7 @@ namespace HealthGateway.LaboratoryTests
             };
             RequestResult<LaboratoryReport> delegateResult = new RequestResult<LaboratoryReport>()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 PageSize = 100,
                 PageIndex = 1,
                 ResourcePayload = labReport,
@@ -118,11 +119,11 @@ namespace HealthGateway.LaboratoryTests
 
             Task<RequestResult<LaboratoryReport>> actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, BearerToken);
 
-            Assert.True(actualResult.Result.ResultStatus == Common.Constants.ResultType.Success);
+            Assert.True(actualResult.Result.ResultStatus == ResultType.Success);
             Assert.True(actualResult.Result!.ResourcePayload!.Report == MockedReportContent);
         }
 
-        private static ILaboratoryService GetLabServiceForLabOrdersTests(Common.Constants.ResultType expectedResultType)
+        private static ILaboratoryService GetLabServiceForLabOrdersTests(ResultType expectedResultType)
         {
             List<LaboratoryOrder> labOrders = new List<LaboratoryOrder>()
             {

@@ -27,8 +27,16 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// </summary>
         /// <param name="state">The configuration state.</param>
         /// <returns>The new state.</returns>
-        [ReducerMethod(typeof(LoadAction))]
-        public static State ReduceLoadAction(State state) => new(state.Configuration, true);
+        [ReducerMethod(typeof(Actions.LoadAction))]
+        public static State ReduceLoadAction(State state)
+        {
+            return state with
+            {
+                Configuration = state.Configuration,
+                IsLoading = true,
+                ErrorMessage = state.ErrorMessage,
+            };
+        }
 
         /// <summary>
         /// The Reducer for the load success action.
@@ -37,7 +45,14 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// <param name="action">The load success action.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod]
-        public static State ReduceLoadSuccessAction(State state, LoadSuccessAction action) => new(action.State, false);
+        public static State ReduceLoadSuccessAction(State state, Actions.LoadSuccessAction action)
+        {
+            return state with
+            {
+                Configuration = action.State,
+                IsLoading = false,
+            };
+        }
 
         /// <summary>
         /// The Reducer for the fail action.
@@ -46,6 +61,14 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// <param name="action">The load fail action.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod]
-        public static State ReduceLoadFailAction(State state, LoadFailAction action) => new(state.Configuration, false, action.ErrorMessage);
+        public static State ReduceLoadFailAction(State state, Actions.LoadFailAction action)
+        {
+            return state with
+            {
+                Configuration = state.Configuration,
+                IsLoading = false,
+                ErrorMessage = action.ErrorMessage,
+            };
+        }
     }
 }

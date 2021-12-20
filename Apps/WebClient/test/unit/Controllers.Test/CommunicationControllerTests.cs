@@ -16,7 +16,8 @@
 namespace HealthGateway.WebClient.Test.Controllers
 {
     using DeepEqual.Syntax;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Controllers;
     using HealthGateway.WebClient.Services;
@@ -42,7 +43,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                     Subject = "Mocked Subject",
                     Text = "Mocked Text",
                 },
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
             };
 
             Mock<ICommunicationService> communicationServiceMock = new Mock<ICommunicationService>();

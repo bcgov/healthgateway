@@ -23,11 +23,10 @@ namespace HealthGateway.Common.Delegates
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
-    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authentication;

@@ -21,6 +21,8 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Admin.Server.Constants;
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;

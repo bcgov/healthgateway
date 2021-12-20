@@ -16,12 +16,12 @@
 namespace HealthGateway.Common.Data.Models
 {
     using System;
-    using System.ComponentModel.DataAnnotations;
-    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Database.Constants;
+    using HealthGateway.Database.Models;
 
 #pragma warning disable CS1591 // self explanatory simple model
 #pragma warning disable SA1600 // self explanatory simple model
-    public class MessagingVerification
+    public class MessagingVerificationModel
     {
         /// <summary>
         /// Gets or sets the messaging verification id.
@@ -31,13 +31,11 @@ namespace HealthGateway.Common.Data.Models
         /// <summary>
         /// Gets or sets the users directed identifier.
         /// </summary>
-        [Required]
         public string? UserProfileId { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the messageing verification was validated.
         /// </summary>
-        [Required]
         public bool Validated { get; set; }
 
         /// <summary>
@@ -50,50 +48,58 @@ namespace HealthGateway.Common.Data.Models
         /// Gets or sets the associated email for this verification.
         /// Required if the VerificationType = MessagingVerificationType.Email.
         /// </summary>
-        public virtual Email? Email { get; set; }
+        public Email? Email { get; set; }
 
         /// <summary>
         /// Gets or sets the email invite key.
         /// </summary>
-        [Required]
         public Guid InviteKey { get; set; }
 
         /// <summary>
         /// Gets or sets the Verification type as defined by MEssaginVerificationTypeCode.
         /// </summary>
-        [Required]
-        [MaxLength(10)]
         public string VerificationType { get; set; } = MessagingVerificationType.Email;
 
         /// <summary>
         /// Gets or sets the SMS number for this verification.
         /// Required if the VerificationType = MessagingVerificationType.SMS.
         /// </summary>
-        [MaxLength(10)]
         public string? SMSNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the SMS validation code for this verification.
         /// </summary>
-        [MaxLength(6)]
         public string? SMSValidationCode { get; set; }
 
         /// <summary>
         /// Gets or sets the expire date for the messaging verification.
         /// </summary>
-        [Required]
         public DateTime ExpireDate { get; set; }
 
         /// <summary>
         /// Gets or sets the attemped verification count.
         /// </summary>
-        [Required]
         public int VerificationAttempts { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the messageing verification was deleted.
         /// </summary>
-        [Required]
         public bool Deleted { get; set; }
+
+        public static MessagingVerificationModel CreateFromDbModel(MessagingVerification model)
+        {
+            return new MessagingVerificationModel()
+            {
+                Id = model.Id,
+                UserProfileId = model.UserProfileId,
+                EmailId = model.EmailId,
+                Email = model.Email,
+                VerificationAttempts = model.VerificationAttempts,
+                VerificationType = model.VerificationType,
+                SMSNumber = model.SMSNumber,
+                SMSValidationCode = model.SMSValidationCode,
+                Deleted = model.Deleted,
+            };
+        }
     }
 }

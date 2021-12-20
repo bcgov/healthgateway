@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Client.Store
     /// <summary>
     /// State for base class.
     /// </summary>
-    public abstract class BaseState
+    public abstract record BaseState
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseState"/> class.

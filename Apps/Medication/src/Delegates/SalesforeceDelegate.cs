@@ -25,6 +25,8 @@ namespace HealthGateway.Medication.Delegates
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -75,14 +77,14 @@ namespace HealthGateway.Medication.Delegates
             {
                 RequestResult<IList<MedicationRequest>> retVal = new()
                 {
-                    ResultStatus = Common.Constants.ResultType.Error,
+                    ResultStatus = ResultType.Error,
                 };
 
                 string? accessToken = this.authDelegate.AuthenticateAsUser(this.salesforceConfig.TokenUri, this.salesforceConfig.ClientAuthentication).AccessToken;
                 if (string.IsNullOrEmpty(accessToken))
                 {
                     this.logger.LogError($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
-                    retVal.ResultStatus = Common.Constants.ResultType.Error;
+                    retVal.ResultStatus = ResultType.Error;
                     retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to authenticate to retrieve Medication Requests", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF) };
                     return retVal;
                 }
@@ -107,7 +109,7 @@ namespace HealthGateway.Medication.Delegates
                                 Models.Salesforce.ResponseWrapper? replyWrapper = JsonSerializer.Deserialize<Models.Salesforce.ResponseWrapper>(payload);
                                 if (replyWrapper != null)
                                 {
-                                    retVal.ResultStatus = Common.Constants.ResultType.Success;
+                                    retVal.ResultStatus = ResultType.Success;
                                     retVal.ResourcePayload = replyWrapper.ToHGModels();
                                     retVal.TotalResultCount = replyWrapper.Items.Count;
                                     retVal.PageSize = replyWrapper.Items.Count;
@@ -120,7 +122,7 @@ namespace HealthGateway.Medication.Delegates
 
                                 break;
                             case HttpStatusCode.NoContent: // No Medication Requests exits for this user
-                                retVal.ResultStatus = Common.Constants.ResultType.Success;
+                                retVal.ResultStatus = ResultType.Success;
                                 retVal.ResourcePayload = new List<MedicationRequest>();
                                 retVal.TotalResultCount = 0;
                                 retVal.PageSize = 0;

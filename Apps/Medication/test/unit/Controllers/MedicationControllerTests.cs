@@ -17,7 +17,7 @@ namespace HealthGateway.Medication.Controllers.Test
 {
     using System.Collections.Generic;
     using System.Linq;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Controllers;
     using HealthGateway.Medication.Models;

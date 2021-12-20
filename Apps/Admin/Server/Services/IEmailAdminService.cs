@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System.Collections.Generic;
     using HealthGateway.Admin.Server.Models;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// Service that provides admin functinoality to emails.

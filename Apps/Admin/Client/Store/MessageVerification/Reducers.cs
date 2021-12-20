@@ -27,8 +27,16 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// </summary>
         /// <param name="state">The message verification state.</param>
         /// <returns>The new state.</returns>
-        [ReducerMethod(typeof(LoadAction))]
-        public static State ReduceLoadAction(State state) => new(state.MessagingVerifications, true);
+        [ReducerMethod(typeof(Actions.LoadAction))]
+        public static State ReduceLoadAction(State state)
+        {
+            return state with
+            {
+                RequestResult = state.RequestResult,
+                IsLoading = true,
+                ErrorMessage = state.ErrorMessage,
+            };
+        }
 
         /// <summary>
         /// The Reducer for the load success action.
@@ -37,7 +45,14 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <param name="action">The load success action.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod]
-        public static State ReduceLoadSuccessAction(State state, LoadSuccessAction action) => new(action.State, true, null);
+        public static State ReduceLoadSuccessAction(State state, Actions.LoadSuccessAction action)
+        {
+            return state with
+            {
+                RequestResult = action.State,
+                IsLoading = false,
+            };
+        }
 
         /// <summary>
         /// The Reducer for the fail action.
@@ -46,6 +61,14 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <param name="action">The load fail action.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod]
-        public static State ReduceLoadFailAction(State state, LoadFailAction action) => new(state.MessagingVerifications, false, action.ErrorMessage);
+        public static State ReduceLoadFailAction(State state, Actions.LoadFailAction action)
+        {
+            return state with
+            {
+                RequestResult = state.RequestResult,
+                IsLoading = false,
+                ErrorMessage = action.ErrorMessage,
+            };
+        }
     }
 }

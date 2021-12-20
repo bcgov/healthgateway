@@ -23,6 +23,8 @@ namespace HealthGateway.Encounter.Delegates
     using System.Net.Mime;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
@@ -109,13 +111,13 @@ namespace HealthGateway.Encounter.Delegates
                     if (response.IsSuccessStatusCode)
                     {
                         MSPVisitHistory? visitHistory = JsonSerializer.Deserialize<MSPVisitHistory>(payload);
-                        retVal.ResultStatus = Common.Constants.ResultType.Success;
+                        retVal.ResultStatus = ResultType.Success;
                         retVal.ResourcePayload = visitHistory?.Response;
                         retVal.TotalResultCount = visitHistory?.Response?.TotalRecords;
                     }
                     else
                     {
-                        retVal.ResultStatus = Common.Constants.ResultType.Error;
+                        retVal.ResultStatus = ResultType.Error;
                         retVal.ResultError = new RequestResultError() { ResultMessage = $"Invalid HTTP Response code of {response.StatusCode} from ODR with reason {response.ReasonPhrase}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
                         this.logger.LogError(retVal.ResultError.ResultMessage);
                     }
@@ -124,7 +126,7 @@ namespace HealthGateway.Encounter.Delegates
                 catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
                 {
-                    retVal.ResultStatus = Common.Constants.ResultType.Error;
+                    retVal.ResultStatus = ResultType.Error;
                     retVal.ResultError = new RequestResultError() { ResultMessage = e.ToString(), ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
                     this.logger.LogError($"Unable to post message {e.ToString()}");
                 }

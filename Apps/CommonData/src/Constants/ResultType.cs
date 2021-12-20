@@ -16,18 +16,23 @@
 namespace HealthGateway.Common.Data.Constants
 {
     /// <summary>
-    /// The set of messaging verification types.
+    /// An enum representing the possible results for our transactions.
     /// </summary>
-    public static class MessagingVerificationType
+    public enum ResultType
     {
         /// <summary>
-        /// The email type code.
+        /// Represents a system error condition.
         /// </summary>
-        public const string Email = "Email";
+        Error = 0,
 
         /// <summary>
-        /// The SMS type code.
+        /// Represents a successful result.
         /// </summary>
-        public const string SMS = "SMS";
+        Success = 1,
+
+        /// <summary>
+        /// Represents that the request needs an user action.
+        /// </summary>
+        ActionRequired = 2,
     }
 }
