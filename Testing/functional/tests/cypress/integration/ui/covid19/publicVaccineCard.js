@@ -323,12 +323,14 @@ describe("Public Vaccine Card Downloads", () => {
 describe("Public Vaccine Card Downloads When PublicVaccineDownloadPdf Disabled", () => {
     it("Save Image When PublicVaccineDownloadPdf Disabled", () => {
         deleteDownloadsFolder();
-
         cy.enableModules([
             "Immunization",
             "VaccinationStatus",
             "VaccinationStatusPdf",
         ]);
+        cy.intercept("GET", "**/v1/api/PublicVaccineStatus", {
+            fixture: "ImmunizationService/publicVaccineStatusLoaded.json",
+        });
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(fullyVaccinatedPhn);
