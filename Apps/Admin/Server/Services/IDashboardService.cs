@@ -62,7 +62,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="queryType">The type of query to perform.</param>
         /// <param name="queryString">The value to query on.</param>
         /// <returns>A list of users matching the query.</returns>
-        RequestResult<IList<MessagingVerificationModel>> GetMessageVerifications(UserQueryType queryType, string queryString);
+        RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(UserQueryType queryType, string queryString);
 
         /// <summary>
         /// Retrieves the ratings summary.

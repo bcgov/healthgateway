@@ -18,15 +18,16 @@ namespace HealthGateway.Admin.Server.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
     /// <inheritdoc />
@@ -97,13 +98,12 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<IList<MessagingVerificationModel>> GetMessageVerifications(UserQueryType queryType, string queryString)
+        public RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(UserQueryType queryType, string queryString)
         {
-            List<MessagingVerificationModel> messagingVerificationModel = new();
-            RequestResult<IList<MessagingVerificationModel>> retVal = new()
+            RequestResult<IEnumerable<MessagingVerificationModel>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
-                ResourcePayload = messagingVerificationModel,
+                ResourcePayload = Enumerable.Empty<MessagingVerificationModel>(),
             };
 
             DBResult<IEnumerable<Database.Models.MessagingVerification>>? dbResult = null;
@@ -136,16 +136,13 @@ namespace HealthGateway.Admin.Server.Services
             if (dbResult != null && dbResult.Status == Database.Constants.DBStatusCode.Read)
             {
                 retVal.ResultStatus = ResultType.Success;
-                retVal.ResultStatus = ResultType.Success;
                 if (dbResult.Payload != null)
                 {
                     foreach (var item in dbResult.Payload)
                     {
-                        messagingVerificationModel.Add(MessagingVerificationModel.CreateFromDbModel(item));
+                        retVal.ResourcePayload = dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel);
                     }
                 }
-
-                retVal.ResourcePayload = messagingVerificationModel;
             }
 
             return retVal;

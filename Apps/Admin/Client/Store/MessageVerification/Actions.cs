@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Data.Models;
 
@@ -27,9 +28,8 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <summary>
         /// The action for a load.
         /// </summary>
-#pragma warning disable CA1034 // Nested types should not be visible
+        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
         public class LoadAction
-#pragma warning restore CA1034 // Nested types should not be visible
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="LoadAction"/> class.
@@ -56,9 +56,8 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <summary>
         /// The action representing a failed load.
         /// </summary>
-#pragma warning disable CA1034 // Nested types should not be visible
+        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
         public class LoadFailAction : BaseFailAction
-#pragma warning restore CA1034 // Nested types should not be visible
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="LoadFailAction"/> class.
@@ -73,15 +72,14 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <summary>
         /// The action representing a successful load.
         /// </summary>
-#pragma warning disable CA1034 // Nested types should not be visible
-        public class LoadSuccessAction : BaseLoadSuccessAction<RequestResult<IList<MessagingVerificationModel>>>
-#pragma warning restore CA1034 // Nested types should not be visible
+        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
+        public class LoadSuccessAction : BaseLoadSuccessAction<RequestResult<IEnumerable<MessagingVerificationModel>>>
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
             /// </summary>
             /// <param name="requestResultModel">messaging verification state.</param>
-            public LoadSuccessAction(RequestResult<IList<MessagingVerificationModel>> requestResultModel)
+            public LoadSuccessAction(RequestResult<IEnumerable<MessagingVerificationModel>> requestResultModel)
                 : base(requestResultModel)
             {
             }

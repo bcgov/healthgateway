@@ -88,7 +88,7 @@ namespace HealthGateway.Admin.Client
 
         private static void RegisterRefitClients(this WebAssemblyHostBuilder builder)
         {
-            RegisterRefitClient<IConfigurationApi>(builder, "Support");
+            RegisterRefitClient<IConfigurationApi>(builder, "Configuration");
             RegisterRefitClient<ISupportApi>(builder, "Support");
             RegisterRefitClient<ICsvExportApi>(builder, "CsvExport");
         }

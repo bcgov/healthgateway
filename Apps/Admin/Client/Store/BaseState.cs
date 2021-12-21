@@ -16,22 +16,14 @@
 namespace HealthGateway.Admin.Client.Store
 {
     /// <summary>
-    /// State for base class.
+    /// Base class for states.
     /// </summary>
     public abstract record BaseState
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseState"/> class.
+        /// Gets a value indicating whether the state is loading.
         /// </summary>
-        /// <param name="isLoading">isLoading.</param>
-        /// <param name="errorMessage">errorMessage.</param>
-        protected BaseState(bool isLoading, string? errorMessage) =>
-          (this.IsLoading, this.ErrorMessage) = (isLoading, errorMessage);
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the state is loading.
-        /// </summary>
-        public bool IsLoading { get; set; }
+        public bool IsLoading { get; init; }
 
         /// <summary>
         /// Gets the error message if available.

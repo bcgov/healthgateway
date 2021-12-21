@@ -27,7 +27,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
     /// <summary>
     /// The effect for the Load Action.
     /// </summary>
-    public class LoadEffect : Effect<Actions.LoadAction>
+    public class LoadEffect
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadEffect"/> class.
@@ -46,8 +46,13 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         [Inject]
         private IConfigurationApi ConfigApi { get; set; }
 
-        /// <inheritdoc/>
-        public override async Task HandleAsync(Actions.LoadAction action, IDispatcher dispatcher)
+        /// <summary>
+        /// Handler that calls the service and dispatch the actions.
+        /// </summary>
+        /// <param name="dispatcher">Dispatch the actions.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [EffectMethod(typeof(Actions.LoadAction))]
+        public async Task HandleFetchDataAction(IDispatcher dispatcher)
         {
             this.Logger.LogInformation("Loading External Configuration");
             ApiResponse<ExternalConfiguration> response = await this.ConfigApi.GetConfiguration().ConfigureAwait(true);

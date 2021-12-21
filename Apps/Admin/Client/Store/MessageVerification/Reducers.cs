@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     using Fluxor;
 
     /// <summary>
-    /// The set of Reducers for the Configuration.
+    /// The set of reducers for the feature.
     /// </summary>
     public static class Reducers
     {
@@ -32,9 +32,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         {
             return state with
             {
-                RequestResult = state.RequestResult,
                 IsLoading = true,
-                ErrorMessage = state.ErrorMessage,
             };
         }
 
@@ -51,6 +49,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
             {
                 RequestResult = action.State,
                 IsLoading = false,
+                ErrorMessage = string.Empty,
             };
         }
 
@@ -65,7 +64,6 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         {
             return state with
             {
-                RequestResult = state.RequestResult,
                 IsLoading = false,
                 ErrorMessage = action.ErrorMessage,
             };

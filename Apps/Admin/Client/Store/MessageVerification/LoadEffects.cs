@@ -28,30 +28,36 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     /// <summary>
     /// The effect for the Load Action.
     /// </summary>
-    public class LoadEffect : Effect<Actions.LoadAction>
+    public class LoadEffects
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadEffect"/> class.
+        /// Initializes a new instance of the <see cref="LoadEffects"/> class.
         /// </summary>
         /// <param name="logger">The injected logger.</param>
         /// <param name="supportApi">the injected api to query the support. </param>
-        public LoadEffect(ILogger<LoadEffect> logger, ISupportApi supportApi)
+        public LoadEffects(ILogger<LoadEffects> logger, ISupportApi supportApi)
         {
             this.Logger = logger;
             this.SupportApi = supportApi;
         }
 
         [Inject]
-        private ILogger<LoadEffect> Logger { get; set; }
+        private ILogger<LoadEffects> Logger { get; set; }
 
         [Inject]
         private ISupportApi SupportApi { get; set; }
 
-        /// <inheritdoc/>
-        public override async Task HandleAsync(Actions.LoadAction action, IDispatcher dispatcher)
+        /// <summary>
+        /// Handler that calls the service and dispatch the actions.
+        /// </summary>
+        /// <param name="action">Load the initial action.</param>
+        /// <param name="dispatcher">Dispatch the actions.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [EffectMethod]
+        public async Task HandleFetchDataAction(Actions.LoadAction action, IDispatcher dispatcher)
         {
             this.Logger.LogInformation("Loading Messaging Verification");
-            ApiResponse<RequestResult<IList<MessagingVerificationModel>>> response = await this.SupportApi.GetMedicationVerifications(action.QueryType, action.QueryString).ConfigureAwait(true);
+            ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>> response = await this.SupportApi.GetMedicationVerifications(action.QueryType, action.QueryString).ConfigureAwait(true);
             if (response.IsSuccessStatusCode)
             {
                 this.Logger.LogInformation("Messaging Verification loaded successfully!");

@@ -56,7 +56,7 @@ namespace HealthGateway.Common.Data.Models
         public Guid InviteKey { get; set; }
 
         /// <summary>
-        /// Gets or sets the Verification type as defined by MEssaginVerificationTypeCode.
+        /// Gets or sets the Verification type as defined by MesagingVerificationTypeCode.
         /// </summary>
         public string VerificationType { get; set; } = MessagingVerificationType.Email;
 

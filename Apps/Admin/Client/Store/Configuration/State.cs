@@ -30,10 +30,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// Initializes a new instance of the <see cref="State"/> class.
         /// </summary>
         /// <param name="configuration">The configuration to store.</param>
-        /// <param name="isLoading">True if the data is being loaded.</param>
-        /// <param name="errorMessage">An error message if the state was not loaded.</param>
-        public State(ExternalConfiguration configuration, bool isLoading = false, string? errorMessage = null)
-            : base(isLoading, errorMessage)
+        public State(ExternalConfiguration configuration)
         {
             this.Configuration = configuration;
         }
@@ -43,7 +40,6 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// A parameterless constructor is required on state for determining the initial state, and can be private or public.
         /// </summary>
         public State()
-       : base(false, null)
         {
         }
 

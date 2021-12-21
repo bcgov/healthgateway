@@ -17,7 +17,7 @@
 namespace HealthGateway.Admin.Client.Store
 {
     /// <summary>
-    /// The base load success action facade.
+    /// The base load success action.
     /// </summary>
     /// <typeparam name="TCollection">generic state class.</typeparam>
     public abstract class BaseLoadSuccessAction<TCollection>
@@ -25,14 +25,14 @@ namespace HealthGateway.Admin.Client.Store
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseLoadSuccessAction{TCollection}"/> class.
         /// </summary>
-        /// <param name="state">The successfully loaded messaging verification.</param>
+        /// <param name="state">The successfully loaded state.</param>
         protected BaseLoadSuccessAction(TCollection state)
         {
             this.State = state;
         }
 
         /// <summary>
-        /// Gets the messaging verification.
+        /// Gets the state.
         /// </summary>
         public TCollection State { get; }
     }

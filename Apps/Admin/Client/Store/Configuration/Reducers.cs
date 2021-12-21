@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
     using Fluxor;
 
     /// <summary>
-    /// The set of Reducers for the Configuration.
+    /// The set of reducers for the feature.
     /// </summary>
     public static class Reducers
     {
@@ -32,9 +32,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         {
             return state with
             {
-                Configuration = state.Configuration,
                 IsLoading = true,
-                ErrorMessage = state.ErrorMessage,
             };
         }
 
@@ -51,6 +49,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
             {
                 Configuration = action.State,
                 IsLoading = false,
+                ErrorMessage = string.Empty,
             };
         }
 
@@ -65,7 +64,6 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         {
             return state with
             {
-                Configuration = state.Configuration,
                 IsLoading = false,
                 ErrorMessage = action.ErrorMessage,
             };

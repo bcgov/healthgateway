@@ -32,10 +32,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// Initializes a new instance of the <see cref="State"/> class.
         /// </summary>
         /// <param name="requestResult">Class that returns from service.</param>
-        /// <param name="isLoading">True if the data is being loaded.</param>
-        /// <param name="errorMessage">An error message if the state was not loaded.</param>
-        public State(RequestResult<IList<MessagingVerificationModel>> requestResult, bool isLoading = false, string? errorMessage = null)
-            : base(isLoading, errorMessage)
+        public State(RequestResult<IEnumerable<MessagingVerificationModel>> requestResult)
         {
             this.RequestResult = requestResult;
         }
@@ -45,13 +42,12 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// Initializes a new instance of the <see cref="State"/> class.
         /// </summary>
         public State()
-        : base(false, null)
         {
         }
 
         /// <summary>
         /// Gets messagingVerification.
         /// </summary>
-        public RequestResult<IList<MessagingVerificationModel>>? RequestResult { get; init; }
+        public RequestResult<IEnumerable<MessagingVerificationModel>>? RequestResult { get; init; }
     }
 }

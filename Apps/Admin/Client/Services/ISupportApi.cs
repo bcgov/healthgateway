@@ -33,6 +33,6 @@ namespace HealthGateway.Admin.Client.Services
         /// <param name="queryString">queryString.</param>
         /// <returns>The MessagingVerification object.</returns>
         [Get("/Users?queryType={queryType}&queryString={queryString}")]
-        Task<ApiResponse<RequestResult<IList<MessagingVerificationModel>>>> GetMedicationVerifications(UserQueryType queryType, string queryString);
+        Task<ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>>> GetMedicationVerifications(UserQueryType queryType, string queryString);
     }
 }
