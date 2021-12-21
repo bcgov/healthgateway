@@ -39,23 +39,25 @@ describe("WebClient Note Service", () => {
     });
 
     it("Verify Get Notes Authorized", () => {
-        cy.fixture("WebClientService/notes.json").then((expectedResponse) => {
-            cy.get("@tokens").then((tokens) => {
-                cy.log("Tokens", tokens);
-                cy.request({
-                    url: `${BASEURL}${HDID}`,
-                    followRedirect: false,
-                    auth: {
-                        bearer: tokens.access_token,
-                    },
-                    headers: {
-                        accept: "application/json",
-                    },
-                }).should((response) => {
-                    expect(response.status).to.eq(200);
-                    expect(response.body).to.not.be.null;
-                    expect(response.body).to.deep.equal(expectedResponse);
-                });
+        cy.get("@tokens").then((tokens) => {
+            cy.log("Tokens", tokens);
+            cy.request({
+                url: `${BASEURL}${HDID}`,
+                followRedirect: false,
+                auth: {
+                    bearer: tokens.access_token,
+                },
+                headers: {
+                    accept: "application/json",
+                },
+            }).should((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body).to.not.be.null;
+                expect(response.body.resourcePayload).to.be.an("array").that.is
+                    .empty;
+                expect(response.body.totalResultCount).to.eq(0);
+                expect(response.body.resultStatus).to.eq(1);
+                expect(response.body.resultError).to.eq(null);
             });
         });
     });

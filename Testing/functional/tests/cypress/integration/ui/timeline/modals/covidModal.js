@@ -5,7 +5,7 @@ let interceptPreference = true;
 
 describe("Validate Modals Popup", () => {
     beforeEach(() => {
-        cy.intercept("GET", "/v1/api/UserProfile/*", (req) => {
+        cy.intercept("GET", "**/v1/api/UserProfile/*", (req) => {
             req.reply((res) => {
                 if (interceptPreference) {
                     res.body.resourcePayload.preferences.actionedCovidModalAt.value = actionedCovidModalAt;
