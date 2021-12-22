@@ -13,24 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-
-namespace HealthGateway.Admin.Client.Store.MessageVerification
+namespace HealthGateway.Admin.Client.Store.Configuration
 {
-    using System.Collections.Generic;
     using Fluxor;
     using HealthGateway.Admin.Client.Store;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Admin.Common.Models;
 
     /// <summary>
-    /// MessageVerificationState.
-    /// State should be decorated with [FeatureState] for automatic discovery when services. AddFluxor is called.
+    /// The state for the feature.
+    /// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
     /// </summary>
     [FeatureState]
-    public record State : BaseState
+    public record ConfigurationState : BaseState
     {
         /// <summary>
-        /// Gets messagingVerification.
+        /// Gets the loaded configuration.
         /// </summary>
-        public RequestResult<IEnumerable<MessagingVerificationModel>>? RequestResult { get; init; }
+        public ExternalConfiguration? Configuration { get; init; }
     }
 }

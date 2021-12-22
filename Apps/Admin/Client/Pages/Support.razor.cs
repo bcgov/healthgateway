@@ -31,26 +31,26 @@ namespace HealthGateway.Admin.Client.Pages
     {
         private static List<UserQueryType> QueryTypes => new() { UserQueryType.PHN, UserQueryType.Email, UserQueryType.SMS, UserQueryType.HDID };
 
+        [Inject]
+        private IDispatcher Dispatcher { get; set; } = default!;
+
+        [Inject]
+        private IState<MessageVerificationState> MessageVerificationState { get; set; } = default!;
+
         private UserQueryType SelectedQueryType { get; set; } = UserQueryType.PHN;
 
         private string QueryParameter { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Gets or sets dispatcher.
-        /// </summary>
-        [Inject]
-        private IDispatcher Dispatcher { get; set; } = default!;
-
         private void Search()
         {
-            this.Dispatcher.Dispatch(new Actions.LoadAction(this.SelectedQueryType, this.QueryParameter.Trim()));
+            this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(this.SelectedQueryType, this.QueryParameter.Trim()));
         }
 
         private IEnumerable<MessagingVerificationModel> MessagingVerifications()
         {
-            if (this.RequestResultState?.Value?.RequestResult?.ResourcePayload != null)
+            if (this.MessageVerificationState.Value.RequestResult?.ResourcePayload != null)
             {
-                return this.RequestResultState.Value.RequestResult.ResourcePayload;
+                return this.MessageVerificationState.Value.RequestResult.ResourcePayload;
             }
 
             return Enumerable.Empty<MessagingVerificationModel>();

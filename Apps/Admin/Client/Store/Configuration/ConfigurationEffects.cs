@@ -13,14 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-
-namespace HealthGateway.Admin.Client.Store.MessageVerification
+namespace HealthGateway.Admin.Client.Store.Configuration
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Fluxor;
     using HealthGateway.Admin.Client.Services;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Admin.Common.Models;
     using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.Logging;
     using Refit;
@@ -28,45 +26,44 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     /// <summary>
     /// The effects for the feature.
     /// </summary>
-    public class Effects
+    public class ConfigurationEffects
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Effects"/> class.
+        /// Initializes a new instance of the <see cref="ConfigurationEffects"/> class.
         /// </summary>
         /// <param name="logger">The injected logger.</param>
-        /// <param name="supportApi">the injected api to query the support. </param>
-        public Effects(ILogger<Effects> logger, ISupportApi supportApi)
+        /// <param name="configApi">the injected api to query the configuration. </param>
+        public ConfigurationEffects(ILogger<ConfigurationEffects> logger, IConfigurationApi configApi)
         {
             this.Logger = logger;
-            this.SupportApi = supportApi;
+            this.ConfigApi = configApi;
         }
 
         [Inject]
-        private ILogger<Effects> Logger { get; set; }
+        private ILogger<ConfigurationEffects> Logger { get; set; }
 
         [Inject]
-        private ISupportApi SupportApi { get; set; }
+        private IConfigurationApi ConfigApi { get; set; }
 
         /// <summary>
         /// Handler that calls the service and dispatch the actions.
         /// </summary>
-        /// <param name="action">Load the initial action.</param>
         /// <param name="dispatcher">Dispatch the actions.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        [EffectMethod]
-        public async Task HandleLoadAction(Actions.LoadAction action, IDispatcher dispatcher)
+        [EffectMethod(typeof(ConfigurationActions.LoadAction))]
+        public async Task HandleLoadAction(IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Loading Messaging Verification");
-            ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>> response = await this.SupportApi.GetMedicationVerifications(action.QueryType, action.QueryString).ConfigureAwait(true);
+            this.Logger.LogInformation("Loading External Configuration");
+            ApiResponse<ExternalConfiguration> response = await this.ConfigApi.GetConfiguration().ConfigureAwait(true);
             if (response.IsSuccessStatusCode)
             {
-                this.Logger.LogInformation("Messaging Verification loaded successfully!");
-                dispatcher.Dispatch(new Actions.LoadSuccessAction(response.Content));
+                this.Logger.LogInformation("External Configuration loaded successfully!");
+                dispatcher.Dispatch(new ConfigurationActions.LoadSuccessAction(response.Content));
             }
             else
             {
-                this.Logger.LogError($"Error loading Messaging Verification, reason: {response.Error?.Message}");
-                dispatcher.Dispatch(new Actions.LoadFailAction(response.Error?.Message));
+                this.Logger.LogError($"Error loading External Configuration, reason: {response.Error?.Message}");
+                dispatcher.Dispatch(new ConfigurationActions.LoadFailAction(response.Error?.Message));
             }
         }
     }

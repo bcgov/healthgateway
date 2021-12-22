@@ -33,6 +33,21 @@ namespace HealthGateway.Admin.Client.Pages
     /// </summary>
     public partial class ClaimsPage : FluxorComponent
     {
+        [Inject]
+        private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+
+        [Inject]
+        private IAccessTokenProvider TokenProvider { get; set; } = default!;
+
+        [Inject]
+        private IJSRuntime JsRuntime { get; set; } = default!;
+
+        [Inject]
+        private IDispatcher Dispatcher { get; set; } = default!;
+
+        [Inject]
+        private IState<ConfigurationState> ConfigurationState { get; set; } = default!;
+
         private string? AuthMessage { get; set; } = string.Empty;
 
         private string? SurnameMessage { get; set; } = string.Empty;
@@ -41,20 +56,11 @@ namespace HealthGateway.Admin.Client.Pages
 
         private IEnumerable<Claim> Claims { get; set; } = Enumerable.Empty<Claim>();
 
-        [Inject]
-        private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
-
-        [Inject]
-        private IAccessTokenProvider TokenProvider { get; set; } = default!;
-
-        [Inject]
-        private IDispatcher Dispatcher { get; set; } = default!;
-
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
         {
             await this.GetClaimsPrincipalData().ConfigureAwait(true);
-            this.Dispatcher.Dispatch(new Actions.LoadAction());
+            this.Dispatcher.Dispatch(new ConfigurationActions.LoadAction());
             await this.CreateCookie("HGAdmin", "dark mode", 365).ConfigureAwait(true);
         }
 
@@ -72,18 +78,18 @@ namespace HealthGateway.Admin.Client.Pages
             }
 
             string cookieValue = $"{name}={value}{expires}; path=/";
-            await this.jsRuntime.InvokeVoidAsync("eval", $@"document.cookie = ""{cookieValue}""").ConfigureAwait(true);
+            await this.JsRuntime.InvokeVoidAsync("eval", $@"document.cookie = ""{cookieValue}""").ConfigureAwait(true);
         }
 
         private async Task GetClaimsPrincipalData()
         {
-            var authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(true);
+            AuthenticationState? authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(true);
             ClaimsPrincipal user = authState.User;
 
             if (user.Identity != null && user.Identity.IsAuthenticated)
             {
-                var tokenResult = await this.TokenProvider.RequestAccessToken().ConfigureAwait(true);
-                tokenResult.TryGetToken(out var accessToken);
+                AccessTokenResult? tokenResult = await this.TokenProvider.RequestAccessToken().ConfigureAwait(true);
+                tokenResult.TryGetToken(out AccessToken? accessToken);
                 this.Token = accessToken.Value;
 
                 this.AuthMessage = $"{user.Identity.Name} is authenticated.";

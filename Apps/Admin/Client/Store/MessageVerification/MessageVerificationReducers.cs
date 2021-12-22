@@ -13,22 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.Configuration
+namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
     using Fluxor;
 
     /// <summary>
     /// The set of reducers for the feature.
     /// </summary>
-    public static class Reducers
+    public static class MessageVerificationReducers
     {
         /// <summary>
-        /// The Reducer for loading the configuration.
+        /// The Reducer for loading the message verification.
         /// </summary>
-        /// <param name="state">The configuration state.</param>
+        /// <param name="state">The message verification state.</param>
         /// <returns>The new state.</returns>
-        [ReducerMethod(typeof(Actions.LoadAction))]
-        public static State ReduceLoadAction(State state)
+        [ReducerMethod(typeof(MessageVerificationActions.LoadAction))]
+        public static MessageVerificationState ReduceLoadAction(MessageVerificationState state)
         {
             return state with
             {
@@ -39,15 +39,15 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// <summary>
         /// The Reducer for the load success action.
         /// </summary>
-        /// <param name="state">The configuration state.</param>
+        /// <param name="state">The message verification state.</param>
         /// <param name="action">The load success action.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod]
-        public static State ReduceLoadSuccessAction(State state, Actions.LoadSuccessAction action)
+        public static MessageVerificationState ReduceLoadSuccessAction(MessageVerificationState state, MessageVerificationActions.LoadSuccessAction action)
         {
             return state with
             {
-                Configuration = action.State,
+                RequestResult = action.State,
                 IsLoading = false,
                 ErrorMessage = string.Empty,
             };
@@ -56,11 +56,11 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// <summary>
         /// The Reducer for the fail action.
         /// </summary>
-        /// <param name="state">The configuration state.</param>
+        /// <param name="state">The message verification state.</param>
         /// <param name="action">The load fail action.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod]
-        public static State ReduceLoadFailAction(State state, Actions.LoadFailAction action)
+        public static MessageVerificationState ReduceLoadFailAction(MessageVerificationState state, MessageVerificationActions.LoadFailAction action)
         {
             return state with
             {
