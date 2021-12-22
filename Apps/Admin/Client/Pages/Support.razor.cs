@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Client.Pages
     using System.Collections.Generic;
     using System.Linq;
     using Fluxor;
+    using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Store.MessageVerification;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -26,7 +27,7 @@ namespace HealthGateway.Admin.Client.Pages
     /// <summary>
     /// Backing logic for the Support page.
     /// </summary>
-    public partial class Support : ComponentBase
+    public partial class Support : FluxorComponent
     {
         private static List<UserQueryType> QueryTypes => new() { UserQueryType.PHN, UserQueryType.Email, UserQueryType.SMS, UserQueryType.HDID };
 

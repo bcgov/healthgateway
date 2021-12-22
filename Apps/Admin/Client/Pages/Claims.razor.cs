@@ -21,6 +21,7 @@ namespace HealthGateway.Admin.Client.Pages
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Fluxor;
+    using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Store.Configuration;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Authorization;
@@ -30,7 +31,7 @@ namespace HealthGateway.Admin.Client.Pages
     /// <summary>
     /// Backing logic for the Claims page.
     /// </summary>
-    public partial class Claims : ComponentBase
+    public partial class Claims : FluxorComponent
     {
         private string? AuthMessage { get; set; } = string.Empty;
 
