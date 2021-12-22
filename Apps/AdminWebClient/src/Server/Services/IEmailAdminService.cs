@@ -17,7 +17,7 @@ namespace HealthGateway.Admin.Services
 {
     using System.Collections.Generic;
     using HealthGateway.Admin.Models;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// Service that provides admin functinoality to emails.

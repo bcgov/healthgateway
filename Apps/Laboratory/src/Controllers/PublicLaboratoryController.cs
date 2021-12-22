@@ -16,9 +16,8 @@
 namespace HealthGateway.Laboratory.Controllers
 {
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
-    using HealthGateway.Common.Models;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Services;
     using Microsoft.AspNetCore.Authorization;

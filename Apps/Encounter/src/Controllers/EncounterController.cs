@@ -18,13 +18,11 @@ namespace HealthGateway.Encounter.Controllers
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
-    using HealthGateway.Common.Models;
     using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Services;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
 

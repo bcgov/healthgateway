@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Server.Services
     using System;
     using System.Collections.Generic;
     using HealthGateway.Admin.Server.Models;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// Service that provides admin functionality to User feedback.

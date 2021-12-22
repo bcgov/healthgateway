@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Client.Services
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Constants;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using Refit;
 
     /// <summary>

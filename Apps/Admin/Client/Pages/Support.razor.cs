@@ -18,11 +18,9 @@ namespace HealthGateway.Admin.Client.Pages
     using System.Collections.Generic;
     using System.Linq;
     using Fluxor;
-    using Fluxor.Blazor.Web.Components;
-    using HealthGateway.Admin.Client.Services;
     using HealthGateway.Admin.Client.Store.MessageVerification;
     using HealthGateway.Admin.Common.Constants;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
 
     /// <summary>

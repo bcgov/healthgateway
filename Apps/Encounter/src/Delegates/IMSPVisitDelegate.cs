@@ -16,7 +16,7 @@
 namespace HealthGateway.Encounter.Delegates
 {
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Encounter.Models.ODR;
 

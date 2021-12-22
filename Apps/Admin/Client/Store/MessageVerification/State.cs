@@ -19,7 +19,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     using System.Collections.Generic;
     using Fluxor;
     using HealthGateway.Admin.Client.Store;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// MessageVerificationState.

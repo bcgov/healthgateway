@@ -18,11 +18,10 @@ namespace HealthGateway.Patient.Test.Controllers
     using System;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Controllers;
-    using HealthGateway.Patient.Models;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
     using Xunit;
@@ -44,7 +43,7 @@ namespace HealthGateway.Patient.Test.Controllers
         [Fact]
         public void GetPatients()
         {
-            Mock<IPatientService> patientService = new Mock<IPatientService>();
+            Mock<IPatientService> patientService = new();
             var mockResult = new RequestResult<Common.Models.PatientModel>()
             {
                 ResultStatus = ResultType.Success,
@@ -79,7 +78,7 @@ namespace HealthGateway.Patient.Test.Controllers
             };
             patientService.Setup(x => x.GetPatient(It.IsAny<string>(), Common.Constants.PatientIdentifierType.HDID, false)).ReturnsAsync(mockResult);
 
-            PatientController patientController = new PatientController(patientService.Object);
+            PatientController patientController = new(patientService.Object);
             var actualResult = patientController.GetPatient("123");
             Assert.IsType<JsonResult>(actualResult.Result);
             Assert.True(((JsonResult)actualResult.Result).Value.IsDeepEqual(expectedResult));

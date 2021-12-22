@@ -19,7 +19,7 @@ namespace HealthGateway.Laboratory.Controllers
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Services;

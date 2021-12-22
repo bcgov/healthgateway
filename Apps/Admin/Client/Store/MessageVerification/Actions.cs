@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Admin.Common.Constants;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// Static class that implemenets all action type.

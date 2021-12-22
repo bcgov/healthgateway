@@ -20,7 +20,7 @@ namespace HealthGateway.LaboratoryTests
     using System.Net;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;

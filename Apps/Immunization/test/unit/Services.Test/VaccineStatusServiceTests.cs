@@ -25,8 +25,8 @@ namespace HealthGateway.Immunization.Test.Services
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Services;
@@ -222,7 +222,7 @@ namespace HealthGateway.Immunization.Test.Services
         {
             RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new()
             {
-                ResultStatus =ResultType.ActionRequired,
+                ResultStatus = ResultType.ActionRequired,
                 ResourcePayload = new PHSAResult<VaccineStatusResult>()
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = true, BackOffMilliseconds = 500 },

@@ -20,7 +20,7 @@ namespace HealthGateway.WebClient.Test.Services
     using System.Linq;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;

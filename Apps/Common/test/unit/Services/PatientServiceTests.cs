@@ -19,7 +19,7 @@ namespace HealthGateway.CommonTests.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -66,7 +66,7 @@ namespace HealthGateway.CommonTests.Services
         {
             var configDictionary = new Dictionary<string, string>
             {
-                { "PatientService:CacheTTL", "90" }
+                { "PatientService:CacheTTL", "90" },
             };
             GetPatient(PatientIdentifierType.HDID, configDictionary, Database.Constants.DBStatusCode.Created, true);
         }
@@ -79,7 +79,7 @@ namespace HealthGateway.CommonTests.Services
         {
             var configDictionary = new Dictionary<string, string>
             {
-                { "PatientService:CacheTTL", "90" }
+                { "PatientService:CacheTTL", "90" },
             };
             GetPatient(PatientIdentifierType.PHN, configDictionary, Database.Constants.DBStatusCode.Created);
         }

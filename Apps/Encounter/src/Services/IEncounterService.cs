@@ -17,7 +17,7 @@ namespace HealthGateway.Encounter.Services
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Encounter.Models;
 
     /// <summary>

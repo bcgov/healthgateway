@@ -19,7 +19,7 @@ namespace HealthGateway.Medication.Services.Test
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Medication.Delegates;

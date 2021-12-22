@@ -25,13 +25,11 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.Utils;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Common.Utils;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;

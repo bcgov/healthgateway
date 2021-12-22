@@ -17,14 +17,13 @@
 namespace HealthGateway.Admin.Server.Services
 {
     using System;
-    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Server.Models.CovidSupport;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.ErrorHandling;

@@ -19,7 +19,7 @@ namespace HealthGateway.Admin.Server.Controllers
     using System.Collections.Generic;
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Admin.Server.Services;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 

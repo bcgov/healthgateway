@@ -17,7 +17,7 @@ namespace HealthGateway.WebClient.Controllers
 {
     using System.Collections.Generic;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;

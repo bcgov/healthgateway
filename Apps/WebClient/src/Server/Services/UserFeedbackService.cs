@@ -16,9 +16,8 @@
 namespace HealthGateway.WebClient.Services
 {
     using Hangfire;
-    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;

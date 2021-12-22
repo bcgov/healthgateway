@@ -22,7 +22,7 @@ namespace HealthGateway.Admin.Test.Services
     using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Constants;
     using Microsoft.AspNetCore.Mvc;
     using Moq;

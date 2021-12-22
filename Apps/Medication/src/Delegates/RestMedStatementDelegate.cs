@@ -26,8 +26,8 @@ namespace HealthGateway.Medication.Delegates
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;

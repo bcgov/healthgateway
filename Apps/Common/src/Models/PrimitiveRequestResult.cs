@@ -17,7 +17,7 @@ namespace HealthGateway.Common.Models
 {
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// Class that represents the result of a request with a primitive values.

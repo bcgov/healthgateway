@@ -18,6 +18,7 @@ namespace HealthGateway.Common.ErrorHandling
 {
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// Utilities for translating between error codes and its codification.

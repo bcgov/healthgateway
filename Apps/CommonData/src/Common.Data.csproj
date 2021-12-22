@@ -17,4 +17,8 @@
       <Value>$(MSBuildProjectFullPath)</Value>
     </SonarQubeSetting>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
 </Project>

@@ -21,7 +21,7 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Admin.Constants;
     using HealthGateway.Admin.Models;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;

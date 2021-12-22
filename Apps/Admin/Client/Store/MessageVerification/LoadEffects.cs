@@ -20,7 +20,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     using System.Threading.Tasks;
     using Fluxor;
     using HealthGateway.Admin.Client.Services;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.Logging;
     using Refit;
