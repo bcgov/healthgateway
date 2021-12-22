@@ -88,12 +88,12 @@ namespace HealthGateway.Admin.Client
 
         private static void RegisterRefitClients(this WebAssemblyHostBuilder builder)
         {
-            RegisterRefitClient<IConfigurationApi>(builder, "Configuration");
-            RegisterRefitClient<ISupportApi>(builder, "Support");
-            RegisterRefitClient<ICsvExportApi>(builder, "CsvExport");
+            RegisterRefitClient<IConfigurationApi>(builder, "Configuration", false);
+            RegisterRefitClient<ISupportApi>(builder, "Support", true);
+            RegisterRefitClient<ICsvExportApi>(builder, "CsvExport", true);
         }
 
-        private static void RegisterRefitClient<T>(WebAssemblyHostBuilder builder, string configKey)
+        private static void RegisterRefitClient<T>(WebAssemblyHostBuilder builder, string configKey, bool isAuthorized)
             where T : class
         {
             string baseAddress = builder.HostEnvironment.BaseAddress;
@@ -101,9 +101,17 @@ namespace HealthGateway.Admin.Client
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(baseAddress) });
 
             string address = builder.Configuration.GetSection("Services").GetValue<string>(configKey, baseAddress);
+
+            if (isAuthorized)
+            {
+                builder.Services.AddRefitClient<T>()
+                    .ConfigureHttpClient(c => { c.BaseAddress = new Uri(address); })
+                    .AddHttpMessageHandler(sp => ConfigureAuthorization(sp, address));
+                return;
+            }
+
             builder.Services.AddRefitClient<T>()
-                       .ConfigureHttpClient(c => { c.BaseAddress = new Uri(address); })
-                       .AddHttpMessageHandler(sp => ConfigureAuthorization(sp, address));
+                 .ConfigureHttpClient(c => { c.BaseAddress = new Uri(address); });
         }
 
         private static DelegatingHandler ConfigureAuthorization(IServiceProvider serviceProvider, string address)
