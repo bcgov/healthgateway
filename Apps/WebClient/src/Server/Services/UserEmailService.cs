@@ -20,6 +20,7 @@ namespace HealthGateway.WebClient.Services
     using System.Globalization;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
@@ -227,7 +228,7 @@ namespace HealthGateway.WebClient.Services
                 [EmailTemplateVariable.ExpiryHours] = verificationExpiryHours.ToString("0", CultureInfo.CurrentCulture),
             };
 
-            Database.Models.MessagingVerification messageVerification = new()
+            MessagingVerification messageVerification = new()
             {
                 InviteKey = inviteKey,
                 UserProfileId = hdid,

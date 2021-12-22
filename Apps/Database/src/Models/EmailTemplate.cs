@@ -18,7 +18,8 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Database.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// Represents a text message template.

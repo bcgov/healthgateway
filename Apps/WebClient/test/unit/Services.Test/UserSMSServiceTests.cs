@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Test.Services
 {
     using System;
     using System.Linq;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;

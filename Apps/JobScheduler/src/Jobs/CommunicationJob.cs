@@ -20,6 +20,7 @@ namespace Healthgateway.JobScheduler.Jobs
     using System.Diagnostics.Contracts;
     using Hangfire;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;

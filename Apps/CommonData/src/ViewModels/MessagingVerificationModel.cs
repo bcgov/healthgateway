@@ -16,8 +16,8 @@
 namespace HealthGateway.Common.Data.ViewModels
 {
     using System;
-    using HealthGateway.Database.Constants;
-    using HealthGateway.Database.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
 
 #pragma warning disable CS1591 // self explanatory simple model
 #pragma warning disable SA1600 // self explanatory simple model

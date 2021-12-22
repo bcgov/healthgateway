@@ -18,8 +18,8 @@ namespace HealthGateway.WebClient.Test.Services
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;

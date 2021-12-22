@@ -13,31 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Constants
+namespace HealthGateway.Common.Data.Constants
 {
     /// <summary>
-    /// Represents the status of an email.
+    /// Constants for UserIds used through out the DB.
     /// </summary>
-    public enum EmailStatus
+    public static class UserId
     {
         /// <summary>
-        /// Constant value to a new Email.
+        /// The default Id to use when creating auditable entities.
         /// </summary>
-        New,
+        public const string DefaultUser = "System";
 
         /// <summary>
-        /// Constant value to represent a Pending email.
+        /// The username for the DBMaintainer load application.
         /// </summary>
-        Pending,
+        public const string DBMaintainer = "DBMaintainer";
 
         /// <summary>
-        /// Constant value to represent an email that has errored out.
+        /// The default HDID to use when unknown.
         /// </summary>
-        Error,
-
-        /// <summary>
-        /// Constant value to represent an email that has been sent.
-        /// </summary>
-        Processed,
+        public const string UnknownHdId = "UnknownHDID";
     }
 }
