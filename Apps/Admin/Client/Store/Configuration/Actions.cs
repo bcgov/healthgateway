@@ -25,7 +25,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
     public static class Actions
     {
         /// <summary>
-        /// The action for a load.
+        /// The actions for the feature.
         /// </summary>
         public class LoadAction
         {

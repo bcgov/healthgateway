@@ -26,7 +26,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     public static class Actions
     {
         /// <summary>
-        /// The action for a load.
+        /// The actions for the feature.
         /// </summary>
         [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
         public class LoadAction
