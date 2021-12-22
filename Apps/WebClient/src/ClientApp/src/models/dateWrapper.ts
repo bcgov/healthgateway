@@ -1,6 +1,7 @@
 import { DateTime, Duration, DurationObject, DurationUnit } from "luxon";
 
 const timezone = "America/Vancouver";
+const locale = "en-US"; // times display as 4:07 PM in en-US locale and 4:07 p.m. in en-CA locale
 
 /**
  * Typed representation of a ISO Date, time is not relevant.
@@ -148,7 +149,10 @@ export class DateWrapper {
      */
     public format(formatString?: string): string {
         return this.internalDate.toFormat(
-            formatString || DateWrapper.defaultFormat
+            formatString || DateWrapper.defaultFormat,
+            {
+                locale: locale,
+            }
         );
     }
 
