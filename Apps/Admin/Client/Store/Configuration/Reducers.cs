@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
     using Fluxor;
 
     /// <summary>
-    /// The set of Reducers for the Configuration.
+    /// The set of reducers for the feature.
     /// </summary>
     public static class Reducers
     {
@@ -26,10 +26,15 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// The Reducer for loading the configuration.
         /// </summary>
         /// <param name="state">The configuration state.</param>
-        /// <param name="action">The load action.</param>
         /// <returns>The new state.</returns>
-        [ReducerMethod]
-        public static State ReduceLoadConfigurationAction(State state, LoadAction action) => new(state.Configuration, true);
+        [ReducerMethod(typeof(Actions.LoadAction))]
+        public static State ReduceLoadAction(State state)
+        {
+            return state with
+            {
+                IsLoading = true,
+            };
+        }
 
         /// <summary>
         /// The Reducer for the load success action.
@@ -38,7 +43,15 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// <param name="action">The load success action.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod]
-        public static State ReduceLoadConfigurationSuccessAction(State state, LoadSuccessAction action) => new(action.Configuration, false);
+        public static State ReduceLoadSuccessAction(State state, Actions.LoadSuccessAction action)
+        {
+            return state with
+            {
+                Configuration = action.State,
+                IsLoading = false,
+                ErrorMessage = string.Empty,
+            };
+        }
 
         /// <summary>
         /// The Reducer for the fail action.
@@ -47,6 +60,13 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// <param name="action">The load fail action.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod]
-        public static State ReduceLoadConfigurationFailAction(State state, LoadFailAction action) => new(state.Configuration, false, action.ErrorMessage);
+        public static State ReduceLoadFailAction(State state, Actions.LoadFailAction action)
+        {
+            return state with
+            {
+                IsLoading = false,
+                ErrorMessage = action.ErrorMessage,
+            };
+        }
     }
 }

@@ -16,18 +16,44 @@
 namespace HealthGateway.Admin.Client.Pages
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using Fluxor;
+    using Fluxor.Blazor.Web.Components;
+    using HealthGateway.Admin.Client.Store.MessageVerification;
     using HealthGateway.Admin.Common.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
 
     /// <summary>
     /// Backing logic for the Support page.
     /// </summary>
-    public partial class Support : ComponentBase
+    public partial class Support : FluxorComponent
     {
         private static List<UserQueryType> QueryTypes => new() { UserQueryType.PHN, UserQueryType.Email, UserQueryType.SMS, UserQueryType.HDID };
 
         private UserQueryType SelectedQueryType { get; set; } = UserQueryType.PHN;
 
         private string QueryParameter { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets dispatcher.
+        /// </summary>
+        [Inject]
+        private IDispatcher Dispatcher { get; set; } = default!;
+
+        private void Search()
+        {
+            this.Dispatcher.Dispatch(new Actions.LoadAction(this.SelectedQueryType, this.QueryParameter.Trim()));
+        }
+
+        private IEnumerable<MessagingVerificationModel> MessagingVerifications()
+        {
+            if (this.RequestResultState?.Value?.RequestResult?.ResourcePayload != null)
+            {
+                return this.RequestResultState.Value.RequestResult.ResourcePayload;
+            }
+
+            return Enumerable.Empty<MessagingVerificationModel>();
+        }
     }
 }

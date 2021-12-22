@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,26 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Constants
+namespace HealthGateway.Common.Data.Constants
 {
     /// <summary>
-    /// An enum representing the possible results for our transactions.
+    /// Constants for UserIds used through out the DB.
     /// </summary>
-    public enum ResultType
+    public static class UserId
     {
         /// <summary>
-        /// Represents a system error condition.
+        /// The default Id to use when creating auditable entities.
         /// </summary>
-        Error = 0,
+        public const string DefaultUser = "System";
 
         /// <summary>
-        /// Represents a successful result.
+        /// The username for the DBMaintainer load application.
         /// </summary>
-        Success = 1,
+        public const string DBMaintainer = "DBMaintainer";
 
         /// <summary>
-        /// Represents that the request needs an user action.
+        /// The default HDID to use when unknown.
         /// </summary>
-        ActionRequired = 2,
+        public const string UnknownHdId = "UnknownHDID";
     }
 }

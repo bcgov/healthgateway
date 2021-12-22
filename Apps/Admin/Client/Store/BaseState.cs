@@ -13,20 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.Configuration
+namespace HealthGateway.Admin.Client.Store
 {
-    using Fluxor;
-    using HealthGateway.Admin.Common.Models;
-
     /// <summary>
-    /// Configuration Feature.
+    /// Base class for states.
     /// </summary>
-    public class Feature : Feature<State>
+    public abstract record BaseState
     {
-        /// <inheritdoc />
-        public override string GetName() => "Configuration";
+        /// <summary>
+        /// Gets a value indicating whether the state is loading.
+        /// </summary>
+        public bool IsLoading { get; init; }
 
-        /// <inheritdoc />
-        protected override State GetInitialState() => new();
+        /// <summary>
+        /// Gets the error message if available.
+        /// </summary>
+        public string? ErrorMessage { get; init; }
     }
 }

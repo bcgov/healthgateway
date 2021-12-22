@@ -1,0 +1,33 @@
+@page "/claims"
+@using Fluxor
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+@using HealthGateway.Admin.Client.Store.Configuration
+@namespace HealthGateway.Admin.Client.Pages
+@inject IState<State> configState;
+@inject IJSRuntime jsRuntime
+
+<PageTitle>User Info</PageTitle>
+<MudHidden Invert="@(!configState.Value.IsLoading)"> 
+    <MudProgressLinear Color="Color.Primary" Indeterminate="@(configState.Value.IsLoading)" Class="my-7" />
+</MudHidden>
+<MudContainer>
+    <h1>User Info</h1>
+
+    <p>Auth Message: @this.AuthMessage</p>
+
+    <p>Token: @this.Token</p>
+    @if (this.Claims.Count() > 0)
+    {
+        <ul>
+            @foreach (var claim in this.Claims)
+            {
+                <li>@claim.Type: @claim.Value</li>
+            }
+        </ul>
+    }
+
+    <p>@this.SurnameMessage</p>
+
+    <p>IP Address: @(configState.Value.Configuration?.WebClient.ClientIP ?? configState.Value.ErrorMessage)</p>
+</MudContainer>
+

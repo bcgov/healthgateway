@@ -20,16 +20,16 @@ namespace HealthGateway.CommonTests.Delegates
     using System.IO;
     using System.Net;
     using System.Net.Http;
-    using System.Text;
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.BCMailPlus;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constants;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;

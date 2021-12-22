@@ -25,41 +25,46 @@ namespace HealthGateway.Admin.Client.Store.Configuration
     using Refit;
 
     /// <summary>
-    /// The effect for the Load Action.
+    /// The effects for the feature.
     /// </summary>
-    public class LoadEffect : Effect<LoadAction>
+    public class Effects
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadEffect"/> class.
+        /// Initializes a new instance of the <see cref="Effects"/> class.
         /// </summary>
         /// <param name="logger">The injected logger.</param>
         /// <param name="configApi">the injected api to query the configuration. </param>
-        public LoadEffect(ILogger<LoadEffect> logger, IConfigurationApi configApi)
+        public Effects(ILogger<Effects> logger, IConfigurationApi configApi)
         {
             this.Logger = logger;
             this.ConfigApi = configApi;
         }
 
         [Inject]
-        private ILogger<LoadEffect> Logger { get; set; }
+        private ILogger<Effects> Logger { get; set; }
 
         [Inject]
         private IConfigurationApi ConfigApi { get; set; }
 
-        /// <inheritdoc/>
-        public override async Task HandleAsync(LoadAction action, IDispatcher dispatcher)
+        /// <summary>
+        /// Handler that calls the service and dispatch the actions.
+        /// </summary>
+        /// <param name="dispatcher">Dispatch the actions.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [EffectMethod(typeof(Actions.LoadAction))]
+        public async Task HandleLoadAction(IDispatcher dispatcher)
         {
             this.Logger.LogInformation("Loading External Configuration");
             ApiResponse<ExternalConfiguration> response = await this.ConfigApi.GetConfiguration().ConfigureAwait(true);
             if (response.IsSuccessStatusCode)
             {
                 this.Logger.LogInformation("External Configuration loaded successfully!");
-                dispatcher.Dispatch(new LoadSuccessAction(response.Content));
+                dispatcher.Dispatch(new Actions.LoadSuccessAction(response.Content));
             }
             else
             {
                 this.Logger.LogError($"Error loading External Configuration, reason: {response.Error?.Message}");
-                dispatcher.Dispatch(new LoadFailAction(response.Error?.Message));
+                dispatcher.Dispatch(new Actions.LoadFailAction(response.Error?.Message));
             }
         }
     }

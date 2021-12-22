@@ -18,11 +18,10 @@ namespace HealthGateway.Admin.Client.Services
     using System;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Common.Models;
     using Refit;
 
     /// <summary>
-    /// API to fetch export data.
+    /// API to fetch export data from the server.
     /// </summary>
     public interface ICsvExportApi
     {

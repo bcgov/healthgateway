@@ -19,7 +19,8 @@ namespace HealthGateway.Immunization.Test.Controllers
     using System.Globalization;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Controllers;
     using HealthGateway.Immunization.Services;
@@ -45,7 +46,7 @@ namespace HealthGateway.Immunization.Test.Controllers
         {
             RequestResult<VaccineStatus> expectedRequestResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 TotalResultCount = 2,
                 ResourcePayload = new()
                 {
@@ -68,7 +69,7 @@ namespace HealthGateway.Immunization.Test.Controllers
             RequestResult<VaccineStatus> actual = await controller.GetVaccineStatus(this.phn, this.dob, this.dov).ConfigureAwait(true);
 
             // Verify
-            Assert.Equal(Common.Constants.ResultType.Success, actual.ResultStatus);
+            Assert.Equal(ResultType.Success, actual.ResultStatus);
             Assert.True(actual.IsDeepEqual(expectedRequestResult));
         }
     }

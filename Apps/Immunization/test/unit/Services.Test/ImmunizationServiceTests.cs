@@ -19,26 +19,16 @@ namespace HealthGateway.Immunization.Test.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Constants.PHSA;
-    using HealthGateway.Common.Delegates.PHSA;
-    using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Models.PHSA.Recommendation;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Parser;
     using HealthGateway.Immunization.Services;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -62,9 +52,9 @@ namespace HealthGateway.Immunization.Test.Services
         public void ShouldGetImmunizations()
         {
             var mockDelegate = new Mock<Immunization.Delegates.IImmunizationDelegate>();
-            RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = new RequestResult<PHSAResult<ImmunizationResponse>>()
+            RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new PHSAResult<ImmunizationResponse>()
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = false, },
@@ -85,7 +75,7 @@ namespace HealthGateway.Immunization.Test.Services
                 PageSize = 5,
                 TotalResultCount = 1,
             };
-            RequestResult<ImmunizationResult> expectedResult = new RequestResult<ImmunizationResult>()
+            RequestResult<ImmunizationResult> expectedResult = new()
             {
                 ResultStatus = delegateResult.ResultStatus,
                 ResourcePayload = new ImmunizationResult(
@@ -111,9 +101,9 @@ namespace HealthGateway.Immunization.Test.Services
         public void ShouldGetImmunization()
         {
             var mockDelegate = new Mock<Immunization.Delegates.IImmunizationDelegate>();
-            RequestResult<PHSAResult<ImmunizationViewResponse>> delegateResult = new RequestResult<PHSAResult<ImmunizationViewResponse>>()
+            RequestResult<PHSAResult<ImmunizationViewResponse>> delegateResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new PHSAResult<ImmunizationViewResponse>()
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = false, },
@@ -129,7 +119,7 @@ namespace HealthGateway.Immunization.Test.Services
                 PageSize = 5,
                 TotalResultCount = 1,
             };
-            RequestResult<ImmunizationEvent> expectedResult = new RequestResult<ImmunizationEvent>()
+            RequestResult<ImmunizationEvent> expectedResult = new()
             {
                 ResultStatus = delegateResult.ResultStatus,
                 ResourcePayload = EventParser.FromPHSAModel(delegateResult.ResourcePayload.Result),
@@ -154,7 +144,7 @@ namespace HealthGateway.Immunization.Test.Services
             var immzRecommendationResponse = this.GetImmzRecommendationResponse();
             var mockDelegate = new Mock<Immunization.Delegates.IImmunizationDelegate>();
             RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = GetPHSAResult(immzRecommendationResponse);
-            RequestResult<ImmunizationResult> expectedResult = new RequestResult<ImmunizationResult>()
+            RequestResult<ImmunizationResult> expectedResult = new()
             {
                 ResultStatus = delegateResult.ResultStatus,
                 ResourcePayload = new ImmunizationResult(
@@ -198,7 +188,7 @@ namespace HealthGateway.Immunization.Test.Services
             var mockDelegate = new Mock<Immunization.Delegates.IImmunizationDelegate>();
             RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError()
                 {
                     ResultMessage = "Mock Error",
@@ -576,7 +566,7 @@ namespace HealthGateway.Immunization.Test.Services
         {
             return new RequestResult<PHSAResult<ImmunizationResponse>>()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new PHSAResult<ImmunizationResponse>()
                 {
                     LoadState = new() { RefreshInProgress = false, },
@@ -646,7 +636,7 @@ namespace HealthGateway.Immunization.Test.Services
 
         private ImmunizationRecommendationResponse GetImmzRecommendationResponse()
         {
-            ImmunizationRecommendationResponse immzRecommendationResponse = new ImmunizationRecommendationResponse()
+            ImmunizationRecommendationResponse immzRecommendationResponse = new()
             {
                 ForecastCreationDate = DateTime.Now,
                 RecommendationId = this.recomendationSetId,
@@ -654,7 +644,7 @@ namespace HealthGateway.Immunization.Test.Services
                 RecommendationSourceSystemId = "MockSourceID",
             };
 
-            RecommendationResponse recommendationResponse = new RecommendationResponse();
+            RecommendationResponse recommendationResponse = new();
             recommendationResponse.ForecastStatus.ForecastStatusText = "Eligible";
             recommendationResponse.TargetDisease.TargetDiseaseCodes.Add(new SystemCode()
             {

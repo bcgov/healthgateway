@@ -15,18 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Test.Controllers
 {
-    using System.Collections.Generic;
-    using System.Security.Claims;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.WebClient.Controllers;
-    using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
     using Xunit;
@@ -44,23 +39,23 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldCreateUserFeedback()
         {
-            var userFeedback = new UserFeedback()
+            UserFeedback userFeedback = new()
             {
                 UserProfileId = Hdid,
                 CreatedBy = Hdid,
                 UpdatedBy = Hdid,
             };
 
-            DBResult<UserFeedback> mockedDBResult = new DBResult<UserFeedback>()
+            DBResult<UserFeedback> mockedDBResult = new()
             {
                 Status = Database.Constants.DBStatusCode.Created,
                 Payload = userFeedback,
             };
 
-            Mock<IUserFeedbackService> userFeedbackServiceMock = new Mock<IUserFeedbackService>();
+            Mock<IUserFeedbackService> userFeedbackServiceMock = new();
             userFeedbackServiceMock.Setup(s => s.CreateUserFeedback(It.IsAny<UserFeedback>())).Returns(mockedDBResult);
 
-            UserFeedbackController controller = new UserFeedbackController(userFeedbackServiceMock.Object);
+            UserFeedbackController controller = new(userFeedbackServiceMock.Object);
             var actualResult = controller.CreateUserFeedback(Hdid, userFeedback);
             Assert.IsType<OkResult>(actualResult);
         }
@@ -71,23 +66,23 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldCreateUserFeedbackWithConflictResultError()
         {
-            var userFeedback = new UserFeedback()
+            UserFeedback userFeedback = new()
             {
                 UserProfileId = Hdid,
                 CreatedBy = Hdid,
                 UpdatedBy = Hdid,
             };
 
-            DBResult<UserFeedback> mockedDBResult = new DBResult<UserFeedback>()
+            DBResult<UserFeedback> mockedDBResult = new()
             {
                 Status = Database.Constants.DBStatusCode.Error,
                 Payload = userFeedback,
             };
 
-            Mock<IUserFeedbackService> userFeedbackServiceMock = new Mock<IUserFeedbackService>();
+            Mock<IUserFeedbackService> userFeedbackServiceMock = new();
             userFeedbackServiceMock.Setup(s => s.CreateUserFeedback(It.IsAny<UserFeedback>())).Returns(mockedDBResult);
 
-            UserFeedbackController controller = new UserFeedbackController(userFeedbackServiceMock.Object);
+            UserFeedbackController controller = new(userFeedbackServiceMock.Object);
             var actualResult = controller.CreateUserFeedback(Hdid, userFeedback);
             Assert.IsType<ConflictResult>(actualResult);
         }
@@ -98,12 +93,12 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldCreateUserFeedbackWithBadRequestResultError()
         {
-            DBResult<UserFeedback> mockedDBResult = new DBResult<UserFeedback>()
+            DBResult<UserFeedback> mockedDBResult = new()
             {
                 Status = Database.Constants.DBStatusCode.Error,
             };
 
-            Mock<IUserFeedbackService> userFeedbackServiceMock = new Mock<IUserFeedbackService>();
+            Mock<IUserFeedbackService> userFeedbackServiceMock = new();
             userFeedbackServiceMock.Setup(s => s.CreateUserFeedback(It.IsAny<UserFeedback>())).Returns(mockedDBResult);
 
             UserFeedbackController controller = new UserFeedbackController(userFeedbackServiceMock.Object);
@@ -119,22 +114,22 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldCreateRating()
         {
-            var rating = new Rating()
+            Rating rating = new()
             {
                 CreatedBy = Hdid,
                 UpdatedBy = Hdid,
             };
 
-            RequestResult<Rating> expectedResult = new RequestResult<Rating>()
+            RequestResult<Rating> expectedResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = rating,
             };
 
-            Mock<IUserFeedbackService> userFeedbackServiceMock = new Mock<IUserFeedbackService>();
+            Mock<IUserFeedbackService> userFeedbackServiceMock = new();
             userFeedbackServiceMock.Setup(s => s.CreateRating(It.IsAny<Rating>())).Returns(expectedResult);
 
-            UserFeedbackController controller = new UserFeedbackController(userFeedbackServiceMock.Object);
+            UserFeedbackController controller = new(userFeedbackServiceMock.Object);
             var actualResult = controller.CreateRating(rating);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
         }

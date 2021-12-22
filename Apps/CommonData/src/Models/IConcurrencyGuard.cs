@@ -13,22 +13,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.Configuration
+namespace HealthGateway.Common.Data.Models
 {
+    using System;
+
     /// <summary>
-    /// The action representing a failed load.
+    /// Interface representing standard optimistic locking for all DB entities.
     /// </summary>
-    public class LoadFailAction
+    public interface IConcurrencyGuard
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailAction"/> class.
+        /// Gets or sets the version number.
+        /// A unique value per row which changes on update.
         /// </summary>
-        /// <param name="errorMessage">The error.</param>
-        public LoadFailAction(string errorMessage) => this.ErrorMessage = errorMessage;
-
-        /// <summary>
-        /// Gets the error message associated with the failed action.
-        /// </summary>
-        public string ErrorMessage { get; }
+        uint Version { get; set; }
     }
 }

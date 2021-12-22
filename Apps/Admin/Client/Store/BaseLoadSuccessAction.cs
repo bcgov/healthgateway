@@ -13,24 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.Configuration
-{
-    using HealthGateway.Admin.Common.Models;
 
+namespace HealthGateway.Admin.Client.Store
+{
     /// <summary>
-    /// The action representing a successful load.
+    /// The base load success action.
     /// </summary>
-    public class LoadSuccessAction
+    /// <typeparam name="TCollection">generic state class.</typeparam>
+    public abstract class BaseLoadSuccessAction<TCollection>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
+        /// Initializes a new instance of the <see cref="BaseLoadSuccessAction{TCollection}"/> class.
         /// </summary>
-        /// <param name="configuration">The successfully loaded configuration.</param>
-        public LoadSuccessAction(ExternalConfiguration configuration) => this.Configuration = configuration;
+        /// <param name="state">The successfully loaded state.</param>
+        protected BaseLoadSuccessAction(TCollection state)
+        {
+            this.State = state;
+        }
 
         /// <summary>
-        /// Gets the configuration.
+        /// Gets the state.
         /// </summary>
-        public ExternalConfiguration Configuration { get; }
+        public TCollection State { get; }
     }
 }

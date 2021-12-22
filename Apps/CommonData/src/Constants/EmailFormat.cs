@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,26 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Constants
+namespace HealthGateway.Common.Data.Constants
 {
     /// <summary>
-    /// Constants for UserIds used through out the DB.
+    /// Represents the format of emails.
     /// </summary>
-    public static class UserId
+    public enum EmailFormat
     {
         /// <summary>
-        /// The default Id to use when creating auditable entities.
+        /// Constant value to represent Text email.
         /// </summary>
-        public const string DefaultUser = "System";
+        Text,
 
         /// <summary>
-        /// The username for the DBMaintainer load application.
+        /// Constant value to represent HTML email.
         /// </summary>
-        public const string DBMaintainer = "DBMaintainer";
-
-        /// <summary>
-        /// The default HDID to use when unknown.
-        /// </summary>
-        public const string UnknownHdId = "UnknownHDID";
+        HTML,
     }
 }

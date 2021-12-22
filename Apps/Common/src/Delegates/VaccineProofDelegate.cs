@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.Delegates
 {
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Net;
@@ -25,14 +24,15 @@ namespace HealthGateway.Common.Delegates
     using System.Net.Mime;
     using System.Text;
     using System.Text.Json;
-    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.BCMailPlus;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constants;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 

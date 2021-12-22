@@ -23,7 +23,9 @@ namespace HealthGateway.Medication.Services.Test
     using System.Security.Principal;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
@@ -34,7 +36,6 @@ namespace HealthGateway.Medication.Services.Test
     using HealthGateway.Medication.Models.ODR;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -59,7 +60,7 @@ namespace HealthGateway.Medication.Services.Test
         public async Task InvalidProtectiveWord()
         {
             var httpContextAccessorMock = this.GetHttpContextAccessorMock();
-            Mock<IPatientService> patientDelegateMock = new Mock<IPatientService>();
+            Mock<IPatientService> patientDelegateMock = new();
             patientDelegateMock.Setup(s => s.GetPatientPHN(this.hdid)).Returns(Task.FromResult(
                 new RequestResult<string>()
                 {
@@ -67,11 +68,11 @@ namespace HealthGateway.Medication.Services.Test
                     ResultStatus = ResultType.Success,
                 }));
 
-            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
+            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
-            Mock<IMedStatementDelegate> medStatementDelegateMock = new Mock<IMedStatementDelegate>();
-            RequestResult<MedicationHistoryResponse> requestResult = new RequestResult<MedicationHistoryResponse>();
+            Mock<IMedStatementDelegate> medStatementDelegateMock = new();
+            RequestResult<MedicationHistoryResponse> requestResult = new();
             requestResult.ResourcePayload = new MedicationHistoryResponse();
             medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<ODRHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
@@ -116,7 +117,7 @@ namespace HealthGateway.Medication.Services.Test
         {
             var httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
-            Mock<IPatientService> patientDelegateMock = new Mock<IPatientService>();
+            Mock<IPatientService> patientDelegateMock = new();
             patientDelegateMock.Setup(s => s.GetPatient(this.hdid, Common.Constants.PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
                 new RequestResult<PatientModel>()
                 {
@@ -128,16 +129,16 @@ namespace HealthGateway.Medication.Services.Test
                         HdId = this.hdid,
                         PersonalHealthNumber = this.phn,
                     },
-                    ResultStatus = Common.Constants.ResultType.Success,
+                    ResultStatus = ResultType.Success,
                 }));
 
-            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
+            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
-            Mock<IMedStatementDelegate> medStatementDelegateMock = new Mock<IMedStatementDelegate>();
-            RequestResult<MedicationHistoryResponse> requestResult = new RequestResult<MedicationHistoryResponse>()
+            Mock<IMedStatementDelegate> medStatementDelegateMock = new();
+            RequestResult<MedicationHistoryResponse> requestResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
             };
             requestResult.ResourcePayload = new MedicationHistoryResponse();
             medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
@@ -151,7 +152,7 @@ namespace HealthGateway.Medication.Services.Test
 
             // Run and Verify
             RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, this.protectiveWord).ConfigureAwait(true);
-            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Success);
+            Assert.True(actual.ResultStatus == ResultType.Success);
         }
 
         /// <summary>
@@ -174,13 +175,13 @@ namespace HealthGateway.Medication.Services.Test
                         HdId = this.hdid,
                         PersonalHealthNumber = this.phn,
                     },
-                    ResultStatus = Common.Constants.ResultType.Success,
+                    ResultStatus = ResultType.Success,
                 }));
 
-            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
+            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
 
             // We need two tests, one for Fed data and one for Provincial data
-            List<DrugProduct> drugList = new List<DrugProduct>()
+            List<DrugProduct> drugList = new()
             {
                 new DrugProduct()
                 {
@@ -204,10 +205,10 @@ namespace HealthGateway.Medication.Services.Test
 
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(drugList);
 
-            Mock<IMedStatementDelegate> medStatementDelegateMock = new Mock<IMedStatementDelegate>();
-            RequestResult<MedicationHistoryResponse> requestResult = new RequestResult<MedicationHistoryResponse>()
+            Mock<IMedStatementDelegate> medStatementDelegateMock = new();
+            RequestResult<MedicationHistoryResponse> requestResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new MedicationHistoryResponse()
                 {
                     TotalRecords = 1,
@@ -246,7 +247,7 @@ namespace HealthGateway.Medication.Services.Test
         {
             var httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
-            Mock<IPatientService> patientDelegateMock = new Mock<IPatientService>();
+            Mock<IPatientService> patientDelegateMock = new();
             patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
                 new RequestResult<PatientModel>()
                 {
@@ -261,7 +262,7 @@ namespace HealthGateway.Medication.Services.Test
                     ResultStatus = ResultType.Success,
                 }));
 
-            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
+            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
 
             // We need two tests, one for Fed data and one for Provincial data
             List<DrugProduct> drugList = new List<DrugProduct>()
@@ -274,10 +275,10 @@ namespace HealthGateway.Medication.Services.Test
             };
 
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(drugList);
-            Mock<IMedStatementDelegate> medStatementDelegateMock = new Mock<IMedStatementDelegate>();
-            RequestResult<MedicationHistoryResponse> requestResult = new RequestResult<MedicationHistoryResponse>()
+            Mock<IMedStatementDelegate> medStatementDelegateMock = new();
+            RequestResult<MedicationHistoryResponse> requestResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new MedicationHistoryResponse()
                 {
                     TotalRecords = 1,
@@ -305,7 +306,7 @@ namespace HealthGateway.Medication.Services.Test
             RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true)).Result;
 
             // Verify
-            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Success && actual?.ResourcePayload?.Count == 1);
+            Assert.True(actual.ResultStatus == ResultType.Success && actual?.ResourcePayload?.Count == 1);
         }
 
         /// <summary>
@@ -315,7 +316,7 @@ namespace HealthGateway.Medication.Services.Test
         public void ShouldGetMedicationsProvLookup()
         {
             var httpContextAccessorMock = this.GetHttpContextAccessorMock();
-            Mock<IPatientService> patientDelegateMock = new Mock<IPatientService>();
+            Mock<IPatientService> patientDelegateMock = new();
             patientDelegateMock.Setup(s => s.GetPatient(this.hdid, Common.Constants.PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
                 new RequestResult<PatientModel>()
                 {
@@ -327,10 +328,10 @@ namespace HealthGateway.Medication.Services.Test
                         HdId = this.hdid,
                         PersonalHealthNumber = this.phn,
                     },
-                    ResultStatus = Common.Constants.ResultType.Success,
+                    ResultStatus = ResultType.Success,
                 }));
 
-            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
+            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
 
             // We need two tests, one for Fed data and one for Provincial data
             List<PharmaCareDrug> drugList = new List<PharmaCareDrug>()
@@ -345,10 +346,10 @@ namespace HealthGateway.Medication.Services.Test
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
             drugLookupDelegateMock.Setup(p => p.GetPharmaCareDrugsByDIN(It.IsAny<List<string>>())).Returns(drugList);
 
-            Mock<IMedStatementDelegate> medStatementDelegateMock = new Mock<IMedStatementDelegate>();
-            RequestResult<MedicationHistoryResponse> requestResult = new RequestResult<MedicationHistoryResponse>()
+            Mock<IMedStatementDelegate> medStatementDelegateMock = new();
+            RequestResult<MedicationHistoryResponse> requestResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new MedicationHistoryResponse()
                 {
                     TotalRecords = 1,
@@ -388,7 +389,7 @@ namespace HealthGateway.Medication.Services.Test
         {
             var httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
-            Mock<IPatientService> patientDelegateMock = new Mock<IPatientService>();
+            Mock<IPatientService> patientDelegateMock = new();
             patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
                 new RequestResult<PatientModel>()
                 {
@@ -403,13 +404,13 @@ namespace HealthGateway.Medication.Services.Test
                     ResultStatus = ResultType.Success,
                 }));
 
-            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
+            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
-            Mock<IMedStatementDelegate> medStatementDelegateMock = new Mock<IMedStatementDelegate>();
-            RequestResult<MedicationHistoryResponse> requestResult = new RequestResult<MedicationHistoryResponse>()
+            Mock<IMedStatementDelegate> medStatementDelegateMock = new();
+            RequestResult<MedicationHistoryResponse> requestResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new MedicationHistoryResponse()
                 {
                     TotalRecords = 0,
@@ -440,18 +441,18 @@ namespace HealthGateway.Medication.Services.Test
         public async Task ShouldGetPatientError()
         {
             var httpContextAccessorMock = this.GetHttpContextAccessorMock();
-            Mock<IPatientService> patientDelegateMock = new Mock<IPatientService>();
+            Mock<IPatientService> patientDelegateMock = new();
             patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
                 new RequestResult<PatientModel>()
                 {
                     ResultStatus = ResultType.Error,
                 }));
 
-            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
+            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
-            Mock<IMedStatementDelegate> medStatementDelegateMock = new Mock<IMedStatementDelegate>();
-            RequestResult<MedicationHistoryResponse> requestResult = new RequestResult<MedicationHistoryResponse>()
+            Mock<IMedStatementDelegate> medStatementDelegateMock = new();
+            RequestResult<MedicationHistoryResponse> requestResult = new()
             {
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new MedicationHistoryResponse()
@@ -478,26 +479,28 @@ namespace HealthGateway.Medication.Services.Test
 
         private Mock<IHttpContextAccessor> GetHttpContextAccessorMock()
         {
-            Mock<IIdentity> identityMock = new Mock<IIdentity>();
+            Mock<IIdentity> identityMock = new();
             identityMock.Setup(s => s.Name).Returns(this.userId);
 
-            Mock<ClaimsPrincipal> claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+            Mock<ClaimsPrincipal> claimsPrincipalMock = new();
             claimsPrincipalMock.Setup(s => s.Identity).Returns(identityMock.Object);
 
-            Mock<ConnectionInfo> connectionInfoMock = new Mock<ConnectionInfo>();
+            Mock<ConnectionInfo> connectionInfoMock = new();
             connectionInfoMock.Setup(s => s.RemoteIpAddress).Returns(IPAddress.Parse(this.ipAddress));
 
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", "Bearer TestJWT");
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            IHeaderDictionary headerDictionary = new HeaderDictionary
+            {
+                { "Authorization", "Bearer TestJWT" },
+            };
+            Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
 
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+            Mock<HttpContext> httpContextMock = new();
             httpContextMock.Setup(s => s.Connection).Returns(connectionInfoMock.Object);
             httpContextMock.Setup(s => s.User).Returns(claimsPrincipalMock.Object);
             httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
             return httpContextAccessorMock;
         }

@@ -24,6 +24,8 @@ namespace HealthGateway.CommonTests.Delegates
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -57,7 +59,7 @@ namespace HealthGateway.CommonTests.Delegates
         {
             var expectedRequestResult = new RequestResult<NotificationSettingsResponse>()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 TotalResultCount = 1,
             };
             Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = this.GetNotificationSettings(HttpStatusCode.OK, expectedRequestResult);
@@ -74,7 +76,7 @@ namespace HealthGateway.CommonTests.Delegates
         {
             var expectedRequestResult = new RequestResult<NotificationSettingsResponse>()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
             };
             Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = this.GetNotificationSettings(HttpStatusCode.OK, expectedRequestResult, true);
             var actualResult = response.Item1;
@@ -92,7 +94,7 @@ namespace HealthGateway.CommonTests.Delegates
         {
             var expectedRequestResult = new RequestResult<NotificationSettingsResponse>()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
             };
             Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = this.GetNotificationSettings(HttpStatusCode.BadRequest, expectedRequestResult);
             var actualResult = response.Item1;
@@ -105,13 +107,13 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void ValidateGetNotificationSettings204()
         {
-            RequestResult<NotificationSettingsResponse> expected = new RequestResult<NotificationSettingsResponse>()
+            RequestResult<NotificationSettingsResponse> expected = new()
             {
                 ResourcePayload = new NotificationSettingsResponse(),
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 TotalResultCount = 0,
             };
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.NoContent,
                 Content = new StringContent(string.Empty),
@@ -129,12 +131,12 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void ValidateGetNotificationSettings403()
         {
-            RequestResult<NotificationSettingsResponse> expected = new RequestResult<NotificationSettingsResponse>()
+            RequestResult<NotificationSettingsResponse> expected = new()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = "DID Claim is missing or can not resolve PHN, HTTP Error Forbidden", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) },
             };
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.Forbidden,
                 Content = new StringContent(string.Empty),
@@ -154,7 +156,7 @@ namespace HealthGateway.CommonTests.Delegates
         {
             var expectedRequestResult = new RequestResult<NotificationSettingsResponse>()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 TotalResultCount = 1,
             };
             Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = this.SetNotificationSettings(HttpStatusCode.OK, expectedRequestResult);
@@ -171,7 +173,7 @@ namespace HealthGateway.CommonTests.Delegates
         {
             var expectedRequestResult = new RequestResult<NotificationSettingsResponse>()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
             };
             Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = this.SetNotificationSettings(HttpStatusCode.OK, expectedRequestResult, true);
             var actualResult = response.Item1;
@@ -189,7 +191,7 @@ namespace HealthGateway.CommonTests.Delegates
         {
             var expectedRequestResult = new RequestResult<NotificationSettingsResponse>()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
             };
             Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = this.SetNotificationSettings(HttpStatusCode.BadRequest, expectedRequestResult);
             var actualResult = response.Item1;
@@ -202,9 +204,9 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void ValidateSetNotificationSettings201()
         {
-            RequestResult<NotificationSettingsResponse> expected = new RequestResult<NotificationSettingsResponse>()
+            RequestResult<NotificationSettingsResponse> expected = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new NotificationSettingsResponse()
                 {
                     SMSEnabled = true,
@@ -226,7 +228,7 @@ namespace HealthGateway.CommonTests.Delegates
             request.SMSVerificationCode = "1234";
             string json = JsonSerializer.Serialize(request);
 
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.Created,
                 Content = new StringContent(json),
@@ -245,12 +247,12 @@ namespace HealthGateway.CommonTests.Delegates
         public void ValidateSetNotificationSettings400()
         {
             string errMsg = "Mocked Error";
-            RequestResult<NotificationSettingsResponse> expected = new RequestResult<NotificationSettingsResponse>()
+            RequestResult<NotificationSettingsResponse> expected = new()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = $"Bad Request, HTTP Error BadRequest\nDetails:\n{errMsg}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) },
             };
-            NotificationSettingsRequest notificationSettings = new NotificationSettingsRequest()
+            NotificationSettingsRequest notificationSettings = new()
             {
                 SMSEnabled = true,
                 SMSNumber = "5551231234",
@@ -265,7 +267,7 @@ namespace HealthGateway.CommonTests.Delegates
                         NotificationTarget.Covid19,
                     },
             };
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.BadRequest,
                 Content = new StringContent(errMsg),
@@ -283,12 +285,12 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void ValidateSetNotificationSettings403()
         {
-            RequestResult<NotificationSettingsRequest> expected = new RequestResult<NotificationSettingsRequest>()
+            RequestResult<NotificationSettingsRequest> expected = new()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = "DID Claim is missing or can not resolve PHN, HTTP Error Forbidden", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) },
             };
-            NotificationSettingsRequest notificationSettings = new NotificationSettingsRequest()
+            NotificationSettingsRequest notificationSettings = new()
             {
                 SMSEnabled = true,
                 SMSNumber = "5551231234",
@@ -303,7 +305,7 @@ namespace HealthGateway.CommonTests.Delegates
                         NotificationTarget.Covid19,
                     },
             };
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.Forbidden,
                 Content = new StringContent(string.Empty),
@@ -343,7 +345,7 @@ namespace HealthGateway.CommonTests.Delegates
                   ItExpr.IsAny<CancellationToken>())
                .ReturnsAsync(httpResponseMessage)
                .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
             return mockHttpClientService;
@@ -364,7 +366,7 @@ namespace HealthGateway.CommonTests.Delegates
             string json = @"{""smsEnabled"": true, ""smsCellNumber"": ""5551231234"", ""smsVerified"": true, ""smsScope"": [""COVID19""], ""emailEnabled"": true, ""emailAddress"": ""email@email.blah"", ""emailScope"": [""COVID19""]}";
 
             expectedRequestResult.ResourcePayload = JsonSerializer.Deserialize<NotificationSettingsResponse>(json);
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = expectedResponseStatusCode,
                 Content = throwException ? null : new StringContent(json),
@@ -407,7 +409,7 @@ namespace HealthGateway.CommonTests.Delegates
             NotificationSettingsRequest request = new NotificationSettingsRequest(expectedRequestResult.ResourcePayload);
             request.SMSVerificationCode = "1234";
             string json = JsonSerializer.Serialize(request);
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = expectedResponseStatusCode,
                 Content = throwException ? null : new StringContent(json),

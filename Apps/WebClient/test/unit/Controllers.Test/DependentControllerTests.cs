@@ -19,7 +19,8 @@ namespace HealthGateway.WebClient.Test.Controllers
     using System.Collections.Generic;
     using System.Security.Claims;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.WebClient.Controllers;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
@@ -49,16 +50,16 @@ namespace HealthGateway.WebClient.Test.Controllers
         public void ShouldGetDependents()
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
-            Mock<IDependentService> dependentServiceMock = new Mock<IDependentService>();
+            Mock<IDependentService> dependentServiceMock = new();
             IEnumerable<DependentModel> expectedDependends = GetMockDependends();
-            RequestResult<IEnumerable<DependentModel>> expectedResult = new RequestResult<IEnumerable<DependentModel>>()
+            RequestResult<IEnumerable<DependentModel>> expectedResult = new()
             {
                 ResourcePayload = expectedDependends,
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
             };
             dependentServiceMock.Setup(s => s.GetDependents(this.hdid, 0, 500)).Returns(expectedResult);
 
-            DependentController dependentController = new DependentController(
+            DependentController dependentController = new(
                 new Mock<ILogger<UserProfileController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
@@ -75,8 +76,8 @@ namespace HealthGateway.WebClient.Test.Controllers
         public void ShouldAddDependent()
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
-            Mock<IDependentService> dependentServiceMock = new Mock<IDependentService>();
-            DependentModel expectedDependend = new DependentModel()
+            Mock<IDependentService> dependentServiceMock = new();
+            DependentModel expectedDependend = new()
             {
                 OwnerId = $"OWNER",
                 DelegateId = $"DELEGATER",
@@ -89,14 +90,14 @@ namespace HealthGateway.WebClient.Test.Controllers
                     LastName = this.lastname,
                 },
             };
-            RequestResult<DependentModel> expectedResult = new RequestResult<DependentModel>()
+            RequestResult<DependentModel> expectedResult = new()
             {
                 ResourcePayload = expectedDependend,
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
             };
             dependentServiceMock.Setup(s => s.AddDependent(this.hdid, It.IsAny<AddDependentRequest>())).Returns(expectedResult);
 
-            DependentController dependentController = new DependentController(
+            DependentController dependentController = new(
                 new Mock<ILogger<UserProfileController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
@@ -113,15 +114,15 @@ namespace HealthGateway.WebClient.Test.Controllers
         {
             string delegateId = this.hdid;
             string dependentId = "123";
-            DependentModel dependentModel = new DependentModel() { DelegateId = delegateId, OwnerId = dependentId };
+            DependentModel dependentModel = new() { DelegateId = delegateId, OwnerId = dependentId };
 
-            RequestResult<DependentModel> expectedResult = new RequestResult<DependentModel>()
+            RequestResult<DependentModel> expectedResult = new()
             {
                 ResourcePayload = dependentModel,
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
             };
 
-            Mock<IDependentService> dependentServiceMock = new Mock<IDependentService>();
+            Mock<IDependentService> dependentServiceMock = new();
             dependentServiceMock.Setup(s => s.Remove(dependentModel)).Returns(expectedResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
@@ -146,13 +147,13 @@ namespace HealthGateway.WebClient.Test.Controllers
             string dependentId = "123";
             DependentModel dependentModel = new DependentModel() { DelegateId = delegateId, OwnerId = dependentId };
 
-            RequestResult<DependentModel> expectedResult = new RequestResult<DependentModel>()
+            RequestResult<DependentModel> expectedResult = new()
             {
                 ResourcePayload = dependentModel,
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
             };
 
-            Mock<IDependentService> dependentServiceMock = new Mock<IDependentService>();
+            Mock<IDependentService> dependentServiceMock = new();
             dependentServiceMock.Setup(s => s.Remove(dependentModel)).Returns(expectedResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, delegateId);
@@ -168,7 +169,7 @@ namespace HealthGateway.WebClient.Test.Controllers
 
         private static IEnumerable<DependentModel> GetMockDependends()
         {
-            List<DependentModel> dependentModels = new List<DependentModel>();
+            List<DependentModel> dependentModels = new();
 
             for (int i = 0; i < 10; i++)
             {
@@ -193,13 +194,15 @@ namespace HealthGateway.WebClient.Test.Controllers
 
         private static Mock<IHttpContextAccessor> CreateValidHttpContext(string token, string userId, string hdid)
         {
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", token);
-            headerDictionary.Add("referer", "http://localhost/");
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            IHeaderDictionary headerDictionary = new HeaderDictionary
+            {
+                { "Authorization", token },
+                { "referer", "http://localhost/" },
+            };
+            Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
 
-            List<Claim> claims = new List<Claim>()
+            List<Claim> claims = new()
             {
                 new Claim(ClaimTypes.Name, "username"),
                 new Claim(ClaimTypes.NameIdentifier, userId),
@@ -207,15 +210,15 @@ namespace HealthGateway.WebClient.Test.Controllers
                 new Claim("auth_time", "123"),
                 new Claim("access_token", token),
             };
-            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
-            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+            ClaimsIdentity identity = new(claims, "TestAuth");
+            ClaimsPrincipal claimsPrincipal = new(identity);
 
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+            Mock<HttpContext> httpContextMock = new();
             httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
             httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
-            Mock<IAuthenticationService> authenticationMock = new Mock<IAuthenticationService>();
+            Mock<IAuthenticationService> authenticationMock = new();
             var authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
             authResult.Properties.StoreTokens(new[]
             {

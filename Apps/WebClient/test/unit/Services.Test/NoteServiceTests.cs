@@ -19,10 +19,10 @@ namespace HealthGateway.WebClient.Test.Services
     using System.Collections.Generic;
     using System.Linq;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -169,7 +169,7 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldInsertNoteWithNoKeyError()
         {
             string? encryptionKey = null;
-            DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
+            DBResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile() { EncryptionKey = encryptionKey },
             };
@@ -177,7 +177,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
 
-            UserNote userNote = new UserNote()
+            UserNote userNote = new()
             {
                 HdId = this.hdid,
                 Title = "Deleted Note",
@@ -202,15 +202,15 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldUpdateNoteWithNoKeyError()
         {
             string? encryptionKey = null;
-            DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
+            DBResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile() { EncryptionKey = encryptionKey },
             };
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
 
-            UserNote userNote = new UserNote()
+            UserNote userNote = new()
             {
                 HdId = this.hdid,
                 Title = "Deleted Note",
@@ -235,12 +235,12 @@ namespace HealthGateway.WebClient.Test.Services
         public void ShouldDeleteNoteWithNoKeyError()
         {
             string? encryptionKey = null;
-            DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
+            DBResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile() { EncryptionKey = encryptionKey },
             };
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
 
             UserNote userNote = new UserNote()
@@ -265,15 +265,15 @@ namespace HealthGateway.WebClient.Test.Services
             string? encryptionKey = null,
             Database.Constants.DBStatusCode notesDBResultStatus = Database.Constants.DBStatusCode.Read)
         {
-            DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
+            DBResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile() { EncryptionKey = encryptionKey },
             };
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
 
-            Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
+            Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
             cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
 
@@ -299,13 +299,13 @@ namespace HealthGateway.WebClient.Test.Services
                 userNoteList = UserNote.CreateListFromDbModel(noteList, cryptoDelegateMock.Object, encryptionKey).ToList();
             }
 
-            DBResult<IEnumerable<Note>> notesDBResult = new DBResult<IEnumerable<Note>>
+            DBResult<IEnumerable<Note>> notesDBResult = new()
             {
                 Payload = noteList,
                 Status = notesDBResultStatus,
             };
 
-            Mock<INoteDelegate> noteDelegateMock = new Mock<INoteDelegate>();
+            Mock<INoteDelegate> noteDelegateMock = new();
             noteDelegateMock.Setup(s => s.GetNotes(this.hdid, 0, 500)).Returns(notesDBResult);
 
             INoteService service = new NoteService(
@@ -322,15 +322,15 @@ namespace HealthGateway.WebClient.Test.Services
         private Tuple<RequestResult<UserNote>, UserNote> ExecuteCreateNote(Database.Constants.DBStatusCode dBStatusCode = Database.Constants.DBStatusCode.Created)
         {
             string encryptionKey = "abc";
-            DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
+            DBResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile() { EncryptionKey = encryptionKey },
             };
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
 
-            Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
+            Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
             cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
 
@@ -349,7 +349,7 @@ namespace HealthGateway.WebClient.Test.Services
                 Status = dBStatusCode,
             };
 
-            Mock<INoteDelegate> noteDelegateMock = new Mock<INoteDelegate>();
+            Mock<INoteDelegate> noteDelegateMock = new();
             noteDelegateMock.Setup(s => s.AddNote(It.Is<Note>(x => x.Text == note.Text), true)).Returns(insertResult);
 
             INoteService service = new NoteService(
@@ -365,15 +365,15 @@ namespace HealthGateway.WebClient.Test.Services
         private Tuple<RequestResult<UserNote>, UserNote> ExecuteUpdateNote(Database.Constants.DBStatusCode dBStatusCode = Database.Constants.DBStatusCode.Updated)
         {
             string encryptionKey = "abc";
-            DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
+            DBResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile() { EncryptionKey = encryptionKey },
             };
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
 
-            Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
+            Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
             cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
 
@@ -387,13 +387,13 @@ namespace HealthGateway.WebClient.Test.Services
 
             Note note = userNote.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
 
-            DBResult<Note> updateResult = new DBResult<Note>
+            DBResult<Note> updateResult = new()
             {
                 Payload = note,
                 Status = dBStatusCode,
             };
 
-            Mock<INoteDelegate> noteDelegateMock = new Mock<INoteDelegate>();
+            Mock<INoteDelegate> noteDelegateMock = new();
             noteDelegateMock.Setup(s => s.UpdateNote(It.Is<Note>(x => x.Text == note.Text), true)).Returns(updateResult);
 
             INoteService service = new NoteService(
@@ -409,15 +409,15 @@ namespace HealthGateway.WebClient.Test.Services
         private Tuple<RequestResult<UserNote>, UserNote> ExecuteDeleteNote(Database.Constants.DBStatusCode dBStatusCode = Database.Constants.DBStatusCode.Deleted)
         {
             string encryptionKey = "abc";
-            DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
+            DBResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile() { EncryptionKey = encryptionKey },
             };
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
 
-            Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
+            Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
             cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
 
@@ -430,13 +430,13 @@ namespace HealthGateway.WebClient.Test.Services
             };
             Note note = userNote.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
 
-            DBResult<Note> deleteResult = new DBResult<Note>
+            DBResult<Note> deleteResult = new()
             {
                 Payload = note,
                 Status = dBStatusCode,
             };
 
-            Mock<INoteDelegate> noteDelegateMock = new Mock<INoteDelegate>();
+            Mock<INoteDelegate> noteDelegateMock = new();
             noteDelegateMock.Setup(s => s.DeleteNote(It.Is<Note>(x => x.Text == note.Text), true)).Returns(deleteResult);
 
             INoteService service = new NoteService(

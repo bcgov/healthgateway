@@ -17,6 +17,7 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
 {
     using System;
     using System.Collections.Generic;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;

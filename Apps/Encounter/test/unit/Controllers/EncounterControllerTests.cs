@@ -17,15 +17,10 @@ namespace HealthGateway.EncounterTests
 {
     using System;
     using System.Collections.Generic;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Encounter.Controllers;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Services;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
     using Moq;
-    using Xunit;
 
     /// <summary>
     /// EncounterController's Unit Tests.
@@ -45,7 +40,7 @@ namespace HealthGateway.EncounterTests
 
         private static RequestResult<IEnumerable<EncounterModel>> GetEncounters()
         {
-            RequestResult<IEnumerable<EncounterModel>> result = new RequestResult<IEnumerable<EncounterModel>>();
+            RequestResult<IEnumerable<EncounterModel>> result = new();
             var encounters = new List<EncounterModel>();
             encounters.Add(new EncounterModel()
             {

@@ -1,5 +1,9 @@
 @page "/support"
 @attribute [Authorize(Roles = Roles.Admin)]
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+@using Fluxor
+@using HealthGateway.Admin.Client.Store.MessageVerification
+@inject IState<State> RequestResultState
 
 <PageTitle>Support</PageTitle>
 <HgPageHeading>Support</HgPageHeading>
@@ -17,12 +21,12 @@
         <MudItem xs="12" sm="9">
             <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@SelectedQueryType.ToString()" @bind-Value="QueryParameter" />
         </MudItem>
-        <MudItem Class="d-flex justify-end" xs="12">
-            <HgButton TopMargin="Breakpoint.Always" EndIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="Color.Primary">Search</HgButton>
+        <MudItem Class="d-flex justify-end" xs="12">          
+            <HgButton TopMargin="Breakpoint.Always" EndIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="Color.Primary" @onclick="Search">Search</HgButton>
         </MudItem>
     </MudGrid>
 </MudForm>
-<MudTable Class="mt-3" T="string" Items="new List<string> { string.Empty }"  Breakpoint="Breakpoint.Md" HorizontalScrollbar="true">
+<MudTable Class="mt-3" Items="MessagingVerifications()"  Breakpoint="Breakpoint.Md" HorizontalScrollbar="true">
     <HeaderContent>
         <MudTh>HDID</MudTh>
         <MudTh>Email</MudTh>
@@ -33,15 +37,16 @@
         <MudTh>SMS Verified Date</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="HDID">P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A</MudTd>
-        <MudTd DataLabel="Email">test@example.com</MudTd>
+        <MudTd DataLabel="HDID">@context.UserProfileId</MudTd>
+        <MudTd DataLabel="Email">@context.Email?.Id</MudTd>
         <MudTd DataLabel="Email Verified">false</MudTd>
         <MudTd DataLabel="Email Verified Date">31/12/2020 11:59 PM</MudTd>
         <MudTd DataLabel="SMS">250‑867‑5309</MudTd>
-        <MudTd DataLabel="SMS Verified">true</MudTd>
+        <MudTd DataLabel="SMS Verified">@context.SMSNumber</MudTd>
         <MudTd DataLabel="SMS Verified Date">01/01/2021 12:01 AM</MudTd>
     </RowTemplate>
     <PagerContent>
         <MudTablePager />
     </PagerContent>
 </MudTable>
+

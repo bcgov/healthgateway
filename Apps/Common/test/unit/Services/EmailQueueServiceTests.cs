@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,12 +21,13 @@ namespace HealthGateway.CommonTests.Services
     using Hangfire;
     using Hangfire.Common;
     using Hangfire.States;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -61,7 +62,7 @@ namespace HealthGateway.CommonTests.Services
             };
 
             Guid expectedEmailId = Guid.Parse("389425bc-0380-467f-b003-e03cfa871f83");
-            Dictionary<string, string> kv = new Dictionary<string, string>();
+            Dictionary<string, string> kv = new();
             kv.Add("environment", environment);
             var mockLogger = new Mock<ILogger<EmailQueueService>>();
             var mockJobclient = new Mock<IBackgroundJobClient>();
@@ -96,7 +97,7 @@ namespace HealthGateway.CommonTests.Services
         {
             DateTime now = DateTime.Now;
             string expectedEmail = "mock@mock.com";
-            EmailTemplate emailTemplate = new EmailTemplate()
+            EmailTemplate emailTemplate = new()
             {
                 Id = Guid.Parse("93895b38-cc48-47a3-b592-c02691521b28"),
                 CreatedBy = "Mocked Created By",
@@ -206,7 +207,7 @@ namespace HealthGateway.CommonTests.Services
                 Body = expectedBody,
             };
             Guid expectedNewEmailId = Guid.Parse("389425bc-0380-467f-b003-e03cfa871f83");
-            Dictionary<string, string> kv = new Dictionary<string, string>();
+            Dictionary<string, string> kv = new();
             kv.Add("environment", environment);
             var mockLogger = new Mock<ILogger<EmailQueueService>>();
             var mockJobclient = new Mock<IBackgroundJobClient>();
@@ -240,19 +241,19 @@ namespace HealthGateway.CommonTests.Services
         public void ShouldProcessTemplate()
         {
             string emailTo = "test@test.com";
-            Dictionary<string, string> d = new Dictionary<string, string>();
+            Dictionary<string, string> d = new();
             d.Add("SUBJECT", "Test Subject");
             d.Add("PARM1", "PARM1");
             d.Add("PARM2", "PARM2");
             d.Add("PARM3", "PARM3");
-            EmailTemplate template = new EmailTemplate()
+            EmailTemplate template = new()
             {
                 Subject = "Subject=${SUBJECT}",
                 Body = "PARM1=${PARM1}, PARM2=${PARM2}, PARM3=${PARM3}",
                 FormatCode = EmailFormat.Text,
                 Priority = EmailPriority.Standard,
             };
-            Email expected = new Email()
+            Email expected = new()
             {
                 To = emailTo,
                 Subject = "Subject=Test Subject",
@@ -278,14 +279,14 @@ namespace HealthGateway.CommonTests.Services
             string bodyPrefix = "Mock Body";
             string environment = string.Empty;
             string expectedBody = $"{bodyPrefix} {environment}";
-            EmailTemplate template = new EmailTemplate()
+            EmailTemplate template = new()
             {
                 Subject = "Mock Subject",
                 Body = $"{bodyPrefix} ${{Environment}}",
                 FormatCode = EmailFormat.Text,
                 Priority = EmailPriority.Standard,
             };
-            Dictionary<string, string> d = new Dictionary<string, string>();
+            Dictionary<string, string> d = new();
             var mockWebHosting = new Mock<IWebHostEnvironment>();
             mockWebHosting.Setup(s => s.EnvironmentName).Returns(Environments.Production);
             IEmailQueueService emailService = new EmailQueueService(
@@ -314,7 +315,7 @@ namespace HealthGateway.CommonTests.Services
                 FormatCode = EmailFormat.Text,
                 Priority = EmailPriority.Standard,
             };
-            Dictionary<string, string> d = new Dictionary<string, string>();
+            Dictionary<string, string> d = new();
             var mockWebHosting = new Mock<IWebHostEnvironment>();
 
             mockWebHosting.Setup(s => s.EnvironmentName).Returns(environment);

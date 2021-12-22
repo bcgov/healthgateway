@@ -17,7 +17,7 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System.Collections.Generic;
     using HealthGateway.Admin.Server.Models;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// Service that interacts with the Communications database.

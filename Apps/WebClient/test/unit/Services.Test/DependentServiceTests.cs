@@ -19,6 +19,9 @@ namespace HealthGateway.WebClient.Test.Services
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -73,7 +76,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void GetDependentsWithEmptyPatientResPayloadError()
         {
-            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>();
+            RequestResult<PatientModel> patientResult = new();
 
             IDependentService service = this.SetupMockForGetDependents(patientResult);
             RequestResult<IEnumerable<DependentModel>> actualResult = service.GetDependents(this.mockParentHdId, 0, 500);
@@ -103,7 +106,7 @@ namespace HealthGateway.WebClient.Test.Services
         public void ValidateDependentWithEmptyPatientResPayloadError()
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
-            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>();
+            RequestResult<PatientModel> patientResult = new();
 
             // Test Scenario - Happy Path: Found HdId for the PHN, Found Patient.
             IDependentService service = this.SetupMockDependentService(addDependentRequest, null, patientResult);

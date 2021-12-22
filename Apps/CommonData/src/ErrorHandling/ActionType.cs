@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.ErrorHandling
+namespace HealthGateway.Common.Data.Models.ErrorHandling
 {
     /// <summary>
     /// Enumerator that defines the different types of required actions.

@@ -23,9 +23,9 @@ namespace HealthGateway.CommonTests.Delegates
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authentication;
@@ -63,7 +63,7 @@ namespace HealthGateway.CommonTests.Delegates
             string hdid = "TheTestHdid";
             string immunizationId = "fbdec97f-a603-4305-59ed-08d906b6603e";
 
-            var expectedRequestResult = new RequestResult<ImmunizationEvent>()
+            RequestResult<ImmunizationEvent> expectedRequestResult = new()
             {
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 1,
@@ -91,7 +91,7 @@ namespace HealthGateway.CommonTests.Delegates
                 },
             };
 
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(JsonSerializer.Serialize(expectedRequestResult)),
@@ -131,7 +131,7 @@ namespace HealthGateway.CommonTests.Delegates
             string hdid = "TheTestHdid";
             string immunizationId = "fbdec97f-a603-4305-59ed-08d906b6603e";
 
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.NotImplemented,
                 Content = null,
@@ -160,7 +160,7 @@ namespace HealthGateway.CommonTests.Delegates
             string hdid = "TheTestHdid";
             string immunizationId = "fbdec97f-a603-4305-59ed-08d906b6603e";
 
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.Forbidden,
                 Content = null,
@@ -189,7 +189,7 @@ namespace HealthGateway.CommonTests.Delegates
             string hdid = "TheTestHdid";
             string immunizationId = "fbdec97f-a603-4305-59ed-08d906b6603e";
 
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.NoContent,
                 Content = null,
@@ -218,7 +218,7 @@ namespace HealthGateway.CommonTests.Delegates
             string hdid = "TheTestHdid";
             string immunizationId = "fbdec97f-a603-4305-59ed-08d906b6603e";
 
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(string.Empty),
@@ -242,14 +242,14 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void ErrorContextNull()
         {
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(JsonSerializer.Serialize(string.Empty)),
             };
 
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new();
 
             IImmunizationDelegate immunizationDelegate = new RestImmunizationDelegate(
                 loggerFactory.CreateLogger<RestImmunizationDelegate>(),
@@ -289,7 +289,7 @@ namespace HealthGateway.CommonTests.Delegates
                   ItExpr.IsAny<CancellationToken>())
                .ReturnsAsync(httpResponseMessage)
                .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
             return mockHttpClientService;
@@ -297,9 +297,11 @@ namespace HealthGateway.CommonTests.Delegates
 
         private static Mock<IHttpContextAccessor> CreateValidHttpContext(string token, string userId, string hdid)
         {
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", token);
-            headerDictionary.Add("referer", "http://localhost/");
+            IHeaderDictionary headerDictionary = new HeaderDictionary
+            {
+                { "Authorization", token },
+                { "referer", "http://localhost/" },
+            };
             Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
 

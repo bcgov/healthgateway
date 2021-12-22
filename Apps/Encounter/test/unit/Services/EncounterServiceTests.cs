@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,11 +20,11 @@ namespace HealthGateway.Encounter.Test.Service
     using System.Globalization;
     using System.Linq;
     using System.Net;
-    using System.Security.Cryptography;
-    using System.Text;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
@@ -33,7 +33,6 @@ namespace HealthGateway.Encounter.Test.Service
     using HealthGateway.Encounter.Models.ODR;
     using HealthGateway.Encounter.Services;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -44,7 +43,7 @@ namespace HealthGateway.Encounter.Test.Service
     public class EncounterServiceTests
     {
         private readonly string ipAddress = "127.0.0.1";
-        private readonly Claim sameClaim = new Claim()
+        private readonly Claim sameClaim = new()
         {
             ClaimId = 1,
             PractitionerName = "Mock Name 1",
@@ -61,7 +60,7 @@ namespace HealthGateway.Encounter.Test.Service
             },
         };
 
-        private readonly Claim oddClaim = new Claim()
+        private readonly Claim oddClaim = new()
         {
             ClaimId = 2,
             PractitionerName = "Mock Name 2",
@@ -84,9 +83,9 @@ namespace HealthGateway.Encounter.Test.Service
         [Fact]
         public void ValidateEncounters()
         {
-            RequestResult<MSPVisitHistoryResponse> delegateResult = new RequestResult<MSPVisitHistoryResponse>()
+            RequestResult<MSPVisitHistoryResponse> delegateResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 PageSize = 100,
                 PageIndex = 1,
                 ResourcePayload = new MSPVisitHistoryResponse()
@@ -127,7 +126,7 @@ namespace HealthGateway.Encounter.Test.Service
         [Fact]
         public void NoClaims()
         {
-            RequestResult<MSPVisitHistoryResponse> delegateResult = new RequestResult<MSPVisitHistoryResponse>()
+            RequestResult<MSPVisitHistoryResponse> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
                 PageSize = 100,
@@ -166,7 +165,7 @@ namespace HealthGateway.Encounter.Test.Service
         [Fact]
         public void PatientError()
         {
-            RequestResult<MSPVisitHistoryResponse> delegateResult = new RequestResult<MSPVisitHistoryResponse>()
+            RequestResult<MSPVisitHistoryResponse> delegateResult = new()
             {
             };
 
@@ -176,9 +175,9 @@ namespace HealthGateway.Encounter.Test.Service
             var mockMSPDelegate = new Mock<IMSPVisitDelegate>();
             mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
-            RequestResult<PatientModel> errorPatientResult = new RequestResult<PatientModel>()
+            RequestResult<PatientModel> errorPatientResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError()
                 {
                     ErrorCode = "Mock Error",
@@ -199,7 +198,7 @@ namespace HealthGateway.Encounter.Test.Service
                 mockMSPDelegate.Object);
 
             var actualResult = service.GetEncounters(hdid).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error &&
+            Assert.True(actualResult.ResultStatus == ResultType.Error &&
                         actualResult.ResultError.IsDeepEqual(errorPatientResult.ResultError));
         }
 

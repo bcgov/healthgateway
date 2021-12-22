@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,19 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Database.Models
+namespace HealthGateway.Admin.Client.Store
 {
-    using System;
-
     /// <summary>
-    /// Interface representing standard optimistic locking for all DB entities.
+    /// Base class for fail action.
     /// </summary>
-    public interface IConcurrencyGuard
+    public abstract class BaseFailAction
     {
         /// <summary>
-        /// Gets or sets the version number.
-        /// A unique value per row which changes on update.
+        /// Initializes a new instance of the <see cref="BaseFailAction"/> class.
         /// </summary>
-        uint Version { get; set; }
+        /// <param name="errorMessage">The error.</param>
+        protected BaseFailAction(string errorMessage) => this.ErrorMessage = errorMessage;
+
+        /// <summary>
+        /// Gets the error message associated with the failed action.
+        /// </summary>
+        public string ErrorMessage { get; }
     }
 }

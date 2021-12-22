@@ -18,13 +18,17 @@ namespace HealthGateway.Admin.Server.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
     /// <inheritdoc />
@@ -95,15 +99,15 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<IEnumerable<Database.Models.MessagingVerification>> GetMessageVerifications(UserQueryType queryType, string queryString)
+        public RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(UserQueryType queryType, string queryString)
         {
-            RequestResult<IEnumerable<Database.Models.MessagingVerification>> retVal = new()
+            RequestResult<IEnumerable<MessagingVerificationModel>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
-                ResourcePayload = new List<Database.Models.MessagingVerification>(),
+                ResourcePayload = Enumerable.Empty<MessagingVerificationModel>(),
             };
 
-            DBResult<IEnumerable<Database.Models.MessagingVerification>>? dbResult = null;
+            DBResult<IEnumerable<MessagingVerification>>? dbResult = null;
             switch (queryType)
             {
                 case UserQueryType.PHN:
@@ -133,7 +137,10 @@ namespace HealthGateway.Admin.Server.Services
             if (dbResult != null && dbResult.Status == Database.Constants.DBStatusCode.Read)
             {
                 retVal.ResultStatus = ResultType.Success;
-                retVal.ResourcePayload = dbResult.Payload ?? retVal.ResourcePayload;
+                if (dbResult.Payload != null)
+                {
+                    retVal.ResourcePayload = dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel);
+                }
             }
 
             return retVal;

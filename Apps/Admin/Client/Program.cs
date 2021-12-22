@@ -21,10 +21,8 @@ namespace HealthGateway.Admin.Client
     using System.Threading.Tasks;
     using Blazored.LocalStorage;
     using Fluxor;
-    using HealthGateway.Admin.Client;
     using HealthGateway.Admin.Client.Authorization;
     using HealthGateway.Admin.Client.Services;
-    using HealthGateway.Admin.Client.Store.Configuration;
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
     using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -52,18 +50,8 @@ namespace HealthGateway.Admin.Client
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
-            // Configure HTTP Services
-            string baseAddress = builder.HostEnvironment.BaseAddress;
-            string configAddress = builder.Configuration.GetSection("Services").GetValue<string>("Configuration", baseAddress);
-            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(baseAddress) });
-            builder.Services.AddRefitClient<IConfigurationApi>()
-                                .ConfigureHttpClient(c => { c.BaseAddress = new Uri(configAddress); });
-
-            string exportCsvAddress = builder.Configuration.GetSection("Services").GetValue<string>("CsvExport", baseAddress);
-            builder.Services.AddRefitClient<ICsvExportApi>()
-                    .ConfigureHttpClient(c => { c.BaseAddress = new Uri(exportCsvAddress); })
-                    .AddHttpMessageHandler(sp => sp.GetRequiredService<AuthorizationMessageHandler>()
-                        .ConfigureHandler(new[] { exportCsvAddress }));
+            // Register Refit Clients
+            RegisterRefitClients(builder);
 
             // Configure Logging
             IConfigurationSection loggerConfig = builder.Configuration.GetSection("Logging");
@@ -92,11 +80,44 @@ namespace HealthGateway.Admin.Client
                                     {
                                         rdt.Name = "Health Gateway Admin";
                                     }));
-            builder.Services.AddScoped<Admin.Client.Store.Configuration.StateFacade>();
 
             builder.Services.AddBlazoredLocalStorage();
 
             await builder.Build().RunAsync().ConfigureAwait(true);
+        }
+
+        private static void RegisterRefitClients(this WebAssemblyHostBuilder builder)
+        {
+            RegisterRefitClient<IConfigurationApi>(builder, "Configuration", false);
+            RegisterRefitClient<ISupportApi>(builder, "Support", true);
+            RegisterRefitClient<ICsvExportApi>(builder, "CsvExport", true);
+        }
+
+        private static void RegisterRefitClient<T>(WebAssemblyHostBuilder builder, string configKey, bool isAuthorized)
+            where T : class
+        {
+            string baseAddress = builder.HostEnvironment.BaseAddress;
+
+            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(baseAddress) });
+
+            string address = builder.Configuration.GetSection("Services").GetValue<string>(configKey, baseAddress);
+
+            if (isAuthorized)
+            {
+                builder.Services.AddRefitClient<T>()
+                    .ConfigureHttpClient(c => { c.BaseAddress = new Uri(address); })
+                    .AddHttpMessageHandler(sp => ConfigureAuthorization(sp, address));
+                return;
+            }
+
+            builder.Services.AddRefitClient<T>()
+                 .ConfigureHttpClient(c => { c.BaseAddress = new Uri(address); });
+        }
+
+        private static DelegatingHandler ConfigureAuthorization(IServiceProvider serviceProvider, string address)
+        {
+            return serviceProvider.GetRequiredService<AuthorizationMessageHandler>()
+                .ConfigureHandler(new[] { address });
         }
     }
 }
