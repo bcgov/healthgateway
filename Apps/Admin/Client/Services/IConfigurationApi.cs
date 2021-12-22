@@ -28,7 +28,7 @@ namespace HealthGateway.Admin.Client.Services
         /// Gets the configuration from the server for local overrides.
         /// </summary>
         /// <returns>The ExternalConfiguration object.</returns>
-        [Get("/v1/api/configuration")]
+        [Get("/")]
         Task<ApiResponse<ExternalConfiguration>> GetConfiguration();
     }
 }
