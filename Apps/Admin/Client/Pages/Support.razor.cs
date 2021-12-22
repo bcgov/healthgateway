@@ -46,11 +46,11 @@ namespace HealthGateway.Admin.Client.Pages
             this.Dispatcher.Dispatch(new Actions.LoadAction(this.SelectedQueryType, this.QueryParameter.Trim()));
         }
 
-        private IEnumerable<MessagingVerificationModel>? MessagingVerificationsList()
+        private IEnumerable<MessagingVerificationModel> MessagingVerifications()
         {
             if (this.RequestResultState?.Value?.RequestResult?.ResourcePayload != null)
             {
-                return this.RequestResultState?.Value?.RequestResult?.ResourcePayload;
+                return this.RequestResultState.Value.RequestResult.ResourcePayload;
             }
 
             return Enumerable.Empty<MessagingVerificationModel>();

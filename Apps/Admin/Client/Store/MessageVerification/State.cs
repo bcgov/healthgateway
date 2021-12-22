@@ -29,23 +29,6 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     public record State : BaseState
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="State"/> class.
-        /// </summary>
-        /// <param name="requestResult">Class that returns from service.</param>
-        public State(RequestResult<IEnumerable<MessagingVerificationModel>> requestResult)
-        {
-            this.RequestResult = requestResult;
-        }
-
-        /// A parameterless constructor is required on state for determining the initial state, and can be private or public.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="State"/> class.
-        /// </summary>
-        public State()
-        {
-        }
-
-        /// <summary>
         /// Gets messagingVerification.
         /// </summary>
         public RequestResult<IEnumerable<MessagingVerificationModel>>? RequestResult { get; init; }

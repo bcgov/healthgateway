@@ -31,7 +31,7 @@ namespace HealthGateway.Admin.Client.Pages
     /// <summary>
     /// Backing logic for the Claims page.
     /// </summary>
-    public partial class Claims : FluxorComponent
+    public partial class ClaimsPage : FluxorComponent
     {
         private string? AuthMessage { get; set; } = string.Empty;
 
@@ -39,7 +39,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private string? Token { get; set; } = string.Empty;
 
-        private IEnumerable<Claim> ClaimList { get; set; } = Enumerable.Empty<Claim>();
+        private IEnumerable<Claim> Claims { get; set; } = Enumerable.Empty<Claim>();
 
         [Inject]
         private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
@@ -48,13 +48,13 @@ namespace HealthGateway.Admin.Client.Pages
         private IAccessTokenProvider TokenProvider { get; set; } = default!;
 
         [Inject]
-        private IDispatcher? Dispatcher { get; set; }
+        private IDispatcher Dispatcher { get; set; } = default!;
 
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
         {
             await this.GetClaimsPrincipalData().ConfigureAwait(true);
-            this.Dispatcher?.Dispatch(new Actions.LoadAction());
+            this.Dispatcher.Dispatch(new Actions.LoadAction());
             await this.CreateCookie("HGAdmin", "dark mode", 365).ConfigureAwait(true);
         }
 
@@ -87,7 +87,7 @@ namespace HealthGateway.Admin.Client.Pages
                 this.Token = accessToken.Value;
 
                 this.AuthMessage = $"{user.Identity.Name} is authenticated.";
-                this.ClaimList = user.Claims;
+                this.Claims = user.Claims;
                 this.SurnameMessage =
                     $"Surname: {user.FindFirst(c => c.Type == ClaimTypes.Surname)?.Value}";
             }

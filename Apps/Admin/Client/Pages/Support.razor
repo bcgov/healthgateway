@@ -26,7 +26,7 @@
         </MudItem>
     </MudGrid>
 </MudForm>
-<MudTable Class="mt-3" Items="MessagingVerificationsList()"  Breakpoint="Breakpoint.Md" HorizontalScrollbar="true">
+<MudTable Class="mt-3" Items="MessagingVerifications()"  Breakpoint="Breakpoint.Md" HorizontalScrollbar="true">
     <HeaderContent>
         <MudTh>HDID</MudTh>
         <MudTh>Email</MudTh>
@@ -38,7 +38,7 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="HDID">@context.UserProfileId</MudTd>
-        <MudTd DataLabel="Email">test@example.com</MudTd>
+        <MudTd DataLabel="Email">@context.Email?.Id</MudTd>
         <MudTd DataLabel="Email Verified">false</MudTd>
         <MudTd DataLabel="Email Verified Date">31/12/2020 11:59 PM</MudTd>
         <MudTd DataLabel="SMS">250‑867‑5309</MudTd>

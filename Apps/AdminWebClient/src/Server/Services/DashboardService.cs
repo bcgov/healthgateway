@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Constants;
     using HealthGateway.Common.Constants;
@@ -99,11 +100,10 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc />
         public RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(UserQueryType queryType, string queryString)
         {
-            List<MessagingVerificationModel> messagingVerificationModel = new();
             RequestResult<IEnumerable<MessagingVerificationModel>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
-                ResourcePayload = messagingVerificationModel,
+                ResourcePayload = Enumerable.Empty<MessagingVerificationModel>(),
             };
 
             DBResult<IEnumerable<MessagingVerification>>? dbResult = null;
@@ -138,13 +138,8 @@ namespace HealthGateway.Admin.Services
                 retVal.ResultStatus = ResultType.Success;
                 if (dbResult.Payload != null)
                 {
-                    foreach (var item in dbResult.Payload)
-                    {
-                        messagingVerificationModel.Add(MessagingVerificationModel.CreateFromDbModel(item));
-                    }
+                    retVal.ResourcePayload = dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel);
                 }
-
-                retVal.ResourcePayload = messagingVerificationModel;
             }
 
             return retVal;

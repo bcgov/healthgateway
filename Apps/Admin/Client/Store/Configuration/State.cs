@@ -27,23 +27,6 @@ namespace HealthGateway.Admin.Client.Store.Configuration
     public record State : BaseState
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="State"/> class.
-        /// </summary>
-        /// <param name="configuration">The configuration to store.</param>
-        public State(ExternalConfiguration configuration)
-        {
-            this.Configuration = configuration;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="State"/> class.
-        /// A parameterless constructor is required on state for determining the initial state, and can be private or public.
-        /// </summary>
-        public State()
-        {
-        }
-
-        /// <summary>
         /// Gets the loaded configuration.
         /// </summary>
         public ExternalConfiguration? Configuration { get; init; }

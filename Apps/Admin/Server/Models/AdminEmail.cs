@@ -18,8 +18,7 @@ namespace HealthGateway.Admin.Server.Models
     using System;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Database.Constants;
-    using HealthGateway.Database.Models;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// Model that provides a user representation of the Email model.

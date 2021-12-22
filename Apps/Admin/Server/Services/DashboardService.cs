@@ -23,6 +23,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -106,7 +107,7 @@ namespace HealthGateway.Admin.Server.Services
                 ResourcePayload = Enumerable.Empty<MessagingVerificationModel>(),
             };
 
-            DBResult<IEnumerable<Database.Models.MessagingVerification>>? dbResult = null;
+            DBResult<IEnumerable<MessagingVerification>>? dbResult = null;
             switch (queryType)
             {
                 case UserQueryType.PHN:
@@ -138,10 +139,7 @@ namespace HealthGateway.Admin.Server.Services
                 retVal.ResultStatus = ResultType.Success;
                 if (dbResult.Payload != null)
                 {
-                    foreach (var item in dbResult.Payload)
-                    {
-                        retVal.ResourcePayload = dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel);
-                    }
+                    retVal.ResourcePayload = dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel);
                 }
             }
 

@@ -21,12 +21,12 @@ namespace HealthGateway.Admin.Client.Store.Configuration
     /// <summary>
     /// Static class that implemenets all action type.
     /// </summary>
+    [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
     public static class Actions
     {
         /// <summary>
         /// The action for a load.
         /// </summary>
-        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
         public class LoadAction
         {
         }
@@ -34,7 +34,6 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// <summary>
         /// The action representing a failed load.
         /// </summary>
-        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
         public class LoadFailAction : BaseFailAction
         {
             /// <summary>
@@ -50,7 +49,6 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// <summary>
         /// The action representing a successful load.
         /// </summary>
-        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
         public class LoadSuccessAction : BaseLoadSuccessAction<ExternalConfiguration>
         {
             /// <summary>

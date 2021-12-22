@@ -16,10 +16,10 @@
     <p>Auth Message: @this.AuthMessage</p>
 
     <p>Token: @this.Token</p>
-    @if (this.ClaimList.Count() > 0)
+    @if (this.Claims.Count() > 0)
     {
         <ul>
-            @foreach (var claim in this.ClaimList)
+            @foreach (var claim in this.Claims)
             {
                 <li>@claim.Type: @claim.Value</li>
             }
