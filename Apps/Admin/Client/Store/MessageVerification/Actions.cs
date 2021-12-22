@@ -21,14 +21,14 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
-    /// Static class that implemenets all action type.
+    /// Static class that implements all action type.
     /// </summary>
+    [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
     public static class Actions
     {
         /// <summary>
         /// The actions for the feature.
         /// </summary>
-        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
         public class LoadAction
         {
             /// <summary>
@@ -56,7 +56,6 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <summary>
         /// The action representing a failed load.
         /// </summary>
-        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
         public class LoadFailAction : BaseFailAction
         {
             /// <summary>
@@ -72,7 +71,6 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <summary>
         /// The action representing a successful load.
         /// </summary>
-        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
         public class LoadSuccessAction : BaseLoadSuccessAction<RequestResult<IEnumerable<MessagingVerificationModel>>>
         {
             /// <summary>

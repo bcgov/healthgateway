@@ -19,7 +19,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
     using HealthGateway.Admin.Common.Models;
 
     /// <summary>
-    /// Static class that implemenets all action type.
+    /// Static class that implements all action type.
     /// </summary>
     [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
     public static class Actions
