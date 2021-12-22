@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Configuration
 {
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Admin.Common.Models;
 
     /// <summary>
@@ -25,18 +26,16 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// <summary>
         /// The action for a load.
         /// </summary>
-#pragma warning disable CA1034 // Nested types should not be visible
+        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
         public class LoadAction
-#pragma warning restore CA1034 // Nested types should not be visible
         {
         }
 
         /// <summary>
         /// The action representing a failed load.
         /// </summary>
-#pragma warning disable CA1034 // Nested types should not be visible
+        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
         public class LoadFailAction : BaseFailAction
-#pragma warning restore CA1034 // Nested types should not be visible
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="LoadFailAction"/> class.
@@ -51,9 +50,8 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// <summary>
         /// The action representing a successful load.
         /// </summary>
-#pragma warning disable CA1034 // Nested types should not be visible
+        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
         public class LoadSuccessAction : BaseLoadSuccessAction<ExternalConfiguration>
-#pragma warning restore CA1034 // Nested types should not be visible
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
