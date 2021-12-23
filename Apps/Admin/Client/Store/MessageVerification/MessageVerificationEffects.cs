@@ -56,16 +56,16 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         [EffectMethod]
         public async Task HandleLoadAction(MessageVerificationActions.LoadAction action, IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Loading Messaging Verification");
+            this.Logger.LogInformation("Loading messaging verifications");
             ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>> response = await this.SupportApi.GetMedicationVerifications(action.QueryType, action.QueryString).ConfigureAwait(true);
-            if (response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode && response.Content != null)
             {
-                this.Logger.LogInformation("Messaging Verification loaded successfully!");
+                this.Logger.LogInformation("Messaging verifications loaded successfully!");
                 dispatcher.Dispatch(new MessageVerificationActions.LoadSuccessAction(response.Content));
             }
             else
             {
-                this.Logger.LogError($"Error loading Messaging Verification, reason: {response.Error?.Message}");
+                this.Logger.LogError($"Error loading messaging verifications, reason: {response.Error?.Message}");
                 dispatcher.Dispatch(new MessageVerificationActions.LoadFailAction(response.Error?.Message));
             }
         }

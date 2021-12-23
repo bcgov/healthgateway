@@ -55,7 +55,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         {
             this.Logger.LogInformation("Loading External Configuration");
             ApiResponse<ExternalConfiguration> response = await this.ConfigApi.GetConfiguration().ConfigureAwait(true);
-            if (response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode && response.Content != null)
             {
                 this.Logger.LogInformation("External Configuration loaded successfully!");
                 dispatcher.Dispatch(new ConfigurationActions.LoadSuccessAction(response.Content));

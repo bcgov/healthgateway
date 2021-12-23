@@ -27,8 +27,13 @@ namespace HealthGateway.Admin.Client.Store.Configuration
     public record ConfigurationState : BaseState
     {
         /// <summary>
-        /// Gets the loaded configuration.
+        /// Gets the configuration object.
         /// </summary>
         public ExternalConfiguration? Configuration { get; init; }
+
+        /// <summary>
+        /// Gets a value indicating whether the configuration object has been loaded.
+        /// </summary>
+        public bool Loaded => this.Configuration != null;
     }
 }

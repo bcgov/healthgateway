@@ -29,8 +29,13 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     public record MessageVerificationState : BaseState
     {
         /// <summary>
-        /// Gets messagingVerification.
+        /// Gets the messaging verification request result.
         /// </summary>
         public RequestResult<IEnumerable<MessagingVerificationModel>>? RequestResult { get; init; }
+
+        /// <summary>
+        /// Gets a value indicating whether the messaging verification request result has been loaded.
+        /// </summary>
+        public bool Loaded => this.RequestResult != null;
     }
 }
