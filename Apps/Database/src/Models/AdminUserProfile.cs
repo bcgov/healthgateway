@@ -32,13 +32,13 @@ public class AdminUserProfile : AuditableEntity
     public Guid AdminUserProfileId { get; set; }
 
     /// <summary>
-    /// Gets or sets the preferred username.
+    /// Gets or sets the username.
     /// </summary>
     [MaxLength(255)]
     public string Username { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the preferred username.
+    /// Gets or sets the email.
     /// </summary>
     [MaxLength(255)]
     public string? Email { get; set; } = string.Empty;

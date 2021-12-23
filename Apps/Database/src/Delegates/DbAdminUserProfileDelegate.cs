@@ -46,11 +46,11 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
     }
 
     /// <inheritdoc />
-    public DBResult<AdminUserProfile> GetAdminUserProfile(string preferredUsername)
+    public DBResult<AdminUserProfile> GetAdminUserProfile(string username)
     {
-        this.logger.LogTrace("Getting admin user profile from DB with Preferred Name: {PreferredName}", preferredUsername);
+        this.logger.LogTrace("Getting admin user profile from DB with Userame: {Username}", username);
         DBResult<AdminUserProfile> result = new DBResult<AdminUserProfile>();
-        AdminUserProfile? profile = this.dbContext.AdminUserProfile.SingleOrDefault(profile => profile.Username == preferredUsername);
+        AdminUserProfile? profile = this.dbContext.AdminUserProfile.SingleOrDefault(profile => profile.Username == username);
 
         if (profile != null)
         {
@@ -59,7 +59,7 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
         }
         else
         {
-            this.logger.LogInformation("Unable to find Admin User by Preferred Name: {PreferredName}", preferredUsername);
+            this.logger.LogInformation("Unable to find Admin User by Username: {Username}", username);
             result.Status = DBStatusCode.NotFound;
         }
 

@@ -136,9 +136,9 @@ namespace HealthGateway.WebClient.Services
 
             // Populate most recent login date time
             userProfile.LastLoginDateTimes.Add(retVal.Payload.LastLoginDateTime);
-            foreach (UserProfileHistory userProfiileHistory in userProfileHistoryDbResult.Payload)
+            foreach (UserProfileHistory userProfileHistory in userProfileHistoryDbResult.Payload)
             {
-                userProfile.LastLoginDateTimes.Add(userProfiileHistory.LastLoginDateTime);
+                userProfile.LastLoginDateTimes.Add(userProfileHistory.LastLoginDateTime);
             }
 
             userProfile.HasTermsOfServiceUpdated = termsOfServiceResult.ResourcePayload?.EffectiveDate > previousLastLogin;

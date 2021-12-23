@@ -26,9 +26,9 @@ public interface IAdminUserProfileDelegate
     /// <summary>
     /// Fetches the AdminUserProfile from the database.
     /// </summary>
-    /// <param name="preferredUsername">The unique preferred username key to find.</param>
+    /// <param name="username">The unique username key to find.</param>
     /// <returns>A DB result which encapsulates the return object and status.</returns>
-    DBResult<AdminUserProfile> GetAdminUserProfile(string preferredUsername);
+    DBResult<AdminUserProfile> GetAdminUserProfile(string username);
 
     /// <summary>
     /// Creates an AdminUserProfile object in the database.

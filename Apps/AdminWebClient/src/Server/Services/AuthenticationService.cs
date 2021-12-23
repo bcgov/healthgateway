@@ -24,6 +24,7 @@ namespace HealthGateway.Admin.Services
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models;
+    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Wrapper;
@@ -124,9 +125,9 @@ namespace HealthGateway.Admin.Services
             AuthenticationData authData = this.GetAuthenticationData();
             if (authData.IsAuthenticated && authData.User != null && user != null)
             {
-                DateTime jwtAuthTime = GetAuthDateTime(user);
+                DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
 
-                DBResult<Database.Models.AdminUserProfile> result = this.profileDelegate.GetAdminUserProfile(preferredUsername: authData.User.Id);
+                DBResult<Database.Models.AdminUserProfile> result = this.profileDelegate.GetAdminUserProfile(username: authData.User.Id);
                 if (result.Status == DBStatusCode.NotFound)
                 {
                     // Create profile
@@ -154,21 +155,6 @@ namespace HealthGateway.Admin.Services
                     }
                 }
             }
-        }
-
-        private static DateTime GetAuthDateTime(ClaimsPrincipal claimsPrincipal)
-        {
-            // auth_time is not mandatory in a Bearer token.
-            string rowAuthTime = claimsPrincipal.FindFirstValue("auth_time");
-
-            // get token  "issued at time", which *is* mandatory in JWT bearer token.
-            rowAuthTime = rowAuthTime ?? claimsPrincipal.FindFirstValue("iat");
-
-            // Auth time comes in the JWT as seconds after 1970-01-01
-            DateTime jwtAuthTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-                .AddSeconds(int.Parse(rowAuthTime, CultureInfo.CurrentCulture));
-
-            return jwtAuthTime;
         }
     }
 }
