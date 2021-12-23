@@ -36,7 +36,6 @@ using Xunit;
 /// </summary>
 public class AuthenticationServiceTests
 {
-    private static string authDatetime = "1640202141";
     private readonly string accessToken = "ACCESS-TOKEN";
 
     /// <summary>
@@ -137,7 +136,7 @@ public class AuthenticationServiceTests
     {
         List<Claim> claims = new()
         {
-            new Claim("auth_time", authDatetime),
+            new Claim("auth_time", "1640202141"),
             new Claim("preferred_username", "username"),
             new Claim(ClaimTypes.Name, "username"),
             new Claim(ClaimTypes.Email, "user@idr"),

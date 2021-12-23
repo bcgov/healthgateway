@@ -133,8 +133,8 @@ namespace HealthGateway.Admin.Services
                     // Create profile
                     Database.Models.AdminUserProfile newProfile = new()
                     {
-                        // Keycloak id is case insensitive
-                        Username = authData.User.Id.ToLower(CultureInfo.CurrentCulture),
+                        // Keycloak always creates username in lowercase
+                        Username = authData.User.Id,
                         Email = authData.User.Email,
                         LastLoginDateTime = jwtAuthTime,
                     };
