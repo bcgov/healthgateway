@@ -15,12 +15,19 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.Linq;
     using System.Security.Claims;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models;
+    using HealthGateway.Common.Utils;
+    using HealthGateway.Database.Constants;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Wrapper;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -39,6 +46,7 @@ namespace HealthGateway.Admin.Services
         private readonly ILogger logger;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly string[] enabledRoles;
+        private readonly IAdminUserProfileDelegate profileDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticationService"/> class.
@@ -46,11 +54,13 @@ namespace HealthGateway.Admin.Services
         /// <param name="httpContextAccessor">Injected HttpContext Provider.</param>
         /// <param name="configuration">Injected Configuration Provider.</param>
         /// <param name="logger">Injected Logger Provider.</param>
-        public AuthenticationService(ILogger<AuthenticationService> logger, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        /// <param name="profileDelegate">Injected Admin User Profile Delegate Provider.</param>
+        public AuthenticationService(ILogger<AuthenticationService> logger, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, IAdminUserProfileDelegate profileDelegate)
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
             this.enabledRoles = configuration.GetSection("EnabledRoles").Get<string[]>();
+            this.profileDelegate = profileDelegate;
         }
 
         /// <summary>
@@ -106,6 +116,45 @@ namespace HealthGateway.Admin.Services
             };
 
             return authProps;
+        }
+
+        /// <inheritdoc />
+        public void SetLastLoginDateTime()
+        {
+            ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
+            AuthenticationData authData = this.GetAuthenticationData();
+            if (authData.IsAuthenticated && authData.User != null && user != null)
+            {
+                DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
+
+                DBResult<Database.Models.AdminUserProfile> result = this.profileDelegate.GetAdminUserProfile(username: authData.User.Id);
+                if (result.Status == DBStatusCode.NotFound)
+                {
+                    // Create profile
+                    Database.Models.AdminUserProfile newProfile = new()
+                    {
+                        // Keycloak always creates username in lowercase
+                        Username = authData.User.Id,
+                        Email = authData.User.Email,
+                        LastLoginDateTime = jwtAuthTime,
+                    };
+                    DBResult<Database.Models.AdminUserProfile> insertResult = this.profileDelegate.Add(newProfile);
+                    if (insertResult.Status == DBStatusCode.Error)
+                    {
+                        this.logger.LogError("Unable to add admin user profile to DB.... {Result}", JsonSerializer.Serialize(insertResult));
+                    }
+                }
+                else
+                {
+                    // Update profile
+                    result.Payload.LastLoginDateTime = jwtAuthTime;
+                    DBResult<Database.Models.AdminUserProfile> updateResult = this.profileDelegate.Update(result.Payload);
+                    if (updateResult.Status == DBStatusCode.Error)
+                    {
+                        this.logger.LogError("Unable to update admin user profile to DB... {Result}", JsonSerializer.Serialize(updateResult));
+                    }
+                }
+            }
         }
     }
 }

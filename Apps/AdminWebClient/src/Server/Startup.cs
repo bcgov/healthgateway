@@ -109,6 +109,7 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<IImmunizationAdminDelegate, RestImmunizationAdminDelegate>();
             services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
+            services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
 
             // Configure SPA
             services.AddControllersWithViews();
