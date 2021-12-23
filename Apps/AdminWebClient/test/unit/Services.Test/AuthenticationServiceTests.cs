@@ -37,7 +37,6 @@ using Xunit;
 public class AuthenticationServiceTests
 {
     private static string authDatetime = "1640202141";
-
     private readonly string accessToken = "ACCESS-TOKEN";
 
     /// <summary>
@@ -66,17 +65,10 @@ public class AuthenticationServiceTests
         };
         profileDelegateMock.Setup(s => s.Add(It.IsAny<AdminUserProfile>())).Returns(insertResult);
 
-        Mock<IConfiguration> configurationMock = new();
-        Mock<IConfigurationSection> adminUserSectionMock = new Mock<IConfigurationSection>();
-        adminUserSectionMock.Setup(s => s.Value).Returns("AdminUser");
-        Mock<IConfigurationSection> enabledRoleSectionMock = new Mock<IConfigurationSection>();
-        enabledRoleSectionMock.Setup(s => s.GetChildren()).Returns(new List<IConfigurationSection> { adminUserSectionMock.Object });
-        configurationMock.Setup(c => c.GetSection(It.IsAny<string>())).Returns(enabledRoleSectionMock.Object);
-
         Admin.Services.IAuthenticationService service = new Admin.Services.AuthenticationService(
             new Mock<ILogger<Admin.Services.AuthenticationService>>().Object,
             this.GetHttpContextAccessor().Object,
-            configurationMock.Object,
+            GetConfiguration().Object,
             profileDelegateMock.Object);
 
         // Act
@@ -94,15 +86,16 @@ public class AuthenticationServiceTests
     public void ShouldUpdateLastLoginDateTimeWhenAdminUserProfileExists()
     {
         // Arrange
+        AdminUserProfile profile = new()
+        {
+            Username = "username",
+            Email = "user@idir",
+        };
+
         DBResult<AdminUserProfile> getResult = new()
         {
             Status = DBStatusCode.Read,
-            Payload = new AdminUserProfile
-            {
-                Username = "username",
-                Email = "user@idir",
-                Version = 0,
-            },
+            Payload = profile,
         };
 
         Mock<IAdminUserProfileDelegate> profileDelegateMock = new();
@@ -111,25 +104,14 @@ public class AuthenticationServiceTests
         DBResult<AdminUserProfile> updateResult = new()
         {
             Status = DBStatusCode.Updated,
-            Payload = new AdminUserProfile
-            {
-                Username = "username",
-                Email = "user@idir",
-            },
+            Payload = profile,
         };
         profileDelegateMock.Setup(s => s.Update(It.IsAny<AdminUserProfile>(), true)).Returns(updateResult);
-
-        Mock<IConfiguration> configurationMock = new();
-        Mock<IConfigurationSection> adminUserSectionMock = new Mock<IConfigurationSection>();
-        adminUserSectionMock.Setup(s => s.Value).Returns("AdminUser");
-        Mock<IConfigurationSection> enabledRoleSectionMock = new Mock<IConfigurationSection>();
-        enabledRoleSectionMock.Setup(s => s.GetChildren()).Returns(new List<IConfigurationSection> { adminUserSectionMock.Object });
-        configurationMock.Setup(c => c.GetSection(It.IsAny<string>())).Returns(enabledRoleSectionMock.Object);
 
         Admin.Services.IAuthenticationService service = new Admin.Services.AuthenticationService(
             new Mock<ILogger<Admin.Services.AuthenticationService>>().Object,
             this.GetHttpContextAccessor().Object,
-            configurationMock.Object,
+            GetConfiguration().Object,
             profileDelegateMock.Object);
 
         // Act
@@ -138,6 +120,17 @@ public class AuthenticationServiceTests
         // Assert
         profileDelegateMock.Verify(m => m.Add(It.IsAny<AdminUserProfile>()), Times.Never);
         profileDelegateMock.Verify(m => m.Update(It.IsAny<AdminUserProfile>(), true), Times.Once);
+    }
+
+    private static Mock<IConfiguration> GetConfiguration()
+    {
+        Mock<IConfiguration> configurationMock = new();
+        Mock<IConfigurationSection> adminUserSectionMock = new Mock<IConfigurationSection>();
+        adminUserSectionMock.Setup(s => s.Value).Returns("AdminUser");
+        Mock<IConfigurationSection> enabledRoleSectionMock = new Mock<IConfigurationSection>();
+        enabledRoleSectionMock.Setup(s => s.GetChildren()).Returns(new List<IConfigurationSection> { adminUserSectionMock.Object });
+        configurationMock.Setup(c => c.GetSection(It.IsAny<string>())).Returns(enabledRoleSectionMock.Object);
+        return configurationMock;
     }
 
     private static ClaimsPrincipal GetClaimsPrincipal()
