@@ -382,14 +382,14 @@ export default class PublicCovidTestView extends Vue {
                                         target="blank_"
                                         >page</a
                                     >
-                                    {{
+                                    <span>{{
                                         getPeriod(
                                             publicCovidTest.resultLink,
                                             publicCovidTest.resultDescription
                                                 .length,
                                             resultDescriptionIndex
                                         )
-                                    }}
+                                    }}</span>
                                 </b-col>
                             </b-row>
                         </div>
