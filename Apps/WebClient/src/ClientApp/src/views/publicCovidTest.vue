@@ -370,8 +370,8 @@ export default class PublicCovidTestView extends Vue {
                                             (resultDescriptionIndex + 1)
                                         "
                                         target="blank_"
-                                        >here.</a
-                                    >
+                                        >page</a
+                                    >.
                                 </b-col>
                             </b-row>
                         </div>
