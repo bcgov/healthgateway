@@ -186,6 +186,16 @@ export default class PublicCovidTestView extends Vue {
         }
     }
 
+    private getPeriod(link: string, length: number, index: number): string {
+        if (this.isNotStringEmpty(link)) {
+            if (this.isLastRow(length, index)) {
+                return ".";
+            }
+            return "";
+        }
+        return "";
+    }
+
     private isLastRow(length: number, index: number): boolean {
         const indexSize = length - 1;
         if (indexSize == index) {
@@ -371,7 +381,15 @@ export default class PublicCovidTestView extends Vue {
                                         "
                                         target="blank_"
                                         >page</a
-                                    >.
+                                    >
+                                    {{
+                                        getPeriod(
+                                            publicCovidTest.resultLink,
+                                            publicCovidTest.resultDescription
+                                                .length,
+                                            resultDescriptionIndex
+                                        )
+                                    }}
                                 </b-col>
                             </b-row>
                         </div>
