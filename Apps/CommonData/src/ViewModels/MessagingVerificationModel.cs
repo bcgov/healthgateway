@@ -29,12 +29,12 @@ namespace HealthGateway.Common.Data.ViewModels
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the users directed identifier.
+        /// Gets or sets the user's directed identifier.
         /// </summary>
         public string? UserProfileId { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the messageing verification was validated.
+        /// Gets or sets a value indicating whether the messaging verification was validated.
         /// </summary>
         public bool Validated { get; set; }
 
@@ -56,7 +56,7 @@ namespace HealthGateway.Common.Data.ViewModels
         public Guid InviteKey { get; set; }
 
         /// <summary>
-        /// Gets or sets the Verification type as defined by MesagingVerificationTypeCode.
+        /// Gets or sets the Verification type as defined by MessagingVerificationTypeCode.
         /// </summary>
         public string VerificationType { get; set; } = MessagingVerificationType.Email;
 
@@ -82,9 +82,14 @@ namespace HealthGateway.Common.Data.ViewModels
         public int VerificationAttempts { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the messageing verification was deleted.
+        /// Gets or sets a value indicating whether the messaging verification was deleted.
         /// </summary>
         public bool Deleted { get; set; }
+
+        /// <summary>
+        /// Gets or sets the datetime the entity was updated.
+        /// </summary>
+        public DateTime UpdatedDateTime { get; set; }
 
         public static MessagingVerificationModel CreateFromDbModel(MessagingVerification model)
         {
@@ -99,6 +104,7 @@ namespace HealthGateway.Common.Data.ViewModels
                 SMSNumber = model.SMSNumber,
                 SMSValidationCode = model.SMSValidationCode,
                 Deleted = model.Deleted,
+                UpdatedDateTime = model.UpdatedDateTime,
             };
         }
     }

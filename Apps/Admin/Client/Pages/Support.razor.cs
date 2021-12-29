@@ -21,6 +21,8 @@ namespace HealthGateway.Admin.Client.Pages
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Store.MessageVerification;
     using HealthGateway.Admin.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
 
@@ -31,29 +33,59 @@ namespace HealthGateway.Admin.Client.Pages
     {
         private static List<UserQueryType> QueryTypes => new() { UserQueryType.PHN, UserQueryType.Email, UserQueryType.SMS, UserQueryType.HDID };
 
+        [Inject]
+        private IDispatcher Dispatcher { get; set; } = default!;
+
+        [Inject]
+        private IState<MessageVerificationState> MessageVerificationState { get; set; } = default!;
+
         private UserQueryType SelectedQueryType { get; set; } = UserQueryType.PHN;
 
         private string QueryParameter { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Gets or sets dispatcher.
-        /// </summary>
-        [Inject]
-        private IDispatcher Dispatcher { get; set; } = default!;
+        private bool MessagingVerificationsLoading => this.MessageVerificationState.Value.IsLoading;
+
+        private bool MessagingVerificationsLoaded => this.MessageVerificationState.Value.Loaded;
+
+        private IEnumerable<MessagingVerificationModel> MessagingVerifications =>
+            this.MessageVerificationState.Value.RequestResult?.ResourcePayload ?? Enumerable.Empty<MessagingVerificationModel>();
+
+        private IEnumerable<MessagingVerificationRow> MessagingVerificationRows => this.MessagingVerifications.Select(v => new MessagingVerificationRow(v));
 
         private void Search()
         {
-            this.Dispatcher.Dispatch(new Actions.LoadAction(this.SelectedQueryType, this.QueryParameter.Trim()));
+            this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(this.SelectedQueryType, this.QueryParameter.Trim()));
         }
 
-        private IEnumerable<MessagingVerificationModel> MessagingVerifications()
+        private sealed record MessagingVerificationRow
         {
-            if (this.RequestResultState?.Value?.RequestResult?.ResourcePayload != null)
+            public MessagingVerificationRow(MessagingVerificationModel model)
             {
-                return this.RequestResultState.Value.RequestResult.ResourcePayload;
+                this.Hdid = model.UserProfileId ?? string.Empty;
+                this.EmailOrSms = model.VerificationType switch
+                {
+                    MessagingVerificationType.Email => model.Email?.To ?? "N/A",
+                    _ => model.SMSNumber ?? "N/A",
+
+                };
+                this.Verified = model.Validated ? "true" : "false";
+                this.VerificationDate = DateFormatter.ToShortDateAndTime(model.UpdatedDateTime);
+                this.VerificationCode = model.VerificationType switch
+                {
+                    MessagingVerificationType.Email => "-",
+                    _ => model.SMSValidationCode ?? "-",
+                };
             }
 
-            return Enumerable.Empty<MessagingVerificationModel>();
+            public string Hdid { get; init; }
+
+            public string EmailOrSms { get; init; }
+
+            public string Verified { get; init; }
+
+            public string VerificationDate { get; init; }
+
+            public string VerificationCode { get; init; }
         }
     }
 }
