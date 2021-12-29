@@ -1,4 +1,4 @@
-import { StringISODateTime } from "@/models/dateWrapper";
+import { StringISODate, StringISODateTime } from "@/models/dateWrapper";
 
 // Laboratory model
 export interface LaboratoryResult {
@@ -57,6 +57,23 @@ export interface PublicCovidTestResponseResult {
     records: PublicCovidTestRecord[];
 }
 
+export interface AuthenticateRapidTestRequest {
+    // rapid test serial number.
+    labSerialNumber: string;
+
+    // result of the rapid test.
+    positive?: boolean;
+
+    // Dependent date of birth.
+    dateTestTaken: StringISODate;
+}
+
+export interface AuthenticateRapidTestResponse {
+    loaded: boolean;
+    retryin: number;
+    phn: string;
+    records: AuthenticateRapidTestRequest[];
+}
 export abstract class LaboratoryUtil {
     public static isTestResultReady(testStatus: string | null): boolean {
         if (testStatus == null) {
@@ -65,4 +82,9 @@ export abstract class LaboratoryUtil {
             return ["Final", "Corrected", "Amended"].includes(testStatus);
         }
     }
+}
+
+export enum RapidTestResult {
+    Positive,
+    Negative,
 }

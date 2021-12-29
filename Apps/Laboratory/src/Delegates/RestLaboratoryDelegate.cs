@@ -312,5 +312,97 @@ namespace HealthGateway.Laboratory.Delegates
             this.logger.LogDebug($"Finished getting public COVID-19 test results {phn} {dateOfBirth} {collectionDate}...");
             return retVal;
         }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<PHSAResult<IEnumerable<RapidTestResult>>>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticaeRapidTestRequest rapidTestRequest)
+        {
+            using (Source.StartActivity("SubmitRapidTest"))
+            {
+                HttpContext? httpContext = this.httpContextAccessor.HttpContext;
+                string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+
+                RequestResult<PHSAResult<IEnumerable<RapidTestResult>>> retVal = new()
+                {
+                    ResultStatus = ResultType.Error,
+                    PageIndex = 0,
+                };
+
+                try
+                {
+                    Dictionary<string, string?> query = new()
+                    {
+                        ["subjectHdid"] = hdid,
+                    };
+
+                    JsonSerializerOptions serializerOptions = new()
+                    {
+                        Converters = { new DateOnlyJsonConverter() },
+                    };
+
+                    string json = JsonSerializer.Serialize(new { rapidTestRequest }, serializerOptions);
+                    using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+
+                    string endpointString = $"{this.labConfig.BaseUrl}{this.labConfig.AuthenticateRapidTestEndPoint}";
+                    Uri endpoint = new(QueryHelpers.AddQueryString(endpointString, query));
+                    using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
+
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+                    client.DefaultRequestHeaders.Add("X-Forward-For", ipAddress);
+
+                    HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    this.logger.LogTrace($"Response: {response}");
+
+                    switch (response.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            this.logger.LogTrace($"Response payload: {payload}");
+                            PHSAResult<IEnumerable<RapidTestResult>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<IEnumerable<RapidTestResult>>>(payload);
+                            if (phsaResult != null && phsaResult.Result != null)
+                            {
+                                retVal.ResultStatus = ResultType.Success;
+                                retVal.ResourcePayload = phsaResult;
+                                retVal.TotalResultCount = phsaResult.Result.Count();
+                            }
+                            else
+                            {
+                                retVal.ResultError = new RequestResultError()
+                                {
+                                    ResultMessage = "Error with JSON data",
+                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                };
+                            }
+
+                            break;
+                        case HttpStatusCode.Forbidden:
+                            retVal.ResultError = new RequestResultError()
+                            {
+                                ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            };
+                            break;
+                        default:
+                            retVal.ResultError = new RequestResultError()
+                            {
+                                ResultMessage = $"Unable to connect to Laboratory Authenticated Rapid Tests, HTTP Error {response.StatusCode}",
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            };
+                            this.logger.LogError($"Unable to connect to endpoint {endpointString}, HTTP Error {response.StatusCode}\n{payload}");
+                            break;
+                    }
+                }
+#pragma warning disable CA1031 // Do not catch general exception types
+                catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
+                {
+                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception Submitting Rapid Test: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                    this.logger.LogError($"Unexpected exception in Submitting Rapid Test {e}");
+                }
+
+                return retVal;
+            }
+        }
     }
 }

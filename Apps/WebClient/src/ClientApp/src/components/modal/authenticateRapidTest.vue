@@ -1,0 +1,396 @@
+<script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import Vue from "vue";
+import { Component } from "vue-property-decorator";
+import { required } from "vuelidate/lib/validators";
+import { Validation } from "vuelidate/vuelidate";
+import { Action, Getter } from "vuex-class";
+
+import LoadingComponent from "@/components/loading.vue";
+import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
+import { DateWrapper } from "@/models/dateWrapper";
+import { AuthenticateRapidTestRequest } from "@/models/laboratory";
+import PatientData from "@/models/patientData";
+//import { ResultError } from "@/models/requestResult";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.container";
+import { ILaboratoryService, ILogger } from "@/services/interfaces";
+import SnowPlow from "@/utility/snowPlow";
+
+library.add(faInfoCircle);
+
+@Component({
+    components: {
+        LoadingComponent,
+        "hg-date-dropdown": HgDateDropdownComponent,
+    },
+})
+export default class CovidRapidTestComponent extends Vue {
+    @Action("getPatientData", { namespace: "user" })
+    getPatientData!: () => Promise<void>;
+
+    @Getter("patientData", { namespace: "user" })
+    patientData!: PatientData;
+    private isLoading = false;
+    private isVisible = false;
+    private isSuccess = false;
+    private errorMessage = "";
+
+    private logger!: ILogger;
+    private laboratoryService!: ILaboratoryService;
+
+    private rapidTest: AuthenticateRapidTestRequest = {
+        labSerialNumber: "",
+        dateTestTaken: "",
+    };
+
+    private resultOptions = [
+        { value: true, text: "Positive" },
+        { value: false, text: "Negative" },
+    ];
+
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.laboratoryService = container.get<ILaboratoryService>(
+            SERVICE_IDENTIFIER.LaboratoryService
+        );
+        this.isLoading = true;
+        Promise.all([this.getPatientData()])
+            .then(() => {
+                this.logger.debug("Patient Data is loaded.");
+            })
+            .catch((err) => {
+                this.logger.error(`Error loading patient data: ${err}`);
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    }
+
+    private formatDate(date: string | undefined): string {
+        return date === undefined
+            ? ""
+            : DateWrapper.format(date, "yyyy-MMM-dd");
+    }
+
+    private formatPatientData(data: string | undefined): string {
+        return data === undefined ? "" : data;
+    }
+
+    private get fullName(): string {
+        return (
+            this.formatPatientData(this.patientData?.firstname) +
+            " " +
+            this.formatPatientData(this.patientData?.lastname)
+        );
+    }
+
+    private get birthDate(): string {
+        return this.formatDate(this.patientData?.birthdate ?? undefined);
+    }
+
+    private clear() {
+        this.rapidTest = {
+            labSerialNumber: "",
+            dateTestTaken: "",
+        };
+        this.isVisible = true;
+        this.isSuccess = false;
+    }
+
+    public showModal(): void {
+        // Reset input components when changing between div tags
+        this.$nextTick(() => {
+            this.$v.$reset();
+        });
+        this.clear();
+    }
+
+    private isValid(param: Validation): boolean | undefined {
+        return param.$dirty ? !param.$invalid : undefined;
+    }
+
+    private validations() {
+        return {
+            rapidTest: {
+                labSerialNumber: {
+                    required: required,
+                },
+                dateTestTaken: {
+                    required: required,
+                    maxValue: (value: string) =>
+                        new DateWrapper(value).isBefore(new DateWrapper()),
+                },
+                positive: { required: required },
+            },
+        };
+    }
+    private handleSubmit(bvModalEvt: Event) {
+        // Prevent modal from closing
+        bvModalEvt.preventDefault();
+        this.$v.$touch();
+        if (this.$v.$invalid) {
+        } else {
+            this.$v.$reset();
+            this.submitRapidTest();
+        }
+    }
+
+    private submitRapidTest() {
+        this.isLoading = true;
+        SnowPlow.trackEvent({
+            action: "submit",
+            text: "Autheticate_Rapid_Test",
+        });
+        this.laboratoryService
+            .postAutheticateRapidTest(this.patientData.hdid, this.rapidTest)
+            .then((result) => {
+                this.isLoading = false;
+                this.isSuccess = true;
+                this.errorMessage = "";
+                this.logger.debug(`Rapid Test is submitted." ${result} `);
+                //this.handleSubmitModal();
+            })
+            .catch((err) => {
+                this.isSuccess = false;
+                this.isLoading = false;
+                this.errorMessage = err.resultMessage;
+                this.logger.error(`Error in submitting rapid test : ${err}`);
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    }
+
+    // @Emit()
+    // private handleSubmitModal() {
+    //    this.clear();
+    // Hide the modal manually
+    //   this.$nextTick(() => {
+    //  this.hideModal();
+    //   });
+    // }
+    private isDisabled() {
+        return this.isSuccess;
+    }
+
+    public hideModal(): void {
+        this.$v.$reset();
+        this.isVisible = false;
+    }
+}
+</script>
+
+<template>
+    <b-modal
+        id="covid-test-kit-modal"
+        v-model="isVisible"
+        data-testid="covid-test-kit-modal"
+        content-class="mt-5"
+        title="Submit Rapid Test Result"
+        size="lg"
+        header-bg-variant="primary"
+        header-text-variant="light"
+        centered
+    >
+        <div v-if="isSuccess">
+            <b-alert
+                data-testid="post-Rapid-Test-SuccessBanner"
+                variant="success"
+                class="mb-3 p-3"
+                show
+                dismissible
+            >
+                <h2 class="h4">
+                    Your COVID rapid test result has been submitted.
+                </h2>
+            </b-alert>
+        </div>
+        <div>
+            <b-alert
+                data-testid="post-Rapid-Test-ErrorBanner"
+                variant="danger"
+                dismissible
+                :show="!!errorMessage"
+            >
+                <h4>Something went wrong!</h4>
+                <span>
+                    We were unable to submit your rapid test result. Please
+                    refresh your browser and try again.
+                </span>
+            </b-alert>
+        </div>
+        <b-row class="col-12 mb-2">
+            <b-col>
+                <form>
+                    <b-row>
+                        <b-col>
+                            <p>Please provide the following:</p>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col>
+                            <b-form-group label="Name:" label-for="patientName">
+                                <strong
+                                    ><label data-testid="fullname-label">{{
+                                        fullName
+                                    }}</label></strong
+                                >
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col>
+                            <b-form-group
+                                label="Date of Birth:"
+                                label-for="dateOfBirth"
+                            >
+                                <strong
+                                    ><label data-testid="birthDate-label">{{
+                                        birthDate
+                                    }}</label></strong
+                                >
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col>
+                            <b-form-group
+                                label="Serial Number:"
+                                label-for="serialNumber"
+                            >
+                                <b-form-input
+                                    id="serialNumber"
+                                    ref="serialNumber"
+                                    v-model="rapidTest.labSerialNumber"
+                                    class="col-lg-4 col-12 mb-2"
+                                    data-testid="serial-number-input"
+                                    aria-label="Serial Number"
+                                    :state="
+                                        isValid($v.rapidTest.labSerialNumber)
+                                    "
+                                    :disabled="isDisabled()"
+                                    @blur="
+                                        $v.rapidTest.labSerialNumber.$touch()
+                                    "
+                                />
+                                <b-form-invalid-feedback
+                                    :state="
+                                        isValid($v.rapidTest.labSerialNumber)
+                                    "
+                                    aria-label="Invalid Serial Number"
+                                    data-testid="feedbackSerialNumberIsRequired"
+                                >
+                                    Serial Number is required.
+                                </b-form-invalid-feedback>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col class="col-lg-5 col-12">
+                            <b-form-group
+                                label="Date of Test:"
+                                label-for="dateOfRapidTest"
+                                :state="isValid($v.rapidTest.dateTestTaken)"
+                            >
+                                <hg-date-dropdown
+                                    id="dateOfRapidTest"
+                                    v-model="rapidTest.dateTestTaken"
+                                    :state="isValid($v.rapidTest.dateTestTaken)"
+                                    :allow-future="false"
+                                    :min-year="2020"
+                                    :disabled="isDisabled()"
+                                    data-testid="dateOf-rapid-test"
+                                    aria-label="Date of Rapid Test"
+                                    @blur="$vrapidTest.dateTestTaken.$touch()"
+                                />
+                                <b-form-invalid-feedback
+                                    v-if="
+                                        $v.rapidTest.dateTestTaken.$dirty &&
+                                        !$v.rapidTest.dateTestTaken.required
+                                    "
+                                    aria-label="Invalid Date of Test"
+                                    data-testid="feedbackDateOfRapidIsRequired"
+                                    force-show
+                                >
+                                    A valid date of test is required.
+                                </b-form-invalid-feedback>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col>
+                            <b-form-group
+                                label="Result:"
+                                label-for="resultOptionSelected"
+                                :state="isValid($v.rapidTest.positive)"
+                            >
+                                <b-form-radio-group
+                                    id="resultOptionSelected"
+                                    ref="resultOptionSelected"
+                                    v-model="rapidTest.positive"
+                                    aria-label="Result"
+                                    :options="resultOptions"
+                                    :state="isValid($v.rapidTest.positive)"
+                                    data-testid="result-selected-option"
+                                    :disabled="isDisabled()"
+                                    @blur="$v.rapidTest.result.$touch()"
+                                >
+                                    <b-form-invalid-feedback
+                                        :state="isValid($v.rapidTest.positive)"
+                                        aria-label="Invalid Result Option"
+                                        data-testid="feedbackResultOptionIsRequired"
+                                    >
+                                        Please select one.
+                                    </b-form-invalid-feedback>
+                                </b-form-radio-group>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                </form>
+            </b-col>
+        </b-row>
+        <template #modal-footer>
+            <b-row>
+                <div class="mr-2">
+                    <hg-button
+                        v-if="!isSuccess"
+                        data-testid="rapid-test-cancel-Btn"
+                        variant="secondary"
+                        @click="hideModal"
+                        >Cancel</hg-button
+                    >
+                </div>
+                <div>
+                    <hg-button
+                        v-if="!isSuccess"
+                        data-testid="rapid-test-submit-Btn"
+                        variant="primary"
+                        aria-label="Submit"
+                        @click="handleSubmit"
+                        >Submit</hg-button
+                    >
+                </div>
+                <div>
+                    <hg-button
+                        v-if="isSuccess"
+                        variant="secondary"
+                        aria-label="Close"
+                        @click="hideModal()"
+                    >
+                        Close
+                    </hg-button>
+                </div>
+            </b-row>
+        </template>
+        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+    </b-modal>
+</template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+.infoIcon {
+    color: $aquaBlue;
+}
+</style>

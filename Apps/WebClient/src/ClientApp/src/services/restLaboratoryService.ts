@@ -5,6 +5,8 @@ import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
 import { ServiceName } from "@/models/errorInterfaces";
 import {
+    AuthenticateRapidTestRequest,
+    AuthenticateRapidTestResponse,
     LaboratoryOrder,
     LaboratoryReport,
     PublicCovidTestResponseResult,
@@ -18,6 +20,7 @@ import {
     ILogger,
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
+
 @injectable()
 export class RestLaboratoryService implements ILaboratoryService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
@@ -119,7 +122,7 @@ export class RestLaboratoryService implements ILaboratoryService {
             }
             this.http
                 .getWithCors<RequestResult<LaboratoryReport>>(
-                    `${this.baseUri}${this.LABORATORY_BASE_URI}/${reportId}/Report?hdid=${hdid}`
+                    `${this.baseUri}${this.LABORATORY_BASE_URI}/${hdid}/Report?hdid=${hdid}`
                 )
                 .then((requestResult) => {
                     resolve(requestResult);
@@ -130,6 +133,49 @@ export class RestLaboratoryService implements ILaboratoryService {
                         ErrorTranslator.internalNetworkError(
                             err,
                             ServiceName.Laboratory
+                        )
+                    );
+                });
+        });
+    }
+
+    public postAutheticateRapidTest(
+        hdid: string,
+        request: AuthenticateRapidTestRequest
+    ): Promise<RequestResult<AuthenticateRapidTestResponse>> {
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                resolve({
+                    pageIndex: 0,
+                    pageSize: 0,
+                    resourcePayload: {
+                        loaded: false,
+                        phn: "",
+                        records: [],
+                        retryin: 0,
+                    },
+                    resultStatus: ResultType.Success,
+                    totalResultCount: 0,
+                });
+                return;
+            }
+
+            this.http
+                .post<RequestResult<AuthenticateRapidTestResponse>>(
+                    `${this.baseUri}${this.LABORATORY_BASE_URI}/${hdid}/rapidTest`,
+                    request
+                )
+                .then((requestResult) => {
+                    this.logger.debug(`CreateRapidTest ${requestResult}`);
+                })
+                .catch((err) => {
+                    this.logger.error(
+                        `Post Autheticate Rapid Test Error: ${err}`
+                    );
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
                         )
                     );
                 });

@@ -120,6 +120,7 @@ export enum ClientModule {
     VaccinationExportPdf = "VaccinationExportPdf",
     FederalCardButton = "FederalCardButton",
     PublicLaboratoryResult = "PublicLaboratoryResult",
+    AuthenticateSubmitRapidTest = "AuthenticateSubmitRapidTest",
 }
 
 function getAvailableModules() {

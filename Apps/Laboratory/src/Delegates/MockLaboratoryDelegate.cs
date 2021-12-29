@@ -104,5 +104,10 @@ namespace HealthGateway.Laboratory.Delegates
         {
             throw new NotImplementedException();
         }
+
+        Task<RequestResult<PHSAResult<IEnumerable<RapidTestResult>>>> ILaboratoryDelegate.CreateRapidTestAsync(string hdid, string bearerToken, AuthenticaeRapidTestRequest rapidTestRequest)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

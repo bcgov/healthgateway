@@ -114,6 +114,58 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
+        public async Task<RequestResult<AuthenticateRapidTestResponse>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticaeRapidTestRequest rapidTestRequest)
+        {
+            RequestResult<AuthenticateRapidTestResponse> retVal = new()
+            {
+                ResultStatus = ResultType.Error,
+                ResourcePayload = new AuthenticateRapidTestResponse(),
+            };
+
+            RequestResult<PHSAResult<IEnumerable<RapidTestResult>>> result = await this.laboratoryDelegate.CreateRapidTestAsync(hdid, bearerToken, rapidTestRequest).ConfigureAwait(true);
+            IEnumerable<RapidTestResult> payload = result.ResourcePayload?.Result ?? Enumerable.Empty<RapidTestResult>();
+            PHSALoadState? loadState = result.ResourcePayload?.LoadState;
+
+            retVal.ResultStatus = result.ResultStatus;
+            retVal.ResultError = result.ResultError;
+
+            //if (payload.Any())
+            //{
+            //    LabIndicatorType labIndicatorType = Enum.Parse<LabIndicatorType>(payload.Select(x => x.StatusIndicator).First());
+
+            //    if (labIndicatorType == LabIndicatorType.Found)
+            //    {
+            //        retVal.ResourcePayload = new AuthenticateRapidTestResponse(payload.Select(RapidTestRecord.FromModel).ToList());
+            //    }
+
+            //    if (labIndicatorType == LabIndicatorType.DataMismatch || labIndicatorType == LabIndicatorType.NotFound)
+            //    {
+            //        retVal.ResultStatus = ResultType.ActionRequired;
+            //        retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
+            //    }
+
+            //    if (labIndicatorType == LabIndicatorType.Threshold || labIndicatorType == LabIndicatorType.Blocked)
+            //    {
+            //        retVal.ResultStatus = ResultType.ActionRequired;
+            //        retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.RecordsNotAvailable, ActionType.Invalid);
+            //    }
+            //}
+
+            if (loadState != null)
+            {
+                retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
+                if (loadState.RefreshInProgress)
+                {
+                    retVal.ResultStatus = ResultType.ActionRequired;
+                    retVal.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
+                    retVal.ResourcePayload.RetryIn = Math.Max(loadState.BackOffMilliseconds, this.labConfig.BackOffMilliseconds);
+                }
+            }
+
+            return retVal;
+        }
+
+        /// <inheritdoc/>
         public async Task<RequestResult<PublicCovidTestResponse>> GetPublicCovidTestsAsync(string phn, string dateOfBirthString, string collectionDateString)
         {
             RequestResult<PublicCovidTestResponse> retVal = new()

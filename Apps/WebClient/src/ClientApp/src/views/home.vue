@@ -7,6 +7,7 @@ import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
+import AuthenticateRapidTestComponent from "@/components/modal/authenticateRapidTest.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
@@ -18,11 +19,15 @@ library.add(faSearch, faCheckCircle);
 
 @Component({
     components: {
+        AuthenticateRapidTestComponent,
         LoadingComponent,
         MessageModalComponent,
     },
 })
 export default class HomeView extends Vue {
+    @Ref("authenticateRapidTestModal")
+    readonly authenticateRapidTestModal!: AuthenticateRapidTestComponent;
+
     @Action("retrieveAuthenticatedVaccineRecord", {
         namespace: "vaccinationStatus",
     })
@@ -130,6 +135,13 @@ export default class HomeView extends Vue {
 
     private get loadingStatusMessage(): string {
         return this.vaccineRecordStatusMessage;
+    }
+
+    private get showAuthenticateSubmitRapidTest(): boolean {
+        return this.config.modules["AuthenticateSubmitRapidTest"];
+    }
+    private showAuthenticateRapidTestModal() {
+        this.authenticateRapidTestModal.showModal();
     }
 }
 </script>
@@ -265,6 +277,29 @@ export default class HomeView extends Vue {
                 </hg-card-button>
             </b-col>
         </b-row>
+        <b-row>
+            <b-col cols="12" :lg="cardColumnSize" class="p-3">
+                <hg-card-button
+                    v-if="showAuthenticateSubmitRapidTest"
+                    title="Submit a COVID Rapid Test Result"
+                    data-testid="covid-rapid-test-card-btn"
+                    class="col-12"
+                    @click="showAuthenticateRapidTestModal()"
+                >
+                    <template #icon>
+                        <img
+                            class="cdc-logo"
+                            src="@/assets/images/gov/cdc-logo.png"
+                            alt="Covid Rapid Test"
+                        />
+                    </template>
+                    <div>
+                        Submit your COVID rapid test result to support public
+                        health in tracking transmission of COVID-19.
+                    </div>
+                </hg-card-button>
+            </b-col>
+        </b-row>
         <MessageModalComponent
             ref="sensitivedocumentDownloadModal"
             title="Sensitive Document Download"
@@ -276,6 +311,10 @@ export default class HomeView extends Vue {
             ok-only
             title="Alert"
             :message="vaccineRecordResultMessage"
+        />
+        <AuthenticateRapidTestComponent
+            ref="authenticateRapidTestModal"
+            @show="showAuthenticateRapidTestModal"
         />
     </div>
 </template>
@@ -292,20 +331,10 @@ export default class HomeView extends Vue {
     height: 1.5em;
 }
 
+.cdc-logo {
+    height: 2em;
+}
 .checkmark {
     color: $hg-state-success;
-}
-</style>
-<style lang="scss">
-@import "@/assets/scss/_variables.scss";
-
-.vld-overlay {
-    .vld-background {
-        opacity: 0.75;
-    }
-
-    .vld-icon {
-        text-align: center;
-    }
 }
 </style>

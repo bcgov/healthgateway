@@ -16,40 +16,42 @@
 namespace HealthGateway.Laboratory.Models
 {
     using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Provides configuration data for the Laboratory Delegate.
+    /// Object that defines the request for submitting a rapid test.
     /// </summary>
-    public class LaboratoryConfig
+    public class AuthenticaeRapidTestRequest
     {
-        /// <summary>
-        /// Gets or sets the laboratory base endpoint.
-        /// </summary>
-        public Uri BaseUrl { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the lab orders endpoint.
+        /// Gets or sets the id for the lab result.
         /// </summary>
-        public string LabOrdersEndpoint { get; set; } = string.Empty;
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the public COVID-19 tests endpoint.
+        /// Gets or sets the PHN the report is for.
         /// </summary>
-        public string PublicCovidTestsEndPoint { get; set; } = string.Empty;
+        [JsonPropertyName("phn")]
+        public string PHN { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the authenticate rapid test endpoint.
+        /// Gets or sets the serial number for rapid test.
         /// </summary>
-        public string AuthenticateRapidTestEndPoint { get; set; } = string.Empty;
+        [JsonPropertyName("labSerialNumber")]
+        public string SerialNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the total number of records to retrieve in one call.
+        /// Gets or sets a value indicating whether result is positive (true) or negative (false).
         /// </summary>
-        public string FetchSize { get; set; } = string.Empty;
+        [JsonPropertyName("positive")]
+        public bool Result { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets the default time to wait for a new request.
+        /// Gets or sets the date of rapid test.
         /// </summary>
-        public int BackOffMilliseconds { get; set; }
+        [JsonPropertyName("dateTestTaken")]
+        public DateTime DateTestTaken { get; set; }
     }
 }
