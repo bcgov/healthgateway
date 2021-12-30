@@ -15,7 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
+    using System.Linq;
     using Fluxor;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// The set of reducers for the feature.
@@ -66,6 +68,25 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
             {
                 IsLoading = false,
                 ErrorMessage = action.ErrorMessage,
+            };
+        }
+
+        /// <summary>
+        /// The Reducer for the reset state action.
+        /// </summary>
+        /// <param name="state">The message verification state.</param>
+        /// <returns>The empty state.</returns>
+        [ReducerMethod(typeof(MessageVerificationActions.ResetStateAction))]
+        public static MessageVerificationState ReduceResetStateAction(MessageVerificationState state)
+        {
+            return state with
+            {
+                RequestResult = new()
+                {
+                    ResourcePayload = Enumerable.Empty<MessagingVerificationModel>(),
+                },
+                IsLoading = false,
+                ErrorMessage = string.Empty,
             };
         }
     }

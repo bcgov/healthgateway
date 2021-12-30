@@ -5,6 +5,10 @@
 <PageTitle>Support</PageTitle>
 <HgPageHeading>Support</HgPageHeading>
 
+<MudHidden Invert="!HasError"> 
+    <HgBannerFeedback Variant="Variant.Text" Severity="Severity.Error" ShowCloseIcon="true">@MessageVerificationState?.Value?.ErrorMessage</HgBannerFeedback>
+</MudHidden>
+
 <MudForm>
     <MudGrid Spacing="0">
         <MudItem xs="12" sm="3">
@@ -45,4 +49,12 @@
             <MudTablePager />
         </PagerContent>
     </MudTable>
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        ResetState();
+        base.OnInitialized();
+    }
 }

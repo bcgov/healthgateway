@@ -1,0 +1,12 @@
+@inherits HgComponentBase
+
+@if (!this.IsBannerVisible)
+{
+   <MudAlert Variant="@Variant"
+                  Severity="@Severity"
+                  ShowCloseIcon="@ShowCloseIcon"
+                  CloseIconClicked="(() => CloseBanner(true))"
+                  @attributes="UnmatchedAttributes">
+         @ChildContent
+    </MudAlert>
+}

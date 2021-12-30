@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Data.ViewModels;
 
@@ -81,6 +82,13 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
                 : base(requestResultModel)
             {
             }
+        }
+
+        /// <summary>
+        /// The action that clear the state.
+        /// </summary>
+        public class ResetStateAction
+        {
         }
     }
 }

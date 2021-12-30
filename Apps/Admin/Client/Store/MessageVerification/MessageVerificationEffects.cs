@@ -20,6 +20,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     using System.Threading.Tasks;
     using Fluxor;
     using HealthGateway.Admin.Client.Services;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.Logging;
@@ -58,15 +59,15 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         {
             this.Logger.LogInformation("Loading messaging verifications");
             ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>> response = await this.SupportApi.GetMedicationVerifications(action.QueryType, action.QueryString).ConfigureAwait(true);
-            if (response.IsSuccessStatusCode && response.Content != null)
+            if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
             {
                 this.Logger.LogInformation("Messaging verifications loaded successfully!");
                 dispatcher.Dispatch(new MessageVerificationActions.LoadSuccessAction(response.Content));
             }
             else
             {
-                this.Logger.LogError($"Error loading messaging verifications, reason: {response.Error?.Message}");
-                dispatcher.Dispatch(new MessageVerificationActions.LoadFailAction(response.Error?.Message));
+                this.Logger.LogError($"Error loading messaging verifications, reason: {response.Content?.ResultError?.ResultMessage}");
+                dispatcher.Dispatch(new MessageVerificationActions.LoadFailAction(response.Content?.ResultError?.ResultMessage));
             }
         }
     }
