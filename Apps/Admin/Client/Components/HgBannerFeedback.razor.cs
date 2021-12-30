@@ -42,6 +42,7 @@ namespace HealthGateway.Admin.Client.Components
         [Parameter]
         public bool ShowCloseIcon { get; set; } = true;
 
+        [CascadingParameter]
         private bool IsBannerVisible { get; set; }
 
         private void CloseBanner(bool value)

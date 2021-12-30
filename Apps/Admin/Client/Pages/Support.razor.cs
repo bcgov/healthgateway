@@ -59,6 +59,10 @@ namespace HealthGateway.Admin.Client.Pages
             // Call Reset State to clear the feedback banner.
             this.ResetState();
             this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(this.SelectedQueryType, this.QueryParameter.Trim()));
+            if (this.HasError)
+            {
+                this.IsBannerVisible = true;
+            }
         }
 
         private void ResetState()
