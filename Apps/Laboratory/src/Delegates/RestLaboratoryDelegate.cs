@@ -314,14 +314,14 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PHSAResult<IEnumerable<RapidTestResult>>>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticaeRapidTestRequest rapidTestRequest)
+        public async Task<RequestResult<IEnumerable<RapidTestResult>>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticaeRapidTestRequest rapidTestRequest)
         {
             using (Source.StartActivity("SubmitRapidTest"))
             {
                 HttpContext? httpContext = this.httpContextAccessor.HttpContext;
                 string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
 
-                RequestResult<PHSAResult<IEnumerable<RapidTestResult>>> retVal = new()
+                RequestResult<IEnumerable<RapidTestResult>> retVal = new()
                 {
                     ResultStatus = ResultType.Error,
                     PageIndex = 0,
@@ -359,12 +359,12 @@ namespace HealthGateway.Laboratory.Delegates
                     {
                         case HttpStatusCode.OK:
                             this.logger.LogTrace($"Response payload: {payload}");
-                            PHSAResult<IEnumerable<RapidTestResult>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<IEnumerable<RapidTestResult>>>(payload);
-                            if (phsaResult != null && phsaResult.Result != null)
+                            IEnumerable<RapidTestResult>? phsaResult = JsonSerializer.Deserialize<IEnumerable<RapidTestResult>>(payload);
+                            if (phsaResult != null)
                             {
                                 retVal.ResultStatus = ResultType.Success;
                                 retVal.ResourcePayload = phsaResult;
-                                retVal.TotalResultCount = phsaResult.Result.Count();
+                                retVal.TotalResultCount = phsaResult.Count();
                             }
                             else
                             {
@@ -380,6 +380,13 @@ namespace HealthGateway.Laboratory.Delegates
                             retVal.ResultError = new RequestResultError()
                             {
                                 ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            };
+                            break;
+                        case HttpStatusCode.Conflict:
+                            retVal.ResultError = new RequestResultError()
+                            {
+                                ResultMessage = $"Conflict or can not resolve PHN and Serial Number, HTTP Error {response.StatusCode}",
                                 ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                             };
                             break;

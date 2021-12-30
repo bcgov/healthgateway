@@ -122,45 +122,12 @@ namespace HealthGateway.Laboratory.Services
                 ResourcePayload = new AuthenticateRapidTestResponse(),
             };
 
-            RequestResult<PHSAResult<IEnumerable<RapidTestResult>>> result = await this.laboratoryDelegate.CreateRapidTestAsync(hdid, bearerToken, rapidTestRequest).ConfigureAwait(true);
-            IEnumerable<RapidTestResult> payload = result.ResourcePayload?.Result ?? Enumerable.Empty<RapidTestResult>();
-            PHSALoadState? loadState = result.ResourcePayload?.LoadState;
+            RequestResult<IEnumerable<RapidTestResult>> result = await this.laboratoryDelegate.CreateRapidTestAsync(hdid, bearerToken, rapidTestRequest).ConfigureAwait(true);
+            IEnumerable<RapidTestResult> payload = result.ResourcePayload ?? Enumerable.Empty<RapidTestResult>();
 
             retVal.ResultStatus = result.ResultStatus;
             retVal.ResultError = result.ResultError;
-
-            //if (payload.Any())
-            //{
-            //    LabIndicatorType labIndicatorType = Enum.Parse<LabIndicatorType>(payload.Select(x => x.StatusIndicator).First());
-
-            //    if (labIndicatorType == LabIndicatorType.Found)
-            //    {
-            //        retVal.ResourcePayload = new AuthenticateRapidTestResponse(payload.Select(RapidTestRecord.FromModel).ToList());
-            //    }
-
-            //    if (labIndicatorType == LabIndicatorType.DataMismatch || labIndicatorType == LabIndicatorType.NotFound)
-            //    {
-            //        retVal.ResultStatus = ResultType.ActionRequired;
-            //        retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
-            //    }
-
-            //    if (labIndicatorType == LabIndicatorType.Threshold || labIndicatorType == LabIndicatorType.Blocked)
-            //    {
-            //        retVal.ResultStatus = ResultType.ActionRequired;
-            //        retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.RecordsNotAvailable, ActionType.Invalid);
-            //    }
-            //}
-
-            if (loadState != null)
-            {
-                retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
-                if (loadState.RefreshInProgress)
-                {
-                    retVal.ResultStatus = ResultType.ActionRequired;
-                    retVal.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
-                    retVal.ResourcePayload.RetryIn = Math.Max(loadState.BackOffMilliseconds, this.labConfig.BackOffMilliseconds);
-                }
-            }
+            retVal.ResourcePayload = new AuthenticateRapidTestResponse(payload.Select(RapidTestRecord.FromModel).ToList());
 
             return retVal;
         }

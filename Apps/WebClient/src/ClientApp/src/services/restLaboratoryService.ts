@@ -145,18 +145,7 @@ export class RestLaboratoryService implements ILaboratoryService {
     ): Promise<RequestResult<AuthenticateRapidTestResponse>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
-                resolve({
-                    pageIndex: 0,
-                    pageSize: 0,
-                    resourcePayload: {
-                        loaded: false,
-                        phn: "",
-                        records: [],
-                        retryin: 0,
-                    },
-                    resultStatus: ResultType.Success,
-                    totalResultCount: 0,
-                });
+                reject();
                 return;
             }
 
@@ -166,6 +155,7 @@ export class RestLaboratoryService implements ILaboratoryService {
                     request
                 )
                 .then((requestResult) => {
+                    resolve(requestResult);
                     this.logger.debug(`CreateRapidTest ${requestResult}`);
                 })
                 .catch((err) => {

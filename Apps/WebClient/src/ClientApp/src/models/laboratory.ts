@@ -64,13 +64,11 @@ export interface AuthenticateRapidTestRequest {
     // result of the rapid test.
     positive?: boolean;
 
-    // Dependent date of birth.
+    // date rapid test was taken.
     dateTestTaken: StringISODate;
 }
 
 export interface AuthenticateRapidTestResponse {
-    loaded: boolean;
-    retryin: number;
     phn: string;
     records: AuthenticateRapidTestRequest[];
 }

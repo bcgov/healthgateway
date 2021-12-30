@@ -47,25 +47,9 @@ namespace HealthGateway.Laboratory.Models
         public string PHN { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the responses have been retrieved.
-        /// Will be set to true if the object has been fully loaded.
-        /// When false, only Loaded, and RetryIn will be populated.
-        /// </summary>
-        [JsonPropertyName("loaded")]
-        public bool Loaded { get; set; }
-
-        /// <summary>
-        /// Gets or sets the minimal amount of time that should be waited before another request.
-        /// The unit of measurement is in milliseconds.
-        /// </summary>
-        [JsonPropertyName("retryin")]
-        public int RetryIn { get; set; }
-
-        /// <summary>
         /// Gets the COVID-19 rapid tests.
         /// </summary>
         [JsonPropertyName("c19RapidTestResults")]
         public IList<RapidTestRecord> Records { get; }
-
     }
 }
