@@ -156,7 +156,9 @@ export class RestLaboratoryService implements ILaboratoryService {
                 )
                 .then((requestResult) => {
                     resolve(requestResult);
-                    this.logger.debug(`CreateRapidTest ${requestResult}`);
+                    this.logger.debug(
+                        `CreateRapidTest ${requestResult.resultStatus}`
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(

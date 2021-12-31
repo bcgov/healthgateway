@@ -9,10 +9,11 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
+import { ResultType } from "@/constants/resulttype";
 import { DateWrapper } from "@/models/dateWrapper";
 import { AuthenticateRapidTestRequest } from "@/models/laboratory";
 import PatientData from "@/models/patientData";
-//import { ResultError } from "@/models/requestResult";
+import { ResultError } from "@/models/requestResult";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
@@ -32,6 +33,7 @@ export default class CovidRapidTestComponent extends Vue {
 
     @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
+
     private isLoading = false;
     private isVisible = false;
     private isSuccess = false;
@@ -101,10 +103,15 @@ export default class CovidRapidTestComponent extends Vue {
 
     public showModal(): void {
         // Reset input components when changing between div tags
+        this.resetInput();
+        this.clear();
+        this.errorMessage = "";
+    }
+
+    private resetInput(): void {
         this.$nextTick(() => {
             this.$v.$reset();
         });
-        this.clear();
     }
 
     private isValid(param: Validation): boolean | undefined {
@@ -146,16 +153,21 @@ export default class CovidRapidTestComponent extends Vue {
         this.laboratoryService
             .postAutheticateRapidTest(this.patientData.hdid, this.rapidTest)
             .then((result) => {
-                this.isLoading = false;
-                this.isSuccess = true;
-                this.errorMessage = "";
-                this.logger.debug(`Rapid Test is submitted." ${result} `);
-                //this.handleSubmitModal();
+                if (result.resultStatus === ResultType.Success) {
+                    this.isSuccess = true;
+                    this.errorMessage = "";
+                    this.logger.debug(`Rapid Test is submitted." ${result} `);
+                } else {
+                    this.isSuccess = false;
+                    this.errorMessage = `${result.resultError?.resultMessage}`;
+                    this.logger.debug(
+                        `Rapid Test is not submitted." ${result.resultError?.resultMessage} `
+                    );
+                }
             })
-            .catch((err) => {
+            .catch((err: ResultError) => {
                 this.isSuccess = false;
-                this.isLoading = false;
-                this.errorMessage = err.resultMessage;
+                this.errorMessage = "Error in submitting rapid test";
                 this.logger.error(`Error in submitting rapid test : ${err}`);
             })
             .finally(() => {
@@ -163,14 +175,6 @@ export default class CovidRapidTestComponent extends Vue {
             });
     }
 
-    // @Emit()
-    // private handleSubmitModal() {
-    //    this.clear();
-    // Hide the modal manually
-    //   this.$nextTick(() => {
-    //  this.hideModal();
-    //   });
-    // }
     private isDisabled() {
         return this.isSuccess;
     }
@@ -178,6 +182,10 @@ export default class CovidRapidTestComponent extends Vue {
     public hideModal(): void {
         this.$v.$reset();
         this.isVisible = false;
+    }
+
+    private get showErrorBanner(): boolean {
+        return this.errorMessage !== undefined && this.errorMessage.length > 0;
     }
 }
 </script>
@@ -212,7 +220,8 @@ export default class CovidRapidTestComponent extends Vue {
                 data-testid="post-Rapid-Test-ErrorBanner"
                 variant="danger"
                 dismissible
-                :show="!!errorMessage"
+                :show="showErrorBanner"
+                @dismissed="errorMessage = ''"
             >
                 <h4>Something went wrong!</h4>
                 <span>
@@ -223,132 +232,125 @@ export default class CovidRapidTestComponent extends Vue {
         </div>
         <b-row class="col-12 mb-2">
             <b-col>
-                <form>
-                    <b-row>
-                        <b-col>
-                            <p>Please provide the following:</p>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <b-form-group label="Name:" label-for="patientName">
-                                <strong
-                                    ><label data-testid="fullname-label">{{
-                                        fullName
-                                    }}</label></strong
-                                >
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <b-form-group
-                                label="Date of Birth:"
-                                label-for="dateOfBirth"
+                <b-row>
+                    <b-col>
+                        <p>Please provide the following:</p>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-form-group label="Name:" label-for="patientName">
+                            <strong
+                                ><label data-testid="fullname-label">{{
+                                    fullName
+                                }}</label></strong
                             >
-                                <strong
-                                    ><label data-testid="birthDate-label">{{
-                                        birthDate
-                                    }}</label></strong
-                                >
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <b-form-group
-                                label="Serial Number:"
-                                label-for="serialNumber"
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-form-group
+                            label="Date of Birth:"
+                            label-for="dateOfBirth"
+                        >
+                            <strong
+                                ><label data-testid="birthDate-label">{{
+                                    birthDate
+                                }}</label></strong
                             >
-                                <b-form-input
-                                    id="serialNumber"
-                                    ref="serialNumber"
-                                    v-model="rapidTest.labSerialNumber"
-                                    class="col-lg-4 col-12 mb-2"
-                                    data-testid="serial-number-input"
-                                    aria-label="Serial Number"
-                                    :state="
-                                        isValid($v.rapidTest.labSerialNumber)
-                                    "
-                                    :disabled="isDisabled()"
-                                    @blur="
-                                        $v.rapidTest.labSerialNumber.$touch()
-                                    "
-                                />
-                                <b-form-invalid-feedback
-                                    :state="
-                                        isValid($v.rapidTest.labSerialNumber)
-                                    "
-                                    aria-label="Invalid Serial Number"
-                                    data-testid="feedbackSerialNumberIsRequired"
-                                >
-                                    Serial Number is required.
-                                </b-form-invalid-feedback>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col class="col-lg-5 col-12">
-                            <b-form-group
-                                label="Date of Test:"
-                                label-for="dateOfRapidTest"
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-form-group
+                            label="Serial Number:"
+                            label-for="serialNumber"
+                            :state="isValid($v.rapidTest.labSerialNumber)"
+                        >
+                            <b-form-input
+                                id="serialNumber"
+                                ref="serialNumber"
+                                v-model="rapidTest.labSerialNumber"
+                                class="col-lg-4 col-12 mb-2"
+                                data-testid="serial-number-input"
+                                aria-label="Serial Number"
+                                :state="isValid($v.rapidTest.labSerialNumber)"
+                                :disabled="isDisabled()"
+                                @blur="$v.rapidTest.labSerialNumber.$touch()"
+                            />
+                            <b-form-invalid-feedback
+                                :state="isValid($v.rapidTest.labSerialNumber)"
+                                aria-label="Invalid Serial Number"
+                                data-testid="feedbackSerialNumberIsRequired"
+                            >
+                                Serial Number is required.
+                            </b-form-invalid-feedback>
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col class="col-lg-5 col-12">
+                        <b-form-group
+                            label="Date of Test:"
+                            label-for="dateOfRapidTest"
+                            :state="isValid($v.rapidTest.dateTestTaken)"
+                        >
+                            <hg-date-dropdown
+                                id="dateOfRapidTest"
+                                v-model="rapidTest.dateTestTaken"
                                 :state="isValid($v.rapidTest.dateTestTaken)"
+                                :allow-future="false"
+                                :min-year="2020"
+                                :disabled="isDisabled()"
+                                data-testid="dateOf-rapid-test"
+                                aria-label="Date of Rapid Test"
+                                @blur="$v.rapidTest.dateTestTaken.$touch()"
+                            />
+                            <b-form-invalid-feedback
+                                v-if="
+                                    $v.rapidTest.dateTestTaken.$dirty &&
+                                    !$v.rapidTest.dateTestTaken.required
+                                "
+                                aria-label="Invalid Date of Test"
+                                data-testid="feedbackDateOfRapidIsRequired"
+                                force-show
                             >
-                                <hg-date-dropdown
-                                    id="dateOfRapidTest"
-                                    v-model="rapidTest.dateTestTaken"
-                                    :state="isValid($v.rapidTest.dateTestTaken)"
-                                    :allow-future="false"
-                                    :min-year="2020"
-                                    :disabled="isDisabled()"
-                                    data-testid="dateOf-rapid-test"
-                                    aria-label="Date of Rapid Test"
-                                    @blur="$vrapidTest.dateTestTaken.$touch()"
-                                />
-                                <b-form-invalid-feedback
-                                    v-if="
-                                        $v.rapidTest.dateTestTaken.$dirty &&
-                                        !$v.rapidTest.dateTestTaken.required
-                                    "
-                                    aria-label="Invalid Date of Test"
-                                    data-testid="feedbackDateOfRapidIsRequired"
-                                    force-show
-                                >
-                                    A valid date of test is required.
-                                </b-form-invalid-feedback>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <b-form-group
-                                label="Result:"
-                                label-for="resultOptionSelected"
+                                A valid date of test is required.
+                            </b-form-invalid-feedback>
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-form-group
+                            label="Result:"
+                            label-for="resultOptionSelected"
+                            :state="isValid($v.rapidTest.positive)"
+                        >
+                            <b-form-radio-group
+                                id="resultOptionSelected"
+                                ref="resultOptionSelected"
+                                v-model="rapidTest.positive"
+                                aria-label="Result"
+                                :options="resultOptions"
                                 :state="isValid($v.rapidTest.positive)"
+                                data-testid="result-selected-option"
+                                :disabled="isDisabled()"
+                                @blur="$v.rapidTest.result.$touch()"
                             >
-                                <b-form-radio-group
-                                    id="resultOptionSelected"
-                                    ref="resultOptionSelected"
-                                    v-model="rapidTest.positive"
-                                    aria-label="Result"
-                                    :options="resultOptions"
+                                <b-form-invalid-feedback
                                     :state="isValid($v.rapidTest.positive)"
-                                    data-testid="result-selected-option"
-                                    :disabled="isDisabled()"
-                                    @blur="$v.rapidTest.result.$touch()"
+                                    aria-label="Invalid Result Option"
+                                    data-testid="feedbackResultOptionIsRequired"
                                 >
-                                    <b-form-invalid-feedback
-                                        :state="isValid($v.rapidTest.positive)"
-                                        aria-label="Invalid Result Option"
-                                        data-testid="feedbackResultOptionIsRequired"
-                                    >
-                                        Please select one.
-                                    </b-form-invalid-feedback>
-                                </b-form-radio-group>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                </form>
+                                    Please select one.
+                                </b-form-invalid-feedback>
+                            </b-form-radio-group>
+                        </b-form-group>
+                    </b-col>
+                </b-row>
             </b-col>
         </b-row>
         <template #modal-footer>
