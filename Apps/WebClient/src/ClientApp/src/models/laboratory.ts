@@ -61,6 +61,9 @@ export interface AuthenticateRapidTestRequest {
     // rapid test serial number.
     labSerialNumber: string;
 
+    // customer personal health number.
+    phn?: string;
+
     // result of the rapid test.
     positive?: boolean;
 

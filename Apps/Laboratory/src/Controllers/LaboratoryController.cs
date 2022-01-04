@@ -143,7 +143,7 @@ namespace HealthGateway.Laboratory.Controllers
         /// <returns>A Laboratory PDF Report wrapped in a request result.</returns>
         /// <response code="200">Return the Registration is completed successfully.</response>
         /// <response code="403">DID Claim is missing or can not resolve PHN.</response>
-        /// <response code="409">Registration for PHN and CovidRegCode already exists.</response>
+        /// <response code="409">Combination of PHN and Laboratory Serial number is already exists.</response>
         [HttpPost]
         [Route("{hdid}/rapidTest")]
         [Authorize(Policy = LaboratoryPolicy.Write)]

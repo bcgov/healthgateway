@@ -314,9 +314,9 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<RapidTestResult>>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticaeRapidTestRequest rapidTestRequest)
+        public async Task<RequestResult<IEnumerable<RapidTestResult>>> SubmitRapidTestAsync(string hdid, string bearerToken, AuthenticaeRapidTestRequest rapidTestRequest)
         {
-            using (Source.StartActivity("SubmitRapidTest"))
+            using (Source.StartActivity("SubmitRapidTestAsync"))
             {
                 HttpContext? httpContext = this.httpContextAccessor.HttpContext;
                 string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
@@ -339,7 +339,7 @@ namespace HealthGateway.Laboratory.Delegates
                         Converters = { new DateOnlyJsonConverter() },
                     };
 
-                    string json = JsonSerializer.Serialize(new { rapidTestRequest }, serializerOptions);
+                    string json = JsonSerializer.Serialize(rapidTestRequest, serializerOptions);
                     using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
 
                     string endpointString = $"{this.labConfig.BaseUrl}{this.labConfig.AuthenticateRapidTestEndPoint}";
@@ -404,7 +404,7 @@ namespace HealthGateway.Laboratory.Delegates
                 catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
                 {
-                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception Submitting Rapid Test: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception in Submitting Rapid Test: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                     this.logger.LogError($"Unexpected exception in Submitting Rapid Test {e}");
                 }
 

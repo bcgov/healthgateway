@@ -150,6 +150,7 @@ export default class CovidRapidTestComponent extends Vue {
             action: "submit",
             text: "Autheticate_Rapid_Test",
         });
+        this.rapidTest.phn = this.patientData.personalhealthnumber;
         this.laboratoryService
             .postAutheticateRapidTest(this.patientData.hdid, this.rapidTest)
             .then((result) => {
