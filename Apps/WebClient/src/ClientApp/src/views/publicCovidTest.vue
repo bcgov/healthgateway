@@ -380,7 +380,7 @@ export default class PublicCovidTestView extends Vue {
                                             (resultDescriptionIndex + 1)
                                         "
                                         target="blank_"
-                                        >page</a
+                                        >this page</a
                                     >
                                     <span>{{
                                         getPeriod(
