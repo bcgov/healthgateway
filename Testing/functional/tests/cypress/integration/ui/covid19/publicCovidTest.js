@@ -23,6 +23,10 @@ const publicLaboratoryResultModule = "PublicLaboratoryResult";
 const laboratoryModule = "Laboratory";
 const covidTestUrl = "/covidtest";
 
+const dummyYear = "2021";
+const dummyMonth = "June";
+const dummyDay = "15";
+
 function selectOption(selector, option) {
     return cy.get(selector).should("be.visible", "be.enabled").select(option);
 }
@@ -42,6 +46,7 @@ function selectShouldNotContain(selector, value) {
 function enterCovidTestPHN(phn) {
     cy.get("[data-testid=phnInput]")
         .should("be.visible", "be.enabled")
+        .clear()
         .type(phn);
 }
 
@@ -49,18 +54,18 @@ function clickCovidTestEnterButton() {
     cy.get("[data-testid=btnEnter]").should("be.enabled", "be.visible").click();
 }
 
-describe("Public User - Covid19 Test Result Page", () => {
+describe("Public COVID-19 Test Form", () => {
     beforeEach(() => {
         cy.enableModules([laboratoryModule, publicLaboratoryResultModule]);
         cy.visit(covidTestUrl);
     });
 
-    it("Public Covid19 Test - Cancel", () => {
+    it("Cancel Button Should Go to Landing Page", () => {
         cy.get("[data-testid=btnCancel]").should("be.visible").click();
         cy.get("[data-testid=covid-test-button]").should("exist");
     });
 
-    it("Public Covid19 Test - Login BC Services Card App", () => {
+    it("Log In Button Should Go to Login Page", () => {
         cy.get("[data-testid=btnLogin]")
             .should("be.visible", "be.enabled")
             .click();
@@ -68,43 +73,33 @@ describe("Public User - Covid19 Test Result Page", () => {
         cy.get("[data-testid=vaccineCardFormTitle]").should("not.exist");
     });
 
-    it("Public Covid19 Test - Valid PHN via Select Year", () => {
-        enterCovidTestPHN(Cypress.env("phn"));
-        selectOption(dobYearSelector, "Year");
-        cy.get("[data-testid=phnInput]")
-            .should("be.visible", "be.enabled")
-            .and("have.class", "form-control is-valid");
-    });
-
-    it("Public Covid19 Test - Invalid PHN via Select Year", () => {
-        enterCovidTestPHN(Cypress.env("phn").replace(/.$/, ""));
-        selectOption(dobYearSelector, "Year");
-        cy.get(feedbackPhnMustBeValidSelector).should("be.visible");
-    });
-
-    it("Public Covid19 Test - PHN, DOB and Collection Date not entered via Click Enter", () => {
+    it("Validate PHN, DOB, and Collection Date Required", () => {
         clickCovidTestEnterButton();
+
         cy.get(feedbackPhnIsRequiredSelector).should("be.visible");
         cy.get(feedbackDobIsRequiredSelector).should("be.visible");
         cy.get(feedbackCollectionDateIsRequiredSelector).should("be.visible");
     });
 
-    it("Public Covid19 Test - DOB and Collection Date not entered with Invalid PHN via Click Enter", () => {
-        enterCovidTestPHN(Cypress.env("phn").replace(/.$/, ""));
-        clickCovidTestEnterButton();
-        cy.get(feedbackPhnMustBeValidSelector).should("be.visible");
-        cy.get(feedbackDobIsRequiredSelector).should("be.visible");
-        cy.get(feedbackCollectionDateIsRequiredSelector).should("be.visible");
-    });
-
-    it("Public Covid19 Test - DOB and Collection Date not entered via Click Enter", () => {
+    it("Validate PHN Format", () => {
+        cy.log("Validate valid PHN passes validation.");
         enterCovidTestPHN(Cypress.env("phn"));
+
+        selectOption(dobYearSelector, "Year");
+
+        cy.get("[data-testid=phnInput]")
+            .should("be.visible", "be.enabled")
+            .and("have.class", "form-control is-valid");
+
+        cy.log("Validate invalid PHN fails validation.");
+        enterCovidTestPHN(Cypress.env("phn").replace(/.$/, ""));
+
         clickCovidTestEnterButton();
-        cy.get(feedbackDobIsRequiredSelector).should("be.visible");
-        cy.get(feedbackCollectionDateIsRequiredSelector).should("be.visible");
+
+        cy.get(feedbackPhnMustBeValidSelector).should("be.visible");
     });
 
-    it("Public Covid19 Test - DOB and Collection Date cannot be future dated", () => {
+    it("Validate Date Range for DOB and Collection Date", () => {
         const d = new Date();
         const year = d.getFullYear();
         const monthNumber = d.getMonth(); //Maps to monthNames constant array. Index starts at 0
@@ -125,8 +120,6 @@ describe("Public User - Covid19 Test Result Page", () => {
                 " - Day: " +
                 day
         );
-
-        enterCovidTestPHN(Cypress.env("phn"));
 
         d.setDate(d.getDate() + 1);
         const nextYear = d.getFullYear() === year ? year + 1 : d.getFullYear();
@@ -172,67 +165,68 @@ describe("Public User - Covid19 Test Result Page", () => {
         selectShouldContain(collectionDateDaySelector, day);
     });
 
-    it("Public Covid19 Test - DOB Year and Collection Date not entered via Click Enter", () => {
-        const dobMonth = "June";
-        const dobDay = "15";
+    it("Validate DOB Year Required", () => {
+        selectOption(dobMonthSelector, dummyMonth);
+        selectOption(dobDaySelector, dummyDay);
 
-        enterCovidTestPHN(Cypress.env("phn"));
-        selectOption(dobMonthSelector, dobMonth);
-        selectOption(dobDaySelector, dobDay);
         clickCovidTestEnterButton();
+
         cy.get(feedbackDobIsRequiredSelector).should("be.visible");
+    });
+
+    it("Validate DOB Month Required", () => {
+        selectOption(dobYearSelector, dummyYear);
+        selectOption(dobDaySelector, dummyDay);
+
+        clickCovidTestEnterButton();
+
+        cy.get(feedbackDobIsRequiredSelector).should("be.visible");
+    });
+
+    it("Validate DOB Day Required", () => {
+        selectOption(dobYearSelector, dummyYear);
+        selectOption(dobMonthSelector, dummyMonth);
+
+        clickCovidTestEnterButton();
+
+        cy.get(feedbackDobIsRequiredSelector).should("be.visible");
+    });
+
+    it("Validate Collection Date Year Required", () => {
+        selectOption(collectionDateMonthSelector, dummyMonth);
+        selectOption(collectionDateDaySelector, dummyDay);
+
+        clickCovidTestEnterButton();
+
         cy.get(feedbackCollectionDateIsRequiredSelector).should("be.visible");
     });
 
-    it("Public Covid19 Test - DOB Month and Collection Date not entered via Click Enter", () => {
-        const dobYear = "2021";
-        const dobDay = "15";
+    it("Validate Collection Date Month Required", () => {
+        selectOption(collectionDateYearSelector, dummyYear);
+        selectOption(collectionDateDaySelector, dummyDay);
 
-        enterCovidTestPHN(Cypress.env("phn"));
-        selectOption(dobYearSelector, dobYear);
-        selectOption(dobDaySelector, dobDay);
         clickCovidTestEnterButton();
-        cy.get(feedbackDobIsRequiredSelector).should("be.visible");
+
         cy.get(feedbackCollectionDateIsRequiredSelector).should("be.visible");
     });
 
-    it("Public Covid19 Test - DOB Day and Collection Date not entered via Click Enter", () => {
-        const dobYear = "2021";
-        const dobMonth = "June";
+    it("Validate Collection Date Day Required", () => {
+        selectOption(collectionDateYearSelector, dummyYear);
+        selectOption(collectionDateMonthSelector, dummyMonth);
 
-        enterCovidTestPHN(Cypress.env("phn"));
-        selectOption(dobYearSelector, dobYear);
-        selectOption(dobMonthSelector, dobMonth);
         clickCovidTestEnterButton();
-        cy.get(feedbackDobIsRequiredSelector).should("be.visible");
+
         cy.get(feedbackCollectionDateIsRequiredSelector).should("be.visible");
     });
+});
 
-    it("Public Covid19 Test - Collection Date Month and DOB not entered via Click Enter", () => {
-        const collectionDateYear = "2021";
-        const collectionDateDay = "15";
-
-        enterCovidTestPHN(Cypress.env("phn"));
-        selectOption(collectionDateYearSelector, collectionDateYear);
-        selectOption(collectionDateDaySelector, collectionDateDay);
-        clickCovidTestEnterButton();
-        cy.get(feedbackDobIsRequiredSelector).should("be.visible");
-        cy.get(feedbackCollectionDateIsRequiredSelector).should("be.visible");
+describe("Public COVID-19 Test Results", () => {
+    beforeEach(() => {
+        cy.enableModules([laboratoryModule, publicLaboratoryResultModule]);
+        cy.visit(covidTestUrl);
     });
 
-    it("Public Covid19 Test - Collection Date Day and DOB not entered via Click Enter", () => {
-        const collectionDateYear = "2021";
-        const collectionDateMonth = "June";
-
-        enterCovidTestPHN(Cypress.env("phn"));
-        selectOption(collectionDateYearSelector, collectionDateYear);
-        selectOption(collectionDateMonthSelector, collectionDateMonth);
-        clickCovidTestEnterButton();
-        cy.get(feedbackDobIsRequiredSelector).should("be.visible");
-        cy.get(feedbackCollectionDateIsRequiredSelector).should("be.visible");
-    });
-
-    it("Public Covid19 Test Results - Click another test", () => {
+    it("Successful Response: 1 Result", () => {
         const phn = "9735361219 ";
         const dobYear = "1994";
         const dobMonth = "June";
@@ -241,8 +235,6 @@ describe("Public User - Covid19 Test Result Page", () => {
         const collectionDateMonth = "January";
         const collectionDateDay = "20";
 
-        cy.enableModules(["Laboratory", "PublicLaboratoryResult"]);
-        cy.visit("/covidTest");
         cy.intercept("GET", "**/v1/api/PublicLaboratory/CovidTests", (req) => {
             req.reply({
                 fixture: "LaboratoryService/covidTest.json",
@@ -283,12 +275,9 @@ describe("Public User - Covid19 Test Result Page", () => {
 
         cy.get("[data-testid=btnCheckAnotherTest]").should("be.visible");
         cy.get("[data-testid=btnLogin]").should("be.visible");
-
-        cy.get("[data-testid=btnCheckAnotherTest]").click();
-        cy.get("[data-testid=phnInput]").should("be.visible");
     });
 
-    it("Public Covid19 Test - Empty Results", () => {
+    it("Successful Response: No Results", () => {
         const phn = "9735361219 ";
         const dobYear = "1994";
         const dobMonth = "June";
@@ -319,7 +308,7 @@ describe("Public User - Covid19 Test Result Page", () => {
         cy.get("[data-testid=btnLogin]").should("be.visible");
     });
 
-    it("Public Covid19 Test - Data Mismatch", () => {
+    it("Unsuccessful Response: Data Mismatch", () => {
         const phn = "9735361219 ";
         const dobYear = "1994";
         const dobMonth = "June";
@@ -345,7 +334,7 @@ describe("Public User - Covid19 Test Result Page", () => {
         cy.get("[data-testid=error-text-description]").should("be.visible");
     });
 
-    it("Public Covid19 Test - Invalid", () => {
+    it("Unsuccessful Response: Invalid", () => {
         const phn = "9735361219 ";
         const dobYear = "1994";
         const dobMonth = "June";
@@ -371,7 +360,7 @@ describe("Public User - Covid19 Test Result Page", () => {
         cy.get("[data-testid=error-text-description]").should("be.visible");
     });
 
-    it("Public Covid19 Test - Empty Results and Check another test", () => {
+    it("Check Another Test Button Should Go to Form", () => {
         const phn = "9735361219 ";
         const dobYear = "1994";
         const dobMonth = "June";
