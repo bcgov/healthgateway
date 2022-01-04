@@ -122,7 +122,7 @@ export class RestLaboratoryService implements ILaboratoryService {
             }
             this.http
                 .getWithCors<RequestResult<LaboratoryReport>>(
-                    `${this.baseUri}${this.LABORATORY_BASE_URI}/${hdid}/Report?hdid=${hdid}`
+                    `${this.baseUri}${this.LABORATORY_BASE_URI}/${reportId}/Report?hdid=${hdid}`
                 )
                 .then((requestResult) => {
                     resolve(requestResult);
