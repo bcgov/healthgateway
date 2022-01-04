@@ -115,7 +115,7 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<AuthenticateRapidTestResponse>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticaeRapidTestRequest rapidTestRequest)
+        public async Task<RequestResult<AuthenticateRapidTestResponse>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticateRapidTestRequest rapidTestRequest)
         {
             RequestResult<AuthenticateRapidTestResponse> retVal = new()
             {

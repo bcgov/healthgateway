@@ -29,4 +29,7 @@
   <ItemGroup>
     <None Include="..\..\.editorconfig" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Constants\" />
+  </ItemGroup>
 </Project>

@@ -314,7 +314,7 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<RapidTestResponse>> SubmitRapidTestAsync(string hdid, string bearerToken, AuthenticaeRapidTestRequest rapidTestRequest)
+        public async Task<RequestResult<RapidTestResponse>> SubmitRapidTestAsync(string hdid, string bearerToken, AuthenticateRapidTestRequest rapidTestRequest)
         {
             using (Source.StartActivity("SubmitRapidTestAsync"))
             {

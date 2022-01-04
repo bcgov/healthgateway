@@ -106,7 +106,7 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public Task<RequestResult<RapidTestResponse>> SubmitRapidTestAsync(string hdid, string bearerToken, AuthenticaeRapidTestRequest rapidTestRequest)
+        public Task<RequestResult<RapidTestResponse>> SubmitRapidTestAsync(string hdid, string bearerToken, AuthenticateRapidTestRequest rapidTestRequest)
         {
             throw new NotImplementedException();
         }

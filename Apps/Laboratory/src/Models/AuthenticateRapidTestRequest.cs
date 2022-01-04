@@ -21,7 +21,7 @@ namespace HealthGateway.Laboratory.Models
     /// <summary>
     /// Object that defines the request for submitting a rapid test.
     /// </summary>
-    public class AuthenticaeRapidTestRequest
+    public class AuthenticateRapidTestRequest
     {
         /// <summary>
         /// Gets or sets the id for the lab result.

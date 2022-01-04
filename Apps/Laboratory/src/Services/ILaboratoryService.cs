@@ -52,7 +52,7 @@ namespace HealthGateway.Laboratory.Services
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="rapidTestRequest">The rapid test request model.</param>
         /// <returns>Returns the Rapid Test response.</returns>
-        Task<RequestResult<AuthenticateRapidTestResponse>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticaeRapidTestRequest rapidTestRequest);
+        Task<RequestResult<AuthenticateRapidTestResponse>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticateRapidTestRequest rapidTestRequest);
 
         /// <summary>
         /// Gets a COVID-19 test response for the given patient info.
