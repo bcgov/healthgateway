@@ -314,14 +314,14 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<RapidTestResult>>> SubmitRapidTestAsync(string hdid, string bearerToken, AuthenticaeRapidTestRequest rapidTestRequest)
+        public async Task<RequestResult<RapidTestResponse>> SubmitRapidTestAsync(string hdid, string bearerToken, AuthenticaeRapidTestRequest rapidTestRequest)
         {
             using (Source.StartActivity("SubmitRapidTestAsync"))
             {
                 HttpContext? httpContext = this.httpContextAccessor.HttpContext;
                 string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
 
-                RequestResult<IEnumerable<RapidTestResult>> retVal = new()
+                RequestResult<RapidTestResponse> retVal = new()
                 {
                     ResultStatus = ResultType.Error,
                     PageIndex = 0,
@@ -359,12 +359,12 @@ namespace HealthGateway.Laboratory.Delegates
                     {
                         case HttpStatusCode.OK:
                             this.logger.LogTrace($"Response payload: {payload}");
-                            IEnumerable<RapidTestResult>? phsaResult = JsonSerializer.Deserialize<IEnumerable<RapidTestResult>>(payload);
+                            RapidTestResponse? phsaResult = JsonSerializer.Deserialize<RapidTestResponse>(payload);
                             if (phsaResult != null)
                             {
                                 retVal.ResultStatus = ResultType.Success;
                                 retVal.ResourcePayload = phsaResult;
-                                retVal.TotalResultCount = phsaResult.Count();
+                                retVal.TotalResultCount = phsaResult.RapidTestResults.Count();
                             }
                             else
                             {

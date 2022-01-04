@@ -19,7 +19,7 @@ namespace HealthGateway.Common.Models.PHSA
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The representation of a rapid test record for authenticated access.
+    /// The representation of a rapid test outcome for authenticated access.
     /// </summary>
     public class RapidTestResult
     {

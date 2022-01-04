@@ -13,32 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Laboratory.Models
+namespace HealthGateway.Common.Models.PHSA
 {
-    using System;
+    using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The representation of a rapid test record for authenticated access.
+    /// The representation of a rapid test result for authenticated access.
     /// </summary>
-    public class RapidTestRecord
+    public class RapidTestResponse
     {
         /// <summary>
-        /// Gets or sets the rapid test result of the patient.
+        /// Gets or sets the client PHN.
         /// </summary>
-        [JsonPropertyName("testOutcome")]
-        public string TestResult { get; set; } = string.Empty;
+        [JsonPropertyName("phn")]
+        public string PHN { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the serial number of the rapid test kit.
+        /// Gets or sets the Rapid Test Results.
         /// </summary>
-        [JsonPropertyName("labSerialNumber")]
-        public string SerialNumber { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the date when the rapid test is taken.
-        /// </summary>
-        [JsonPropertyName("dateTestTaken")]
-        public DateTime TestTakenDate { get; set; }
+        [JsonPropertyName("c19RapidTestResults")]
+        public IEnumerable<RapidTestResult> RapidTestResults { get; set; } = new List<RapidTestResult>();
     }
 }

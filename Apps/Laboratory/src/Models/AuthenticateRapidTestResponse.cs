@@ -41,15 +41,15 @@ namespace HealthGateway.Laboratory.Models
         }
 
         /// <summary>
-        /// Gets or sets the PHN the report is for.
+        /// Gets or sets the client PHN.
         /// </summary>
         [JsonPropertyName("phn")]
         public string PHN { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets the COVID-19 rapid tests.
+        /// Gets or sets the rapid tests.
         /// </summary>
         [JsonPropertyName("c19RapidTestResults")]
-        public IList<RapidTestRecord> Records { get; }
+        public IEnumerable<RapidTestRecord> Records { get; set; }
     }
 }

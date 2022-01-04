@@ -31,6 +31,7 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
+    using HealthGateway.Laboratory.Parsers;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -122,12 +123,12 @@ namespace HealthGateway.Laboratory.Services
                 ResourcePayload = new AuthenticateRapidTestResponse(),
             };
 
-            RequestResult<IEnumerable<RapidTestResult>> result = await this.laboratoryDelegate.CreateRapidTestAsync(hdid, bearerToken, rapidTestRequest).ConfigureAwait(true);
-            IEnumerable<RapidTestResult> payload = result.ResourcePayload ?? Enumerable.Empty<RapidTestResult>();
+            RequestResult<RapidTestResponse> result = await this.laboratoryDelegate.SubmitRapidTestAsync(hdid, bearerToken, rapidTestRequest).ConfigureAwait(true);
+            RapidTestResponse payload = result.ResourcePayload ?? new RapidTestResponse();
 
             retVal.ResultStatus = result.ResultStatus;
             retVal.ResultError = result.ResultError;
-            retVal.ResourcePayload = new AuthenticateRapidTestResponse(payload.Select(RapidTestRecord.FromModel).ToList());
+            retVal.ResourcePayload = new AuthenticateRapidTestResponse() { PHN = payload.PHN, Records = AgentParser.FromPHSAModelList(payload.RapidTestResults) };
 
             return retVal;
         }

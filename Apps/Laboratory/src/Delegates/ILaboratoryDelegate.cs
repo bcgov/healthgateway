@@ -57,12 +57,12 @@ namespace HealthGateway.Laboratory.Delegates
         Task<RequestResult<PHSAResult<IEnumerable<CovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate);
 
         /// <summary>
-        /// Post the rapid test for the give patient info.
+        /// Post the rapid test for the given patient info.
         /// </summary>
         /// <param name="hdid">The requested HDID which owns the reportId.</param>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="rapidTestRequest">The rapid test request model.</param>
         /// <returns>Returns the PHSA response for the Rapid Test.</returns>
-        Task<RequestResult<IEnumerable<RapidTestResult>>> SubmitRapidTestAsync(string hdid, string bearerToken, AuthenticaeRapidTestRequest rapidTestRequest);
+        Task<RequestResult<RapidTestResponse>> SubmitRapidTestAsync(string hdid, string bearerToken, AuthenticaeRapidTestRequest rapidTestRequest);
     }
 }

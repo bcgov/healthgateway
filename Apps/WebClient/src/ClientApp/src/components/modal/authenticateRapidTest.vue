@@ -193,9 +193,9 @@ export default class CovidRapidTestComponent extends Vue {
 
 <template>
     <b-modal
-        id="covid-test-kit-modal"
+        id="covidRapidTestModal"
         v-model="isVisible"
-        data-testid="covid-test-kit-modal"
+        data-testid="covidRapidTestModal"
         content-class="mt-5"
         title="Submit Rapid Test Result"
         size="lg"
@@ -205,7 +205,7 @@ export default class CovidRapidTestComponent extends Vue {
     >
         <div v-if="isSuccess">
             <b-alert
-                data-testid="post-Rapid-Test-SuccessBanner"
+                data-testid="postRapidTestSuccessBanner"
                 variant="success"
                 class="mb-3 p-3"
                 show
@@ -218,7 +218,7 @@ export default class CovidRapidTestComponent extends Vue {
         </div>
         <div>
             <b-alert
-                data-testid="post-Rapid-Test-ErrorBanner"
+                data-testid="postRapidTestErrorBanner"
                 variant="danger"
                 dismissible
                 :show="showErrorBanner"
@@ -242,7 +242,7 @@ export default class CovidRapidTestComponent extends Vue {
                     <b-col>
                         <b-form-group label="Name:" label-for="patientName">
                             <strong
-                                ><label data-testid="fullname-label">{{
+                                ><label data-testid="fullnameLabel">{{
                                     fullName
                                 }}</label></strong
                             >
@@ -256,7 +256,7 @@ export default class CovidRapidTestComponent extends Vue {
                             label-for="dateOfBirth"
                         >
                             <strong
-                                ><label data-testid="birthDate-label">{{
+                                ><label data-testid="birthDateLabel">{{
                                     birthDate
                                 }}</label></strong
                             >
@@ -275,7 +275,7 @@ export default class CovidRapidTestComponent extends Vue {
                                 ref="serialNumber"
                                 v-model="rapidTest.labSerialNumber"
                                 class="col-lg-4 col-12 mb-2"
-                                data-testid="serial-number-input"
+                                data-testid="serialNumberInput"
                                 aria-label="Serial Number"
                                 :state="isValid($v.rapidTest.labSerialNumber)"
                                 :disabled="isDisabled()"
@@ -305,7 +305,7 @@ export default class CovidRapidTestComponent extends Vue {
                                 :allow-future="false"
                                 :min-year="2020"
                                 :disabled="isDisabled()"
-                                data-testid="dateOf-rapid-test"
+                                data-testid="dateOfRapidTest"
                                 aria-label="Date of Rapid Test"
                                 @blur="$v.rapidTest.dateTestTaken.$touch()"
                             />
@@ -337,7 +337,7 @@ export default class CovidRapidTestComponent extends Vue {
                                 aria-label="Result"
                                 :options="resultOptions"
                                 :state="isValid($v.rapidTest.positive)"
-                                data-testid="result-selected-option"
+                                data-testid="resultSelectedOption"
                                 :disabled="isDisabled()"
                                 @blur="$v.rapidTest.result.$touch()"
                             >
@@ -359,7 +359,7 @@ export default class CovidRapidTestComponent extends Vue {
                 <div class="mr-2">
                     <hg-button
                         v-if="!isSuccess"
-                        data-testid="rapid-test-cancel-Btn"
+                        data-testid="rapidTestCancelBtn"
                         variant="secondary"
                         @click="hideModal"
                         >Cancel</hg-button
@@ -368,7 +368,7 @@ export default class CovidRapidTestComponent extends Vue {
                 <div>
                     <hg-button
                         v-if="!isSuccess"
-                        data-testid="rapid-test-submit-Btn"
+                        data-testid="rapidTestSubmitBtn"
                         variant="primary"
                         aria-label="Submit"
                         @click="handleSubmit"
