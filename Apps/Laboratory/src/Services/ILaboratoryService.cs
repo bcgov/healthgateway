@@ -46,9 +46,9 @@ namespace HealthGateway.Laboratory.Services
         Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, string bearerToken);
 
         /// <summary>
-        /// Post the rapid test for the give patient info.
+        /// Post the rapid test for the given patient info.
         /// </summary>
-        /// <param name="hdid">The requested HDID which owns the reportId.</param>
+        /// <param name="hdid">The requested HDID which owns the rapid test request.</param>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="rapidTestRequest">The rapid test request model.</param>
         /// <returns>Returns the Rapid Test response.</returns>

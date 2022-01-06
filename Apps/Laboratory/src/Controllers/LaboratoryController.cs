@@ -138,12 +138,12 @@ namespace HealthGateway.Laboratory.Controllers
         /// <summary>
         /// Post a rapid test.
         /// </summary>
-        /// <param name="hdid">The requested HDID which owns the reportId.</param>
+        /// <param name="hdid">The requested HDID which owns the rapid test request.</param>
         /// <param name="rapidTestRequest">The rapid test request model.</param>
         /// <returns>A Rapid Test Result object wrapped in a request result.</returns>
         /// <response code="200">Return the Submission status is completed successfully.</response>
         /// <response code="403">DID Claim is missing or can not resolve PHN.</response>
-        /// <response code="409">Combination of Phn and Serial number is already exists.</response>
+        /// <response code="409">Combination of Phn and Serial number already exists.</response>
         [HttpPost]
         [Route("{hdid}/rapidTest")]
         [Authorize(Policy = LaboratoryPolicy.Write)]

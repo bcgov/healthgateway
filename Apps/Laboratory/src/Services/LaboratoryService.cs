@@ -123,7 +123,7 @@ namespace HealthGateway.Laboratory.Services
                 ResourcePayload = new AuthenticatedRapidTestResponse(),
             };
 
-            RequestResult<RapidTestResponse> result = await this.laboratoryDelegate.SubmitRapidTestAsync(hdid, bearerToken, rapidTestRequest).ConfigureAwait(true);
+            RequestResult<RapidTestResponse> result = await this.laboratoryDelegate.CreateRapidTestAsync(hdid, bearerToken, rapidTestRequest).ConfigureAwait(true);
             RapidTestResponse payload = result.ResourcePayload ?? new RapidTestResponse();
 
             retVal.ResultStatus = result.ResultStatus;

@@ -139,7 +139,7 @@ export default class AuthenticatedRapidTestComponent extends Vue {
         this.isLoading = true;
         SnowPlow.trackEvent({
             action: "submit",
-            text: "Autheticate_Rapid_Test",
+            text: "authenticated_covid_rapid_test",
         });
         this.rapidTest.phn = this.patientData.personalhealthnumber;
         this.laboratoryService
@@ -304,7 +304,7 @@ export default class AuthenticatedRapidTestComponent extends Vue {
                                 :min-year="2020"
                                 :disabled="isDisabled"
                                 data-testid="dateOf-rapid-test"
-                                aria-label="Date of Rapid Test"
+                                aria-label="Date Of Rapid Test"
                                 @blur="$v.rapidTest.dateTestTaken.$touch()"
                             />
                             <b-form-invalid-feedback
@@ -313,7 +313,7 @@ export default class AuthenticatedRapidTestComponent extends Vue {
                                     !$v.rapidTest.dateTestTaken.required
                                 "
                                 aria-label="Invalid Date of Test"
-                                data-testid="feedback-dateof-rapid-isrequired"
+                                data-testid="feedback-dateOf-rapid-isrequired"
                                 force-show
                             >
                                 A valid date of test is required.

@@ -314,20 +314,19 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<RapidTestResponse>> SubmitRapidTestAsync(string hdid, string bearerToken, AuthenticatedRapidTestRequest rapidTestRequest)
+        public async Task<RequestResult<RapidTestResponse>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticatedRapidTestRequest rapidTestRequest)
         {
-            using (Source.StartActivity("SubmitRapidTestAsync"))
-            {
-                HttpContext? httpContext = this.httpContextAccessor.HttpContext;
-                string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+            using Activity? activity = Source.StartActivity("SubmitRapidTestAsync");
+            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
+            string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
 
-                RequestResult<RapidTestResponse> retVal = new()
+            RequestResult<RapidTestResponse> retVal = new()
                 {
                     ResultStatus = ResultType.Error,
                     PageIndex = 0,
                 };
 
-                try
+            try
                 {
                     Dictionary<string, string?> query = new()
                     {
@@ -408,8 +407,7 @@ namespace HealthGateway.Laboratory.Delegates
                     this.logger.LogError($"Unexpected exception in Submitting Rapid Test {e}");
                 }
 
-                return retVal;
-            }
+            return retVal;
         }
     }
 }
