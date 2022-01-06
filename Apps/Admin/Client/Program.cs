@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Client
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Net.Http;
+    using System.Reflection;
     using System.Threading.Tasks;
     using Blazored.LocalStorage;
     using Fluxor;
@@ -73,7 +74,7 @@ namespace HealthGateway.Admin.Client
             }).AddAccountClaimsPrincipalFactory<RolesClaimsPrincipalFactory>();
 
             // Configure State Management
-            var currentAssembly = typeof(Program).Assembly;
+            Assembly currentAssembly = typeof(Program).Assembly;
             builder.Services.AddFluxor(options => options
                                     .ScanAssemblies(currentAssembly)
                                     .UseReduxDevTools(rdt =>
@@ -96,22 +97,22 @@ namespace HealthGateway.Admin.Client
         private static void RegisterRefitClient<T>(WebAssemblyHostBuilder builder, string configKey, bool isAuthorized)
             where T : class
         {
-            string baseAddress = builder.HostEnvironment.BaseAddress;
+            Uri baseAddress = new(builder.HostEnvironment.BaseAddress);
+            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = baseAddress });
 
-            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(baseAddress) });
-
-            string address = builder.Configuration.GetSection("Services").GetValue<string>(configKey, baseAddress);
+            string servicePath = builder.Configuration.GetSection("Services").GetValue<string>(configKey);
+            Uri address = new(baseAddress, servicePath);
 
             if (isAuthorized)
             {
                 builder.Services.AddRefitClient<T>()
-                    .ConfigureHttpClient(c => { c.BaseAddress = new Uri(address); })
-                    .AddHttpMessageHandler(sp => ConfigureAuthorization(sp, address));
+                    .ConfigureHttpClient(c => { c.BaseAddress = address; })
+                    .AddHttpMessageHandler(sp => ConfigureAuthorization(sp, address.AbsoluteUri));
                 return;
             }
 
             builder.Services.AddRefitClient<T>()
-                 .ConfigureHttpClient(c => { c.BaseAddress = new Uri(address); });
+                 .ConfigureHttpClient(c => { c.BaseAddress = address; });
         }
 
         private static DelegatingHandler ConfigureAuthorization(IServiceProvider serviceProvider, string address)
