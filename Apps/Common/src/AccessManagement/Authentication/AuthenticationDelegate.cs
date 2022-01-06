@@ -23,7 +23,8 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Services;
-
+    using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -31,49 +32,105 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     /// </summary>
     public class AuthenticationDelegate : IAuthenticationDelegate
     {
+        private const string AuthConfigSectionName = "AuthCache";
+
         private readonly ILogger<IAuthenticationDelegate> logger;
         private readonly IHttpClientService httpClientService;
+        private readonly IMemoryCache? memoryCache;
+        private readonly int tokenCacheMinutes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticationDelegate"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="httpClientService">The injected http client service.</param>
+        /// <param name="configuration">The injected configuration provider.</param>
+        /// <param name="memoryCache">The injected memory cache provider.</param>
         public AuthenticationDelegate(
             ILogger<IAuthenticationDelegate> logger,
-            IHttpClientService httpClientService)
+            IHttpClientService httpClientService,
+            IConfiguration? configuration,
+            IMemoryCache? memoryCache)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
+            IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
+            this.tokenCacheMinutes = configSection?.GetValue<int>("TokenCacheExpireMinutes", 0) ?? 0;
+            this.memoryCache = memoryCache;
         }
 
         /// <inheritdoc/>
         public JWTModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
             this.logger.LogDebug($"Authenticating Service... {tokenRequest.ClientId}");
-            Task<IAuthModel> authenticating = this.ClientCredentialsGrant(tokenUri, tokenRequest);
-
-            JWTModel jwtModel = (authenticating.Result as JWTModel)!;
+            JWTModel? jwtModel = this.ClientCredentialsGrant(tokenUri, tokenRequest);
             this.logger.LogDebug($"Finished authenticating Service. {tokenRequest.ClientId}");
+            if (jwtModel == null)
+            {
+                this.logger.LogCritical($"Unable to authenticate to as {tokenRequest.Username} to {tokenUri}");
+                throw new InvalidOperationException("Auth failure - JWTModel cannot be null");
+            }
 
             return jwtModel;
         }
 
         /// <inheritdoc/>
-        public JWTModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
+        public JWTModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = false)
         {
-            this.logger.LogDebug($"Authenticating Direct Grant as User: {tokenRequest.Username}");
-            Task<IAuthModel> authenticating = this.ResourceOwnerPasswordGrant(tokenUri, tokenRequest);
-
-            JWTModel jwtModel = (authenticating.Result as JWTModel)!;
-            this.logger.LogDebug($"Finished authenticating User: {tokenRequest.Username}");
-
+            (JWTModel jwtModel, _) = this.AuthenticateUser(tokenUri, tokenRequest, cacheEnabled);
             return jwtModel;
         }
 
-        private async Task<IAuthModel> ClientCredentialsGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
+            /// <inheritdoc/>
+        public (JWTModel JwtModel, bool Cached) AuthenticateUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled)
         {
-            JWTModel authModel = new();
+            string cacheKey = $"{tokenUri}:{tokenRequest.Audience}:{tokenRequest.ClientId}:{tokenRequest.Username}";
+            bool cached = false;
+            this.logger.LogDebug("Attempting to fetch token from cache");
+            JWTModel? jwtModel = null;
+            if (cacheEnabled && this.tokenCacheMinutes > 0)
+            {
+                this.memoryCache.TryGetValue(cacheKey, out jwtModel);
+            }
+
+            if (jwtModel != null)
+            {
+                this.logger.LogDebug("Auth token found in cache");
+                cached = true;
+            }
+            else
+            {
+                this.logger.LogInformation($"JWT Model not found in cache - Authenticating Direct Grant as User: {tokenRequest.Username}");
+                jwtModel = this.ResourceOwnerPasswordGrant(tokenUri, tokenRequest);
+                if (jwtModel != null)
+                {
+                    if (cacheEnabled && this.tokenCacheMinutes > 0)
+                    {
+                        this.logger.LogDebug("Attempting to store Access token in cache");
+                        MemoryCacheEntryOptions cacheEntryOptions = new();
+                        cacheEntryOptions.AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddMinutes(this.tokenCacheMinutes));
+                        this.memoryCache.Set(cacheKey, jwtModel, cacheEntryOptions);
+                    }
+                    else
+                    {
+                        this.logger.LogDebug("Caching is not configured or has been disabled");
+                    }
+                }
+                else
+                {
+                    this.logger.LogCritical($"Unable to authenticate to as {tokenRequest.Username} to {tokenUri}");
+                    throw new InvalidOperationException("Auth failure - JWTModel cannot be null");
+                }
+
+                this.logger.LogInformation($"Finished authenticating User: {tokenRequest.Username}");
+            }
+
+            return (jwtModel, cached);
+        }
+
+        private JWTModel? ClientCredentialsGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
+        {
+            JWTModel? authModel = null;
             try
             {
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -89,9 +146,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 content.Headers.Clear();
                 content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
 
-                using HttpResponseMessage response = await client.PostAsync(tokenUri, content).ConfigureAwait(true);
+                using HttpResponseMessage response = client.PostAsync(tokenUri, content).Result;
 
-                string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                string jwtTokenResponse = response.Content.ReadAsStringAsync().Result;
                 this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
                 response.EnsureSuccessStatusCode();
                 authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse)!;
@@ -104,9 +161,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             return authModel;
         }
 
-        private async Task<IAuthModel> ResourceOwnerPasswordGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
+        private JWTModel? ResourceOwnerPasswordGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
-            JWTModel authModel = new();
+            JWTModel? authModel = null;
             try
             {
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -126,12 +183,14 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 content.Headers.Clear();
                 content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
 
-                using HttpResponseMessage response = await client.PostAsync(tokenUri, content).ConfigureAwait(true);
-
-                string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
-                response.EnsureSuccessStatusCode();
-                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse)!;
+                using (Task<HttpResponseMessage> task = client.PostAsync(tokenUri, content))
+                {
+                        HttpResponseMessage response = task.Result;
+                        string jwtTokenResponse = response.Content.ReadAsStringAsync().Result;
+                        this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
+                        response.EnsureSuccessStatusCode();
+                        authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse);
+                }
             }
             catch (HttpRequestException e)
             {
