@@ -30,8 +30,8 @@ function enterVaccineCardPHN(phn) {
         .type(phn);
 }
 
-function select(selector, value) {
-    cy.get(selector).should("be.visible", "be.enabled").select(value);
+function selectOption(selector, option) {
+    return cy.get(selector).should("be.visible", "be.enabled").select(option);
 }
 
 function clickVaccineCardEnterButton() {
@@ -57,12 +57,12 @@ describe("Public Vaccine Card Result", () => {
 
         enterVaccineCardPHN(phn);
 
-        select(dobYearSelector, dobYear);
-        select(dobMonthSelector, dobMonth);
-        select(dobDaySelector, dobDay);
-        select(dovYearSelector, dovYear);
-        select(dovMonthSelector, dovMonth);
-        select(dovDaySelector, dovDay);
+        selectOption(dobYearSelector, dobYear);
+        selectOption(dobMonthSelector, dobMonth);
+        selectOption(dobDaySelector, dobDay);
+        selectOption(dovYearSelector, dovYear);
+        selectOption(dovMonthSelector, dovMonth);
+        selectOption(dovDaySelector, dovDay);
 
         clickVaccineCardEnterButton();
 
@@ -79,12 +79,12 @@ describe("Public Vaccine Card Result", () => {
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(fullyVaccinatedPhn);
-        select(dobYearSelector, fullyVaccinatedDobYear);
-        select(dobMonthSelector, fullyVaccinatedDobMonth);
-        select(dobDaySelector, fullyVaccinatedDobDay);
-        select(dovYearSelector, fullyVaccinatedDovYear);
-        select(dovMonthSelector, fullyVaccinatedDovMonth);
-        select(dovDaySelector, fullyVaccinatedDovDay);
+        selectOption(dobYearSelector, fullyVaccinatedDobYear);
+        selectOption(dobMonthSelector, fullyVaccinatedDobMonth);
+        selectOption(dobDaySelector, fullyVaccinatedDobDay);
+        selectOption(dovYearSelector, fullyVaccinatedDovYear);
+        selectOption(dovMonthSelector, fullyVaccinatedDovMonth);
+        selectOption(dovDaySelector, fullyVaccinatedDovDay);
 
         clickVaccineCardEnterButton();
 
@@ -106,12 +106,12 @@ describe("Public Vaccine Card Downloads", () => {
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(fullyVaccinatedPhn);
-        select(dobYearSelector, fullyVaccinatedDobYear);
-        select(dobMonthSelector, fullyVaccinatedDobMonth);
-        select(dobDaySelector, fullyVaccinatedDobDay);
-        select(dovYearSelector, fullyVaccinatedDovYear);
-        select(dovMonthSelector, fullyVaccinatedDovMonth);
-        select(dovDaySelector, fullyVaccinatedDovDay);
+        selectOption(dobYearSelector, fullyVaccinatedDobYear);
+        selectOption(dobMonthSelector, fullyVaccinatedDobMonth);
+        selectOption(dobDaySelector, fullyVaccinatedDobDay);
+        selectOption(dovYearSelector, fullyVaccinatedDovYear);
+        selectOption(dovMonthSelector, fullyVaccinatedDovMonth);
+        selectOption(dovDaySelector, fullyVaccinatedDovDay);
 
         clickVaccineCardEnterButton();
     });
