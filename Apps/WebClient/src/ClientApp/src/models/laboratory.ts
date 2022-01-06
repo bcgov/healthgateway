@@ -57,7 +57,7 @@ export interface PublicCovidTestResponseResult {
     records: PublicCovidTestRecord[];
 }
 
-export interface AuthenticateRapidTestRequest {
+export interface AuthenticatedRapidTestRequest {
     // rapid test serial number.
     labSerialNumber: string;
 
@@ -71,9 +71,9 @@ export interface AuthenticateRapidTestRequest {
     dateTestTaken: StringISODate;
 }
 
-export interface AuthenticateRapidTestResponse {
+export interface AuthenticatedRapidTestResponse {
     phn: string;
-    records: AuthenticateRapidTestRequest[];
+    records: AuthenticatedRapidTestRequest[];
 }
 export abstract class LaboratoryUtil {
     public static isTestResultReady(testStatus: string | null): boolean {
@@ -83,9 +83,4 @@ export abstract class LaboratoryUtil {
             return ["Final", "Corrected", "Amended"].includes(testStatus);
         }
     }
-}
-
-export enum RapidTestResult {
-    Positive,
-    Negative,
 }

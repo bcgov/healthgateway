@@ -21,30 +21,30 @@ namespace HealthGateway.Laboratory.Models
     /// <summary>
     /// Represents the result from submitting an authenticated COVID-19 rapid test.
     /// </summary>
-    public class AuthenticateRapidTestResponse
+    public class AuthenticatedRapidTestResponse
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AuthenticateRapidTestResponse"/> class.
+        /// Initializes a new instance of the <see cref="AuthenticatedRapidTestResponse"/> class.
         /// </summary>
-        public AuthenticateRapidTestResponse()
+        public AuthenticatedRapidTestResponse()
         {
             this.Records = new List<RapidTestRecord>();
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AuthenticateRapidTestResponse"/> class.
+        /// Initializes a new instance of the <see cref="AuthenticatedRapidTestResponse"/> class.
         /// </summary>
         /// <param name="records">The list of COVID-19 rapid tests.</param>
-        public AuthenticateRapidTestResponse(IList<RapidTestRecord> records)
+        public AuthenticatedRapidTestResponse(IList<RapidTestRecord> records)
         {
             this.Records = records;
         }
 
         /// <summary>
-        /// Gets or sets the client PHN.
+        /// Gets or sets the client Phn.
         /// </summary>
         [JsonPropertyName("phn")]
-        public string PHN { get; set; } = string.Empty;
+        public string Phn { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the rapid tests.

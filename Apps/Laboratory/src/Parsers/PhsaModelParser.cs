@@ -16,13 +16,14 @@
 namespace HealthGateway.Laboratory.Parsers
 {
     using System.Collections.Generic;
+    using System.Linq;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Models;
 
     /// <summary>
     /// Provides parser methods for converting PHSA model to Rapid Result Response model.
     /// </summary>
-    public static class AgentParser
+    public static class PhsaModelParser
     {
         /// <summary>
         /// Converts a PHSA RapidTestResult to a RapidTestRecord model.
@@ -46,16 +47,12 @@ namespace HealthGateway.Laboratory.Parsers
         /// <returns>A list of Rapid Test Record objects.</returns>
         public static IEnumerable<RapidTestRecord> FromPHSAModelList(IEnumerable<RapidTestResult>? rapidTestResult)
         {
-            List<RapidTestRecord> rapidTestRecords = new();
-            if (rapidTestResult != null)
+            if (rapidTestResult == null)
             {
-                foreach (RapidTestResult rapidTest in rapidTestResult)
-                {
-                    rapidTestRecords.Add(AgentParser.FromPHSAModel(rapidTest));
-                }
+                return Enumerable.Empty<RapidTestRecord>();
             }
 
-            return rapidTestRecords;
+            return rapidTestResult.Select(PhsaModelParser.FromPHSAModel);
         }
     }
 }

@@ -62,7 +62,7 @@ namespace HealthGateway.Laboratory.Delegates
         /// <param name="hdid">The requested HDID which owns the reportId.</param>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="rapidTestRequest">The rapid test request model.</param>
-        /// <returns>Returns the PHSA response for the Rapid Test.</returns>
-        Task<RequestResult<RapidTestResponse>> SubmitRapidTestAsync(string hdid, string bearerToken, AuthenticateRapidTestRequest rapidTestRequest);
+        /// <returns>Returns the Phsa response for the Rapid Test.</returns>
+        Task<RequestResult<RapidTestResponse>> SubmitRapidTestAsync(string hdid, string bearerToken, AuthenticatedRapidTestRequest rapidTestRequest);
     }
 }

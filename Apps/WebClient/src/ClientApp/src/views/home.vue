@@ -7,7 +7,7 @@ import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
-import AuthenticateRapidTestComponent from "@/components/modal/authenticateRapidTest.vue";
+import AuthenticatedRapidTestComponent from "@/components/modal/authenticatedRapidTest.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
@@ -19,14 +19,14 @@ library.add(faSearch, faCheckCircle);
 
 @Component({
     components: {
-        AuthenticateRapidTestComponent,
+        AuthenticatedRapidTestComponent,
         LoadingComponent,
         MessageModalComponent,
     },
 })
 export default class HomeView extends Vue {
-    @Ref("authenticateRapidTestModal")
-    readonly authenticateRapidTestModal!: AuthenticateRapidTestComponent;
+    @Ref("authenticatedRapidTestModal")
+    readonly authenticatedRapidTestModal!: AuthenticatedRapidTestComponent;
 
     @Action("retrieveAuthenticatedVaccineRecord", {
         namespace: "vaccinationStatus",
@@ -130,18 +130,21 @@ export default class HomeView extends Vue {
     }
 
     private get cardColumnSize(): number {
-        return this.showFederalCardButton ? 4 : 6;
+        return this.showFederalCardButton ||
+            this.showAuthenticatedSubmitRapidTest
+            ? 4
+            : 6;
     }
 
     private get loadingStatusMessage(): string {
         return this.vaccineRecordStatusMessage;
     }
 
-    private get showAuthenticateSubmitRapidTest(): boolean {
+    private get showAuthenticatedSubmitRapidTest(): boolean {
         return this.config.modules["AuthenticateSubmitRapidTest"];
     }
-    private showAuthenticateRapidTestModal() {
-        this.authenticateRapidTestModal.showModal();
+    private showAuthenticatedRapidTestModal() {
+        this.authenticatedRapidTestModal.showModal();
     }
 }
 </script>
@@ -276,15 +279,17 @@ export default class HomeView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-        </b-row>
-        <b-row>
-            <b-col cols="12" :lg="cardColumnSize" class="p-3">
+            <b-col
+                v-if="showAuthenticatedSubmitRapidTest"
+                cols="12"
+                :lg="cardColumnSize"
+                class="p-3"
+            >
                 <hg-card-button
-                    v-if="showAuthenticateSubmitRapidTest"
                     title="Submit a COVID Rapid Test Result"
                     data-testid="covid-rapid-test-card-btn"
                     class="col-12"
-                    @click="showAuthenticateRapidTestModal()"
+                    @click="showAuthenticatedRapidTestModal()"
                 >
                     <template #icon>
                         <img
@@ -312,9 +317,9 @@ export default class HomeView extends Vue {
             title="Alert"
             :message="vaccineRecordResultMessage"
         />
-        <AuthenticateRapidTestComponent
-            ref="authenticateRapidTestModal"
-            @show="showAuthenticateRapidTestModal"
+        <AuthenticatedRapidTestComponent
+            ref="authenticatedRapidTestModal"
+            @show="showAuthenticatedRapidTestModal"
         />
     </div>
 </template>

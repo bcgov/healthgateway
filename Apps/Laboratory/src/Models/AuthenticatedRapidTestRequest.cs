@@ -21,19 +21,13 @@ namespace HealthGateway.Laboratory.Models
     /// <summary>
     /// Object that defines the request for submitting a rapid test.
     /// </summary>
-    public class AuthenticateRapidTestRequest
+    public class AuthenticatedRapidTestRequest
     {
         /// <summary>
-        /// Gets or sets the id for the lab result.
-        /// </summary>
-        [JsonPropertyName("id")]
-        public int Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the PHN the report is for.
+        /// Gets or sets the Phn the report is for.
         /// </summary>
         [JsonPropertyName("phn")]
-        public string PHN { get; set; } = string.Empty;
+        public string Phn { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the serial number for rapid test.

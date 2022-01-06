@@ -24,10 +24,10 @@ namespace HealthGateway.Common.Models.PHSA
     public class RapidTestResponse
     {
         /// <summary>
-        /// Gets or sets the client PHN.
+        /// Gets or sets the client Phn.
         /// </summary>
         [JsonPropertyName("phn")]
-        public string PHN { get; set; } = string.Empty;
+        public string Phn { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Rapid Test Results.

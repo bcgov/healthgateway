@@ -115,12 +115,12 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<AuthenticateRapidTestResponse>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticateRapidTestRequest rapidTestRequest)
+        public async Task<RequestResult<AuthenticatedRapidTestResponse>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticatedRapidTestRequest rapidTestRequest)
         {
-            RequestResult<AuthenticateRapidTestResponse> retVal = new()
+            RequestResult<AuthenticatedRapidTestResponse> retVal = new()
             {
                 ResultStatus = ResultType.Error,
-                ResourcePayload = new AuthenticateRapidTestResponse(),
+                ResourcePayload = new AuthenticatedRapidTestResponse(),
             };
 
             RequestResult<RapidTestResponse> result = await this.laboratoryDelegate.SubmitRapidTestAsync(hdid, bearerToken, rapidTestRequest).ConfigureAwait(true);
@@ -128,7 +128,7 @@ namespace HealthGateway.Laboratory.Services
 
             retVal.ResultStatus = result.ResultStatus;
             retVal.ResultError = result.ResultError;
-            retVal.ResourcePayload = new AuthenticateRapidTestResponse() { PHN = payload.PHN, Records = AgentParser.FromPHSAModelList(payload.RapidTestResults) };
+            retVal.ResourcePayload = new AuthenticatedRapidTestResponse() { Phn = payload.Phn, Records = PhsaModelParser.FromPHSAModelList(payload.RapidTestResults) };
 
             return retVal;
         }

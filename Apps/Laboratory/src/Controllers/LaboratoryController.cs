@@ -143,11 +143,11 @@ namespace HealthGateway.Laboratory.Controllers
         /// <returns>A Rapid Test Result object wrapped in a request result.</returns>
         /// <response code="200">Return the Submission status is completed successfully.</response>
         /// <response code="403">DID Claim is missing or can not resolve PHN.</response>
-        /// <response code="409">Combination of PHN and Laboratory Serial number is already exists.</response>
+        /// <response code="409">Combination of Phn and Serial number is already exists.</response>
         [HttpPost]
         [Route("{hdid}/rapidTest")]
         [Authorize(Policy = LaboratoryPolicy.Write)]
-        public async Task<IActionResult> CreateRapidTestAsync(string hdid, [FromBody] AuthenticateRapidTestRequest rapidTestRequest)
+        public async Task<IActionResult> CreateRapidTestAsync(string hdid, [FromBody] AuthenticatedRapidTestRequest rapidTestRequest)
         {
             this.logger.LogDebug($"Post rapid test for hdid {hdid}");
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
@@ -156,7 +156,7 @@ namespace HealthGateway.Laboratory.Controllers
                 string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
                 if (accessToken != null)
                 {
-                    RequestResult<AuthenticateRapidTestResponse> result = await this.service.CreateRapidTestAsync(hdid, accessToken, rapidTestRequest).ConfigureAwait(true);
+                    RequestResult<AuthenticatedRapidTestResponse> result = await this.service.CreateRapidTestAsync(hdid, accessToken, rapidTestRequest).ConfigureAwait(true);
                     this.logger.LogDebug($"Finished submitting a rapid test from controller... {hdid}");
                     return new JsonResult(result);
                 }

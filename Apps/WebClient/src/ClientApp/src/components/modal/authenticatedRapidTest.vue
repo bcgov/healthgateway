@@ -11,7 +11,7 @@ import LoadingComponent from "@/components/loading.vue";
 import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
 import { ResultType } from "@/constants/resulttype";
 import { DateWrapper } from "@/models/dateWrapper";
-import { AuthenticateRapidTestRequest } from "@/models/laboratory";
+import { AuthenticatedRapidTestRequest } from "@/models/laboratory";
 import PatientData from "@/models/patientData";
 import { ResultError } from "@/models/requestResult";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -27,7 +27,7 @@ library.add(faInfoCircle);
         "hg-date-dropdown": HgDateDropdownComponent,
     },
 })
-export default class CovidRapidTestComponent extends Vue {
+export default class AuthenticatedRapidTestComponent extends Vue {
     @Action("getPatientData", { namespace: "user" })
     getPatientData!: () => Promise<void>;
 
@@ -42,7 +42,7 @@ export default class CovidRapidTestComponent extends Vue {
     private logger!: ILogger;
     private laboratoryService!: ILaboratoryService;
 
-    private rapidTest: AuthenticateRapidTestRequest = {
+    private rapidTest: AuthenticatedRapidTestRequest = {
         labSerialNumber: "",
         dateTestTaken: "",
     };
@@ -58,11 +58,10 @@ export default class CovidRapidTestComponent extends Vue {
             SERVICE_IDENTIFIER.LaboratoryService
         );
         this.isLoading = true;
-        Promise.all([this.getPatientData()])
-            .then(() => {
-                this.logger.debug("Patient Data is loaded.");
-            })
+        this.getPatientData()
             .catch((err) => {
+                this.isLoading = false;
+                this.hideModal();
                 this.logger.error(`Error loading patient data: ${err}`);
             })
             .finally(() => {
@@ -80,18 +79,6 @@ export default class CovidRapidTestComponent extends Vue {
         return data === undefined ? "" : data;
     }
 
-    private get fullName(): string {
-        return (
-            this.formatPatientData(this.patientData?.firstname) +
-            " " +
-            this.formatPatientData(this.patientData?.lastname)
-        );
-    }
-
-    private get birthDate(): string {
-        return this.formatDate(this.patientData?.birthdate ?? undefined);
-    }
-
     private clear() {
         this.rapidTest = {
             labSerialNumber: "",
@@ -106,6 +93,11 @@ export default class CovidRapidTestComponent extends Vue {
         this.resetInput();
         this.clear();
         this.errorMessage = "";
+    }
+
+    public hideModal(): void {
+        this.$v.$reset();
+        this.isVisible = false;
     }
 
     private resetInput(): void {
@@ -137,8 +129,7 @@ export default class CovidRapidTestComponent extends Vue {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
         this.$v.$touch();
-        if (this.$v.$invalid) {
-        } else {
+        if (!this.$v.$invalid) {
             this.$v.$reset();
             this.submitRapidTest();
         }
@@ -152,41 +143,48 @@ export default class CovidRapidTestComponent extends Vue {
         });
         this.rapidTest.phn = this.patientData.personalhealthnumber;
         this.laboratoryService
-            .postAutheticateRapidTest(this.patientData.hdid, this.rapidTest)
+            .postAuthenticatedRapidTest(this.patientData.hdid, this.rapidTest)
             .then((result) => {
                 if (result.resultStatus === ResultType.Success) {
                     this.isSuccess = true;
                     this.errorMessage = "";
-                    this.logger.debug(`Rapid Test is submitted." ${result} `);
+                    this.logger.debug(`Rapid Test was submitted." ${result} `);
                 } else {
                     this.isSuccess = false;
                     this.errorMessage = `${result.resultError?.resultMessage}`;
                     this.logger.debug(
-                        `Rapid Test is not submitted." ${result.resultError?.resultMessage} `
+                        `Rapid Test was not submitted." ${result.resultError?.resultMessage} `
                     );
                 }
             })
             .catch((err: ResultError) => {
                 this.isSuccess = false;
-                this.errorMessage = "Error in submitting rapid test";
-                this.logger.error(`Error in submitting rapid test : ${err}`);
+                this.errorMessage = "Errors submitting rapid test";
+                this.logger.error(`Errors submitting rapid test : ${err}`);
             })
             .finally(() => {
                 this.isLoading = false;
             });
     }
 
-    private isDisabled() {
+    private get isDisabled(): boolean {
         return this.isSuccess;
-    }
-
-    public hideModal(): void {
-        this.$v.$reset();
-        this.isVisible = false;
     }
 
     private get showErrorBanner(): boolean {
         return this.errorMessage !== undefined && this.errorMessage.length > 0;
+    }
+
+    private get fullName(): string {
+        return (
+            this.formatPatientData(this.patientData?.firstname) +
+            " " +
+            this.formatPatientData(this.patientData?.lastname)
+        );
+    }
+
+    private get birthDate(): string {
+        return this.formatDate(this.patientData?.birthdate ?? undefined);
     }
 }
 </script>
@@ -195,7 +193,7 @@ export default class CovidRapidTestComponent extends Vue {
     <b-modal
         id="covidRapidTestModal"
         v-model="isVisible"
-        data-testid="covidRapidTestModal"
+        data-testid="covid-rapid-test-modal"
         content-class="mt-5"
         title="Submit Rapid Test Result"
         size="lg"
@@ -205,7 +203,7 @@ export default class CovidRapidTestComponent extends Vue {
     >
         <div v-if="isSuccess">
             <b-alert
-                data-testid="postRapidTestSuccessBanner"
+                data-testid="post-rapid-test-success-banner"
                 variant="success"
                 class="mb-3 p-3"
                 show
@@ -218,7 +216,7 @@ export default class CovidRapidTestComponent extends Vue {
         </div>
         <div>
             <b-alert
-                data-testid="postRapidTestErrorBanner"
+                data-testid="post-rapid-test-error-banner"
                 variant="danger"
                 dismissible
                 :show="showErrorBanner"
@@ -242,7 +240,7 @@ export default class CovidRapidTestComponent extends Vue {
                     <b-col>
                         <b-form-group label="Name:" label-for="patientName">
                             <strong
-                                ><label data-testid="fullnameLabel">{{
+                                ><label data-testid="fullname-label">{{
                                     fullName
                                 }}</label></strong
                             >
@@ -256,7 +254,7 @@ export default class CovidRapidTestComponent extends Vue {
                             label-for="dateOfBirth"
                         >
                             <strong
-                                ><label data-testid="birthDateLabel">{{
+                                ><label data-testid="birthdate-label">{{
                                     birthDate
                                 }}</label></strong
                             >
@@ -275,16 +273,16 @@ export default class CovidRapidTestComponent extends Vue {
                                 ref="serialNumber"
                                 v-model="rapidTest.labSerialNumber"
                                 class="col-lg-4 col-12 mb-2"
-                                data-testid="serialNumberInput"
+                                data-testid="serial-number-input"
                                 aria-label="Serial Number"
                                 :state="isValid($v.rapidTest.labSerialNumber)"
-                                :disabled="isDisabled()"
+                                :disabled="isDisabled"
                                 @blur="$v.rapidTest.labSerialNumber.$touch()"
                             />
                             <b-form-invalid-feedback
                                 :state="isValid($v.rapidTest.labSerialNumber)"
                                 aria-label="Invalid Serial Number"
-                                data-testid="feedbackSerialNumberIsRequired"
+                                data-testid="feedback-serialnumber-isrequired"
                             >
                                 Serial Number is required.
                             </b-form-invalid-feedback>
@@ -304,8 +302,8 @@ export default class CovidRapidTestComponent extends Vue {
                                 :state="isValid($v.rapidTest.dateTestTaken)"
                                 :allow-future="false"
                                 :min-year="2020"
-                                :disabled="isDisabled()"
-                                data-testid="dateOfRapidTest"
+                                :disabled="isDisabled"
+                                data-testid="dateOf-rapid-test"
                                 aria-label="Date of Rapid Test"
                                 @blur="$v.rapidTest.dateTestTaken.$touch()"
                             />
@@ -315,7 +313,7 @@ export default class CovidRapidTestComponent extends Vue {
                                     !$v.rapidTest.dateTestTaken.required
                                 "
                                 aria-label="Invalid Date of Test"
-                                data-testid="feedbackDateOfRapidIsRequired"
+                                data-testid="feedback-dateof-rapid-isrequired"
                                 force-show
                             >
                                 A valid date of test is required.
@@ -337,14 +335,14 @@ export default class CovidRapidTestComponent extends Vue {
                                 aria-label="Result"
                                 :options="resultOptions"
                                 :state="isValid($v.rapidTest.positive)"
-                                data-testid="resultSelectedOption"
-                                :disabled="isDisabled()"
+                                data-testid="result-selected-option"
+                                :disabled="isDisabled"
                                 @blur="$v.rapidTest.result.$touch()"
                             >
                                 <b-form-invalid-feedback
                                     :state="isValid($v.rapidTest.positive)"
                                     aria-label="Invalid Result Option"
-                                    data-testid="feedbackResultOptionIsRequired"
+                                    data-testid="feedback-result-option-isrequired"
                                 >
                                     Please select one.
                                 </b-form-invalid-feedback>
@@ -359,7 +357,7 @@ export default class CovidRapidTestComponent extends Vue {
                 <div class="mr-2">
                     <hg-button
                         v-if="!isSuccess"
-                        data-testid="rapidTestCancelBtn"
+                        data-testid="rapid-test-cancel-btn"
                         variant="secondary"
                         @click="hideModal"
                         >Cancel</hg-button
@@ -368,7 +366,7 @@ export default class CovidRapidTestComponent extends Vue {
                 <div>
                     <hg-button
                         v-if="!isSuccess"
-                        data-testid="rapidTestSubmitBtn"
+                        data-testid="rapid-test-submit-btn"
                         variant="primary"
                         aria-label="Submit"
                         @click="handleSubmit"
@@ -390,10 +388,3 @@ export default class CovidRapidTestComponent extends Vue {
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
     </b-modal>
 </template>
-
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-.infoIcon {
-    color: $aquaBlue;
-}
-</style>

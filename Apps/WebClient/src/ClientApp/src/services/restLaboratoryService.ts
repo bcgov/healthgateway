@@ -5,8 +5,8 @@ import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
 import { ServiceName } from "@/models/errorInterfaces";
 import {
-    AuthenticateRapidTestRequest,
-    AuthenticateRapidTestResponse,
+    AuthenticatedRapidTestRequest,
+    AuthenticatedRapidTestResponse,
     LaboratoryOrder,
     LaboratoryReport,
     PublicCovidTestResponseResult,
@@ -139,10 +139,10 @@ export class RestLaboratoryService implements ILaboratoryService {
         });
     }
 
-    public postAutheticateRapidTest(
+    public postAuthenticatedRapidTest(
         hdid: string,
-        request: AuthenticateRapidTestRequest
-    ): Promise<RequestResult<AuthenticateRapidTestResponse>> {
+        request: AuthenticatedRapidTestRequest
+    ): Promise<RequestResult<AuthenticatedRapidTestResponse>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
                 reject();
@@ -150,7 +150,7 @@ export class RestLaboratoryService implements ILaboratoryService {
             }
 
             this.http
-                .post<RequestResult<AuthenticateRapidTestResponse>>(
+                .post<RequestResult<AuthenticatedRapidTestResponse>>(
                     `${this.baseUri}${this.LABORATORY_BASE_URI}/${hdid}/rapidTest`,
                     request
                 )
