@@ -15,41 +15,41 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Models
 {
-    using System;
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Provides configuration data for the Laboratory Delegate.
+    /// Represents the result from submitting an authenticated COVID-19 rapid test.
     /// </summary>
-    public class LaboratoryConfig
+    public class AuthenticatedRapidTestResponse
     {
         /// <summary>
-        /// Gets or sets the laboratory base endpoint.
+        /// Initializes a new instance of the <see cref="AuthenticatedRapidTestResponse"/> class.
         /// </summary>
-        public Uri BaseUrl { get; set; } = null!;
+        public AuthenticatedRapidTestResponse()
+        {
+            this.Records = new List<RapidTestRecord>();
+        }
 
         /// <summary>
-        /// Gets or sets the lab orders endpoint.
+        /// Initializes a new instance of the <see cref="AuthenticatedRapidTestResponse"/> class.
         /// </summary>
-        public string LabOrdersEndpoint { get; set; } = string.Empty;
+        /// <param name="records">The list of COVID-19 rapid tests.</param>
+        public AuthenticatedRapidTestResponse(IList<RapidTestRecord> records)
+        {
+            this.Records = records;
+        }
 
         /// <summary>
-        /// Gets or sets the public COVID-19 tests endpoint.
+        /// Gets or sets the client Phn.
         /// </summary>
-        public string PublicCovidTestsEndPoint { get; set; } = string.Empty;
+        [JsonPropertyName("phn")]
+        public string Phn { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the authenticated rapid test endpoint.
+        /// Gets or sets the rapid tests.
         /// </summary>
-        public string AuthenticatedRapidTestEndPoint { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the total number of records to retrieve in one call.
-        /// </summary>
-        public string FetchSize { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the default time to wait for a new request.
-        /// </summary>
-        public int BackOffMilliseconds { get; set; }
+        [JsonPropertyName("c19RapidTestResults")]
+        public IEnumerable<RapidTestRecord> Records { get; set; }
     }
 }

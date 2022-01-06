@@ -16,40 +16,35 @@
 namespace HealthGateway.Laboratory.Models
 {
     using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Provides configuration data for the Laboratory Delegate.
+    /// Object that defines the request for submitting a rapid test.
     /// </summary>
-    public class LaboratoryConfig
+    public class AuthenticatedRapidTestRequest
     {
         /// <summary>
-        /// Gets or sets the laboratory base endpoint.
+        /// Gets or sets the Phn the report is for.
         /// </summary>
-        public Uri BaseUrl { get; set; } = null!;
+        [JsonPropertyName("phn")]
+        public string Phn { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the lab orders endpoint.
+        /// Gets or sets the serial number for rapid test.
         /// </summary>
-        public string LabOrdersEndpoint { get; set; } = string.Empty;
+        [JsonPropertyName("labSerialNumber")]
+        public string SerialNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the public COVID-19 tests endpoint.
+        /// Gets or sets a value indicating whether result is positive (true) or negative (false).
         /// </summary>
-        public string PublicCovidTestsEndPoint { get; set; } = string.Empty;
+        [JsonPropertyName("positive")]
+        public bool Result { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets the authenticated rapid test endpoint.
+        /// Gets or sets the date of rapid test.
         /// </summary>
-        public string AuthenticatedRapidTestEndPoint { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the total number of records to retrieve in one call.
-        /// </summary>
-        public string FetchSize { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the default time to wait for a new request.
-        /// </summary>
-        public int BackOffMilliseconds { get; set; }
+        [JsonPropertyName("dateTestTaken")]
+        public DateTime DateTestTaken { get; set; }
     }
 }

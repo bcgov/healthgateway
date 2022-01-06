@@ -18,6 +18,8 @@ import type { Dependent } from "@/models/dependent";
 import Encounter from "@/models/encounter";
 import type ImmunizationResult from "@/models/immunizationResult";
 import {
+    AuthenticatedRapidTestRequest,
+    AuthenticatedRapidTestResponse,
     LaboratoryOrder,
     LaboratoryReport,
     PublicCovidTestResponseResult,
@@ -116,6 +118,10 @@ export interface ILaboratoryService {
         reportId: string,
         hdid: string
     ): Promise<RequestResult<LaboratoryReport>>;
+    postAuthenticatedRapidTest(
+        hdid: string,
+        request: AuthenticatedRapidTestRequest
+    ): Promise<RequestResult<AuthenticatedRapidTestResponse>>;
 }
 
 export interface IConfigService {
