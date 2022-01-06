@@ -343,3 +343,17 @@ export default class HomeView extends Vue {
     color: $hg-state-success;
 }
 </style>
+
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+
+.vld-overlay {
+    .vld-background {
+        opacity: 0.75;
+    }
+
+    .vld-icon {
+        text-align: center;
+    }
+}
+</style>
