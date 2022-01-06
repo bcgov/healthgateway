@@ -33,7 +33,6 @@ namespace HealthGateway.Immunization.Test.Services
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -109,14 +108,13 @@ namespace HealthGateway.Immunization.Test.Services
             mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, isPublicEndpoint)).Returns(Task.FromResult(delegateResult));
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), false)).Returns(jwtModel);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwtModel);
 
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                GetMemoryCache(),
                 this.GetHttpContextAccessor().Object);
 
             if (isPublicEndpoint)
@@ -187,14 +185,13 @@ namespace HealthGateway.Immunization.Test.Services
             mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, isPublicEndpoint)).Returns(Task.FromResult(delegateResult));
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), false)).Returns(jwtModel);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwtModel);
 
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                GetMemoryCache(),
                 this.GetHttpContextAccessor().Object);
 
             if (isPublicEndpoint)
@@ -272,14 +269,13 @@ namespace HealthGateway.Immunization.Test.Services
             mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, isPublicEndpoint)).Returns(Task.FromResult(delegateResult));
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), false)).Returns(jwtModel);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwtModel);
 
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                GetMemoryCache(),
                 this.GetHttpContextAccessor().Object);
 
             if (isPublicEndpoint)
@@ -359,14 +355,13 @@ namespace HealthGateway.Immunization.Test.Services
             mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, isPublicEndpoint)).Returns(Task.FromResult(delegateResult));
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), false)).Returns(jwtModel);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwtModel);
 
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                GetMemoryCache(),
                 this.GetHttpContextAccessor().Object);
 
             if (isPublicEndpoint)
@@ -448,14 +443,13 @@ namespace HealthGateway.Immunization.Test.Services
             mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, isPublicEndpoint)).Returns(Task.FromResult(delegateResult));
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), false)).Returns(jwtModel);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwtModel);
 
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                GetMemoryCache(),
                 this.GetHttpContextAccessor().Object);
 
             if (isPublicEndpoint)
@@ -490,7 +484,6 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                GetMemoryCache(),
                 this.GetHttpContextAccessor().Object);
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -512,7 +505,6 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                GetMemoryCache(),
                 this.GetHttpContextAccessor().Object);
 
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -533,7 +525,6 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                GetMemoryCache(),
                 this.GetHttpContextAccessor().Object);
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -541,15 +532,6 @@ namespace HealthGateway.Immunization.Test.Services
             RequestResult<VaccineStatus> actualResult = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, "yyyyMMddx").ConfigureAwait(true)).Result;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-        }
-
-        private static IMemoryCache? GetMemoryCache()
-        {
-            ServiceCollection services = new();
-            services.AddMemoryCache();
-            ServiceProvider serviceProvider = services.BuildServiceProvider();
-
-            return serviceProvider.GetService<IMemoryCache>();
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

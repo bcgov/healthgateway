@@ -17,6 +17,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Net;
     using System.Net.Http;
     using System.Text.Json;
@@ -42,6 +43,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
         /// AuthenticateAsUser - Happy Path.
         /// </summary>
         [Fact]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public void ShouldAuthenticateAsUser()
         {
             Uri tokenUri = new("http://testsite");
