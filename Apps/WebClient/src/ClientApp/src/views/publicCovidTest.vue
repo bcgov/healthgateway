@@ -474,7 +474,7 @@ export default class PublicCovidTestView extends Vue {
                                 data-testid="error-text-description"
                                 class="pl-4"
                             >
-                                <p :class="haveErrorDetails ? 'mb-1' : 'mb-0'">
+                                <p :class="{ 'mb-0': haveErrorDetails }">
                                     {{
                                         publicCovidTestResponseResultError.description
                                     }}
