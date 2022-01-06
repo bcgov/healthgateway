@@ -104,5 +104,11 @@ namespace HealthGateway.Laboratory.Delegates
         {
             throw new NotImplementedException();
         }
+
+        /// <inheritdoc/>
+        public Task<RequestResult<RapidTestResponse>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticatedRapidTestRequest rapidTestRequest)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -5,6 +5,8 @@ import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
 import { ServiceName } from "@/models/errorInterfaces";
 import {
+    AuthenticatedRapidTestRequest,
+    AuthenticatedRapidTestResponse,
     LaboratoryOrder,
     LaboratoryReport,
     PublicCovidTestResponseResult,
@@ -18,6 +20,7 @@ import {
     ILogger,
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
+
 @injectable()
 export class RestLaboratoryService implements ILaboratoryService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
@@ -130,6 +133,41 @@ export class RestLaboratoryService implements ILaboratoryService {
                         ErrorTranslator.internalNetworkError(
                             err,
                             ServiceName.Laboratory
+                        )
+                    );
+                });
+        });
+    }
+
+    public postAuthenticatedRapidTest(
+        hdid: string,
+        request: AuthenticatedRapidTestRequest
+    ): Promise<RequestResult<AuthenticatedRapidTestResponse>> {
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                reject();
+                return;
+            }
+
+            this.http
+                .post<RequestResult<AuthenticatedRapidTestResponse>>(
+                    `${this.baseUri}${this.LABORATORY_BASE_URI}/${hdid}/rapidTest`,
+                    request
+                )
+                .then((requestResult) => {
+                    resolve(requestResult);
+                    this.logger.debug(
+                        `CreateRapidTest ${requestResult.resultStatus}`
+                    );
+                })
+                .catch((err) => {
+                    this.logger.error(
+                        `Post Autheticate Rapid Test Error: ${err}`
+                    );
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
                         )
                     );
                 });

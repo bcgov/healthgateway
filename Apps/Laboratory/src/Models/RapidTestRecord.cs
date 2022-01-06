@@ -16,40 +16,29 @@
 namespace HealthGateway.Laboratory.Models
 {
     using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Provides configuration data for the Laboratory Delegate.
+    /// The representation of a rapid test record for authenticated access.
     /// </summary>
-    public class LaboratoryConfig
+    public class RapidTestRecord
     {
         /// <summary>
-        /// Gets or sets the laboratory base endpoint.
+        /// Gets or sets the rapid test result of the patient.
         /// </summary>
-        public Uri BaseUrl { get; set; } = null!;
+        [JsonPropertyName("testOutcome")]
+        public string TestResult { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the lab orders endpoint.
+        /// Gets or sets the serial number of the rapid test kit.
         /// </summary>
-        public string LabOrdersEndpoint { get; set; } = string.Empty;
+        [JsonPropertyName("labSerialNumber")]
+        public string SerialNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the public COVID-19 tests endpoint.
+        /// Gets or sets the date when the rapid test is taken.
         /// </summary>
-        public string PublicCovidTestsEndPoint { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the authenticated rapid test endpoint.
-        /// </summary>
-        public string AuthenticatedRapidTestEndPoint { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the total number of records to retrieve in one call.
-        /// </summary>
-        public string FetchSize { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the default time to wait for a new request.
-        /// </summary>
-        public int BackOffMilliseconds { get; set; }
+        [JsonPropertyName("dateTestTaken")]
+        public DateTime TestTakenDate { get; set; }
     }
 }

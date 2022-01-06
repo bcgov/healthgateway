@@ -31,6 +31,7 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
+    using HealthGateway.Laboratory.Parsers;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -111,6 +112,25 @@ namespace HealthGateway.Laboratory.Services
         public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, string bearerToken)
         {
             return await this.laboratoryDelegate.GetLabReport(id, hdid, bearerToken).ConfigureAwait(true);
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<AuthenticatedRapidTestResponse>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticatedRapidTestRequest rapidTestRequest)
+        {
+            RequestResult<AuthenticatedRapidTestResponse> retVal = new()
+            {
+                ResultStatus = ResultType.Error,
+                ResourcePayload = new AuthenticatedRapidTestResponse(),
+            };
+
+            RequestResult<RapidTestResponse> result = await this.laboratoryDelegate.CreateRapidTestAsync(hdid, bearerToken, rapidTestRequest).ConfigureAwait(true);
+            RapidTestResponse payload = result.ResourcePayload ?? new RapidTestResponse();
+
+            retVal.ResultStatus = result.ResultStatus;
+            retVal.ResultError = result.ResultError;
+            retVal.ResourcePayload = new AuthenticatedRapidTestResponse() { Phn = payload.Phn, Records = PhsaModelParser.FromPhsaModelList(payload.RapidTestResults) };
+
+            return retVal;
         }
 
         /// <inheritdoc/>
