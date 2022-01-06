@@ -1,9 +1,12 @@
-@inherits HgComponentBase
+@typeparam TResetAction
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-<MudAlert Variant="@Variant"
-          Severity="@Severity"
-          ShowCloseIcon="@ShowCloseIcon"
-          CloseIconClicked="OnCloseCallback"
-          @attributes="UnmatchedAttributes">
-    @ChildContent
-</MudAlert>
+@if (IsEnabled && !IsHidden)
+{
+    <MudAlert Variant="Variant.Text"
+          Severity="Severity"
+          ShowCloseIcon="true"
+          CloseIconClicked="Close">
+        @ChildContent
+    </MudAlert>
+}

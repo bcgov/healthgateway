@@ -37,16 +37,11 @@ namespace HealthGateway.Admin.Client.Pages
         private IDispatcher Dispatcher { get; set; } = default!;
 
         [Inject]
-        private IActionSubscriber ActionSubscriber { get; set; } = default!;
-
-        [Inject]
         private IState<MessageVerificationState> MessageVerificationState { get; set; } = default!;
 
         private UserQueryType SelectedQueryType { get; set; } = UserQueryType.PHN;
 
         private string QueryParameter { get; set; } = string.Empty;
-
-        private bool IsBannerHidden { get; set; }
 
         private bool MessagingVerificationsLoading => this.MessageVerificationState.Value.IsLoading;
 
@@ -64,36 +59,20 @@ namespace HealthGateway.Admin.Client.Pages
         {
             base.OnInitialized();
             this.ResetState();
-            this.ActionSubscriber.SubscribeToAction<MessageVerificationActions.LoadFailAction>(this, this.HandleLoadFailAction);
         }
 
-        /// <inheritdoc/>
-        protected override void Dispose(bool disposing)
-        {
-            this.ActionSubscriber.UnsubscribeFromAllActions(this);
-            base.Dispose(disposing);
-        }
-
-        private void Search()
-        {
-            // Call Reset State to clear the feedback banner.
-            this.ResetState();
-            this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(this.SelectedQueryType, this.QueryParameter.Trim()));
-        }
-
+        /// <summary>
+        /// Resets the component to its initial state.
+        /// </summary>
         private void ResetState()
         {
             this.Dispatcher.Dispatch(new MessageVerificationActions.ResetStateAction());
         }
 
-        private void HandleLoadFailAction(MessageVerificationActions.LoadFailAction action)
+        private void Search()
         {
-            this.IsBannerHidden = false;
-        }
-
-        private void CloseErrorBanner()
-        {
-            this.IsBannerHidden = true;
+            this.ResetState();
+            this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(this.SelectedQueryType, this.QueryParameter.Trim()));
         }
 
         private sealed record MessagingVerificationRow
