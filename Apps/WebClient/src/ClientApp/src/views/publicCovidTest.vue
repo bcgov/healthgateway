@@ -211,6 +211,13 @@ export default class PublicCovidTestView extends Vue {
         return false;
     }
 
+    private haveErrorDetails(): boolean {
+        if (this.publicCovidTestResponseResultError !== undefined) {
+            return this.publicCovidTestResponseResultError.detail.length > 0;
+        }
+        return false;
+    }
+
     private showLink(link: string, length: number, index: number): boolean {
         if (this.isNotStringEmpty(link)) {
             return this.isLastRow(length, index);
@@ -467,11 +474,16 @@ export default class PublicCovidTestView extends Vue {
                                 data-testid="error-text-description"
                                 class="pl-4"
                             >
-                                {{
-                                    publicCovidTestResponseResultError.description
-                                }}
-                                <br />
-                                {{ publicCovidTestResponseResultError.detail }}
+                                <p :class="haveErrorDetails ? 'mb-1' : 'mb-0'">
+                                    {{
+                                        publicCovidTestResponseResultError.description
+                                    }}
+                                </p>
+                                <div>
+                                    {{
+                                        publicCovidTestResponseResultError.detail
+                                    }}
+                                </div>
                             </div>
                         </b-alert>
                     </div>
