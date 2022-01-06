@@ -112,6 +112,11 @@ export default class PublicCovidTestView extends Vue {
             ?.patientDisplayName;
     }
 
+    private get haveErrorDetails(): boolean {
+        const detail = this.publicCovidTestResponseResultError?.detail;
+        return detail ? true : false;
+    }
+
     private cancel() {
         // Reset store module in case there are errors
         this.resetPublicCovidTestResponseResult();
@@ -467,9 +472,16 @@ export default class PublicCovidTestView extends Vue {
                                 data-testid="error-text-description"
                                 class="pl-4"
                             >
-                                {{
-                                    publicCovidTestResponseResultError.description
-                                }}
+                                <div :class="{ 'mb-3': haveErrorDetails }">
+                                    {{
+                                        publicCovidTestResponseResultError.description
+                                    }}
+                                </div>
+                                <div>
+                                    {{
+                                        publicCovidTestResponseResultError.detail
+                                    }}
+                                </div>
                             </div>
                         </b-alert>
                     </div>

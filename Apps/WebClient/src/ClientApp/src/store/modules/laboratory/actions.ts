@@ -160,7 +160,10 @@ export const actions: LaboratoryActions = {
 
         if (error.actionCode === ActionType.DataMismatch) {
             bannerError.title = "Data Mismatch";
-            bannerError.description = error.resultMessage;
+            bannerError.description =
+                "The information you entered does not match our records. Please try again.";
+            bannerError.detail =
+                "Please note that it can take up to 48 hours from the time of test before a result is available.";
         }
 
         context.commit("setPublicCovidTestResponseResultError", bannerError);
