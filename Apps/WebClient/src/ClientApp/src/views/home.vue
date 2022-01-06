@@ -141,7 +141,7 @@ export default class HomeView extends Vue {
     }
 
     private get showAuthenticatedSubmitRapidTest(): boolean {
-        return this.config.modules["AuthenticateSubmitRapidTest"];
+        return this.config.modules["AuthenticatedSubmitRapidTest"];
     }
     private showAuthenticatedRapidTestModal() {
         this.authenticatedRapidTestModal.showModal();

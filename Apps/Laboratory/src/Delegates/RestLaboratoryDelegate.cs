@@ -342,7 +342,7 @@ namespace HealthGateway.Laboratory.Delegates
                     string json = JsonSerializer.Serialize(rapidTestRequest, serializerOptions);
                     using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
 
-                    string endpointString = $"{this.labConfig.BaseUrl}{this.labConfig.AuthenticateRapidTestEndPoint}";
+                    string endpointString = $"{this.labConfig.BaseUrl}{this.labConfig.AuthenticatedRapidTestEndPoint}";
                     Uri endpoint = new(QueryHelpers.AddQueryString(endpointString, query));
                     using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
 
