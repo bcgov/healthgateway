@@ -470,6 +470,8 @@ export default class PublicCovidTestView extends Vue {
                                 {{
                                     publicCovidTestResponseResultError.description
                                 }}
+                                <br />
+                                {{ publicCovidTestResponseResultError.detail }}
                             </div>
                         </b-alert>
                     </div>
