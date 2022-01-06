@@ -303,8 +303,8 @@ export default class AuthenticatedRapidTestComponent extends Vue {
                                 :allow-future="false"
                                 :min-year="2020"
                                 :disabled="isDisabled"
-                                data-testid="dateOf-rapid-test"
-                                aria-label="Date Of Rapid Test"
+                                data-testid="date-of-rapid-test"
+                                aria-label="Date of Rapid Test"
                                 @blur="$v.rapidTest.dateTestTaken.$touch()"
                             />
                             <b-form-invalid-feedback
@@ -313,7 +313,7 @@ export default class AuthenticatedRapidTestComponent extends Vue {
                                     !$v.rapidTest.dateTestTaken.required
                                 "
                                 aria-label="Invalid Date of Test"
-                                data-testid="feedback-dateOf-rapid-isrequired"
+                                data-testid="feedback-date-of-rapid-isrequired"
                                 force-show
                             >
                                 A valid date of test is required.
