@@ -21,16 +21,16 @@ namespace HealthGateway.Laboratory.Parsers
     using HealthGateway.Laboratory.Models;
 
     /// <summary>
-    /// Provides parser methods for converting PHSA model to Rapid Result Response model.
+    /// Provides parser methods for converting Phsa model to Rapid Result Response model.
     /// </summary>
     public static class PhsaModelParser
     {
         /// <summary>
-        /// Converts a PHSA RapidTestResult to a RapidTestRecord model.
+        /// Converts a Phsa RapidTestResult to a RapidTestRecord model.
         /// </summary>
         /// <param name="model">The result model.</param>
         /// <returns>The record model.</returns>
-        public static RapidTestRecord FromPHSAModel(RapidTestResult model)
+        public static RapidTestRecord FromPhsaModel(RapidTestResult model)
         {
             return new RapidTestRecord()
             {
@@ -41,18 +41,18 @@ namespace HealthGateway.Laboratory.Parsers
         }
 
         /// <summary>
-        /// Creates a List of Rapid Test Record object from a PHSA model.
+        /// Creates a List of Rapid Test Record object from a Phsa model.
         /// </summary>
-        /// <param name="rapidTestResult">The list of PHSA models to convert.</param>
+        /// <param name="rapidTestResult">The list of Phsa models to convert.</param>
         /// <returns>A list of Rapid Test Record objects.</returns>
-        public static IEnumerable<RapidTestRecord> FromPHSAModelList(IEnumerable<RapidTestResult>? rapidTestResult)
+        public static IEnumerable<RapidTestRecord> FromPhsaModelList(IEnumerable<RapidTestResult>? rapidTestResult)
         {
             if (rapidTestResult == null)
             {
                 return Enumerable.Empty<RapidTestRecord>();
             }
 
-            return rapidTestResult.Select(PhsaModelParser.FromPHSAModel);
+            return rapidTestResult.Select(PhsaModelParser.FromPhsaModel);
         }
     }
 }

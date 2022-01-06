@@ -128,7 +128,7 @@ namespace HealthGateway.Laboratory.Services
 
             retVal.ResultStatus = result.ResultStatus;
             retVal.ResultError = result.ResultError;
-            retVal.ResourcePayload = new AuthenticatedRapidTestResponse() { Phn = payload.Phn, Records = PhsaModelParser.FromPHSAModelList(payload.RapidTestResults) };
+            retVal.ResourcePayload = new AuthenticatedRapidTestResponse() { Phn = payload.Phn, Records = PhsaModelParser.FromPhsaModelList(payload.RapidTestResults) };
 
             return retVal;
         }
