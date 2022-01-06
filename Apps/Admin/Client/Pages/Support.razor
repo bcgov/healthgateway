@@ -5,11 +5,12 @@
 <PageTitle>Support</PageTitle>
 <HgPageHeading>Support</HgPageHeading>
 
-<CascadingValue  Value = "@IsBannerVisible">
-    <MudHidden Invert="!HasError"> 
-    <HgBannerFeedback Variant="Variant.Text" Severity="Severity.Error" ShowCloseIcon="true" >@MessageVerificationState?.Value?.ErrorMessage</HgBannerFeedback>
-    </MudHidden>
-</CascadingValue>
+@if (HasError && !IsBannerHidden)
+{
+    <HgBannerFeedback Severity="Severity.Error" ShowCloseIcon="true" OnCloseCallback="@CloseErrorBanner">
+        @MessageVerificationState?.Value?.ErrorMessage
+    </HgBannerFeedback>
+}
 
 <MudForm>
     <MudGrid Spacing="0">
@@ -51,14 +52,4 @@
             <MudTablePager />
         </PagerContent>
     </MudTable>
-}
-
-@code {
-    public bool IsBannerVisible { get; set; }
-
-    protected override void OnInitialized()
-    {
-        ResetState();
-        base.OnInitialized();
-    }
 }

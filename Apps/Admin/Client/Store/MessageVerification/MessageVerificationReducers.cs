@@ -15,9 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
-    using System.Linq;
     using Fluxor;
-    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// The set of reducers for the feature.
@@ -81,10 +79,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         {
             return state with
             {
-                RequestResult = new()
-                {
-                    ResourcePayload = Enumerable.Empty<MessagingVerificationModel>(),
-                },
+                RequestResult = null,
                 IsLoading = false,
                 ErrorMessage = string.Empty,
             };

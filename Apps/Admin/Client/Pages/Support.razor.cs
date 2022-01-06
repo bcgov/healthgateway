@@ -37,11 +37,16 @@ namespace HealthGateway.Admin.Client.Pages
         private IDispatcher Dispatcher { get; set; } = default!;
 
         [Inject]
+        private IActionSubscriber ActionSubscriber { get; set; } = default!;
+
+        [Inject]
         private IState<MessageVerificationState> MessageVerificationState { get; set; } = default!;
 
         private UserQueryType SelectedQueryType { get; set; } = UserQueryType.PHN;
 
         private string QueryParameter { get; set; } = string.Empty;
+
+        private bool IsBannerHidden { get; set; }
 
         private bool MessagingVerificationsLoading => this.MessageVerificationState.Value.IsLoading;
 
@@ -54,20 +59,41 @@ namespace HealthGateway.Admin.Client.Pages
 
         private IEnumerable<MessagingVerificationRow> MessagingVerificationRows => this.MessagingVerifications.Select(v => new MessagingVerificationRow(v));
 
+        /// <inheritdoc/>
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            this.ResetState();
+            this.ActionSubscriber.SubscribeToAction<MessageVerificationActions.LoadFailAction>(this, this.HandleLoadFailAction);
+        }
+
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            this.ActionSubscriber.UnsubscribeFromAllActions(this);
+            base.Dispose(disposing);
+        }
+
         private void Search()
         {
             // Call Reset State to clear the feedback banner.
             this.ResetState();
             this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(this.SelectedQueryType, this.QueryParameter.Trim()));
-            if (this.HasError)
-            {
-                this.IsBannerVisible = true;
-            }
         }
 
         private void ResetState()
         {
             this.Dispatcher.Dispatch(new MessageVerificationActions.ResetStateAction());
+        }
+
+        private void HandleLoadFailAction(MessageVerificationActions.LoadFailAction action)
+        {
+            this.IsBannerHidden = false;
+        }
+
+        private void CloseErrorBanner()
+        {
+            this.IsBannerHidden = true;
         }
 
         private sealed record MessagingVerificationRow

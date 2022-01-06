@@ -27,7 +27,7 @@ namespace HealthGateway.Admin.Client.Components
         /// Gets or sets the MudBlazor variant that should be applied to the component.
         /// </summary>
         [Parameter]
-        public Variant Variant { get; set; } = Variant.Filled;
+        public Variant Variant { get; set; } = Variant.Text;
 
         /// <summary>
         /// Gets or sets the MudBlazor severity type that should be applied to the component.
@@ -42,15 +42,10 @@ namespace HealthGateway.Admin.Client.Components
         [Parameter]
         public bool ShowCloseIcon { get; set; } = true;
 
-        [CascadingParameter]
-        private bool IsBannerVisible { get; set; }
-
-        private void CloseBanner(bool value)
-        {
-            if (value)
-            {
-                this.IsBannerVisible = true;
-            }
-        }
+        /// <summary>
+        /// Gets or sets the callback to be executed when the banner is closed.
+        /// </summary>
+        [Parameter]
+        public EventCallback<MudAlert> OnCloseCallback { get; set; }
     }
 }
