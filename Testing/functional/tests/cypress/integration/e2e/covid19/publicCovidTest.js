@@ -148,7 +148,7 @@ describe("Public COVID-19 Test Results", () => {
             pendingCollectionDateMonth,
             pendingCollectionDateDay
         );
-        checkResult("NotSet", "Pending");
+        checkResult("Not Set", "Pending");
     });
 
     it("Successful Response: Cancelled Result", () => {
@@ -157,7 +157,7 @@ describe("Public COVID-19 Test Results", () => {
             cancelledCollectionDateMonth,
             cancelledCollectionDateDay
         );
-        checkResult("Cancelled", "StatusChange");
+        checkResult("Cancelled", "Cancelled");
     });
 
     it("Successful Response: Multiple Results", () => {
