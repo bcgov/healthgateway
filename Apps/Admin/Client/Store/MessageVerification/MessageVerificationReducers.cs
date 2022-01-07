@@ -47,9 +47,9 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         {
             return state with
             {
-                RequestResult = action.State,
                 IsLoading = false,
-                ErrorMessage = string.Empty,
+                RequestResult = action.State,
+                RequestError = null,
             };
         }
 
@@ -65,7 +65,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
             return state with
             {
                 IsLoading = false,
-                ErrorMessage = action.ErrorMessage,
+                RequestError = action.Error,
             };
         }
 
@@ -79,9 +79,9 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         {
             return state with
             {
-                RequestResult = null,
                 IsLoading = false,
-                ErrorMessage = string.Empty,
+                RequestResult = null,
+                RequestError = null,
             };
         }
     }

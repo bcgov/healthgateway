@@ -47,9 +47,9 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         {
             return state with
             {
-                Configuration = action.State,
                 IsLoading = false,
-                ErrorMessage = string.Empty,
+                Configuration = action.State,
+                RequestError = null,
             };
         }
 
@@ -65,7 +65,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
             return state with
             {
                 IsLoading = false,
-                ErrorMessage = action.ErrorMessage,
+                RequestError = action.Error,
             };
         }
     }

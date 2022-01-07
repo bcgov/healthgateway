@@ -8,7 +8,7 @@
 <HgPageHeading>Support</HgPageHeading>
 
 <HgBannerFeedback Severity="Severity.Error" IsEnabled="HasError" TResetAction="MessageVerificationActions.ResetStateAction">
-    @MessageVerificationState?.Value?.ErrorMessage
+    @MessageVerificationState.Value.RequestError?.Message
 </HgBannerFeedback>
 
 <MudForm>

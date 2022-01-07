@@ -17,7 +17,7 @@
 namespace HealthGateway.Admin.Client.Store
 {
     /// <summary>
-    /// The base load success action.
+    /// The base class for a successful load action.
     /// </summary>
     /// <typeparam name="TCollection">generic state class.</typeparam>
     public abstract class BaseLoadSuccessAction<TCollection>

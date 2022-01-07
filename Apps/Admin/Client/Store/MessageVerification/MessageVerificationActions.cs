@@ -56,14 +56,14 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <summary>
         /// The action representing a failed load.
         /// </summary>
-        public class LoadFailAction : BaseFailAction
+        public class LoadFailAction : BaseLoadFailAction
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="LoadFailAction"/> class.
             /// </summary>
-            /// <param name="errorMessage">The error.</param>
-            public LoadFailAction(string errorMessage)
-                : base(errorMessage)
+            /// <param name="error">The request error.</param>
+            public LoadFailAction(RequestError error)
+                : base(error)
             {
             }
         }
