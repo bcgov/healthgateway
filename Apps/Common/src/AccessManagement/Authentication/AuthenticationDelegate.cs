@@ -81,7 +81,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             return jwtModel;
         }
 
-            /// <inheritdoc/>
+        /// <inheritdoc/>
         public (JWTModel JwtModel, bool Cached) AuthenticateUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled)
         {
             string cacheKey = $"{tokenUri}:{tokenRequest.Audience}:{tokenRequest.ClientId}:{tokenRequest.Username}";
@@ -185,11 +185,11 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 
                 using (Task<HttpResponseMessage> task = client.PostAsync(tokenUri, content))
                 {
-                        HttpResponseMessage response = task.Result;
-                        string jwtTokenResponse = response.Content.ReadAsStringAsync().Result;
-                        this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
-                        response.EnsureSuccessStatusCode();
-                        authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse);
+                    HttpResponseMessage response = task.Result;
+                    string jwtTokenResponse = response.Content.ReadAsStringAsync().Result;
+                    this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
+                    response.EnsureSuccessStatusCode();
+                    authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse);
                 }
             }
             catch (HttpRequestException e)
