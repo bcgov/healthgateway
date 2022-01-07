@@ -145,6 +145,7 @@ namespace HealthGateway.Laboratory.Controllers
         /// <response code="403">DID Claim is missing or can not resolve PHN.</response>
         /// <response code="409">Combination of Phn and Serial number already exists.</response>
         [HttpPost]
+        [Produces("application/json")]
         [Route("{hdid}/rapidTest")]
         [Authorize(Policy = LaboratoryPolicy.Write)]
         public async Task<RequestResult<AuthenticatedRapidTestResponse>> CreateRapidTestAsync(string hdid, [FromBody] AuthenticatedRapidTestRequest rapidTestRequest)
