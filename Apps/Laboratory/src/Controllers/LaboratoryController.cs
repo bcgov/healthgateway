@@ -147,8 +147,9 @@ namespace HealthGateway.Laboratory.Controllers
         [HttpPost]
         [Route("{hdid}/rapidTest")]
         [Authorize(Policy = LaboratoryPolicy.Write)]
-        public async Task<IActionResult> CreateRapidTestAsync(string hdid, [FromBody] AuthenticatedRapidTestRequest rapidTestRequest)
+        public async Task<RequestResult<AuthenticatedRapidTestResponse>> CreateRapidTestAsync(string hdid, [FromBody] AuthenticatedRapidTestRequest rapidTestRequest)
         {
+            RequestResult<AuthenticatedRapidTestResponse> result = new();
             this.logger.LogDebug($"Post rapid test for hdid {hdid}");
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
@@ -156,13 +157,13 @@ namespace HealthGateway.Laboratory.Controllers
                 string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
                 if (accessToken != null)
                 {
-                    RequestResult<AuthenticatedRapidTestResponse> result = await this.service.CreateRapidTestAsync(hdid, accessToken, rapidTestRequest).ConfigureAwait(true);
+                    result = await this.service.CreateRapidTestAsync(hdid, accessToken, rapidTestRequest).ConfigureAwait(true);
                     this.logger.LogDebug($"Finished submitting a rapid test from controller... {hdid}");
-                    return new JsonResult(result);
+                    return result;
                 }
             }
 
-            return this.Unauthorized();
+            return result;
         }
     }
 }

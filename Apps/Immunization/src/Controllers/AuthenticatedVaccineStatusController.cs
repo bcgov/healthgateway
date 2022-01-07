@@ -65,13 +65,13 @@ namespace HealthGateway.Immunization.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Authorize(Policy = ImmunizationPolicy.Read)]
-        public async Task<IActionResult> GetVaccineStatus([FromQuery] string hdid)
+        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus([FromQuery] string hdid)
         {
             this.logger.LogDebug($"Getting vaccine status for HDID {hdid}");
             RequestResult<VaccineStatus> result = await this.vaccineStatusService.GetAuthenticatedVaccineStatus(hdid).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting vaccine status for HDID {hdid}");
 
-            return new JsonResult(result);
+            return result;
         }
 
         /// <summary>
@@ -87,13 +87,13 @@ namespace HealthGateway.Immunization.Controllers
         [Produces("application/json")]
         [Route("pdf")]
         [Authorize(Policy = ImmunizationPolicy.Read)]
-        public async Task<IActionResult> GetVaccineProof([FromQuery] string hdid)
+        public async Task<RequestResult<VaccineProofDocument>> GetVaccineProof([FromQuery] string hdid)
         {
             this.logger.LogDebug($"Getting  Vaccine Proof for HDID {hdid}");
             RequestResult<VaccineProofDocument> result = await this.vaccineStatusService.GetAuthenticatedVaccineProof(hdid).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting Vaccine Proof for HDID {hdid}");
 
-            return new JsonResult(result);
+            return result;
         }
     }
 }
