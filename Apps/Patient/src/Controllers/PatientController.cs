@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,7 +58,7 @@ namespace HealthGateway.Patient.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = PatientPolicy.Read)]
-        public async Task<IActionResult> GetPatient(string hdid)
+        public async Task<RequestResult<Models.PatientModel>> GetPatient(string hdid)
         {
             RequestResult<Common.Models.PatientModel> patientResult = await this.service.GetPatient(hdid).ConfigureAwait(true);
             RequestResult<Models.PatientModel> result = new()
@@ -71,7 +71,7 @@ namespace HealthGateway.Patient.Controllers
                 TotalResultCount = patientResult.TotalResultCount,
             };
 
-            return new JsonResult(result);
+            return result;
         }
     }
 }
