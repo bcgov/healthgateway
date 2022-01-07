@@ -654,7 +654,7 @@ export default class PublicCovidTestView extends Vue {
                         placement="topright"
                     >
                         Your information is being collected to provide you with
-                        your COVID-19 vaccination status under s. 26(c) of the
+                        your COVID-19 test result under s. 26(c) of the
                         <em
                             >Freedom of Information and Protection of Privacy
                             Act</em
