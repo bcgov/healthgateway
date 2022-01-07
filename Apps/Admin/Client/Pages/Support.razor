@@ -2,8 +2,14 @@
 @attribute [Authorize(Roles = Roles.Admin)]
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
+@using HealthGateway.Admin.Client.Store.MessageVerification
+
 <PageTitle>Support</PageTitle>
 <HgPageHeading>Support</HgPageHeading>
+
+<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasError" TResetAction="MessageVerificationActions.ResetStateAction">
+    @MessageVerificationState.Value.RequestError?.Message
+</HgBannerFeedback>
 
 <MudForm>
     <MudGrid Spacing="0">

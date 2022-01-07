@@ -47,9 +47,9 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         {
             return state with
             {
-                RequestResult = action.State,
                 IsLoading = false,
-                ErrorMessage = string.Empty,
+                RequestResult = action.State,
+                RequestError = null,
             };
         }
 
@@ -65,7 +65,23 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
             return state with
             {
                 IsLoading = false,
-                ErrorMessage = action.ErrorMessage,
+                RequestError = action.Error,
+            };
+        }
+
+        /// <summary>
+        /// The Reducer for the reset state action.
+        /// </summary>
+        /// <param name="state">The message verification state.</param>
+        /// <returns>The empty state.</returns>
+        [ReducerMethod(typeof(MessageVerificationActions.ResetStateAction))]
+        public static MessageVerificationState ReduceResetStateAction(MessageVerificationState state)
+        {
+            return state with
+            {
+                IsLoading = false,
+                RequestResult = null,
+                RequestError = null,
             };
         }
     }

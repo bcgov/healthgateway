@@ -47,13 +47,31 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool MessagingVerificationsLoaded => this.MessageVerificationState.Value.Loaded;
 
+        private bool HasError => this.MessageVerificationState.Value.RequestError != null && this.MessageVerificationState.Value.RequestError.Message.Length > 0;
+
         private IEnumerable<MessagingVerificationModel> MessagingVerifications =>
             this.MessageVerificationState.Value.RequestResult?.ResourcePayload ?? Enumerable.Empty<MessagingVerificationModel>();
 
         private IEnumerable<MessagingVerificationRow> MessagingVerificationRows => this.MessagingVerifications.Select(v => new MessagingVerificationRow(v));
 
+        /// <inheritdoc/>
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            this.ResetState();
+        }
+
+        /// <summary>
+        /// Resets the component to its initial state.
+        /// </summary>
+        private void ResetState()
+        {
+            this.Dispatcher.Dispatch(new MessageVerificationActions.ResetStateAction());
+        }
+
         private void Search()
         {
+            this.ResetState();
             this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(this.SelectedQueryType, this.QueryParameter.Trim()));
         }
 

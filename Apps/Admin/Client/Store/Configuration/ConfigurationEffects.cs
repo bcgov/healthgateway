@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
     using System.Threading.Tasks;
     using Fluxor;
     using HealthGateway.Admin.Client.Services;
+    using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Models;
     using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.Logging;
@@ -53,18 +54,19 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         [EffectMethod(typeof(ConfigurationActions.LoadAction))]
         public async Task HandleLoadAction(IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Loading External Configuration");
+            this.Logger.LogInformation("Loading external configuration");
+
             ApiResponse<ExternalConfiguration> response = await this.ConfigApi.GetConfiguration().ConfigureAwait(true);
             if (response.IsSuccessStatusCode && response.Content != null)
             {
-                this.Logger.LogInformation("External Configuration loaded successfully!");
+                this.Logger.LogInformation("External configuration loaded successfully!");
                 dispatcher.Dispatch(new ConfigurationActions.LoadSuccessAction(response.Content));
+                return;
             }
-            else
-            {
-                this.Logger.LogError($"Error loading External Configuration, reason: {response.Error?.Message}");
-                dispatcher.Dispatch(new ConfigurationActions.LoadFailAction(response.Error?.Message));
-            }
+
+            RequestError error = StoreUtility.FormatRequestError(response.Error, null);
+            this.Logger.LogError($"Error loading external configuration, reason: {error.Message}");
+            dispatcher.Dispatch(new ConfigurationActions.LoadFailAction(error));
         }
     }
 }

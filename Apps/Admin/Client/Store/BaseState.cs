@@ -26,8 +26,8 @@ namespace HealthGateway.Admin.Client.Store
         public bool IsLoading { get; init; }
 
         /// <summary>
-        /// Gets the error message if available.
+        /// Gets the request error if available.
         /// </summary>
-        public string? ErrorMessage { get; init; }
+        public RequestError? RequestError { get; init; }
     }
 }
