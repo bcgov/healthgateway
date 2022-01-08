@@ -76,7 +76,8 @@ namespace Healthgateway.JobScheduler.Jobs
                 this.logger.LogDebug($"Sending Email...");
                 using SmtpClient smtpClient = new();
                 smtpClient.Connect(this.host, this.port, SecureSocketOptions.None);
-                smtpClient.Send(this.PrepareMessage(clientFeedback.Email, feedback));
+                using MimeMessage message = this.PrepareMessage(clientFeedback.Email, feedback);
+                smtpClient.Send(message);
                 smtpClient.Disconnect(true);
                 this.logger.LogDebug($"Finished Sending Email...");
             }
