@@ -122,6 +122,14 @@ namespace HealthGateway.Common.ErrorHandling
         }
 
         /// <summary>
+        /// Gets the Keycloak service code.
+        /// </summary>
+        public static ServiceType Keycloak
+        {
+            get { return new ServiceType("KEYCLOAK"); }
+        }
+
+        /// <summary>
         /// Gets or sets the Value that holds the internal representation of the ServiceType.
         /// </summary>
         public string Value { get; set; }

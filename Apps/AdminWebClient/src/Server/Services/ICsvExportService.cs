@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Services
 {
     using System;
     using System.IO;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Service that provides functionality to export data in CSV format.
@@ -54,5 +55,12 @@ namespace HealthGateway.Admin.Services
         /// <param name="endDate">Optional end date to include in the query.</param>
         /// <returns>returns a stream representing a CSV of the Ratings.</returns>
         Stream GetRatings(DateTime? startDate, DateTime? endDate);
+
+        /// <summary>
+        /// Retrieves a stream of inactive users in CSV format exclusive of the days inactive.
+        /// </summary>
+        /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
+        /// <returns>returns a stream representing a CSV of inactive users.</returns>
+        Task<Stream> GetInactiveUsers(int inactiveDays);
     }
 }
