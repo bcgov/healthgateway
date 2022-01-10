@@ -36,7 +36,7 @@
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@mdi/font": "^5.9.55",
     "@types/luxon": "^1.27.0",
-    "@types/node": "^16.11.19",
+    "@types/node": "^17.0.8",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
     "@vue/cli-plugin-eslint": "^4.5.15",
