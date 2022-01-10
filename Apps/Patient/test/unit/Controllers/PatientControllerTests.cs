@@ -79,10 +79,9 @@ namespace HealthGateway.Patient.Test.Controllers
             patientService.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.HDID, false)).ReturnsAsync(mockResult);
 
             PatientController patientController = new(patientService.Object);
-            Task<IActionResult> actualResult = patientController.GetPatient("123");
+            RequestResult<Models.PatientModel> actualResult = patientController.GetPatient("123").Result;
 
-            Assert.IsType<JsonResult>(actualResult.Result);
-            expectedResult.ShouldDeepEqual(((JsonResult)actualResult.Result).Value);
+            expectedResult.ShouldDeepEqual(actualResult);
         }
     }
 }
