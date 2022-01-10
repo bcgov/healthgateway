@@ -15,8 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Pages
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Store.MessageVerification;
@@ -25,6 +27,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
+    using MudBlazor;
 
     /// <summary>
     /// Backing logic for the Support page.
@@ -43,6 +46,8 @@ namespace HealthGateway.Admin.Client.Pages
 
         private string QueryParameter { get; set; } = string.Empty;
 
+        private MudForm Form { get; set; } = default!;
+
         private bool MessagingVerificationsLoading => this.MessageVerificationState.Value.IsLoading;
 
         private bool MessagingVerificationsLoaded => this.MessageVerificationState.Value.Loaded;
@@ -53,6 +58,21 @@ namespace HealthGateway.Admin.Client.Pages
             this.MessageVerificationState.Value.RequestResult?.ResourcePayload ?? Enumerable.Empty<MessagingVerificationModel>();
 
         private IEnumerable<MessagingVerificationRow> MessagingVerificationRows => this.MessagingVerifications.Select(v => new MessagingVerificationRow(v));
+
+        private Func<string, string?> ValidateQueryParameter => (parameter) =>
+        {
+            if (string.IsNullOrWhiteSpace(parameter))
+            {
+                return "Search parameter is required";
+            }
+
+            if (this.SelectedQueryType == UserQueryType.PHN && !PhnValidator.IsValid(StringManipulator.StripWhitespace(parameter)))
+            {
+                return "Invalid PHN";
+            }
+
+            return null;
+        };
 
         /// <inheritdoc/>
         protected override void OnInitialized()
@@ -69,10 +89,14 @@ namespace HealthGateway.Admin.Client.Pages
             this.Dispatcher.Dispatch(new MessageVerificationActions.ResetStateAction());
         }
 
-        private void Search()
+        private async Task SearchAsync()
         {
-            this.ResetState();
-            this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(this.SelectedQueryType, this.QueryParameter.Trim()));
+            await this.Form.Validate().ConfigureAwait(true);
+            if (this.Form.IsValid)
+            {
+                this.ResetState();
+                this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(this.SelectedQueryType, StringManipulator.StripWhitespace(this.QueryParameter)));
+            }
         }
 
         private sealed record MessagingVerificationRow

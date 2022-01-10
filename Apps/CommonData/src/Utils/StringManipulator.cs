@@ -23,6 +23,9 @@ namespace HealthGateway.Common.Data.Utils
     /// </summary>
     public static class StringManipulator
     {
+        private static readonly Regex PlaceholderRegex = new("\\$\\{(.*?)\\}");
+        private static readonly Regex WhitespaceRegex = new(@"\s");
+
         /// <summary>
         /// Replaces any occurences of ${key} in the string with the value.
         /// </summary>
@@ -54,12 +57,27 @@ namespace HealthGateway.Common.Data.Utils
                 // The regex will find all instances of ${ANYTHING} and will evaluate if the keys between
                 // the mustaches match one of those in the dictionary.  If so it then replaces the match
                 // with the value in the dictionary.
-                retVal = Regex.Replace(inStr, "\\$\\{(.*?)\\}", m =>
+                retVal = PlaceholderRegex.Replace(inStr, m =>
                    (m.Groups.Count > 1 && data.ContainsKey(m.Groups[1].Value)) ?
                    data[m.Groups[1].Value] : m.Value);
             }
 
             return retVal;
+        }
+
+        /// <summary>
+        /// Removes any whitespace from the provided string.
+        /// </summary>
+        /// <param name="target">A string that may contain whitespace.</param>
+        /// <returns>The string with whitespace removed.</returns>
+        public static string? StripWhitespace(string? target)
+        {
+            if (target is null)
+            {
+                return target;
+            }
+
+            return WhitespaceRegex.Replace(target, string.Empty);
         }
     }
 }
