@@ -16,7 +16,7 @@
 namespace HealthGateway.Common.Models
 {
     using System.Collections.Generic;
-    using HealthGateway.Common.Utils;
+    using HealthGateway.Common.Data.Utils;
 
     /// <summary>
     /// Defines the BC Mail Plus Configuration model.
