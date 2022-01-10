@@ -11,10 +11,10 @@
     @MessageVerificationState.Value.RequestError?.Message
 </HgBannerFeedback>
 
-<MudForm>
+<MudForm @ref="Form">
     <MudGrid Spacing="0">
         <MudItem xs="12" sm="3">
-            <HgSelect T="UserQueryType" Label="Query Type" @bind-Value="SelectedQueryType">
+            <HgSelect T="UserQueryType" Label="Query Type" Required="@true" @bind-Value="SelectedQueryType">
                 @foreach (UserQueryType queryType in QueryTypes)
                 {
                     <MudSelectItem Value="@queryType" />
@@ -22,10 +22,10 @@
             </HgSelect>
         </MudItem>
         <MudItem xs="12" sm="9">
-            <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@SelectedQueryType.ToString()" @bind-Value="QueryParameter" />
+            <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@SelectedQueryType.ToString()" Required="@true" Validation="@ValidateQueryParameter" @bind-Value="QueryParameter" />
         </MudItem>
         <MudItem Class="d-flex justify-end" xs="12">
-            <HgButton TopMargin="Breakpoint.Always" EndIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="Color.Primary" @onclick="Search">Search</HgButton>
+            <HgButton TopMargin="Breakpoint.Always" EndIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="Color.Primary" @onclick="SearchAsync">Search</HgButton>
         </MudItem>
     </MudGrid>
 </MudForm>
