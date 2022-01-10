@@ -15,11 +15,11 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.AdminWebClient
 {
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Services;
+    using HealthGateway.Common.AccessManagement.Administration;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.Delegates;
@@ -110,6 +110,8 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
             services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
+            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+            services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
 
             // Configure SPA
             services.AddControllersWithViews();

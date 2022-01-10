@@ -24,6 +24,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using System.Collections.Generic;
+using System;
 
 /// <inheritdoc />
 [ExcludeFromCodeCoverage]
@@ -48,7 +50,7 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
     /// <inheritdoc />
     public DBResult<AdminUserProfile> GetAdminUserProfile(string username)
     {
-        this.logger.LogTrace("Getting admin user profile from DB with Userame: {Username}", username);
+        this.logger.LogTrace("Getting admin user profile from DB with Username: {Username}", username);
         DBResult<AdminUserProfile> result = new DBResult<AdminUserProfile>();
         AdminUserProfile? profile = this.dbContext.AdminUserProfile.SingleOrDefault(profile => profile.Username == username);
 
@@ -64,6 +66,24 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
         }
 
         this.logger.LogTrace("Finished getting admin user profile from DB... {Result}", JsonSerializer.Serialize(result));
+        return result;
+    }
+
+    /// <inheritdoc />
+    public DBResult<IEnumerable<AdminUserProfile>> GetInactiveAdminUserProfiles(int inactiveDays)
+    {
+        this.logger.LogTrace("Retrieving all the inactive admin user profiles for the past {InactiveDays} day(s)...", inactiveDays);
+
+        DBResult<IEnumerable<AdminUserProfile>> result = new DBResult<IEnumerable<AdminUserProfile>>()
+        {
+            Payload = this.dbContext.AdminUserProfile
+                .Where(profile => profile.LastLoginDateTime.Date <= DateTime.UtcNow.AddDays(-inactiveDays).Date)
+                .OrderByDescending(profile => profile.LastLoginDateTime)
+                .ToList(),
+            Status = DBStatusCode.Read,
+        };
+
+        this.logger.LogTrace("Finished retrieving {Count} inactive admin user profiles for the past {InactiveDays} day(s)...", result.Payload!.Count(), inactiveDays);
         return result;
     }
 

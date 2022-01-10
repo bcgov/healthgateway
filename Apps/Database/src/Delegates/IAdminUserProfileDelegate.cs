@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates;
 
+using System;
+using System.Collections.Generic;
 using HealthGateway.Database.Models;
 using HealthGateway.Database.Wrapper;
 
@@ -29,6 +31,13 @@ public interface IAdminUserProfileDelegate
     /// <param name="username">The unique username key to find.</param>
     /// <returns>A DB result which encapsulates the return object and status.</returns>
     DBResult<AdminUserProfile> GetAdminUserProfile(string username);
+
+    /// <summary>
+    /// Returns Inactive AdminUserProfile objects from the database.
+    /// </summary>
+    /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
+    /// <returns>An IEnumerable of AdminUserProfile objects wrapped in a DBResult.</returns>
+    DBResult<IEnumerable<AdminUserProfile>> GetInactiveAdminUserProfiles(int inactiveDays);
 
     /// <summary>
     /// Creates an AdminUserProfile object in the database.

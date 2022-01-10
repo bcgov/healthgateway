@@ -37,6 +37,15 @@ using Xunit;
 public class AuthenticationServiceTests
 {
     private readonly string accessToken = "ACCESS-TOKEN";
+    private readonly IConfiguration configuration;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AuthenticationServiceTests"/> class.
+    /// </summary>
+    public AuthenticationServiceTests()
+    {
+        this.configuration = GetIConfigurationRoot();
+    }
 
     /// <summary>
     /// Add last login date time when admin user profile record does not exist in DB.
@@ -67,7 +76,7 @@ public class AuthenticationServiceTests
         Admin.Services.IAuthenticationService service = new Admin.Services.AuthenticationService(
             new Mock<ILogger<Admin.Services.AuthenticationService>>().Object,
             this.GetHttpContextAccessor().Object,
-            GetConfiguration().Object,
+            this.configuration,
             profileDelegateMock.Object);
 
         // Act
@@ -110,7 +119,7 @@ public class AuthenticationServiceTests
         Admin.Services.IAuthenticationService service = new Admin.Services.AuthenticationService(
             new Mock<ILogger<Admin.Services.AuthenticationService>>().Object,
             this.GetHttpContextAccessor().Object,
-            GetConfiguration().Object,
+            this.configuration,
             profileDelegateMock.Object);
 
         // Act
@@ -121,15 +130,19 @@ public class AuthenticationServiceTests
         profileDelegateMock.Verify(m => m.Update(It.IsAny<AdminUserProfile>(), true), Times.Once);
     }
 
-    private static Mock<IConfiguration> GetConfiguration()
+    private static IConfigurationRoot GetIConfigurationRoot()
     {
-        Mock<IConfiguration> configurationMock = new();
-        Mock<IConfigurationSection> adminUserSectionMock = new Mock<IConfigurationSection>();
-        adminUserSectionMock.Setup(s => s.Value).Returns("AdminUser");
-        Mock<IConfigurationSection> enabledRoleSectionMock = new Mock<IConfigurationSection>();
-        enabledRoleSectionMock.Setup(s => s.GetChildren()).Returns(new List<IConfigurationSection> { adminUserSectionMock.Object });
-        configurationMock.Setup(c => c.GetSection(It.IsAny<string>())).Returns(enabledRoleSectionMock.Object);
-        return configurationMock;
+        Dictionary<string, string> myConfiguration = new()
+        {
+            { "EnabledRoles", "[ \"AdminUser\", \"AdminReviewer\", \"SupportUser\" ]" },
+        };
+
+        return new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile("appsettings.Development.json", optional: true)
+            .AddJsonFile("appsettings.local.json", optional: true)
+            .AddInMemoryCollection(myConfiguration)
+            .Build();
     }
 
     private static ClaimsPrincipal GetClaimsPrincipal()
