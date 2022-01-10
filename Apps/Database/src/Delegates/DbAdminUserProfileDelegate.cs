@@ -80,10 +80,10 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
                 .Where(profile => profile.LastLoginDateTime.Date <= DateTime.UtcNow.AddDays(-inactiveDays).Date)
                 .OrderByDescending(profile => profile.LastLoginDateTime)
                 .ToList(),
+            Status = DBStatusCode.Read,
         };
-        result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
 
-        this.logger.LogTrace("Finished retrieving {Count} inactive admin user profiles for the past {InactiveDays} day(s)...", result.Payload!.ToList().Count, inactiveDays);
+        this.logger.LogTrace("Finished retrieving {Count} inactive admin user profiles for the past {InactiveDays} day(s)...", result.Payload!.Count(), inactiveDays);
         return result;
     }
 

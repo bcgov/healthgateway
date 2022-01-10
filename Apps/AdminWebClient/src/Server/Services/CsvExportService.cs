@@ -132,7 +132,7 @@ namespace HealthGateway.Admin.Services
             // Inactive admin user profiles from DB
             DBResult<IEnumerable<AdminUserProfile>> profilesResult = this.adminUserProfileDelegate.GetInactiveAdminUserProfiles(inactiveDays);
 
-            if (profilesResult.Status == DBStatusCode.Read && profilesResult.Payload.ToList().Count > 0)
+            if (profilesResult.Status == DBStatusCode.Read && profilesResult.Payload.Any())
             {
                 inactiveUsers.AddRange(profilesResult.Payload.Select(AdminUserProfileView.FromModel).ToList());
                 this.logger.LogDebug("Inactive db admin user profile count: {Count} since {InactiveDays} day(s)...", inactiveUsers.Count, inactiveDays);

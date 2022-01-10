@@ -111,34 +111,44 @@ namespace HealthGateway.Common.AccessManagement.Administration
                 ResultStatus = ResultType.Error,
             };
 
-            Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(GetRolesUrlKey));
-            HttpClient client = this.CreateHttpClient(baseUri, jwtModel.AccessToken);
-            string uri = $"{role}/users";
-
-            HttpResponseMessage response = await client.GetAsync(new Uri(uri, UriKind.Relative)).ConfigureAwait(true);
-            string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-            this.logger.LogDebug("Getting users for role: {Role}, response payload: {Payload} ...", role, payload);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                retVal.ResultStatus = ResultType.Success;
+                Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(GetRolesUrlKey));
+                HttpClient client = this.CreateHttpClient(baseUri, jwtModel.AccessToken);
+                string uri = $"{role}/users";
 
-                List<UserRepresentation>? users = JsonSerializer.Deserialize<List<UserRepresentation>>(payload);
-                if (users != null)
+                HttpResponseMessage response = await client.GetAsync(new Uri(uri, UriKind.Relative)).ConfigureAwait(true);
+                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                this.logger.LogDebug("Getting users for role: {Role}, response payload: {Payload} ...", role, payload);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    retVal.ResourcePayload = users.ToList();
-                    retVal.TotalResultCount = users.ToList().Count;
+                    retVal.ResultStatus = ResultType.Success;
+
+                    List<UserRepresentation>? users = JsonSerializer.Deserialize<List<UserRepresentation>>(payload);
+                    if (users != null)
+                    {
+                        retVal.ResourcePayload = users.ToList();
+                        retVal.TotalResultCount = users.ToList().Count;
+                    }
+                }
+                else
+                {
+                    this.logger.LogError("Unable to connect to endpoint: {Endpoint}, HTTP Error: {Response} ...", baseUri + uri, response.StatusCode);
+
+                    retVal.ResultError = new RequestResultError()
+                    {
+                        ResultMessage = $"Unable to connect to endpoint: {baseUri}{uri}, HTTP Error: {response.StatusCode}.",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
+                    };
                 }
             }
-            else
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
-                this.logger.LogError("Unable to connect to endpoint: {Endpoint}, HTTP Error: {Response} ...", baseUri + uri, response.StatusCode);
-
-                retVal.ResultError = new RequestResultError()
-                {
-                    ResultMessage = $"Unable to connect to endpoint: {baseUri}{uri}, HTTP Error: {response.StatusCode}.",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
-                };
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting users: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak) };
+                this.logger.LogError($"Unexpected exception in Get Users {e}");
             }
 
             return retVal;
