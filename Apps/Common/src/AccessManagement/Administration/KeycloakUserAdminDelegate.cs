@@ -128,8 +128,8 @@ namespace HealthGateway.Common.AccessManagement.Administration
                     List<UserRepresentation>? users = JsonSerializer.Deserialize<List<UserRepresentation>>(payload);
                     if (users != null)
                     {
-                        retVal.ResourcePayload = users.ToList();
-                        retVal.TotalResultCount = users.ToList().Count;
+                        retVal.ResourcePayload = users;
+                        retVal.TotalResultCount = users.Count;
                     }
                 }
                 else
