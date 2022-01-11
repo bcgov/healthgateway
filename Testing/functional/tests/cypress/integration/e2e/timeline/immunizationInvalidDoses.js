@@ -6,8 +6,8 @@ describe("Timeline - Immunization - Invalid Doses", () => {
     });
 
     it("Timeline - Partially Vaccinated 1 Valid Dose and 1 Invalid Dose - Keycloak user", () => {
-        const validDoseDate1 = "Jul 14";
-        const invalidDoseDate1 = "Mar 30";
+        const validDoseDate1 = "2021-Jul-14";
+        const invalidDoseDate1 = "2021-Mar-30";
 
         cy.login(
             Cypress.env("keycloak.invaliddoses.username"),
