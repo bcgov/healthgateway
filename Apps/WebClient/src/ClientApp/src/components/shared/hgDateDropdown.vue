@@ -16,6 +16,7 @@ export default class HgDateDropdownComponent extends Vue {
     @Prop({ required: false, default: false }) allowFuture!: boolean;
     @Prop({ required: false, default: true }) allowPast!: boolean;
     @Prop({ required: false, default: null }) minYear?: number;
+    @Prop({ required: false, default: false }) disabled!: boolean;
 
     private day: number | null = null;
     private month: number | null = null;
@@ -184,6 +185,7 @@ export default class HgDateDropdownComponent extends Vue {
                 :class="getClass(state)"
                 :options="getYears"
                 aria-label="Year"
+                :disabled="disabled"
                 @change="onChange"
             />
         </b-col>
@@ -194,6 +196,7 @@ export default class HgDateDropdownComponent extends Vue {
                 :class="getClass(state)"
                 :options="getMonths"
                 aria-label="Month"
+                :disabled="disabled"
                 @change="onChange"
             />
         </b-col>
@@ -204,6 +207,7 @@ export default class HgDateDropdownComponent extends Vue {
                 :class="getClass(state)"
                 :options="getDays"
                 aria-label="Day"
+                :disabled="disabled"
                 @change="onChange"
                 @blur="onBlur"
             />

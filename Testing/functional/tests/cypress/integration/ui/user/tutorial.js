@@ -2,7 +2,7 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Tutorial", () => {
     before(() => {
-        cy.intercept("GET", "/v1/api/UserProfile/*", (req) => {
+        cy.intercept("GET", "**/v1/api/UserProfile/*", (req) => {
             req.reply((res) => {
                 res.body.resourcePayload.preferences.tutorialMenuNote.value =
                     "true";

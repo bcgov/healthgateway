@@ -86,12 +86,12 @@ namespace HealthGateway.Encounter.Test.Delegates
                             }]
                         }
                     }";
-            using var httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(content),
             };
-            var handlerMock = new Mock<HttpMessageHandler>();
+            Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
@@ -110,7 +110,9 @@ namespace HealthGateway.Encounter.Test.Delegates
             {
                 PHN = "123456789",
             };
+
             RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Single(actualResult?.ResourcePayload?.Claims);
             Assert.Equal(1, actualResult?.TotalResultCount);
@@ -122,12 +124,12 @@ namespace HealthGateway.Encounter.Test.Delegates
         [Fact]
         public void ShouldErrorDynamicLookup()
         {
-            using var httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.Unauthorized,
                 Content = new StringContent(string.Empty),
             };
-            var handlerMock = new Mock<HttpMessageHandler>();
+            Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
@@ -147,8 +149,10 @@ namespace HealthGateway.Encounter.Test.Delegates
             {
                 PHN = "123456789",
             };
+
             RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () =>
                 await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
@@ -163,7 +167,7 @@ namespace HealthGateway.Encounter.Test.Delegates
                 StatusCode = HttpStatusCode.Unauthorized,
                 Content = new StringContent(string.Empty),
             };
-            var handlerMock = new Mock<HttpMessageHandler>();
+            Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
@@ -182,7 +186,9 @@ namespace HealthGateway.Encounter.Test.Delegates
             {
                 PHN = "123456789",
             };
+
             RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
@@ -192,7 +198,7 @@ namespace HealthGateway.Encounter.Test.Delegates
         [Fact]
         public void ShouldException()
         {
-            var handlerMock = new Mock<HttpMessageHandler>();
+            Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
@@ -201,7 +207,7 @@ namespace HealthGateway.Encounter.Test.Delegates
                   ItExpr.IsAny<CancellationToken>())
                .Throws<HttpRequestException>()
                .Verifiable();
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IMSPVisitDelegate mspVisitDelegate = new RestMSPVisitDelegate(
@@ -212,7 +218,9 @@ namespace HealthGateway.Encounter.Test.Delegates
             {
                 PHN = "123456789",
             };
+
             RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
+
             Assert.True(actualResult.ResultStatus == ResultType.Error);
             Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CE-ODR", StringComparison.InvariantCulture));
         }
@@ -220,8 +228,6 @@ namespace HealthGateway.Encounter.Test.Delegates
         private static IConfigurationRoot GetIConfigurationRoot()
         {
             return new ConfigurationBuilder()
-
-                // .SetBasePath(outputPath)
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("appsettings.Development.json", optional: true)
                 .AddJsonFile("appsettings.local.json", optional: true)
@@ -230,7 +236,7 @@ namespace HealthGateway.Encounter.Test.Delegates
 
         private static IConfigurationRoot GetLocalConfig()
         {
-            var myConfiguration = new Dictionary<string, string>
+            Dictionary<string, string> myConfiguration = new()
             {
                 { "ODR:DynamicServiceLookup", "True" },
                 { "ODR:BaseEndpoint", "http://mockendpoint/" },

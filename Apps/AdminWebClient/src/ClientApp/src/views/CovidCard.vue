@@ -1,4 +1,6 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import { Component, Vue, Watch } from "vue-property-decorator";
 
@@ -20,6 +22,8 @@ import { ICovidSupportService } from "@/services/interfaces";
 import { Mask, phnMask, postalCodeMask, zipCodeMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
 import SnowPlow from "@/utility/snowPlow";
+
+library.add(faEye, faEyeSlash);
 
 interface ImmunizationRow {
     date: string;
@@ -52,6 +56,7 @@ export default class CovidCardView extends Vue {
     private address: Address = { ...emptyAddress };
     private immunizations: ImmunizationRow[] = [];
     private searchResult: CovidCardPatientResult | null = null;
+    private maskHdid = true;
     private covidSupportService!: ICovidSupportService;
     private selectedDestination = "";
 
@@ -109,6 +114,10 @@ export default class CovidCardView extends Vue {
 
     private get patientName(): string {
         return `${this.searchResult?.patient?.firstname} ${this.searchResult?.patient?.lastname}`;
+    }
+
+    private get patientHdid(): string {
+        return this.searchResult?.patient?.hdid ?? "";
     }
 
     private get containsInvalidDoses(): boolean {
@@ -235,6 +244,7 @@ export default class CovidCardView extends Vue {
                 } else {
                     this.phn = "";
                     this.searchResult = result;
+                    this.maskHdid = true;
                     this.setAddress(
                         this.searchResult?.patient?.postalAddress,
                         this.searchResult?.patient?.physicalAddress
@@ -456,14 +466,14 @@ export default class CovidCardView extends Vue {
                         <v-col>
                             <v-text-field
                                 v-model="patientName"
-                                disabled
+                                readonly
                                 label="Name"
                             />
                         </v-col>
                         <v-col>
                             <v-text-field
                                 v-model="birthDate"
-                                disabled
+                                readonly
                                 label="Birthdate"
                             />
                         </v-col>
@@ -472,8 +482,30 @@ export default class CovidCardView extends Vue {
                                 v-model="
                                     searchResult.patient.personalhealthnumber
                                 "
-                                disabled
+                                readonly
                                 label="PHN"
+                            />
+                        </v-col>
+                    </v-row>
+                    <v-row align="center" dense>
+                        <v-col>
+                            <v-text-field
+                                v-if="patientHdid.length > 0"
+                                :value="maskHdid ? '        ' : patientHdid"
+                                :type="maskHdid ? 'password' : 'text'"
+                                :append-outer-icon="
+                                    maskHdid ? 'fa-eye-slash' : 'fa-eye'
+                                "
+                                readonly
+                                dense
+                                label="HDID"
+                                @click:append-outer="maskHdid = !maskHdid"
+                            />
+                            <v-text-field
+                                v-else
+                                disabled
+                                dense
+                                label="No HDID"
                             />
                         </v-col>
                     </v-row>

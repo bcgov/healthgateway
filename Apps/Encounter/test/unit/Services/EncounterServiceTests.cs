@@ -67,7 +67,7 @@ namespace HealthGateway.Encounter.Test.Service
             ServiceDate = DateTime.ParseExact("2015/07/15", "yyyy/MM/dd", CultureInfo.InvariantCulture),
         };
 
-        private readonly RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>()
+        private readonly RequestResult<PatientModel> patientResult = new()
         {
             ResultStatus = ResultType.Success,
             ResourcePayload = new PatientModel()
@@ -90,7 +90,7 @@ namespace HealthGateway.Encounter.Test.Service
                 PageIndex = 1,
                 ResourcePayload = new MSPVisitHistoryResponse()
                 {
-                    Claims = new List<Claim>()
+                    Claims = new List<Claim>
                     {
                         this.sameClaim,
                         this.oddClaim,
@@ -100,13 +100,13 @@ namespace HealthGateway.Encounter.Test.Service
             };
             string hdid = "MOCKHDID";
 
-            var mockMSPDelegate = new Mock<IMSPVisitDelegate>();
+            Mock<IMSPVisitDelegate> mockMSPDelegate = new();
             mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(delegateResult);
 
-            var mockPatientService = new Mock<IPatientService>();
+            Mock<IPatientService> mockPatientService = new();
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).ReturnsAsync(this.patientResult);
 
-            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(this.GetHttpContext());
 
             IEncounterService service = new EncounterService(
@@ -115,7 +115,8 @@ namespace HealthGateway.Encounter.Test.Service
                 mockPatientService.Object,
                 mockMSPDelegate.Object);
 
-            var actualResult = service.GetEncounters(hdid).Result;
+            RequestResult<IEnumerable<EncounterModel>> actualResult = service.GetEncounters(hdid).Result;
+
             Assert.True(actualResult.ResultStatus == ResultType.Success);
             Assert.Equal(2, actualResult.ResourcePayload.Count()); // should return distint claims only.
         }
@@ -139,13 +140,13 @@ namespace HealthGateway.Encounter.Test.Service
 
             string hdid = "MOCKHDID";
 
-            var mockMSPDelegate = new Mock<IMSPVisitDelegate>();
+            Mock<IMSPVisitDelegate> mockMSPDelegate = new();
             mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
-            var mockPatientService = new Mock<IPatientService>();
+            Mock<IPatientService> mockPatientService = new();
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(this.patientResult));
 
-            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(this.GetHttpContext());
 
             IEncounterService service = new EncounterService(
@@ -154,7 +155,8 @@ namespace HealthGateway.Encounter.Test.Service
                 mockPatientService.Object,
                 mockMSPDelegate.Object);
 
-            var actualResult = service.GetEncounters(hdid).Result;
+            RequestResult<IEnumerable<EncounterModel>> actualResult = service.GetEncounters(hdid).Result;
+
             Assert.True(actualResult.ResultStatus == ResultType.Success);
             Assert.False(actualResult.ResourcePayload.Any());
         }
@@ -165,14 +167,12 @@ namespace HealthGateway.Encounter.Test.Service
         [Fact]
         public void PatientError()
         {
-            RequestResult<MSPVisitHistoryResponse> delegateResult = new()
-            {
-            };
+            RequestResult<MSPVisitHistoryResponse> delegateResult = new();
 
             string hdid = "MOCKHDID";
-            using Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
-            var mockMSPDelegate = new Mock<IMSPVisitDelegate>();
+            Mock<IMSPVisitDelegate> mockMSPDelegate = new();
             mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             RequestResult<PatientModel> errorPatientResult = new()
@@ -185,10 +185,10 @@ namespace HealthGateway.Encounter.Test.Service
                 },
             };
 
-            var mockPatientService = new Mock<IPatientService>();
+            Mock<IPatientService> mockPatientService = new();
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(errorPatientResult));
 
-            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(this.GetHttpContext());
 
             IEncounterService service = new EncounterService(
@@ -197,14 +197,15 @@ namespace HealthGateway.Encounter.Test.Service
                 mockPatientService.Object,
                 mockMSPDelegate.Object);
 
-            var actualResult = service.GetEncounters(hdid).Result;
-            Assert.True(actualResult.ResultStatus == ResultType.Error &&
-                        actualResult.ResultError.IsDeepEqual(errorPatientResult.ResultError));
+            RequestResult<IEnumerable<EncounterModel>> actualResult = service.GetEncounters(hdid).Result;
+
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+            errorPatientResult.ResultError.ShouldDeepEqual(actualResult.ResultError);
         }
 
         private HttpContext GetHttpContext()
         {
-            var context = new DefaultHttpContext()
+            DefaultHttpContext context = new()
             {
                 Connection =
                 {

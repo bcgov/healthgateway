@@ -54,7 +54,7 @@ namespace HealthGateway.Medication.Services.Test
             RequestResult<IList<MedicationRequest>> expectedDelegateResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new List<MedicationRequest>()
+                ResourcePayload = new List<MedicationRequest>
                 {
                     new MedicationRequest() { ReferenceNumber = "abc" },
                     new MedicationRequest() { ReferenceNumber = "xyz" },
@@ -72,8 +72,7 @@ namespace HealthGateway.Medication.Services.Test
                 mockDelegate.Object);
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () =>
-                                                                    await service.GetMedicationRequests(hdid).ConfigureAwait(true)).Result;
+            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await service.GetMedicationRequests(hdid).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(ResultType.Success, response.ResultStatus);
@@ -102,8 +101,7 @@ namespace HealthGateway.Medication.Services.Test
                 new Mock<IMedicationRequestDelegate>().Object);
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () =>
-                                                                    await service.GetMedicationRequests(hdid).ConfigureAwait(true)).Result;
+            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await service.GetMedicationRequests(hdid).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(ResultType.Error, response.ResultStatus);
@@ -142,8 +140,7 @@ namespace HealthGateway.Medication.Services.Test
                 mockDelegate.Object);
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () =>
-                                                                    await service.GetMedicationRequests(hdid).ConfigureAwait(true)).Result;
+            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await service.GetMedicationRequests(hdid).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(ResultType.Error, response.ResultStatus);

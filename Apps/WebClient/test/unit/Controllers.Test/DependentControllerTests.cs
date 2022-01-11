@@ -63,10 +63,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 new Mock<ILogger<UserProfileController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
-            var actualResult = dependentController.GetAll(this.hdid);
+            IActionResult actualResult = dependentController.GetAll(this.hdid);
 
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(((JsonResult)actualResult).Value?.IsDeepEqual(expectedResult));
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -101,9 +101,9 @@ namespace HealthGateway.WebClient.Test.Controllers
                 new Mock<ILogger<UserProfileController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
-            var actualResult = dependentController.AddDependent(new AddDependentRequest());
+            IActionResult actualResult = dependentController.AddDependent(new AddDependentRequest());
 
-            Assert.True(((JsonResult)actualResult).Value!.IsDeepEqual(expectedResult));
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -127,14 +127,14 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
-            DependentController dependentController = new DependentController(
+            DependentController dependentController = new(
                 new Mock<ILogger<UserProfileController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
-            var actualResult = dependentController.Delete(delegateId, dependentId, dependentModel);
+            IActionResult actualResult = dependentController.Delete(delegateId, dependentId, dependentModel);
 
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(((JsonResult)actualResult).Value!.IsDeepEqual(expectedResult));
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace HealthGateway.WebClient.Test.Controllers
         {
             string delegateId = this.hdid;
             string dependentId = "123";
-            DependentModel dependentModel = new DependentModel() { DelegateId = delegateId, OwnerId = dependentId };
+            DependentModel dependentModel = new() { DelegateId = delegateId, OwnerId = dependentId };
 
             RequestResult<DependentModel> expectedResult = new()
             {
@@ -158,12 +158,13 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, delegateId);
 
-            DependentController dependentController = new DependentController(
+            DependentController dependentController = new(
                 new Mock<ILogger<UserProfileController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
 
-            var actualResult = dependentController.Delete("anotherId", "wrongId", dependentModel);
+            IActionResult actualResult = dependentController.Delete("anotherId", "wrongId", dependentModel);
+
             Assert.IsType<BadRequestResult>(actualResult);
         }
 
@@ -219,7 +220,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<IHttpContextAccessor> httpContextAccessorMock = new();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
             Mock<IAuthenticationService> authenticationMock = new();
-            var authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
+            AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
             authResult.Properties.StoreTokens(new[]
             {
                 new AuthenticationToken { Name = "access_token", Value = token },

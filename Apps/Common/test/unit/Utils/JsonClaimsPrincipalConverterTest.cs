@@ -33,8 +33,10 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldCanConvertClaimsPrincipal()
         {
-            JsonClaimsPrincipalConverter jsonClaimsPrincipalConverter = new JsonClaimsPrincipalConverter();
-            var actualResult = jsonClaimsPrincipalConverter.CanConvert(typeof(ClaimsPrincipal));
+            JsonClaimsPrincipalConverter jsonClaimsPrincipalConverter = new();
+
+            bool actualResult = jsonClaimsPrincipalConverter.CanConvert(typeof(ClaimsPrincipal));
+
             Assert.True(actualResult);
         }
 
@@ -44,8 +46,10 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldCanConvertNotClaimsPrincipal()
         {
-            JsonClaimsPrincipalConverter jsonClaimsPrincipalConverter = new JsonClaimsPrincipalConverter();
-            var actualResult = jsonClaimsPrincipalConverter.CanConvert(typeof(string));
+            JsonClaimsPrincipalConverter jsonClaimsPrincipalConverter = new();
+
+            bool actualResult = jsonClaimsPrincipalConverter.CanConvert(typeof(string));
+
             Assert.False(actualResult);
         }
 
@@ -55,16 +59,14 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldWriteJson()
         {
-            StringBuilder sb = new StringBuilder();
-            StringWriter sw = new StringWriter(sb);
-            using (JsonWriter writer = new JsonTextWriter(sw))
-            {
-                ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal();
-                JsonSerializer jsonSerializer = new JsonSerializer();
+            StringBuilder sb = new();
+            StringWriter sw = new(sb);
+            using JsonWriter writer = new JsonTextWriter(sw);
+            ClaimsPrincipal claimsPrincipal = new();
+            JsonSerializer jsonSerializer = new();
+            JsonClaimsPrincipalConverter jsonClaimsPrincipalConverter = new();
 
-                JsonClaimsPrincipalConverter jsonClaimsPrincipalConverter = new JsonClaimsPrincipalConverter();
-                jsonClaimsPrincipalConverter.WriteJson(writer, claimsPrincipal, jsonSerializer);
-            }
+            jsonClaimsPrincipalConverter.WriteJson(writer, claimsPrincipal, jsonSerializer);
 
             Assert.NotEmpty(sb.ToString());
         }
@@ -83,20 +85,20 @@ namespace HealthGateway.CommonTests.Utils
                'OriginalIssuer':'mockOriginalIssuer',
             }";
 
-            StringReader textReader = new StringReader(json);
-            using (JsonTextReader reader = new JsonTextReader(textReader))
-            {
-                JsonSerializer jsonSerializer = new JsonSerializer();
-                JsonClaimConverter jsonClaimConverter = new JsonClaimConverter();
-                object actualResult = jsonClaimConverter.ReadJson(reader, typeof(Claim), "existingValue", jsonSerializer);
-                Assert.IsType<Claim>(actualResult);
-                Claim claim = (Claim)actualResult;
-                Assert.Equal("mockType", claim.Type);
-                Assert.Equal("mockValue", claim.Value);
-                Assert.Equal("mockValueType", claim.ValueType);
-                Assert.Equal("mockIssuer", claim.Issuer);
-                Assert.Equal("mockOriginalIssuer", claim.OriginalIssuer);
-            }
+            StringReader textReader = new(json);
+            using JsonTextReader reader = new(textReader);
+            JsonSerializer jsonSerializer = new();
+            JsonClaimConverter jsonClaimConverter = new();
+
+            object actualResult = jsonClaimConverter.ReadJson(reader, typeof(Claim), "existingValue", jsonSerializer);
+
+            Assert.IsType<Claim>(actualResult);
+            Claim claim = (Claim)actualResult;
+            Assert.Equal("mockType", claim.Type);
+            Assert.Equal("mockValue", claim.Value);
+            Assert.Equal("mockValueType", claim.ValueType);
+            Assert.Equal("mockIssuer", claim.Issuer);
+            Assert.Equal("mockOriginalIssuer", claim.OriginalIssuer);
         }
     }
 }

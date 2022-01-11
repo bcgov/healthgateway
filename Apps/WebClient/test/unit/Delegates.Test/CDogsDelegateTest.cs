@@ -54,7 +54,7 @@ namespace HealthGateway.WebClient.Test.Delegates
         [Fact]
         public void ShouldGenerateReport()
         {
-            var cdogsRequest = new CDogsRequestModel()
+            CDogsRequestModel cdogsRequest = new()
             {
                 Data = JsonDocument.Parse("{}").RootElement,
             };
@@ -65,7 +65,7 @@ namespace HealthGateway.WebClient.Test.Delegates
                 Content = new StringContent("123"),
             };
 
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             ICDogsDelegate cdogsDelegate = new CDogsDelegate(
                 loggerFactory.CreateLogger<CDogsDelegate>(),
@@ -73,19 +73,18 @@ namespace HealthGateway.WebClient.Test.Delegates
                 this.configuration);
 
             RequestResult<ReportModel> actualResult = Task.Run(async () => await cdogsDelegate.GenerateReportAsync(cdogsRequest).ConfigureAwait(true)).Result;
+
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            var myConfiguration = new Dictionary<string, string>
+            Dictionary<string, string> myConfiguration = new()
             {
                 { "ServiceEndpoints:HGCDogs", "https://some-test-url/CDogs/" },
             };
 
             return new ConfigurationBuilder()
-
-                // .SetBasePath(outputPath)
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("appsettings.Development.json", optional: true)
                 .AddJsonFile("appsettings.local.json", optional: true)

@@ -167,7 +167,8 @@ namespace Healthgateway.JobScheduler.Jobs
                         smtpClient.Connect(this.host, this.port, SecureSocketOptions.None);
                         try
                         {
-                            smtpClient.Send(EmailJob.PrepareMessage(email));
+                            using MimeMessage message = EmailJob.PrepareMessage(email);
+                            smtpClient.Send(message);
                             email.SmtpStatusCode = (int)SmtpStatusCode.Ok;
                             email.EmailStatusCode = EmailStatus.Processed;
                             email.SentDateTime = DateTime.UtcNow;

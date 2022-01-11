@@ -1,7 +1,7 @@
 const { AuthMethod } = require("../../../support/constants");
 const profilePath = "/profile";
 const healthInsightsPath = "/healthInsights";
-const dashboardPath = "/dashboard";
+const homePath = "/home";
 
 describe("Bookmark", () => {
     beforeEach(() => {
@@ -28,13 +28,13 @@ describe("Bookmark", () => {
         cy.url().should("include", healthInsightsPath);
     });
 
-    it("Redirect to Dashboard", () => {
+    it("Redirect to home", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            dashboardPath
+            homePath
         );
-        cy.url().should("include", dashboardPath);
+        cy.url().should("include", homePath);
     });
 });

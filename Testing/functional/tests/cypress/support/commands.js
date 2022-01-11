@@ -258,7 +258,7 @@ Cypress.Commands.add("enableModules", (modules) => {
                     config.webClient.modules[key] = modules === key;
                 }
             });
-            cy.intercept("GET", "/v1/api/configuration/", {
+            cy.intercept("GET", "**/v1/api/configuration/", {
                 statusCode: 200,
                 body: config,
             });

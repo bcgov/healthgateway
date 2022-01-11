@@ -25,6 +25,7 @@ namespace HealthGateway.Immunization.Test.Delegates
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
@@ -44,7 +45,7 @@ namespace HealthGateway.Immunization.Test.Delegates
     {
         private readonly IConfiguration configuration;
         private readonly string phn = "9735353315";
-        private readonly DateTime dob = new DateTime(1990, 01, 05);
+        private readonly DateTime dob = new(1990, 01, 05);
         private readonly string accessToken = "XXDDXX";
 
         /// <summary>
@@ -93,7 +94,8 @@ namespace HealthGateway.Immunization.Test.Delegates
                 PersonalHealthNumber = this.phn,
                 DateOfBirth = this.dob,
             };
-            var actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
+
+            RequestResult<PHSAResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -136,7 +138,8 @@ namespace HealthGateway.Immunization.Test.Delegates
                 PersonalHealthNumber = this.phn,
                 DateOfBirth = this.dob,
             };
-            var actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
+
+            RequestResult<PHSAResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -145,7 +148,7 @@ namespace HealthGateway.Immunization.Test.Delegates
 
         private static IHttpClientService GetHttpClientService(HttpResponseMessage httpResponseMessage)
         {
-            var handlerMock = new Mock<HttpMessageHandler>();
+            Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
@@ -161,13 +164,11 @@ namespace HealthGateway.Immunization.Test.Delegates
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            var myConfiguration = new Dictionary<string, string>
+            Dictionary<string, string> myConfiguration = new()
             {
                 { "PHSA:BaseUrl", "https://some-test-url/" },
             };
             return new ConfigurationBuilder()
-
-                // .SetBasePath(outputPath)
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("appsettings.Development.json", optional: true)
                 .AddJsonFile("appsettings.local.json", optional: true)
@@ -208,7 +209,7 @@ namespace HealthGateway.Immunization.Test.Delegates
             httpContextAccessorMock
                 .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
                 .Returns(authenticationMock.Object);
-            var authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
+            AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
             authResult.Properties.StoreTokens(new[]
             {
                 new AuthenticationToken { Name = "access_token", Value = this.accessToken },

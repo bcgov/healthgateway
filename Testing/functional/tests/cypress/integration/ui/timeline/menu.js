@@ -80,22 +80,27 @@ describe("Menu System", () => {
 
     it("Side bar contains nav links", () => {
         login(false);
-        cy.get("[data-testid=menuBtnTimelineLink]").should(
+        cy.get("[data-testid=menu-btn-home-link]").should(
+            "have.attr",
+            "href",
+            "/home"
+        );
+        cy.get("[data-testid=menu-btn-time-line-link]").should(
             "have.attr",
             "href",
             "/timeline"
         );
-        cy.get("[data-testid=menuBtnHealthInsightsLink]").should(
+        cy.get("[data-testid=menu-btn-health-insights-link]").should(
             "have.attr",
             "href",
             "/healthInsights"
         );
-        cy.get("[data-testid=menuBtnReportsLink]").should(
+        cy.get("[data-testid=menu-btn-reports-link]").should(
             "have.attr",
             "href",
             "/reports"
         );
-        cy.get("[data-testid=menuBtnDependentsLink]").should(
+        cy.get("[data-testid=menu-btn-dependents-link]").should(
             "have.attr",
             "href",
             "/dependents"

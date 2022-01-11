@@ -59,7 +59,7 @@ namespace HealthGateway.Medication.Services.Test
         [Fact]
         public async Task InvalidProtectiveWord()
         {
-            var httpContextAccessorMock = this.GetHttpContextAccessorMock();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
             Mock<IPatientService> patientDelegateMock = new();
             patientDelegateMock.Setup(s => s.GetPatientPHN(this.hdid)).Returns(Task.FromResult(
                 new RequestResult<string>()
@@ -115,10 +115,10 @@ namespace HealthGateway.Medication.Services.Test
         [Fact]
         public async Task ValidProtectiveWord()
         {
-            var httpContextAccessorMock = this.GetHttpContextAccessorMock();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, Common.Constants.PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
+            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
                 new RequestResult<PatientModel>()
                 {
                     ResourcePayload = new PatientModel()
@@ -161,10 +161,10 @@ namespace HealthGateway.Medication.Services.Test
         [Fact]
         public void ShouldGetMedications()
         {
-            var httpContextAccessorMock = this.GetHttpContextAccessorMock();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
-            Mock<IPatientService> patientDelegateMock = new Mock<IPatientService>();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, Common.Constants.PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
+            Mock<IPatientService> patientDelegateMock = new();
+            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
                 new RequestResult<PatientModel>()
                 {
                     ResourcePayload = new PatientModel()
@@ -213,9 +213,9 @@ namespace HealthGateway.Medication.Services.Test
                 {
                     TotalRecords = 1,
                     Pages = 1,
-                    Results = new List<Models.ODR.MedicationResult>()
+                    Results = new List<MedicationResult>
                     {
-                        new Models.ODR.MedicationResult()
+                        new MedicationResult()
                         {
                             DIN = this.din,
                             GenericName = "Generic Name",
@@ -245,7 +245,7 @@ namespace HealthGateway.Medication.Services.Test
         [Fact]
         public void ShouldGetMedicationsDrugInfoMissing()
         {
-            var httpContextAccessorMock = this.GetHttpContextAccessorMock();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
             Mock<IPatientService> patientDelegateMock = new();
             patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
@@ -265,7 +265,7 @@ namespace HealthGateway.Medication.Services.Test
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
 
             // We need two tests, one for Fed data and one for Provincial data
-            List<DrugProduct> drugList = new List<DrugProduct>()
+            List<DrugProduct> drugList = new()
             {
                 new DrugProduct()
                 {
@@ -283,9 +283,9 @@ namespace HealthGateway.Medication.Services.Test
                 {
                     TotalRecords = 1,
                     Pages = 1,
-                    Results = new List<Models.ODR.MedicationResult>()
+                    Results = new List<MedicationResult>
                     {
-                        new Models.ODR.MedicationResult()
+                        new MedicationResult()
                         {
                             DIN = this.din,
                             GenericName = "Generic Name",
@@ -315,9 +315,9 @@ namespace HealthGateway.Medication.Services.Test
         [Fact]
         public void ShouldGetMedicationsProvLookup()
         {
-            var httpContextAccessorMock = this.GetHttpContextAccessorMock();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, Common.Constants.PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
+            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
                 new RequestResult<PatientModel>()
                 {
                     ResourcePayload = new PatientModel()
@@ -334,7 +334,7 @@ namespace HealthGateway.Medication.Services.Test
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
 
             // We need two tests, one for Fed data and one for Provincial data
-            List<PharmaCareDrug> drugList = new List<PharmaCareDrug>()
+            List<PharmaCareDrug> drugList = new()
             {
                 new PharmaCareDrug()
                 {
@@ -354,9 +354,9 @@ namespace HealthGateway.Medication.Services.Test
                 {
                     TotalRecords = 1,
                     Pages = 1,
-                    Results = new List<Models.ODR.MedicationResult>()
+                    Results = new List<MedicationResult>
                     {
-                        new Models.ODR.MedicationResult()
+                        new MedicationResult()
                         {
                             DIN = this.din,
                             GenericName = "Generic Name",
@@ -387,7 +387,7 @@ namespace HealthGateway.Medication.Services.Test
         [Fact]
         public async Task ShouldGetEmptyMedications()
         {
-            var httpContextAccessorMock = this.GetHttpContextAccessorMock();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
             Mock<IPatientService> patientDelegateMock = new();
             patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
@@ -440,7 +440,7 @@ namespace HealthGateway.Medication.Services.Test
         [Fact]
         public async Task ShouldGetPatientError()
         {
-            var httpContextAccessorMock = this.GetHttpContextAccessorMock();
+            Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
             Mock<IPatientService> patientDelegateMock = new();
             patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
                 new RequestResult<PatientModel>()

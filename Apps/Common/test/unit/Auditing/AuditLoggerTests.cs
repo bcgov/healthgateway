@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,16 +15,12 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.CommonTests.Auditing
 {
-    using System;
-    using System.Security.Principal;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Database.Constants;
-    using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -40,9 +36,9 @@ namespace HealthGateway.CommonTests.Auditing
         [Fact]
         public void ShouldPopulateWithHttpContext()
         {
-            DefaultHttpContext ctx = new DefaultHttpContext();
+            DefaultHttpContext ctx = new();
             ctx.Connection.RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 });
-            AuditEvent expected = new AuditEvent()
+            AuditEvent expected = new()
             {
                 ApplicationType = ApplicationType.Configuration,
                 ClientIP = "127.0.0.1",
@@ -52,14 +48,14 @@ namespace HealthGateway.CommonTests.Auditing
                 TransactionVersion = string.Empty,
             };
 
-            Mock<ILogger<IAuditLogger>> logger = new Mock<ILogger<IAuditLogger>>();
-            Mock<IWriteAuditEventDelegate> dbContext = new Mock<IWriteAuditEventDelegate>();
-            AuditLogger auditLogger = new AuditLogger(logger.Object, dbContext.Object);
+            Mock<ILogger<IAuditLogger>> logger = new();
+            Mock<IWriteAuditEventDelegate> dbContext = new();
+            AuditLogger auditLogger = new(logger.Object, dbContext.Object);
 
-            AuditEvent actual = new AuditEvent();
+            AuditEvent actual = new();
             auditLogger.PopulateWithHttpContext(ctx, actual);
 
-            Assert.True(expected.IsDeepEqual(actual));
+            expected.ShouldDeepEqual(actual);
         }
     }
 }

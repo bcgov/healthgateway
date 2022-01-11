@@ -31,7 +31,7 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
         /// </summary>
         public MessagingVerificationDelegateMock()
         {
-           this.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
+            this.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
         }
 
         /// <summary>

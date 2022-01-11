@@ -18,6 +18,7 @@ namespace HealthGateway.WebClient.Test.Controllers
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.WebClient.Controllers;
@@ -48,7 +49,7 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             DBResult<UserFeedback> mockedDBResult = new()
             {
-                Status = Database.Constants.DBStatusCode.Created,
+                Status = DBStatusCode.Created,
                 Payload = userFeedback,
             };
 
@@ -56,7 +57,8 @@ namespace HealthGateway.WebClient.Test.Controllers
             userFeedbackServiceMock.Setup(s => s.CreateUserFeedback(It.IsAny<UserFeedback>())).Returns(mockedDBResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
-            var actualResult = controller.CreateUserFeedback(Hdid, userFeedback);
+            IActionResult actualResult = controller.CreateUserFeedback(Hdid, userFeedback);
+
             Assert.IsType<OkResult>(actualResult);
         }
 
@@ -75,7 +77,7 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             DBResult<UserFeedback> mockedDBResult = new()
             {
-                Status = Database.Constants.DBStatusCode.Error,
+                Status = DBStatusCode.Error,
                 Payload = userFeedback,
             };
 
@@ -83,7 +85,8 @@ namespace HealthGateway.WebClient.Test.Controllers
             userFeedbackServiceMock.Setup(s => s.CreateUserFeedback(It.IsAny<UserFeedback>())).Returns(mockedDBResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
-            var actualResult = controller.CreateUserFeedback(Hdid, userFeedback);
+            IActionResult actualResult = controller.CreateUserFeedback(Hdid, userFeedback);
+
             Assert.IsType<ConflictResult>(actualResult);
         }
 
@@ -95,16 +98,17 @@ namespace HealthGateway.WebClient.Test.Controllers
         {
             DBResult<UserFeedback> mockedDBResult = new()
             {
-                Status = Database.Constants.DBStatusCode.Error,
+                Status = DBStatusCode.Error,
             };
 
             Mock<IUserFeedbackService> userFeedbackServiceMock = new();
             userFeedbackServiceMock.Setup(s => s.CreateUserFeedback(It.IsAny<UserFeedback>())).Returns(mockedDBResult);
 
-            UserFeedbackController controller = new UserFeedbackController(userFeedbackServiceMock.Object);
+            UserFeedbackController controller = new(userFeedbackServiceMock.Object);
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            var actualResult = controller.CreateUserFeedback(Hdid, null);
+            IActionResult actualResult = controller.CreateUserFeedback(Hdid, null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
             Assert.IsType<BadRequestResult>(actualResult);
         }
 
@@ -130,8 +134,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             userFeedbackServiceMock.Setup(s => s.CreateRating(It.IsAny<Rating>())).Returns(expectedResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
-            var actualResult = controller.CreateRating(rating);
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
+            IActionResult actualResult = controller.CreateRating(rating);
+
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
     }
 }

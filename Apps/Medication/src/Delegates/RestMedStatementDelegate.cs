@@ -27,13 +27,13 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
-    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models.Cacheable;
     using HealthGateway.Medication.Models.ODR;
@@ -258,7 +258,7 @@ namespace HealthGateway.Medication.Delegates
                         Operator = Constants.ProtectiveWordOperator.Get,
                     },
                 };
-                var options = new JsonSerializerOptions
+                JsonSerializerOptions? options = new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,

@@ -24,12 +24,12 @@ namespace HealthGateway.Encounter.Delegates
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
-    using HealthGateway.Common.Utils;
     using HealthGateway.Encounter.Models.ODR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;

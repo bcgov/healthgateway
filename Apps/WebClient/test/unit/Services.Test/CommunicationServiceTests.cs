@@ -41,12 +41,10 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldGetActiveCommunication()
         {
-            Tuple<RequestResult<Communication>, Communication> result = ExecuteGetActiveCommunication(DBStatusCode.Read);
-            var actualResult = result.Item1;
-            var communication = result.Item2;
+            (RequestResult<Communication> actualResult, Communication communication) = ExecuteGetActiveCommunication(DBStatusCode.Read);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload?.IsDeepEqual(communication));
+            communication.ShouldDeepEqual(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -55,14 +53,13 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldGetActiveCommunicationWithDBError()
         {
-            Tuple<RequestResult<Communication>, Communication> result = ExecuteGetActiveCommunication(DBStatusCode.Error);
-            var actualResult = result.Item1;
+            (RequestResult<Communication> actualResult, _) = ExecuteGetActiveCommunication(DBStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
         }
 
-        private static Tuple<RequestResult<Communication>, Communication> ExecuteGetActiveCommunication(DBStatusCode dbResultStatus = DBStatusCode.Read)
+        private static (RequestResult<Communication> ActualResult, Communication Communication) ExecuteGetActiveCommunication(DBStatusCode dbResultStatus = DBStatusCode.Read)
         {
             Communication communication = new()
             {
@@ -84,15 +81,15 @@ namespace HealthGateway.WebClient.Test.Services
             IMemoryCache? memoryCache = serviceProvider.GetService<IMemoryCache>();
 
             Mock<ICommunicationDelegate> communicationDelegateMock = new();
-            communicationDelegateMock.Setup(s => s.GetActiveBanner(Database.Constants.CommunicationType.Banner)).Returns(dbResult);
+            communicationDelegateMock.Setup(s => s.GetActiveBanner(CommunicationType.Banner)).Returns(dbResult);
 
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,
                 communicationDelegateMock.Object,
                 memoryCache);
-            RequestResult<Communication> actualResult = service.GetActiveBanner(Database.Constants.CommunicationType.Banner);
+            RequestResult<Communication> actualResult = service.GetActiveBanner(CommunicationType.Banner);
 
-            return new Tuple<RequestResult<Communication>, Communication>(actualResult, communication);
+            return (actualResult, communication);
         }
     }
 }

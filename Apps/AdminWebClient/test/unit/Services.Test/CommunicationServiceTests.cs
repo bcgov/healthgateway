@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Test.Services
+namespace HealthGateway.AdminWebClientTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
@@ -91,7 +91,7 @@ namespace HealthGateway.Admin.Test.Services
 
             // Check result
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(comm.IsDeepEqual(actualResult.ResourcePayload));
+            comm.ShouldDeepEqual(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace HealthGateway.Admin.Test.Services
 
             // Check result
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.True(comm.IsDeepEqual(actualResult?.ResourcePayload));
+            comm.ShouldDeepEqual(actualResult?.ResourcePayload);
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace HealthGateway.Admin.Test.Services
 
             // Check result
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(comm.IsDeepEqual(actualResult?.ResourcePayload));
+            comm.ShouldDeepEqual(actualResult?.ResourcePayload);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace HealthGateway.Admin.Test.Services
                 ExpiryDateTime = new DateTime(2020, 07, 07),
             };
 
-            RequestResult<Communication> expectedResult = new RequestResult<Communication>()
+            RequestResult<Communication> expectedResult = new()
             {
                 ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = "Processed communication can't be deleted.", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
@@ -189,7 +189,7 @@ namespace HealthGateway.Admin.Test.Services
             RequestResult<Communication> actualResult = DeleteCommunication(comm, DBStatusCode.Error);
 
             // Check result
-            Assert.True(expectedResult.IsDeepEqual(actualResult));
+            expectedResult.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -212,20 +212,20 @@ namespace HealthGateway.Admin.Test.Services
 
             // Check result
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.True(comm.IsDeepEqual(actualResult?.ResourcePayload));
+            comm.ShouldDeepEqual(actualResult?.ResourcePayload);
         }
 
         private static RequestResult<Communication> UpdateCommunication(Communication comm, DBStatusCode dbStatusCode)
         {
             // Set up delegate
-            DBResult<HealthGateway.Database.Models.Communication> insertResult = new()
+            DBResult<Database.Models.Communication> insertResult = new()
             {
                 Payload = comm.ToDbModel(),
                 Status = dbStatusCode,
             };
 
             Mock<ICommunicationDelegate> communicationDelegateMock = new();
-            communicationDelegateMock.Setup(s => s.Update(It.Is<HealthGateway.Database.Models.Communication>(x => x.Text == comm.Text), true)).Returns(insertResult);
+            communicationDelegateMock.Setup(s => s.Update(It.Is<Database.Models.Communication>(x => x.Text == comm.Text), true)).Returns(insertResult);
 
             // Set up service
             ICommunicationService service = new CommunicationService(
@@ -238,14 +238,14 @@ namespace HealthGateway.Admin.Test.Services
         private static RequestResult<Communication> DeleteCommunication(Communication comm, DBStatusCode dbStatusCode)
         {
             // Set up delegate
-            DBResult<HealthGateway.Database.Models.Communication> deleteResult = new DBResult<HealthGateway.Database.Models.Communication>
+            DBResult<Database.Models.Communication> deleteResult = new()
             {
                 Payload = comm.ToDbModel(),
                 Status = dbStatusCode,
             };
 
-            Mock<ICommunicationDelegate> communicationDelegateMock = new Mock<ICommunicationDelegate>();
-            communicationDelegateMock.Setup(s => s.Delete(It.Is<HealthGateway.Database.Models.Communication>(x => x.Text == comm.Text), true)).Returns(deleteResult);
+            Mock<ICommunicationDelegate> communicationDelegateMock = new();
+            communicationDelegateMock.Setup(s => s.Delete(It.Is<Database.Models.Communication>(x => x.Text == comm.Text), true)).Returns(deleteResult);
 
             // Set up service
             ICommunicationService service = new CommunicationService(
@@ -267,14 +267,14 @@ namespace HealthGateway.Admin.Test.Services
             };
 
             // Set up delegate
-            DBResult<HealthGateway.Database.Models.Communication> insertResult = new DBResult<HealthGateway.Database.Models.Communication>
+            DBResult<Database.Models.Communication> insertResult = new()
             {
                 Payload = comm.ToDbModel(),
                 Status = dBStatusCode,
             };
 
-            Mock<ICommunicationDelegate> communicationDelegateMock = new Mock<ICommunicationDelegate>();
-            communicationDelegateMock.Setup(s => s.Add(It.Is<HealthGateway.Database.Models.Communication>(x => x.Text == comm.Text), true)).Returns(insertResult);
+            Mock<ICommunicationDelegate> communicationDelegateMock = new();
+            communicationDelegateMock.Setup(s => s.Add(It.Is<Database.Models.Communication>(x => x.Text == comm.Text), true)).Returns(insertResult);
 
             // Set up service
             ICommunicationService service = new CommunicationService(
@@ -285,32 +285,33 @@ namespace HealthGateway.Admin.Test.Services
 
             // Check result
             Assert.Equal(expectedResultType, actualResult.ResultStatus);
-            Assert.True(comm.IsDeepEqual(actualResult?.ResourcePayload));
+            comm.ShouldDeepEqual(actualResult?.ResourcePayload);
         }
 
         private static void ShouldGetCommunicationsWithSpecifiedDBStatusCode(DBStatusCode dBStatusCode, ResultType expectedResultType)
         {
             // Sample communication to test
-            List<HealthGateway.Database.Models.Communication> commsList = new List<HealthGateway.Database.Models.Communication>();
-            commsList.Add(new HealthGateway.Database.Models.Communication()
+            List<Database.Models.Communication> commsList = new()
             {
-                Text = "Test communication",
-                Subject = "Testing communication",
-                EffectiveDateTime = new DateTime(2020, 04, 04),
-                ExpiryDateTime = new DateTime(2020, 05, 13),
-            });
+                new Database.Models.Communication()
+                {
+                    Text = "Test communication",
+                    Subject = "Testing communication",
+                    EffectiveDateTime = new DateTime(2020, 04, 04),
+                    ExpiryDateTime = new DateTime(2020, 05, 13),
+                },
+                new Database.Models.Communication()
+                {
+                    Text = "Test communication 2",
+                    Subject = "Testing communication 2",
+                    EffectiveDateTime = new DateTime(2021, 04, 04),
+                    ExpiryDateTime = new DateTime(2021, 05, 13),
+                },
+            };
 
-            commsList.Add(new HealthGateway.Database.Models.Communication()
-            {
-                Text = "Test communication 2",
-                Subject = "Testing communication 2",
-                EffectiveDateTime = new DateTime(2021, 04, 04),
-                ExpiryDateTime = new DateTime(2021, 05, 13),
-            });
+            List<Database.Models.Communication> refCommsList = commsList;
 
-            List<HealthGateway.Database.Models.Communication> refCommsList = commsList;
-
-            DBResult<IEnumerable<HealthGateway.Database.Models.Communication>> commsDBResult = new DBResult<IEnumerable<HealthGateway.Database.Models.Communication>>
+            DBResult<IEnumerable<Database.Models.Communication>> commsDBResult = new()
             {
                 Payload = commsList,
                 Status = dBStatusCode,
@@ -326,7 +327,7 @@ namespace HealthGateway.Admin.Test.Services
             RequestResult<IEnumerable<Communication>> actualResult = service.GetAll();
 
             Assert.Equal(expectedResultType, actualResult.ResultStatus);
-            Assert.True(refCommsList.IsDeepEqual(actualResult?.ResourcePayload));
+            refCommsList.ShouldDeepEqual(actualResult?.ResourcePayload);
         }
     }
 }

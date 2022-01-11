@@ -43,17 +43,14 @@ namespace HealthGateway.Immunization.Services
     {
         private const string PHSAConfigSectionKey = "PHSA";
         private const string AuthConfigSectionName = "ClientAuthentication";
-        private const string TokenCacheKey = "TokenCacheKey";
 
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IMemoryCache memoryCache;
         private readonly ILogger<VaccineStatusService> logger;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly PHSAConfig phsaConfig;
         private readonly Uri tokenUri;
-        private readonly int tokenCacheMinutes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VaccineStatusService"/> class.
@@ -62,14 +59,12 @@ namespace HealthGateway.Immunization.Services
         /// <param name="logger">The injected logger.</param>
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="vaccineStatusDelegate">The injected vaccine status delegate.</param>
-        /// <param name="memoryCache">The cache to use to reduce lookups.</param>
         /// <param name="httpContextAccessor">The injected http context accessor.</param>
         public VaccineStatusService(
             IConfiguration configuration,
             ILogger<VaccineStatusService> logger,
             IAuthenticationDelegate authDelegate,
             IVaccineStatusDelegate vaccineStatusDelegate,
-            IMemoryCache memoryCache,
             IHttpContextAccessor httpContextAccessor)
         {
             this.authDelegate = authDelegate;
@@ -77,14 +72,12 @@ namespace HealthGateway.Immunization.Services
 
             IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
             this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
-            this.tokenCacheMinutes = configSection.GetValue<int>("TokenCacheExpireMinutes", 20);
             this.tokenRequest = new ClientCredentialsTokenRequest();
             configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
 
             this.phsaConfig = new();
             configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
 
-            this.memoryCache = memoryCache;
             this.httpContextAccessor = httpContextAccessor;
             this.logger = logger;
         }
@@ -239,31 +232,21 @@ namespace HealthGateway.Immunization.Services
                 IncludeFederalVaccineProof = includeVaccineProof,
             };
 
-            this.memoryCache.TryGetValue(TokenCacheKey, out string? accessToken);
-            if (accessToken == null)
+            try
             {
-                this.logger.LogInformation("Access token not found in cache");
-                accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest).AccessToken;
-                if (!string.IsNullOrEmpty(accessToken))
-                {
-                    this.logger.LogInformation("Attempting to store Access token in cache");
-                    MemoryCacheEntryOptions cacheEntryOptions = new();
-                    cacheEntryOptions.AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddMinutes(this.tokenCacheMinutes));
-                    this.memoryCache.Set(TokenCacheKey, accessToken, cacheEntryOptions);
-                }
-                else
-                {
-                    this.logger.LogCritical("The auth token is null or empty - unable to cache or proceed");
-                    retVal.ResultError = new()
-                    {
-                        ResultMessage = "Error authenticating with KeyCloak",
-                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-                    };
-                    return retVal;
-                }
+                string? accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest, true).AccessToken;
+                retVal = await this.GetVaccineStatusFromDelegate(query, accessToken, phn).ConfigureAwait(true);
             }
-
-            retVal = await this.GetVaccineStatusFromDelegate(query, accessToken, phn).ConfigureAwait(true);
+            catch (InvalidOperationException e)
+            {
+                this.logger.LogCritical($"Error during authentication {e}");
+                retVal.ResultError = new()
+                {
+                    ResultMessage = "Error authenticating with KeyCloak",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                };
+                return retVal;
+            }
 
             return retVal;
         }

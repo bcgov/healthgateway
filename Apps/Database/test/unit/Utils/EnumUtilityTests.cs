@@ -32,7 +32,9 @@ namespace HealthGateway.DatabaseTests.Context
         public void ValidateToString()
         {
             string expected = "Success";
+
             string actual = EnumUtility.ToEnumString<AuditTransactionResult>(AuditTransactionResult.Success);
+
             Assert.True(actual == expected);
         }
 
@@ -43,7 +45,9 @@ namespace HealthGateway.DatabaseTests.Context
         public void ValidateToStringAnnotation()
         {
             string expected = "Ok";
+
             string actual = EnumUtility.ToEnumString<AuditTransactionResult>(AuditTransactionResult.Success, true);
+
             Assert.True(actual == expected);
         }
 
@@ -54,7 +58,9 @@ namespace HealthGateway.DatabaseTests.Context
         public void ValidateToEnum()
         {
             AuditTransactionResult expected = AuditTransactionResult.Success;
+
             AuditTransactionResult actual = EnumUtility.ToEnum<AuditTransactionResult>("Success", false);
+
             Assert.True(actual == expected);
         }
 
@@ -65,7 +71,9 @@ namespace HealthGateway.DatabaseTests.Context
         public void ValidateToEnumAnnotation()
         {
             AuditTransactionResult expected = AuditTransactionResult.Success;
+
             AuditTransactionResult actual = EnumUtility.ToEnum<AuditTransactionResult>("Ok", true);
+
             Assert.True(actual == expected);
         }
 
@@ -76,7 +84,9 @@ namespace HealthGateway.DatabaseTests.Context
         public void ValidateToEnumAnnotationDefault()
         {
             AuditTransactionResult expected = AuditTransactionResult.Success;
+
             AuditTransactionResult actual = EnumUtility.ToEnum<AuditTransactionResult>("Success", true);
+
             Assert.True(actual == expected);
         }
 

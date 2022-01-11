@@ -39,7 +39,7 @@ namespace HealthGateway.WebClient.Test.Controllers
         {
             ReportRequestModel request = new()
             {
-                Data = default(System.Text.Json.JsonElement),
+                Data = default,
                 Template = TemplateType.Medication,
                 Type = ReportFormatType.PDF,
             };
@@ -57,9 +57,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             reportServiceMock.Setup(s => s.GetReport(request)).Returns(expectedResult);
 
             ReportController controller = new(reportServiceMock.Object);
-            var actualResult = controller.GenerateReport(request);
+            IActionResult actualResult = controller.GenerateReport(request);
 
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
     }
 }

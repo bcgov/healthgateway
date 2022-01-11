@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Test.Services
+namespace HealthGateway.AdminWebClientTests.Controllers.Test
 {
     using System;
     using System.Collections.Generic;
@@ -35,15 +35,15 @@ namespace HealthGateway.Admin.Test.Services
         [Fact]
         public void ShouldGetDependentCount()
         {
-            Dictionary<DateTime, int> expected = new Dictionary<DateTime, int>() { { default(DateTime), 3 } };
-            Mock<IDashboardService> mockService = new Mock<IDashboardService>();
+            Dictionary<DateTime, int> expected = new() { { default, 3 } };
+            Mock<IDashboardService> mockService = new();
             mockService.Setup(s => s.GetDailyDependentCount(It.IsAny<int>())).Returns(expected);
-            DashboardController controller = new DashboardController(
-                mockService.Object);
+            DashboardController controller = new(mockService.Object);
 
             IActionResult actualResult = controller.GetDependentCount(-480);
+
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected));
+            expected.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
     }
 }

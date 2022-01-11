@@ -93,7 +93,8 @@ namespace HealthGateway.Immunization.Test.Delegates
                 httpClientService,
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
-            var actualResult = immsDelegate.GetImmunizations(0).Result;
+
+            RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(0).Result;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -135,7 +136,8 @@ namespace HealthGateway.Immunization.Test.Delegates
                 httpClientService,
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
-            var actualResult = immsDelegate.GetImmunizations(0).Result;
+
+            RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(0).Result;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -150,7 +152,7 @@ namespace HealthGateway.Immunization.Test.Delegates
         {
             string json = "{}";
 
-            RequestResult<IEnumerable<ImmunizationResponse>> expectedResult = new RequestResult<IEnumerable<ImmunizationResponse>>()
+            RequestResult<IEnumerable<ImmunizationResponse>> expectedResult = new()
             {
                 PageIndex = 0,
                 ResultStatus = ResultType.Error,
@@ -175,9 +177,9 @@ namespace HealthGateway.Immunization.Test.Delegates
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
 
-            var actualResult = immsDelegate.GetImmunizations(0).Result;
+            RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(0).Result;
 
-            Assert.True(expectedResult.IsDeepEqual(actualResult));
+            expectedResult.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -199,7 +201,8 @@ namespace HealthGateway.Immunization.Test.Delegates
                 httpClientService,
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
-            var actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
+
+            RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.Success && actualResult?.ResourcePayload?.Result == null);
             Assert.Null(actualResult?.ResourcePayload?.Result);
@@ -212,7 +215,7 @@ namespace HealthGateway.Immunization.Test.Delegates
         public void Forbidden()
         {
             int pageIndex = 0;
-            RequestResult<IEnumerable<ImmunizationResponse>> expectedResult = new RequestResult<IEnumerable<ImmunizationResponse>>()
+            RequestResult<IEnumerable<ImmunizationResponse>> expectedResult = new()
             {
                 ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError()
@@ -235,9 +238,10 @@ namespace HealthGateway.Immunization.Test.Delegates
                 httpClientService,
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
-            var actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
 
-            Assert.True(actualResult.IsDeepEqual(expectedResult));
+            RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
+
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -247,7 +251,7 @@ namespace HealthGateway.Immunization.Test.Delegates
         public void RequestTimeout()
         {
             int pageIndex = 0;
-            RequestResult<IEnumerable<ImmunizationResponse>> expectedResult = new RequestResult<IEnumerable<ImmunizationResponse>>()
+            RequestResult<IEnumerable<ImmunizationResponse>> expectedResult = new()
             {
                 ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError()
@@ -270,9 +274,10 @@ namespace HealthGateway.Immunization.Test.Delegates
                 httpClientService,
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
-            var actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
 
-            Assert.True(actualResult.IsDeepEqual(expectedResult));
+            RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
+
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>
@@ -281,7 +286,7 @@ namespace HealthGateway.Immunization.Test.Delegates
         [Fact]
         public void Exception()
         {
-            var handlerMock = new Mock<HttpMessageHandler>();
+            Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
@@ -306,7 +311,8 @@ namespace HealthGateway.Immunization.Test.Delegates
                 mockHttpClientService.Object,
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
-            var actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
+
+            RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.Error);
             Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CE-PHSA", StringComparison.InvariantCulture));
@@ -314,7 +320,7 @@ namespace HealthGateway.Immunization.Test.Delegates
 
         private static IHttpClientService GetHttpClientService(HttpResponseMessage httpResponseMessage)
         {
-            var handlerMock = new Mock<HttpMessageHandler>();
+            Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
@@ -331,8 +337,6 @@ namespace HealthGateway.Immunization.Test.Delegates
         private static IConfigurationRoot GetIConfigurationRoot()
         {
             return new ConfigurationBuilder()
-
-                // .SetBasePath(outputPath)
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("appsettings.Development.json", optional: true)
                 .AddJsonFile("appsettings.local.json", optional: true)
@@ -359,7 +363,7 @@ namespace HealthGateway.Immunization.Test.Delegates
             httpContextAccessorMock
                 .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
                 .Returns(authenticationMock.Object);
-            var authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
+            AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
             authResult.Properties.StoreTokens(new[]
             {
                 new AuthenticationToken { Name = "access_token", Value = this.token },

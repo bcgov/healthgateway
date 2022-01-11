@@ -2,19 +2,64 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 
+import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import ReleaseNoteComponent from "@/components/releaseNote.vue";
+import BreadcrumbItem from "@/models/breadcrumbItem";
 
 @Component({
     components: {
+        BreadcrumbComponent,
         "release-note": ReleaseNoteComponent,
     },
 })
-export default class ReleaseNotesView extends Vue {}
+export default class ReleaseNotesView extends Vue {
+    private breadcrumbItems: BreadcrumbItem[] = [
+        {
+            text: "Release Notes",
+            to: "/release-notes",
+            active: true,
+            dataTestId: "breadcrumb-release-notes",
+        },
+    ];
+}
 </script>
 
 <template>
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
+        <release-note
+            date="December 15, 2021"
+            version="v1.4.17"
+            title="Breadcrumb Navigation"
+        >
+            <ul>
+                <li>
+                    We added breadcrumb navigation to assist in moving around
+                    the application.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
+            date="December 7, 2021"
+            version="v1.4.16"
+            title="Login History, Exports Sorting, Dashboard Tiles"
+        >
+            <ul>
+                <li>
+                    We added login history in the profile page to show the last
+                    five logins.
+                </li>
+                <li>
+                    We updated the sort order on record exports to default to
+                    most recent first.
+                </li>
+                <li>
+                    We updated the dashboard tile order so the health records
+                    link is first.
+                </li>
+            </ul>
+        </release-note>
         <release-note
             date="October 29, 2021"
             version="v1.4.14"

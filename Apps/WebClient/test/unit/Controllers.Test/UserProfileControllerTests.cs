@@ -54,7 +54,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             IActionResult actualResult = this.GetUserProfile(expected, new Dictionary<string, UserPreferenceModel>() { });
 
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(((JsonResult)actualResult)?.Value?.IsDeepEqual(expected));
+            expected.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -64,12 +64,15 @@ namespace HealthGateway.WebClient.Test.Controllers
         public void ShouldGetUserProfileWithoutUserPreference()
         {
             RequestResult<UserProfileModel> expected = this.GetUserProfileExpectedRequestResultMock(ResultType.Success);
+
             IActionResult actualResult = this.GetUserProfile(expected, null);
 
             Assert.IsType<JsonResult>(actualResult);
-            var jsonResult = actualResult as JsonResult;
-            var reqResult = jsonResult?.Value as RequestResult<UserProfileModel>;
-            Assert.True(reqResult != null && reqResult.ResultStatus == ResultType.Success && reqResult.ResourcePayload != null);
+            JsonResult? jsonResult = actualResult as JsonResult;
+            RequestResult<UserProfileModel>? reqResult = jsonResult?.Value as RequestResult<UserProfileModel>;
+            Assert.NotNull(reqResult);
+            Assert.Equal(ResultType.Success, reqResult?.ResultStatus);
+            Assert.NotNull(reqResult?.ResourcePayload);
             Assert.Empty(reqResult?.ResourcePayload?.Preferences);
         }
 
@@ -110,10 +113,11 @@ namespace HealthGateway.WebClient.Test.Controllers
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 smsServiceMock.Object);
+
             IActionResult actualResult = await service.CreateUserProfile(this.hdid, createUserRequest).ConfigureAwait(true);
 
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(((JsonResult)actualResult).Value?.IsDeepEqual(expected));
+            expected.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -135,6 +139,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object);
+
             IActionResult actualResult = await controller.Validate(this.hdid).ConfigureAwait(true);
 
             Assert.IsType<JsonResult>(actualResult);
@@ -147,12 +152,13 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldCreateUserPreference()
         {
-            var userPref = new UserPreferenceModel()
+            UserPreferenceModel userPref = new()
             {
                 HdId = this.hdid,
                 Preference = "actionedCovidModalAt",
                 Value = "Body value",
             };
+
             IActionResult actualResult = this.CreateUserPreference(userPref);
 
             Assert.IsType<JsonResult>(actualResult);
@@ -181,12 +187,13 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldUpdateUserPreference()
         {
-            var userPref = new UserPreferenceModel()
+            UserPreferenceModel userPref = new()
             {
                 HdId = this.hdid,
                 Preference = "actionedCovidModalAt",
                 Value = "Body value",
             };
+
             IActionResult actualResult = this.UpdateUserPreference(userPref);
 
             Assert.IsType<JsonResult>(actualResult);
@@ -212,7 +219,7 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldUpdateUserPreferenceWithEmptyPreferenceError()
         {
-            var userPref = new UserPreferenceModel()
+            UserPreferenceModel userPref = new()
             {
                 HdId = this.hdid,
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -220,6 +227,7 @@ namespace HealthGateway.WebClient.Test.Controllers
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 Value = "Body value",
             };
+
             IActionResult actualResult = this.UpdateUserPreference(userPref);
 
             Assert.IsType<BadRequestResult>(actualResult);
@@ -231,12 +239,13 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldUpdateUserPreferenceWithForbidResultError()
         {
-            var userPref = new UserPreferenceModel()
+            UserPreferenceModel userPref = new()
             {
                 HdId = this.hdid + "dif.",
                 Preference = "valid pref name",
                 Value = "Body value",
             };
+
             IActionResult actualResult = this.UpdateUserPreference(userPref);
 
             Assert.IsType<ForbidResult>(actualResult);
@@ -249,7 +258,7 @@ namespace HealthGateway.WebClient.Test.Controllers
         public void ShouldGetLastTermsOfService()
         {
             // Setup
-            var termsOfService = new TermsOfServiceModel()
+            TermsOfServiceModel termsOfService = new()
             {
                 Id = Guid.NewGuid(),
                 Content = "abc",
@@ -275,10 +284,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 emailServiceMock.Object,
                 smsServiceMock.Object);
 
-            var actualResult = service.GetLastTermsOfService();
+            IActionResult actualResult = service.GetLastTermsOfService();
 
             Assert.IsType<JsonResult>(actualResult);
-            Assert.True(((JsonResult)actualResult).Value?.IsDeepEqual(expectedResult));
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -297,8 +306,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 new Mock<IUserSMSService>().Object);
+
             IActionResult actualResult = controller.UpdateUserEmail(this.hdid, "emailadd@hgw.ca");
-            var userUpdated = (actualResult as JsonResult)?.Value;
+
+            object? userUpdated = (actualResult as JsonResult)?.Value;
             Assert.True(userUpdated != null && (bool)userUpdated);
         }
 
@@ -326,9 +337,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 new Mock<IUserSMSService>().Object);
-            IActionResult actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
-            var result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
 
+            IActionResult actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
+
+            PrimitiveRequestResult<bool>? result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
             Assert.Equal(ResultType.Success, result?.ResultStatus);
         }
 
@@ -355,9 +367,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 new Mock<IUserSMSService>().Object);
-            IActionResult actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
-            var result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
 
+            IActionResult actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
+
+            PrimitiveRequestResult<bool>? result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
             Assert.Equal(ResultType.Error, result!.ResultStatus);
         }
 
@@ -377,8 +390,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object);
+
             IActionResult actualResult = controller.UpdateUserSMSNumber(this.hdid, "250 123 456");
-            var smsUpdated = (actualResult as JsonResult)?.Value;
+
+            object? smsUpdated = (actualResult as JsonResult)?.Value;
             Assert.True(smsUpdated != null && (bool)smsUpdated);
         }
 
@@ -404,9 +419,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object);
+
             IActionResult actualResult = Task.Run(async () => await controller.ValidateSMS(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
 
-            var result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
+            PrimitiveRequestResult<bool>? result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
             Assert.Equal(ResultType.Success, result?.ResultStatus);
             Assert.Equal(true, result?.ResourcePayload);
         }
@@ -433,9 +449,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object);
+
             IActionResult actualResult = Task.Run(async () => await controller.ValidateSMS(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
 
-            var result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
+            PrimitiveRequestResult<bool>? result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
             Assert.Equal(ResultType.Success, result?.ResultStatus);
             Assert.Equal(false, result?.ResourcePayload);
         }
@@ -467,7 +484,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<IHttpContextAccessor> httpContextAccessorMock = new();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
             Mock<IAuthenticationService> authenticationMock = new();
-            var authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
+            AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
             authResult.Properties.StoreTokens(new[]
             {
                 new AuthenticationToken { Name = "access_token", Value = token },

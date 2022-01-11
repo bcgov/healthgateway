@@ -53,7 +53,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
             // Setup Configuration
             string endpoint = "https://test-endpoint";
-            Uri tokenUri = new Uri("https://localhost");
+            Uri tokenUri = new("https://localhost");
             ClientCredentialsTokenRequest tokenRequest = new()
             {
                 ClientId = "TEST_CLIENTID",
@@ -80,7 +80,8 @@ namespace HealthGateway.Medication.Delegates.Test
             mockAuthenticationDelegate
                 .Setup(s => s.AuthenticateAsUser(
                     It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
-                    It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId)))
+                    It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
+                    true))
                 .Returns(() => authorizationJWT);
 
             // Setup Http response
@@ -92,7 +93,7 @@ namespace HealthGateway.Medication.Delegates.Test
             Mock<IHttpClientService> mockHttpClient = CreateHttpClient(httpResponseMessage, phn, authorizationJWT?.AccessToken);
 
             // Setup class to be tested
-            IMedicationRequestDelegate medDelegate = new SalesforeceDelegate(
+            IMedicationRequestDelegate medDelegate = new SalesforceDelegate(
                 CreateLogger(),
                 mockHttpClient.Object,
                 configuration,
@@ -120,7 +121,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
             // Setup Configuration
             string endpoint = "https://test-endpoint";
-            Uri tokenUri = new Uri("https://localhost");
+            Uri tokenUri = new("https://localhost");
             ClientCredentialsTokenRequest tokenRequest = new()
             {
                 ClientId = "TEST_CLIENTID",
@@ -144,11 +145,12 @@ namespace HealthGateway.Medication.Delegates.Test
             mockAuthenticationDelegate
                 .Setup(s => s.AuthenticateAsUser(
                     It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
-                    It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId)))
+                    It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
+                    true))
                 .Returns(() => new JWTModel());
 
             // Setup class to be tested
-            IMedicationRequestDelegate medDelegate = new SalesforeceDelegate(
+            IMedicationRequestDelegate medDelegate = new SalesforceDelegate(
                 CreateLogger(),
                 new Mock<IHttpClientService>().Object,
                 configuration,
@@ -176,7 +178,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
             // Setup Configuration
             string endpoint = "https://test-endpoint";
-            Uri tokenUri = new Uri("https://localhost");
+            Uri tokenUri = new("https://localhost");
             ClientCredentialsTokenRequest tokenRequest = new()
             {
                 ClientId = "TEST_CLIENTID",
@@ -203,7 +205,8 @@ namespace HealthGateway.Medication.Delegates.Test
             mockAuthenticationDelegate
                 .Setup(s => s.AuthenticateAsUser(
                     It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
-                    It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId)))
+                    It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
+                    true))
                 .Returns(() => authorizationJWT);
 
             // Setup Http response
@@ -214,7 +217,7 @@ namespace HealthGateway.Medication.Delegates.Test
             Mock<IHttpClientService> mockHttpClient = CreateHttpClient(httpResponseMessage, phn, authorizationJWT?.AccessToken);
 
             // Setup class to be tested
-            IMedicationRequestDelegate medDelegate = new SalesforeceDelegate(
+            IMedicationRequestDelegate medDelegate = new SalesforceDelegate(
                 CreateLogger(),
                 mockHttpClient.Object,
                 configuration,
@@ -242,7 +245,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
             // Setup Configuration
             string endpoint = "https://test-endpoint";
-            Uri tokenUri = new Uri("https://localhost");
+            Uri tokenUri = new("https://localhost");
             ClientCredentialsTokenRequest tokenRequest = new()
             {
                 ClientId = "TEST_CLIENTID",
@@ -269,7 +272,8 @@ namespace HealthGateway.Medication.Delegates.Test
             mockAuthenticationDelegate
                 .Setup(s => s.AuthenticateAsUser(
                     It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
-                    It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId)))
+                    It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
+                    true))
                 .Returns(() => authorizationJWT);
 
             // Setup Http response
@@ -280,7 +284,7 @@ namespace HealthGateway.Medication.Delegates.Test
             Mock<IHttpClientService> mockHttpClient = CreateHttpClient(httpResponseMessage, phn, authorizationJWT?.AccessToken);
 
             // Setup class to be tested
-            IMedicationRequestDelegate medDelegate = new SalesforeceDelegate(
+            IMedicationRequestDelegate medDelegate = new SalesforceDelegate(
                 CreateLogger(),
                 mockHttpClient.Object,
                 configuration,
@@ -306,15 +310,15 @@ namespace HealthGateway.Medication.Delegates.Test
                 .Build();
         }
 
-        private static ILogger<SalesforeceDelegate> CreateLogger()
+        private static ILogger<SalesforceDelegate> CreateLogger()
         {
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            return loggerFactory.CreateLogger<SalesforeceDelegate>();
+            return loggerFactory.CreateLogger<SalesforceDelegate>();
         }
 
         private static JWTModel CreateJWTModel(string json)
         {
-            var jwt = JsonSerializer.Deserialize<JWTModel>(json);
+            JWTModel? jwt = JsonSerializer.Deserialize<JWTModel>(json);
 
             return jwt ?? new();
         }

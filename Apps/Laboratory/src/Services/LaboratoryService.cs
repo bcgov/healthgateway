@@ -33,6 +33,7 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
+    using HealthGateway.Laboratory.Parsers;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -116,6 +117,25 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
+        public async Task<RequestResult<AuthenticatedRapidTestResponse>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticatedRapidTestRequest rapidTestRequest)
+        {
+            RequestResult<AuthenticatedRapidTestResponse> retVal = new()
+            {
+                ResultStatus = ResultType.Error,
+                ResourcePayload = new AuthenticatedRapidTestResponse(),
+            };
+
+            RequestResult<RapidTestResponse> result = await this.laboratoryDelegate.SubmitRapidTestAsync(hdid, bearerToken, rapidTestRequest).ConfigureAwait(true);
+            RapidTestResponse payload = result.ResourcePayload ?? new RapidTestResponse();
+
+            retVal.ResultStatus = result.ResultStatus;
+            retVal.ResultError = result.ResultError;
+            retVal.ResourcePayload = new AuthenticatedRapidTestResponse() { Phn = payload.Phn, Records = PhsaModelParser.FromPhsaModelList(payload.RapidTestResults) };
+
+            return retVal;
+        }
+
+        /// <inheritdoc/>
         public async Task<RequestResult<PublicCovidTestResponse>> GetPublicCovidTestsAsync(string phn, string dateOfBirthString, string collectionDateString)
         {
             RequestResult<PublicCovidTestResponse> retVal = new()
@@ -188,8 +208,12 @@ namespace HealthGateway.Laboratory.Services
 
             if (payload.Any())
             {
-                retVal.ResourcePayload = new PublicCovidTestResponse(payload.Select(PublicCovidTestRecord.FromModel).ToList());
                 LabIndicatorType labIndicatorType = Enum.Parse<LabIndicatorType>(payload.Select(x => x.StatusIndicator).First());
+
+                if (labIndicatorType == LabIndicatorType.Found)
+                {
+                    retVal.ResourcePayload = new PublicCovidTestResponse(payload.Select(PublicCovidTestRecord.FromModel).ToList());
+                }
 
                 if (labIndicatorType == LabIndicatorType.DataMismatch || labIndicatorType == LabIndicatorType.NotFound)
                 {

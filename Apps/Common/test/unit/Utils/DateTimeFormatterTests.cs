@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 namespace HealthGateway.CommonTests.Utils
 {
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
     using HealthGateway.Common.Utils;
     using Xunit;
@@ -34,7 +33,9 @@ namespace HealthGateway.CommonTests.Utils
         {
             DateTime dt = DateTime.ParseExact("20200101", "yyyyMMdd", CultureInfo.InvariantCulture);
             string expectedDateStr = "2020-01-01";
+
             string actualDateStr = DateTimeFormatter.FormatDate(dt);
+
             Assert.True(actualDateStr == expectedDateStr);
         }
 
@@ -45,6 +46,7 @@ namespace HealthGateway.CommonTests.Utils
         public void ShouldNullReturnEmpty()
         {
             string result = DateTimeFormatter.FormatDate(null);
+
             Assert.True(string.IsNullOrEmpty(result));
         }
     }

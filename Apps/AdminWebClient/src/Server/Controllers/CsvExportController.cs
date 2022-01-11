@@ -20,7 +20,6 @@ namespace HealthGateway.Admin.Controllers
     using System.Threading.Tasks;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.Utils;
-    using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Net.Http.Headers;
@@ -61,6 +60,22 @@ namespace HealthGateway.Admin.Controllers
         public IActionResult GetUserProfiles(DateTime? startDate = null, DateTime? endDate = null)
         {
             return SendContentResponse("UserProfiles", this.dataExportService.GetUserProfiles(startDate, endDate));
+        }
+
+        /// <summary>
+        /// Retrieves a list of inactive users created exclusive of the days inactive.
+        /// </summary>
+        /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
+        /// <returns>A CSV of inactive users.</returns>
+        /// <response code="200">Returns the list of beta requests.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("GetInactiveUsers")]
+        [Produces("text/csv")]
+        public async Task<IActionResult> GetInactiveAdminUser(int inactiveDays)
+        {
+            return SendContentResponse("InactiveUsers", await this.dataExportService.GetInactiveUsers(inactiveDays).ConfigureAwait(true));
         }
 
         /// <summary>

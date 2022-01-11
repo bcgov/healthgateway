@@ -54,8 +54,10 @@ namespace HealthGateway.WebClient.Test.Controllers
             noteServiceMock.Setup(s => s.CreateNote(It.IsAny<UserNote>())).Returns(expectedResult);
 
             NoteController controller = new(noteServiceMock.Object);
-            var actualResult = controller.CreateNote(Hdid, expectedResult.ResourcePayload);
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
+
+            IActionResult actualResult = controller.CreateNote(Hdid, expectedResult.ResourcePayload);
+
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -78,8 +80,10 @@ namespace HealthGateway.WebClient.Test.Controllers
             noteServiceMock.Setup(s => s.UpdateNote(It.IsAny<UserNote>())).Returns(expectedResult);
 
             NoteController controller = new(noteServiceMock.Object);
-            var actualResult = controller.UpdateNote(Hdid, expectedResult.ResourcePayload);
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
+
+            IActionResult actualResult = controller.UpdateNote(Hdid, expectedResult.ResourcePayload);
+
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -102,8 +106,10 @@ namespace HealthGateway.WebClient.Test.Controllers
             noteServiceMock.Setup(s => s.DeleteNote(It.IsAny<UserNote>())).Returns(expectedResult);
 
             NoteController controller = new(noteServiceMock.Object);
-            var actualResult = controller.DeleteNote(expectedResult.ResourcePayload);
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
+
+            IActionResult actualResult = controller.DeleteNote(expectedResult.ResourcePayload);
+
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -132,10 +138,13 @@ namespace HealthGateway.WebClient.Test.Controllers
             noteServiceMock.Setup(s => s.GetNotes(It.IsAny<string>(), 0, 500)).Returns(expectedResult);
 
             NoteController service = new(noteServiceMock.Object);
-            var actualResult = service.GetAll(Hdid);
-            var jsonResult = actualResult as JsonResult;
+
+            IActionResult actualResult = service.GetAll(Hdid);
+
+            JsonResult? jsonResult = actualResult as JsonResult;
             RequestResult<IEnumerable<UserNote>>? actualRequestResult = jsonResult?.Value as RequestResult<IEnumerable<UserNote>>;
-            Assert.True(actualRequestResult != null && actualRequestResult.ResultStatus == ResultType.Success);
+            Assert.NotNull(actualRequestResult);
+            Assert.Equal(ResultType.Success, actualRequestResult?.ResultStatus);
         }
     }
 }

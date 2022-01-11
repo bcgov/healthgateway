@@ -52,10 +52,11 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<ICommentService> commentServiceMock = new();
             commentServiceMock.Setup(s => s.Add(expectedResult.ResourcePayload)).Returns(expectedResult);
 
-            CommentController service = new CommentController(commentServiceMock.Object);
-            var actualResult = service.Create(Hdid, expectedResult.ResourcePayload);
+            CommentController service = new(commentServiceMock.Object);
 
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
+            IActionResult actualResult = service.Create(Hdid, expectedResult.ResourcePayload);
+
+            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
         }
 
         /// <summary>
@@ -73,8 +74,10 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<ICommentService> commentServiceMock = new();
             commentServiceMock.Setup(s => s.Add(expectedResult.ResourcePayload)).Returns(expectedResult);
 
-            CommentController service = new CommentController(commentServiceMock.Object);
-            var actualResult = service.Create(Hdid, expectedResult.ResourcePayload);
+            CommentController service = new(commentServiceMock.Object);
+
+            IActionResult actualResult = service.Create(Hdid, expectedResult.ResourcePayload);
+
             Assert.IsType<BadRequestResult>(actualResult);
         }
 
@@ -97,9 +100,11 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<ICommentService> commentServiceMock = new();
             commentServiceMock.Setup(s => s.Update(expectedResult.ResourcePayload)).Returns(expectedResult);
 
-            CommentController service = new CommentController(commentServiceMock.Object);
-            var actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
-            var jsonResult = actualResult as JsonResult;
+            CommentController service = new(commentServiceMock.Object);
+
+            IActionResult actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
+
+            JsonResult? jsonResult = actualResult as JsonResult;
             RequestResult<UserComment>? actualRequestResult = jsonResult?.Value as RequestResult<UserComment>;
             Assert.True(actualRequestResult != null && actualRequestResult.ResultStatus == ResultType.Success);
             Assert.Equal(Hdid, actualRequestResult?.ResourcePayload!.UpdatedBy);
@@ -123,8 +128,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<ICommentService> commentServiceMock = new();
             commentServiceMock.Setup(s => s.Update(expectedResult.ResourcePayload)).Returns(expectedResult);
 
-            CommentController service = new CommentController(commentServiceMock.Object);
-            var actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
+            CommentController service = new(commentServiceMock.Object);
+
+            IActionResult actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
 
             Assert.IsType<ForbidResult>(actualResult);
         }
@@ -135,7 +141,7 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldUpdateCommentWithBadRequestError()
         {
-            RequestResult<UserComment> expectedResult = new RequestResult<UserComment>()
+            RequestResult<UserComment> expectedResult = new()
             {
                 ResourcePayload = null,
                 ResultStatus = ResultType.Error,
@@ -144,8 +150,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<ICommentService> commentServiceMock = new();
             commentServiceMock.Setup(s => s.Update(expectedResult.ResourcePayload)).Returns(expectedResult);
 
-            CommentController service = new CommentController(commentServiceMock.Object);
-            var actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
+            CommentController service = new(commentServiceMock.Object);
+
+            IActionResult actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
 
             Assert.IsType<BadRequestResult>(actualResult);
         }
@@ -156,7 +163,7 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldDeleteComment()
         {
-            RequestResult<UserComment> expectedResult = new RequestResult<UserComment>()
+            RequestResult<UserComment> expectedResult = new()
             {
                 ResourcePayload = new UserComment()
                 {
@@ -169,12 +176,15 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<ICommentService> commentServiceMock = new();
             commentServiceMock.Setup(s => s.Delete(expectedResult.ResourcePayload)).Returns(expectedResult);
 
-            CommentController service = new CommentController(commentServiceMock.Object);
-            var actualResult = service.Delete(Hdid, expectedResult.ResourcePayload);
-            var jsonResult = actualResult as JsonResult;
+            CommentController service = new(commentServiceMock.Object);
+
+            IActionResult actualResult = service.Delete(Hdid, expectedResult.ResourcePayload);
+
+            JsonResult? jsonResult = actualResult as JsonResult;
             RequestResult<UserComment>? actualRequestResult = jsonResult?.Value as RequestResult<UserComment>;
-            Assert.True(actualRequestResult != null && actualRequestResult.ResultStatus == ResultType.Success);
-            Assert.True(actualRequestResult?.IsDeepEqual(expectedResult));
+            Assert.NotNull(actualRequestResult);
+            Assert.Equal(ResultType.Success, actualRequestResult?.ResultStatus);
+            expectedResult.ShouldDeepEqual(actualRequestResult);
         }
 
         /// <summary>
@@ -195,8 +205,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<ICommentService> commentServiceMock = new();
             commentServiceMock.Setup(s => s.Delete(expectedResult.ResourcePayload)).Returns(expectedResult);
 
-            CommentController service = new CommentController(commentServiceMock.Object);
-            var actualResult = service.Delete(Hdid, expectedResult.ResourcePayload);
+            CommentController service = new(commentServiceMock.Object);
+
+            IActionResult actualResult = service.Delete(Hdid, expectedResult.ResourcePayload);
 
             Assert.IsType<ForbidResult>(actualResult);
         }
@@ -226,11 +237,14 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<ICommentService> commentServiceMock = new();
             commentServiceMock.Setup(s => s.GetEntryComments(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
 
-            CommentController service = new CommentController(commentServiceMock.Object);
-            var actualResult = service.GetAllForEntry(Hdid, "parentEntryIdMock");
-            var jsonResult = actualResult as JsonResult;
+            CommentController service = new(commentServiceMock.Object);
+
+            IActionResult actualResult = service.GetAllForEntry(Hdid, "parentEntryIdMock");
+
+            JsonResult? jsonResult = actualResult as JsonResult;
             RequestResult<IEnumerable<UserComment>>? actualRequestResult = jsonResult?.Value as RequestResult<IEnumerable<UserComment>>;
-            Assert.True(actualRequestResult != null && actualRequestResult.ResultStatus == ResultType.Success);
+            Assert.NotNull(actualRequestResult);
+            Assert.Equal(ResultType.Success, actualRequestResult?.ResultStatus);
         }
     }
 }

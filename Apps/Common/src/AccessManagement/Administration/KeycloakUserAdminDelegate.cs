@@ -16,13 +16,18 @@
 namespace HealthGateway.Common.AccessManagement.Administration
 {
     using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Net.Http;
+    using System.Text.Json;
     using System.Threading.Tasks;
-
     using HealthGateway.Common.AccessManagement.Administration.Models;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Services;
-
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -45,6 +50,11 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// Configuration Key for the Get User Url.
         /// </summary>
         public const string GETUSERURL = "GetUserUrl";
+
+        /// <summary>
+        /// Configuration Key for the Get User Url.
+        /// </summary>
+        private const string GetRolesUrlKey = "GetRolesUrl";
 
         /// <summary>
         /// The injected logger delegate.
@@ -77,12 +87,69 @@ namespace HealthGateway.Common.AccessManagement.Administration
             this.configuration = configuration;
         }
 
+        private static ActivitySource Source { get; } = new ActivitySource(nameof(KeycloakUserAdminDelegate));
+
         /// <inheritdoc/>
         public UserRepresentation GetUser(Guid userId, JWTModel jwtModel)
         {
             this.logger.LogInformation($"Keycloak GetUser : {userId.ToString()}");
 
             throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<IEnumerable<UserRepresentation>>> GetUsers(IdentityAccessRole role, JWTModel jwtModel)
+        {
+            using Activity? activity = Source.StartActivity();
+
+            this.logger.LogDebug("Getting users for role: {Role} ...", role);
+
+            RequestResult<IEnumerable<UserRepresentation>> retVal = new()
+            {
+                ResultStatus = ResultType.Error,
+            };
+
+            try
+            {
+                Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(GetRolesUrlKey));
+                HttpClient client = this.CreateHttpClient(baseUri, jwtModel.AccessToken);
+                string uri = $"{role}/users";
+
+                HttpResponseMessage response = await client.GetAsync(new Uri(uri, UriKind.Relative)).ConfigureAwait(true);
+                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                this.logger.LogDebug("Getting users for role: {Role}, response payload: {Payload} ...", role, payload);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    retVal.ResultStatus = ResultType.Success;
+
+                    List<UserRepresentation>? users = JsonSerializer.Deserialize<List<UserRepresentation>>(payload);
+                    if (users != null)
+                    {
+                        retVal.ResourcePayload = users;
+                        retVal.TotalResultCount = users.Count;
+                    }
+                }
+                else
+                {
+                    this.logger.LogError("Unable to connect to endpoint: {Endpoint}, HTTP Error: {Response} ...", baseUri + uri, response.StatusCode);
+
+                    retVal.ResultError = new RequestResultError()
+                    {
+                        ResultMessage = $"Unable to connect to endpoint: {baseUri}{uri}, HTTP Error: {response.StatusCode}.",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
+                    };
+                }
+            }
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
+            {
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting users: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak) };
+                this.logger.LogError($"Unexpected exception in Get Users {e}");
+            }
+
+            return retVal;
         }
 
         /// <inheritdoc/>
@@ -111,7 +178,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
             bool retVal = false;
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
             using HttpClient client = this.CreateHttpClient(baseUri, jwtModel.AccessToken!);
-            HttpResponseMessage response = await client.DeleteAsync(new Uri(userId!.ToString(), UriKind.Relative)).ConfigureAwait(true);
+            HttpResponseMessage response = await client.DeleteAsync(new Uri(userId.ToString(), UriKind.Relative)).ConfigureAwait(true);
             if (response.IsSuccessStatusCode)
             {
                 retVal = true;
@@ -131,7 +198,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
         }
 
         /// <summary>
-        /// Retuns an HttpClient for the AuthService to be invoked.
+        /// Returns an HttpClient for the AuthService to be invoked.
         /// </summary>
         /// <param name="baseUri">The uri of the service endpoint.</param>
         /// <param name="base64BearerToken">The JSON Web Token.</param>

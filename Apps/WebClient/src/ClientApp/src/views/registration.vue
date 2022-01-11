@@ -268,7 +268,7 @@ export default class RegistrationView extends Vue {
             const defaultRoute = this.webClientConfig.modules[
                 "VaccinationStatus"
             ]
-                ? "/dashboard"
+                ? "/home"
                 : "/timeline";
 
             this.$router.push({

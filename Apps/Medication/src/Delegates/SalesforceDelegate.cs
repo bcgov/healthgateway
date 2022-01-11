@@ -37,7 +37,7 @@ namespace HealthGateway.Medication.Delegates
     /// <summary>
     /// Salesforce Implementation that retrieves Medication Requests.
     /// </summary>
-    public class SalesforeceDelegate : IMedicationRequestDelegate
+    public class SalesforceDelegate : IMedicationRequestDelegate
     {
         private const string SalesforceConfigSectionKey = "Salesforce";
 
@@ -47,14 +47,14 @@ namespace HealthGateway.Medication.Delegates
         private readonly IAuthenticationDelegate authDelegate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SalesforeceDelegate"/> class.
+        /// Initializes a new instance of the <see cref="SalesforceDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="authDelegate">The delegate responsible authentication.</param>
-        public SalesforeceDelegate(
-            ILogger<SalesforeceDelegate> logger,
+        public SalesforceDelegate(
+            ILogger<SalesforceDelegate> logger,
             IHttpClientService httpClientService,
             IConfiguration configuration,
             IAuthenticationDelegate authDelegate)
@@ -79,7 +79,7 @@ namespace HealthGateway.Medication.Delegates
                     ResultStatus = ResultType.Error,
                 };
 
-                string? accessToken = this.authDelegate.AuthenticateAsUser(this.salesforceConfig.TokenUri, this.salesforceConfig.ClientAuthentication).AccessToken;
+                string? accessToken = this.authDelegate.AuthenticateAsUser(this.salesforceConfig.TokenUri, this.salesforceConfig.ClientAuthentication, true).AccessToken;
                 if (string.IsNullOrEmpty(accessToken))
                 {
                     this.logger.LogError($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");

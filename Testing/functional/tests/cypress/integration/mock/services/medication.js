@@ -37,7 +37,7 @@ describe("Medication Service", () => {
 
     it("Verify Get Medications List", () => {
         const drugIdentifiersQueryString =
-            "drugIdentifiers=66999990&drugIdentifiers=02391724&drugIdentifiers=02212048&drugIdentifiers=02263238&drugIdentifiers=00496499&drugIdentifiers=02042258&drugIdentifiers=02240550&drugIdentifiers=01926799&drugIdentifiers=02237250&drugIdentifiers=02252716&drugIdentifiers=02263254&drugIdentifiers=02046121&drugIdentifiers=02271958&drugIdentifiers=02240606&drugIdentifiers=02247701&drugIdentifiers=02046148&drugIdentifiers=66999997&drugIdentifiers=00402753&drugIdentifiers=00029246";
+            "drugIdentifiers=66999990&drugIdentifiers=02391724&drugIdentifiers=02212048&drugIdentifiers=02263238&drugIdentifiers=00496499&drugIdentifiers=02042258&drugIdentifiers=02240550&drugIdentifiers=01926799&drugIdentifiers=02237250&drugIdentifiers=02252716&drugIdentifiers=02263254&drugIdentifiers=02046121&drugIdentifiers=02271958&drugIdentifiers=02240606&drugIdentifiers=02247701&drugIdentifiers=02046148&drugIdentifiers=00402753&drugIdentifiers=00029246";
         cy.get("@config").then((config) => {
             cy.log(
                 `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
@@ -52,7 +52,7 @@ describe("Medication Service", () => {
                 expect(response.status).to.eq(200);
                 expect(response.body).to.not.be.null;
                 cy.log(`response.body: ${response.body}`);
-                expect(response.body.totalResultCount).to.equal(19);
+                expect(response.body.totalResultCount).to.equal(18);
                 expect(response.body.resourcePayload).to.not.be.null;
                 const drug66999990 = response.body.resourcePayload["66999990"];
                 verifyProvincialDrug(drug66999990);

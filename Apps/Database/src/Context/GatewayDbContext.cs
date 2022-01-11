@@ -80,6 +80,7 @@ namespace HealthGateway.Database.Context
         public DbSet<EventLog> EventLog { get; set; } = null!;
         public DbSet<AdminTag> AdminTag { get; set; } = null!;
         public DbSet<UserFeedbackTag> UserFeedbackTag { get; set; } = null!;
+        public DbSet<AdminUserProfile> AdminUserProfile { get; set; } = null!;
 
 #pragma warning restore CS1591, SA1600
 
@@ -331,6 +332,11 @@ namespace HealthGateway.Database.Context
             // Create non-unique key for UserProfileHistory
             modelBuilder.Entity<UserProfileHistory>()
                 .HasIndex(p => p.HdId);
+
+            // Create unique key for AdminUserProfile
+            modelBuilder.Entity<AdminUserProfile>()
+                .HasIndex(p => p.Username)
+                .IsUnique(true);
 
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);

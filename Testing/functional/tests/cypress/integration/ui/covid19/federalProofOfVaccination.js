@@ -1,9 +1,9 @@
 import { deleteDownloadsFolder } from "../../../support/utils";
 const { AuthMethod } = require("../../../support/constants");
-const dashboardUrl = "/dashboard";
+const homeUrl = "/home";
 
-describe("Dashboard - Proof of Vaccination Card", () => {
-    it("Dashboard - Federal Card button - Spinner displayed and download confirmed", () => {
+describe("Federal Proof of Vaccination", () => {
+    it("Save Federal Proof of Vaccination with Retry", () => {
         deleteDownloadsFolder();
         let isLoading = false;
         cy.intercept(
@@ -30,7 +30,7 @@ describe("Dashboard - Proof of Vaccination Card", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            dashboardUrl
+            homeUrl
         );
 
         cy.get("[data-testid=proof-vaccination-card-btn]")
@@ -40,19 +40,19 @@ describe("Dashboard - Proof of Vaccination Card", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
-        cy.wait(10000);
+        cy.wait(1000);
         cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
         cy.verifyDownload("VaccineProof.pdf");
     });
 
-    it("Dashboard - Federal Card button - Not enabled", () => {
+    it("Federal Proof of Vaccination Absent When Disabled", () => {
         cy.enableModules(["Immunization"]);
 
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            dashboardUrl
+            homeUrl
         );
 
         cy.get("[data-testid=proof-vaccination-card-btn]").should("not.exist");

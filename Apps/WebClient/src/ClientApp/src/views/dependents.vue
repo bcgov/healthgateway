@@ -8,8 +8,10 @@ import { Action, Getter } from "vuex-class";
 import DependentCardComponent from "@/components/dependentCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import NewDependentComponent from "@/components/modal/newDependent.vue";
+import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import ResourceCentreComponent from "@/components/resourceCentre.vue";
 import BannerError from "@/models/bannerError";
+import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import type { Dependent } from "@/models/dependent";
 import User from "@/models/user";
@@ -22,6 +24,7 @@ library.add(faUserPlus);
 
 @Component({
     components: {
+        BreadcrumbComponent,
         LoadingComponent,
         DependentCardComponent,
         NewDependentComponent,
@@ -46,8 +49,20 @@ export default class DependentsView extends Vue {
     private isLoading = true;
     private dependents: Dependent[] = [];
 
-    private mounted() {
+    private breadcrumbItems: BreadcrumbItem[] = [
+        {
+            text: "Dependents",
+            to: "/dependents",
+            active: true,
+            dataTestId: "breadcrumb-dependents",
+        },
+    ];
+
+    private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
+
+    private mounted() {
         this.dependentService = container.get<IDependentService>(
             SERVICE_IDENTIFIER.DependentService
         );
@@ -87,6 +102,7 @@ export default class DependentsView extends Vue {
 </script>
 <template>
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
         <b-row>
             <b-col class="col-12 col-lg-9 column-wrapper">

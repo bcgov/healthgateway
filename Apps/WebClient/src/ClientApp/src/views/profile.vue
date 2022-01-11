@@ -17,7 +17,9 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import VerifySMSComponent from "@/components/modal/verifySMS.vue";
+import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import BannerError from "@/models/bannerError";
+import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
@@ -39,6 +41,7 @@ const authNamespace = "auth";
 
 @Component({
     components: {
+        BreadcrumbComponent,
         LoadingComponent,
         VerifySMSComponent,
     },
@@ -116,6 +119,15 @@ export default class ProfileView extends Vue {
     private timeForDeletion = -1;
 
     private intervalHandler = 0;
+
+    private breadcrumbItems: BreadcrumbItem[] = [
+        {
+            text: "Profile",
+            to: "/profile",
+            active: true,
+            dataTestId: "breadcrumb-profile",
+        },
+    ];
 
     private get isEmptyEmail(): boolean {
         return (
@@ -463,6 +475,7 @@ export default class ProfileView extends Vue {
 
 <template>
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
         <b-alert
             :show="showCheckEmailAlert"
@@ -749,26 +762,6 @@ export default class ProfileView extends Vue {
                                 </b-form-group>
                             </b-col>
                         </b-row>
-                        <b-row class="mb-3">
-                            <b-col>
-                                <label for="lastLoginDate" class="hg-label"
-                                    >Login History</label
-                                >
-                                <div id="lastLoginDate">
-                                    <ul>
-                                        <li
-                                            v-for="(
-                                                item, index
-                                            ) in formattedLoginDateTimes"
-                                            :key="index"
-                                            data-testid="lastLoginDateItem"
-                                        >
-                                            {{ item }}
-                                        </li>
-                                    </ul>
-                                </div>
-                            </b-col>
-                        </b-row>
                         <b-row
                             v-if="!smsNumber && tempSMS"
                             data-testid="smsOptOutMessage"
@@ -813,6 +806,26 @@ export default class ProfileView extends Vue {
                                 >
                                     Save
                                 </hg-button>
+                            </b-col>
+                        </b-row>
+                        <b-row class="mb-3">
+                            <b-col>
+                                <label for="lastLoginDate" class="hg-label"
+                                    >Login History</label
+                                >
+                                <div id="lastLoginDate">
+                                    <ul>
+                                        <li
+                                            v-for="(
+                                                item, index
+                                            ) in formattedLoginDateTimes"
+                                            :key="index"
+                                            data-testid="lastLoginDateItem"
+                                        >
+                                            {{ item }}
+                                        </li>
+                                    </ul>
+                                </div>
                             </b-col>
                         </b-row>
                     </b-col>

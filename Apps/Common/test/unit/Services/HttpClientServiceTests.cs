@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,10 +34,10 @@ namespace HealthGateway.CommonTests.Services
         public void ShouldGetHttpClientsWithTimeout()
         {
             int timeout = 23;
-            Mock<IHttpClientFactory> mockHttpClientFactory = new Mock<IHttpClientFactory>();
-            using HttpClient httpClient = new HttpClient();
+            Mock<IHttpClientFactory> mockHttpClientFactory = new();
+            using HttpClient httpClient = new();
             mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(httpClient);
-            Dictionary<string, string> configDictionary = new Dictionary<string, string>
+            Dictionary<string, string> configDictionary = new()
             {
                 { "HttpClient:Timeout", $"00:00:{timeout}" },
             };
@@ -45,7 +45,8 @@ namespace HealthGateway.CommonTests.Services
             IConfiguration config = new ConfigurationBuilder()
                                         .AddInMemoryCollection(configDictionary)
                                         .Build();
-            HttpClientService service = new HttpClientService(mockHttpClientFactory.Object, config);
+            HttpClientService service = new(mockHttpClientFactory.Object, config);
+
             using HttpClient client = service.CreateDefaultHttpClient();
 
             Assert.IsType<HttpClient>(client);

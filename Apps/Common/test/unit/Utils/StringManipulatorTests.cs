@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 namespace HealthGateway.CommonTests.Utils
 {
     using System.Collections.Generic;
-    using HealthGateway.Common.Utils;
+    using HealthGateway.Common.Data.Utils;
     using Xunit;
 
     /// <summary>
@@ -34,9 +34,14 @@ namespace HealthGateway.CommonTests.Utils
             string expected1 = "PARM1=PARM1, PARM2=${PARM2}, PARM3=${PARM3}";
             string expected2 = "PARM1=PARM1, PARM2=PARM2, PARM3=${PARM3}";
             string expected3 = "PARM1=PARM1, PARM2=PARM2, PARM3=PARM3";
-            Assert.True(StringManipulator.Replace(inStr, "PARM1", "PARM1") == expected1);
-            Assert.True(StringManipulator.Replace(expected1, "PARM2", "PARM2") == expected2);
-            Assert.True(StringManipulator.Replace(expected2, "PARM3", "PARM3") == expected3);
+
+            string? actual1 = StringManipulator.Replace(inStr, "PARM1", "PARM1");
+            string? actual2 = StringManipulator.Replace(expected1, "PARM2", "PARM2");
+            string? actual3 = StringManipulator.Replace(expected2, "PARM3", "PARM3");
+
+            Assert.Equal(expected1, actual1);
+            Assert.Equal(expected2, actual2);
+            Assert.Equal(expected3, actual3);
         }
 
         /// <summary>
@@ -45,7 +50,7 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldReplaceDictionary()
         {
-            Dictionary<string, string> data = new Dictionary<string, string>()
+            Dictionary<string, string> data = new()
             {
                 { "PARM1", "PARM1" },
                 { "PARM2", "PARM2" },
@@ -53,7 +58,9 @@ namespace HealthGateway.CommonTests.Utils
             };
             string inStr = "PARM1=${PARM1}, PARM2=${PARM2}, PARM3=${PARM3}";
             string expected = "PARM1=PARM1, PARM2=PARM2, PARM3=PARM3";
+
             string? result = StringManipulator.Replace(inStr, data);
+
             Assert.True(result == expected);
         }
 
@@ -64,6 +71,7 @@ namespace HealthGateway.CommonTests.Utils
         public void ShouldNullReturnNull()
         {
             string? result = StringManipulator.Replace(null, "KEY", "VALUE");
+
             Assert.True(result is null);
         }
     }

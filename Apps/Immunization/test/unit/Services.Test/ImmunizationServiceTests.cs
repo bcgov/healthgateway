@@ -26,6 +26,7 @@ namespace HealthGateway.Immunization.Test.Services
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Models.PHSA.Recommendation;
+    using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Parser;
     using HealthGateway.Immunization.Services;
@@ -51,7 +52,7 @@ namespace HealthGateway.Immunization.Test.Services
         [Fact]
         public void ShouldGetImmunizations()
         {
-            var mockDelegate = new Mock<Immunization.Delegates.IImmunizationDelegate>();
+            Mock<IImmunizationDelegate> mockDelegate = new();
             RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
@@ -59,7 +60,7 @@ namespace HealthGateway.Immunization.Test.Services
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = false, },
                     Result = new ImmunizationResponse(
-                        new List<ImmunizationViewResponse>()
+                        new List<ImmunizationViewResponse>
                         {
                             new ImmunizationViewResponse()
                             {
@@ -90,8 +91,9 @@ namespace HealthGateway.Immunization.Test.Services
             mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<int>())).ReturnsAsync(delegateResult);
             IImmunizationService service = new ImmunizationService(mockDelegate.Object);
 
-            var actualResult = service.GetImmunizations(0);
-            Assert.True(expectedResult.IsDeepEqual(actualResult.Result));
+            Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(0);
+
+            expectedResult.ShouldDeepEqual(actualResult.Result);
         }
 
         /// <summary>
@@ -100,7 +102,7 @@ namespace HealthGateway.Immunization.Test.Services
         [Fact]
         public void ShouldGetImmunization()
         {
-            var mockDelegate = new Mock<Immunization.Delegates.IImmunizationDelegate>();
+            Mock<IImmunizationDelegate> mockDelegate = new();
             RequestResult<PHSAResult<ImmunizationViewResponse>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
@@ -130,8 +132,10 @@ namespace HealthGateway.Immunization.Test.Services
 
             mockDelegate.Setup(s => s.GetImmunization(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
             IImmunizationService service = new ImmunizationService(mockDelegate.Object);
-            var actualResult = service.GetImmunization("immz_id");
-            Assert.True(expectedResult.IsDeepEqual(actualResult.Result));
+
+            Task<RequestResult<ImmunizationEvent>> actualResult = service.GetImmunization("immz_id");
+
+            expectedResult.ShouldDeepEqual(actualResult.Result);
         }
 
         /// <summary>
@@ -141,8 +145,8 @@ namespace HealthGateway.Immunization.Test.Services
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public void ShouldGetRecomendation()
         {
-            var immzRecommendationResponse = this.GetImmzRecommendationResponse();
-            var mockDelegate = new Mock<Immunization.Delegates.IImmunizationDelegate>();
+            ImmunizationRecommendationResponse immzRecommendationResponse = this.GetImmzRecommendationResponse();
+            Mock<IImmunizationDelegate> mockDelegate = new();
             RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = GetPHSAResult(immzRecommendationResponse);
             RequestResult<ImmunizationResult> expectedResult = new()
             {
@@ -159,10 +163,11 @@ namespace HealthGateway.Immunization.Test.Services
             mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
             IImmunizationService service = new ImmunizationService(mockDelegate.Object);
 
-            var actualResult = service.GetImmunizations(0);
-            Assert.True(expectedResult.IsDeepEqual(actualResult.Result));
+            Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(0);
+
+            expectedResult.ShouldDeepEqual(actualResult.Result);
             Assert.Equal(1, expectedResult.ResourcePayload.Recommendations.Count);
-            var recomendationResult = expectedResult.ResourcePayload.Recommendations[0];
+            ImmunizationRecommendation recomendationResult = expectedResult.ResourcePayload.Recommendations[0];
             Assert.Equal(this.recomendationSetId, recomendationResult.RecommendationSetId);
             Assert.Equal(this.vaccineName, recomendationResult.Immunization.Name);
             Assert.Collection(
@@ -185,7 +190,7 @@ namespace HealthGateway.Immunization.Test.Services
         [Fact]
         public void ValidateImmunizationError()
         {
-            var mockDelegate = new Mock<Immunization.Delegates.IImmunizationDelegate>();
+            Mock<IImmunizationDelegate> mockDelegate = new();
             RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = new()
             {
                 ResultStatus = ResultType.Error,
@@ -204,8 +209,9 @@ namespace HealthGateway.Immunization.Test.Services
             mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
             IImmunizationService service = new ImmunizationService(mockDelegate.Object);
 
-            var actualResult = service.GetImmunizations(0);
-            Assert.True(expectedResult.IsDeepEqual(actualResult.Result));
+            Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(0);
+
+            expectedResult.ShouldDeepEqual(actualResult.Result);
         }
 
         /*
@@ -228,7 +234,7 @@ namespace HealthGateway.Immunization.Test.Services
 
             RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new PHSAResult<VaccineStatusResult>()
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = false, },
@@ -279,7 +285,8 @@ namespace HealthGateway.Immunization.Test.Services
                 mockHttpContextAccessor.Object);
 
             RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success);
+
+            Assert.True(actualResult.ResultStatus == ResultType.Success);
             Assert.True(actualResult.ResourcePayload != null && actualResult.ResourcePayload.Document.Data == assetResult.ResourcePayload.Data);
         }
 
@@ -291,7 +298,7 @@ namespace HealthGateway.Immunization.Test.Services
         {
             RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new PHSAResult<VaccineStatusResult>()
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = true, },
@@ -331,7 +338,8 @@ namespace HealthGateway.Immunization.Test.Services
                 mockHttpContextAccessor.Object);
 
             RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.ActionRequired && actualResult.ResultError != null);
+
+            Assert.True(actualResult.ResultStatus == ResultType.ActionRequired && actualResult.ResultError != null);
         }
 
         /// <summary>
@@ -342,7 +350,7 @@ namespace HealthGateway.Immunization.Test.Services
         {
             RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = "Unable to generate vaccine proof pdf", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) },
             };
 
@@ -362,7 +370,8 @@ namespace HealthGateway.Immunization.Test.Services
                 mockHttpContextAccessor.Object);
 
             RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
-            Assert.True(vaccineStatusResult.IsDeepEqual(actualResult));
+
+            vaccineStatusResult.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -373,7 +382,7 @@ namespace HealthGateway.Immunization.Test.Services
         {
             RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new PHSAResult<VaccineStatusResult>()
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = false, },
@@ -402,7 +411,8 @@ namespace HealthGateway.Immunization.Test.Services
                 mockHttpContextAccessor.Object);
 
             RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error);
+
+            Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
@@ -413,7 +423,7 @@ namespace HealthGateway.Immunization.Test.Services
         {
             RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new PHSAResult<VaccineStatusResult>()
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = false, },
@@ -439,7 +449,8 @@ namespace HealthGateway.Immunization.Test.Services
                 mockHttpContextAccessor.Object);
 
             RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error);
+
+            Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
@@ -450,7 +461,7 @@ namespace HealthGateway.Immunization.Test.Services
         {
             RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new PHSAResult<VaccineStatusResult>()
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = false, },
@@ -496,6 +507,7 @@ namespace HealthGateway.Immunization.Test.Services
                 mockHttpContextAccessor.Object);
 
             RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
@@ -518,7 +530,7 @@ namespace HealthGateway.Immunization.Test.Services
 
             RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult = new()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = new PHSAResult<VaccineStatusResult>()
                 {
                     LoadState = new PHSALoadState() { RefreshInProgress = false, },
@@ -558,6 +570,7 @@ namespace HealthGateway.Immunization.Test.Services
               mockHttpContextAccessor.Object);
 
             RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+
             Assert.True(actualResult.ResultStatus == ResultType.ActionRequired && actualResult.ResultError != null);
         }
         */
@@ -572,7 +585,7 @@ namespace HealthGateway.Immunization.Test.Services
                     LoadState = new() { RefreshInProgress = false, },
                     Result = new(
                         new List<ImmunizationViewResponse>(),
-                        new List<ImmunizationRecommendationResponse>()
+                        new List<ImmunizationRecommendationResponse>
                         {
                             immzRecommendationResponse,
                         }),
@@ -601,7 +614,7 @@ namespace HealthGateway.Immunization.Test.Services
             Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
 
-            List<Claim> claims = new List<Claim>()
+            List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, "username"),
                 new Claim(ClaimTypes.NameIdentifier, userId),
