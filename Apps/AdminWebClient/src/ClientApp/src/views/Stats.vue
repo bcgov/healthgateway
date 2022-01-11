@@ -6,19 +6,48 @@ import { Getter } from "vuex-class";
 export default class StatsView extends Vue {
     @Getter("serviceEndpoints", { namespace: "config" })
     private serviceEndpoints!: { [id: string]: string };
+
+    private inactiveDays = 90;
+
+    private inactiveDaysRules = {
+        required: (value: number) => !!value || "Required.",
+        valid: (value: number) => value >= 0 || "Invalid value",
+    };
+
     private downloadUserProfileCSV(): void {
-        window.open(
-            `${this.serviceEndpoints.CsvExportBaseUri}/GetUserProfiles`
-        );
+        this.$nextTick(() => {
+            (this.$refs.form as Vue & { reset: () => void }).reset();
+            window.open(
+                `${this.serviceEndpoints.CsvExportBaseUri}/GetUserProfiles`
+            );
+        });
     }
     private downloadUserNotesCSV(): void {
-        window.open(`${this.serviceEndpoints.CsvExportBaseUri}/GetNotes`);
+        this.$nextTick(() => {
+            (this.$refs.form as Vue & { reset: () => void }).reset();
+            window.open(`${this.serviceEndpoints.CsvExportBaseUri}/GetNotes`);
+        });
     }
     private downloadUserCommentsCSV(): void {
-        window.open(`${this.serviceEndpoints.CsvExportBaseUri}/GetComments`);
+        this.$nextTick(() => {
+            (this.$refs.form as Vue & { reset: () => void }).reset();
+            window.open(
+                `${this.serviceEndpoints.CsvExportBaseUri}/GetComments`
+            );
+        });
     }
     private downloadUserRatingsCSV(): void {
-        window.open(`${this.serviceEndpoints.CsvExportBaseUri}/GetRatings`);
+        this.$nextTick(() => {
+            (this.$refs.form as Vue & { reset: () => void }).reset();
+            window.open(`${this.serviceEndpoints.CsvExportBaseUri}/GetRatings`);
+        });
+    }
+    private downloadInactiveUsersCSV(): void {
+        if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
+            window.open(
+                `${this.serviceEndpoints.CsvExportBaseUri}/GetInactiveUsers?inactiveDays=${this.inactiveDays}`
+            );
+        }
     }
 }
 </script>
@@ -31,7 +60,7 @@ export default class StatsView extends Vue {
                     <v-card-title>
                         <span class="headline">System Stats Download</span>
                     </v-card-title>
-                    <v-form>
+                    <v-form ref="form">
                         <v-container>
                             <v-row>
                                 <v-col align="center" justify="center">
@@ -67,6 +96,31 @@ export default class StatsView extends Vue {
                                     >
                                 </v-col>
                             </v-row>
+                            <v-row
+                                ><v-col
+                                    cols
+                                    sm="6"
+                                    md="3"
+                                    align="center"
+                                    justify="center"
+                                >
+                                    <h3>Inactive Users</h3>
+                                    <v-text-field
+                                        v-model="inactiveDays"
+                                        type="number"
+                                        label="Inactive Days"
+                                        :rules="[
+                                            inactiveDaysRules.required,
+                                            inactiveDaysRules.valid,
+                                        ]"
+                                    />
+                                    <v-btn
+                                        class="info"
+                                        @click="downloadInactiveUsersCSV()"
+                                        ><v-icon>fa-download</v-icon></v-btn
+                                    >
+                                </v-col></v-row
+                            >
                         </v-container>
                     </v-form>
                 </v-card>
