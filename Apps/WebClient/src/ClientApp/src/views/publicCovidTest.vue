@@ -693,7 +693,7 @@ export default class PublicCovidTestView extends Vue {
                     </div>
                 </div>
             </form>
-                </div>
+        </div>
     </div>
 </template>
 
