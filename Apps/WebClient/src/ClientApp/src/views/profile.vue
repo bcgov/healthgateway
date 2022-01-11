@@ -762,26 +762,6 @@ export default class ProfileView extends Vue {
                                 </b-form-group>
                             </b-col>
                         </b-row>
-                        <b-row class="mb-3">
-                            <b-col>
-                                <label for="lastLoginDate" class="hg-label"
-                                    >Login History</label
-                                >
-                                <div id="lastLoginDate">
-                                    <ul>
-                                        <li
-                                            v-for="(
-                                                item, index
-                                            ) in formattedLoginDateTimes"
-                                            :key="index"
-                                            data-testid="lastLoginDateItem"
-                                        >
-                                            {{ item }}
-                                        </li>
-                                    </ul>
-                                </div>
-                            </b-col>
-                        </b-row>
                         <b-row
                             v-if="!smsNumber && tempSMS"
                             data-testid="smsOptOutMessage"
@@ -826,6 +806,26 @@ export default class ProfileView extends Vue {
                                 >
                                     Save
                                 </hg-button>
+                            </b-col>
+                        </b-row>
+                        <b-row class="mb-3">
+                            <b-col>
+                                <label for="lastLoginDate" class="hg-label"
+                                    >Login History</label
+                                >
+                                <div id="lastLoginDate">
+                                    <ul>
+                                        <li
+                                            v-for="(
+                                                item, index
+                                            ) in formattedLoginDateTimes"
+                                            :key="index"
+                                            data-testid="lastLoginDateItem"
+                                        >
+                                            {{ item }}
+                                        </li>
+                                    </ul>
+                                </div>
                             </b-col>
                         </b-row>
                     </b-col>
