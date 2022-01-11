@@ -15,30 +15,20 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Layouts
 {
-    using System.Threading.Tasks;
     using Blazored.LocalStorage;
     using HealthGateway.Admin.Client.Theme;
     using Microsoft.AspNetCore.Components;
-    using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
     using MudBlazor;
 
     /// <summary>
-    /// Main Layout theming and logic.
+    /// Login Layout theming and logic.
     /// </summary>
-    public partial class MainLayout
+    public partial class LoginLayout
     {
         private const string DarkThemeKey = "DarkMode";
 
         [Inject]
-        private SignOutSessionStateManager SignOutManager { get; set; } = default!;
-
-        [Inject]
-        private NavigationManager Navigation { get; set; } = default!;
-
-        [Inject]
         private ILocalStorageService LocalStorage { get; set; } = default!;
-
-        private bool DrawerOpen { get; set; } = true;
 
         private bool DarkMode { get; set; } = true;
 
@@ -60,23 +50,6 @@ namespace HealthGateway.Admin.Client.Layouts
             {
                 await this.LocalStorage.SetItemAsync<bool>(DarkThemeKey, this.DarkMode).ConfigureAwait(true);
             }
-        }
-
-        private async Task ToggleTheme()
-        {
-            this.DarkMode = !this.DarkMode;
-            await this.LocalStorage.SetItemAsync<bool>(DarkThemeKey, this.DarkMode).ConfigureAwait(true);
-        }
-
-        private void DrawerToggle()
-        {
-            this.DrawerOpen = !this.DrawerOpen;
-        }
-
-        private async Task BeginSignOut()
-        {
-            await this.SignOutManager.SetSignOutState().ConfigureAwait(true);
-            this.Navigation.NavigateTo("authentication/logout");
         }
     }
 }
