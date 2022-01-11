@@ -693,39 +693,6 @@ export default class PublicCovidTestView extends Vue {
                     </div>
                 </div>
             </form>
-            <div class="mt-4 px-3 px-sm-5 py-4 bg-white">
-                <h3 class="mb-3">Help in other languages</h3>
-                <p>
-                    Talk to someone on the phone. Get support in 140+ languages,
-                    including:
-                </p>
-                <p>
-                    <span lang="zh">國粵語</span> |
-                    <span lang="pa">ਅਨੁਵਾਦ ਸਰਵਿਸਿਜ਼</span> |
-                    <span lang="ar">خدمات-ت-رج-م-ه؟</span> |
-                    <span lang="fr">Français</span> |
-                    <span lang="es">Español</span>
-                </p>
-                <p>
-                    <strong>
-                        Service is available every day: 7 am to 7 pm or 9 am to
-                        5 pm on holidays.
-                    </strong>
-                </p>
-                <div class="my-3">
-                    <hg-button variant="secondary" href="tel:+18338382323">
-                        Call: 1-833-838-2323 (Toll-Free)
-                    </hg-button>
-                </div>
-                <div class="my-3">
-                    <hg-button variant="secondary" href="tel:711">
-                        Telephone for the Deaf: Dial 711
-                    </hg-button>
-                </div>
-                <div class="text-muted">
-                    Standard message and data rates may apply.
-                </div>
-            </div>
         </div>
     </div>
 </template>
