@@ -174,10 +174,11 @@ public class InactiveUserService : IInactiveUserService
         foreach (UserRepresentation user in users)
         {
             AdminUserProfileView? adminUserProfileView = inactiveUsers.Find(x1 => x1.Username == user.Username);
-            bool adminProfileExists = activeUserProfiles.Exists(x2 => x2.Username == user.Username);
 
             if (adminUserProfileView == null)
             {
+                bool adminProfileExists = activeUserProfiles.Exists(x2 => x2.Username == user.Username);
+
                 if (!adminProfileExists)
                 {
                     AdminUserProfileView adminUserProfile = AdminUserProfileView.FromKeycloakModel(user);

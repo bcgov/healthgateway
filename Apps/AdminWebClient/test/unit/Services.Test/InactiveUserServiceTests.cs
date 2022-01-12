@@ -56,7 +56,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         [Fact]
         public void ShouldGetInactiveUsers()
         {
-            int expectedInactiveUserCount = 4;
+            int expectedInactiveUserCount = 5;
 
             // Arrange
             Mock<IAuthenticationDelegate> authenticationDelegateMock = new();
@@ -75,6 +75,12 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                     {
                         Username = "username2",
                     },
+
+                    // Example: when 0 inactive days is entered, user will be both active and inactive
+                    new AdminUserProfile
+                    {
+                        Username = "username7",
+                    },
                 },
             };
 
@@ -91,6 +97,12 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                     {
                         Username = "username4",
                     },
+
+                    // Example: when 0 inactive days is entered, user will be both active and inactive
+                    new AdminUserProfile
+                    {
+                        Username = "username7",
+                    },
                 },
             };
 
@@ -104,6 +116,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             Guid userId4 = Guid.NewGuid();
             Guid userId5 = Guid.NewGuid();
             Guid userId6 = Guid.NewGuid();
+            Guid userId7 = Guid.NewGuid();
 
             RequestResult<IEnumerable<UserRepresentation>> adminUserResult = new()
             {
@@ -177,6 +190,12 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                         UserId = userId6,
                         Username = "username6",
                         Email = "user6@idir",
+                    },
+                    new UserRepresentation
+                    {
+                        UserId = userId7,
+                        Username = "username7",
+                        Email = "user7@idir",
                     },
                 },
             };
