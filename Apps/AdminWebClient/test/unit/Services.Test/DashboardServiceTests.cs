@@ -13,14 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Test.Services
+namespace HealthGateway.AdminWebClientTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
-    using Microsoft.Extensions.Configuration;
     using Moq;
     using Xunit;
 

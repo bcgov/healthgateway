@@ -46,6 +46,15 @@ namespace HealthGateway.Laboratory.Services
         Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, string bearerToken);
 
         /// <summary>
+        /// Post the rapid test for the given patient info.
+        /// </summary>
+        /// <param name="hdid">The requested HDID which owns the rapid test request.</param>
+        /// <param name="bearerToken">The security token representing the authenticated user.</param>
+        /// <param name="rapidTestRequest">The rapid test request model.</param>
+        /// <returns>Returns the Rapid Test response.</returns>
+        Task<RequestResult<AuthenticatedRapidTestResponse>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticatedRapidTestRequest rapidTestRequest);
+
+        /// <summary>
         /// Gets a COVID-19 test response for the given patient info.
         /// </summary>
         /// <param name="phn">The patient's Personal Health Number.</param>

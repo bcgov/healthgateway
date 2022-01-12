@@ -16,6 +16,8 @@
 namespace HealthGateway.CommonTests.AccessManagement.Administration
 {
     using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Net;
     using System.Net.Http;
     using System.Text.Json;
@@ -25,6 +27,8 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Services;
+    using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Moq.Protected;
@@ -39,9 +43,16 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
         /// AuthenticateAsUser - Happy Path.
         /// </summary>
         [Fact]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public void ShouldAuthenticateAsUser()
         {
             Uri tokenUri = new("http://testsite");
+            Dictionary<string, string> configurationParams = new()
+            {
+                { "AuthCache:TokenCacheExpireMinutes", "20" },
+            };
+            IConfiguration configuration = CreateConfiguration(configurationParams);
+
             ClientCredentialsTokenRequest tokenRequest = new()
             {
                 ClientId = "CLIENT_ID",
@@ -49,6 +60,8 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
                 Username = "A_USERNAME",
                 Password = "SOME_PASSWORD",
             };
+
+            using IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
 
             string json = @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
             JWTModel? expected = JsonSerializer.Deserialize<JWTModel>(json);
@@ -71,9 +84,15 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
-            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object);
-            JWTModel actualModel = authDelegate.AuthenticateAsUser(tokenUri, tokenRequest);
+            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object, configuration, memoryCache);
+            JWTModel actualModel = authDelegate.AuthenticateAsUser(tokenUri, tokenRequest, false);
             expected.ShouldDeepEqual(actualModel);
+
+            (JWTModel cacheResult, bool cached) = authDelegate.AuthenticateUser(tokenUri, tokenRequest, true);
+            Assert.True(!cached);
+
+            (JWTModel fetchedCachedResult, cached) = authDelegate.AuthenticateUser(tokenUri, tokenRequest, true);
+            Assert.True(cached);
         }
 
         /// <summary>
@@ -110,9 +129,19 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
-            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object);
+            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object, null, null);
             JWTModel actualModel = authDelegate.AuthenticateAsSystem(tokenUri, tokenRequest);
             expected.ShouldDeepEqual(actualModel);
+        }
+
+        private static IConfiguration CreateConfiguration(Dictionary<string, string> configParams)
+        {
+            return new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true)
+                .AddJsonFile("appsettings.Development.json", optional: true)
+                .AddJsonFile("appsettings.local.json", optional: true)
+                .AddInMemoryCollection(configParams)
+                .Build();
         }
     }
 }

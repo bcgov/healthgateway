@@ -14,7 +14,7 @@
                 "testStatus": "NotSet",
                 "testOutcome": "NotSet",
                 "resultTitle": null,
-                "resultDescription": null,
+                "resultDescription": [],
                 "resultLink": null
             }
         ]

@@ -38,6 +38,11 @@ namespace HealthGateway.Laboratory.Models
         public string PublicCovidTestsEndPoint { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the authenticated rapid test endpoint.
+        /// </summary>
+        public string AuthenticatedRapidTestEndPoint { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the total number of records to retrieve in one call.
         /// </summary>
         public string FetchSize { get; set; } = string.Empty;

@@ -70,13 +70,13 @@ namespace HealthGateway.Immunization.Controllers
         [Produces("application/json")]
         [Route("{immunizationId}")]
         [Authorize(Policy = ImmunizationPolicy.Read)]
-        public async Task<IActionResult> GetImmunization([FromQuery] string hdid, string immunizationId)
+        public async Task<RequestResult<ImmunizationEvent>> GetImmunization([FromQuery] string hdid, string immunizationId)
         {
             this.logger.LogDebug($"Getting immunization {immunizationId} for user {hdid}");
             RequestResult<ImmunizationEvent> result = await this.service.GetImmunization(immunizationId).ConfigureAwait(true);
 
             this.logger.LogDebug($"Finished getting immunization {immunizationId} for user {hdid}");
-            return new JsonResult(result);
+            return result;
         }
 
         /// <summary>
@@ -91,13 +91,13 @@ namespace HealthGateway.Immunization.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Authorize(Policy = ImmunizationPolicy.Read)]
-        public async Task<IActionResult> GetImmunizations([FromQuery] string hdid)
+        public async Task<RequestResult<ImmunizationResult>> GetImmunizations([FromQuery] string hdid)
         {
             this.logger.LogDebug($"Getting immunizations for user {hdid}");
             RequestResult<ImmunizationResult> result = await this.service.GetImmunizations().ConfigureAwait(true);
 
             this.logger.LogDebug($"Finished getting immunizations for user {hdid}");
-            return new JsonResult(result);
+            return result;
         }
     }
 }

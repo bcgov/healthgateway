@@ -74,6 +74,7 @@ namespace HealthGateway.Medication
             });
 
             // Add services
+            services.AddMemoryCache();
             services.AddTransient<IMedicationService, RestMedicationService>();
             services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
             services.AddTransient<IMedicationRequestService, MedicationRequestService>();
@@ -84,7 +85,7 @@ namespace HealthGateway.Medication
             services.AddTransient<IMedStatementDelegate, RestMedStatementDelegate>();
             services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
             services.AddTransient<IHashDelegate, HMACHashDelegate>();
-            services.AddTransient<IMedicationRequestDelegate, SalesforeceDelegate>();
+            services.AddTransient<IMedicationRequestDelegate, SalesforceDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
         }
 

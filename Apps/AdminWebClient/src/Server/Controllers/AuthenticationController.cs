@@ -77,6 +77,8 @@ namespace HealthGateway.Admin.Controllers
                 return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme);
             }
 
+            this.authenticationService.SetLastLoginDateTime();
+
             this.logger.LogDebug("Redirecting to dashboard");
             string basePath = this.httpContextAccessor.HttpContext?.Request.PathBase.Value ?? string.Empty;
             if (this.Url.IsLocalUrl(basePath))

@@ -16,8 +16,12 @@
 namespace HealthGateway.Common.AccessManagement.Administration
 {
     using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Administration.Models;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Models;
 
     /// <summary>
     /// The UserDelegate IAM Admin Service interface.
@@ -31,6 +35,14 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// <param name="jwtModel">Json Web Token model for authenticating the call.</param>
         /// <returns>A resulting UserRepresentation object.</returns>
         UserRepresentation GetUser(Guid userId, JWTModel jwtModel);
+
+        /// <summary>
+        /// Returns users for the role passed in.
+        /// </summary>
+        /// <param name="role">The requested users role.</param>
+        /// <param name="jwtModel">Json Web Token model for authenticating the call.</param>
+        /// <returns>An Enumerable of UserRepresentation objects.</returns>
+        Task<RequestResult<IEnumerable<UserRepresentation>>> GetUsers(IdentityAccessRole role, JWTModel jwtModel);
 
         /// <summary>
         /// Delete a User account from the Identity and Access Management system.

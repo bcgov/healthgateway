@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
+    using System;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Mvc;
 
@@ -41,5 +42,10 @@ namespace HealthGateway.Admin.Services
         /// <returns> The AuthenticationProperties.</returns>
         /// <param name="redirectPath">The URI to redirect to after logon.</param>
         AuthenticationProperties GetAuthenticationProperties(string redirectPath);
+
+        /// <summary>
+        /// Sets last login date time for admin user profile.
+        /// </summary>
+        void SetLastLoginDateTime();
     }
 }

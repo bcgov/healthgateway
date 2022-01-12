@@ -2,8 +2,8 @@ import { deleteDownloadsFolder } from "../../../support/utils";
 const { AuthMethod } = require("../../../support/constants");
 const homeUrl = "/home";
 
-describe("Home - Proof of Vaccination Card", () => {
-    it("Home - Federal Card button - Spinner displayed and download confirmed", () => {
+describe("Federal Proof of Vaccination", () => {
+    it("Save Federal Proof of Vaccination with Retry", () => {
         deleteDownloadsFolder();
         let isLoading = false;
         cy.intercept(
@@ -40,12 +40,12 @@ describe("Home - Proof of Vaccination Card", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
-        cy.wait(10000);
+        cy.wait(1000);
         cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
         cy.verifyDownload("VaccineProof.pdf");
     });
 
-    it("Home - Federal Card button - Not enabled", () => {
+    it("Federal Proof of Vaccination Absent When Disabled", () => {
         cy.enableModules(["Immunization"]);
 
         cy.login(

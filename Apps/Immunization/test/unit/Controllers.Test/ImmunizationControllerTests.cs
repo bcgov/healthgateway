@@ -91,18 +91,14 @@ namespace HealthGateway.Immunization.Test.Controllers
             ImmunizationController controller = new(new Mock<ILogger<ImmunizationController>>().Object, svcMock.Object);
 
             // Act
-            IActionResult actual = await controller.GetImmunizations(this.hdid).ConfigureAwait(true);
+            RequestResult<ImmunizationResult> actual = await controller.GetImmunizations(this.hdid).ConfigureAwait(true);
 
             // Verify
-            Assert.IsType<JsonResult>(actual);
-
-            JsonResult? jsonResult = actual as JsonResult;
-            RequestResult<ImmunizationResult>? result = jsonResult?.Value as RequestResult<ImmunizationResult>;
-            Assert.True(result != null && result.ResultStatus == ResultType.Success);
+            Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
             int count = 0;
-            if (result != null && result.ResultStatus == ResultType.Success)
+            if (actual != null && actual.ResultStatus == ResultType.Success)
             {
-                foreach (ImmunizationEvent? immz in result.ResourcePayload!.Immunizations)
+                foreach (ImmunizationEvent? immz in actual.ResourcePayload!.Immunizations)
                 {
                     count++;
                 }
@@ -150,13 +146,10 @@ namespace HealthGateway.Immunization.Test.Controllers
             ImmunizationController controller = new(new Mock<ILogger<ImmunizationController>>().Object, svcMock.Object);
 
             // Act
-            IActionResult actual = await controller.GetImmunization(this.hdid, immunizationId).ConfigureAwait(true);
+            RequestResult<ImmunizationEvent> actual = await controller.GetImmunization(this.hdid, immunizationId).ConfigureAwait(true);
 
             // Verify
-            Assert.IsType<JsonResult>(actual);
-            JsonResult? jsonResult = actual as JsonResult;
-            RequestResult<ImmunizationEvent>? result = jsonResult?.Value as RequestResult<ImmunizationEvent>;
-            Assert.True(result != null && result.ResultStatus == ResultType.Success);
+            Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
         }
     }
 }

@@ -112,6 +112,11 @@ export default class PublicCovidTestView extends Vue {
             ?.patientDisplayName;
     }
 
+    private get haveErrorDetails(): boolean {
+        const detail = this.publicCovidTestResponseResultError?.detail;
+        return detail ? true : false;
+    }
+
     private cancel() {
         // Reset store module in case there are errors
         this.resetPublicCovidTestResponseResult();
@@ -138,7 +143,7 @@ export default class PublicCovidTestView extends Vue {
 
     private formatDate(date: StringISODateTime): string {
         if (date) {
-            const dateWrapper = new DateWrapper(date);
+            const dateWrapper = new DateWrapper(date, { hasTime: true });
             const dateString = dateWrapper.format("yyyy-MMM-dd");
             const timeString = dateWrapper.format("t").replace(" ", "\u00A0");
             return `${dateString}, ${timeString}`;
@@ -184,6 +189,16 @@ export default class PublicCovidTestView extends Vue {
             default:
                 return [];
         }
+    }
+
+    private getPeriod(link: string, length: number, index: number): string {
+        if (this.isNotStringEmpty(link)) {
+            if (this.isLastRow(length, index)) {
+                return ".";
+            }
+            return "";
+        }
+        return "";
     }
 
     private isLastRow(length: number, index: number): boolean {
@@ -370,8 +385,16 @@ export default class PublicCovidTestView extends Vue {
                                             (resultDescriptionIndex + 1)
                                         "
                                         target="blank_"
-                                        >here.</a
+                                        >this page</a
                                     >
+                                    <span>{{
+                                        getPeriod(
+                                            publicCovidTest.resultLink,
+                                            publicCovidTest.resultDescription
+                                                .length,
+                                            resultDescriptionIndex
+                                        )
+                                    }}</span>
                                 </b-col>
                             </b-row>
                         </div>
@@ -449,9 +472,16 @@ export default class PublicCovidTestView extends Vue {
                                 data-testid="error-text-description"
                                 class="pl-4"
                             >
-                                {{
-                                    publicCovidTestResponseResultError.description
-                                }}
+                                <div :class="{ 'mb-3': haveErrorDetails }">
+                                    {{
+                                        publicCovidTestResponseResultError.description
+                                    }}
+                                </div>
+                                <div>
+                                    {{
+                                        publicCovidTestResponseResultError.detail
+                                    }}
+                                </div>
                             </div>
                         </b-alert>
                     </div>
@@ -624,7 +654,7 @@ export default class PublicCovidTestView extends Vue {
                         placement="topright"
                     >
                         Your information is being collected to provide you with
-                        your COVID-19 vaccination status under s. 26(c) of the
+                        your COVID-19 test result under s. 26(c) of the
                         <em
                             >Freedom of Information and Protection of Privacy
                             Act</em
@@ -663,39 +693,6 @@ export default class PublicCovidTestView extends Vue {
                     </div>
                 </div>
             </form>
-            <div class="mt-4 px-3 px-sm-5 py-4 bg-white">
-                <h3 class="mb-3">Help in other languages</h3>
-                <p>
-                    Talk to someone on the phone. Get support in 140+ languages,
-                    including:
-                </p>
-                <p>
-                    <span lang="zh">國粵語</span> |
-                    <span lang="pa">ਅਨੁਵਾਦ ਸਰਵਿਸਿਜ਼</span> |
-                    <span lang="ar">خدمات-ت-رج-م-ه؟</span> |
-                    <span lang="fr">Français</span> |
-                    <span lang="es">Español</span>
-                </p>
-                <p>
-                    <strong>
-                        Service is available every day: 7 am to 7 pm or 9 am to
-                        5 pm on holidays.
-                    </strong>
-                </p>
-                <div class="my-3">
-                    <hg-button variant="secondary" href="tel:+18338382323">
-                        Call: 1-833-838-2323 (Toll-Free)
-                    </hg-button>
-                </div>
-                <div class="my-3">
-                    <hg-button variant="secondary" href="tel:711">
-                        Telephone for the Deaf: Dial 711
-                    </hg-button>
-                </div>
-                <div class="text-muted">
-                    Standard message and data rates may apply.
-                </div>
-            </div>
         </div>
     </div>
 </template>

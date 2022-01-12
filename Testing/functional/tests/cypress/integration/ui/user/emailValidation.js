@@ -14,7 +14,7 @@ describe("User Email Verification", () => {
         cy.intercept("GET", `${baseUrl}/email/validate/expired`, {
             fixture: "WebClientService/EmailValidation/expired.json",
         });
-        cy.intercept("GET", "/v1/api/UserProfile/*").as("getUserProfile");
+        cy.intercept("GET", "**/v1/api/UserProfile/*").as("getUserProfile");
     });
 
     it("Check verified email invite", () => {
