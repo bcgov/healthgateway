@@ -70,6 +70,24 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
     }
 
     /// <inheritdoc />
+    public DBResult<IEnumerable<AdminUserProfile>> GetActiveAdminUserProfiles(int activeDays)
+    {
+        this.logger.LogTrace("Retrieving all the active admin user profiles since {ActiveDays} day(s) ago...", activeDays);
+
+        DBResult<IEnumerable<AdminUserProfile>> result = new DBResult<IEnumerable<AdminUserProfile>>()
+        {
+            Payload = this.dbContext.AdminUserProfile
+                .Where(profile => profile.LastLoginDateTime.Date >= DateTime.UtcNow.AddDays(-activeDays).Date)
+                .OrderByDescending(profile => profile.LastLoginDateTime)
+                .ToList(),
+            Status = DBStatusCode.Read,
+        };
+
+        this.logger.LogTrace("Finished retrieving {Count} active admin user profiles since {ActiveDays} day(s) ago...", result.Payload.Count(), activeDays);
+        return result;
+    }
+
+    /// <inheritdoc />
     public DBResult<IEnumerable<AdminUserProfile>> GetInactiveAdminUserProfiles(int inactiveDays)
     {
         this.logger.LogTrace("Retrieving all the inactive admin user profiles for the past {InactiveDays} day(s)...", inactiveDays);
@@ -83,7 +101,7 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
             Status = DBStatusCode.Read,
         };
 
-        this.logger.LogTrace("Finished retrieving {Count} inactive admin user profiles for the past {InactiveDays} day(s)...", result.Payload!.Count(), inactiveDays);
+        this.logger.LogTrace("Finished retrieving {Count} inactive admin user profiles for the past {InactiveDays} day(s)...", result.Payload.Count(), inactiveDays);
         return result;
     }
 

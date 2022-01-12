@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.AccessManagement.Administration.Models
 {
     using System;
-    using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Text.Json.Serialization;
 
@@ -60,7 +59,7 @@ namespace HealthGateway.Common.AccessManagement.Administration.Models
         /// Gets or sets the user's username.
         /// </summary>
         [JsonPropertyName("username")]
-        public string? Username { get; set; }
+        public string Username { get; set; } = String.Empty;
 
         /// <summary>
         /// Gets or sets the user's unique account identifier.
