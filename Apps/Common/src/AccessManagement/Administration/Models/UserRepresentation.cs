@@ -59,7 +59,7 @@ namespace HealthGateway.Common.AccessManagement.Administration.Models
         /// Gets or sets the user's username.
         /// </summary>
         [JsonPropertyName("username")]
-        public string Username { get; set; } = String.Empty;
+        public string Username { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the user's unique account identifier.
