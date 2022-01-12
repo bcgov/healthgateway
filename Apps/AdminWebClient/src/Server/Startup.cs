@@ -93,6 +93,7 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<IEmailAdminService, EmailAdminService>();
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<ICsvExportService, CsvExportService>();
+            services.AddTransient<ICovidSupportService, CovidSupportService>();
             services.AddTransient<IInactiveUserService, InactiveUserService>();
 
             // Add delegates
