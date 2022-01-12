@@ -135,7 +135,6 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
         if (result.Status == DBStatusCode.Read)
         {
             // Copy certain attributes into the fetched Admin User Profile
-            result.Payload.Email = profile.Email;
             result.Payload.LastLoginDateTime = profile.LastLoginDateTime;
             result.Payload.UpdatedBy = profile.UpdatedBy;
             result.Payload.Version = profile.Version;

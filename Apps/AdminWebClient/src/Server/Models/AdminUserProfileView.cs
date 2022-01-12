@@ -76,7 +76,6 @@ namespace HealthGateway.Admin.Server.Models
             {
                 AdminUserProfileId = model.AdminUserProfileId,
                 Username = model.Username,
-                Email = model.Email,
                 LastLoginDateTime = model.LastLoginDateTime,
             };
         }

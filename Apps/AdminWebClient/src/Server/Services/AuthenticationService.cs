@@ -135,7 +135,6 @@ namespace HealthGateway.Admin.Services
                     {
                         // Keycloak always creates username in lowercase
                         Username = authData.User.Id,
-                        Email = authData.User.Email,
                         LastLoginDateTime = jwtAuthTime,
                     };
                     DBResult<Database.Models.AdminUserProfile> insertResult = this.profileDelegate.Add(newProfile);

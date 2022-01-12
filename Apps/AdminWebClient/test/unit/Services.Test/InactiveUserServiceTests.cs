@@ -70,12 +70,10 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                     new AdminUserProfile
                     {
                         Username = "username1",
-                        Email = "user1@idir",
                     },
                     new AdminUserProfile
                     {
                         Username = "username2",
-                        Email = "user2@idir",
                     },
                 },
             };
@@ -88,12 +86,10 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                     new AdminUserProfile
                     {
                         Username = "username3",
-                        Email = "user3@idir",
                     },
                     new AdminUserProfile
                     {
                         Username = "username4",
-                        Email = "user4@idir",
                     },
                 },
             };
@@ -393,12 +389,10 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                     new AdminUserProfile
                     {
                         Username = "username3",
-                        Email = "user3@idir",
                     },
                     new AdminUserProfile
                     {
                         Username = "username4",
-                        Email = "user4@idir",
                     },
                 },
             };
@@ -464,7 +458,6 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                     new AdminUserProfile
                     {
                         Username = "username1",
-                        Email = "user1@idir",
                     },
                 },
             };
@@ -529,7 +522,6 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                     new AdminUserProfile
                     {
                         Username = "username1",
-                        Email = "user1@idir",
                     },
                 },
             };

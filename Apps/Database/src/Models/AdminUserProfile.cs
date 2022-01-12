@@ -38,12 +38,6 @@ public class AdminUserProfile : AuditableEntity
     public string Username { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the email.
-    /// </summary>
-    [MaxLength(255)]
-    public string? Email { get; set; } = string.Empty;
-
-    /// <summary>
     /// Gets or sets the users last login datetime.
     /// </summary>
     public DateTime LastLoginDateTime { get; set; }
