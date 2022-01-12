@@ -71,7 +71,7 @@
         "@fortawesome/free-regular-svg-icons": "^5.15.4",
         "@fortawesome/free-solid-svg-icons": "^5.15.4",
         "@fortawesome/vue-fontawesome": "^2.0.6",
-        "@types/file-saver": "^2.0.4",
+        "@types/file-saver": "^2.0.5",
         "@types/vue-clickaway": "^2.2.0",
         "@types/vue-the-mask": "^0.11.1",
         "axios": "^0.24.0",
