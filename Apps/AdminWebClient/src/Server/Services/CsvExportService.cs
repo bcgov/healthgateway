@@ -164,11 +164,11 @@ namespace HealthGateway.Admin.Services
         private static Stream GetStream<TModel, TMap>(IEnumerable<TModel> obj)
             where TMap : ClassMap
         {
-            MemoryStream stream = new MemoryStream();
-            using (StreamWriter writeFile = new StreamWriter(stream, leaveOpen: true))
+            MemoryStream stream = new();
+            using (StreamWriter writeFile = new(stream, leaveOpen: true))
             {
 #pragma warning disable CA2000 // Dispose objects before losing scope
-                CsvWriter? csv = new CsvWriter(writeFile, CultureInfo.CurrentCulture, leaveOpen: true);
+                CsvWriter csv = new(writeFile, CultureInfo.CurrentCulture, leaveOpen: true);
 #pragma warning restore CA2000 // Dispose objects before losing scope
                 csv.Context.RegisterClassMap<TMap>();
                 csv.WriteRecords(obj);

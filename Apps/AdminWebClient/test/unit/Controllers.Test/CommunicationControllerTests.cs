@@ -63,7 +63,7 @@ namespace HealthGateway.AdminWebClientTests.Controllers.Test
             mockCommunicationService.Setup(s => s.Add(It.Is<Communication>(x => x.Text == comm.Text))).Returns(expected);
 
             // Initialize controller
-            CommunicationController controller = new CommunicationController(mockCommunicationService.Object);
+            CommunicationController controller = new(mockCommunicationService.Object);
 
             // Test if controller adds communication properly
             IActionResult actualResult = controller.Add(comm);
