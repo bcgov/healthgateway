@@ -107,7 +107,7 @@ public class InactiveUserService : IInactiveUserService
             if (adminUsersResult.ResultStatus == ResultType.Success)
             {
                 List<UserRepresentation> adminUsers = adminUsersResult.ResourcePayload.ToList();
-                this.PopulateUserDatails(inactiveUsers, adminUsers, IdentityAccessRole.AdminUser);
+                this.PopulateUserDetails(inactiveUsers, adminUsers, IdentityAccessRole.AdminUser);
                 this.AddInactiveUser(inactiveUsers, activeUserProfiles, adminUsers, IdentityAccessRole.AdminUser);
             }
             else
@@ -119,7 +119,7 @@ public class InactiveUserService : IInactiveUserService
             if (supportUsersResult.ResultStatus == ResultType.Success)
             {
                 List<UserRepresentation> supportUsers = supportUsersResult.ResourcePayload.ToList();
-                this.PopulateUserDatails(inactiveUsers, supportUsers, IdentityAccessRole.SupportUser);
+                this.PopulateUserDetails(inactiveUsers, supportUsers, IdentityAccessRole.SupportUser);
                 this.AddInactiveUser(inactiveUsers, activeUserProfiles, supportUsers, IdentityAccessRole.SupportUser);
             }
             else
@@ -141,7 +141,7 @@ public class InactiveUserService : IInactiveUserService
         return requestResult;
     }
 
-    private void PopulateUserDatails(List<AdminUserProfileView> inactiveUsers, List<UserRepresentation> identityAccessUsers, IdentityAccessRole role)
+    private void PopulateUserDetails(List<AdminUserProfileView> inactiveUsers, List<UserRepresentation> identityAccessUsers, IdentityAccessRole role)
     {
         this.logger.LogDebug("Keycloak {Role} count: {Count}...", role.ToString(), identityAccessUsers.Count);
         List<UserRepresentation> users = identityAccessUsers.FindAll(x1 => inactiveUsers.Exists(x2 => x1.Username == x2.Username));
@@ -165,31 +165,15 @@ public class InactiveUserService : IInactiveUserService
     private void AddInactiveUser(List<AdminUserProfileView> inactiveUsers, List<AdminUserProfile> activeUserProfiles, List<UserRepresentation> identityAccessUsers, IdentityAccessRole role)
     {
         this.logger.LogDebug("Keycloak {Role} count: {Count}...", role.ToString(), identityAccessUsers.Count);
-        List<UserRepresentation> users = identityAccessUsers.FindAll(x1 => !inactiveUsers.Exists(x2 => x1.Username == x2.Username));
-        this.logger.LogDebug("Keycloak {Role} users that do not exist in inactiveUsers list - count: {Count}...", role.ToString(), users.Count);
+        IEnumerable<UserRepresentation> users = identityAccessUsers.Where(x1 =>
+            !inactiveUsers.Exists(x2 => x1.Username == x2.Username) &&
+            !activeUserProfiles.Exists(x2 => x1.Username == x2.Username));
+        this.logger.LogDebug("Keycloak {Role} users that do not exist in inactiveUsers list - count: {Count}...", role.ToString(), users.Count());
 
         foreach (UserRepresentation user in users)
         {
-            // Find an adminUserProfileView object whose username matches the username in users (keycloak user).
-            AdminUserProfileView? adminUserProfileView = inactiveUsers.Find(x1 => x1.Username == user.Username);
-
-            if (adminUserProfileView == null)
-            {
-                // The adminUserProfileView object does not exist in inactiveUsers so now lets check if this user is active.
-                bool adminProfileExists = activeUserProfiles.Exists(x2 => x2.Username == user.Username);
-
-                if (!adminProfileExists)
-                {
-                    // This user does not exist, which means there is no DB record for this user.
-                    AdminUserProfileView adminUserProfile = AdminUserProfileView.FromKeycloakModel(user, role.ToString());
-                    inactiveUsers.Add(adminUserProfile);
-                }
-            }
-            else
-            {
-                // This occurs when the user has already been added to the inactiveUsers list i.e., user belongs to more than one user role.
-                adminUserProfileView.RealmRoles = adminUserProfileView.RealmRoles != null ? (adminUserProfileView.RealmRoles + ", " + role.ToString()) : role.ToString();
-            }
+            AdminUserProfileView adminUserProfile = AdminUserProfileView.FromKeycloakModel(user, role.ToString());
+            inactiveUsers.Add(adminUserProfile);
         }
     }
 }
