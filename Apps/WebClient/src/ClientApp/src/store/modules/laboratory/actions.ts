@@ -163,7 +163,7 @@ export const actions: LaboratoryActions = {
             bannerError.description =
                 "The information you entered does not match our records. Please try again.";
             bannerError.detail =
-                "Please note that it can take up to 48 hours from the time of test before a result is available.";
+                "Please note that it can take up to 48 hours from the time of test before a result is available. If it has been at least 48 hours since you tested, please contact the COVID-19 Results Line (1‐833‐707‐2792) to investigate the issue.";
         }
 
         context.commit("setPublicCovidTestResponseResultError", bannerError);
