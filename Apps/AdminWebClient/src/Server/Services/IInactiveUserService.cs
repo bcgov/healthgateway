@@ -21,7 +21,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Models;
 
     /// <summary>
-    /// Service that provides functionality to extract inactive users..
+    /// Service that provides functionality to extract inactive users.
     /// </summary>
     public interface IInactiveUserService
     {

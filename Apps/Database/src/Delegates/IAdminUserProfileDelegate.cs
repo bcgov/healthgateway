@@ -35,14 +35,14 @@ public interface IAdminUserProfileDelegate
     /// <summary>
     /// Returns Active AdminUserProfile objects from the database.
     /// </summary>
-    /// <param name="activeDays">The days active to filter from the users last login.</param>
+    /// <param name="activeDays">Users active within the last X days".</param>
     /// <returns>An IEnumerable of AdminUserProfile objects wrapped in a DBResult.</returns>
     DBResult<IEnumerable<AdminUserProfile>> GetActiveAdminUserProfiles(int activeDays);
 
     /// <summary>
     /// Returns Inactive AdminUserProfile objects from the database.
     /// </summary>
-    /// <param name="inactiveDays">The days inactive to filter from the users last login.</param>
+    /// <param name="inactiveDays">Users inactive for at least X days.</param>
     /// <returns>An IEnumerable of AdminUserProfile objects wrapped in a DBResult.</returns>
     DBResult<IEnumerable<AdminUserProfile>> GetInactiveAdminUserProfiles(int inactiveDays);
 

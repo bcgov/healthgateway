@@ -66,7 +66,7 @@ namespace HealthGateway.Admin.Server.Models
         public DateTime? LastLoginDateTime { get; set; }
 
         /// <summary>
-        /// Creates a AdminUserProfileView object from an AdminUserProfile model.
+        /// Creates an AdminUserProfileView object from an AdminUserProfile model.
         /// </summary>
         /// <param name="model">The AdminUserProfile to convert.</param>
         /// <returns>The newly created AdminUserProfileView object.</returns>
@@ -81,11 +81,12 @@ namespace HealthGateway.Admin.Server.Models
         }
 
         /// <summary>
-        /// Creates a AdminUserProfileView object from an UserRepresentation model.
+        /// Creates an AdminUserProfileView object from a UserRepresentation model.
         /// </summary>
-        /// <param name="model">The UserRrepresentation to convert.</param>
+        /// <param name="model">The UserRepresentation to convert.</param>
+        /// <param name="realmRoles">The user's roles (comma separated).</param>
         /// <returns>The newly created AdminUserProfileView object.</returns>
-        public static AdminUserProfileView FromKeycloakModel(UserRepresentation model)
+        public static AdminUserProfileView FromKeycloakModel(UserRepresentation model, string realmRoles)
         {
             return new AdminUserProfileView()
             {
@@ -94,6 +95,7 @@ namespace HealthGateway.Admin.Server.Models
                 Email = model.Email,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
+                RealmRoles = realmRoles,
             };
         }
     }

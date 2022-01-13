@@ -76,7 +76,13 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                         Username = "username2",
                     },
 
-                    // Example: when 0 inactive days is entered, user will be both active and inactive
+                    // It is possible for active and inactive users to have the same record.
+                    // Current Date is Nov 6. Add in 1 day for days active. GetActiveAdminUserProfiles
+                    // returns user with last login datetime of Nov 5. Any record that is Nov 5 and after
+                    // are active.
+                    // GetInactiveAdminUserProfiles returns user with last login datetime of Nov 5.
+                    // Rule: lastLoginDateTime >= DateTime.UtcNow.AddDays(-activeDays).
+                    // InactiveUserService.GetInactiveUsers will determine what inactive users to return.
                     new AdminUserProfile
                     {
                         Username = "username7",
@@ -98,7 +104,12 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                         Username = "username4",
                     },
 
-                    // Example: when 0 inactive days is entered, user will be both active and inactive
+                    // It is possible for active and inactive users to have the same record.
+                    // Current Date is Nov 6. Add in 1 day for days inactive. GetActiveAdminUserProfiles
+                    // returns user with last login datetime of Nov 5. Any record that is Nov 5 and before
+                    // are inactive.
+                    // Rule: lastLoginDateTime <= DateTime.UtcNow.AddDays(-inactiveDays).
+                    // InactiveUserService.GetInactiveUsers will determine what inactive users to return.
                     new AdminUserProfile
                     {
                         Username = "username7",
