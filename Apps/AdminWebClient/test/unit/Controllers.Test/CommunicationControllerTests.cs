@@ -21,8 +21,8 @@ namespace HealthGateway.AdminWebClientTests.Controllers.Test
     using HealthGateway.Admin.Controllers;
     using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
-    using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Constants;
     using Microsoft.AspNetCore.Mvc;
     using Moq;

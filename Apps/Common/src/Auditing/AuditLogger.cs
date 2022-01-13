@@ -19,6 +19,7 @@ namespace HealthGateway.Common.Auditing
     using System.Linq;
     using System.Reflection;
     using System.Security.Claims;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -147,6 +148,8 @@ namespace HealthGateway.Common.Auditing
                 case "Medication":
                     return ApplicationType.Medication;
                 case "AdminWebClient":
+                    return ApplicationType.AdminWebClient;
+                case "Admin.Server":
                     return ApplicationType.AdminWebClient;
                 case "Laboratory":
                     return ApplicationType.Laboratory;

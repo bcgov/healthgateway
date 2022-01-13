@@ -25,6 +25,8 @@ namespace HealthGateway.Common.Delegates.PHSA
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -65,7 +67,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         {
             RequestResult<NotificationSettingsResponse> retVal = new RequestResult<NotificationSettingsResponse>()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
             };
             Stopwatch timer = new Stopwatch();
             timer.Start();
@@ -88,7 +90,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                         NotificationSettingsResponse? notificationSettings = JsonSerializer.Deserialize<NotificationSettingsResponse>(payload);
                         if (notificationSettings != null)
                         {
-                            retVal.ResultStatus = Common.Constants.ResultType.Success;
+                            retVal.ResultStatus = ResultType.Success;
                             retVal.ResourcePayload = notificationSettings;
                             retVal.TotalResultCount = 1;
                         }
@@ -99,7 +101,7 @@ namespace HealthGateway.Common.Delegates.PHSA
 
                         break;
                     case HttpStatusCode.NoContent: // No Notification Settings exits for this user
-                        retVal.ResultStatus = Common.Constants.ResultType.Success;
+                        retVal.ResultStatus = ResultType.Success;
                         retVal.ResourcePayload = new NotificationSettingsResponse();
                         retVal.TotalResultCount = 0;
                         break;
@@ -131,7 +133,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         {
             RequestResult<NotificationSettingsResponse> retVal = new RequestResult<NotificationSettingsResponse>()
             {
-                ResultStatus = Common.Constants.ResultType.Error,
+                ResultStatus = ResultType.Error,
             };
             Stopwatch timer = new Stopwatch();
             timer.Start();
@@ -164,12 +166,12 @@ namespace HealthGateway.Common.Delegates.PHSA
                     case HttpStatusCode.Created:
                     case HttpStatusCode.OK:
                         NotificationSettingsResponse? nsResponse = JsonSerializer.Deserialize<NotificationSettingsResponse>(payload, options);
-                        retVal.ResultStatus = Common.Constants.ResultType.Success;
+                        retVal.ResultStatus = ResultType.Success;
                         retVal.TotalResultCount = 1;
                         retVal.ResourcePayload = nsResponse;
                         break;
                     case HttpStatusCode.UnprocessableEntity:
-                        retVal.ResultStatus = Constants.ResultType.ActionRequired;
+                        retVal.ResultStatus = ResultType.ActionRequired;
                         this.logger.LogInformation($"PHSA has indicated that the SMS number is invalid: {notificationSettings.SMSNumber}");
                         retVal.ResultError = new RequestResultError() { ResultMessage = $"PHSA has indicated that the SMS number is invalid: {notificationSettings.SMSNumber}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.SMSInvalid, ServiceType.PHSA) };
                         break;

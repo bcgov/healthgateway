@@ -21,7 +21,7 @@ namespace HealthGateway.WebClient.Listeners
     using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;

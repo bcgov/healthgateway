@@ -26,7 +26,8 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
     using HealthGateway.Common.AccessManagement.Administration.Models;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -77,7 +78,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<KeycloakUserAdminDelegate> logger = loggerFactory.CreateLogger<KeycloakUserAdminDelegate>();
 
-            var response = new List<UserRepresentation>()
+            List<UserRepresentation>? response = new List<UserRepresentation>()
             {
                 new UserRepresentation()
                 {
@@ -121,7 +122,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<KeycloakUserAdminDelegate> logger = loggerFactory.CreateLogger<KeycloakUserAdminDelegate>();
 
-            var response = new List<UserRepresentation>();
+            List<UserRepresentation>? response = new List<UserRepresentation>();
 
             using HttpResponseMessage httpResponseMessage = new()
             {

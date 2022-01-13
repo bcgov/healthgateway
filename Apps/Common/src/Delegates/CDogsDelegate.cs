@@ -24,12 +24,13 @@ namespace HealthGateway.Common.Delegates
     using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Utils;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.CDogs;
     using HealthGateway.Common.Services;
-    using HealthGateway.Common.Utils;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -104,9 +105,11 @@ namespace HealthGateway.Common.Delegates
                     if (response.IsSuccessStatusCode)
                     {
                         retVal.ResultStatus = ResultType.Success;
-                        retVal.ResourcePayload = new ReportModel();
-                        retVal.ResourcePayload.Data = Convert.ToBase64String(payload);
-                        retVal.ResourcePayload.FileName = $"{request.Options.ReportName}.{request.Options.ConvertTo}";
+                        retVal.ResourcePayload = new ReportModel
+                        {
+                            Data = Convert.ToBase64String(payload),
+                            FileName = $"{request.Options.ReportName}.{request.Options.ConvertTo}",
+                        };
                         retVal.TotalResultCount = 1;
                     }
                     else

@@ -25,9 +25,9 @@ namespace HealthGateway.Immunization.Test.Delegates
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Models.PHSA.Recommendation;
     using HealthGateway.Common.Services;

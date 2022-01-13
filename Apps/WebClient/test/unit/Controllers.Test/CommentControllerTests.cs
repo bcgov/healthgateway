@@ -18,8 +18,8 @@ namespace HealthGateway.WebClient.Test.Controllers
     using System;
     using System.Collections.Generic;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.WebClient.Controllers;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;

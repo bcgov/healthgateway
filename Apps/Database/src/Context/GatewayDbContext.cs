@@ -22,6 +22,8 @@ namespace HealthGateway.Database.Context
     using System.IO;
     using System.Reflection;
     using System.Text;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Utils;

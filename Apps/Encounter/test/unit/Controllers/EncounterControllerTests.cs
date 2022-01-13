@@ -17,7 +17,7 @@ namespace HealthGateway.EncounterTests
 {
     using System;
     using System.Collections.Generic;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Services;
     using Moq;

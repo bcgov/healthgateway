@@ -19,8 +19,9 @@ namespace HealthGateway.Common.Services
     using System.Collections.Generic;
     using Hangfire;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Jobs;
-    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Hosting;

@@ -24,13 +24,15 @@ namespace HealthGateway.Medication.Services
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
@@ -128,7 +130,7 @@ namespace HealthGateway.Medication.Services
                 else
                 {
                     this.logger.LogInformation($"Invalid protective word. {hdid}");
-                    result.ResultStatus = Common.Constants.ResultType.ActionRequired;
+                    result.ResultStatus = ResultType.ActionRequired;
                     result.ResultError = ErrorTranslator.ActionRequired(validationResult.Item2, ActionType.Protected);
                 }
 

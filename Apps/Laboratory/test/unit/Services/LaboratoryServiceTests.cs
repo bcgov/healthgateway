@@ -23,10 +23,10 @@ namespace HealthGateway.LaboratoryTests
     using DeepEqual.Syntax;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
-    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
-    using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
