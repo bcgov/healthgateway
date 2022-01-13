@@ -68,7 +68,6 @@ public class AuthenticationServiceTests
             Payload = new AdminUserProfile
             {
                 Username = "username",
-                Email = "user@idir",
             },
         };
         profileDelegateMock.Setup(s => s.Add(It.IsAny<AdminUserProfile>())).Returns(insertResult);
@@ -97,7 +96,6 @@ public class AuthenticationServiceTests
         AdminUserProfile profile = new()
         {
             Username = "username",
-            Email = "user@idir",
         };
 
         DBResult<AdminUserProfile> getResult = new()

@@ -13,33 +13,23 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Models;
-
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using HealthGateway.Common.Data.Models;
-
-/// <summary>
-/// The admin user profile model.
-/// </summary>
-public class AdminUserProfile : AuditableEntity
+namespace HealthGateway.Admin.Server.Services
 {
-    /// <summary>
-    /// Gets or sets the id.
-    /// </summary>
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid AdminUserProfileId { get; set; }
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using HealthGateway.Admin.Server.Models;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
-    /// Gets or sets the username.
+    /// Service that provides functionality to extract inactive users.
     /// </summary>
-    [MaxLength(255)]
-    public string Username { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the users last login datetime.
-    /// </summary>
-    public DateTime LastLoginDateTime { get; set; }
+    public interface IInactiveUserService
+    {
+        /// <summary>
+        /// Returns inactive users exclusive of the days inactive.
+        /// </summary>
+        /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
+        /// <returns>returns a Request Result of List.</returns>
+        Task<RequestResult<List<AdminUserProfileView>>> GetInactiveUsers(int inactiveDays);
+    }
 }

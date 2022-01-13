@@ -19,16 +19,12 @@ namespace HealthGateway.Admin.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
-    using System.Linq;
     using System.Threading.Tasks;
     using CsvHelper;
     using CsvHelper.Configuration;
     using HealthGateway.Admin.Server.Mappers;
     using HealthGateway.Admin.Server.Models;
-    using HealthGateway.Common.AccessManagement.Administration;
-    using HealthGateway.Common.AccessManagement.Administration.Models;
-    using HealthGateway.Common.AccessManagement.Authentication;
-    using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -36,25 +32,17 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
     public class CsvExportService : ICsvExportService
     {
         private const int PageSize = 100000;
         private const int Page = 0;
-        private const string AuthConfigSectionName = "KeycloakAdmin:Authentication";
         private readonly INoteDelegate noteDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly ICommentDelegate commentDelegate;
         private readonly IRatingDelegate ratingDelegate;
-        private readonly IAuthenticationDelegate authDelegate;
-        private readonly IAdminUserProfileDelegate adminUserProfileDelegate;
-        private readonly IUserAdminDelegate userAdminDelegate;
-        private readonly ILogger logger;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
-        private readonly Uri tokenUri;
+        private readonly IInactiveUserService inactiveUserService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CsvExportService"/> class.
@@ -63,36 +51,19 @@ namespace HealthGateway.Admin.Services
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
         /// <param name="commentDelegate">The comment delegate to interact with the DB.</param>
         /// <param name="ratingDelegate">The rating delegate to interact with the DB.</param>
-        /// <param name="authDelegate">The OAuth2 authentication service.</param>
-        /// <param name="adminUserProfileDelegate">The admin user profile delegate to interact with the DB.</param>
-        /// <param name="userAdminDelegate">The user admin delegate to access identity access.</param>
-        /// <param name="configuration">The configuration to use.</param>
-        /// <param name="logger">Injected Logger Provider.</param>
+        /// <param name="inactiveUserService">The inactive user service to get match db and keycloak inactive users.</param>
         public CsvExportService(
             INoteDelegate noteDelegate,
             IUserProfileDelegate userProfileDelegate,
             ICommentDelegate commentDelegate,
             IRatingDelegate ratingDelegate,
-            IAuthenticationDelegate authDelegate,
-            IAdminUserProfileDelegate adminUserProfileDelegate,
-            IUserAdminDelegate userAdminDelegate,
-            ILogger<CsvExportService> logger,
-            IConfiguration configuration)
+            IInactiveUserService inactiveUserService)
         {
             this.noteDelegate = noteDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.commentDelegate = commentDelegate;
             this.ratingDelegate = ratingDelegate;
-            this.authDelegate = authDelegate;
-            this.adminUserProfileDelegate = adminUserProfileDelegate;
-            this.userAdminDelegate = userAdminDelegate;
-            this.logger = logger;
-
-            IConfigurationSection configSection = configuration.GetSection(AuthConfigSectionName);
-            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
-
-            this.tokenRequest = new ClientCredentialsTokenRequest();
-            configSection.Bind(this.tokenRequest);
+            this.inactiveUserService = inactiveUserService;
         }
 
         /// <inheritdoc />
@@ -126,39 +97,14 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc />
         public async Task<Stream> GetInactiveUsers(int inactiveDays)
         {
-            this.logger.LogDebug("Getting inactive users since {InactiveDays} day(s) from last login....", inactiveDays);
+            RequestResult<List<AdminUserProfileView>> inactiveUsersResult = await this.inactiveUserService.GetInactiveUsers(inactiveDays).ConfigureAwait(true);
 
-            List<AdminUserProfileView> inactiveUsers = new List<AdminUserProfileView>();
-
-            // Inactive admin user profiles from DB
-            DBResult<IEnumerable<AdminUserProfile>> profilesResult = this.adminUserProfileDelegate.GetInactiveAdminUserProfiles(inactiveDays);
-
-            if (profilesResult.Status == DBStatusCode.Read && profilesResult.Payload.Any())
+            if (inactiveUsersResult.ResultStatus == ResultType.Success)
             {
-                inactiveUsers.AddRange(profilesResult.Payload.Select(AdminUserProfileView.FromModel).ToList());
-                this.logger.LogDebug("Inactive db admin user profile count: {Count} since {InactiveDays} day(s)...", inactiveUsers.Count, inactiveDays);
-
-                // Get admin and support users from keycloak
-                JWTModel jwtModel = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest);
-                RequestResult<IEnumerable<UserRepresentation>> adminUsersResult = await this.userAdminDelegate.GetUsers(IdentityAccessRole.AdminUser, jwtModel).ConfigureAwait(true);
-                RequestResult<IEnumerable<UserRepresentation>> supportUsersResult = await this.userAdminDelegate.GetUsers(IdentityAccessRole.SupportUser, jwtModel).ConfigureAwait(true);
-
-                if (adminUsersResult.ResultStatus == ResultType.Success && adminUsersResult.ResourcePayload != null)
-                {
-                    this.SetUserDetails(inactiveUsers, adminUsersResult.ResourcePayload.ToList(), IdentityAccessRole.AdminUser);
-                }
-
-                if (supportUsersResult.ResultStatus == ResultType.Success && supportUsersResult.ResourcePayload != null)
-                {
-                    this.SetUserDetails(inactiveUsers, supportUsersResult.ResourcePayload.ToList(), IdentityAccessRole.SupportUser);
-                }
-
-                this.logger.LogDebug("Inactive user with no keycloak match count: {Count}...", inactiveUsers.FindAll(x => x.UserId == null).Count);
-                inactiveUsers.RemoveAll(x => x.UserId == null);
+                return GetStream<AdminUserProfileView, AdminUserProfileViewCsvMap>(inactiveUsersResult.ResourcePayload);
             }
 
-            this.logger.LogDebug("Inactive user count: {Count}...", inactiveUsers.Count);
-            return GetStream<AdminUserProfileView, AdminUserProfileViewCsvMap>(inactiveUsers);
+            return GetStream<AdminUserProfileView, AdminUserProfileViewCsvMap>(new List<AdminUserProfileView>());
         }
 
         private static Stream GetStream<TModel, TMap>(IEnumerable<TModel> obj)
@@ -175,26 +121,6 @@ namespace HealthGateway.Admin.Services
             }
 
             return stream;
-        }
-
-        private void SetUserDetails(List<AdminUserProfileView> inactiveUsers, List<UserRepresentation> identityAccessUsers, IdentityAccessRole role)
-        {
-            this.logger.LogDebug("{Role} count: {Count}...", role.ToString(), identityAccessUsers.Count);
-            List<UserRepresentation> users = identityAccessUsers.FindAll(x1 => inactiveUsers.Exists(x2 => x1.Username == x2.Username));
-            this.logger.LogDebug("Filtered {Role} count: {Count}...", role.ToString(), users.Count);
-
-            foreach (AdminUserProfileView inactiveUser in inactiveUsers)
-            {
-                UserRepresentation? user = users.Find(x => x.Username == inactiveUser.Username);
-
-                if (user != null)
-                {
-                    inactiveUser.FirstName = inactiveUser.FirstName ??= user.FirstName;
-                    inactiveUser.LastName = inactiveUser.LastName ??= user.LastName;
-                    inactiveUser.UserId = inactiveUser.UserId ??= user.UserId;
-                    inactiveUser.RealmRoles = inactiveUser.RealmRoles != null ? (inactiveUser.RealmRoles + ", " + role.ToString()) : role.ToString();
-                }
-            }
         }
     }
 }

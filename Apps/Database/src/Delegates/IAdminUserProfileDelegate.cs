@@ -33,9 +33,16 @@ public interface IAdminUserProfileDelegate
     DBResult<AdminUserProfile> GetAdminUserProfile(string username);
 
     /// <summary>
+    /// Returns Active AdminUserProfile objects from the database.
+    /// </summary>
+    /// <param name="activeDays">Users active within the last X days".</param>
+    /// <returns>An IEnumerable of AdminUserProfile objects wrapped in a DBResult.</returns>
+    DBResult<IEnumerable<AdminUserProfile>> GetActiveAdminUserProfiles(int activeDays);
+
+    /// <summary>
     /// Returns Inactive AdminUserProfile objects from the database.
     /// </summary>
-    /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
+    /// <param name="inactiveDays">Users inactive for at least X days.</param>
     /// <returns>An IEnumerable of AdminUserProfile objects wrapped in a DBResult.</returns>
     DBResult<IEnumerable<AdminUserProfile>> GetInactiveAdminUserProfiles(int inactiveDays);
 

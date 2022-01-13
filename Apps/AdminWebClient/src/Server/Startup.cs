@@ -17,6 +17,7 @@ namespace HealthGateway.AdminWebClient
 {
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Delegates;
+    using HealthGateway.Admin.Server.Services;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -93,6 +94,7 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<ICsvExportService, CsvExportService>();
             services.AddTransient<ICovidSupportService, CovidSupportService>();
+            services.AddTransient<IInactiveUserService, InactiveUserService>();
 
             // Add delegates
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
