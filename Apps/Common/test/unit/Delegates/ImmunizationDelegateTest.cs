@@ -23,9 +23,9 @@ namespace HealthGateway.CommonTests.Delegates
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authentication;

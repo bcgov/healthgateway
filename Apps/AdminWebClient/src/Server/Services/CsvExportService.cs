@@ -26,7 +26,9 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -108,11 +110,11 @@ namespace HealthGateway.Admin.Services
         private static Stream GetStream<TModel, TMap>(IEnumerable<TModel> obj)
             where TMap : ClassMap
         {
-            MemoryStream stream = new MemoryStream();
-            using (StreamWriter writeFile = new StreamWriter(stream, leaveOpen: true))
+            MemoryStream stream = new();
+            using (StreamWriter writeFile = new(stream, leaveOpen: true))
             {
 #pragma warning disable CA2000 // Dispose objects before losing scope
-                var csv = new CsvWriter(writeFile, CultureInfo.CurrentCulture, leaveOpen: true);
+                CsvWriter csv = new(writeFile, CultureInfo.CurrentCulture, leaveOpen: true);
 #pragma warning restore CA2000 // Dispose objects before losing scope
                 csv.Context.RegisterClassMap<TMap>();
                 csv.WriteRecords(obj);

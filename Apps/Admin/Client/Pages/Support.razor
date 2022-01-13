@@ -1,0 +1,54 @@
+@page "/support"
+@attribute [Authorize(Roles = Roles.Admin)]
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@using HealthGateway.Admin.Client.Store.MessageVerification
+
+<PageTitle>Support</PageTitle>
+<HgPageHeading>Support</HgPageHeading>
+
+<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasError" TResetAction="MessageVerificationActions.ResetStateAction">
+    @MessageVerificationState.Value.RequestError?.Message
+</HgBannerFeedback>
+
+<MudForm @ref="Form">
+    <MudGrid Spacing="0">
+        <MudItem xs="12" sm="3">
+            <HgSelect T="UserQueryType" Label="Query Type" Required="@true" @bind-Value="SelectedQueryType">
+                @foreach (UserQueryType queryType in QueryTypes)
+                {
+                    <MudSelectItem Value="@queryType" />
+                }
+            </HgSelect>
+        </MudItem>
+        <MudItem xs="12" sm="9">
+            <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@SelectedQueryType.ToString()" Required="@true" Validation="@ValidateQueryParameter" @bind-Value="QueryParameter" />
+        </MudItem>
+        <MudItem Class="d-flex justify-end" xs="12">
+            <HgButton TopMargin="Breakpoint.Always" EndIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="Color.Primary" @onclick="SearchAsync">Search</HgButton>
+        </MudItem>
+    </MudGrid>
+</MudForm>
+
+@if (MessagingVerificationsLoaded || MessagingVerificationsLoading)
+{
+    <MudTable Class="mt-3" Items="MessagingVerificationRows" Loading="MessagingVerificationsLoading" Breakpoint="Breakpoint.Md" HorizontalScrollbar="true" Striped="true" Dense="true">
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.Hdid)">HDID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.EmailOrSms)">Email or SMS</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.Verified)">Verified</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortBy="new Func<MessagingVerificationRow, object>(x => x.VerificationDate)">Verification Date</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.VerificationCode)">Verification Code</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="HDID">@context.Hdid</MudTd>
+            <MudTd DataLabel="Email or SMS">@context.EmailOrSms</MudTd>
+            <MudTd DataLabel="Verified">@context.Verified</MudTd>
+            <MudTd DataLabel="Verification Date">@context.VerificationDate</MudTd>
+            <MudTd DataLabel="Verification Code">@context.VerificationCode</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+}

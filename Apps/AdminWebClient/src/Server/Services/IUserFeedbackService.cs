@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Services
     using System;
     using System.Collections.Generic;
     using HealthGateway.Admin.Models;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// Service that provides admin functionality to User feedback.

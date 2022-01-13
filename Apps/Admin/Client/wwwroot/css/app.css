@@ -1,0 +1,24 @@
+@font-face {
+    font-family: "BCSans";
+    font-style: normal;
+    src: url("/fonts/BCSans-Regular.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "BCSans";
+    font-style: italic;
+    src: url("/fonts/BCSans-Italic.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "BCSans";
+    font-weight: 700;
+    src: url("/fonts/BCSans-Bold.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "BCSans";
+    font-style: italic;
+    font-weight: 700;
+    src: url("/fonts/BCSans-BoldItalic.woff2") format("woff2");
+}

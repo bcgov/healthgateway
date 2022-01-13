@@ -13,8 +13,16 @@ parameters:
 steps:
   - task: DotNetCoreCLI@2
     displayName: "Compiling code for $(App.Name)"
+    condition: eq(variables['WASMBuild'], false)
     inputs:
       projects: "$(App.Home)/src"
+      arguments: "--no-incremental /warnaserror"
+
+  - task: DotNetCoreCLI@2
+    displayName: "Compiling code for Blazor Solution $(App.Name)"
+    condition: eq(variables['WASMBuild'], true)
+    inputs:
+      projects: "$(App.Home)"
       arguments: "--no-incremental /warnaserror"
 
   - task: Npm@1
@@ -34,10 +42,19 @@ steps:
 
   - task: DotNetCoreCLI@2
     displayName: "Runing Unit Tests for $(App.Name)"
-    condition: and(succeeded(), eq(variables['UnitTests'], true))
+    condition: and(succeeded(), and(eq(variables['WASMBuild'], false),eq(variables['UnitTests'], true)))
     inputs:
       command: "test"
       projects: "$(App.Home)/test/unit/$(App.Name)Tests.csproj"
+      arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
+      testRunTitle: "$(App.Name): Performing Unit Tests"
+
+  - task: DotNetCoreCLI@2
+    displayName: "Runing Unit Tests for Blazor Solution $(App.Name)"
+    condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
+    inputs:
+      command: "test"
+      projects: "$(App.Home)"
       arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
       testRunTitle: "$(App.Name): Performing Unit Tests"
 
@@ -45,7 +62,13 @@ steps:
       set -e
       reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
     displayName: "Creating Code Coverage Report for $(App.Name)"
-    condition: and(succeeded(), eq(variables['UnitTests'], true))
+    condition: and(succeeded(), and(eq(variables['WASMBuild'], false),eq(variables['UnitTests'], true)))
+
+  - script: |
+      set -e
+      reportgenerator -reports:$(App.Home)/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+    displayName: "Creating Code Coverage Report for Blazor Solution $(App.Name)"
+    condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
 
   - task: PublishCodeCoverageResults@1
     displayName: "Publishing Code Coverage for $(App.Name)"
@@ -58,11 +81,23 @@ steps:
 
   - task: DotNetCoreCLI@2
     displayName: "Publishing code for $(App.Name)"
+    condition: and(succeeded(), eq(variables['WASMBuild'], false))
     inputs:
       modifyOutputPath: false
       command: "publish"
       publishWebProjects: false
       projects: "$(App.Home)/src"
+      arguments: "-o $(Build.BinariesDirectory)"
+      zipAfterPublish: false
+
+  - task: DotNetCoreCLI@2
+    displayName: "Publishing code for Blazor Solution $(App.Name)"
+    condition: and(succeeded(), eq(variables['WASMBuild'], true))
+    inputs:
+      modifyOutputPath: false
+      command: "publish"
+      publishWebProjects: false
+      projects: "$(App.Home)/Server"
       arguments: "-o $(Build.BinariesDirectory)"
       zipAfterPublish: false
 

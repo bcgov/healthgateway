@@ -16,8 +16,8 @@
 namespace HealthGateway.Immunization.Services
 {
     using System.Threading.Tasks;
-    using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Delegates;

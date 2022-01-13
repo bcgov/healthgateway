@@ -1,0 +1,46 @@
+@page "/showcase/message-box"
+
+<PageTitle>Message Box</PageTitle>
+
+<article>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Message Box</MudText>
+    <MudButton Class="my-2" Color="Color.Primary" OnClick="OpenMessageBox">Click to Open</MudButton>
+    <MudAlert Dense="true" Severity="@ResultSeverity">@MessageBoxResult</MudAlert>
+</article>
+
+@code
+{
+    [Inject]
+    private IDialogService DialogService { get; set; } = default!;
+
+    private string MessageBoxResult { get; set; } = "Unopened";
+    private Severity ResultSeverity { get; set; } = Severity.Normal;
+
+    private async void OpenMessageBox()
+    {
+        bool? result = await DialogService.ShowMessageBox(new MessageBoxOptions()
+            {
+                Title = "Title of the Message Box",
+                Message = "Text explaining what is happening.",
+                NoText = "No",
+                CancelText = "Cancel",
+            });
+
+        if (result == true)
+        {
+            MessageBoxResult = "Result: OK";
+            ResultSeverity = Severity.Success;
+        }
+        else if (result == false)
+        {
+            MessageBoxResult = "Result: No";
+            ResultSeverity = Severity.Error;
+        }
+        else if (result == null)
+        {
+            MessageBoxResult = "Result: Cancel";
+            ResultSeverity = Severity.Info;
+        }
+        StateHasChanged();
+    }
+}

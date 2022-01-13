@@ -18,18 +18,16 @@ namespace HealthGateway.Common.AccessManagement.Administration
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using System.Net.Http;
     using System.Text.Json;
     using System.Threading.Tasks;
-
     using HealthGateway.Common.AccessManagement.Administration.Models;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
-
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 

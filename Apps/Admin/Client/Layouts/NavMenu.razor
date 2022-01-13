@@ -1,0 +1,42 @@
+<MudNavMenu>
+    <MudNavGroup Title="Showcase" Icon="@Icons.Material.Filled.WbSunny" Expanded="true">
+        <MudNavLink Href="showcase/alerts" Icon="@Icons.Material.Filled.PriorityHigh">Alerts</MudNavLink>
+        <MudNavLink Href="showcase/chips" Icon="@Icons.Material.Filled.Label">Chips</MudNavLink>
+        <MudNavLink Href="showcase/forms" Icon="@Icons.Material.Filled.DynamicForm">Forms</MudNavLink>
+        <MudNavGroup Title="Layout" Icon="@Icons.Material.Filled.Dashboard" Expanded="false">
+            <MudNavLink Href="showcase/expansion-panels" Icon="@Icons.Material.Filled.Expand">Expansion Panels</MudNavLink>
+            <MudNavLink Href="showcase/paper-and-cards" Icon="@Icons.Material.Filled.Note">Paper and Cards</MudNavLink>
+            <MudNavLink Href="showcase/tabs" Icon="@Icons.Material.Filled.Tab">Tabs</MudNavLink>
+        </MudNavGroup>
+        <MudNavLink Href="showcase/links-and-buttons" Icon="@Icons.Material.Filled.Link">Links and Buttons</MudNavLink>
+        <MudNavLink Href="showcase/message-box" Icon="@Icons.Material.Filled.HelpOutline">Message Box</MudNavLink>
+        <MudNavLink Href="showcase/pagination" Icon="@Icons.Filled.KeyboardArrowRight">Pagination</MudNavLink>
+        <MudNavLink Href="showcase/tool-bar" Icon="@Icons.Material.Filled.Construction">Tool Bar</MudNavLink>
+        <MudNavLink Href="showcase/typography" Icon="@Icons.Material.Filled.TextFields">Typography</MudNavLink>
+    </MudNavGroup>
+
+    <AuthorizeView Roles="@($" {Roles.Admin},{Roles.Reviewer}")">
+        <MudNavLink Href="dashboard" Icon="@Icons.Material.Filled.ViewQuilt">Dashboard</MudNavLink>
+    </AuthorizeView>
+    <AuthorizeView Roles="@Roles.Admin">
+        <MudNavLink Href="job-scheduler" Icon="@Icons.Material.Filled.Schedule">Job Scheduler</MudNavLink>
+    </AuthorizeView>
+    <AuthorizeView Roles="@Roles.Admin">
+        <MudNavLink Href="communications" Icon="@Icons.Material.Filled.Announcement">Communications</MudNavLink>
+    </AuthorizeView>
+    <AuthorizeView Roles="@($" {Roles.Admin},{Roles.Reviewer}")">
+        <MudNavLink Href="feedback" Icon="@Icons.Material.Filled.Email">Feedback Review</MudNavLink>
+    </AuthorizeView>
+    <AuthorizeView Roles="@Roles.Admin">
+        <MudNavLink Href="analytics" Icon="fas fa-download">System Analytics</MudNavLink>
+    </AuthorizeView>
+    <AuthorizeView Roles="@Roles.Admin">
+        <MudNavLink Href="emails" Icon="@Icons.Material.Filled.Send">Resend Emails</MudNavLink>
+    </AuthorizeView>
+    <AuthorizeView Roles="@Roles.Admin">
+        <MudNavLink Href="support" Icon="@Icons.Material.Filled.PersonSearch">Support</MudNavLink>
+    </AuthorizeView>
+    <AuthorizeView Roles="@Roles.Support">
+        <MudNavLink Href="vaccine-proof" Icon="fas fa-address-card">BC Vaccine Card</MudNavLink>
+    </AuthorizeView>
+</MudNavMenu>

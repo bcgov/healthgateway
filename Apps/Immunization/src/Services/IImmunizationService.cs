@@ -16,7 +16,7 @@
 namespace HealthGateway.Immunization.Services
 {
     using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Immunization.Models;
 

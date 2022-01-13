@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Models
     using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Constants;
 
     /// <summary>

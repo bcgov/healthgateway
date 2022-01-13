@@ -16,6 +16,10 @@
 
 namespace HealthGateway.Common.ErrorHandling
 {
+    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ViewModels;
+
     /// <summary>
     /// Utilities for translating between error codes and its codification.
     /// </summary>
@@ -50,9 +54,9 @@ namespace HealthGateway.Common.ErrorHandling
         /// <param name="message">The user friendly message.</param>
         /// <param name="actionType">Action type that caused the issue.</param>
         /// <returns>A RequestResultError encapsulating the action required.</returns>
-        public static HealthGateway.Common.Models.RequestResultError ActionRequired(string message, ActionType actionType)
+        public static RequestResultError ActionRequired(string message, ActionType actionType)
         {
-            return new Models.RequestResultError()
+            return new RequestResultError()
             {
                 ResultMessage = message,
                 ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),

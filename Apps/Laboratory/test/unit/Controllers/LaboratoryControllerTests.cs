@@ -19,8 +19,8 @@ namespace HealthGateway.LaboratoryTests
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Laboratory.Controllers;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Models;

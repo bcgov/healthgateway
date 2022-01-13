@@ -16,7 +16,7 @@
 namespace HealthGateway.CommonTests.Utils
 {
     using System.Collections.Generic;
-    using HealthGateway.Common.Utils;
+    using HealthGateway.Common.Data.Utils;
     using Xunit;
 
     /// <summary>

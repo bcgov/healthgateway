@@ -17,7 +17,8 @@ namespace HealthGateway.WebClient.Test.Services
 {
     using System.Text.Json;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.CDogs;
