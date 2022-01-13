@@ -25,7 +25,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;

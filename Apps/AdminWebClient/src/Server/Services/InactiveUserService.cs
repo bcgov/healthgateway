@@ -23,7 +23,7 @@ using HealthGateway.Common.AccessManagement.Authentication;
 using HealthGateway.Common.AccessManagement.Administration.Models;
 using HealthGateway.Common.AccessManagement.Authentication.Models;
 using HealthGateway.Common.Constants;
-using HealthGateway.Common.Models;
+using HealthGateway.Common.Data.ViewModels;
 using HealthGateway.Database.Constants;
 using HealthGateway.Database.Delegates;
 using HealthGateway.Database.Models;
@@ -32,6 +32,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using HealthGateway.Common.Data.Constants;
 
 /// <inheritdoc />
 public class InactiveUserService : IInactiveUserService
