@@ -73,7 +73,7 @@ public class InactiveUserService : IInactiveUserService
     }
 
     /// <inheritdoc />
-    public async Task<RequestResult<List<AdminUserProfileView>>> GetInactiveUsers(int inactiveDays)
+    public async Task<RequestResult<List<AdminUserProfileView>>> GetInactiveUsers(int inactiveDays, int timeOffset)
     {
         List<AdminUserProfileView> inactiveUsers = new List<AdminUserProfileView>();
 
@@ -87,10 +87,11 @@ public class InactiveUserService : IInactiveUserService
         this.logger.LogDebug("Getting inactive users past {InactiveDays} day(s) from last login....", inactiveDays);
 
         // Inactive admin user profiles from DB
-        DBResult<IEnumerable<AdminUserProfile>> inactiveProfileResult = this.adminUserProfileDelegate.GetInactiveAdminUserProfiles(inactiveDays);
+        TimeSpan timeSpan = new(0, timeOffset, 0);
+        DBResult<IEnumerable<AdminUserProfile>> inactiveProfileResult = this.adminUserProfileDelegate.GetInactiveAdminUserProfiles(inactiveDays, timeSpan);
 
         // Active admin user profiles from DB
-        DBResult<IEnumerable<AdminUserProfile>> activeProfileResult = this.adminUserProfileDelegate.GetActiveAdminUserProfiles(inactiveDays);
+        DBResult<IEnumerable<AdminUserProfile>> activeProfileResult = this.adminUserProfileDelegate.GetActiveAdminUserProfiles(inactiveDays, timeSpan);
 
         // Compare inactive users in DB to users in Keycloak
         if (inactiveProfileResult.Status == DBStatusCode.Read && activeProfileResult.Status == DBStatusCode.Read)
