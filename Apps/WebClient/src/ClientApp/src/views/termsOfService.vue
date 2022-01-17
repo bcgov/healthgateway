@@ -18,8 +18,7 @@ import { ILogger, IUserProfileService } from "@/services/interfaces";
     },
 })
 export default class TermsOfServiceView extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
+    private logger!: ILogger;
     private userProfileService!: IUserProfileService;
     private isLoading = true;
     private hasErrors = false;
@@ -37,6 +36,7 @@ export default class TermsOfServiceView extends Vue {
     ];
 
     private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.userProfileService = container.get(
             SERVICE_IDENTIFIER.UserProfileService
         );
