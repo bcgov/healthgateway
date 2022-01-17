@@ -565,7 +565,7 @@ export default class ProfileView extends Vue {
                                             id="resendEmail"
                                             data-testid="resendEmailBtn"
                                             variant="secondary"
-                                            class="ml-3"
+                                            class="ml-md-3 mt-md-0 mt-1"
                                             :disabled="emailVerificationSent"
                                             @click="sendUserEmailUpdate()"
                                         >
@@ -715,7 +715,7 @@ export default class ProfileView extends Vue {
                                             id="verifySMS"
                                             variant="secondary"
                                             data-testid="verifySMSBtn"
-                                            class="ml-3"
+                                            class="ml-md-3 mt-md-0 mt-1"
                                             @click="verifySMS()"
                                         >
                                             Verify
