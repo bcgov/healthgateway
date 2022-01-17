@@ -61,6 +61,8 @@
     <EmbeddedResource Include="Server\Assets\Templates\MedicationReport.xlsx" />
     <EmbeddedResource Include="Server\Assets\Templates\MedicationRequestReport.docx" />
     <EmbeddedResource Include="Server\Assets\Templates\MedicationRequestReport.xlsx" />
+      <EmbeddedResource Include="Server\Assets\Templates\NotesReport.docx" />
+      <EmbeddedResource Include="Server\Assets\Templates\NotesReport.xlsx" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
