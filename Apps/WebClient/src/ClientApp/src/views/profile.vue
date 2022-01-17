@@ -561,7 +561,8 @@ export default class ProfileView extends Vue {
                                             </b-col>
                                             <b-col
                                                 cols="12"
-                                                md="auto pl-md-0 pl-3"
+                                                md="auto"
+                                                class="pl-md-0 pl-3"
                                             >
                                                 <hg-button
                                                     id="resendEmail"
@@ -721,7 +722,8 @@ export default class ProfileView extends Vue {
                                             </b-col>
                                             <b-col
                                                 cols="12"
-                                                md="auto pl-md-0 pl-3"
+                                                md="auto"
+                                                class="pl-md-0 pl-3"
                                             >
                                                 <hg-button
                                                     id="verifySMS"
