@@ -538,39 +538,48 @@ export default class ProfileView extends Vue {
                                         >Edit</b-link
                                     >
                                     <div class="form-inline mb-1">
-                                        <b-form-input
-                                            id="email"
-                                            v-model="$v.email.$model"
-                                            data-testid="emailInput"
-                                            type="email"
-                                            :placeholder="
-                                                isEmailEditable
-                                                    ? 'Your email address'
-                                                    : 'Empty'
-                                            "
-                                            :disabled="!isEmailEditable"
-                                            :state="
-                                                isValid($v.email) ||
-                                                !isEmailEditable
-                                                    ? null
-                                                    : false
-                                            "
-                                        />
-                                        <hg-button
-                                            v-if="
-                                                !emailVerified &&
-                                                !isEmailEditable &&
-                                                email
-                                            "
-                                            id="resendEmail"
-                                            data-testid="resendEmailBtn"
-                                            variant="secondary"
-                                            class="ml-3"
-                                            :disabled="emailVerificationSent"
-                                            @click="sendUserEmailUpdate()"
-                                        >
-                                            Resend Verification
-                                        </hg-button>
+                                        <b-row>
+                                            <b-col>
+                                                <b-form-input
+                                                    id="email"
+                                                    v-model="$v.email.$model"
+                                                    data-testid="emailInput"
+                                                    type="email"
+                                                    :placeholder="
+                                                        isEmailEditable
+                                                            ? 'Your email address'
+                                                            : 'Empty'
+                                                    "
+                                                    :disabled="!isEmailEditable"
+                                                    :state="
+                                                        isValid($v.email) ||
+                                                        !isEmailEditable
+                                                            ? null
+                                                            : false
+                                                    "
+                                                />
+                                            </b-col>
+                                            <b-col
+                                                cols="12"
+                                                md="auto"
+                                                class="pl-md-0 pl-3"
+                                            >
+                                                <hg-button
+                                                    id="resendEmail"
+                                                    data-testid="resendEmailBtn"
+                                                    variant="secondary"
+                                                    class="mt-md-0 mt-2"
+                                                    :disabled="
+                                                        emailVerificationSent
+                                                    "
+                                                    @click="
+                                                        sendUserEmailUpdate()
+                                                    "
+                                                >
+                                                    Resend Verification
+                                                </hg-button>
+                                            </b-col>
+                                        </b-row>
                                     </div>
                                     <b-form-invalid-feedback
                                         :state="$v.email.email"
@@ -687,39 +696,46 @@ export default class ProfileView extends Vue {
                                         >Edit</b-link
                                     >
                                     <div class="form-inline mb-1">
-                                        <b-form-input
-                                            id="smsNumber"
-                                            v-model="$v.smsNumber.$model"
-                                            v-mask="'(###) ###-####'"
-                                            type="tel"
-                                            data-testid="smsNumberInput"
-                                            :placeholder="
-                                                isSMSEditable
-                                                    ? 'Your phone number'
-                                                    : 'Empty'
-                                            "
-                                            :disabled="!isSMSEditable"
-                                            :state="
-                                                isValid($v.smsNumber) ||
-                                                !isSMSEditable
-                                                    ? null
-                                                    : false
-                                            "
-                                        />
-                                        <hg-button
-                                            v-if="
-                                                !smsVerified &&
-                                                !isSMSEditable &&
-                                                smsNumber
-                                            "
-                                            id="verifySMS"
-                                            variant="secondary"
-                                            data-testid="verifySMSBtn"
-                                            class="ml-3"
-                                            @click="verifySMS()"
-                                        >
-                                            Verify
-                                        </hg-button>
+                                        <b-row>
+                                            <b-col>
+                                                <b-form-input
+                                                    id="smsNumber"
+                                                    v-model="
+                                                        $v.smsNumber.$model
+                                                    "
+                                                    v-mask="'(###) ###-####'"
+                                                    type="tel"
+                                                    data-testid="smsNumberInput"
+                                                    :placeholder="
+                                                        isSMSEditable
+                                                            ? 'Your phone number'
+                                                            : 'Empty'
+                                                    "
+                                                    :disabled="!isSMSEditable"
+                                                    :state="
+                                                        isValid($v.smsNumber) ||
+                                                        !isSMSEditable
+                                                            ? null
+                                                            : false
+                                                    "
+                                                />
+                                            </b-col>
+                                            <b-col
+                                                cols="12"
+                                                md="auto"
+                                                class="pl-md-0 pl-3"
+                                            >
+                                                <hg-button
+                                                    id="verifySMS"
+                                                    variant="secondary"
+                                                    data-testid="verifySMSBtn"
+                                                    class="mt-md-0 mt-2"
+                                                    @click="verifySMS()"
+                                                >
+                                                    Verify
+                                                </hg-button>
+                                            </b-col>
+                                        </b-row>
                                     </div>
                                     <b-form-invalid-feedback
                                         :state="$v.smsNumber.sms"
