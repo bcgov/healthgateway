@@ -1,0 +1,45 @@
+{
+    "resourcePayload": [
+        {
+            "id": "f1d2aeae-19de-43fa-a0bf-88b47787cf84",
+            "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            "title": "Test 3",
+            "text": "Test 3 Notes",
+            "journalDate": "2022-01-10",
+            "version": 9059,
+            "createdDateTime": "2022-01-18T00:46:55.299029",
+            "createdBy": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            "updatedDateTime": "2022-01-18T00:46:55.299029",
+            "updatedBy": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A"
+        },
+        {
+            "id": "b87b47bd-b46c-4a28-8d00-26ea0a1865e6",
+            "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            "title": "Test 1",
+            "text": "Testing note 1",
+            "journalDate": "2022-01-17",
+            "version": 8938,
+            "createdDateTime": "2022-01-17T21:33:18.206679",
+            "createdBy": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            "updatedDateTime": "2022-01-17T21:33:18.206679",
+            "updatedBy": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A"
+        },
+        {
+            "id": "273c6c0f-ebb4-4b36-9dc2-3a24a8cb916a",
+            "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            "title": "Test 2",
+            "text": "Testing Notes 2",
+            "journalDate": "2022-01-16",
+            "version": 8940,
+            "createdDateTime": "2022-01-17T21:33:30.871408",
+            "createdBy": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            "updatedDateTime": "2022-01-17T21:33:30.871408",
+            "updatedBy": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A"
+        }
+    ],
+    "totalResultCount": 3,
+    "pageIndex": 0,
+    "pageSize": 500,
+    "resultStatus": 1,
+    "resultError": null
+}

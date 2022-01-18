@@ -286,3 +286,60 @@ describe("Reports - MSP Visit", () => {
             });
     });
 });
+
+describe("Reports - Notes (User-Entered)", () => {
+    beforeEach(() => {
+        cy.enableModules([
+            "Encounter",
+            "Medication",
+            "Laboratory",
+            "Immunization",
+            "MedicationRequest",
+            "Note",
+        ]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/reports"
+        );
+    });
+
+    it("Validate Note (User-Entered) Report with Unsorted Data", () => {
+        cy.intercept("GET", `**/v1/api/Note/${HDID}`, (req) => {
+            req.reply({
+                fixture: "Report/noteUnSorted.json",
+            });
+        });
+        cy.get("[data-testid=reportType]")
+            .should("be.enabled", "be.visible")
+            .select("My Notes");
+
+        cy.get("[data-testid=reportSample]").should("be.visible");
+
+        cy.get("[data-testid=user-note-date]")
+            .first()
+            .then(($dateItem) => {
+                // Column date in the 1st row in the table
+                const firstDate = new Date($dateItem.text().trim());
+                cy.get("[data-testid=user-note-date]")
+                    .eq(1)
+                    .then(($dateItem) => {
+                        // Column date in the 2nd row in the table
+                        const secondDate = new Date($dateItem.text().trim());
+                        expect(firstDate).to.be.gte(secondDate);
+                        // Column date in the last row in the table
+                        cy.get("[data-testid=user-note-date]")
+                            .eq(2)
+                            .then(($dateItem) => {
+                                // Column date in the last row in the table
+                                const lastDate = new Date(
+                                    $dateItem.text().trim()
+                                );
+                                expect(firstDate).to.be.gte(lastDate);
+                                expect(secondDate).to.be.gte(lastDate);
+                            });
+                    });
+            });
+    });
+});
