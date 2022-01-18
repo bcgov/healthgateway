@@ -7,7 +7,8 @@ export interface LaboratoryResult {
     outOfRange: boolean;
     collectedDateTime: StringISODateTime;
     testStatus: string | null;
-    resultDescription: string | null;
+    resultDescription: string[];
+    resultLink: string | null;
     labResultOutcome: string | null;
     receivedDateTime: StringISODateTime;
     resultDateTime: StringISODateTime;

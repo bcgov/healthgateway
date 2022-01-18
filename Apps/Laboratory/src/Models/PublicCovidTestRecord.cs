@@ -38,8 +38,7 @@ namespace HealthGateway.Laboratory.Models
         /// </summary>
         /// <param name="resultDescription">The list of result descriptions.</param>
         [JsonConstructor]
-        public PublicCovidTestRecord(
-            IList<string> resultDescription)
+        public PublicCovidTestRecord(IList<string> resultDescription)
         {
             this.ResultDescription = resultDescription;
         }
