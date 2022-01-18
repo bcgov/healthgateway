@@ -404,6 +404,7 @@ export default class DependentCardComponent extends Vue {
                                         "
                                         triggers="hover focus"
                                         placement="bottomleft"
+                                        data-testid="dependent-covid-test-info-popover"
                                     >
                                         <LaboratoryResultDescriptionComponent
                                             class="p-2"
