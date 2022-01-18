@@ -67,6 +67,11 @@ namespace HealthGateway.WebClient.Models
         /// Indicates a Medication Request template type.
         /// </summary>
         MedicationRequest,
+
+        /// <summary>
+        /// Indicates a Notes template type.
+        /// </summary>
+        Notes,
     }
 
     /// <summary>
