@@ -35,12 +35,12 @@ export default class ReleaseNotesView extends Vue {
         >
             <ul>
                 <li>
-                    We updated the COVID test display to include with more clear 
-                    messaging depending on your test results. 
+                    We updated the COVID test display to include with more clear
+                    messaging depending on your test results.
                 </li>
                 <li>
-                    We added a feature which allows you to export notes that you 
-                    have added to your profile as PDF or Excel files. 
+                    We added a feature which allows you to export notes that you
+                    have added to your profile as PDF or Excel files.
                 </li>
             </ul>
         </release-note>
