@@ -118,6 +118,58 @@
                     "resultDateTime": "2020-10-04T21:08:00+00:00",
                     "loinc": "94309-2",
                     "loincName": "COVID-19 Virus PCR (FH)"
+                },
+                {
+                    "id": "40a6e571-62b6-4cb3-89ed-afe7a322ccb4",
+                    "testType": "Nasopharyngeal Swab",
+                    "outOfRange": true,
+                    "collectedDateTime": "2020-10-02T15:45:00+00:00",
+                    "testStatus": "SomeOtherState",
+                    "labResultOutcome": "Positive",
+                    "resultDescription": ["POSITIVE"],
+                    "resultLink": "",
+                    "receivedDateTime": "2020-10-03T11:30:00+00:00",
+                    "resultDateTime": "2020-10-03T21:08:00+00:00",
+                    "loinc": "94309-2",
+                    "loincName": "COVID-19 Virus PCR (FH)"
+                },
+                {
+                    "id": "40a6e571-62b6-4cb3-89ed-afe7a322ccf5",
+                    "testType": "Nasopharyngeal Swab",
+                    "outOfRange": true,
+                    "collectedDateTime": "2020-10-04T08:45:00-07:00",
+                    "testStatus": "Final",
+                    "labResultOutcome": "Negative",
+                    "resultDescription": [
+                        "Your test result for COVID-19 is Positive. Please listen to the following important information",
+                        "You need to self-isolate. The people you live with also need to self-isolate if they are not fully vaccinated. Public health will contact you. ",
+                        "Most people can manage their symptoms at home. However, if you have chest pain or difficulty breathing and need urgent help, call 911",
+                        "For more information call 811 or visit "
+                    ],
+                    "resultLink": "http://www.bccdc.ca/health-info/diseases-conditions/covid-19/if-you-have-covid-19",
+                    "receivedDateTime": "2020-10-05T04:30:00-07:00",
+                    "resultDateTime": "2020-10-05T14:08:00-07:00",
+                    "loinc": "94309-2",
+                    "loincName": "COVID-19 Virus PCR (FH)"
+                },
+                {
+                    "id": "40a6e571-62b6-4cb3-89ed-afe7a322ccf8",
+                    "testType": "Nasopharyngeal Swab",
+                    "outOfRange": true,
+                    "collectedDateTime": "2020-10-06T08:45:00-07:00",
+                    "testStatus": "Final",
+                    "labResultOutcome": "Negative",
+                    "resultDescription": [
+                        "Your test result for COVID-19 is Positive. Please listen to the following important information",
+                        "You need to self-isolate. The people you live with also need to self-isolate if they are not fully vaccinated. Public health will contact you. ",
+                        "Most people can manage their symptoms at home. However, if you have chest pain or difficulty breathing and need urgent help, call 911",
+                        "For more information call 811 or visit "
+                    ],
+                    "resultLink": "http://www.bccdc.ca/health-info/diseases-conditions/covid-19/if-you-have-covid-19",
+                    "receivedDateTime": "2020-10-07T04:30:00-07:00",
+                    "resultDateTime": "2020-10-07T14:08:00-07:00",
+                    "loinc": "94309-2",
+                    "loincName": "COVID-19 Virus PCR (FH)"
                 }
             ]
         }

@@ -168,9 +168,9 @@ export default class LaboratoryTimelineComponent extends Vue {
                     >
                         <span>Result:</span>
                         <span
-                            :class="getOutcomeClasses(entry.labResultOutcome)"
+                            :class="getOutcomeClasses(result.labResultOutcome)"
                         >
-                            {{ entry.labResultOutcome }}
+                            {{ result.labResultOutcome }}
                         </span>
                     </strong>
                 </div>
@@ -190,7 +190,11 @@ export default class LaboratoryTimelineComponent extends Vue {
                     <strong>Result Date:</strong>
                     {{ formatDate(result.resultDateTime) }}
                 </div>
-                <div v-if="result.resultDescription.length > 0" class="my-2">
+                <div
+                    v-if="result.resultDescription.length > 0"
+                    class="my-2"
+                    data-testid="laboratoryResultDescription"
+                >
                     <strong>Result Description:</strong>
                     <LaboratoryResultDescriptionComponent
                         :description="result.resultDescription"
