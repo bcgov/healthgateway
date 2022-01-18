@@ -66,6 +66,7 @@ namespace HealthGateway.Admin.Controllers
         /// Retrieves a list of inactive users created exclusive of the days inactive.
         /// </summary>
         /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
+        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
         /// <returns>A CSV of inactive users.</returns>
         /// <response code="200">Returns the list of beta requests.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -73,9 +74,9 @@ namespace HealthGateway.Admin.Controllers
         [HttpGet]
         [Route("GetInactiveUsers")]
         [Produces("text/csv")]
-        public async Task<IActionResult> GetInactiveAdminUser(int inactiveDays)
+        public async Task<IActionResult> GetInactiveAdminUser(int inactiveDays, int timeOffset)
         {
-            return SendContentResponse("InactiveUsers", await this.dataExportService.GetInactiveUsers(inactiveDays).ConfigureAwait(true));
+            return SendContentResponse("InactiveUsers", await this.dataExportService.GetInactiveUsers(inactiveDays, timeOffset).ConfigureAwait(true));
         }
 
         /// <summary>

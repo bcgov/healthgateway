@@ -45,7 +45,11 @@ export default class StatsView extends Vue {
     private downloadInactiveUsersCSV(): void {
         if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
             window.open(
-                `${this.serviceEndpoints.CsvExportBaseUri}/GetInactiveUsers?inactiveDays=${this.inactiveDays}`
+                `${
+                    this.serviceEndpoints.CsvExportBaseUri
+                }/GetInactiveUsers?inactiveDays=${
+                    this.inactiveDays
+                }&timeOffset=${new Date().getTimezoneOffset() * -1}`
             );
         }
     }

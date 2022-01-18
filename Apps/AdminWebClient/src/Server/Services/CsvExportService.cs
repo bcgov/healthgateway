@@ -25,10 +25,8 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Admin.Server.Mappers;
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Admin.Server.Services;
-    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -95,9 +93,9 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public async Task<Stream> GetInactiveUsers(int inactiveDays)
+        public async Task<Stream> GetInactiveUsers(int inactiveDays, int timeOffset)
         {
-            RequestResult<List<AdminUserProfileView>> inactiveUsersResult = await this.inactiveUserService.GetInactiveUsers(inactiveDays).ConfigureAwait(true);
+            RequestResult<List<AdminUserProfileView>> inactiveUsersResult = await this.inactiveUserService.GetInactiveUsers(inactiveDays, timeOffset).ConfigureAwait(true);
 
             if (inactiveUsersResult.ResultStatus == ResultType.Success)
             {

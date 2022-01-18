@@ -119,8 +119,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
 
             Mock<IAdminUserProfileDelegate> adminUserProfileDelegateMock = new();
-            adminUserProfileDelegateMock.Setup(s => s.GetActiveAdminUserProfiles(It.IsAny<int>())).Returns(activeProfileResult);
-            adminUserProfileDelegateMock.Setup(s => s.GetInactiveAdminUserProfiles(It.IsAny<int>())).Returns(inactiveProfileResult);
+            adminUserProfileDelegateMock.Setup(s => s.GetActiveAdminUserProfiles(It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(activeProfileResult);
+            adminUserProfileDelegateMock.Setup(s => s.GetInactiveAdminUserProfiles(It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(inactiveProfileResult);
 
             Guid userId1 = Guid.NewGuid();
             Guid userId2 = Guid.NewGuid();
@@ -224,7 +224,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 this.configuration);
 
             // Act
-            Task<RequestResult<List<AdminUserProfileView>>> result = service.GetInactiveUsers(10);
+            Task<RequestResult<List<AdminUserProfileView>>> result = service.GetInactiveUsers(10, It.IsAny<int>());
 
             // Assert
             Assert.Equal(expectedInactiveUserCount, result.Result.TotalResultCount);
@@ -256,8 +256,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
 
             Mock<IAdminUserProfileDelegate> adminUserProfileDelegateMock = new();
-            adminUserProfileDelegateMock.Setup(s => s.GetActiveAdminUserProfiles(It.IsAny<int>())).Returns(activeProfileResult);
-            adminUserProfileDelegateMock.Setup(s => s.GetInactiveAdminUserProfiles(It.IsAny<int>())).Returns(inactiveProfileResult);
+            adminUserProfileDelegateMock.Setup(s => s.GetActiveAdminUserProfiles(It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(activeProfileResult);
+            adminUserProfileDelegateMock.Setup(s => s.GetInactiveAdminUserProfiles(It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(inactiveProfileResult);
 
             Guid userId1 = Guid.NewGuid();
             Guid userId2 = Guid.NewGuid();
@@ -328,7 +328,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 this.configuration);
 
             // Act
-            Task<RequestResult<List<AdminUserProfileView>>> result = service.GetInactiveUsers(10);
+            Task<RequestResult<List<AdminUserProfileView>>> result = service.GetInactiveUsers(10, It.IsAny<int>());
 
             // Assert
             Assert.Equal(expectedInactiveUserCount, result.Result.TotalResultCount);
@@ -360,8 +360,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
 
             Mock<IAdminUserProfileDelegate> adminUserProfileDelegateMock = new();
-            adminUserProfileDelegateMock.Setup(s => s.GetActiveAdminUserProfiles(It.IsAny<int>())).Returns(activeProfileResult);
-            adminUserProfileDelegateMock.Setup(s => s.GetInactiveAdminUserProfiles(It.IsAny<int>())).Returns(inactiveProfileResult);
+            adminUserProfileDelegateMock.Setup(s => s.GetActiveAdminUserProfiles(It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(activeProfileResult);
+            adminUserProfileDelegateMock.Setup(s => s.GetInactiveAdminUserProfiles(It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(inactiveProfileResult);
 
             RequestResult<IEnumerable<UserRepresentation>> adminUserResult = new()
             {
@@ -387,7 +387,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 this.configuration);
 
             // Act
-            Task<RequestResult<List<AdminUserProfileView>>> result = service.GetInactiveUsers(10);
+            Task<RequestResult<List<AdminUserProfileView>>> result = service.GetInactiveUsers(10, It.IsAny<int>());
 
             // Assert
             Assert.Equal(expectedInactiveUserCount, result.Result.TotalResultCount);
@@ -429,8 +429,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
 
             Mock<IAdminUserProfileDelegate> adminUserProfileDelegateMock = new();
-            adminUserProfileDelegateMock.Setup(s => s.GetActiveAdminUserProfiles(It.IsAny<int>())).Returns(activeProfileResult);
-            adminUserProfileDelegateMock.Setup(s => s.GetInactiveAdminUserProfiles(It.IsAny<int>())).Returns(inactiveProfileResult);
+            adminUserProfileDelegateMock.Setup(s => s.GetActiveAdminUserProfiles(It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(activeProfileResult);
+            adminUserProfileDelegateMock.Setup(s => s.GetInactiveAdminUserProfiles(It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(inactiveProfileResult);
 
             RequestResult<IEnumerable<UserRepresentation>> adminUserResult = new()
             {
@@ -456,7 +456,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 this.configuration);
 
             // Act
-            Task<RequestResult<List<AdminUserProfileView>>> result = service.GetInactiveUsers(10);
+            Task<RequestResult<List<AdminUserProfileView>>> result = service.GetInactiveUsers(10, It.IsAny<int>());
 
             // Assert
             Assert.Equal(expectedInactiveUserCount, result.Result.TotalResultCount);
@@ -494,8 +494,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
 
             Mock<IAdminUserProfileDelegate> adminUserProfileDelegateMock = new();
-            adminUserProfileDelegateMock.Setup(s => s.GetActiveAdminUserProfiles(It.IsAny<int>())).Returns(activeProfileResult);
-            adminUserProfileDelegateMock.Setup(s => s.GetInactiveAdminUserProfiles(It.IsAny<int>())).Returns(inactiveProfileResult);
+            adminUserProfileDelegateMock.Setup(s => s.GetActiveAdminUserProfiles(It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(activeProfileResult);
+            adminUserProfileDelegateMock.Setup(s => s.GetInactiveAdminUserProfiles(It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(inactiveProfileResult);
 
             RequestResult<IEnumerable<UserRepresentation>> adminUserResult = new()
             {
@@ -521,7 +521,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 this.configuration);
 
             // Act
-            Task<RequestResult<List<AdminUserProfileView>>> result = service.GetInactiveUsers(10);
+            Task<RequestResult<List<AdminUserProfileView>>> result = service.GetInactiveUsers(10, It.IsAny<int>());
 
             // Assert
             Assert.Equal(expectedResult, result.Result.ResultStatus);
@@ -558,8 +558,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
 
             Mock<IAdminUserProfileDelegate> adminUserProfileDelegateMock = new();
-            adminUserProfileDelegateMock.Setup(s => s.GetActiveAdminUserProfiles(It.IsAny<int>())).Returns(activeProfileResult);
-            adminUserProfileDelegateMock.Setup(s => s.GetInactiveAdminUserProfiles(It.IsAny<int>())).Returns(inactiveProfileResult);
+            adminUserProfileDelegateMock.Setup(s => s.GetActiveAdminUserProfiles(It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(activeProfileResult);
+            adminUserProfileDelegateMock.Setup(s => s.GetInactiveAdminUserProfiles(It.IsAny<int>(), It.IsAny<TimeSpan>())).Returns(inactiveProfileResult);
 
             RequestResult<IEnumerable<UserRepresentation>> adminUserResult = new()
             {
@@ -585,7 +585,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 this.configuration);
 
             // Act
-            Task<RequestResult<List<AdminUserProfileView>>> result = service.GetInactiveUsers(10);
+            Task<RequestResult<List<AdminUserProfileView>>> result = service.GetInactiveUsers(10, It.IsAny<int>());
 
             // Assert
             Assert.Equal(expectedResult, result.Result.ResultStatus);

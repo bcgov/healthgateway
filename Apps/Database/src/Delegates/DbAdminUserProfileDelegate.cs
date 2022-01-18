@@ -70,14 +70,14 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
     }
 
     /// <inheritdoc />
-    public DBResult<IEnumerable<AdminUserProfile>> GetActiveAdminUserProfiles(int activeDays)
+    public DBResult<IEnumerable<AdminUserProfile>> GetActiveAdminUserProfiles(int activeDays, TimeSpan timeOffset)
     {
         this.logger.LogTrace("Retrieving all the active admin user profiles since {ActiveDays} day(s) ago...", activeDays);
 
         DBResult<IEnumerable<AdminUserProfile>> result = new DBResult<IEnumerable<AdminUserProfile>>()
         {
             Payload = this.dbContext.AdminUserProfile
-                .Where(profile => profile.LastLoginDateTime.Date >= DateTime.UtcNow.AddDays(-activeDays).Date)
+                .Where(profile => profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes).Date >= DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-activeDays).Date)
                 .OrderByDescending(profile => profile.LastLoginDateTime)
                 .ToList(),
             Status = DBStatusCode.Read,
@@ -88,14 +88,14 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
     }
 
     /// <inheritdoc />
-    public DBResult<IEnumerable<AdminUserProfile>> GetInactiveAdminUserProfiles(int inactiveDays)
+    public DBResult<IEnumerable<AdminUserProfile>> GetInactiveAdminUserProfiles(int inactiveDays, TimeSpan timeOffset)
     {
         this.logger.LogTrace("Retrieving all the inactive admin user profiles for the past {InactiveDays} day(s)...", inactiveDays);
 
         DBResult<IEnumerable<AdminUserProfile>> result = new DBResult<IEnumerable<AdminUserProfile>>()
         {
             Payload = this.dbContext.AdminUserProfile
-                .Where(profile => profile.LastLoginDateTime.Date <= DateTime.UtcNow.AddDays(-inactiveDays).Date)
+                .Where(profile => profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes).Date <= DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-inactiveDays).Date)
                 .OrderByDescending(profile => profile.LastLoginDateTime)
                 .ToList(),
             Status = DBStatusCode.Read,

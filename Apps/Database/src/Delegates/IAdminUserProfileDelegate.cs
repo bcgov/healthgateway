@@ -36,15 +36,17 @@ public interface IAdminUserProfileDelegate
     /// Returns Active AdminUserProfile objects from the database.
     /// </summary>
     /// <param name="activeDays">Users active within the last X days".</param>
+    /// <param name="timeOffset">The clients offset to get to UTC.</param>
     /// <returns>An IEnumerable of AdminUserProfile objects wrapped in a DBResult.</returns>
-    DBResult<IEnumerable<AdminUserProfile>> GetActiveAdminUserProfiles(int activeDays);
+    DBResult<IEnumerable<AdminUserProfile>> GetActiveAdminUserProfiles(int activeDays, TimeSpan timeOffset);
 
     /// <summary>
     /// Returns Inactive AdminUserProfile objects from the database.
     /// </summary>
     /// <param name="inactiveDays">Users inactive for at least X days.</param>
+    /// <param name="timeOffset">The clients offset to get to UTC.</param>
     /// <returns>An IEnumerable of AdminUserProfile objects wrapped in a DBResult.</returns>
-    DBResult<IEnumerable<AdminUserProfile>> GetInactiveAdminUserProfiles(int inactiveDays);
+    DBResult<IEnumerable<AdminUserProfile>> GetInactiveAdminUserProfiles(int inactiveDays, TimeSpan timeOffset);
 
     /// <summary>
     /// Creates an AdminUserProfile object in the database.
