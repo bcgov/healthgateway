@@ -239,7 +239,7 @@ describe("dependents", () => {
         cy.get("[data-testid=dependentCovidTestDate]")
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
-        expect(cy.get("[data-testid=dependentCovidTestLocation]").last()).not.to
+        expect(cy.get("[data-testid=dependentCovidTestStatus]").last()).not.to
             .be.empty;
         expect(cy.get("[data-testid=dependentCovidTestLabResult]").last()).not
             .to.be.empty;

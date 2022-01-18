@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 namespace HealthGateway.Laboratory.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -23,6 +24,24 @@ namespace HealthGateway.Laboratory.Models
     /// </summary>
     public class LaboratoryResult
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LaboratoryResult"/> class.
+        /// </summary>
+        public LaboratoryResult()
+        {
+            this.ResultDescription = new List<string>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LaboratoryResult"/> class.
+        /// </summary>
+        /// <param name="resultDescription">The list of result descriptions.</param>
+        [JsonConstructor]
+        public LaboratoryResult(IList<string> resultDescription)
+        {
+            this.ResultDescription = resultDescription;
+        }
+
         /// <summary>
         /// Gets or sets the id for the lab result.
         /// </summary>
@@ -60,10 +79,16 @@ namespace HealthGateway.Laboratory.Models
         public string LabResultOutcome { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the result description.
+        /// Gets the result description.
         /// </summary>
         [JsonPropertyName("resultDescription")]
-        public string ResultDescription { get; set; } = string.Empty;
+        public IList<string> ResultDescription { get; }
+
+        /// <summary>
+        /// Gets or sets the result link.
+        /// </summary>
+        [JsonPropertyName("resultLink")]
+        public string ResultLink { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the received datetime.

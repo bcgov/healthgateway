@@ -1,11 +1,16 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faEllipsisV, faFileDownload } from "@fortawesome/free-solid-svg-icons";
+import {
+    faDownload,
+    faEllipsisV,
+    faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { BTab, BTabs } from "bootstrap-vue";
 import Vue from "vue";
 import { Component, Emit, Prop, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import LaboratoryResultDescriptionComponent from "@/components/laboratory/laboratoryResultDescription.vue";
 import DeleteModalComponent from "@/components/modal/deleteConfirmation.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import { ResultType } from "@/constants/resulttype";
@@ -13,11 +18,7 @@ import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
-import {
-    LaboratoryOrder,
-    LaboratoryReport,
-    LaboratoryUtil,
-} from "@/models/laboratory";
+import { LaboratoryReport, LaboratoryUtil } from "@/models/laboratory";
 import { LaboratoryResult } from "@/models/laboratory";
 import { ResultError } from "@/models/requestResult";
 import User from "@/models/user";
@@ -30,7 +31,13 @@ import {
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 
-library.add(faEllipsisV, faFileDownload);
+library.add(faEllipsisV, faDownload, faInfoCircle);
+
+interface LaboratoryResultRow {
+    id: string;
+    reportAvailable: boolean;
+    result: LaboratoryResult;
+}
 
 @Component({
     components: {
@@ -38,6 +45,7 @@ library.add(faEllipsisV, faFileDownload);
         BTab,
         MessageModalComponent,
         DeleteModalComponent,
+        LaboratoryResultDescriptionComponent,
     },
 })
 export default class DependentCardComponent extends Vue {
@@ -68,10 +76,10 @@ export default class DependentCardComponent extends Vue {
     private logger!: ILogger;
     private laboratoryService!: ILaboratoryService;
     private dependentService!: IDependentService;
-    private labResults: LaboratoryOrder[] = [];
+    private labResultRows: LaboratoryResultRow[] = [];
     private isDataLoaded = false;
 
-    private selectedLabOrder!: LaboratoryOrder;
+    private selectedLabResultRow!: LaboratoryResultRow;
 
     private get isExpired() {
         let birthDate = new DateWrapper(
@@ -94,8 +102,8 @@ export default class DependentCardComponent extends Vue {
         );
     }
 
-    private showSensitiveDocumentDownloadModal(labOrder: LaboratoryOrder) {
-        this.selectedLabOrder = labOrder;
+    private showSensitiveDocumentDownloadModal(row: LaboratoryResultRow) {
+        this.selectedLabResultRow = row;
         this.sensitivedocumentDownloadModal.showModal();
     }
 
@@ -108,7 +116,20 @@ export default class DependentCardComponent extends Vue {
             .getOrders(this.dependent.ownerId)
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
-                    this.labResults = results.resourcePayload;
+                    this.labResultRows =
+                        results.resourcePayload.flatMap<LaboratoryResultRow>(
+                            (o) => {
+                                return o.labResults.map<LaboratoryResultRow>(
+                                    (r) => {
+                                        return {
+                                            id: o.id,
+                                            reportAvailable: o.reportAvailable,
+                                            result: r,
+                                        };
+                                    }
+                                );
+                            }
+                        );
                     this.sortEntries();
                     this.isDataLoaded = true;
                 } else {
@@ -136,17 +157,20 @@ export default class DependentCardComponent extends Vue {
     }
 
     private sortEntries() {
-        this.labResults.sort((a, b) => {
-            let dateA = new DateWrapper(a.labResults[0].collectedDateTime);
-            let dateB = new DateWrapper(b.labResults[0].collectedDateTime);
+        this.labResultRows.sort((a, b) => {
+            let dateA = new DateWrapper(a.result.collectedDateTime);
+            let dateB = new DateWrapper(b.result.collectedDateTime);
             return dateA.isAfter(dateB) ? -1 : dateA.isBefore(dateB) ? 1 : 0;
         });
     }
 
     private getReport() {
-        let labResult = this.selectedLabOrder.labResults[0];
+        let labResult = this.selectedLabResultRow.result;
         this.laboratoryService
-            .getReportDocument(this.selectedLabOrder.id, this.dependent.ownerId)
+            .getReportDocument(
+                this.selectedLabResultRow.id,
+                this.dependent.ownerId
+            )
             .then((result) => {
                 const link = document.createElement("a");
                 let report: LaboratoryReport = result.resourcePayload;
@@ -210,6 +234,17 @@ export default class DependentCardComponent extends Vue {
             return "";
         }
     }
+
+    private getOutcomeClasses(outcome: string): string[] {
+        switch (outcome?.toUpperCase()) {
+            case "NEGATIVE":
+                return ["text-success"];
+            case "POSITIVE":
+                return ["text-danger"];
+            default:
+                return ["text-muted"];
+        }
+    }
 }
 </script>
 
@@ -241,8 +276,9 @@ export default class DependentCardComponent extends Vue {
                                 <hg-button
                                     variant="secondary"
                                     @click="deleteDependent()"
-                                    >Remove Dependent</hg-button
                                 >
+                                    Remove Dependent
+                                </hg-button>
                             </b-col>
                         </b-row>
                     </div>
@@ -259,7 +295,7 @@ export default class DependentCardComponent extends Vue {
                                             "
                                             data-testid="dependentPHN"
                                             readonly
-                                        ></b-form-input>
+                                        />
                                     </b-col>
                                 </b-row>
                             </b-col>
@@ -277,7 +313,7 @@ export default class DependentCardComponent extends Vue {
                                             "
                                             data-testid="dependentDOB"
                                             readonly
-                                        ></b-form-input>
+                                        />
                                     </b-col>
                                 </b-row>
                             </b-col>
@@ -294,12 +330,12 @@ export default class DependentCardComponent extends Vue {
                         <div data-testid="covid19TabTitle">COVID-19</div>
                     </template>
                     <b-row v-if="isLoading" class="m-2">
-                        <b-col><b-spinner></b-spinner></b-col>
+                        <b-col><b-spinner /></b-col>
                     </b-row>
-                    <b-row v-else-if="labResults.length == 0" class="m-2">
-                        <b-col data-testid="covid19NoRecords"
-                            >No records found.</b-col
-                        >
+                    <b-row v-else-if="labResultRows.length == 0" class="m-2">
+                        <b-col data-testid="covid19NoRecords">
+                            No records found.
+                        </b-col>
                     </b-row>
                     <table
                         v-else
@@ -312,96 +348,97 @@ export default class DependentCardComponent extends Vue {
                                 Test Type
                             </th>
                             <th scope="col" class="d-none d-sm-table-cell">
-                                Test Location
+                                Status
                             </th>
                             <th scope="col">Result</th>
                             <th scope="col">Report</th>
                         </tr>
-                        <tr
-                            v-for="item in labResults"
-                            :key="item.labResults[0].id"
-                        >
+                        <tr v-for="(row, index) in labResultRows" :key="index">
                             <td data-testid="dependentCovidTestDate">
-                                {{
-                                    formatDate(
-                                        item.labResults[0].collectedDateTime
-                                    )
-                                }}
+                                {{ formatDate(row.result.collectedDateTime) }}
                             </td>
                             <td
                                 data-testid="dependentCovidTestType"
                                 class="d-none d-sm-table-cell"
                             >
-                                {{ item.labResults[0].testType }}
+                                {{ row.result.testType }}
                             </td>
                             <td
-                                data-testid="dependentCovidTestLocation"
+                                data-testid="dependentCovidTestStatus"
                                 class="d-none d-sm-table-cell"
                             >
-                                {{ item.location }}
+                                {{ row.result.testStatus }}
                             </td>
-                            <td
-                                data-testid="dependentCovidTestLabResult"
-                                :class="item.labResults[0].labResultOutcome"
-                            >
-                                {{ formatResult(item.labResults[0]) }}
+                            <td data-testid="dependentCovidTestLabResult">
+                                <span
+                                    class="font-weight-bold"
+                                    :class="
+                                        getOutcomeClasses(
+                                            row.result.labResultOutcome
+                                        )
+                                    "
+                                >
+                                    {{ formatResult(row.result) }}
+                                </span>
+                                <span v-if="checkResultReady(row.result)">
+                                    <hg-button
+                                        :id="
+                                            'dependent-covid-test-info-button-' +
+                                            index
+                                        "
+                                        aria-label="Result Description"
+                                        href="#"
+                                        variant="link"
+                                        data-testid="dependent-covid-test-info-button"
+                                        class="shadow-none p-0 ml-1"
+                                    >
+                                        <hg-icon
+                                            icon="info-circle"
+                                            size="small"
+                                        />
+                                    </hg-button>
+                                    <b-popover
+                                        :target="
+                                            'dependent-covid-test-info-button-' +
+                                            index
+                                        "
+                                        triggers="hover focus"
+                                        placement="bottomleft"
+                                        data-testid="dependent-covid-test-info-popover"
+                                    >
+                                        <LaboratoryResultDescriptionComponent
+                                            class="p-2"
+                                            :description="
+                                                row.result.resultDescription
+                                            "
+                                            :link="row.result.resultLink"
+                                        />
+                                    </b-popover>
+                                </span>
                             </td>
                             <td>
                                 <hg-button
                                     v-if="
-                                        item.reportAvailable &&
-                                        checkResultReady(item.labResults[0])
+                                        row.reportAvailable &&
+                                        checkResultReady(row.result)
                                     "
                                     data-testid="dependentCovidReportDownloadBtn"
                                     variant="link"
+                                    class="p-1"
                                     @click="
-                                        showSensitiveDocumentDownloadModal(item)
+                                        showSensitiveDocumentDownloadModal(row)
                                     "
                                 >
                                     <hg-icon
-                                        icon="file-download"
+                                        icon="download"
                                         size="medium"
+                                        square
                                         aria-hidden="true"
                                     />
                                 </hg-button>
                             </td>
                         </tr>
                     </table>
-                    <div class="p-1">
-                        <strong>What to expect next</strong>
-                        <p>
-                            If you receive a
-                            <strong>positive</strong> COVID-19 result:
-                        </p>
-                        <ul>
-                            <li>
-                                You and the people you live with need to
-                                self-isolate now.
-                            </li>
-                            <li>
-                                Public health will contact you in 2 to 3 days
-                                with further instructions.
-                            </li>
-                            <li>
-                                If you are a health care worker, please notify
-                                your employer of your positive result.
-                            </li>
-                            <li>
-                                Monitor your health and contact a health care
-                                provider or call 8-1-1 if you are concerned
-                                about your symptoms.
-                            </li>
-                            <li>
-                                Go to
-                                <a
-                                    href="http://www.bccdc.ca/results"
-                                    target="blank_"
-                                    >www.bccdc.ca/results</a
-                                >
-                                for more information about your test result.
-                            </li>
-                        </ul>
-                    </div>
                 </b-tab>
                 <template #tabs-start>
                     <div class="w-100">
@@ -459,7 +496,7 @@ export default class DependentCardComponent extends Vue {
             title="Remove Dependent"
             message="Are you sure you want to remove this dependent?"
             @submit="deleteDependent()"
-        ></delete-modal-component>
+        />
         <MessageModalComponent
             ref="sensitivedocumentDownloadModal"
             title="Sensitive Document Download"
@@ -486,12 +523,6 @@ th {
 }
 .dependentMenu {
     color: $soft_text;
-}
-td.Positive {
-    color: red;
-}
-td.Negative {
-    color: green;
 }
 .card-title {
     padding-left: 14px;

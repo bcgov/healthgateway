@@ -1,0 +1,23 @@
+{
+    "resourcePayload": [
+        {
+            "dependentInformation": {
+                "hdid": "645645767756756767",
+                "firstname": "Sam",
+                "lastname": "Testfive",
+                "PHN": "9874307168",
+                "dateOfBirth": "2014-03-15T00:00:00",
+                "gender": "Female"
+            },
+            "ownerId": "645645767756756767",
+            "delegateId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            "reasonCode": 0,
+            "version": 9650
+        }
+    ],
+    "totalResultCount": 1,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 1,
+    "resultError": null
+}

@@ -72,25 +72,35 @@ describe("Laboratory", () => {
             });
         cy.get("[data-testid=filterTextInput]").should("be.visible");
 
+        // Test multiple records with resultLink
         const otherStatus = "Test Status: SomeOtherState";
         cy.log("Verifying not ready state");
         cy.get("[data-testid=timelineCard]")
-            .eq(1)
+            .eq(1) // Card Index 1
             .within(() => {
                 cy.get("[data-testid=laboratoryHeaderDescription]").should(
-                    "not.be.visible"
+                    "not.exist"
                 );
                 cy.get("[data-testid=entryCardDetailsTitle]").click();
             });
         cy.get("[id=entry-details-modal]")
             .should("be.visible")
             .within(() => {
-                cy.get("[data-testid=laboratoryTestStatus]").should(
-                    "be.visible"
-                );
-                cy.get("[data-testid=laboratoryTestStatus]").should(($div) => {
-                    expect($div.text().trim()).equal(otherStatus);
-                });
+                cy.get("[data-testid=laboratoryTestStatus]")
+                    .first()
+                    .should("be.visible");
+                cy.get("[data-testid=laboratoryTestStatus]")
+                    .first()
+                    .should(($div) => {
+                        expect($div.text().trim()).equal(otherStatus);
+                    });
+                cy.get("[data-testid=laboratoryResultDescription]")
+                    .eq(2)
+                    .find("p")
+                    .last()
+                    .find("a")
+                    .should("have.attr", "href");
+
                 cy.get("[data-testid=backBtn]").click();
             });
         cy.get("[data-testid=filterTextInput]").should("be.visible");
@@ -98,7 +108,7 @@ describe("Laboratory", () => {
         const positiveSummary = "Result: Positive";
         cy.log("Verifying Corrected state");
         cy.get("[data-testid=timelineCard]")
-            .eq(2)
+            .eq(2) // Card Index 2
             .within(() => {
                 cy.get("[data-testid=laboratoryHeaderDescription]").should(
                     "be.visible"
