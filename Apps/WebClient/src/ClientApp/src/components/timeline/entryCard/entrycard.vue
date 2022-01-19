@@ -153,6 +153,7 @@ export default class EntrycardTimelineComponent extends Vue {
                                     data-testid="attachmentIcon"
                                 />
                             </span>
+                            <slot name="header-menu" />
                         </b-col>
                     </b-row>
                 </b-col>
