@@ -25,12 +25,13 @@
                     "outOfRange": false,
                     "collectedDateTime": "2020-12-03T10:00:00+00:00",
                     "testStatus": "Final",
-                    "resultDescription": "NEGATIVE for COVID-19 virus (SARS-CoV-2)\nby NAAT.\n\nThis is a validated laboratory developed\nassay.\n",
+                    "resultDescription": [ "NEGATIVE for COVID-19 virus (SARS-CoV-2) by NAAT.", "This is a validated laboratory developed assay." ],
                     "labResultOutcome": "Negative",
                     "receivedDateTime": "2020-12-03T23:40:00+00:00",
                     "resultDateTime": "2020-12-04T16:45:09+00:00",
                     "loinc": "94309-2",
-                    "loincName": "COVID-19 Coronavirus RNA (PCR/NAAT)"
+                    "loincName": "COVID-19 Coronavirus RNA (PCR/NAAT)",
+                    "resultLink": null
                 }
             ]
         },
@@ -54,12 +55,13 @@
                     "outOfRange": true,
                     "collectedDateTime": "2020-07-14T16:48:00+00:00",
                     "testStatus": "Amended",
-                    "resultDescription": "ORGANISM 1                     COVID-19 VIRUS (2019-NCOV)*<br>DETECTED BY NAT",
+                    "resultDescription": [ "ORGANISM 1 COVID-19 VIRUS (2019-NCOV)*", "DETECTED BY NAT" ],
                     "labResultOutcome": "Positive",
                     "receivedDateTime": "2020-07-15T05:35:00+00:00",
                     "resultDateTime": "2020-07-15T05:35:00+00:00",
                     "loinc": "XXX-1927",
-                    "loincName": "Microbiology Report"
+                    "loincName": "Microbiology Report",
+                    "resultLink": null
                 }
             ]
         },
@@ -83,12 +85,13 @@
                     "outOfRange": true,
                     "collectedDateTime": "2020-08-21T15:30:00+00:00",
                     "testStatus": "Final",
-                    "resultDescription": "Positive",
+                    "resultDescription": [ "Positive" ],
                     "labResultOutcome": "Positive",
                     "receivedDateTime": "2020-08-21T18:06:00+00:00",
                     "resultDateTime": "2020-08-21T18:21:59+00:00",
                     "loinc": "94309-2",
-                    "loincName": "COVID-19"
+                    "loincName": "COVID-19",
+                    "resultLink": null
                 }
             ]
         },
@@ -112,12 +115,13 @@
                     "outOfRange": true,
                     "collectedDateTime": "2020-10-03T15:45:00+00:00",
                     "testStatus": "Final",
-                    "resultDescription": "POSITIVE",
+                    "resultDescription": [ "POSITIVE" ],
                     "labResultOutcome": "Positive",
                     "receivedDateTime": "2020-10-04T11:30:00+00:00",
                     "resultDateTime": "2020-10-04T21:08:00+00:00",
                     "loinc": "94309-2",
-                    "loincName": "COVID-19 Virus PCR (FH)"
+                    "loincName": "COVID-19 Virus PCR (FH)",
+                    "resultLink": null
                 }
             ]
         },
@@ -141,12 +145,13 @@
                     "outOfRange": false,
                     "collectedDateTime": "2020-06-15T05:47:00+00:00",
                     "testStatus": "Final",
-                    "resultDescription": "Negative.",
+                    "resultDescription": [ "Negative." ],
                     "labResultOutcome": "Negative",
                     "receivedDateTime": "2020-06-16T05:47:00+00:00",
                     "resultDateTime": "2020-06-16T10:10:00+00:00",
                     "loinc": "XXX-3286",
-                    "loincName": "COVID-19 n-Coronavirus  NAT"
+                    "loincName": "COVID-19 n-Coronavirus  NAT",
+                    "resultLink": null
                 }
             ]
         },
@@ -170,12 +175,13 @@
                     "outOfRange": false,
                     "collectedDateTime": "2020-06-14T17:45:00+00:00",
                     "testStatus": "Final",
-                    "resultDescription": "Negative",
+                    "resultDescription": [ "Negative" ],
                     "labResultOutcome": "NotSet",
                     "receivedDateTime": "2020-06-14T19:42:00+00:00",
                     "resultDateTime": "2020-06-15T03:52:00+00:00",
                     "loinc": "94309-2",
-                    "loincName": "COVID-19 Virus PCR (FH)"
+                    "loincName": "COVID-19 Virus PCR (FH)",
+                    "resultLink": null
                 }
             ]
         },
@@ -199,12 +205,13 @@
                     "outOfRange": true,
                     "collectedDateTime": "2020-12-05T12:00:00+00:00",
                     "testStatus": "Corrected",
-                    "resultDescription": "POSITIVE for COVID-19 virus (SARS-CoV-2)\nby NAAT.\n\nThis is a validated laboratory developed\nassay.\n- Result sent to Public Health \nFor patients residing outside British\nColumbia, ordering practitioners must\nreport this result to Public Health \nOffice specific to the province of resid-\nence.\n",
+                    "resultDescription": [ "POSITIVE for COVID-19 virus (SARS-CoV-2) by NAAT.", "This is a validated laboratory developed assay.", "Result sent to Public Health. For patients residing outside British Columbia, ordering practitioners must report this result to Public Health Office specific to the province of residence." ],
                     "labResultOutcome": "Positive",
                     "receivedDateTime": "2020-12-05T17:26:00+00:00",
                     "resultDateTime": "2020-12-06T09:45:00+00:00",
                     "loinc": "94309-2",
-                    "loincName": "COVID-19 Coronavirus RNA (PCR/NAAT)"
+                    "loincName": "COVID-19 Coronavirus RNA (PCR/NAAT)",
+                    "resultLink": null
                 }
             ]
         }
