@@ -7,6 +7,7 @@ TRUNCATE gateway."ResourceDelegateHistory" CASCADE;
 TRUNCATE gateway."UserPreference" CASCADE;
 TRUNCATE gateway."Comment" CASCADE;
 TRUNCATE gateway."MessagingVerification" CASCADE;
+TRUNCATE gateway."Note" CASCADE;
 
 /* Registered HealthGateway User */
 INSERT INTO gateway."UserProfile"(
@@ -318,3 +319,71 @@ VALUES (
 	false,
 	0
 );
+
+INSERT INTO gateway."Note"(
+	"NoteId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"UserProfileId", 
+	"Title", 
+	"Text", 
+	"JournalDateTime")
+VALUES (
+	uuid_generate_v4(),
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	now(),
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	now(),
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	'Z5/Z7ZkAF8t5HpJq07QGBw==',
+	'W/rhf01ikEQrN9v1wX5sfA==',
+	now()
+);
+
+
+INSERT INTO gateway."Note"(
+	"NoteId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"UserProfileId", 
+	"Title", 
+	"Text", 
+	"JournalDateTime")
+VALUES (
+	uuid_generate_v4(),
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	'2022-01-17 00:48:01.11617',
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	'2022-01-17 00:48:01.11617',
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	'Z5/Z7ZkAF8t5HpJq07QGBw==',
+	'W/rhf01ikEQrN9v1wX5sfA==',
+	'2022-01-17 00:48:01.116171'
+);
+
+INSERT INTO gateway."Note"(
+	"NoteId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"UserProfileId", 
+	"Title", 
+	"Text", 
+	"JournalDateTime")
+VALUES (
+	uuid_generate_v4(),
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	'2022-01-16 00:48:01.11617',
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	'2022-01-16 00:48:01.11617',
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	'Z5/Z7ZkAF8t5HpJq07QGBw==',
+	'W/rhf01ikEQrN9v1wX5sfA==',
+	'2022-01-16 00:48:01.11617'
+);
+
