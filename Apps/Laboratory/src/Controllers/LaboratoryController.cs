@@ -22,6 +22,7 @@ namespace HealthGateway.Laboratory.Controllers
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
     using HealthGateway.Laboratory.Models;
+    using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -66,13 +67,13 @@ namespace HealthGateway.Laboratory.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
-        [HttpGet]
+        [HttpGet("Covid19")]
         [Produces("application/json")]
         [Authorize(Policy = LaboratoryPolicy.Read)]
-        public async Task<RequestResult<IEnumerable<Covid19Model>>> GetCovid19Orders([FromQuery] string hdid)
+        public async Task<RequestResult<IEnumerable<PhsaCovid19Order>>> GetCovid19Orders([FromQuery] string hdid)
         {
             this.logger.LogDebug($"Getting list of COVID-19 orders... ");
-            RequestResult<IEnumerable<Covid19Model>> result = await this.service.GetCovid19Orders(hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<PhsaCovid19Order>> result = await this.service.GetCovid19Orders(hdid).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting COVID-19 orders from controller... {hdid}");
             return result;
         }

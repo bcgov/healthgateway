@@ -65,11 +65,11 @@ namespace HealthGateway.LaboratoryTests
         {
             ILaboratoryService service = this.GetLabServiceForCovid19Orders(ResultType.Success);
 
-            Task<RequestResult<IEnumerable<Covid19Model>>> actualResult = service.GetCovid19Orders(HdId, 0);
+            Task<RequestResult<IEnumerable<PhsaCovid19Order>>> actualResult = service.GetCovid19Orders(HdId, 0);
 
             Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
             int count = 0;
-            foreach (Covid19Model model in actualResult.Result!.ResourcePayload!)
+            foreach (PhsaCovid19Order model in actualResult.Result!.ResourcePayload!)
             {
                 count++;
                 Assert.True(model.MessageID.Equals(MockedMessageID + count, StringComparison.Ordinal));
@@ -86,7 +86,7 @@ namespace HealthGateway.LaboratoryTests
         {
             ILaboratoryService service = this.GetLabServiceForCovid19Orders(ResultType.Error);
 
-            Task<RequestResult<IEnumerable<Covid19Model>>> actualResult = service.GetCovid19Orders(HdId, 0);
+            Task<RequestResult<IEnumerable<PhsaCovid19Order>>> actualResult = service.GetCovid19Orders(HdId, 0);
 
             Assert.Equal(ResultType.Error, actualResult.Result.ResultStatus);
         }
