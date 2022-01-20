@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Models
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// An administrative view of UserFeedback with Email populated from UserProfile.

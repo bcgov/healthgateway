@@ -24,6 +24,8 @@ namespace HealthGateway.CommonTests.Delegates
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.BCMailPlus;

@@ -17,7 +17,7 @@ namespace HealthGateway.Medication.Delegates
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Medication.Models;
 
     /// <summary>

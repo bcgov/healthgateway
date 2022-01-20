@@ -17,7 +17,8 @@ namespace HealthGateway.WebClient.Test.Services
 {
     using System.Text.Json;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.CDogs;
@@ -35,8 +36,16 @@ namespace HealthGateway.WebClient.Test.Services
         /// <summary>
         /// GetReport - Happy path scenario.
         /// </summary>
-        [Fact]
-        public void ShouldGetReport()
+        /// <param name="templateType">Report Template Type.</param>
+        /// <param name="reportName">Report Name.</param>
+        [Theory]
+        [InlineData(TemplateType.Medication, "HealthGatewayMedicationReport")]
+        [InlineData(TemplateType.Notes, "HealthGatewayNotesReport")]
+        [InlineData(TemplateType.Encounter, "HealthGatewayEncounterReport")]
+        [InlineData(TemplateType.Immunization, "HealthGatewayImmunizationReport")]
+        [InlineData(TemplateType.Covid, "HealthGatewayCovidReport")]
+        [InlineData(TemplateType.MedicationRequest, "HealthGatewayMedicationRequestReport")]
+        public void ShouldGetReport(TemplateType templateType, string reportName)
         {
             RequestResult<ReportModel> expectedResult = new()
             {
@@ -50,12 +59,12 @@ namespace HealthGateway.WebClient.Test.Services
             ReportRequestModel reportRequest = new()
             {
                 Data = JsonDocument.Parse("{}").RootElement,
-                Template = TemplateType.Medication,
+                Template = templateType,
                 Type = ReportFormatType.PDF,
             };
 
             Mock<ICDogsDelegate> cdogsDelegateMock = new();
-            cdogsDelegateMock.Setup(s => s.GenerateReportAsync(It.Is<CDogsRequestModel>(r => r.Options.ReportName == "HealthGatewayMedicationReport"))).ReturnsAsync(expectedResult);
+            cdogsDelegateMock.Setup(s => s.GenerateReportAsync(It.Is<CDogsRequestModel>(r => r.Options.ReportName == reportName))).ReturnsAsync(expectedResult);
 
             IReportService service = new ReportService(
                 new Mock<ILogger<ReportService>>().Object,

@@ -20,9 +20,9 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using DeepEqual.Syntax;
     using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
-    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Wrapper;

@@ -44,6 +44,8 @@ describe("Notes", () => {
             expect(str).to.eq("Are you sure you want to delete this note?");
         });
         cy.get("[data-testid=deleteNoteMenuBtn]").last().click();
-        cy.get("[data-testid=noteTitle]").should("not.exist");
+        cy.get("[data-testid=noteTitle]")
+            .contains("Note Title!")
+            .should("not.exist");
     });
 });

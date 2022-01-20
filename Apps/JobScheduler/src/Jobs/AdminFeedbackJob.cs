@@ -18,6 +18,7 @@ namespace Healthgateway.JobScheduler.Jobs
     using System;
     using System.Collections.Generic;
     using Hangfire;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;

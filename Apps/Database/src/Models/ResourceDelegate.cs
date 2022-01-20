@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Models
 {
     using System.ComponentModel.DataAnnotations;
     using System.Text.Json;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
 
     /// <summary>

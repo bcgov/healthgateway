@@ -15,6 +15,7 @@ export enum TemplateType {
     Medication,
     COVID,
     MedicationRequest,
+    Notes,
 }
 
 export enum ReportFormatType {

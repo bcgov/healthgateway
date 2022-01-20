@@ -29,6 +29,22 @@ export default class ReleaseNotesView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
         <release-note
+            date="January 19, 2022"
+            version="v1.5.1"
+            title="COVID Tests Update, Export Notes"
+        >
+            <ul>
+                <li>
+                    We updated the COVID test display to include with more clear
+                    messaging depending on your test results.
+                </li>
+                <li>
+                    We added a feature which allows you to export notes that you
+                    have added to your profile as PDF or Excel files.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
             date="December 15, 2021"
             version="v1.4.17"
             title="Breadcrumb Navigation"

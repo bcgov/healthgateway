@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Delegates
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.Immunization;
 
     /// <summary>

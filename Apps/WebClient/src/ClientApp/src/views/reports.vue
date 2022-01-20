@@ -16,6 +16,7 @@ import ImmunizationHistoryReportComponent from "@/components/report/immunization
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MedicationRequestReportComponent from "@/components/report/medicationRequest.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
+import NotesReportComponent from "@/components/report/notes.vue";
 import ResourceCentreComponent from "@/components/resourceCentre.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -38,6 +39,7 @@ const mspVisitReport = "msp-visit-report";
 const covid19Report = "covid19-report";
 const immunizationReport = "immunization-report";
 const medicationRequestReport = "medication-request-report";
+const noteReport = "note-report";
 
 @Component({
     components: {
@@ -52,6 +54,7 @@ const medicationRequestReport = "medication-request-report";
         "hg-date-picker": DatePickerComponent,
         MultiSelectComponent,
         "resource-centre": ResourceCentreComponent,
+        noteReport: NotesReportComponent,
     },
 })
 export default class ReportsView extends Vue {
@@ -193,6 +196,12 @@ export default class ReportsView extends Vue {
                 text: "Special Authority Requests",
             });
         }
+        if (this.config.modules["Note"]) {
+            this.reportTypeOptions.push({
+                value: noteReport,
+                text: "My Notes",
+            });
+        }
     }
 
     private clearFilter() {
@@ -290,6 +299,9 @@ export default class ReportsView extends Vue {
                 break;
             case medicationRequestReport:
                 reportName = "Special Authority Requests";
+                break;
+            case noteReport:
+                reportName = "Notes";
                 break;
             default:
                 reportName = "";

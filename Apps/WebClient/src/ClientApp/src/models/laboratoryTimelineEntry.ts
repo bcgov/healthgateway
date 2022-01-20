@@ -92,7 +92,9 @@ export class LaboratoryResultViewModel {
     public outOfRange: string;
     public collectedDateTime: DateWrapper;
     public testStatus: string | null;
-    public resultDescription: string | null;
+    public isTestResultReady: boolean;
+    public resultDescription: string[];
+    public resultLink: string | null;
     public labResultOutcome: string | null;
     public receivedDateTime: DateWrapper;
     public resultDateTime: DateWrapper;
@@ -107,7 +109,11 @@ export class LaboratoryResultViewModel {
             hasTime: true,
         });
         this.testStatus = model.testStatus;
+        this.isTestResultReady = LaboratoryUtil.isTestResultReady(
+            this.testStatus
+        );
         this.resultDescription = model.resultDescription;
+        this.resultLink = model.resultLink;
         this.labResultOutcome = model.labResultOutcome;
         this.receivedDateTime = new DateWrapper(model.receivedDateTime, {
             hasTime: true,

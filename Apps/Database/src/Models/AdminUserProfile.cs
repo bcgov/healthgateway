@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using HealthGateway.Common.Data.Models;
 
 /// <summary>
 /// The admin user profile model.
@@ -36,12 +37,6 @@ public class AdminUserProfile : AuditableEntity
     /// </summary>
     [MaxLength(255)]
     public string Username { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the email.
-    /// </summary>
-    [MaxLength(255)]
-    public string? Email { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the users last login datetime.

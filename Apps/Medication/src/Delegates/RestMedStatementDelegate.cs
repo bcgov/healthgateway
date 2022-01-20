@@ -25,12 +25,15 @@ namespace HealthGateway.Medication.Delegates
     using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.Utils;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
-    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models.Cacheable;
     using HealthGateway.Medication.Models.ODR;
@@ -132,19 +135,19 @@ namespace HealthGateway.Medication.Delegates
                                 MedicationHistory? medicationHistory = JsonSerializer.Deserialize<MedicationHistory>(payload);
                                 if (medicationHistory != null)
                                 {
-                                    retVal.ResultStatus = Common.Constants.ResultType.Success;
+                                    retVal.ResultStatus = ResultType.Success;
                                     retVal.ResourcePayload = medicationHistory.Response;
                                 }
                                 else
                                 {
-                                    retVal.ResultStatus = Common.Constants.ResultType.Error;
+                                    retVal.ResultStatus = ResultType.Error;
                                     retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to deserialize ODR response", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
                                     this.logger.LogError(retVal.ResultError.ResultMessage);
                                 }
                             }
                             else
                             {
-                                retVal.ResultStatus = Common.Constants.ResultType.Error;
+                                retVal.ResultStatus = ResultType.Error;
                                 retVal.ResultError = new RequestResultError() { ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason ${response.ReasonPhrase}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
                                 this.logger.LogError(retVal.ResultError.ResultMessage);
                             }
@@ -161,7 +164,7 @@ namespace HealthGateway.Medication.Delegates
                 }
                 catch (Exception e)
                 {
-                    retVal.ResultStatus = Common.Constants.ResultType.Error;
+                    retVal.ResultStatus = ResultType.Error;
                     retVal.ResultError = new RequestResultError() { ResultMessage = e.ToString(), ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
                     this.logger.LogError($"Error with Medication Service: {e}");
                 }
@@ -255,7 +258,7 @@ namespace HealthGateway.Medication.Delegates
                         Operator = Constants.ProtectiveWordOperator.Get,
                     },
                 };
-                var options = new JsonSerializerOptions
+                JsonSerializerOptions? options = new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,

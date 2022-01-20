@@ -52,4 +52,7 @@
     <None Remove="Assets\Legal\TermsOfService.20201224.html" />
     <None Remove="Assets\docs\EmailAccountClosed %28copy%29.html" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CommonData\src\Common.Data.csproj" />
+  </ItemGroup>
 </Project>

@@ -1,0 +1,125 @@
+@page "/showcase/links-and-buttons"
+
+<PageTitle>Links and Buttons</PageTitle>
+
+<article>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Links</MudText>
+    <MudLink Class="mx-1 my-2" Href="#">Default</MudLink>
+    <MudLink Class="mx-1 my-2" Href="#" Disabled="true">Disabled</MudLink>
+    <MudLink Class="mx-1 my-2" Href="#" Underline="Underline.Always">Always Underlined</MudLink>
+    <MudLink Class="mx-1 my-2" Href="#" Underline="Underline.None">Never Underlined</MudLink>
+</article>
+<MudDivider DividerType="DividerType.Middle" Class="my-6" />
+<article>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Filled Button Variant</MudText>
+    <div>
+        <MudButton Class="mx-1 my-2" Variant="Variant.Filled" Color="@Color.Primary" Disabled="true">Disabled</MudButton>
+        @foreach (Color colour in Colours)
+        {
+            <MudButton Class="mx-1 my-2" Variant="Variant.Filled" Color="@colour">@colour</MudButton>
+        }
+    </div>
+    <div>
+        <MudButton Class="mx-1 my-2" StartIcon="@Icons.Material.Filled.Login" Variant="Variant.Filled" Color="Color.Primary">Icon Before</MudButton>
+        <MudButton Class="mx-1 my-2" EndIcon="@Icons.Material.Filled.Logout" Variant="Variant.Filled" Color="Color.Secondary">Icon After</MudButton>
+        <MudButton Class="mx-1 my-2" StartIcon="@Icons.Material.Filled.Feedback" Variant="Variant.Filled" Color="Color.Tertiary">Icon Before</MudButton>
+    </div>
+</article>
+<article>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Outlined Button Variant</MudText>
+    <div>
+        <MudButton Class="mx-1 my-2" Variant="Variant.Outlined" Color="@Color.Primary" Disabled="true">Disabled</MudButton>
+        @foreach (Color colour in Colours)
+        {
+            <MudButton Class="mx-1 my-2" Variant="Variant.Outlined" Color="@colour">@colour</MudButton>
+        }
+    </div>
+    <div>
+
+        <MudButton Class="mx-1 my-2" StartIcon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Color="Color.Primary">Icon Before</MudButton>
+        <MudButton Class="mx-1 my-2" StartIcon="@Icons.Material.Filled.PersonAdd" Variant="Variant.Outlined" Color="Color.Secondary">Icon Before</MudButton>
+        <MudButton Class="mx-1 my-2" StartIcon="@Icons.Material.Filled.Person" Variant="Variant.Outlined" Color="Color.Tertiary">Icon Before</MudButton>
+    </div>
+</article>
+<article>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Text Button Variant</MudText>
+    <div>
+        <MudButton Class="mx-1 my-2" Variant="Variant.Text" Color="@Color.Primary" Disabled="true">Disabled</MudButton>
+        @foreach (Color colour in Colours)
+        {
+            <MudButton Class="mx-1 my-2" Variant="Variant.Text" Color="@colour">@colour</MudButton>
+        }
+    </div>
+    <div>
+        <MudButton Class="mx-1 my-2" StartIcon="@Icons.Material.Filled.Search" Variant="Variant.Text" Color="Color.Primary">Icon Before</MudButton>
+        <MudButton Class="mx-1 my-2" StartIcon="@Icons.Material.Filled.CheckCircle" Variant="Variant.Text" Color="Color.Secondary">Icon Before</MudButton>
+        <MudButton Class="mx-1 my-2" StartIcon="@Icons.Material.Filled.ContentCopy" Variant="Variant.Text" Color="Color.Tertiary">Icon Before</MudButton>
+    </div>
+</article>
+<article>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Icon Buttons</MudText>
+    <div>
+        <MudIconButton Class="mx-1 my-2" Icon="@Icons.Material.Filled.EditCalendar" Variant="Variant.Filled" Color="Color.Primary" Disabled="true" />
+        <MudIconButton Class="mx-1 my-2" Icon="@Icons.Material.Filled.EditCalendar" Variant="Variant.Filled" Color="Color.Primary" />
+        <MudIconButton Class="mx-1 my-2" Icon="@Icons.Material.Filled.EditCalendar" Variant="Variant.Filled" Color="Color.Secondary" />
+        <MudIconButton Class="mx-1 my-2" Icon="@Icons.Material.Filled.EditCalendar" Variant="Variant.Filled" Color="Color.Tertiary" />
+        <MudIconButton Class="mx-1 my-2" Icon="@Icons.Material.Filled.EditCalendar" Variant="Variant.Outlined" Color="Color.Primary" Disabled="true" />
+        <MudIconButton Class="mx-1 my-2" Icon="@Icons.Material.Filled.EditCalendar" Variant="Variant.Outlined" Color="Color.Primary" />
+        <MudIconButton Class="mx-1 my-2" Icon="@Icons.Material.Filled.EditCalendar" Variant="Variant.Outlined" Color="Color.Secondary" />
+        <MudIconButton Class="mx-1 my-2" Icon="@Icons.Material.Filled.EditCalendar" Variant="Variant.Outlined" Color="Color.Tertiary" />
+        <MudIconButton Icon="@Icons.Material.Filled.FileDownload" Color="Color.Primary" Disabled="true" />
+        <MudIconButton Icon="@Icons.Material.Filled.FileDownload" Color="Color.Primary" />
+        <MudIconButton Icon="@Icons.Material.Filled.FileDownload" Color="Color.Secondary" />
+        <MudIconButton Icon="@Icons.Material.Filled.FileDownload" Color="Color.Tertiary" />
+    </div>
+</article>
+<article>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Button Groups</MudText>
+    @foreach (Variant variant in Variants)
+    {
+        <div>
+            <MudButtonGroup Class="mx-1 my-2" Color="Color.Primary" Variant="@variant">
+                <MudButton Class="ma-0">One</MudButton>
+                <MudButton Class="ma-0">Two</MudButton>
+                <MudButton Class="ma-0">Three</MudButton>
+            </MudButtonGroup>
+            <MudButtonGroup Class="mx-1 my-2" Color="Color.Secondary" Variant="@variant">
+                <MudButton Class="ma-0">One</MudButton>
+                <MudButton Class="ma-0">Two</MudButton>
+                <MudButton Class="ma-0">Three</MudButton>
+            </MudButtonGroup>
+            <MudButtonGroup Class="mx-1 my-2" Color="Color.Tertiary" Variant="@variant">
+                <MudButton Class="ma-0">One</MudButton>
+                <MudButton Class="ma-0">Two</MudButton>
+                <MudButton Class="ma-0">Three</MudButton>
+            </MudButtonGroup>
+        </div>
+    }
+</article>
+<article>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Floating Action Buttons</MudText>
+    <MudFab Class="mx-1 my-2" Color="Color.Primary" Icon="@Icons.Material.Filled.Add" />
+    <MudFab Class="mx-1 my-2" Color="Color.Secondary" Icon="@Icons.Material.Filled.Edit" />
+    <MudFab Class="mx-1 my-2" Color="Color.Tertiary" Icon="@Icons.Material.Filled.HelpCenter" />
+</article>
+
+@code
+{
+    public IList<Variant> Variants { get; } = new List<Variant>()
+    {
+        Variant.Filled,
+        Variant.Outlined,
+        Variant.Text,
+    };
+    public IList<Color> Colours { get; } = new List<Color>()
+    {
+        Color.Default,
+        Color.Primary,
+        Color.Secondary,
+        Color.Tertiary,
+        Color.Info,
+        Color.Success,
+        Color.Warning,
+        Color.Error,
+    };
+}

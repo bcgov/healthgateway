@@ -128,9 +128,9 @@ export default class EntrycardTimelineComponent extends Vue {
                     </b-row>
                     <b-row>
                         <b-col class="py-1 text-muted align-self-center">
-                            <slot name="header-description">{{
-                                subtitle
-                            }}</slot>
+                            <slot name="header-description">
+                                {{ subtitle }}
+                            </slot>
                         </b-col>
                         <b-col cols="4" class="text-right align-self-center">
                             <span
@@ -153,7 +153,7 @@ export default class EntrycardTimelineComponent extends Vue {
                                     data-testid="attachmentIcon"
                                 />
                             </span>
-                            <slot name="header-menu"> </slot>
+                            <slot name="header-menu" />
                         </b-col>
                     </b-row>
                 </b-col>

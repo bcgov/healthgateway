@@ -1,0 +1,12 @@
+@typeparam TResetAction
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@if (IsEnabled && !IsHidden)
+{
+    <MudAlert Variant="Variant.Text"
+          Severity="Severity"
+          ShowCloseIcon="true"
+          CloseIconClicked="Close">
+        @ChildContent
+    </MudAlert>
+}

@@ -60,7 +60,8 @@ namespace HealthGateway.Admin.Services
         /// Retrieves a stream of inactive users in CSV format exclusive of the days inactive.
         /// </summary>
         /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
+        /// <param name="timeOffset">The clients offset to get to UTC.</param>
         /// <returns>returns a stream representing a CSV of inactive users.</returns>
-        Task<Stream> GetInactiveUsers(int inactiveDays);
+        Task<Stream> GetInactiveUsers(int inactiveDays, int timeOffset);
     }
 }

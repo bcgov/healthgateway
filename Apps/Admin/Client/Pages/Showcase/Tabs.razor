@@ -1,0 +1,113 @@
+@page "/showcase/tabs"
+
+<PageTitle>Tabs</PageTitle>
+
+<article>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Normal</MudText>
+    @foreach (Color colour in Colours)
+    {
+        <MudTabs Class="my-4" Elevation="4" Color="@colour" ApplyEffectsToContainer="true" PanelClass="pa-6">
+            <MudTabPanel Text="Tab One">
+                <MudText>Content One</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Two">
+                <MudText>Content Two</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Three">
+                <MudText>Content Three</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Disabled" Disabled="true">
+                <MudText>Content Disabled</MudText>
+            </MudTabPanel>
+        </MudTabs>
+    }
+</article>
+<article>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Overflowing</MudText>
+    @foreach (Color colour in Colours)
+    {
+        <MudTabs Class="my-4" Elevation="4" Color="@colour" ApplyEffectsToContainer="true" PanelClass="pa-6">
+            <MudTabPanel Text="Tab One">
+                <MudText>Content One</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Two">
+                <MudText>Content Two</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Three">
+                <MudText>Content Three</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Four">
+                <MudText>Content Four</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Five">
+                <MudText>Content Five</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Six">
+                <MudText>Content Six</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Seven">
+                <MudText>Content Seven</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Eight">
+                <MudText>Content Eight</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Nine">
+                <MudText>Content Nine</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Ten">
+                <MudText>Content Ten</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Eleven">
+                <MudText>Content Eleven</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Twelve">
+                <MudText>Content Twelve</MudText>
+            </MudTabPanel>
+        </MudTabs>
+    }
+</article>
+<article>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Centered</MudText>
+    @foreach (Color colour in Colours)
+    {
+        <MudTabs Class="my-4" Elevation="4" Color="@colour" Centered="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+            <MudTabPanel Text="Tab One">
+                <MudText>Content One</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Two">
+                <MudText>Content Two</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Three">
+                <MudText>Content Three</MudText>
+            </MudTabPanel>
+        </MudTabs>
+    }
+</article>
+<article>
+    <MudText Class="mt-4 mb-3" Typo="Typo.h4">Positioned Left</MudText>
+    @foreach (Color colour in Colours)
+    {
+        <MudTabs Class="my-4" Elevation="4" Color="@colour" Position="Position.Left" ApplyEffectsToContainer="true" PanelClass="pa-6">
+            <MudTabPanel Text="Tab One">
+                <MudText>Content One</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Two">
+                <MudText>Content Two</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Three">
+                <MudText>Content Three</MudText>
+            </MudTabPanel>
+        </MudTabs>
+    }
+</article>
+
+@code
+{
+    public IList<Color> Colours { get; } = new List<Color>()
+    {
+        Color.Default,
+        Color.Primary,
+        Color.Secondary,
+        Color.Tertiary,
+    };
+}

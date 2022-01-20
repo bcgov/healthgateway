@@ -16,13 +16,13 @@
 namespace HealthGateway.Patient.Test.Controllers
 {
     using System;
-    using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Controllers;
-    using Microsoft.AspNetCore.Mvc;
     using Moq;
     using Xunit;
 

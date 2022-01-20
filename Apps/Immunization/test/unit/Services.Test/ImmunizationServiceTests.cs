@@ -21,8 +21,8 @@ namespace HealthGateway.Immunization.Test.Services
     using System.Linq;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Models.PHSA.Recommendation;

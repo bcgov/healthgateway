@@ -21,7 +21,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
     using HealthGateway.Common.AccessManagement.Administration.Models;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// The UserDelegate IAM Admin Service interface.

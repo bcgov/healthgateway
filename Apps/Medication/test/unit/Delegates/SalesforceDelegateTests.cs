@@ -25,8 +25,8 @@ namespace HealthGateway.Medication.Delegates.Test
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
-    using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Services;
     using HealthGateway.Medication.Models;
     using Microsoft.Extensions.Configuration;

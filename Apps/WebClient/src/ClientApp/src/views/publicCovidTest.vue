@@ -298,12 +298,6 @@ export default class PublicCovidTestView extends Vue {
                         class="covid-test-result mt-2 px-2 py-2"
                     >
                         <b-row class="px-2 pt-1">
-                            <b-col :data-testid="'test-type-' + (index + 1)">
-                                <strong>Test Type: </strong>
-                                {{ publicCovidTest.testType }}
-                            </b-col>
-                        </b-row>
-                        <b-row class="px-2 pt-1">
                             <b-col>
                                 <strong>Result: </strong>
                                 <span
@@ -324,6 +318,12 @@ export default class PublicCovidTestView extends Vue {
                                         }}</strong
                                     ></span
                                 >
+                            </b-col>
+                        </b-row>
+                        <b-row class="px-2 pt-1">
+                            <b-col :data-testid="'test-type-' + (index + 1)">
+                                <strong>Test Type: </strong>
+                                {{ publicCovidTest.testType }}
                             </b-col>
                         </b-row>
                         <b-row class="px-2 pt-1">

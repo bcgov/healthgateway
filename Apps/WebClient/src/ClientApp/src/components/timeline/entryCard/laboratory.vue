@@ -1,11 +1,12 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faFileDownload, faFlask } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faFlask } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
+import LaboratoryResultDescriptionComponent from "@/components/laboratory/laboratoryResultDescription.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryReport } from "@/models/laboratory";
@@ -18,12 +19,13 @@ import SnowPlow from "@/utility/snowPlow";
 
 import EntrycardTimelineComponent from "./entrycard.vue";
 
-library.add(faFileDownload, faFlask);
+library.add(faDownload, faFlask);
 
 @Component({
     components: {
         MessageModalComponent,
         EntryCard: EntrycardTimelineComponent,
+        LaboratoryResultDescriptionComponent,
     },
 })
 export default class LaboratoryTimelineComponent extends Vue {
@@ -54,6 +56,17 @@ export default class LaboratoryTimelineComponent extends Vue {
 
     private formatDate(date: DateWrapper): string {
         return date.format("yyyy-MMM-dd, t");
+    }
+
+    private getOutcomeClasses(outcome: string): string[] {
+        switch (outcome?.toUpperCase()) {
+            case "NEGATIVE":
+                return ["text-success"];
+            case "POSITIVE":
+                return ["text-danger"];
+            default:
+                return [];
+        }
     }
 
     private showConfirmationModal(): void {
@@ -100,119 +113,93 @@ export default class LaboratoryTimelineComponent extends Vue {
         :is-mobile-details="isMobileDetails"
         :has-attachment="reportAvailable"
     >
-        <div slot="header-description">
+        <div v-if="entry.resultList.length === 1" slot="header-description">
             <strong
                 v-show="entry.isTestResultReady"
                 data-testid="laboratoryHeaderDescription"
             >
-                Result:
-                <span :class="entry.labResultOutcome"
-                    >{{ entry.labResultOutcome }}
-                </span></strong
-            >
+                <span>Result:</span>
+                <span :class="getOutcomeClasses(entry.labResultOutcome)">
+                    {{ entry.labResultOutcome }}
+                </span>
+            </strong>
         </div>
-
         <div slot="details-body">
-            <div v-if="reportAvailable" data-testid="laboratoryReportAvailable">
-                <b-spinner v-if="isLoadingDocument"></b-spinner>
+            <div
+                v-if="reportAvailable"
+                data-testid="laboratoryReportAvailable"
+                class="mt-2 mb-n1"
+            >
+                <b-spinner v-if="isLoadingDocument" class="mb-1" />
                 <span v-else data-testid="laboratoryReport">
-                    <strong>Report:</strong>
-                    <b-btn
+                    <strong class="align-bottom d-inline-block pb-1">
+                        Report:
+                    </strong>
+                    <hg-button
                         v-if="entry.isTestResultReady"
                         variant="link"
+                        class="p-1 ml-1"
                         @click="showConfirmationModal()"
                     >
                         <hg-icon
-                            icon="file-download"
+                            icon="download"
                             size="medium"
+                            square
                             aria-hidden="true"
                         />
-                    </b-btn>
+                    </hg-button>
                 </span>
             </div>
-            <div class="detailSection">
-                {{ entry.summaryDescription }}
-            </div>
-
-            <div class="detailSection">
-                <div>
-                    <strong>Ordering Providers:</strong>
-                    {{ entry.orderingProviders }}
-                </div>
+            <div class="my-2">
                 <div data-testid="laboratoryReportingLab">
                     <strong>Reporting Lab:</strong>
                     {{ entry.reportingLab }}
                 </div>
-                <div>
-                    <strong>Location:</strong>
-                    {{ entry.location }}
-                </div>
             </div>
-
-            <div class="detailSection">
-                <strong>Results:</strong>
+            <div v-for="result in entry.resultList" :key="result.id">
+                <hr />
+                <div data-testid="laboratoryTestType" class="my-2">
+                    <strong
+                        v-if="
+                            result.isTestResultReady &&
+                            entry.resultList.length > 1
+                        "
+                        data-testid="laboratoryTestResult"
+                    >
+                        <span>Result:</span>
+                        <span
+                            :class="getOutcomeClasses(result.labResultOutcome)"
+                        >
+                            {{ result.labResultOutcome }}
+                        </span>
+                    </strong>
+                </div>
+                <div data-testid="laboratoryTestType" class="my-2">
+                    <strong>Test Type:</strong>
+                    {{ result.testType }}
+                </div>
+                <div data-testid="laboratoryTestStatus" class="my-2">
+                    <strong>Test Status:</strong>
+                    {{ result.testStatus }}
+                </div>
+                <div class="my-2">
+                    <strong>Collection Date:</strong>
+                    {{ formatDate(result.collectedDateTime) }}
+                </div>
+                <div class="my-2">
+                    <strong>Result Date:</strong>
+                    {{ formatDate(result.resultDateTime) }}
+                </div>
                 <div
-                    v-for="result in entry.resultList"
-                    :key="result.id"
-                    class="border p-1"
+                    v-if="result.resultDescription.length > 0"
+                    class="my-2"
+                    data-testid="laboratoryResultDescription"
                 >
-                    <div data-testid="laboratoryTestType">
-                        <strong>Test Type:</strong>
-                        {{ result.testType }}
-                    </div>
-                    <div>
-                        <strong>Out Of Range:</strong>
-                        {{ result.outOfRange }}
-                    </div>
-                    <div data-testid="laboratoryTestStatus">
-                        <strong>Test Status:</strong>
-                        {{ result.testStatus }}
-                    </div>
-                    <div class="my-2">
-                        <strong>Result Description:</strong>
-                        <p v-html="result.resultDescription"></p>
-                    </div>
-                    <div>
-                        <strong>Collected Date Time:</strong>
-                        {{ formatDate(result.collectedDateTime) }}
-                    </div>
-
-                    <div>
-                        <strong>Received Date Time:</strong>
-                        {{ formatDate(result.receivedDateTime) }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="detailSection">
-                <div>
-                    <strong>What to expect next</strong>
-                    <p>
-                        If you receive a
-                        <strong>positive</strong> COVID-19 result:
-                    </p>
-                    <ul>
-                        <li>You need to self-isolate now.</li>
-                        <li>
-                            The people you live with will also need to
-                            self-isolate if they are not fully vaccinated.
-                        </li>
-                        <li>Public health will contact you.</li>
-                        <li>
-                            Monitor your health and contact a health care
-                            provider or call 8-1-1 if you are concerned about
-                            your symptoms.
-                        </li>
-                        <li>
-                            Go to
-                            <a
-                                href="http://www.bccdc.ca/results"
-                                target="blank_"
-                                >www.bccdc.ca/results</a
-                            >
-                            for more information.
-                        </li>
-                    </ul>
+                    <strong>Result Description:</strong>
+                    <LaboratoryResultDescriptionComponent
+                        :description="result.resultDescription"
+                        :link="result.resultLink"
+                    />
                 </div>
             </div>
             <MessageModalComponent
@@ -235,16 +222,5 @@ export default class LaboratoryTimelineComponent extends Vue {
 .row {
     padding: 0;
     margin: 0px;
-}
-
-.detailSection {
-    margin-top: 15px;
-}
-
-span.Positive {
-    color: red;
-}
-span.Negative {
-    color: green;
 }
 </style>
