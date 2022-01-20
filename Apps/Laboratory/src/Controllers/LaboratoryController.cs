@@ -23,9 +23,7 @@ namespace HealthGateway.Laboratory.Controllers
     using HealthGateway.Common.Filters;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Services;
-    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
 
@@ -47,57 +45,36 @@ namespace HealthGateway.Laboratory.Controllers
         private readonly ILaboratoryService service;
 
         /// <summary>
-        /// Gets or sets the http context accessor.
-        /// </summary>
-        private readonly IHttpContextAccessor httpContextAccessor;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryController"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="svc">The laboratory data service.</param>
-        /// <param name="httpContextAccessor">The Http Context accessor.</param>
         public LaboratoryController(
             ILogger<LaboratoryController> logger,
-            ILaboratoryService svc,
-            IHttpContextAccessor httpContextAccessor)
+            ILaboratoryService svc)
         {
             this.logger = logger;
             this.service = svc;
-            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
-        /// Gets a json list of laboratory orders.
+        /// Gets a json list of COVID-19 orders.
         /// </summary>
-        /// <param name="hdid">The hdid resource to request the laboratory orders for.</param>
-        /// <returns>A list of laboratory records wrapped in a request result.</returns>
-        /// <response code="200">Returns the List of laboratory records.</response>
+        /// <param name="hdid">The hdid resource to request the COVID-19 orders for.</param>
+        /// <returns>A list of COVID-19 records wrapped in a request result.</returns>
+        /// <response code="200">Returns the List of COVID-19 records.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
         [Authorize(Policy = LaboratoryPolicy.Read)]
-        public async Task<IActionResult> GetLaboratoryOrders([FromQuery] string hdid)
+        public async Task<RequestResult<IEnumerable<Covid19Model>>> GetCovid19Orders([FromQuery] string hdid)
         {
-            this.logger.LogDebug($"Getting list of laboratory orders... ");
-
-            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
-            if (httpContext != null)
-            {
-                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-
-                if (accessToken != null)
-                {
-                    RequestResult<IEnumerable<LaboratoryModel>> result = await this.service.GetLaboratoryOrders(accessToken, hdid).ConfigureAwait(true);
-                    this.logger.LogDebug($"Finished getting lab orders from controller... {hdid}");
-
-                    return new JsonResult(result);
-                }
-            }
-
-            return this.Unauthorized();
+            this.logger.LogDebug($"Getting list of COVID-19 orders... ");
+            RequestResult<IEnumerable<Covid19Model>> result = await this.service.GetCovid19Orders(hdid).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished getting COVID-19 orders from controller... {hdid}");
+            return result;
         }
 
         /// <summary>
@@ -114,25 +91,14 @@ namespace HealthGateway.Laboratory.Controllers
         [Produces("application/json")]
         [Route("{reportId}/Report")]
         [Authorize(Policy = LaboratoryPolicy.Read)]
-        public async Task<IActionResult> GetLaboratoryReport(Guid reportId, [FromQuery] string hdid)
+        public async Task<RequestResult<LaboratoryReport>> GetLaboratoryReport(Guid reportId, [FromQuery] string hdid)
         {
             this.logger.LogDebug($"Getting PDF version of Laboratory Report for hdid {hdid}");
 
-            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
-            if (httpContext != null)
-            {
-                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+            RequestResult<LaboratoryReport> result = await this.service.GetLabReport(reportId, hdid).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished getting pdf report from controller... {hdid}");
 
-                if (accessToken != null)
-                {
-                    RequestResult<LaboratoryReport> result = await this.service.GetLabReport(reportId, hdid, accessToken).ConfigureAwait(true);
-                    this.logger.LogDebug($"Finished getting pdf report from controller... {hdid}");
-
-                    return new JsonResult(result);
-                }
-            }
-
-            return this.Unauthorized();
+            return result;
         }
 
         /// <summary>
@@ -150,20 +116,9 @@ namespace HealthGateway.Laboratory.Controllers
         [Authorize(Policy = LaboratoryPolicy.Write)]
         public async Task<RequestResult<AuthenticatedRapidTestResponse>> CreateRapidTestAsync(string hdid, [FromBody] AuthenticatedRapidTestRequest rapidTestRequest)
         {
-            RequestResult<AuthenticatedRapidTestResponse> result = new();
             this.logger.LogDebug($"Post rapid test for hdid {hdid}");
-            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
-            if (httpContext != null)
-            {
-                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-                if (accessToken != null)
-                {
-                    result = await this.service.CreateRapidTestAsync(hdid, accessToken, rapidTestRequest).ConfigureAwait(true);
-                    this.logger.LogDebug($"Finished submitting a rapid test from controller... {hdid}");
-                    return result;
-                }
-            }
-
+            RequestResult<AuthenticatedRapidTestResponse> result = await this.service.CreateRapidTestAsync(hdid, rapidTestRequest).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished submitting a rapid test from controller... {hdid}");
             return result;
         }
     }

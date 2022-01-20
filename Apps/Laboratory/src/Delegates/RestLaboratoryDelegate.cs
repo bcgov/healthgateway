@@ -33,6 +33,7 @@ namespace HealthGateway.Laboratory.Delegates
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils;
     using HealthGateway.Laboratory.Models;
+    using HealthGateway.Laboratory.Models.PHSA;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Configuration;
@@ -73,11 +74,11 @@ namespace HealthGateway.Laboratory.Delegates
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestLaboratoryDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, string hdid, int pageIndex = 0)
+        public async Task<RequestResult<IEnumerable<PhsaCovid19Order>>> GetCovid19Orders(string bearerToken, string hdid, int pageIndex = 0)
         {
-            using (Source.StartActivity("GetLaboratoryOrders"))
+            using (Source.StartActivity("GetCovid19Orders"))
             {
-                RequestResult<IEnumerable<LaboratoryOrder>> retVal = new RequestResult<IEnumerable<LaboratoryOrder>>()
+                RequestResult<IEnumerable<PhsaCovid19Order>> retVal = new()
                 {
                     ResultStatus = ResultType.Error,
                     PageIndex = pageIndex,
@@ -105,7 +106,7 @@ namespace HealthGateway.Laboratory.Delegates
                     {
                         case HttpStatusCode.OK:
                             this.logger.LogTrace($"Response payload: {payload}");
-                            PHSAResult<List<LaboratoryOrder>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<List<LaboratoryOrder>>>(payload);
+                            PHSAResult<List<PhsaCovid19Order>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<List<PhsaCovid19Order>>>(payload);
                             if (phsaResult != null && phsaResult.Result != null)
                             {
                                 retVal.ResultStatus = ResultType.Success;
@@ -123,7 +124,7 @@ namespace HealthGateway.Laboratory.Delegates
                             break;
                         case HttpStatusCode.NoContent: // No Lab exits for this user
                             retVal.ResultStatus = ResultType.Success;
-                            retVal.ResourcePayload = new List<LaboratoryOrder>();
+                            retVal.ResourcePayload = new List<PhsaCovid19Order>();
                             retVal.TotalResultCount = 0;
 #pragma warning disable CA1305 // Specify IFormatProvider
                             retVal.PageSize = int.Parse(this.labConfig.FetchSize);
@@ -142,8 +143,8 @@ namespace HealthGateway.Laboratory.Delegates
                 catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
                 {
-                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Lab Orders: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
-                    this.logger.LogError($"Unexpected exception in Get Lab Orders {e}");
+                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Covid19 Orders: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                    this.logger.LogError($"Unexpected exception in Get Covid19 Orders {e}");
                 }
 
                 this.logger.LogDebug($"Finished getting Laboratory Orders");
