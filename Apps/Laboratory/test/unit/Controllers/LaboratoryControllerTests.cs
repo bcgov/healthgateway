@@ -24,7 +24,6 @@ namespace HealthGateway.LaboratoryTests
     using HealthGateway.Laboratory.Controllers;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Models;
-    using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -75,18 +74,18 @@ namespace HealthGateway.LaboratoryTests
                 .ReturnsAsync(authResult);
 
             Mock<ILaboratoryService> svcMock = new();
-            svcMock.Setup(s => s.GetCovid19Orders(Hdid, 0)).ReturnsAsync(new RequestResult<IEnumerable<PhsaCovid19Order>>()
+            svcMock.Setup(s => s.GetCovid19Orders(Hdid, 0)).ReturnsAsync(new RequestResult<IEnumerable<Covid19Model>>()
             {
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 0,
-                ResourcePayload = new List<PhsaCovid19Order>(),
+                ResourcePayload = new List<Covid19Model>(),
             });
             LaboratoryController controller = new(
                 new Mock<ILogger<LaboratoryController>>().Object,
                 svcMock.Object);
 
             // Act
-            RequestResult<IEnumerable<PhsaCovid19Order>> actual = await controller.GetCovid19Orders(Hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<Covid19Model>> actual = await controller.GetCovid19Orders(Hdid).ConfigureAwait(true);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
@@ -100,7 +99,7 @@ namespace HealthGateway.LaboratoryTests
         public async Task GetLabOrderError()
         {
             Mock<ILaboratoryService> svcMock = new();
-            svcMock.Setup(s => s.GetCovid19Orders(Hdid, 0)).ReturnsAsync(new RequestResult<IEnumerable<PhsaCovid19Order>>()
+            svcMock.Setup(s => s.GetCovid19Orders(Hdid, 0)).ReturnsAsync(new RequestResult<IEnumerable<Covid19Model>>()
             {
                 ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = "Test Error" },
@@ -112,7 +111,7 @@ namespace HealthGateway.LaboratoryTests
                 svcMock.Object);
 
             // Act
-            RequestResult<IEnumerable<PhsaCovid19Order>> actual = await controller.GetCovid19Orders(Hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<Covid19Model>> actual = await controller.GetCovid19Orders(Hdid).ConfigureAwait(true);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Error);

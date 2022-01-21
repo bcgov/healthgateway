@@ -13,28 +13,23 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Laboratory.Models.PHSA
+namespace HealthGateway.Laboratory.Models
 {
     using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
+    using HealthGateway.Laboratory.Models.PHSA;
 
     /// <summary>
-    /// An instance of a COVID-19 Order.
+    /// An instance of a COVID-19 Model.
     /// </summary>
-    public class PhsaCovid19Order
+    public class Covid19Model
     {
         /// <summary>
-        /// Gets or sets the id for the COVID-19 order.
+        /// Gets or sets the id for the COVID-19 result.
         /// </summary>
         [JsonPropertyName("id")]
         public Guid Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the sourceSystemId for the lab order.
-        /// </summary>
-        [JsonPropertyName("sourceSystemId")]
-        public string SourceSystemId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the PHN the report is for.
@@ -43,7 +38,7 @@ namespace HealthGateway.Laboratory.Models.PHSA
         public string PHN { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Provider IDs for the Order.
+        /// Gets or sets the Provider IDs for the Model.
         /// </summary>
         [JsonPropertyName("orderingProviderIds")]
         public string OrderProviderIDs { get; set; } = string.Empty;
@@ -101,5 +96,59 @@ namespace HealthGateway.Laboratory.Models.PHSA
         /// </summary>
         [JsonPropertyName("labResults")]
         public IEnumerable<PhsaCovid19Test>? Covid19Results { get; set; }
+
+        /// <summary>
+        /// Creates a Covid19Model object from a PHSA model.
+        /// </summary>
+        /// <param name="model">The laboratory result to convert.</param>
+        /// <returns>The newly created laboratory object.</returns>
+        public static Covid19Model FromPHSAModel(PhsaCovid19Order model)
+        {
+            return new Covid19Model()
+            {
+                Id = model.Id,
+                PHN = MaskPHN(model.PHN),
+                OrderProviderIDs = model.OrderProviderIDs,
+                OrderingProviders = model.OrderingProviders,
+                ReportingLab = model.ReportingLab,
+                Location = model.Location,
+                LabType = model.LabType,
+                MessageDateTime = model.MessageDateTime,
+                MessageID = model.MessageID,
+                AdditionalData = model.AdditionalData,
+                ReportAvailable = model.ReportAvailable,
+                Covid19Results = model.Covid19Results,
+            };
+        }
+
+        /// <summary>
+        /// Creates a Covid19Model object from a PHSA model.
+        /// </summary>
+        /// <param name="models">The list of PHSA models to convert.</param>
+        /// <returns>A list of Covid19Model objects.</returns>
+        public static IEnumerable<Covid19Model> FromPHSAModelList(IEnumerable<PhsaCovid19Order>? models)
+        {
+            List<Covid19Model> objects = new();
+            if (models != null)
+            {
+                foreach (PhsaCovid19Order immunizationModel in models)
+                {
+                    objects.Add(Covid19Model.FromPHSAModel(immunizationModel));
+                }
+            }
+
+            return objects;
+        }
+
+        private static string MaskPHN(string phn)
+        {
+            string retPHN = "****";
+            if (phn != null && phn.Length > 3)
+            {
+                retPHN = $"{phn.Remove(phn.Length - 5, 4)}****";
+            }
+
+            return retPHN;
+        }
     }
 }
