@@ -112,7 +112,7 @@ namespace HealthGateway.LaboratoryTests
             };
 
             Mock<ILaboratoryDelegate> mockLaboratoryDelegate = new();
-            mockLaboratoryDelegate.Setup(s => s.GetLabReport(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockLaboratoryDelegate.Setup(s => s.GetLabReport(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())).Returns(Task.FromResult(delegateResult));
 
             Mock<ILaboratoryDelegateFactory> mockLaboratoryDelegateFactory = new();
             mockLaboratoryDelegateFactory.Setup(s => s.CreateInstance()).Returns(mockLaboratoryDelegate.Object);
