@@ -98,9 +98,9 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<Covid19Model>>> GetCovid19Orders(string hdid, int pageIndex = 0)
+        public async Task<RequestResult<IEnumerable<Covid19Order>>> GetCovid19Orders(string hdid, int pageIndex = 0)
         {
-            RequestResult<IEnumerable<Covid19Model>> retVal = new();
+            RequestResult<IEnumerable<Covid19Order>> retVal = new();
 
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
@@ -113,7 +113,7 @@ namespace HealthGateway.Laboratory.Services
                     if (delegateResult.ResultStatus == ResultType.Success)
                     {
                         retVal.ResultStatus = delegateResult.ResultStatus;
-                        retVal.ResourcePayload = Covid19Model.FromPHSAModelList(delegateResult.ResourcePayload);
+                        retVal.ResourcePayload = Covid19Order.FromPHSAModelList(delegateResult.ResourcePayload);
                         retVal.PageIndex = delegateResult.PageIndex;
                         retVal.PageSize = delegateResult.PageSize;
                         retVal.TotalResultCount = delegateResult.TotalResultCount;

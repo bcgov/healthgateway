@@ -57,7 +57,7 @@ namespace HealthGateway.Laboratory.Delegates
                     MessageID = "20200770000196",
                     AdditionalData = string.Empty,
                     ReportAvailable = true,
-                    Covid19Results = new PhsaCovid19Test[]
+                    Covid19Tests = new PhsaCovid19Test[]
                     {
                         new PhsaCovid19Test(new List<string>() { "Nasopharyngeal Swab<br>HEALTH CARE WORKER<br>Negative.<br>No COVID-19 virus (2019-nCoV) detected by NAT.", "This test targets the RdRP and E gene regions of COVID-19 virus (2019-nCoV) and has not been fully validated.", })
                         {

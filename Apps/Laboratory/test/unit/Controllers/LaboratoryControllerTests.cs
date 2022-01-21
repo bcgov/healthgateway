@@ -74,18 +74,18 @@ namespace HealthGateway.LaboratoryTests
                 .ReturnsAsync(authResult);
 
             Mock<ILaboratoryService> svcMock = new();
-            svcMock.Setup(s => s.GetCovid19Orders(Hdid, 0)).ReturnsAsync(new RequestResult<IEnumerable<Covid19Model>>()
+            svcMock.Setup(s => s.GetCovid19Orders(Hdid, 0)).ReturnsAsync(new RequestResult<IEnumerable<Covid19Order>>()
             {
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 0,
-                ResourcePayload = new List<Covid19Model>(),
+                ResourcePayload = new List<Covid19Order>(),
             });
             LaboratoryController controller = new(
                 new Mock<ILogger<LaboratoryController>>().Object,
                 svcMock.Object);
 
             // Act
-            RequestResult<IEnumerable<Covid19Model>> actual = await controller.GetCovid19Orders(Hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<Covid19Order>> actual = await controller.GetCovid19Orders(Hdid).ConfigureAwait(true);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
@@ -99,7 +99,7 @@ namespace HealthGateway.LaboratoryTests
         public async Task GetLabOrderError()
         {
             Mock<ILaboratoryService> svcMock = new();
-            svcMock.Setup(s => s.GetCovid19Orders(Hdid, 0)).ReturnsAsync(new RequestResult<IEnumerable<Covid19Model>>()
+            svcMock.Setup(s => s.GetCovid19Orders(Hdid, 0)).ReturnsAsync(new RequestResult<IEnumerable<Covid19Order>>()
             {
                 ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = "Test Error" },
@@ -111,7 +111,7 @@ namespace HealthGateway.LaboratoryTests
                 svcMock.Object);
 
             // Act
-            RequestResult<IEnumerable<Covid19Model>> actual = await controller.GetCovid19Orders(Hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<Covid19Order>> actual = await controller.GetCovid19Orders(Hdid).ConfigureAwait(true);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Error);

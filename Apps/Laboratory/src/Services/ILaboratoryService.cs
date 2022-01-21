@@ -20,10 +20,9 @@ namespace HealthGateway.Laboratory.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Laboratory.Models;
-    using HealthGateway.Laboratory.Models.PHSA;
 
     /// <summary>
-    /// The Covid19 data service.
+    /// The laboratory data service.
     /// </summary>
     public interface ILaboratoryService
     {
@@ -34,7 +33,7 @@ namespace HealthGateway.Laboratory.Services
         /// <param name="hdid">The requested hdid.</param>
         /// <param name="pageIndex">The page index to return.</param>
         /// <returns>The list of COVID-19 orders available for the authenticated user.</returns>
-        Task<RequestResult<IEnumerable<Covid19Model>>> GetCovid19Orders(string hdid, int pageIndex = 0);
+        Task<RequestResult<IEnumerable<Covid19Order>>> GetCovid19Orders(string hdid, int pageIndex = 0);
 
         /// <summary>
         /// Gets the Lab report for the supplied id belonging to the authenticated user.

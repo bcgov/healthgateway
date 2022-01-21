@@ -37,7 +37,7 @@ namespace HealthGateway.Laboratory.Models.PHSA
         public string SourceSystemId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the PHN the report is for.
+        /// Gets or sets the PHN the order is for.
         /// </summary>
         [JsonPropertyName("phn")]
         public string PHN { get; set; } = string.Empty;
@@ -49,7 +49,7 @@ namespace HealthGateway.Laboratory.Models.PHSA
         public string OrderProviderIDs { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the providers names.
+        /// Gets or sets the providers' names.
         /// </summary>
         [JsonPropertyName("orderingProviders")]
         public string OrderingProviders { get; set; } = string.Empty;
@@ -97,9 +97,9 @@ namespace HealthGateway.Laboratory.Models.PHSA
         public bool ReportAvailable { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets the list of COVID-19 results.
+        /// Gets or sets the list of COVID-19 tests.
         /// </summary>
         [JsonPropertyName("labResults")]
-        public IEnumerable<PhsaCovid19Test>? Covid19Results { get; set; }
+        public IEnumerable<PhsaCovid19Test>? Covid19Tests { get; set; }
     }
 }

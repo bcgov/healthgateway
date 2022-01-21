@@ -88,7 +88,7 @@ export class RestLaboratoryService implements ILaboratoryService {
             }
             this.http
                 .getWithCors<RequestResult<LaboratoryOrder[]>>(
-                    `${this.baseUri}${this.LABORATORY_BASE_URI}?hdid=${hdid}`
+                    `${this.baseUri}${this.LABORATORY_BASE_URI}/Covid19Orders?hdid=${hdid}`
                 )
                 .then((requestResult) => {
                     resolve(requestResult);

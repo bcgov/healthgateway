@@ -62,27 +62,28 @@ namespace HealthGateway.Laboratory.Controllers
         /// </summary>
         /// <param name="hdid">The hdid resource to request the COVID-19 orders for.</param>
         /// <returns>A list of COVID-19 records wrapped in a request result.</returns>
-        /// <response code="200">Returns the List of COVID-19 records.</response>
+        /// <response code="200">Returns the list of COVID-19 records.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
+        [Route("Covid19Orders")]
         [Authorize(Policy = LaboratoryPolicy.Read)]
-        public async Task<RequestResult<IEnumerable<Covid19Model>>> GetCovid19Orders([FromQuery] string hdid)
+        public async Task<RequestResult<IEnumerable<Covid19Order>>> GetCovid19Orders([FromQuery] string hdid)
         {
             this.logger.LogDebug($"Getting list of COVID-19 orders... ");
-            RequestResult<IEnumerable<Covid19Model>> result = await this.service.GetCovid19Orders(hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<Covid19Order>> result = await this.service.GetCovid19Orders(hdid).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting COVID-19 orders from controller... {hdid}");
             return result;
         }
 
         /// <summary>
-        /// Gets a a specific Laboratory report.
+        /// Gets a specific laboratory report.
         /// </summary>
         /// <param name="reportId">The ID of the report belonging to the authenticated user to fetch.</param>
         /// <param name="hdid">The requested HDID which owns the reportId.</param>
-        /// <returns>A Laboratory PDF Report wrapped in a request result.</returns>
+        /// <returns>A laboratory PDF report wrapped in a request result.</returns>
         /// <response code="200">Returns the specified PDF lab report.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
