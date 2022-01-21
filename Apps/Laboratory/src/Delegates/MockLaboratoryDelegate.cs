@@ -24,6 +24,7 @@ namespace HealthGateway.Laboratory.Delegates
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Models;
+    using HealthGateway.Laboratory.Models.PHSA;
     using Microsoft.Extensions.Configuration;
 
     /// <summary>
@@ -33,17 +34,17 @@ namespace HealthGateway.Laboratory.Delegates
     public class MockLaboratoryDelegate : ILaboratoryDelegate
     {
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, string hdid, int pageIndex = 0)
+        public async Task<RequestResult<IEnumerable<PhsaCovid19Order>>> GetCovid19Orders(string bearerToken, string hdid, int pageIndex = 0)
         {
-            RequestResult<IEnumerable<LaboratoryOrder>> retVal = new()
+            RequestResult<IEnumerable<PhsaCovid19Order>> retVal = new()
             {
                 PageIndex = 0,
                 PageSize = 10000,
                 ResultStatus = ResultType.Success,
             };
-            LaboratoryOrder[] mockData =
+            PhsaCovid19Order[] mockData =
             {
-                new LaboratoryOrder()
+                new PhsaCovid19Order()
                 {
                     Id = Guid.Parse("612d31e5-12e1-451f-a475-58d6b0a8f007"),
                     PHN = "9735352542",
@@ -56,9 +57,9 @@ namespace HealthGateway.Laboratory.Delegates
                     MessageID = "20200770000196",
                     AdditionalData = string.Empty,
                     ReportAvailable = true,
-                    LabResults = new LaboratoryResult[]
+                    Covid19Tests = new PhsaCovid19Test[]
                     {
-                        new LaboratoryResult(new List<string>() { "Nasopharyngeal Swab<br>HEALTH CARE WORKER<br>Negative.<br>No COVID-19 virus (2019-nCoV) detected by NAT.", "This test targets the RdRP and E gene regions of COVID-19 virus (2019-nCoV) and has not been fully validated.", })
+                        new PhsaCovid19Test(new List<string>() { "Nasopharyngeal Swab<br>HEALTH CARE WORKER<br>Negative.<br>No COVID-19 virus (2019-nCoV) detected by NAT.", "This test targets the RdRP and E gene regions of COVID-19 virus (2019-nCoV) and has not been fully validated.", })
                         {
                             Id = Guid.Parse("dee12642-fb2c-481f-9ae4-c672b045b2b1"),
                             TestType = "COVID19",

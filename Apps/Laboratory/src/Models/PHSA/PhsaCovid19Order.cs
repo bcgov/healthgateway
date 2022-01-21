@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,19 +13,19 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Laboratory.Models
+namespace HealthGateway.Laboratory.Models.PHSA
 {
     using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// An instance of a Laboratory Order.
+    /// An instance of a COVID-19 Order.
     /// </summary>
-    public class LaboratoryOrder
+    public class PhsaCovid19Order
     {
         /// <summary>
-        /// Gets or sets the id for the lab order.
+        /// Gets or sets the id for the COVID-19 order.
         /// </summary>
         [JsonPropertyName("id")]
         public Guid Id { get; set; }
@@ -37,7 +37,7 @@ namespace HealthGateway.Laboratory.Models
         public string SourceSystemId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the PHN the report is for.
+        /// Gets or sets the PHN the order is for.
         /// </summary>
         [JsonPropertyName("phn")]
         public string PHN { get; set; } = string.Empty;
@@ -49,7 +49,7 @@ namespace HealthGateway.Laboratory.Models
         public string OrderProviderIDs { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the providers names.
+        /// Gets or sets the providers' names.
         /// </summary>
         [JsonPropertyName("orderingProviders")]
         public string OrderingProviders { get; set; } = string.Empty;
@@ -97,9 +97,9 @@ namespace HealthGateway.Laboratory.Models
         public bool ReportAvailable { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets the list of lab results.
+        /// Gets or sets the list of COVID-19 tests.
         /// </summary>
         [JsonPropertyName("labResults")]
-        public IEnumerable<LaboratoryResult>? LabResults { get; set; }
+        public IEnumerable<PhsaCovid19Test>? Covid19Tests { get; set; }
     }
 }

@@ -21,6 +21,7 @@ namespace HealthGateway.Laboratory.Delegates
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Models;
+    using HealthGateway.Laboratory.Models.PHSA;
 
     /// <summary>
     /// Interface that defines a delegate to retrieve laboratory information.
@@ -28,14 +29,14 @@ namespace HealthGateway.Laboratory.Delegates
     public interface ILaboratoryDelegate
     {
         /// <summary>
-        /// Returns a List of Lab Orders for the authenticated user.
-        /// It has a collection of one or more Lab Results depending on the tests ordered.
+        /// Returns a List of COVID-19 Orders for the authenticated user.
+        /// It has a collection of one or more COVID-19 Results depending on the tests ordered.
         /// </summary>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="hdid">The requested hdid.</param>
         /// <param name="pageIndex">The page index to return.</param>
-        /// <returns>The list of Lab Reports available for the user identified by the bearerToken.</returns>
-        Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, string hdid, int pageIndex = 0);
+        /// <returns>The list of COVID-19 Orders available for the user identified by the bearerToken.</returns>
+        Task<RequestResult<IEnumerable<PhsaCovid19Order>>> GetCovid19Orders(string bearerToken, string hdid, int pageIndex = 0);
 
         /// <summary>
         /// Gets the Lab report in binary format for the supplied id belonging to the authenticated user.

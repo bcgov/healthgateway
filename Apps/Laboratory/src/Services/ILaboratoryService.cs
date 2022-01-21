@@ -27,32 +27,29 @@ namespace HealthGateway.Laboratory.Services
     public interface ILaboratoryService
     {
         /// <summary>
-        /// Returns a List of lab orders for the authenticated user.
-        /// It has a collection of one or more Lab Results depending on the tests ordered.
+        /// Returns a List of COVID-19 orders for the authenticated user.
+        /// It has a collection of one or more COVID-19 results depending on the tests ordered.
         /// </summary>
-        /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="hdid">The requested hdid.</param>
         /// <param name="pageIndex">The page index to return.</param>
-        /// <returns>The list of Lab Reports available for the user identified by the bearerToken.</returns>
-        Task<RequestResult<IEnumerable<LaboratoryModel>>> GetLaboratoryOrders(string bearerToken, string hdid, int pageIndex = 0);
+        /// <returns>The list of COVID-19 orders available for the authenticated user.</returns>
+        Task<RequestResult<IEnumerable<Covid19Order>>> GetCovid19Orders(string hdid, int pageIndex = 0);
 
         /// <summary>
         /// Gets the Lab report for the supplied id belonging to the authenticated user.
         /// </summary>
         /// <param name="id">The ID of the lab report to get.</param>
         /// <param name="hdid">The requested HDID which owns the reportId.</param>
-        /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <returns>A base64 encoded PDF.</returns>
-        Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, string bearerToken);
+        Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid);
 
         /// <summary>
         /// Post the rapid test for the given patient info.
         /// </summary>
         /// <param name="hdid">The requested HDID which owns the rapid test request.</param>
-        /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="rapidTestRequest">The rapid test request model.</param>
         /// <returns>Returns the Rapid Test response.</returns>
-        Task<RequestResult<AuthenticatedRapidTestResponse>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticatedRapidTestRequest rapidTestRequest);
+        Task<RequestResult<AuthenticatedRapidTestResponse>> CreateRapidTestAsync(string hdid, AuthenticatedRapidTestRequest rapidTestRequest);
 
         /// <summary>
         /// Gets a COVID-19 test response for the given patient info.
