@@ -43,9 +43,10 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// Initializes a new instance of the <see cref="LaboratoryDelegateMock"/> class.
         /// </summary>
         /// <param name="delegateResult">List of laboratory reports.</param>
-        public LaboratoryDelegateMock(RequestResult<LaboratoryReport> delegateResult)
+        /// <param name="isCovid19">Indicates whether the COVID-19 report should be returned.</param>
+        public LaboratoryDelegateMock(RequestResult<LaboratoryReport> delegateResult, bool isCovid19 = true)
         {
-            this.Setup(s => s.GetLabReport(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            this.Setup(s => s.GetLabReport(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), isCovid19)).Returns(Task.FromResult(delegateResult));
         }
 
         /// <summary>

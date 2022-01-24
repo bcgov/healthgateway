@@ -364,6 +364,5 @@ namespace HealthGateway.LaboratoryTests
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
-
     }
 }
