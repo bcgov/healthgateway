@@ -40,8 +40,18 @@ namespace HealthGateway.Laboratory.Services
         /// </summary>
         /// <param name="id">The ID of the lab report to get.</param>
         /// <param name="hdid">The requested HDID which owns the reportId.</param>
+        /// <param name="isCovid19">Indicates whether the COVID-19 report should be returned..</param>
         /// <returns>A base64 encoded PDF.</returns>
-        Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid);
+        Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, bool isCovid19 = true);
+
+        /// <summary>
+        /// Returns a List of lab orders for the authenticated user.
+        /// It has a collection of one or more Lab Results depending on the tests ordered.
+        /// </summary>
+        /// <param name="hdid">The requested hdid.</param>
+        /// <param name="pageIndex">The page index to return.</param>
+        /// <returns>Returns List of lab orders.</returns>
+        Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string hdid, int pageIndex = 0);
 
         /// <summary>
         /// Post the rapid test for the given patient info.

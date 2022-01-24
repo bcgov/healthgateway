@@ -153,9 +153,9 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, string bearerToken)
+        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, string bearerToken, bool isCovid19)
         {
-            using (Source.StartActivity("GetLaboratoryOrders"))
+            using (Source.StartActivity("GetLabReport"))
             {
                 RequestResult<LaboratoryReport> retVal = new RequestResult<LaboratoryReport>()
                 {
@@ -224,6 +224,12 @@ namespace HealthGateway.Laboratory.Delegates
                 this.logger.LogDebug($"Finished getting Laboratory Report");
                 return retVal;
             }
+        }
+
+        /// <inheritdoc/>
+        public Task<RequestResult<IEnumerable<PhsaLaboratoryOrder>>> GetLaboratoryOrders(string hdid, string bearerToken, int pageIndex = 0)
+        {
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc/>

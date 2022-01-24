@@ -133,7 +133,7 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid)
+        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, bool isCovid19 = true)
         {
             RequestResult<LaboratoryReport> retVal = new();
 
@@ -144,12 +144,18 @@ namespace HealthGateway.Laboratory.Services
 
                 if (accessToken != null)
                 {
-                    retVal = await this.laboratoryDelegate.GetLabReport(id, hdid, accessToken).ConfigureAwait(true);
+                    retVal = await this.laboratoryDelegate.GetLabReport(id, hdid, accessToken, isCovid19).ConfigureAwait(true);
                 }
             }
 
             retVal.ResultError = UnauthorizedResultError();
             return retVal;
+        }
+
+        /// <inheritdoc/>
+        public Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string hdid, int pageIndex = 0)
+        {
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
