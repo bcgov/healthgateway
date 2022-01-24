@@ -168,7 +168,7 @@ namespace HealthGateway.LaboratoryTests
             IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), httpClientService, CreateValidHttpContext().Object, this.configuration);
 
-            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty, string.Empty).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty, string.Empty, It.IsAny<bool>()).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Equal(expectedPDF, actualResult.ResourcePayload!.Report);
@@ -190,7 +190,7 @@ namespace HealthGateway.LaboratoryTests
             IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), httpClientService, CreateValidHttpContext().Object, this.configuration);
 
-            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty, string.Empty).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty, string.Empty, It.IsAny<bool>()).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -211,7 +211,7 @@ namespace HealthGateway.LaboratoryTests
             IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), httpClientService, CreateValidHttpContext().Object, this.configuration);
 
-            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty, string.Empty).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty, string.Empty, It.IsAny<bool>()).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -233,7 +233,7 @@ namespace HealthGateway.LaboratoryTests
             IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), httpClientService, CreateValidHttpContext().Object, this.configuration);
 
-            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty, string.Empty).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty, string.Empty, It.IsAny<bool>()).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Contains($"HTTP Error {HttpStatusCode.BadRequest}", actualResult.ResultError!.ResultMessage, StringComparison.OrdinalIgnoreCase);

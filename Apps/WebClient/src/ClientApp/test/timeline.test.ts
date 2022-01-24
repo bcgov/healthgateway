@@ -6,11 +6,9 @@ import VueContentPlaceholders from "vue-content-placeholders";
 import VueRouter from "vue-router";
 import Vuex, { Store } from "vuex";
 
-import { LoadStatus } from "@/models/storeOperations";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
-import { ImmunizationState } from "@/store/modules/immunization/types";
 import { GatewayStoreOptions, RootState } from "@/store/types";
 import TimelineView from "@/views/timeline.vue";
 
@@ -29,17 +27,10 @@ function createWrapper(options?: GatewayStoreOptions): Wrapper<TimelineView> {
 
     store = new Vuex.Store(options);
 
-    const ChildComponentStub = {
-        name: "LoadingComponent",
-        template: "<div v-show='isLoading' id='loadingStub'/>",
-        props: ["isLoading"],
-    };
-
     return shallowMount(TimelineView, {
         localVue,
         store: store,
         stubs: {
-            LoadingComponent: ChildComponentStub,
             "hg-icon": true,
             "hg-button": true,
             "page-title": true,
@@ -66,8 +57,7 @@ describe("Timeline view", () => {
         const wrapper = createWrapper(options);
 
         // Check values
-        expect(wrapper.find("#loadingStub").isVisible()).toBe(true);
-        expect(wrapper.find(linearTimelineTag).isVisible()).toBe(false);
+        expect(wrapper.find("#loading-toast").isVisible()).toBe(true);
     });
 
     test("Active", () => {
@@ -76,7 +66,6 @@ describe("Timeline view", () => {
         options.modules.medication.modules.statement.getters.isMedicationStatementLoading =
             () => false;
         const wrapper = createWrapper(options);
-        expect(wrapper.find("#loadingStub").isVisible()).toBe(false);
         expect(wrapper.find(linearTimelineTag).isVisible()).toBe(true);
         expect(wrapper.find("calendartimeline-stub").isVisible()).toBe(false);
     });
@@ -89,34 +78,5 @@ describe("Timeline view", () => {
 
         expect(wrapper.find(linearTimelineTag).isVisible()).toBe(false);
         expect(wrapper.find("calendartimeline-stub").isVisible()).toBe(true);
-    });
-
-    test("Shows Loading immunization", () => {
-        // Setup vuex store
-        const options = new StoreOptionsStub();
-        const module = options.modules.immunization;
-        module.mutations.setStatus = (
-            state: ImmunizationState,
-            loadStatus: LoadStatus
-        ) => {
-            state.status = loadStatus;
-        };
-
-        module.state.status = LoadStatus.NONE;
-        module.getters.isDeferredLoad = (state: ImmunizationState) =>
-            state.status === LoadStatus.DEFERRED;
-
-        const wrapper = createWrapper(options);
-        expect(wrapper.find("[data-testid=immunizationLoading]").exists()).toBe(
-            false
-        );
-
-        store.commit("immunization/setStatus", LoadStatus.DEFERRED);
-
-        wrapper.vm.$nextTick().then(() => {
-            expect(
-                wrapper.find("[data-testid=immunizationLoading]").exists()
-            ).toBe(true);
-        });
     });
 });
