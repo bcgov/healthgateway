@@ -70,7 +70,7 @@ namespace HealthGateway.LaboratoryTests
                 "TestAuth"));
 
         /// <summary>
-        /// ShouldGetCovid19Orders test.
+        /// GetCovid19Orders test.
         /// </summary>
         /// <param name="expectedResultType"> result type from service.</param>
         [Theory]
@@ -78,7 +78,7 @@ namespace HealthGateway.LaboratoryTests
         [InlineData(ResultType.Error)]
         public void ShouldGetCovid19Orders(ResultType expectedResultType)
         {
-            List<PhsaCovid19Order> labOrders = new()
+            List<PhsaCovid19Order> covid19Orders = new()
             {
                 new PhsaCovid19Order()
                 {
@@ -105,7 +105,7 @@ namespace HealthGateway.LaboratoryTests
                 ResultStatus = expectedResultType,
                 PageSize = 100,
                 PageIndex = 1,
-                ResourcePayload = labOrders,
+                ResourcePayload = covid19Orders,
             };
 
             Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
