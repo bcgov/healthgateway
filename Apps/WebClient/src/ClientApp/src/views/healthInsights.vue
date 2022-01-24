@@ -192,7 +192,7 @@ export default class HealthInsightsView extends Vue {
 <template>
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
         <BreadcrumbComponent :items="breadcrumbItems" />
-        <LoadingComponent v-if="isLoading" :is-custom="true" />
+        <LoadingComponent :is-loading="isLoading" :is-custom="true" />
         <b-row>
             <b-col id="healthInsights" class="col-12 col-md-10 col-lg-9">
                 <page-title title="Health Insights" />
