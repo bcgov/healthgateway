@@ -1,6 +1,7 @@
 import BannerError from "@/models/bannerError";
 import {
     Covid19LaboratoryOrder,
+    LaboratoryOrder,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import { LoadStatus } from "@/models/storeOperations";
@@ -23,6 +24,22 @@ export const mutations: LaboratoryMutations = {
     covid19LaboratoryError(state: LaboratoryState, error: Error) {
         state.authenticatedCovid19.statusMessage = error.message;
         state.authenticatedCovid19.status = LoadStatus.ERROR;
+    },
+    setLaboratoryOrdersRequested(state: LaboratoryState) {
+        state.authenticated.status = LoadStatus.REQUESTED;
+    },
+    setLaboratoryOrders(
+        state: LaboratoryState,
+        laboratoryOrders: LaboratoryOrder[]
+    ) {
+        state.authenticated.laboratoryOrders = laboratoryOrders;
+        state.authenticated.error = undefined;
+        state.authenticated.statusMessage = "success";
+        state.authenticated.status = LoadStatus.LOADED;
+    },
+    laboratoryError(state: LaboratoryState, error: Error) {
+        state.authenticated.statusMessage = error.message;
+        state.authenticated.status = LoadStatus.ERROR;
     },
     setPublicCovidTestResponseResultRequested(state: LaboratoryState) {
         state.publicCovid19.publicCovidTestResponseResult = undefined;

@@ -4,6 +4,7 @@ import BannerError from "@/models/bannerError";
 import { StringISODate } from "@/models/dateWrapper";
 import {
     Covid19LaboratoryOrder,
+    LaboratoryOrder,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import RequestResult, { ResultError } from "@/models/requestResult";
@@ -83,6 +84,71 @@ export const actions: LaboratoryActions = {
         context.dispatch(
             "errorBanner/addResultError",
             { message: "Fetch COVID-19 Laboratory Orders Error", error },
+            { root: true }
+        );
+    },
+    retrieveLaboratoryOrders(
+        context,
+        params: { hdid: string }
+    ): Promise<RequestResult<LaboratoryOrder[]>> {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const laboratoryService: ILaboratoryService =
+            container.get<ILaboratoryService>(
+                SERVICE_IDENTIFIER.LaboratoryService
+            );
+
+        return new Promise((resolve, reject) => {
+            const laboratoryOrders: LaboratoryOrder[] =
+                context.getters.laboratoryOrders;
+            if (context.state.authenticated.status === LoadStatus.LOADED) {
+                logger.debug("Laboratory Orders found stored, not querying!");
+                resolve({
+                    pageIndex: 0,
+                    pageSize: 0,
+                    resourcePayload: laboratoryOrders,
+                    resultStatus: ResultType.Success,
+                    totalResultCount: laboratoryOrders.length,
+                });
+            } else {
+                logger.debug("Retrieving Laboratory Orders");
+                context.commit("setLaboratoryOrdersRequested");
+                laboratoryService
+                    .getLaboratoryOrders(params.hdid)
+                    .then((result) => {
+                        if (result.resultStatus === ResultType.Success) {
+                            EventTracker.loadData(
+                                EntryType.LaboratoryOrder,
+                                result.resourcePayload.length
+                            );
+                            context.commit(
+                                "setLaboratoryOrders",
+                                result.resourcePayload
+                            );
+                            resolve(result);
+                        } else {
+                            context.dispatch(
+                                "handleLaboratoryError",
+                                result.resultError
+                            );
+                            reject(result.resultError);
+                        }
+                    })
+                    .catch((error) => {
+                        context.dispatch("handleLaboratoryError", error);
+                        reject(error);
+                    });
+            }
+        });
+    },
+    handleLaboratoryError(context, error: ResultError) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
+        logger.error(`ERROR: ${JSON.stringify(error)}`);
+        context.commit("laboratoryError", error);
+
+        context.dispatch(
+            "errorBanner/addResultError",
+            { message: "Fetch Laboratory Orders Error", error },
             { root: true }
         );
     },

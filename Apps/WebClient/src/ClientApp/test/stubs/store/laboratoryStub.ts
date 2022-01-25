@@ -4,6 +4,7 @@ import BannerError from "@/models/bannerError";
 import {
     Covid19LaboratoryOrder,
     PublicCovidTestResponseResult,
+    LaboratoryOrder,
 } from "@/models/laboratory";
 import { LoadStatus } from "@/models/storeOperations";
 import {
@@ -26,6 +27,11 @@ const laboratoryState: LaboratoryState = {
         statusMessage: "",
         status: LoadStatus.NONE,
     },
+    authenticated: {
+        laboratoryOrders: [],
+        statusMessage: "",
+        status: LoadStatus.NONE,
+    },
 };
 
 const laboratoryGetters: LaboratoryGetters = {
@@ -36,6 +42,15 @@ const laboratoryGetters: LaboratoryGetters = {
         return 0;
     },
     covid19LaboratoryOrdersAreLoading(): boolean {
+        return false;
+    },
+    laboratoryOrders(): LaboratoryOrder[] {
+        return [];
+    },
+    laboratoryOrdersCount(): number {
+        return 0;
+    },
+    laboratoryOrdersAreLoading(): boolean {
         return false;
     },
     publicCovidTestResponseResult(): PublicCovidTestResponseResult | undefined {
@@ -55,6 +70,8 @@ const laboratoryGetters: LaboratoryGetters = {
 const laboratoryActions: LaboratoryActions = {
     retrieveCovid19LaboratoryOrders: voidPromise,
     handleCovid19LaboratoryError: voidMethod,
+    retrieveLaboratoryOrders: voidPromise,
+    handleLaboratoryError: voidMethod,
     retrievePublicCovidTests: voidPromise,
     handlePublicCovidTestsError: voidMethod,
     resetPublicCovidTestResponseResult: voidMethod,
@@ -64,6 +81,9 @@ const laboratoryMutations: LaboratoryMutations = {
     setCovid19LaboratoryOrdersRequested: voidMethod,
     setCovid19LaboratoryOrders: voidMethod,
     covid19LaboratoryError: voidMethod,
+    setLaboratoryOrdersRequested: voidMethod,
+    setLaboratoryOrders: voidMethod,
+    laboratoryError: voidMethod,
     setPublicCovidTestResponseResultRequested: voidMethod,
     setPublicCovidTestResponseResult: voidMethod,
     setPublicCovidTestResponseResultError: voidMethod,

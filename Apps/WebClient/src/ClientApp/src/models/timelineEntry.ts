@@ -7,6 +7,7 @@ export enum EntryType {
     Medication = "Medication",
     Immunization = "Immunization",
     Covid19LaboratoryOrder = "Laboratory",
+    LaboratoryOrder = "AllLaboratory",
     Encounter = "Encounter",
     Note = "Note",
     NONE = "NONE",

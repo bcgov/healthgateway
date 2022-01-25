@@ -10,6 +10,7 @@ import BannerError from "@/models/bannerError";
 import { StringISODate } from "@/models/dateWrapper";
 import {
     Covid19LaboratoryOrder,
+    LaboratoryOrder,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import RequestResult, { ResultError } from "@/models/requestResult";
@@ -29,6 +30,12 @@ export interface LaboratoryState {
         error?: ResultError;
         status: LoadStatus;
     };
+    authenticated: {
+        laboratoryOrders: LaboratoryOrder[];
+        statusMessage: string;
+        error?: ResultError;
+        status: LoadStatus;
+    };
 }
 
 export interface LaboratoryGetters
@@ -36,6 +43,9 @@ export interface LaboratoryGetters
     covid19LaboratoryOrders(state: LaboratoryState): Covid19LaboratoryOrder[];
     covid19LaboratoryOrdersCount(state: LaboratoryState): number;
     covid19LaboratoryOrdersAreLoading(state: LaboratoryState): boolean;
+    laboratoryOrders(state: LaboratoryState): LaboratoryOrder[];
+    laboratoryOrdersCount(state: LaboratoryState): number;
+    laboratoryOrdersAreLoading(state: LaboratoryState): boolean;
     publicCovidTestResponseResult(
         state: LaboratoryState
     ): PublicCovidTestResponseResult | undefined;
@@ -57,6 +67,11 @@ export interface LaboratoryActions
         context: StoreContext,
         error: ResultError
     ): void;
+    retrieveLaboratoryOrders(
+        context: StoreContext,
+        params: { hdid: string }
+    ): Promise<RequestResult<LaboratoryOrder[]>>;
+    handleLaboratoryError(context: StoreContext, error: ResultError): void;
     retrievePublicCovidTests(
         context: StoreContext,
         params: {
@@ -79,6 +94,12 @@ export interface LaboratoryMutations extends MutationTree<LaboratoryState> {
         laboratoryOrders: Covid19LaboratoryOrder[]
     ): void;
     covid19LaboratoryError(state: LaboratoryState, error: Error): void;
+    setLaboratoryOrdersRequested(state: LaboratoryState): void;
+    setLaboratoryOrders(
+        state: LaboratoryState,
+        laboratoryOrders: LaboratoryOrder[]
+    ): void;
+    laboratoryError(state: LaboratoryState, error: Error): void;
     setPublicCovidTestResponseResultRequested(state: LaboratoryState): void;
     setPublicCovidTestResponseResult(
         state: LaboratoryState,

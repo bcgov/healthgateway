@@ -32,6 +32,28 @@ export interface Covid19LaboratoryTest {
     loincName: string | null;
 }
 
+// laboratory order model
+export interface LaboratoryOrder {
+    laboratoryReportId: string;
+    reportingSource: string | null;
+    reportId: string | null;
+    collectionDateTime: StringISODateTime;
+    commonName: string | null;
+    orderingProvider: string | null;
+    testStatus: string | null;
+    reportAvailable: boolean;
+    laboratoryTests: LaboratoryTest[];
+}
+
+// laboratory test model
+export interface LaboratoryTest {
+    batteryType: string;
+    obxId: string | null;
+    outOfRange: boolean;
+    loinc: string | null;
+    testStatus: string | null;
+}
+
 export interface LaboratoryReport {
     mediaType: string;
     encoding: string;

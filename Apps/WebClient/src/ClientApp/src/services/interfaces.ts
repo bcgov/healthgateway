@@ -21,6 +21,7 @@ import {
     AuthenticatedRapidTestRequest,
     AuthenticatedRapidTestResponse,
     Covid19LaboratoryOrder,
+    LaboratoryOrder,
     LaboratoryReport,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
@@ -116,6 +117,9 @@ export interface ILaboratoryService {
     getCovid19LaboratoryOrders(
         hdid: string
     ): Promise<RequestResult<Covid19LaboratoryOrder[]>>;
+    getLaboratoryOrders(
+        hdid: string
+    ): Promise<RequestResult<LaboratoryOrder[]>>;
     getReportDocument(
         reportId: string,
         hdid: string,
