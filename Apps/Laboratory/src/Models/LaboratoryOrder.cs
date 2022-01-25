@@ -120,4 +120,17 @@ public class LaboratoryOrder
             ReportAvailable = model.PdfReportAvailable,
         };
     }
+
+    /// <summary>
+    /// Creates a collection of Laboratory Order models from a collection of PHSA models.
+    /// </summary>
+    /// <param name="phsaOrders">The list of PHSA models to convert.</param>
+    /// <returns>A collection of COVID-19 order models.</returns>
+    public static IEnumerable<LaboratoryOrder> FromPhsaModelList(IEnumerable<PhsaLaboratoryOrder>? phsaOrders)
+    {
+        List<LaboratoryOrder> orders = phsaOrders != null
+            ? phsaOrders.Select(LaboratoryOrder.FromPhsaModel).ToList()
+            : new List<LaboratoryOrder>();
+        return orders;
+    }
 }

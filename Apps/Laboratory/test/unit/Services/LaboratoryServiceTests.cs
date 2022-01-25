@@ -156,7 +156,7 @@ namespace HealthGateway.LaboratoryTests
 
             ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
 
-            Task<RequestResult<LaboratoryReport>> actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty);
+            Task<RequestResult<LaboratoryReport>> actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, It.IsAny<bool>());
 
             Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
             Assert.Equal(MockedReportContent, actualResult.Result.ResourcePayload!.Report);

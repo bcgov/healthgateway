@@ -133,7 +133,7 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, bool isCovid19 = true)
+        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, bool isCovid19)
         {
             RequestResult<LaboratoryReport> retVal = new();
 
@@ -144,7 +144,7 @@ namespace HealthGateway.Laboratory.Services
 
                 if (accessToken != null)
                 {
-                    retVal = await this.laboratoryDelegate.GetLabReport(id, hdid, accessToken, isCovid19).ConfigureAwait(true);
+                    return await this.laboratoryDelegate.GetLabReport(id, hdid, accessToken, isCovid19).ConfigureAwait(true);
                 }
             }
 
@@ -153,9 +153,39 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string hdid, int pageIndex = 0)
+        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string hdid)
         {
-            throw new NotImplementedException();
+            RequestResult<IEnumerable<LaboratoryOrder>> retVal = new()
+            {
+                ResultStatus = ResultType.Error,
+                ResultError = UnauthorizedResultError(),
+            };
+
+            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
+            if (httpContext != null)
+            {
+                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+
+                if (accessToken != null)
+                {
+                    RequestResult<PhsaLaboratorySummary> delegateResult = await this.laboratoryDelegate.GetLaboratorySummary(hdid, accessToken).ConfigureAwait(true);
+                    if (delegateResult.ResultStatus == ResultType.Success)
+                    {
+                        retVal.ResultStatus = delegateResult.ResultStatus;
+                        retVal.ResourcePayload = LaboratoryOrder.FromPhsaModelList(delegateResult.ResourcePayload!.LabOrders);
+                        retVal.PageIndex = delegateResult.PageIndex;
+                        retVal.PageSize = delegateResult.PageSize;
+                        retVal.TotalResultCount = delegateResult.ResourcePayload!.LabOrderCount;
+                    }
+                    else
+                    {
+                        retVal.ResultStatus = delegateResult.ResultStatus;
+                        retVal.ResultError = delegateResult.ResultError;
+                    }
+                }
+            }
+
+            return retVal;
         }
 
         /// <inheritdoc/>
@@ -290,7 +320,7 @@ namespace HealthGateway.Laboratory.Services
             return retVal;
         }
 
-        private static RequestResultError? UnauthorizedResultError()
+        private static RequestResultError UnauthorizedResultError()
         {
             return new()
             {

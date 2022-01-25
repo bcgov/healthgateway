@@ -33,6 +33,11 @@ namespace HealthGateway.Laboratory.Models
         public string LabOrdersEndpoint { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the Provincial Lab Information System lab endpoint.
+        /// </summary>
+        public string PlisLabEndPoint { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the public COVID-19 tests endpoint.
         /// </summary>
         public string PublicCovidTestsEndPoint { get; set; } = string.Empty;

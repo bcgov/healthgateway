@@ -111,7 +111,7 @@ namespace HealthGateway.LaboratoryTests
                 svcMock.Object);
 
             // Act
-            RequestResult<LaboratoryReport> actual = await controller.GetLaboratoryReport(guid, Hdid).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> actual = await controller.GetLaboratoryReport(guid, Hdid, It.IsAny<bool>()).ConfigureAwait(true);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
@@ -138,7 +138,7 @@ namespace HealthGateway.LaboratoryTests
                 svcMock.Object);
 
             // Act
-            RequestResult<LaboratoryReport> actual = await controller.GetLaboratoryReport(guid, Hdid).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> actual = await controller.GetLaboratoryReport(guid, Hdid, It.IsAny<bool>()).ConfigureAwait(true);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Error);

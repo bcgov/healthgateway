@@ -53,9 +53,8 @@ namespace HealthGateway.Laboratory.Delegates
         /// </summary>
         /// <param name="hdid">The requested hdid.</param>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
-        /// <param name="pageIndex">The page index to return.</param>
-        /// <returns>Returns List of Provincial Lab Information System Lab Orders.</returns>
-        Task<RequestResult<IEnumerable<PhsaLaboratoryOrder>>> GetLaboratoryOrders(string hdid, string bearerToken, int pageIndex = 0);
+        /// <returns>Returns a summary of Provincial Lab Information System Lab Orders.</returns>
+        Task<RequestResult<PhsaLaboratorySummary>> GetLaboratorySummary(string hdid, string bearerToken);
 
         /// <summary>
         /// Returns the public COVID-19 test results for the given patient.

@@ -101,7 +101,7 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public Task<RequestResult<IEnumerable<PhsaLaboratoryOrder>>> GetLaboratoryOrders(string hdid, string bearerToken, int pageIndex = 0)
+        public Task<RequestResult<PhsaLaboratorySummary>> GetLaboratorySummary(string hdid, string bearerToken)
         {
             throw new NotImplementedException();
         }
