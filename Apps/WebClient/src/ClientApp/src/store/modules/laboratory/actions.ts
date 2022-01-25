@@ -117,7 +117,8 @@ export const actions: LaboratoryActions = {
                     .then((result) => {
                         if (result.resultStatus === ResultType.Success) {
                             EventTracker.loadData(
-                                EntryType.LaboratoryOrder,
+                                // Laboratory and COVID-19 shares the same modules
+                                EntryType.Covid19LaboratoryOrder,
                                 result.resourcePayload.length
                             );
                             context.commit(

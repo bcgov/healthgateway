@@ -34,34 +34,24 @@ export interface Covid19LaboratoryTest {
 
 // laboratory order model
 export interface LaboratoryOrder {
-    id: string;
-    phn: string | null;
-    orderingProviderIds: string | null;
-    orderingProviders: string | null;
-    reportingLab: string | null;
-    location: string | null;
-    ormOrOru: string | null;
-    messageDateTime: StringISODateTime;
-    messageId: string | null;
-    additionalData: string | null;
-    reportAvailable: boolean;
-    labResults: Covid19LaboratoryTest[];
+    laboratoryReportId: string;
+    reportingSource: string | null;
+    reportId: string | null;
+    collectionDateTime: StringISODateTime;
+    commonName: string | null;
+    orderingProvider: string | null;
+    testStatus: string | null;
+    reportAvailable: string | null;
+    laboratoryTests: LaboratoryTest[];
 }
 
 // laboratory test model
 export interface LaboratoryTest {
-    id: string;
-    testType: string | null;
+    batteryType: string;
+    obxId: string | null;
     outOfRange: boolean;
-    collectedDateTime: StringISODateTime;
-    testStatus: string | null;
-    resultDescription: string[];
-    resultLink: string | null;
-    labResultOutcome: string | null;
-    receivedDateTime: StringISODateTime;
-    resultDateTime: StringISODateTime;
     loinc: string | null;
-    loincName: string | null;
+    testStatus: string | null;
 }
 
 export interface LaboratoryReport {
