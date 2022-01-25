@@ -51,7 +51,7 @@ describe("Validate Modals Popup", () => {
             .click()
             .wait(250);
         cy.get("[data-testid=protectiveWordModal]").should("not.exist");
-        cy.contains("Gathering your health records ...");
+        cy.contains("Retrieving your health records");
     });
 
     it("Dismiss Protective Word", () => {
