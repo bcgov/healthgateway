@@ -11,7 +11,7 @@ import MultiSelectComponent, {
     SelectOption,
 } from "@/components/multiSelect.vue";
 import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
-import COVID19ReportComponent from "@/components/report/covid19.vue";
+import Covid19ReportComponent from "@/components/report/covid19.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MedicationRequestReportComponent from "@/components/report/medicationRequest.vue";
@@ -48,7 +48,7 @@ const noteReport = "note-report";
         "message-modal": MessageModalComponent,
         medicationReport: MedicationHistoryReportComponent,
         mspVisitReport: MSPVisitsReportComponent,
-        covid19Report: COVID19ReportComponent,
+        covid19Report: Covid19ReportComponent,
         immunizationReport: ImmunizationHistoryReportComponent,
         medicationRequestReport: MedicationRequestReportComponent,
         "hg-date-picker": DatePickerComponent,

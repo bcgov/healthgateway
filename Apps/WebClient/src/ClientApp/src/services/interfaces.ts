@@ -20,7 +20,7 @@ import type ImmunizationResult from "@/models/immunizationResult";
 import {
     AuthenticatedRapidTestRequest,
     AuthenticatedRapidTestResponse,
-    LaboratoryOrder,
+    Covid19LaboratoryOrder,
     LaboratoryReport,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
@@ -108,15 +108,18 @@ export interface IEncounterService {
 
 export interface ILaboratoryService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getCovidTests(
+    getPublicCovid19Tests(
         phn: string,
         dateOfBirth: string,
         collectionDate: string
     ): Promise<RequestResult<PublicCovidTestResponseResult>>;
-    getOrders(hdid: string): Promise<RequestResult<LaboratoryOrder[]>>;
+    getCovid19LaboratoryOrders(
+        hdid: string
+    ): Promise<RequestResult<Covid19LaboratoryOrder[]>>;
     getReportDocument(
         reportId: string,
-        hdid: string
+        hdid: string,
+        isCovid19: boolean
     ): Promise<RequestResult<LaboratoryReport>>;
     postAuthenticatedRapidTest(
         hdid: string,

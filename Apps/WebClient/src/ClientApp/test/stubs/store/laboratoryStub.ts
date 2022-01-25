@@ -2,7 +2,7 @@ import { voidMethod, voidPromise } from "@test/stubs/util";
 
 import BannerError from "@/models/bannerError";
 import {
-    LaboratoryOrder,
+    Covid19LaboratoryOrder,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import { LoadStatus } from "@/models/storeOperations";
@@ -15,13 +15,13 @@ import {
 } from "@/store/modules/laboratory/types";
 
 const laboratoryState: LaboratoryState = {
-    public: {
+    publicCovid19: {
         publicCovidTestResponseResult: undefined,
         error: undefined,
         status: LoadStatus.NONE,
         statusMessage: "",
     },
-    authenticated: {
+    authenticatedCovid19: {
         laboratoryOrders: [],
         statusMessage: "",
         status: LoadStatus.NONE,
@@ -29,13 +29,13 @@ const laboratoryState: LaboratoryState = {
 };
 
 const laboratoryGetters: LaboratoryGetters = {
-    laboratoryOrders(): LaboratoryOrder[] {
+    covid19LaboratoryOrders(): Covid19LaboratoryOrder[] {
         return [];
     },
-    laboratoryCount(): number {
+    covid19LaboratoryOrdersCount(): number {
         return 0;
     },
-    isLoading(): boolean {
+    covid19LaboratoryOrdersAreLoading(): boolean {
         return false;
     },
     publicCovidTestResponseResult(): PublicCovidTestResponseResult | undefined {
@@ -53,17 +53,17 @@ const laboratoryGetters: LaboratoryGetters = {
 };
 
 const laboratoryActions: LaboratoryActions = {
-    retrieve: voidPromise,
-    handleError: voidMethod,
+    retrieveCovid19LaboratoryOrders: voidPromise,
+    handleCovid19LaboratoryError: voidMethod,
     retrievePublicCovidTests: voidPromise,
     handlePublicCovidTestsError: voidMethod,
     resetPublicCovidTestResponseResult: voidMethod,
 };
 
 const laboratoryMutations: LaboratoryMutations = {
-    setRequested: voidMethod,
-    setLaboratoryOrders: voidMethod,
-    laboratoryError: voidMethod,
+    setCovid19LaboratoryOrdersRequested: voidMethod,
+    setCovid19LaboratoryOrders: voidMethod,
+    covid19LaboratoryError: voidMethod,
     setPublicCovidTestResponseResultRequested: voidMethod,
     setPublicCovidTestResponseResult: voidMethod,
     setPublicCovidTestResponseResultError: voidMethod,

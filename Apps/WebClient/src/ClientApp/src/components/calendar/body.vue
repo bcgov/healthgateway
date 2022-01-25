@@ -12,10 +12,10 @@ import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action } from "vuex-class";
 
+import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
-import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
 import MedicationRequestTimelineEntry from "@/models/medicationRequestTimelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
@@ -112,7 +112,7 @@ export default class CalendarBodyComponent extends Vue {
 
         let groups = thisDayEvents.reduce<Record<string, TimelineEntry[]>>(
             (groups, entry: TimelineEntry) => {
-                let entryType: string = EntryType[entry.type];
+                const entryType = entry.type;
                 // Create a new group if it the type doesnt exist in the map
                 if (!groups[entryType]) {
                     groups[entryType] = [];
@@ -124,13 +124,13 @@ export default class CalendarBodyComponent extends Vue {
         );
 
         let index = 0;
-        return Object.keys(groups).map<CalendarEntry>((typeKey: string) => {
+        return Object.keys(groups).map<CalendarEntry>((type: string) => {
             index++;
             return {
-                id: date.fromEpoch() + "-type-" + typeKey,
+                id: date.fromEpoch() + "-type-" + type,
                 cellIndex: index,
-                type: EntryType[typeKey as keyof typeof EntryType],
-                entries: groups[typeKey].sort(
+                type: type as EntryType,
+                entries: groups[type].sort(
                     (a: TimelineEntry, b: TimelineEntry) =>
                         a.type > b.type ? 1 : a.type < b.type ? -1 : 0
                 ),
@@ -145,7 +145,7 @@ export default class CalendarBodyComponent extends Vue {
         if (event.type == EntryType.Immunization) {
             return "syringe";
         }
-        if (event.type == EntryType.Laboratory) {
+        if (event.type == EntryType.Covid19LaboratoryOrder) {
             return "flask";
         }
         if (event.type == EntryType.Note) {
@@ -179,8 +179,8 @@ export default class CalendarBodyComponent extends Vue {
             return (entry as MedicationTimelineEntry).medication.brandName;
         } else if (type == EntryType.Immunization) {
             return (entry as ImmunizationTimelineEntry).immunization.name;
-        } else if (type == EntryType.Laboratory) {
-            return (entry as LaboratoryTimelineEntry).summaryTitle;
+        } else if (type == EntryType.Covid19LaboratoryOrder) {
+            return (entry as Covid19LaboratoryOrderTimelineEntry).summaryTitle;
         } else if (type == EntryType.Note) {
             return (entry as NoteTimelineEntry).title;
         } else if (type == EntryType.Encounter) {

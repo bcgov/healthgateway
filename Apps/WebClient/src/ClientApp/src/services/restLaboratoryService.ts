@@ -7,7 +7,7 @@ import { ServiceName } from "@/models/errorInterfaces";
 import {
     AuthenticatedRapidTestRequest,
     AuthenticatedRapidTestResponse,
-    LaboratoryOrder,
+    Covid19LaboratoryOrder,
     LaboratoryReport,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
@@ -40,7 +40,7 @@ export class RestLaboratoryService implements ILaboratoryService {
         this.isEnabled = config.webClient.modules["Laboratory"];
     }
 
-    getCovidTests(
+    getPublicCovid19Tests(
         phn: string,
         dateOfBirth: string,
         collectionDate: string
@@ -74,7 +74,9 @@ export class RestLaboratoryService implements ILaboratoryService {
         });
     }
 
-    public getOrders(hdid: string): Promise<RequestResult<LaboratoryOrder[]>> {
+    public getCovid19LaboratoryOrders(
+        hdid: string
+    ): Promise<RequestResult<Covid19LaboratoryOrder[]>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
                 resolve({
@@ -87,7 +89,7 @@ export class RestLaboratoryService implements ILaboratoryService {
                 return;
             }
             this.http
-                .getWithCors<RequestResult<LaboratoryOrder[]>>(
+                .getWithCors<RequestResult<Covid19LaboratoryOrder[]>>(
                     `${this.baseUri}${this.LABORATORY_BASE_URI}/Covid19Orders?hdid=${hdid}`
                 )
                 .then((requestResult) => {
@@ -107,7 +109,8 @@ export class RestLaboratoryService implements ILaboratoryService {
 
     public getReportDocument(
         reportId: string,
-        hdid: string
+        hdid: string,
+        isCovid19: boolean
     ): Promise<RequestResult<LaboratoryReport>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
@@ -122,7 +125,7 @@ export class RestLaboratoryService implements ILaboratoryService {
             }
             this.http
                 .getWithCors<RequestResult<LaboratoryReport>>(
-                    `${this.baseUri}${this.LABORATORY_BASE_URI}/${reportId}/Report?hdid=${hdid}`
+                    `${this.baseUri}${this.LABORATORY_BASE_URI}/${reportId}/Report?hdid=${hdid}&isCovid19=${isCovid19}`
                 )
                 .then((requestResult) => {
                     resolve(requestResult);
@@ -162,7 +165,7 @@ export class RestLaboratoryService implements ILaboratoryService {
                 })
                 .catch((err) => {
                     this.logger.error(
-                        `Post Autheticate Rapid Test Error: ${err}`
+                        `Post Authenticated Rapid Test Error: ${err}`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(

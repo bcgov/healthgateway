@@ -58,8 +58,8 @@ export default class FilterComponent extends Vue {
     @Getter("immunizationCount", { namespace: "immunization" })
     immunizationCount!: number;
 
-    @Getter("laboratoryCount", { namespace: "laboratory" })
-    laboratoryCount!: number;
+    @Getter("covid19LaboratoryOrdersCount", { namespace: "laboratory" })
+    covid19LaboratoryOrdersCount!: number;
 
     @Getter("encounterCount", { namespace: "encounter" })
     encounterCount!: number;
@@ -94,10 +94,11 @@ export default class FilterComponent extends Vue {
                 numEntries: this.medicationStatementCount,
             },
             {
-                type: EntryType.Laboratory,
+                type: EntryType.Covid19LaboratoryOrder,
                 display: "COVID-19 Tests",
-                isEnabled: this.config.modules[EntryType.Laboratory],
-                numEntries: this.laboratoryCount,
+                isEnabled:
+                    this.config.modules[EntryType.Covid19LaboratoryOrder],
+                numEntries: this.covid19LaboratoryOrdersCount,
             },
             {
                 type: EntryType.Encounter,

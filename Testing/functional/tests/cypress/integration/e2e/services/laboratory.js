@@ -30,7 +30,7 @@ describe("Patient Service", () => {
                 `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
             );
             cy.request({
-                url: `${config.serviceEndpoints.Laboratory}v1/api/Laboratory?hdid=${HDID}`,
+                url: `${config.serviceEndpoints.Laboratory}v1/api/Laboratory/Covid19Orders?hdid=${HDID}`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -47,7 +47,7 @@ describe("Patient Service", () => {
                     `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
                 );
                 cy.request({
-                    url: `${config.serviceEndpoints.Laboratory}v1/api/Laboratory?hdid=${EXPIREDELEGATEDHDID}`,
+                    url: `${config.serviceEndpoints.Laboratory}v1/api/Laboratory/Covid19Orders?hdid=${EXPIREDELEGATEDHDID}`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -71,7 +71,7 @@ describe("Patient Service", () => {
                     `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
                 );
                 cy.request({
-                    url: `${config.serviceEndpoints.Laboratory}v1/api/Laboratory?hdid=${HDID}`,
+                    url: `${config.serviceEndpoints.Laboratory}v1/api/Laboratory/Covid19Orders?hdid=${HDID}`,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token,
@@ -96,7 +96,7 @@ describe("Patient Service", () => {
                     `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
                 );
                 cy.request({
-                    url: `${config.serviceEndpoints.Laboratory}v1/api/Laboratory?hdid=${DELEGATEDHDID}`,
+                    url: `${config.serviceEndpoints.Laboratory}v1/api/Laboratory/Covid19Orders?hdid=${DELEGATEDHDID}`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {

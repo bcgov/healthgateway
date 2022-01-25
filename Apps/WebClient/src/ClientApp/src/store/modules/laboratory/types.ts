@@ -9,7 +9,7 @@ import {
 import BannerError from "@/models/bannerError";
 import { StringISODate } from "@/models/dateWrapper";
 import {
-    LaboratoryOrder,
+    Covid19LaboratoryOrder,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import RequestResult, { ResultError } from "@/models/requestResult";
@@ -17,14 +17,14 @@ import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";
 
 export interface LaboratoryState {
-    public: {
+    publicCovid19: {
         publicCovidTestResponseResult?: PublicCovidTestResponseResult;
         statusMessage: string;
         error?: BannerError;
         status?: LoadStatus;
     };
-    authenticated: {
-        laboratoryOrders: LaboratoryOrder[];
+    authenticatedCovid19: {
+        laboratoryOrders: Covid19LaboratoryOrder[];
         statusMessage: string;
         error?: ResultError;
         status: LoadStatus;
@@ -33,9 +33,9 @@ export interface LaboratoryState {
 
 export interface LaboratoryGetters
     extends GetterTree<LaboratoryState, RootState> {
-    laboratoryOrders(state: LaboratoryState): LaboratoryOrder[];
-    laboratoryCount(state: LaboratoryState): number;
-    isLoading(state: LaboratoryState): boolean;
+    covid19LaboratoryOrders(state: LaboratoryState): Covid19LaboratoryOrder[];
+    covid19LaboratoryOrdersCount(state: LaboratoryState): number;
+    covid19LaboratoryOrdersAreLoading(state: LaboratoryState): boolean;
     publicCovidTestResponseResult(
         state: LaboratoryState
     ): PublicCovidTestResponseResult | undefined;
@@ -49,11 +49,14 @@ export interface LaboratoryGetters
 type StoreContext = ActionContext<LaboratoryState, RootState>;
 export interface LaboratoryActions
     extends ActionTree<LaboratoryState, RootState> {
-    retrieve(
+    retrieveCovid19LaboratoryOrders(
         context: StoreContext,
         params: { hdid: string }
-    ): Promise<RequestResult<LaboratoryOrder[]>>;
-    handleError(context: StoreContext, error: ResultError): void;
+    ): Promise<RequestResult<Covid19LaboratoryOrder[]>>;
+    handleCovid19LaboratoryError(
+        context: StoreContext,
+        error: ResultError
+    ): void;
     retrievePublicCovidTests(
         context: StoreContext,
         params: {
@@ -70,12 +73,12 @@ export interface LaboratoryActions
 }
 
 export interface LaboratoryMutations extends MutationTree<LaboratoryState> {
-    setRequested(state: LaboratoryState): void;
-    setLaboratoryOrders(
+    setCovid19LaboratoryOrdersRequested(state: LaboratoryState): void;
+    setCovid19LaboratoryOrders(
         state: LaboratoryState,
-        laboratoryOrders: LaboratoryOrder[]
+        laboratoryOrders: Covid19LaboratoryOrder[]
     ): void;
-    laboratoryError(state: LaboratoryState, error: Error): void;
+    covid19LaboratoryError(state: LaboratoryState, error: Error): void;
     setPublicCovidTestResponseResultRequested(state: LaboratoryState): void;
     setPublicCovidTestResponseResult(
         state: LaboratoryState,
