@@ -32,9 +32,8 @@ describe("Immunization - With Refresh", () => {
     });
 
     it("Validate Immunization Loading", () => {
-        cy.get("[data-testid=immunizationLoading]").should("be.visible");
-        cy.get("[data-testid=immunizationLoading]").should("not.exist");
-        cy.get("[data-testid=immunizationReady]").should("be.visible");
+        cy.get("[data-testid=loading-toast]").should("be.visible");
+        cy.get("[data-testid=loading-toast]").should("not.exist");
     });
 
     it("Validate COVID-19 Immunization Attachment Icons", () => {
@@ -189,8 +188,7 @@ describe("Immunization No Records", () => {
     });
 
     it("Validate Immunization Loading", () => {
-        cy.get("[data-testid=immunizationLoading]").should("be.visible");
-        cy.get("[data-testid=immunizationLoading]").should("not.exist");
-        cy.get("[data-testid=immunizationEmpty]").should("be.visible");
+        cy.get("[data-testid=loading-toast]").should("be.visible");
+        cy.get("[data-testid=loading-toast]").should("not.exist");
     });
 });
