@@ -1,6 +1,6 @@
 import BannerError from "@/models/bannerError";
 import {
-    LaboratoryOrder,
+    Covid19LaboratoryOrder,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import { LoadStatus } from "@/models/storeOperations";
@@ -8,53 +8,53 @@ import { LoadStatus } from "@/models/storeOperations";
 import { LaboratoryMutations, LaboratoryState } from "./types";
 
 export const mutations: LaboratoryMutations = {
-    setRequested(state: LaboratoryState) {
-        state.authenticated.status = LoadStatus.REQUESTED;
+    setCovid19LaboratoryOrdersRequested(state: LaboratoryState) {
+        state.authenticatedCovid19.status = LoadStatus.REQUESTED;
     },
-    setLaboratoryOrders(
+    setCovid19LaboratoryOrders(
         state: LaboratoryState,
-        laboratoryOrders: LaboratoryOrder[]
+        laboratoryOrders: Covid19LaboratoryOrder[]
     ) {
-        state.authenticated.laboratoryOrders = laboratoryOrders;
-        state.authenticated.error = undefined;
-        state.authenticated.statusMessage = "success";
-        state.authenticated.status = LoadStatus.LOADED;
+        state.authenticatedCovid19.laboratoryOrders = laboratoryOrders;
+        state.authenticatedCovid19.error = undefined;
+        state.authenticatedCovid19.statusMessage = "success";
+        state.authenticatedCovid19.status = LoadStatus.LOADED;
     },
-    laboratoryError(state: LaboratoryState, error: Error) {
-        state.authenticated.statusMessage = error.message;
-        state.authenticated.status = LoadStatus.ERROR;
+    covid19LaboratoryError(state: LaboratoryState, error: Error) {
+        state.authenticatedCovid19.statusMessage = error.message;
+        state.authenticatedCovid19.status = LoadStatus.ERROR;
     },
     setPublicCovidTestResponseResultRequested(state: LaboratoryState) {
-        state.public.publicCovidTestResponseResult = undefined;
-        state.public.status = LoadStatus.REQUESTED;
-        state.public.statusMessage = "";
-        state.public.error = undefined;
+        state.publicCovid19.publicCovidTestResponseResult = undefined;
+        state.publicCovid19.status = LoadStatus.REQUESTED;
+        state.publicCovid19.statusMessage = "";
+        state.publicCovid19.error = undefined;
     },
     setPublicCovidTestResponseResult(
         state: LaboratoryState,
         publicCovidTestResponseResult: PublicCovidTestResponseResult
     ) {
-        state.public.publicCovidTestResponseResult =
+        state.publicCovid19.publicCovidTestResponseResult =
             publicCovidTestResponseResult;
-        state.public.status = LoadStatus.LOADED;
-        state.public.statusMessage = "";
-        state.public.error = undefined;
+        state.publicCovid19.status = LoadStatus.LOADED;
+        state.publicCovid19.statusMessage = "";
+        state.publicCovid19.error = undefined;
     },
     setPublicCovidTestResponseResultError(
         state: LaboratoryState,
         error: BannerError
     ) {
-        state.public.error = error;
-        state.public.status = LoadStatus.ERROR;
+        state.publicCovid19.error = error;
+        state.publicCovid19.status = LoadStatus.ERROR;
     },
     setPublicCovidTestResponseResultStatusMessage(
         state: LaboratoryState,
         statusMessage: string
     ) {
-        state.public.statusMessage = statusMessage;
+        state.publicCovid19.statusMessage = statusMessage;
     },
     resetPublicCovidTestResponseResult(state: LaboratoryState) {
-        state.public = {
+        state.publicCovid19 = {
             publicCovidTestResponseResult: undefined,
             status: undefined,
             statusMessage: "",

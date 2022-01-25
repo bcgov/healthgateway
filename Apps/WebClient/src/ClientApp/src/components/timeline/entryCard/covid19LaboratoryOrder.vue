@@ -6,11 +6,11 @@ import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
-import LaboratoryResultDescriptionComponent from "@/components/laboratory/laboratoryResultDescription.vue";
+import Covid19LaboratoryTestDescriptionComponent from "@/components/laboratory/covid19LaboratoryTestDescription.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryReport } from "@/models/laboratory";
-import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
@@ -25,11 +25,11 @@ library.add(faDownload, faFlask);
     components: {
         MessageModalComponent,
         EntryCard: EntrycardTimelineComponent,
-        LaboratoryResultDescriptionComponent,
+        Covid19LaboratoryTestDescriptionComponent,
     },
 })
-export default class LaboratoryTimelineComponent extends Vue {
-    @Prop() entry!: LaboratoryTimelineEntry;
+export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
+    @Prop() entry!: Covid19LaboratoryOrderTimelineEntry;
     @Prop() index!: number;
     @Prop() datekey!: string;
     @Prop() isMobileDetails!: boolean;
@@ -81,7 +81,7 @@ export default class LaboratoryTimelineComponent extends Vue {
 
         this.isLoadingDocument = true;
         this.laboratoryService
-            .getReportDocument(this.entry.id, this.user.hdid)
+            .getReportDocument(this.entry.id, this.user.hdid, true)
             .then((result) => {
                 let dateString =
                     this.entry.displayDate.format("YYYY_MM_DD-HH_mm");
@@ -113,7 +113,7 @@ export default class LaboratoryTimelineComponent extends Vue {
         :is-mobile-details="isMobileDetails"
         :has-attachment="reportAvailable"
     >
-        <div v-if="entry.resultList.length === 1" slot="header-description">
+        <div v-if="entry.tests.length === 1" slot="header-description">
             <strong
                 v-show="entry.isTestResultReady"
                 data-testid="laboratoryHeaderDescription"
@@ -156,49 +156,44 @@ export default class LaboratoryTimelineComponent extends Vue {
                     {{ entry.reportingLab }}
                 </div>
             </div>
-            <div v-for="result in entry.resultList" :key="result.id">
+            <div v-for="test in entry.tests" :key="test.id">
                 <hr />
                 <div data-testid="laboratoryTestType" class="my-2">
                     <strong
-                        v-if="
-                            result.isTestResultReady &&
-                            entry.resultList.length > 1
-                        "
+                        v-if="test.isTestResultReady && entry.tests.length > 1"
                         data-testid="laboratoryTestResult"
                     >
                         <span>Result:</span>
-                        <span
-                            :class="getOutcomeClasses(result.labResultOutcome)"
-                        >
-                            {{ result.labResultOutcome }}
+                        <span :class="getOutcomeClasses(test.labResultOutcome)">
+                            {{ test.labResultOutcome }}
                         </span>
                     </strong>
                 </div>
                 <div data-testid="laboratoryTestType" class="my-2">
                     <strong>Test Type:</strong>
-                    {{ result.testType }}
+                    {{ test.testType }}
                 </div>
                 <div data-testid="laboratoryTestStatus" class="my-2">
                     <strong>Test Status:</strong>
-                    {{ result.testStatus }}
+                    {{ test.testStatus }}
                 </div>
                 <div class="my-2">
                     <strong>Collection Date:</strong>
-                    {{ formatDate(result.collectedDateTime) }}
+                    {{ formatDate(test.collectedDateTime) }}
                 </div>
                 <div class="my-2">
                     <strong>Result Date:</strong>
-                    {{ formatDate(result.resultDateTime) }}
+                    {{ formatDate(test.resultDateTime) }}
                 </div>
                 <div
-                    v-if="result.resultDescription.length > 0"
+                    v-if="test.resultDescription.length > 0"
                     class="my-2"
                     data-testid="laboratoryResultDescription"
                 >
                     <strong>Result Description:</strong>
-                    <LaboratoryResultDescriptionComponent
-                        :description="result.resultDescription"
-                        :link="result.resultLink"
+                    <Covid19LaboratoryTestDescriptionComponent
+                        :description="test.resultDescription"
+                        :link="test.resultLink"
                     />
                 </div>
             </div>

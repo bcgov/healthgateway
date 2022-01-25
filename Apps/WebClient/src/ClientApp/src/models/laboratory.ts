@@ -1,7 +1,23 @@
 import { StringISODate, StringISODateTime } from "@/models/dateWrapper";
 
-// Laboratory model
-export interface LaboratoryResult {
+// COVID-19 lab order model
+export interface Covid19LaboratoryOrder {
+    id: string;
+    phn: string | null;
+    orderingProviderIds: string | null;
+    orderingProviders: string | null;
+    reportingLab: string | null;
+    location: string | null;
+    ormOrOru: string | null;
+    messageDateTime: StringISODateTime;
+    messageId: string | null;
+    additionalData: string | null;
+    reportAvailable: boolean;
+    labResults: Covid19LaboratoryTest[];
+}
+
+// COVID-19 lab test model
+export interface Covid19LaboratoryTest {
     id: string;
     testType: string | null;
     outOfRange: boolean;
@@ -14,21 +30,6 @@ export interface LaboratoryResult {
     resultDateTime: StringISODateTime;
     loinc: string | null;
     loincName: string | null;
-}
-
-export interface LaboratoryOrder {
-    id: string;
-    phn: string | null;
-    orderingProviderIds: string | null;
-    orderingProviders: string | null;
-    reportingLab: string | null;
-    location: string | null;
-    ormOrOru: string | null;
-    messageDateTime: StringISODateTime;
-    messageId: string | null;
-    additionalData: string | null;
-    reportAvailable: boolean;
-    labResults: LaboratoryResult[];
 }
 
 export interface LaboratoryReport {
@@ -82,6 +83,7 @@ export interface AuthenticatedRapidTestResponse {
     phn: string;
     records: RapidTestRecord[];
 }
+
 export abstract class LaboratoryUtil {
     public static isTestResultReady(testStatus: string | null): boolean {
         if (testStatus == null) {

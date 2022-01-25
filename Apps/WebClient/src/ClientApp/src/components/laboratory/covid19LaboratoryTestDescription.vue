@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
 @Component
-export default class LaboratoryResultDescriptionComponent extends Vue {
+export default class Covid19LaboratoryTestDescriptionComponent extends Vue {
     @Prop({ required: true }) description!: string[];
     @Prop({ required: true }) link!: string;
 
