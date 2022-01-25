@@ -314,6 +314,7 @@ export default class TimelineView extends Vue {
             no-auto-hide
             no-close-button
             is-status
+            data-testid="loading-toast"
         >
             <div class="text-center">Retrieving your health records</div>
         </b-toast>

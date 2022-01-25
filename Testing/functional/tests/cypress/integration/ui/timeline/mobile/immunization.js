@@ -23,9 +23,8 @@ describe("Immunization Async", () => {
     });
 
     it("Validate Immunization Loading", () => {
-        cy.get("[data-testid=immunizationLoading]").should("be.visible");
-        cy.get("[data-testid=immunizationLoading]").should("not.exist");
-        cy.get("[data-testid=immunizationReady]").should("be.visible");
+        cy.get("[data-testid=loading-toast]").should("be.visible");
+        cy.get("[data-testid=loading-toast]").should("not.exist");
     });
 });
 
@@ -55,9 +54,8 @@ describe("Immunization Async No Records", () => {
     });
 
     it("Validate Immunization Loading", () => {
-        cy.get("[data-testid=immunizationLoading]").should("be.visible");
-        cy.get("[data-testid=immunizationLoading]").should("not.exist");
-        cy.get("[data-testid=immunizationEmpty]").should("be.visible");
+        cy.get("[data-testid=loading-toast]").should("be.visible");
+        cy.get("[data-testid=loading-toast]").should("not.exist");
     });
 });
 
