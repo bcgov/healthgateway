@@ -1,6 +1,7 @@
 import BannerError from "@/models/bannerError";
 import {
     Covid19LaboratoryOrder,
+    LaboratoryOrder,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import { LoadStatus } from "@/models/storeOperations";
@@ -16,6 +17,15 @@ export const getters: LaboratoryGetters = {
     },
     covid19LaboratoryOrdersAreLoading(state: LaboratoryState): boolean {
         return state.authenticatedCovid19.status === LoadStatus.REQUESTED;
+    },
+    laboratoryOrders(state: LaboratoryState): LaboratoryOrder[] {
+        return state.authenticated.laboratoryOrders;
+    },
+    laboratoryOrdersCount(state: LaboratoryState): number {
+        return state.authenticated.laboratoryOrders.length;
+    },
+    laboratoryOrdersAreLoading(state: LaboratoryState): boolean {
+        return state.authenticated.status === LoadStatus.REQUESTED;
     },
     publicCovidTestResponseResult(
         state: LaboratoryState

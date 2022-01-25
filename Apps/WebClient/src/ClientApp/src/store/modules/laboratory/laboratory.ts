@@ -18,6 +18,12 @@ const state: LaboratoryState = {
         error: undefined,
         status: LoadStatus.NONE,
     },
+    authenticated: {
+        statusMessage: "",
+        laboratoryOrders: [],
+        error: undefined,
+        status: LoadStatus.NONE,
+    },
 };
 
 const namespaced = true;

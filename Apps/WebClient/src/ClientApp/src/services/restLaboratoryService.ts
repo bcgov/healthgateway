@@ -8,6 +8,7 @@ import {
     AuthenticatedRapidTestRequest,
     AuthenticatedRapidTestResponse,
     Covid19LaboratoryOrder,
+    LaboratoryOrder,
     LaboratoryReport,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
@@ -97,6 +98,41 @@ export class RestLaboratoryService implements ILaboratoryService {
                 })
                 .catch((err) => {
                     this.logger.error(`getOrders Fetch error: ${err}`);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.Laboratory
+                        )
+                    );
+                });
+        });
+    }
+
+    public getLaboratoryOrders(
+        hdid: string
+    ): Promise<RequestResult<LaboratoryOrder[]>> {
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                resolve({
+                    pageIndex: 0,
+                    pageSize: 0,
+                    resourcePayload: [],
+                    resultStatus: ResultType.Success,
+                    totalResultCount: 0,
+                });
+                return;
+            }
+            this.http
+                .getWithCors<RequestResult<LaboratoryOrder[]>>(
+                    `${this.baseUri}${this.LABORATORY_BASE_URI}/hdid=${hdid}`
+                )
+                .then((requestResult) => {
+                    resolve(requestResult);
+                })
+                .catch((err) => {
+                    this.logger.error(
+                        `getLaboratoryOrders Fetch error: ${err}`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
