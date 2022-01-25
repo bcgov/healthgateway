@@ -33,6 +33,8 @@ export const enum CommentEntryType {
     Immunization = "Imm",
     // The code representing COVID-19 Laboratory Orders.
     Covid19LaboratoryOrder = "Lab",
+    // The code representing Laboratory Orders.
+    LaboratoryOrder = "AllLab",
     // The code representing Encounter.
     Encounter = "Enc",
 }
@@ -48,6 +50,8 @@ export class EntryTypeMapper {
                 return CommentEntryType.Immunization;
             case EntryType.Covid19LaboratoryOrder:
                 return CommentEntryType.Covid19LaboratoryOrder;
+            case EntryType.LaboratoryOrder:
+                return CommentEntryType.LaboratoryOrder;
             case EntryType.Encounter:
                 return CommentEntryType.Encounter;
             default:

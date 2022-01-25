@@ -41,7 +41,7 @@ export interface LaboratoryOrder {
     commonName: string | null;
     orderingProvider: string | null;
     testStatus: string | null;
-    reportAvailable: string | null;
+    reportAvailable: boolean;
     laboratoryTests: LaboratoryTest[];
 }
 
