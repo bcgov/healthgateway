@@ -79,10 +79,32 @@ namespace HealthGateway.Laboratory.Controllers
         }
 
         /// <summary>
+        /// Gets a json summary of laboratory summary.
+        /// </summary>
+        /// <param name="hdid">The hdid resource to request the Laboratory summary for.</param>
+        /// <returns>A summary of Laboratory records wrapped in a request result.</returns>
+        /// <response code="200">Returns a Laboratory Summary containing a list of Laboratory orders.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="503">The service is unavailable for use.</response>
+        [HttpGet]
+        [Produces("application/json")]
+        [Route("LaboratorySummary")]
+        [Authorize(Policy = LaboratoryPolicy.Read)]
+        public async Task<RequestResult<LaboratorySummary>> GetLaboratorySummary([FromQuery] string hdid)
+        {
+            this.logger.LogDebug($"Getting laboratory summary... ");
+            RequestResult<LaboratorySummary> result = await this.service.GetLaboratorySummary(hdid).ConfigureAwait(true);
+            this.logger.LogDebug("Finished getting laboratory summary from controller for Hdid: {Hdid}...", hdid);
+            return result;
+        }
+
+        /// <summary>
         /// Gets a specific laboratory report.
         /// </summary>
         /// <param name="reportId">The ID of the report belonging to the authenticated user to fetch.</param>
         /// <param name="hdid">The requested HDID which owns the reportId.</param>
+        /// <param name="isCovid19">Indicates whether the COVID-19 report should be returned.</param>
         /// <returns>A laboratory PDF report wrapped in a request result.</returns>
         /// <response code="200">Returns the specified PDF lab report.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -92,12 +114,12 @@ namespace HealthGateway.Laboratory.Controllers
         [Produces("application/json")]
         [Route("{reportId}/Report")]
         [Authorize(Policy = LaboratoryPolicy.Read)]
-        public async Task<RequestResult<LaboratoryReport>> GetLaboratoryReport(Guid reportId, [FromQuery] string hdid)
+        public async Task<RequestResult<LaboratoryReport>> GetLaboratoryReport(Guid reportId, [FromQuery] string hdid, bool isCovid19)
         {
-            this.logger.LogDebug($"Getting PDF version of Laboratory Report for hdid {hdid}");
+            this.logger.LogDebug("Getting PDF version of Laboratory Report for Hdid: {Hdid} and isCovid19: {IsCovid10}...", hdid, isCovid19.ToString());
 
-            RequestResult<LaboratoryReport> result = await this.service.GetLabReport(reportId, hdid).ConfigureAwait(true);
-            this.logger.LogDebug($"Finished getting pdf report from controller... {hdid}");
+            RequestResult<LaboratoryReport> result = await this.service.GetLabReport(reportId, hdid, isCovid19).ConfigureAwait(true);
+            this.logger.LogDebug("Finished getting pdf report from controller for Hdid: {Hdid} and isCovid19: {IsCovid19}...", hdid, isCovid19.ToString());
 
             return result;
         }

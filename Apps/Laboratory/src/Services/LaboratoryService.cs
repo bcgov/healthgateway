@@ -133,7 +133,7 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, bool isCovid19 = true)
+        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, bool isCovid19)
         {
             RequestResult<LaboratoryReport> retVal = new();
 
@@ -144,7 +144,7 @@ namespace HealthGateway.Laboratory.Services
 
                 if (accessToken != null)
                 {
-                    retVal = await this.laboratoryDelegate.GetLabReport(id, hdid, accessToken, isCovid19).ConfigureAwait(true);
+                    return await this.laboratoryDelegate.GetLabReport(id, hdid, accessToken, isCovid19).ConfigureAwait(true);
                 }
             }
 
@@ -153,9 +153,38 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string hdid, int pageIndex = 0)
+        public async Task<RequestResult<LaboratorySummary>> GetLaboratorySummary(string hdid)
         {
-            throw new NotImplementedException();
+            RequestResult<LaboratorySummary> retVal = new();
+
+            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
+            if (httpContext != null)
+            {
+                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+
+                if (accessToken != null)
+                {
+                    RequestResult<PhsaLaboratorySummary> delegateResult = await this.laboratoryDelegate.GetLaboratorySummary(hdid, accessToken).ConfigureAwait(true);
+                    if (delegateResult.ResultStatus == ResultType.Success)
+                    {
+                        retVal.ResultStatus = delegateResult.ResultStatus;
+                        retVal.ResourcePayload = LaboratorySummary.FromPhsaModel(delegateResult.ResourcePayload);
+                        retVal.PageIndex = delegateResult.PageIndex;
+                        retVal.PageSize = delegateResult.PageSize;
+                        retVal.TotalResultCount = delegateResult.TotalResultCount;
+                        return retVal;
+                    }
+                    else
+                    {
+                        retVal.ResultStatus = delegateResult.ResultStatus;
+                        retVal.ResultError = delegateResult.ResultError;
+                        return retVal;
+                    }
+                }
+            }
+
+            retVal.ResultError = UnauthorizedResultError();
+            return retVal;
         }
 
         /// <inheritdoc/>
