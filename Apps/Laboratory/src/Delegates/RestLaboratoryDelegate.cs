@@ -260,7 +260,7 @@ namespace HealthGateway.Laboratory.Delegates
             };
             try
             {
-                string endpointString = $"{this.labConfig.BaseUrl}{this.labConfig.PlisLabSummaryEndPoint}";
+                string endpointString = $"{this.labConfig.BaseUrl}{this.labConfig.PlisLabEndPoint}/LabSummary";
                 Uri endpoint = new(QueryHelpers.AddQueryString(endpointString, query));
                 HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);

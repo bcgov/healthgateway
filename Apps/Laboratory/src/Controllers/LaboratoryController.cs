@@ -79,22 +79,22 @@ namespace HealthGateway.Laboratory.Controllers
         }
 
         /// <summary>
-        /// Gets a json summary of laboratory summary.
+        /// Gets a json list of Laboratory orders.
         /// </summary>
-        /// <param name="hdid">The hdid resource to request the Laboratory summary for.</param>
-        /// <returns>A summary of Laboratory records wrapped in a request result.</returns>
-        /// <response code="200">Returns a Laboratory Summary containing a list of Laboratory orders.</response>
+        /// <param name="hdid">The hdid resource to request the Laboratory orders for.</param>
+        /// <returns>Returns List of lab orders.</returns>
+        /// <response code="200">Returns a list of Laboratory orders.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
-        [Route("LaboratorySummary")]
+        [Route("LaboratoryOrders")]
         [Authorize(Policy = LaboratoryPolicy.Read)]
-        public async Task<RequestResult<LaboratorySummary>> GetLaboratorySummary([FromQuery] string hdid)
+        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders([FromQuery] string hdid)
         {
             this.logger.LogDebug($"Getting laboratory summary... ");
-            RequestResult<LaboratorySummary> result = await this.service.GetLaboratorySummary(hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<LaboratoryOrder>> result = await this.service.GetLaboratoryOrders(hdid).ConfigureAwait(true);
             this.logger.LogDebug("Finished getting laboratory summary from controller for Hdid: {Hdid}...", hdid);
             return result;
         }
@@ -114,7 +114,7 @@ namespace HealthGateway.Laboratory.Controllers
         [Produces("application/json")]
         [Route("{reportId}/Report")]
         [Authorize(Policy = LaboratoryPolicy.Read)]
-        public async Task<RequestResult<LaboratoryReport>> GetLaboratoryReport(Guid reportId, [FromQuery] string hdid, bool isCovid19)
+        public async Task<RequestResult<LaboratoryReport>> GetLaboratoryReport(Guid reportId, [FromQuery] string hdid, bool isCovid19 = true)
         {
             this.logger.LogDebug("Getting PDF version of Laboratory Report for Hdid: {Hdid} and isCovid19: {IsCovid10}...", hdid, isCovid19.ToString());
 

@@ -45,12 +45,12 @@ namespace HealthGateway.Laboratory.Services
         Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, bool isCovid19);
 
         /// <summary>
-        /// Returns a laboratory summary which contains a list of lab orders for the authenticated user.
+        /// Returns a List of lab orders for the authenticated user.
         /// It has a collection of one or more Lab Results depending on the tests ordered.
         /// </summary>
         /// <param name="hdid">The requested hdid.</param>
-        /// <returns>Returns laboratory summary of lab orders.</returns>
-        Task<RequestResult<LaboratorySummary>> GetLaboratorySummary(string hdid);
+        /// <returns>Returns List of lab orders.</returns>
+        Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string hdid);
 
         /// <summary>
         /// Post the rapid test for the given patient info.

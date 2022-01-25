@@ -153,9 +153,13 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratorySummary>> GetLaboratorySummary(string hdid)
+        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string hdid)
         {
-            RequestResult<LaboratorySummary> retVal = new();
+            RequestResult<IEnumerable<LaboratoryOrder>> retVal = new()
+            {
+                ResultStatus = ResultType.Error,
+                ResultError = UnauthorizedResultError(),
+            };
 
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
@@ -168,22 +172,19 @@ namespace HealthGateway.Laboratory.Services
                     if (delegateResult.ResultStatus == ResultType.Success)
                     {
                         retVal.ResultStatus = delegateResult.ResultStatus;
-                        retVal.ResourcePayload = LaboratorySummary.FromPhsaModel(delegateResult.ResourcePayload);
+                        retVal.ResourcePayload = LaboratoryOrder.FromPhsaModelList(delegateResult.ResourcePayload!.LabOrders);
                         retVal.PageIndex = delegateResult.PageIndex;
                         retVal.PageSize = delegateResult.PageSize;
-                        retVal.TotalResultCount = delegateResult.TotalResultCount;
-                        return retVal;
+                        retVal.TotalResultCount = delegateResult.ResourcePayload!.LabOrderCount;
                     }
                     else
                     {
                         retVal.ResultStatus = delegateResult.ResultStatus;
                         retVal.ResultError = delegateResult.ResultError;
-                        return retVal;
                     }
                 }
             }
 
-            retVal.ResultError = UnauthorizedResultError();
             return retVal;
         }
 
@@ -319,7 +320,7 @@ namespace HealthGateway.Laboratory.Services
             return retVal;
         }
 
-        private static RequestResultError? UnauthorizedResultError()
+        private static RequestResultError UnauthorizedResultError()
         {
             return new()
             {
