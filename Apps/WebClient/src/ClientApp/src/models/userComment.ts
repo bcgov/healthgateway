@@ -33,8 +33,8 @@ export const enum CommentEntryType {
     Immunization = "Imm",
     // The code representing COVID-19 Laboratory Orders.
     Covid19LaboratoryOrder = "Lab",
-    // The code representing Laboratory Orders.
-    LaboratoryOrder = "AllLab",
+    // The code representing all Laboratory Orders.
+    LaboratoryOrder = "ALO",
     // The code representing Encounter.
     Encounter = "Enc",
 }

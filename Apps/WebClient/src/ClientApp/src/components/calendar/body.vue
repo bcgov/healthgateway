@@ -7,6 +7,7 @@ import {
     faPills,
     faSyringe,
     faUserMd,
+    faVial,
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
@@ -16,6 +17,7 @@ import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrder
 import { DateWrapper } from "@/models/dateWrapper";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
+import LaboratoryOrderTimelineEntry from "@/models/laboratoryOrderTimelineEntry";
 import MedicationRequestTimelineEntry from "@/models/medicationRequestTimelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
@@ -23,7 +25,15 @@ import TimelineEntry, { DateGroup, EntryType } from "@/models/timelineEntry";
 
 import { CalendarEntry, CalendarWeek } from "./models";
 
-library.add(faClipboardList, faEdit, faFlask, faPills, faSyringe, faUserMd);
+library.add(
+    faClipboardList,
+    faEdit,
+    faFlask,
+    faPills,
+    faSyringe,
+    faUserMd,
+    faVial
+);
 
 @Component({})
 export default class CalendarBodyComponent extends Vue {
@@ -148,6 +158,9 @@ export default class CalendarBodyComponent extends Vue {
         if (event.type == EntryType.Covid19LaboratoryOrder) {
             return "flask";
         }
+        if (event.type == EntryType.LaboratoryOrder) {
+            return "vial";
+        }
         if (event.type == EntryType.Note) {
             return "edit";
         }
@@ -181,6 +194,8 @@ export default class CalendarBodyComponent extends Vue {
             return (entry as ImmunizationTimelineEntry).immunization.name;
         } else if (type == EntryType.Covid19LaboratoryOrder) {
             return (entry as Covid19LaboratoryOrderTimelineEntry).summaryTitle;
+        } else if (type == EntryType.LaboratoryOrder) {
+            return (entry as LaboratoryOrderTimelineEntry).commonName;
         } else if (type == EntryType.Note) {
             return (entry as NoteTimelineEntry).title;
         } else if (type == EntryType.Encounter) {
