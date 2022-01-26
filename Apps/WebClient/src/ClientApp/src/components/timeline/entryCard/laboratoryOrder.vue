@@ -52,17 +52,6 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
         return date.format("yyyy-MMM-dd, t");
     }
 
-    private getDownloadClasses(downloadLabel: string): string[] {
-        switch (downloadLabel?.toUpperCase()) {
-            case "INCOMPLETE":
-                return ["text-muted"];
-            case "FINAL":
-                return ["text-success"];
-            default:
-                return [];
-        }
-    }
-
     private getResultClasses(result: string): string[] {
         switch (result?.toUpperCase()) {
             case "OUT OF RANGE":
@@ -137,7 +126,6 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                     </strong>
                     <hg-button
                         variant="link"
-                        :class="getDownloadClasses(entry.downloadLabel)"
                         class="p-1 ml-1"
                         @click="showConfirmationModal()"
                     >
