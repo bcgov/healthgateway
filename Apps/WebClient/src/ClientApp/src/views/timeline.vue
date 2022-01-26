@@ -24,7 +24,8 @@ import Encounter from "@/models/encounter";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
-import { Covid19LaboratoryOrder } from "@/models/laboratory";
+import { Covid19LaboratoryOrder, LaboratoryOrder } from "@/models/laboratory";
+import LaboratoryOrderTimelineEntry from "@/models/laboratoryOrderTimelineEntry";
 import MedicationRequest from "@/models/MedicationRequest";
 import MedicationRequestTimelineEntry from "@/models/medicationRequestTimelineEntry";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
@@ -81,6 +82,9 @@ export default class TimelineView extends Vue {
         hdid: string;
     }) => Promise<void>;
 
+    @Action("retrieveLaboratoryOrders", { namespace: "laboratory" })
+    retrieveLaboratoryOrders!: (params: { hdid: string }) => Promise<void>;
+
     @Action("retrieveMedicationStatements", { namespace: "medication" })
     retrieveMedications!: (params: {
         hdid: string;
@@ -104,6 +108,9 @@ export default class TimelineView extends Vue {
 
     @Getter("covid19LaboratoryOrdersAreLoading", { namespace: "laboratory" })
     isCovid19LaboratoryLoading!: boolean;
+
+    @Getter("laboratoryOrdersAreLoading", { namespace: "laboratory" })
+    isLaboratoryLoading!: boolean;
 
     @Getter("isLoading", { namespace: "encounter" })
     isEncounterLoading!: boolean;
@@ -134,6 +141,9 @@ export default class TimelineView extends Vue {
 
     @Getter("covid19LaboratoryOrders", { namespace: "laboratory" })
     covid19LaboratoryOrders!: Covid19LaboratoryOrder[];
+
+    @Getter("laboratoryOrders", { namespace: "laboratory" })
+    laboratoryOrders!: LaboratoryOrder[];
 
     @Getter("notes", { namespace: "note" })
     userNotes!: UserNote[];
@@ -211,6 +221,13 @@ export default class TimelineView extends Vue {
             );
         }
 
+        // Add the Laboratory entries to the timeline list
+        for (let order of this.laboratoryOrders) {
+            timelineEntries.push(
+                new LaboratoryOrderTimelineEntry(order, this.getEntryComments)
+            );
+        }
+
         // Add the Encounter entries to the timeline list
         for (let encounter of this.patientEncounters) {
             timelineEntries.push(
@@ -253,6 +270,7 @@ export default class TimelineView extends Vue {
             !this.isImmunizationLoading &&
             !this.isImmunizationDeferred &&
             !this.isCovid19LaboratoryLoading &&
+            !this.isLaboratoryLoading &&
             !this.isEncounterLoading &&
             !this.isNoteLoading &&
             !this.isCommentLoading
@@ -283,6 +301,7 @@ export default class TimelineView extends Vue {
             this.retrieveMedicationRequests({ hdid: this.user.hdid }),
             this.retrieveImmunizations({ hdid: this.user.hdid }),
             this.retrieveCovid19LaboratoryOrders({ hdid: this.user.hdid }),
+            this.retrieveLaboratoryOrders({ hdid: this.user.hdid }),
             this.retrieveEncounters({ hdid: this.user.hdid }),
             this.retrieveNotes({ hdid: this.user.hdid }),
             this.retrieveComments({ hdid: this.user.hdid }),

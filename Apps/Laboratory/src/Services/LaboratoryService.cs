@@ -172,6 +172,7 @@ namespace HealthGateway.Laboratory.Services
                     if (delegateResult.ResultStatus == ResultType.Success && delegateResult.ResourcePayload != null)
                     {
                         retVal.ResultStatus = delegateResult.ResultStatus;
+                        retVal.ResultError = null;
                         retVal.ResourcePayload = LaboratoryOrder.FromPhsaModelList(delegateResult.ResourcePayload.LabOrders);
                         retVal.PageIndex = delegateResult.PageIndex;
                         retVal.PageSize = delegateResult.PageSize;
