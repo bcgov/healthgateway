@@ -313,6 +313,11 @@ export default class TimelineView extends Vue {
         >
             <div class="text-center">Retrieving your health records</div>
         </b-toast>
+        <div
+            v-if="!isFullyLoaded"
+            v-show="false"
+            data-testid="loading-in-progress"
+        />
         <BreadcrumbComponent :items="breadcrumbItems" />
         <b-row>
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
