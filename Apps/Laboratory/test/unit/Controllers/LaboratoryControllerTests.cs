@@ -17,7 +17,6 @@ namespace HealthGateway.LaboratoryTests
 {
     using System;
     using System.Collections.Generic;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -25,10 +24,6 @@ namespace HealthGateway.LaboratoryTests
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Services;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -63,6 +58,32 @@ namespace HealthGateway.LaboratoryTests
 
             // Act
             RequestResult<IEnumerable<Covid19Order>> actual = await controller.GetCovid19Orders(Hdid).ConfigureAwait(true);
+
+            // Verify
+            Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
+        }
+
+        /// <summary>
+        /// Test for GetLaboratoryOrders.
+        /// </summary>
+        /// <returns>Task.</returns>
+        [Fact]
+        public async Task ShouldGetLaboratoryOrders()
+        {
+            Mock<ILaboratoryService> svcMock = new();
+            svcMock.Setup(s => s.GetLaboratoryOrders(Hdid)).ReturnsAsync(new RequestResult<IEnumerable<LaboratoryOrder>>()
+            {
+                ResultStatus = ResultType.Success,
+                TotalResultCount = 0,
+                ResourcePayload = new List<LaboratoryOrder>(),
+            });
+
+            LaboratoryController controller = new(
+                new Mock<ILogger<LaboratoryController>>().Object,
+                svcMock.Object);
+
+            // Act
+            RequestResult<IEnumerable<LaboratoryOrder>> actual = await controller.GetLaboratoryOrders(Hdid).ConfigureAwait(true);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Success);

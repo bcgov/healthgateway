@@ -18,30 +18,20 @@ namespace HealthGateway.LaboratoryTests
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Net;
+    using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.AccessManagement.Authentication;
-    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Laboratory.Delegates;
-    using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;
     using HealthGateway.LaboratoryTests.Mock;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Caching.Memory;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -133,6 +123,173 @@ namespace HealthGateway.LaboratoryTests
         }
 
         /// <summary>
+        /// GetLaboratoryOrders test.
+        /// </summary>
+        /// <param name="expectedResultType"> result type from service.</param>
+        [Theory]
+        [InlineData(ResultType.Success)]
+        [InlineData(ResultType.Error)]
+        public void ShouldGetLaboratoryOrders(ResultType expectedResultType)
+        {
+            string expectedReportId1 = "341L56330T278085";
+            string expectedReportId2 = "341L54565T276529";
+            int expectedOrderCount = 2;
+            int expectedLabTestCount = 1;
+
+            // Arrange
+            PhsaLaboratorySummary laboratorySummary = new PhsaLaboratorySummary()
+            {
+                LastRefreshDate = DateTime.Now,
+                LabOrders = new List<PhsaLaboratoryOrder>()
+                {
+                    new PhsaLaboratoryOrder()
+                    {
+                        ReportId = expectedReportId1,
+                        LabPdfGuid = Guid.NewGuid(),
+                        CommonName = "Lab Test",
+                        OrderingProvider = "PLISBVCC, TREVOR",
+                        CollectionDateTime = DateTime.Now,
+                        PdfReportAvailable = true,
+                        LabBatteries = new List<PhsaLaboratoryTest>()
+                        {
+                            new PhsaLaboratoryTest()
+                            {
+                                BatteryType = "Gas Panel & Oxyhemoglobin; Arterial",
+                                Loinc = "XXX-2133",
+                                ObxId = "341L52331T275607ABGO",
+                                OutOfRange = true,
+                                PlisTestStatus = "Final",
+                            },
+                        },
+                    },
+                    new PhsaLaboratoryOrder()
+                    {
+                        ReportId = expectedReportId2,
+                        LabPdfGuid = Guid.NewGuid(),
+                        CommonName = "Lab Test",
+                        OrderingProvider = "PLISBVCC, TREVOR",
+                        CollectionDateTime = DateTime.Now,
+                        PdfReportAvailable = true,
+                        LabBatteries = new List<PhsaLaboratoryTest>()
+                        {
+                            new PhsaLaboratoryTest()
+                            {
+                                BatteryType = "Gas Panel & Oxyhemoglobin; Arterial",
+                                Loinc = "XXX-2133",
+                                ObxId = "341L52331T275607ABGO",
+                                OutOfRange = true,
+                                PlisTestStatus = "Final",
+                            },
+                        },
+                    },
+                },
+            };
+
+            RequestResult<PhsaLaboratorySummary> delegateResult = new()
+            {
+                ResultStatus = expectedResultType,
+                PageSize = 100,
+                PageIndex = 1,
+                ResourcePayload = laboratorySummary,
+            };
+
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
+
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
+
+            // Act
+            Task<RequestResult<IEnumerable<LaboratoryOrder>>> actualResult = service.GetLaboratoryOrders(HDID);
+
+            // Assert
+            if (expectedResultType == ResultType.Success)
+            {
+                Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
+                Assert.Equal(expectedOrderCount, actualResult.Result.TotalResultCount);
+                Assert.Equal(expectedOrderCount, actualResult.Result.ResourcePayload.Count());
+                Assert.Equal(expectedReportId1, actualResult.Result.ResourcePayload.ToList()[0].ReportId);
+                Assert.Equal(expectedLabTestCount, actualResult.Result.ResourcePayload.ToList()[0].LaboratoryTests.Count);
+                Assert.Equal(expectedReportId2, actualResult.Result.ResourcePayload.ToList()[1].ReportId);
+                Assert.Equal(expectedLabTestCount, actualResult.Result.ResourcePayload.ToList()[1].LaboratoryTests.Count);
+            }
+            else
+            {
+                Assert.Equal(ResultType.Error, actualResult.Result.ResultStatus);
+            }
+        }
+
+        /// <summary>
+        /// GetLaboratoryOrders test given delegate returns null list.
+        /// </summary>
+        [Fact]
+        public void ShouldGetLaboratoryOrdersGivenNullListReturnsZeroCount()
+        {
+            int expectedOrderCount = 0;
+
+            // Arrange
+            PhsaLaboratorySummary laboratorySummary = new PhsaLaboratorySummary()
+            {
+                LastRefreshDate = DateTime.Now,
+                LabOrders = null,
+            };
+
+            RequestResult<PhsaLaboratorySummary> delegateResult = new()
+            {
+                ResultStatus = ResultType.Success,
+                PageSize = 100,
+                PageIndex = 1,
+                ResourcePayload = laboratorySummary,
+            };
+
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
+
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
+
+            // Act
+            Task<RequestResult<IEnumerable<LaboratoryOrder>>> actualResult = service.GetLaboratoryOrders(HDID);
+
+            // Assert
+            Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
+            Assert.Equal(expectedOrderCount, actualResult.Result.TotalResultCount);
+            Assert.Equal(expectedOrderCount, actualResult.Result.ResourcePayload.Count());
+        }
+
+        /// <summary>
+        /// GetLaboratoryOrders test given delegate returns empty list.
+        /// </summary>
+        [Fact]
+        public void ShouldGetLaboratoryOrdersGivenEmptyListReturnsZeroCount()
+        {
+            int expectedOrderCount = 0;
+
+            // Arrange
+            PhsaLaboratorySummary laboratorySummary = new PhsaLaboratorySummary()
+            {
+                LastRefreshDate = DateTime.Now,
+                LabOrders = new List<PhsaLaboratoryOrder>(),
+            };
+
+            RequestResult<PhsaLaboratorySummary> delegateResult = new()
+            {
+                ResultStatus = ResultType.Success,
+                PageSize = 100,
+                PageIndex = 1,
+                ResourcePayload = laboratorySummary,
+            };
+
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
+
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
+
+            // Act
+            Task<RequestResult<IEnumerable<LaboratoryOrder>>> actualResult = service.GetLaboratoryOrders(HDID);
+
+            // Assert
+            Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
+            Assert.Equal(expectedOrderCount, actualResult.Result.TotalResultCount);
+            Assert.Equal(expectedOrderCount, actualResult.Result.ResourcePayload.Count());
+        }
+
+        /// <summary>
         /// GetLabReport test.
         /// </summary>
         [Fact]
@@ -156,7 +313,7 @@ namespace HealthGateway.LaboratoryTests
 
             ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
 
-            Task<RequestResult<LaboratoryReport>> actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, It.IsAny<bool>());
+            Task<RequestResult<LaboratoryReport>> actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, true);
 
             Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
             Assert.Equal(MockedReportContent, actualResult.Result.ResourcePayload!.Report);

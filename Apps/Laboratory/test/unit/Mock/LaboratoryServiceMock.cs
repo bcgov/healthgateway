@@ -127,6 +127,26 @@ namespace HealthGateway.LaboratoryTests.Mock
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="LaboratoryServiceMock"/> class.
+        /// </summary>
+        /// <param name="delegateResult">return object of the delegate service.</param>
+        /// <param name="token">token needed for authentication.</param>
+        /// <param name="mockHttpContextAccessor">IHttpContextAccessor Mock.</param>
+        /// <param name="claimsPrincipal">exposes a collection of identities.</param>
+        public LaboratoryServiceMock(RequestResult<PhsaLaboratorySummary> delegateResult, Mock<IHttpContextAccessor> mockHttpContextAccessor, string token, ClaimsPrincipal claimsPrincipal)
+        {
+            SetupAuthenticationMock(mockHttpContextAccessor, token, claimsPrincipal);
+
+            this.laboratoryService = new LaboratoryService(
+                this.configuration,
+                new Mock<ILogger<LaboratoryService>>().Object,
+                new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult)).Object,
+                null!,
+                null!,
+                mockHttpContextAccessor.Object);
+        }
+
+        /// <summary>
         /// Get the Laboratory Service Mock Instance.
         /// </summary>
         /// <returns>LaboratoryService.</returns>

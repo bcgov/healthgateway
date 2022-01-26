@@ -169,13 +169,13 @@ namespace HealthGateway.Laboratory.Services
                 if (accessToken != null)
                 {
                     RequestResult<PhsaLaboratorySummary> delegateResult = await this.laboratoryDelegate.GetLaboratorySummary(hdid, accessToken).ConfigureAwait(true);
-                    if (delegateResult.ResultStatus == ResultType.Success)
+                    if (delegateResult.ResultStatus == ResultType.Success && delegateResult.ResourcePayload != null)
                     {
                         retVal.ResultStatus = delegateResult.ResultStatus;
-                        retVal.ResourcePayload = LaboratoryOrder.FromPhsaModelList(delegateResult.ResourcePayload!.LabOrders);
+                        retVal.ResourcePayload = LaboratoryOrder.FromPhsaModelList(delegateResult.ResourcePayload.LabOrders);
                         retVal.PageIndex = delegateResult.PageIndex;
                         retVal.PageSize = delegateResult.PageSize;
-                        retVal.TotalResultCount = delegateResult.ResourcePayload!.LabOrderCount;
+                        retVal.TotalResultCount = delegateResult.ResourcePayload.LabOrders?.Count() ?? 0;
                     }
                     else
                     {

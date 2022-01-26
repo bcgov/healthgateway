@@ -66,7 +66,7 @@ public class LaboratoryOrder
     /// Gets or sets the date time when the lab collection took place.
     /// </summary>
     [JsonPropertyName("collectionDateTime")]
-    public DateTime? CollectionDateTime { get; set; }
+    public DateTime CollectionDateTime { get; set; }
 
     /// <summary>
     /// Gets or sets a value for common name.
@@ -128,9 +128,9 @@ public class LaboratoryOrder
     /// <returns>A collection of COVID-19 order models.</returns>
     public static IEnumerable<LaboratoryOrder> FromPhsaModelList(IEnumerable<PhsaLaboratoryOrder>? phsaOrders)
     {
-        List<LaboratoryOrder> orders = phsaOrders != null
-            ? phsaOrders.Select(LaboratoryOrder.FromPhsaModel).ToList()
-            : new List<LaboratoryOrder>();
+        IEnumerable<LaboratoryOrder> orders = phsaOrders != null
+            ? phsaOrders.Select(LaboratoryOrder.FromPhsaModel)
+            : Enumerable.Empty<LaboratoryOrder>();
         return orders;
     }
 }
