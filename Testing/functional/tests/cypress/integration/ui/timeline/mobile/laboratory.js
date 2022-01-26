@@ -5,7 +5,7 @@ describe("Laboratory", () => {
         cy.viewport("iphone-6");
         cy.restoreAuthCookies();
         cy.enableModules("Laboratory");
-        cy.intercept("GET", "**/v1/api/Laboratory*", {
+        cy.intercept("GET", "**/v1/api/Laboratory/Covid19Orders*", {
             fixture: "LaboratoryService/laboratory.json",
         });
         cy.login(
