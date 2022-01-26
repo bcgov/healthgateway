@@ -58,5 +58,14 @@ namespace HealthGateway.LaboratoryTests.Mock
         {
             this.Setup(s => s.GetPublicTestResults(token, It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<DateOnly>())).Returns(Task.FromResult(delegateResult));
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LaboratoryDelegateMock"/> class.
+        /// </summary>
+        /// <param name="delegateResult">List of Laboratory Orders.</param>
+        public LaboratoryDelegateMock(RequestResult<PhsaLaboratorySummary> delegateResult)
+        {
+            this.Setup(s => s.GetLaboratorySummary(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+        }
     }
 }
