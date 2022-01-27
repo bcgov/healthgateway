@@ -24,7 +24,7 @@ describe("Patient Service", () => {
         });
     });
 
-    it("Verify Laboratory Unauthorized", () => {
+    it("Verify COVID-19 Orders Unauthorized", () => {
         cy.get("@config").then((config) => {
             cy.log(
                 `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
@@ -39,7 +39,7 @@ describe("Patient Service", () => {
         });
     });
 
-    it("Verify Laboratory Expired Delegate Forbidden", () => {
+    it("Verify COVID-19 Orders Expired Delegate Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
@@ -63,7 +63,7 @@ describe("Patient Service", () => {
         });
     });
 
-    it("Verify Laboratory Authorized", () => {
+    it("Verify COVID-19 Orders Authorized", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
@@ -88,7 +88,7 @@ describe("Patient Service", () => {
         });
     });
 
-    it("Verify Laboratory Delegate Authorized", () => {
+    it("Verify COVID-19 Orders Delegate Authorized", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {

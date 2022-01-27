@@ -1,6 +1,6 @@
 const { AuthMethod } = require("../../../../support/constants");
 
-function selectShouldBeVisible(selector) {
+function selectorShouldBeVisible(selector) {
     cy.get(selector).should("be.visible");
 }
 
@@ -22,16 +22,18 @@ describe("Laboratory Orders", () => {
             .first()
             .click()
             .then(() => {
-                selectShouldBeVisible("[data-testid=backBtn]");
-                selectShouldBeVisible("[data-testid=entryCardDetailsTitle]");
-                selectShouldBeVisible(
+                selectorShouldBeVisible("[data-testid=backBtn]");
+                selectorShouldBeVisible("[data-testid=entryCardDetailsTitle]");
+                selectorShouldBeVisible(
                     "[data-testid=laboratoryHeaderResultCount]"
                 );
-                selectShouldBeVisible("[data-testid=laboratoryCollectionDate]");
-                selectShouldBeVisible(
+                selectorShouldBeVisible(
+                    "[data-testid=laboratoryCollectionDate]"
+                );
+                selectorShouldBeVisible(
                     "[data-testid=laboratoryOrderingProvider]"
                 );
-                selectShouldBeVisible("[data-testid=laboratoryReportingLab]");
+                selectorShouldBeVisible("[data-testid=laboratoryReportingLab]");
             });
 
         cy.get("[data-testid=laboratoryResultTable]")
