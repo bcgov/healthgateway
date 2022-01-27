@@ -163,6 +163,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                 sticky-header
                 head-variant="light"
                 class="mt-4 mb-2"
+                data-testid="laboratoryResultTable"
             >
                 <template #cell(result)="data">
                     <strong :class="getResultClasses(data.value)">
