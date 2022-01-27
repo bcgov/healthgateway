@@ -31,6 +31,7 @@ export class RestLaboratoryService implements ILaboratoryService {
     private baseUri = "";
     private http!: IHttpDelegate;
     private isEnabled = false;
+    private isCovid19Enabled = false;
 
     public initialize(
         config: ExternalConfiguration,
@@ -38,7 +39,8 @@ export class RestLaboratoryService implements ILaboratoryService {
     ): void {
         this.baseUri = config.serviceEndpoints["Laboratory"];
         this.http = http;
-        this.isEnabled = config.webClient.modules["Laboratory"];
+        this.isEnabled = config.webClient.modules["AllLaboratory"];
+        this.isCovid19Enabled = config.webClient.modules["Laboratory"];
     }
 
     getPublicCovid19Tests(
@@ -47,7 +49,7 @@ export class RestLaboratoryService implements ILaboratoryService {
         collectionDate: string
     ): Promise<RequestResult<PublicCovidTestResponseResult>> {
         return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
+            if (!this.isCovid19Enabled) {
                 reject();
                 return;
             }
@@ -79,7 +81,7 @@ export class RestLaboratoryService implements ILaboratoryService {
         hdid: string
     ): Promise<RequestResult<Covid19LaboratoryOrder[]>> {
         return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
+            if (!this.isCovid19Enabled) {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
@@ -149,7 +151,10 @@ export class RestLaboratoryService implements ILaboratoryService {
         isCovid19: boolean
     ): Promise<RequestResult<LaboratoryReport>> {
         return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
+            if (
+                (!this.isEnabled && !isCovid19) ||
+                (!this.isCovid19Enabled && isCovid19)
+            ) {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
@@ -183,7 +188,7 @@ export class RestLaboratoryService implements ILaboratoryService {
         request: AuthenticatedRapidTestRequest
     ): Promise<RequestResult<AuthenticatedRapidTestResponse>> {
         return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
+            if (!this.isCovid19Enabled) {
                 reject();
                 return;
             }
