@@ -30,6 +30,9 @@ describe("Filters", () => {
         cy.get("[data-testid=MedicationCount]")
             .should("be.visible")
             .contains(countRegex);
+        cy.get("[data-testid=AllLaboratoryCount]")
+            .should("be.visible")
+            .contains(countRegex);
         cy.get("[data-testid=LaboratoryCount]")
             .should("be.visible")
             .contains(countRegex);
@@ -176,7 +179,7 @@ describe("Filters", () => {
         verifyActiveFilter("1");
     });
 
-    it("Filter Laboratory", () => {
+    it("Filter COVID-19", () => {
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=filterContainer]").contains("Clear").click();
@@ -187,6 +190,22 @@ describe("Filters", () => {
         cy.get("[data-testid=noteTitle]").should("not.exist");
         cy.get("[data-testid=immunizationTitle]").should("not.exist");
         cy.get("[data-testid=laboratoryTitle]").should("be.visible");
+        cy.get("[data-testid=medicationTitle]").should("not.exist");
+        cy.get("[data-testid=medicationrequestTitle]").should("not.exist");
+        verifyActiveFilter("1");
+    });
+
+    it("Filter Laboratory", () => {
+        cy.get("[data-testid=filterContainer]").should("not.exist");
+        cy.get("[data-testid=filterDropdown]").click();
+        cy.get("[data-testid=filterContainer]").contains("Clear").click();
+        cy.get("[data-testid=AllLaboratory-filter]").click({ force: true });
+        cy.get("[data-testid=btnFilterApply]").click();
+
+        cy.get("[data-testid=encounterTitle]").should("not.exist");
+        cy.get("[data-testid=noteTitle]").should("not.exist");
+        cy.get("[data-testid=immunizationTitle]").should("not.exist");
+        cy.get("[data-testid=alllaboratoryTitle]").should("be.visible");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
         cy.get("[data-testid=medicationrequestTitle]").should("not.exist");
         verifyActiveFilter("1");

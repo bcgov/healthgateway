@@ -11,7 +11,7 @@
             "reportAvailable": false,
             "laboratoryTests": [
                 {
-                    "batteryType": "Alanine Aminotransferase",
+                    "batteryType": "Alanine Aminotransferase Test",
                     "obxId": "341L56330T278085ALT",
                     "outOfRange": false,
                     "loinc": null,

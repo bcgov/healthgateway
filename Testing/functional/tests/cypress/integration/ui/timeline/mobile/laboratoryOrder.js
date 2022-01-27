@@ -40,16 +40,26 @@ describe("Laboratory Orders", () => {
 
         cy.log("Verifying partial status");
         cy.get("[data-testid=laboratoryResultTable]").then(() => {
-            // Check the 2nd column for the pending status
-            cy.contains("td:nth-child(2)", "Pending")
+            cy.contains("td", "Alanine Aminotransferase Test")
                 .parent("tr")
-                .children()
-                .first();
-            // check the 3rd column for the result
-            cy.contains("td:nth-child(3)", "Partial")
-                .parent("tr")
-                .children()
-                .first();
+                .then(() => {
+                    // Check the Result Column
+                    cy.get("td:nth-child(2)")
+                        .eq(1)
+                        .then(($result) => {
+                            cy.log($result.text().trim());
+                            let result = $result.text().trim();
+                            expect(result).equal("Pending");
+                        });
+                    // Check the Status Column
+                    cy.get("td:nth-child(3)")
+                        .eq(1)
+                        .then(($status) => {
+                            cy.log($status.text().trim());
+                            let status = $status.text().trim();
+                            expect(status).equal("Partial");
+                        });
+                });
         });
 
         cy.get("[data-testid=backBtn]").click();
