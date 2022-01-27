@@ -70,6 +70,8 @@ const ContactUsView = () =>
 const DependentsView = () =>
     import(/* webpackChunkName: "dependents" */ "@/views/dependents.vue");
 const FAQView = () => import(/* webpackChunkName: "faq" */ "@/views/faq.vue");
+const PCRTestView = () =>
+    import(/* webpackChunkName: "pcrTest" */ "@/views/pcrTest.vue");
 
 export enum UserState {
     unauthenticated = "unauthenticated",
@@ -242,6 +244,19 @@ const routes = [
                 UserState.pendingDeletion,
             ],
             requiredModules: [ClientModule.PublicLaboratoryResult],
+        },
+    },
+    {
+        path: "/pcrtest/:serialNumber",
+        component: PCRTestView,
+        props: true,
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.registered,
+                UserState.notRegistered,
+                UserState.pendingDeletion,
+            ],
         },
     },
     {
