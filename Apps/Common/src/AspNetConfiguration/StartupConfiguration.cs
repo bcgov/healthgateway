@@ -29,7 +29,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     public class StartupConfiguration
     {
         private readonly IWebHostEnvironment environment;
-        private readonly IConfiguration configuration;
+        public readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StartupConfiguration"/> class.

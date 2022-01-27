@@ -20,8 +20,6 @@ namespace HealthGateway.Laboratory.Services
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authentication;
-    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
@@ -34,55 +32,42 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Parsers;
-    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Refit;
 
     /// <inheritdoc/>
     public class LaboratoryService : ILaboratoryService
     {
-        private const string LabConfigSectionKey = "Laboratory";
-        private const string AuthConfigSectionName = "ClientAuthentication";
-        private const string TokenCacheKey = "TokenCacheKey";
+        /// <summary>
+        /// The configuration section name for Laboratory.
+        /// </summary>
+        public const string LabConfigSectionKey = "Laboratory";
 
         private readonly ILaboratoryDelegate laboratoryDelegate;
-        private readonly IAuthenticationDelegate authDelegate;
-        private readonly IMemoryCache memoryCache;
+        private readonly ITokenCacheService tokenCacheService;
         private readonly ILogger<LaboratoryService> logger;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly LaboratoryConfig labConfig;
-        private readonly Uri tokenUri;
-        private readonly int tokenCacheMinutes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryService"/> class.
         /// </summary>
-        /// <param name="configuration">The configuration to use.</param>
+        /// <param name="configuration">The injected configuration.</param>
         /// <param name="logger">The injected logger.</param>
         /// <param name="laboratoryDelegateFactory">The laboratory delegate factory.</param>
-        /// <param name="authDelegate">The OAuth2 authentication service.</param>
-        /// <param name="memoryCache">The cache to use to reduce lookups.</param>
+        /// <param name="tokenCacheService">The cache to use to reduce lookups.</param>
         public LaboratoryService(
             IConfiguration configuration,
             ILogger<LaboratoryService> logger,
             ILaboratoryDelegateFactory laboratoryDelegateFactory,
-            IAuthenticationDelegate authDelegate,
-            IMemoryCache memoryCache)
+            ITokenCacheService tokenCacheService)
         {
+            this.logger = logger;
             this.laboratoryDelegate = laboratoryDelegateFactory.CreateInstance();
-            this.authDelegate = authDelegate;
-
-            IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
-            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
-            this.tokenCacheMinutes = configSection.GetValue<int>("TokenCacheExpireMinutes", 20);
-            this.tokenRequest = new ClientCredentialsTokenRequest();
-            configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
+            this.tokenCacheService = tokenCacheService;
 
             this.labConfig = new();
             configuration.Bind(LabConfigSectionKey, this.labConfig);
-
-            this.memoryCache = memoryCache;
-            this.logger = logger;
         }
 
         /// <inheritdoc/>
@@ -187,7 +172,7 @@ namespace HealthGateway.Laboratory.Services
                 return retVal;
             }
 
-            string? accessToken = this.RetrieveAccessToken();
+            string? accessToken = this.tokenCacheService.RetrieveAccessToken();
             if (string.IsNullOrEmpty(accessToken))
             {
                 this.logger.LogCritical("The auth token is null or empty - unable to cache or proceed");
@@ -240,25 +225,6 @@ namespace HealthGateway.Laboratory.Services
             }
 
             return retVal;
-        }
-
-        private string? RetrieveAccessToken()
-        {
-            this.memoryCache.TryGetValue(TokenCacheKey, out string? accessToken);
-            if (accessToken == null)
-            {
-                this.logger.LogInformation("Access token not found in cache");
-                accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest).AccessToken;
-                if (!string.IsNullOrEmpty(accessToken))
-                {
-                    this.logger.LogInformation("Attempting to store Access token in cache");
-                    MemoryCacheEntryOptions cacheEntryOptions = new();
-                    cacheEntryOptions.AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddMinutes(this.tokenCacheMinutes));
-                    this.memoryCache.Set(TokenCacheKey, accessToken, cacheEntryOptions);
-                }
-            }
-
-            return accessToken;
         }
     }
 }
