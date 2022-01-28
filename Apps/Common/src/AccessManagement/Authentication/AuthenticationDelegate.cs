@@ -34,10 +34,16 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     /// </summary>
     public class AuthenticationDelegate : IAuthenticationDelegate
     {
-        private const string AuthConfigSectionName = "AuthCache";
+        /// <summary>
+        /// The default configuration section to retrieve auth information from.
+        /// </summary>
+        public const string DefaultAuthConfigSectionName = "ClientAuthentication";
+
+        private const string CacheConfigSectionName = "AuthCache";
 
         private readonly ILogger<IAuthenticationDelegate> logger;
         private readonly IHttpClientService httpClientService;
+        private readonly IConfiguration? configuration;
         private readonly IMemoryCache? memoryCache;
         private readonly int tokenCacheMinutes;
         private readonly IHttpContextAccessor? httpContextAccessor;
@@ -61,15 +67,13 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
+            this.configuration = configuration;
             this.memoryCache = memoryCache;
             this.httpContextAccessor = httpContextAccessor;
 
-            IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
+            IConfigurationSection? configSection = configuration?.GetSection(CacheConfigSectionName);
             this.tokenCacheMinutes = configSection?.GetValue<int>("TokenCacheExpireMinutes", 0) ?? 0;
-            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
-            this.tokenCacheMinutes = configSection.GetValue<int>("TokenCacheExpireMinutes", 20);
-            this.tokenRequest = new();
-            configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
+            (this.tokenUri, this.tokenRequest) = this.GetConfiguration(DefaultAuthConfigSectionName);
         }
 
         /// <inheritdoc/>
@@ -90,13 +94,30 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <inheritdoc/>
         public string? AccessTokenAsUser()
         {
-            return this.AuthenticateAsUser(this.tokenUri, this.tokenRequest, true)?.AccessToken;
+            return this.AccessTokenAsUser(this.tokenUri, this.tokenRequest);
+        }
+
+        /// <inheritdoc/>
+        public string? AccessTokenAsUser(string sectionName)
+        {
+            (Uri tokenUri, ClientCredentialsTokenRequest tokenRequest) = this.GetConfiguration(sectionName);
+            return this.AccessTokenAsUser(tokenUri, tokenRequest);
         }
 
         /// <inheritdoc/>
         public string? AccessTokenAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = true)
         {
-            return this.AuthenticateAsUser(tokenUri, tokenRequest, cacheEnabled)?.AccessToken;
+            string? accessToken = null;
+            try
+            {
+                accessToken = this.AuthenticateAsUser(tokenUri, tokenRequest, cacheEnabled)?.AccessToken;
+            }
+            catch (InvalidOperationException e)
+            {
+                this.logger.LogDebug($"Internal issue - returning null access token {e}");
+            }
+
+            return accessToken;
         }
 
         /// <inheritdoc/>
@@ -161,6 +182,15 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             return accessToken;
         }
 
+        private (Uri TokenUri, ClientCredentialsTokenRequest TokenRequest) GetConfiguration(string sectionName)
+        {
+            IConfigurationSection? configSection = this.configuration?.GetSection(sectionName);
+            Uri configUri = configSection.GetValue<Uri>(@"TokenUri");
+            ClientCredentialsTokenRequest configTokenRequest = new();
+            configSection.Bind(configTokenRequest); // Client ID, Client Secret, Audience, Username, Password
+            return (configUri, configTokenRequest);
+        }
+
         private JWTModel? ClientCredentialsGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
             JWTModel? authModel = null;
@@ -187,6 +217,10 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse)!;
             }
             catch (HttpRequestException e)
+            {
+                this.logger.LogError($"Error Message {e.Message}");
+            }
+            catch (InvalidOperationException e)
             {
                 this.logger.LogError($"Error Message {e.Message}");
             }
@@ -226,6 +260,10 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 }
             }
             catch (HttpRequestException e)
+            {
+                this.logger.LogError($"Error Message {e.Message}");
+            }
+            catch (InvalidOperationException e)
             {
                 this.logger.LogError($"Error Message {e.Message}");
             }

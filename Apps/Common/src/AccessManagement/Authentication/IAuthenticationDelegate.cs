@@ -35,10 +35,17 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         JWTModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest);
 
         /// <summary>
-        /// Authenticates a resource owner user with direct grant from configuration.
+        /// Authenticates a resource owner user with direct grant from the default configuration section.
         /// </summary>
         /// <returns>The access token for the user information provided in configuration.</returns>
         string? AccessTokenAsUser();
+
+        /// <summary>
+        /// Authenticates a resource owner user with direct grant from a defined configuration section.
+        /// </summary>
+        /// <param name="sectionName">The configuration section used to lookup values.</param>
+        /// <returns>The access token for the user information provided in configuration.</returns>
+        string? AccessTokenAsUser(string sectionName);
 
         /// <summary>
         /// Authenticates a resource owner user with direct grant, no user intervention.

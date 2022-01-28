@@ -3,7 +3,10 @@ import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";
 import { StringISODate } from "@/models/dateWrapper";
 import {
+    Covid19LaboratoryOrder,
+    Covid19LaboratoryOrderResult,
     LaboratoryOrder,
+    LaboratoryOrderResult,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import RequestResult, { ResultError } from "@/models/requestResult";
@@ -17,10 +20,105 @@ import EventTracker from "@/utility/eventTracker";
 import { LaboratoryActions } from "./types";
 
 export const actions: LaboratoryActions = {
-    retrieve(
+    retrieveCovid19LaboratoryOrders(
         context,
         params: { hdid: string }
-    ): Promise<RequestResult<LaboratoryOrder[]>> {
+    ): Promise<RequestResult<Covid19LaboratoryOrderResult>> {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const laboratoryService: ILaboratoryService =
+            container.get<ILaboratoryService>(
+                SERVICE_IDENTIFIER.LaboratoryService
+            );
+
+        return new Promise((resolve, reject) => {
+            const covid19LaboratoryOrders: Covid19LaboratoryOrder[] =
+                context.getters.covid19LaboratoryOrders;
+            if (
+                context.state.authenticatedCovid19.status === LoadStatus.LOADED
+            ) {
+                logger.debug(
+                    "COVID-19 Laboratory Orders found stored, not querying!"
+                );
+                resolve({
+                    pageIndex: 0,
+                    pageSize: 0,
+                    resourcePayload: {
+                        loaded: true,
+                        retryin: 0,
+                        orders: covid19LaboratoryOrders,
+                    },
+                    resultStatus: ResultType.Success,
+                    totalResultCount: covid19LaboratoryOrders.length,
+                });
+            } else {
+                logger.debug("Retrieving COVID-19 Laboratory Orders");
+                context.commit("setCovid19LaboratoryOrdersRequested");
+                laboratoryService
+                    .getCovid19LaboratoryOrders(params.hdid)
+                    .then((result) => {
+                        const payload = result.resourcePayload;
+                        if (result.resultStatus === ResultType.Success) {
+                            EventTracker.loadData(
+                                EntryType.Covid19LaboratoryOrder,
+                                result.totalResultCount
+                            );
+                            context.commit(
+                                "setCovid19LaboratoryOrders",
+                                payload.orders
+                            );
+                            resolve(result);
+                        } else if (
+                            result.resultError?.actionCode ===
+                                ActionType.Refresh &&
+                            !payload.loaded &&
+                            payload.retryin > 0
+                        ) {
+                            logger.info(
+                                "COVID-19 Laboratory Orders not loaded"
+                            );
+                            setTimeout(() => {
+                                logger.info(
+                                    "Re-querying for COVID-19 Laboratory Orders"
+                                );
+                                context.dispatch(
+                                    "retrieveCovid19LaboratoryOrders",
+                                    {
+                                        hdid: params.hdid,
+                                    }
+                                );
+                            }, payload.retryin);
+                            resolve(result);
+                        } else {
+                            context.dispatch(
+                                "handleCovid19LaboratoryError",
+                                result.resultError
+                            );
+                            reject(result.resultError);
+                        }
+                    })
+                    .catch((error) => {
+                        context.dispatch("handleCovid19LaboratoryError", error);
+                        reject(error);
+                    });
+            }
+        });
+    },
+    handleCovid19LaboratoryError(context, error: ResultError) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
+        logger.error(`ERROR: ${JSON.stringify(error)}`);
+        context.commit("covid19LaboratoryError", error);
+
+        context.dispatch(
+            "errorBanner/addResultError",
+            { message: "Fetch COVID-19 Laboratory Orders Error", error },
+            { root: true }
+        );
+    },
+    retrieveLaboratoryOrders(
+        context,
+        params: { hdid: string }
+    ): Promise<RequestResult<LaboratoryOrderResult>> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         const laboratoryService: ILaboratoryService =
             container.get<ILaboratoryService>(
@@ -31,43 +129,67 @@ export const actions: LaboratoryActions = {
             const laboratoryOrders: LaboratoryOrder[] =
                 context.getters.laboratoryOrders;
             if (context.state.authenticated.status === LoadStatus.LOADED) {
-                logger.debug(`Laboratory found stored, not querying!`);
+                logger.debug("Laboratory Orders found stored, not querying!");
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
-                    resourcePayload: laboratoryOrders,
+                    resourcePayload: {
+                        loaded: true,
+                        retryin: 0,
+                        orders: laboratoryOrders,
+                    },
                     resultStatus: ResultType.Success,
                     totalResultCount: laboratoryOrders.length,
                 });
             } else {
-                logger.debug(`Retrieving Laboratory Orders`);
-                context.commit("setRequested");
+                logger.debug("Retrieving Laboratory Orders");
+                context.commit("setLaboratoryOrdersRequested");
                 laboratoryService
-                    .getOrders(params.hdid)
+                    .getLaboratoryOrders(params.hdid)
                     .then((result) => {
+                        const payload = result.resourcePayload;
                         if (result.resultStatus === ResultType.Success) {
                             EventTracker.loadData(
-                                EntryType.Laboratory,
-                                result.resourcePayload.length
+                                EntryType.LaboratoryOrder,
+                                result.totalResultCount
                             );
                             context.commit(
                                 "setLaboratoryOrders",
-                                result.resourcePayload
+                                payload.orders
                             );
                             resolve(result);
+                        } else if (
+                            result.resultError?.actionCode ===
+                                ActionType.Refresh &&
+                            !payload.loaded &&
+                            payload.retryin > 0
+                        ) {
+                            logger.info("Laboratory Orders not loaded");
+                            setTimeout(() => {
+                                logger.info(
+                                    "Re-querying for Laboratory Orders"
+                                );
+                                context.dispatch("retrieveLaboratoryOrders", {
+                                    hdid: params.hdid,
+                                });
+                            }, payload.retryin);
+                            resolve(result);
                         } else {
-                            context.dispatch("handleError", result.resultError);
+                            context.dispatch(
+                                "handleLaboratoryError",
+                                result.resultError
+                            );
                             reject(result.resultError);
                         }
                     })
                     .catch((error) => {
-                        context.dispatch("handleError", error);
+                        context.dispatch("handleLaboratoryError", error);
                         reject(error);
                     });
             }
         });
     },
-    handleError(context, error: ResultError) {
+    handleLaboratoryError(context, error: ResultError) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(error)}`);
@@ -79,7 +201,6 @@ export const actions: LaboratoryActions = {
             { root: true }
         );
     },
-
     retrievePublicCovidTests(
         context,
         params: {
@@ -98,7 +219,7 @@ export const actions: LaboratoryActions = {
             logger.debug(`Retrieving Public Covid Tests in store.`);
             context.commit("setPublicCovidTestResponseResultRequested");
             laboratoryService
-                .getCovidTests(
+                .getPublicCovid19Tests(
                     params.phn,
                     params.dateOfBirth,
                     params.collectionDate
@@ -171,7 +292,7 @@ export const actions: LaboratoryActions = {
     resetPublicCovidTestResponseResult(context) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         logger.debug(
-            `Re-setting Laboratory store module for Public Covid Test response result.`
+            `Resetting Laboratory store module for Public COVID-19 Test response result.`
         );
         context.commit("resetPublicCovidTestResponseResult");
     },

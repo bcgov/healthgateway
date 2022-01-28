@@ -7,7 +7,8 @@ import { ServiceName } from "@/models/errorInterfaces";
 import {
     AuthenticatedRapidTestRequest,
     AuthenticatedRapidTestResponse,
-    LaboratoryOrder,
+    Covid19LaboratoryOrderResult,
+    LaboratoryOrderResult,
     LaboratoryReport,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
@@ -30,6 +31,7 @@ export class RestLaboratoryService implements ILaboratoryService {
     private baseUri = "";
     private http!: IHttpDelegate;
     private isEnabled = false;
+    private isCovid19Enabled = false;
 
     public initialize(
         config: ExternalConfiguration,
@@ -37,16 +39,17 @@ export class RestLaboratoryService implements ILaboratoryService {
     ): void {
         this.baseUri = config.serviceEndpoints["Laboratory"];
         this.http = http;
-        this.isEnabled = config.webClient.modules["Laboratory"];
+        this.isEnabled = config.webClient.modules["AllLaboratory"];
+        this.isCovid19Enabled = config.webClient.modules["Laboratory"];
     }
 
-    getCovidTests(
+    getPublicCovid19Tests(
         phn: string,
         dateOfBirth: string,
         collectionDate: string
     ): Promise<RequestResult<PublicCovidTestResponseResult>> {
         return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
+            if (!this.isCovid19Enabled) {
                 reject();
                 return;
             }
@@ -74,21 +77,23 @@ export class RestLaboratoryService implements ILaboratoryService {
         });
     }
 
-    public getOrders(hdid: string): Promise<RequestResult<LaboratoryOrder[]>> {
+    public getCovid19LaboratoryOrders(
+        hdid: string
+    ): Promise<RequestResult<Covid19LaboratoryOrderResult>> {
         return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
+            if (!this.isCovid19Enabled) {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
-                    resourcePayload: [],
+                    resourcePayload: { loaded: true, retryin: 0, orders: [] },
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
                 });
                 return;
             }
             this.http
-                .getWithCors<RequestResult<LaboratoryOrder[]>>(
-                    `${this.baseUri}${this.LABORATORY_BASE_URI}?hdid=${hdid}`
+                .getWithCors<RequestResult<Covid19LaboratoryOrderResult>>(
+                    `${this.baseUri}${this.LABORATORY_BASE_URI}/Covid19Orders?hdid=${hdid}`
                 )
                 .then((requestResult) => {
                     resolve(requestResult);
@@ -105,12 +110,51 @@ export class RestLaboratoryService implements ILaboratoryService {
         });
     }
 
-    public getReportDocument(
-        reportId: string,
+    public getLaboratoryOrders(
         hdid: string
-    ): Promise<RequestResult<LaboratoryReport>> {
+    ): Promise<RequestResult<LaboratoryOrderResult>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
+                resolve({
+                    pageIndex: 0,
+                    pageSize: 0,
+                    resourcePayload: { loaded: true, retryin: 0, orders: [] },
+                    resultStatus: ResultType.Success,
+                    totalResultCount: 0,
+                });
+                return;
+            }
+            this.http
+                .getWithCors<RequestResult<LaboratoryOrderResult>>(
+                    `${this.baseUri}${this.LABORATORY_BASE_URI}/LaboratoryOrders?hdid=${hdid}`
+                )
+                .then((requestResult) => {
+                    resolve(requestResult);
+                })
+                .catch((err) => {
+                    this.logger.error(
+                        `getLaboratoryOrders Fetch error: ${err}`
+                    );
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.Laboratory
+                        )
+                    );
+                });
+        });
+    }
+
+    public getReportDocument(
+        reportId: string,
+        hdid: string,
+        isCovid19: boolean
+    ): Promise<RequestResult<LaboratoryReport>> {
+        return new Promise((resolve, reject) => {
+            if (
+                (!this.isEnabled && !isCovid19) ||
+                (!this.isCovid19Enabled && isCovid19)
+            ) {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
@@ -122,7 +166,7 @@ export class RestLaboratoryService implements ILaboratoryService {
             }
             this.http
                 .getWithCors<RequestResult<LaboratoryReport>>(
-                    `${this.baseUri}${this.LABORATORY_BASE_URI}/${reportId}/Report?hdid=${hdid}`
+                    `${this.baseUri}${this.LABORATORY_BASE_URI}/${reportId}/Report?hdid=${hdid}&isCovid19=${isCovid19}`
                 )
                 .then((requestResult) => {
                     resolve(requestResult);
@@ -144,7 +188,7 @@ export class RestLaboratoryService implements ILaboratoryService {
         request: AuthenticatedRapidTestRequest
     ): Promise<RequestResult<AuthenticatedRapidTestResponse>> {
         return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
+            if (!this.isCovid19Enabled) {
                 reject();
                 return;
             }
@@ -162,7 +206,7 @@ export class RestLaboratoryService implements ILaboratoryService {
                 })
                 .catch((err) => {
                     this.logger.error(
-                        `Post Autheticate Rapid Test Error: ${err}`
+                        `Post Authenticated Rapid Test Error: ${err}`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(

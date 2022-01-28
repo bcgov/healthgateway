@@ -67,7 +67,7 @@ namespace HealthGateway.Laboratory.Services
                 }
                 catch (HttpRequestException e)
                 {
-                    this.logger.LogCritical("HTTP Request Exception {e}");
+                    this.logger.LogCritical($"HTTP Request Exception {e}");
                     requestResult.ResultError = new RequestResultError()
                     {
                         ResultMessage = $"Error with HTTP Request",
@@ -101,7 +101,7 @@ namespace HealthGateway.Laboratory.Services
             }
             catch (HttpRequestException e)
             {
-                this.logger.LogCritical("HTTP Request Exception {e}");
+                this.logger.LogCritical($"HTTP Request Exception {e}");
                 requestResult.ResultError = new RequestResultError()
                 {
                     ResultMessage = $"Error with HTTP Request",

@@ -93,7 +93,7 @@ namespace HealthGateway.Laboratory.Controllers
         /// <response code="503">The service is unavailable for use.</response>
         [HttpPost]
         [Produces("application/json")]
-        [Route("{hdid}/LabTestKit")]
+        [Route("LabTestKit")]
         public async Task<RequestResult<PublicLabTestKit>> AddLabTestKit([FromBody]PublicLabTestKit labTestKit)
         {
             return await this.labTestKitService.RegisterLabTestKitAsync(labTestKit).ConfigureAwait(true);
