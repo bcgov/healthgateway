@@ -389,18 +389,20 @@ export default class PCRTest extends Vue {
                 break;
             // ### Submitted through manual input
             case this.DSMANUAL:
+                const phnDigits = this.pcrTest.phn;
+                const phoneDigits = this.pcrTest.contactPhoneNumber;
+                const zipDigits = this.pcrTest.postalOrZip;
                 var testKitPublicRequest: RegisterTestKitPublicRequest = {
                     firstName: this.pcrTest.firstName,
                     lastName: this.pcrTest.lastName,
-                    phn: this.pcrTest.phn.replace(/\D/g, ""),
+                    phn: phnDigits ? phnDigits.replace(/\D/g, "") : "",
                     dob: this.pcrTest.dob,
-                    contactPhoneNumber: this.pcrTest.contactPhoneNumber.replace(
-                        /\D/g,
-                        ""
-                    ),
+                    contactPhoneNumber: phoneDigits
+                        ? phoneDigits.replace(/\D/g, "")
+                        : "",
                     streetAddress: this.pcrTest.streetAddress,
                     city: this.pcrTest.city,
-                    postalOrZip: this.pcrTest.postalOrZip.replace(/\D/g, ""),
+                    postalOrZip: zipDigits ? zipDigits.replace(/\D/g, "") : "",
                     testTakenMinutesAgo: this.pcrTest.testTakenMinutesAgo,
                     testKitId: this.pcrTest.testKitId,
                 };
