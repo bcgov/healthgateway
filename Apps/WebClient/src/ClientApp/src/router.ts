@@ -247,6 +247,19 @@ const routes = [
         },
     },
     {
+        path: "/pcrtest",
+        component: PCRTestView,
+        props: false,
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.registered,
+                UserState.notRegistered,
+                UserState.pendingDeletion,
+            ],
+        },
+    },
+    {
         path: "/pcrtest/:serialNumber",
         component: PCRTestView,
         props: true,
