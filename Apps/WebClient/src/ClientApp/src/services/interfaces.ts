@@ -238,6 +238,9 @@ export interface IPCRTestService {
         hdid: string,
         testKit: RegisterTestKitRequest
     ): Promise<RegisterTestKitRequest | undefined>;
+    registerTestKitPublic(
+        testKit: RegisterTestKitRequest
+    ): Promise<RegisterTestKitRequest | undefined>;
 }
 
 export interface IReportService {
