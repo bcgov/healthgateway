@@ -1,12 +1,12 @@
 const { AuthMethod } = require("../../../../support/constants");
 
-describe("Laboratory", () => {
+describe("COVID-19 Orders", () => {
     before(() => {
         cy.viewport("iphone-6");
         cy.restoreAuthCookies();
         cy.enableModules("Laboratory");
-        cy.intercept("GET", "**/v1/api/Laboratory*", {
-            fixture: "LaboratoryService/laboratory.json",
+        cy.intercept("GET", "**/v1/api/Laboratory/Covid19Orders*", {
+            fixture: "LaboratoryService/covid19Orders.json",
         });
         cy.login(
             Cypress.env("keycloak.username"),

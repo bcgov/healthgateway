@@ -2,8 +2,9 @@ import { voidMethod, voidPromise } from "@test/stubs/util";
 
 import BannerError from "@/models/bannerError";
 import {
-    LaboratoryOrder,
+    Covid19LaboratoryOrder,
     PublicCovidTestResponseResult,
+    LaboratoryOrder,
 } from "@/models/laboratory";
 import { LoadStatus } from "@/models/storeOperations";
 import {
@@ -15,11 +16,16 @@ import {
 } from "@/store/modules/laboratory/types";
 
 const laboratoryState: LaboratoryState = {
-    public: {
+    publicCovid19: {
         publicCovidTestResponseResult: undefined,
         error: undefined,
         status: LoadStatus.NONE,
         statusMessage: "",
+    },
+    authenticatedCovid19: {
+        laboratoryOrders: [],
+        statusMessage: "",
+        status: LoadStatus.NONE,
     },
     authenticated: {
         laboratoryOrders: [],
@@ -29,13 +35,22 @@ const laboratoryState: LaboratoryState = {
 };
 
 const laboratoryGetters: LaboratoryGetters = {
+    covid19LaboratoryOrders(): Covid19LaboratoryOrder[] {
+        return [];
+    },
+    covid19LaboratoryOrdersCount(): number {
+        return 0;
+    },
+    covid19LaboratoryOrdersAreLoading(): boolean {
+        return false;
+    },
     laboratoryOrders(): LaboratoryOrder[] {
         return [];
     },
-    laboratoryCount(): number {
+    laboratoryOrdersCount(): number {
         return 0;
     },
-    isLoading(): boolean {
+    laboratoryOrdersAreLoading(): boolean {
         return false;
     },
     publicCovidTestResponseResult(): PublicCovidTestResponseResult | undefined {
@@ -53,15 +68,20 @@ const laboratoryGetters: LaboratoryGetters = {
 };
 
 const laboratoryActions: LaboratoryActions = {
-    retrieve: voidPromise,
-    handleError: voidMethod,
+    retrieveCovid19LaboratoryOrders: voidPromise,
+    handleCovid19LaboratoryError: voidMethod,
+    retrieveLaboratoryOrders: voidPromise,
+    handleLaboratoryError: voidMethod,
     retrievePublicCovidTests: voidPromise,
     handlePublicCovidTestsError: voidMethod,
     resetPublicCovidTestResponseResult: voidMethod,
 };
 
 const laboratoryMutations: LaboratoryMutations = {
-    setRequested: voidMethod,
+    setCovid19LaboratoryOrdersRequested: voidMethod,
+    setCovid19LaboratoryOrders: voidMethod,
+    covid19LaboratoryError: voidMethod,
+    setLaboratoryOrdersRequested: voidMethod,
     setLaboratoryOrders: voidMethod,
     laboratoryError: voidMethod,
     setPublicCovidTestResponseResultRequested: voidMethod,

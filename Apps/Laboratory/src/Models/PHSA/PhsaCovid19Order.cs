@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,37 +13,43 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Laboratory.Models
+namespace HealthGateway.Laboratory.Models.PHSA
 {
     using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// An instance of a Laboratory Model.
+    /// An instance of a COVID-19 Order.
     /// </summary>
-    public class LaboratoryModel
+    public class PhsaCovid19Order
     {
         /// <summary>
-        /// Gets or sets the id for the lab result.
+        /// Gets or sets the id for the COVID-19 order.
         /// </summary>
         [JsonPropertyName("id")]
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the PHN the report is for.
+        /// Gets or sets the sourceSystemId for the lab order.
+        /// </summary>
+        [JsonPropertyName("sourceSystemId")]
+        public string SourceSystemId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the PHN the order is for.
         /// </summary>
         [JsonPropertyName("phn")]
         public string PHN { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Provider IDs for the Model.
+        /// Gets or sets the Provider IDs for the Order.
         /// </summary>
         [JsonPropertyName("orderingProviderIds")]
         public string OrderProviderIDs { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the providers names.
+        /// Gets or sets the providers' names.
         /// </summary>
         [JsonPropertyName("orderingProviders")]
         public string OrderingProviders { get; set; } = string.Empty;
@@ -91,63 +97,9 @@ namespace HealthGateway.Laboratory.Models
         public bool ReportAvailable { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets the list of lab results.
+        /// Gets or sets the list of COVID-19 tests.
         /// </summary>
         [JsonPropertyName("labResults")]
-        public IEnumerable<LaboratoryResult>? LabResults { get; set; }
-
-        /// <summary>
-        /// Creates a LaboratoryModel object from a PHSA model.
-        /// </summary>
-        /// <param name="model">The laboratory result to convert.</param>
-        /// <returns>The newly created laboratory object.</returns>
-        public static LaboratoryModel FromPHSAModel(LaboratoryOrder model)
-        {
-            return new LaboratoryModel()
-            {
-                Id = model.Id,
-                PHN = MaskPHN(model.PHN),
-                OrderProviderIDs = model.OrderProviderIDs,
-                OrderingProviders = model.OrderingProviders,
-                ReportingLab = model.ReportingLab,
-                Location = model.Location,
-                LabType = model.LabType,
-                MessageDateTime = model.MessageDateTime,
-                MessageID = model.MessageID,
-                AdditionalData = model.AdditionalData,
-                ReportAvailable = model.ReportAvailable,
-                LabResults = model.LabResults,
-            };
-        }
-
-        /// <summary>
-        /// Creates a LaboratoryModel object from a PHSA model.
-        /// </summary>
-        /// <param name="models">The list of PHSA models to convert.</param>
-        /// <returns>A list of LaboratoryModel objects.</returns>
-        public static IEnumerable<LaboratoryModel> FromPHSAModelList(IEnumerable<LaboratoryOrder>? models)
-        {
-            List<LaboratoryModel> objects = new List<LaboratoryModel>();
-            if (models != null)
-            {
-                foreach (LaboratoryOrder immunizationModel in models)
-                {
-                    objects.Add(LaboratoryModel.FromPHSAModel(immunizationModel));
-                }
-            }
-
-            return objects;
-        }
-
-        private static string MaskPHN(string phn)
-        {
-            string retPHN = "****";
-            if (phn != null && phn.Length > 3)
-            {
-                retPHN = $"{phn.Remove(phn.Length - 5, 4)}****";
-            }
-
-            return retPHN;
-        }
+        public IEnumerable<PhsaCovid19Test>? Covid19Tests { get; set; }
     }
 }

@@ -945,6 +945,15 @@ namespace HealthGateway.Database.Context
                 },
                 new CommentEntryTypeCode
                 {
+                    CommentEntryCode = CommentEntryType.Covid19Laboratory,
+                    Description = "Comment for a Covid 19 Laboratory Entry",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommentEntryTypeCode
+                {
                     CommentEntryCode = CommentEntryType.Laboratory,
                     Description = "Comment for a Laboratory Entry",
                     CreatedBy = UserId.DefaultUser,

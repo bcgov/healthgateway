@@ -1,7 +1,30 @@
 import { StringISODate, StringISODateTime } from "@/models/dateWrapper";
 
-// Laboratory model
-export interface LaboratoryResult {
+// result model for retrieving COVID-19 lab orders
+export interface Covid19LaboratoryOrderResult {
+    loaded: boolean;
+    retryin: number;
+    orders: Covid19LaboratoryOrder[];
+}
+
+// COVID-19 lab order model
+export interface Covid19LaboratoryOrder {
+    id: string;
+    phn: string | null;
+    orderingProviderIds: string | null;
+    orderingProviders: string | null;
+    reportingLab: string | null;
+    location: string | null;
+    ormOrOru: string | null;
+    messageDateTime: StringISODateTime;
+    messageId: string | null;
+    additionalData: string | null;
+    reportAvailable: boolean;
+    labResults: Covid19LaboratoryTest[];
+}
+
+// COVID-19 lab test model
+export interface Covid19LaboratoryTest {
     id: string;
     testType: string | null;
     outOfRange: boolean;
@@ -16,19 +39,33 @@ export interface LaboratoryResult {
     loincName: string | null;
 }
 
+// result model for retrieving lab orders
+export interface LaboratoryOrderResult {
+    loaded: boolean;
+    retryin: number;
+    orders: LaboratoryOrder[];
+}
+
+// laboratory order model
 export interface LaboratoryOrder {
-    id: string;
-    phn: string | null;
-    orderingProviderIds: string | null;
-    orderingProviders: string | null;
-    reportingLab: string | null;
-    location: string | null;
-    ormOrOru: string | null;
-    messageDateTime: StringISODateTime;
-    messageId: string | null;
-    additionalData: string | null;
+    laboratoryReportId: string;
+    reportingSource: string;
+    reportId: string;
+    collectionDateTime: StringISODateTime;
+    commonName: string;
+    orderingProvider: string;
+    testStatus: string;
     reportAvailable: boolean;
-    labResults: LaboratoryResult[];
+    laboratoryTests: LaboratoryTest[];
+}
+
+// laboratory test model
+export interface LaboratoryTest {
+    batteryType: string;
+    obxId: string;
+    outOfRange: boolean;
+    loinc: string;
+    testStatus: string;
 }
 
 export interface LaboratoryReport {
@@ -82,6 +119,7 @@ export interface AuthenticatedRapidTestResponse {
     phn: string;
     records: RapidTestRecord[];
 }
+
 export abstract class LaboratoryUtil {
     public static isTestResultReady(testStatus: string | null): boolean {
         if (testStatus == null) {

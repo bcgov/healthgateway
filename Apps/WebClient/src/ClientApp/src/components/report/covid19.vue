@@ -4,7 +4,7 @@ import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import { DateWrapper } from "@/models/dateWrapper";
-import { LaboratoryOrder, LaboratoryUtil } from "@/models/laboratory";
+import { Covid19LaboratoryOrder, LaboratoryUtil } from "@/models/laboratory";
 import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
@@ -17,7 +17,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger, IReportService } from "@/services/interfaces";
 
-interface LaboratoryRow {
+interface Covid19LaboratoryOrderRow {
     date: string;
     test_type: string;
     test_location: string;
@@ -25,27 +25,29 @@ interface LaboratoryRow {
 }
 
 @Component
-export default class COVID19ReportComponent extends Vue {
+export default class Covid19ReportComponent extends Vue {
     @Prop() private filter!: ReportFilter;
 
-    @Action("retrieve", { namespace: "laboratory" })
-    retrieveLaboratory!: (params: { hdid: string }) => Promise<void>;
+    @Action("retrieveCovid19LaboratoryOrders", { namespace: "laboratory" })
+    retrieveCovid19LaboratoryOrders!: (params: {
+        hdid: string;
+    }) => Promise<void>;
 
-    @Getter("laboratoryOrders", { namespace: "laboratory" })
-    laboratoryOrders!: LaboratoryOrder[];
+    @Getter("covid19LaboratoryOrders", { namespace: "laboratory" })
+    covid19LaboratoryOrders!: Covid19LaboratoryOrder[];
 
-    @Getter("isLoading", { namespace: "laboratory" })
-    isLaboratoryLoading!: boolean;
+    @Getter("covid19LaboratoryOrdersAreLoading", { namespace: "laboratory" })
+    isCovid19LaboratoryLoading!: boolean;
 
     @Getter("user", { namespace: "user" })
     private user!: User;
 
     private logger!: ILogger;
 
-    private readonly headerClass = "laboratory-report-table-header";
+    private readonly headerClass = "covid19-laboratory-report-table-header";
 
-    private get visibleRecords(): LaboratoryOrder[] {
-        let records = this.laboratoryOrders.filter((record) => {
+    private get visibleRecords(): Covid19LaboratoryOrder[] {
+        let records = this.covid19LaboratoryOrders.filter((record) => {
             return this.filter.allowsDate(
                 record.labResults[0].collectedDateTime
             );
@@ -76,8 +78,8 @@ export default class COVID19ReportComponent extends Vue {
         return this.visibleRecords.length === 0;
     }
 
-    private get items(): LaboratoryRow[] {
-        return this.visibleRecords.map<LaboratoryRow>((x) => {
+    private get items(): Covid19LaboratoryOrderRow[] {
+        return this.visibleRecords.map<Covid19LaboratoryOrderRow>((x) => {
             const labResult = x.labResults[0];
             return {
                 date: DateWrapper.format(labResult.collectedDateTime),
@@ -90,10 +92,10 @@ export default class COVID19ReportComponent extends Vue {
         });
     }
 
-    @Watch("isLaboratoryLoading")
+    @Watch("isCovid19LaboratoryLoading")
     @Emit()
     private onIsLoadingChanged() {
-        return this.isLaboratoryLoading;
+        return this.isCovid19LaboratoryLoading;
     }
 
     @Watch("isEmpty")
@@ -104,9 +106,11 @@ export default class COVID19ReportComponent extends Vue {
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveLaboratory({ hdid: this.user.hdid }).catch((err) => {
-            this.logger.error(`Error loading Covid19 data: ${err}`);
-        });
+        this.retrieveCovid19LaboratoryOrders({ hdid: this.user.hdid }).catch(
+            (err) => {
+                this.logger.error(`Error loading Covid19 data: ${err}`);
+            }
+        );
     }
 
     private mounted() {
@@ -163,14 +167,14 @@ export default class COVID19ReportComponent extends Vue {
 <template>
     <div>
         <section>
-            <b-row v-if="isEmpty && !isLaboratoryLoading">
+            <b-row v-if="isEmpty && !isCovid19LaboratoryLoading">
                 <b-col>No records found.</b-col>
             </b-row>
             <b-table
-                v-if="!isEmpty || isLaboratoryLoading"
+                v-if="!isEmpty || isCovid19LaboratoryLoading"
                 :striped="true"
                 :fixed="true"
-                :busy="isLaboratoryLoading"
+                :busy="isCovid19LaboratoryLoading"
                 :items="items"
                 :fields="fields"
                 class="table-style"
@@ -187,7 +191,7 @@ export default class COVID19ReportComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
-.laboratory-report-table-header {
+.covid19-laboratory-report-table-header {
     color: $heading_color;
     font-size: 0.8rem;
 }

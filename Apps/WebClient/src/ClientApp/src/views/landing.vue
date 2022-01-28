@@ -8,6 +8,7 @@ import {
     faPills,
     faSyringe,
     faUserMd,
+    faVial,
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
@@ -30,7 +31,8 @@ library.add(
     faFlask,
     faPills,
     faSyringe,
-    faUserMd
+    faUserMd,
+    faVial
 );
 
 interface Icon {
@@ -115,8 +117,8 @@ export default class LandingView extends Vue {
             active: false,
         },
         {
-            name: "Laboratory-Inactive",
-            definition: "flask",
+            name: "AllLaboratory",
+            definition: "vial",
             label: "Lab Results",
             active: false,
         },

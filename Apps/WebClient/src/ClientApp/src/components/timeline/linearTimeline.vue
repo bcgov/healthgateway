@@ -7,9 +7,10 @@ import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry, { DateGroup, EntryType } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
 
+import Covid19LaboratoryOrderTimelineComponent from "./entryCard/covid19LaboratoryOrder.vue";
 import EncounterTimelineComponent from "./entryCard/encounter.vue";
 import ImmunizationTimelineComponent from "./entryCard/immunization.vue";
-import LaboratoryTimelineComponent from "./entryCard/laboratory.vue";
+import LaboratoryOrderTimelineComponent from "./entryCard/laboratoryOrder.vue";
 import MedicationTimelineComponent from "./entryCard/medication.vue";
 import MedicationRequestTimelineComponent from "./entryCard/medicationRequest.vue";
 import NoteTimelineComponent from "./entryCard/note.vue";
@@ -19,7 +20,9 @@ import NoteTimelineComponent from "./entryCard/note.vue";
         MedicationRequestComponent: MedicationRequestTimelineComponent,
         MedicationComponent: MedicationTimelineComponent,
         ImmunizationComponent: ImmunizationTimelineComponent,
-        LaboratoryComponent: LaboratoryTimelineComponent,
+        Covid19LaboratoryOrderComponent:
+            Covid19LaboratoryOrderTimelineComponent,
+        LaboratoryOrderComponent: LaboratoryOrderTimelineComponent,
         EncounterComponent: EncounterTimelineComponent,
         NoteComponent: NoteTimelineComponent,
     },
@@ -167,8 +170,11 @@ export default class LinearTimelineComponent extends Vue {
             case EntryType.Immunization:
                 return "ImmunizationComponent";
 
-            case EntryType.Laboratory:
-                return "LaboratoryComponent";
+            case EntryType.Covid19LaboratoryOrder:
+                return "Covid19LaboratoryOrderComponent";
+
+            case EntryType.LaboratoryOrder:
+                return "LaboratoryOrderComponent";
 
             case EntryType.Encounter:
                 return "EncounterComponent";
