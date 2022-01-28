@@ -50,12 +50,10 @@ interface ISelectOption {
     },
 })
 export default class PCRTest extends Vue {
-    // Props
+    // ### Props ###
     @Prop() serialNumber!: string;
 
-    // Store
-    @Getter("user", { namespace: "user" }) user!: User;
-
+    // ### Store ###
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
@@ -74,6 +72,8 @@ export default class PCRTest extends Vue {
     @Action("toggleSidebar", { namespace: "navbar" })
     toggleSidebar!: () => void;
 
+    @Getter("user", { namespace: "user" }) user!: User;
+
     @Getter("isSidebarShown", { namespace: "navbar" })
     isSidebarShown!: boolean;
 
@@ -83,10 +83,10 @@ export default class PCRTest extends Vue {
     @Getter("identityProviders", { namespace: "config" })
     identityProviders!: IdentityProviderConfiguration[];
 
-    // Service
+    // ### Service ###
     private pcrTestService!: IPCRTestService;
 
-    // Data
+    // ### Data ###
     private redirectPath = "/pcrtest/" + this.serialNumber;
 
     private noSerialNumber = false;
@@ -160,10 +160,10 @@ export default class PCRTest extends Vue {
     private DSKEYCLOAK = PCRDataSource.Keycloak;
     private DSMANUAL = PCRDataSource.Manual;
 
-    // Set this to none initially
+    // Set this to none initially to show options
     private dataSource: PCRDataSource = this.DSNONE;
 
-    // Lifecycle
+    // ### Lifecycle ###
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.pcrTestService = container.get<IPCRTestService>(
@@ -213,7 +213,7 @@ export default class PCRTest extends Vue {
         }
     }
 
-    // Getters
+    // ### Getters ###
     private get pcrDataSource(): PCRDataSource {
         return this.dataSource;
     }
@@ -238,11 +238,14 @@ export default class PCRTest extends Vue {
         }
     }
 
+    // Redirect back to serial number path if user had it before logging in
     private get oidcRedirectPath() {
         return this.noSerialNumber ? "/pcrtest" : this.redirectPath;
     }
 
+    // Build dropdown for testTakenMinutesAgo dropdown
     private get testTakenMinutesAgoOptions() {
+        // Initial value is -1, which is the default value for the dropdown
         let testTakenMinutesAgoOptions: ISelectOption[] = [
             { value: -1, text: "Time" },
         ];
@@ -255,6 +258,7 @@ export default class PCRTest extends Vue {
         return testTakenMinutesAgoOptions;
     }
 
+    // ### Setters ###
     private setHasNoPhn(value: boolean) {
         this.noPhn = value;
     }
@@ -274,7 +278,7 @@ export default class PCRTest extends Vue {
         this.dataSource = dataSource;
     }
 
-    // Validation
+    // ### Validation ###
     private isManualInputValidator = requiredIf(
         () => this.dataSource === this.DSMANUAL
     );
@@ -310,10 +314,12 @@ export default class PCRTest extends Vue {
                     // issue
                     required: this.isManualInputValidator,
                     maxValue: (value: string) => {
+                        // only check this if manual mode selected
                         if (this.dataSource === this.DSMANUAL) {
                             return new DateWrapper(value).isBefore(
                                 new DateWrapper()
                             );
+                            // otherwise, return true
                         } else {
                             return true;
                         }
@@ -349,9 +355,10 @@ export default class PCRTest extends Vue {
         return param.$dirty ? !param.$invalid : undefined;
     }
 
-    // Form actions
+    // ### Form Actions ###
     private handleSubmit() {
         switch (this.dataSource) {
+            // ### Submitted through OIDC
             case this.DSKEYCLOAK:
                 var testKitRequest: RegisterTestKitRequest = {
                     hdid: this.oidcUser.hdid,
@@ -360,6 +367,7 @@ export default class PCRTest extends Vue {
                 };
                 console.log(testKitRequest);
                 this.loading = true;
+                // Get user's hdid
                 const hdid = this.user.hdid;
                 this.pcrTestService
                     .registerTestKit(hdid, testKitRequest)
@@ -379,6 +387,7 @@ export default class PCRTest extends Vue {
                         this.loading = false;
                     });
                 break;
+            // ### Submitted through manual input
             case this.DSMANUAL:
                 var testKitPublicRequest: RegisterTestKitPublicRequest = {
                     firstName: this.pcrTest.firstName,
@@ -493,6 +502,7 @@ export default class PCRTest extends Vue {
             </b-row>
             <b-row>
                 <b-col>
+                    <!-- add whitespace above buttons -->
                     <b-row class="pt-3"></b-row>
                     <b-row class="pt-5"></b-row>
                     <b-row class="pt-5" align="center">
