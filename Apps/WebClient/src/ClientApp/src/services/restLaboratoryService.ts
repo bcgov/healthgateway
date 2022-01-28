@@ -7,8 +7,8 @@ import { ServiceName } from "@/models/errorInterfaces";
 import {
     AuthenticatedRapidTestRequest,
     AuthenticatedRapidTestResponse,
-    Covid19LaboratoryOrder,
-    LaboratoryOrder,
+    Covid19LaboratoryOrderResult,
+    LaboratoryOrderResult,
     LaboratoryReport,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
@@ -79,20 +79,20 @@ export class RestLaboratoryService implements ILaboratoryService {
 
     public getCovid19LaboratoryOrders(
         hdid: string
-    ): Promise<RequestResult<Covid19LaboratoryOrder[]>> {
+    ): Promise<RequestResult<Covid19LaboratoryOrderResult>> {
         return new Promise((resolve, reject) => {
             if (!this.isCovid19Enabled) {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
-                    resourcePayload: [],
+                    resourcePayload: { loaded: true, retryin: 0, orders: [] },
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
                 });
                 return;
             }
             this.http
-                .getWithCors<RequestResult<Covid19LaboratoryOrder[]>>(
+                .getWithCors<RequestResult<Covid19LaboratoryOrderResult>>(
                     `${this.baseUri}${this.LABORATORY_BASE_URI}/Covid19Orders?hdid=${hdid}`
                 )
                 .then((requestResult) => {
@@ -112,20 +112,20 @@ export class RestLaboratoryService implements ILaboratoryService {
 
     public getLaboratoryOrders(
         hdid: string
-    ): Promise<RequestResult<LaboratoryOrder[]>> {
+    ): Promise<RequestResult<LaboratoryOrderResult>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
-                    resourcePayload: [],
+                    resourcePayload: { loaded: true, retryin: 0, orders: [] },
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
                 });
                 return;
             }
             this.http
-                .getWithCors<RequestResult<LaboratoryOrder[]>>(
+                .getWithCors<RequestResult<LaboratoryOrderResult>>(
                     `${this.baseUri}${this.LABORATORY_BASE_URI}/LaboratoryOrders?hdid=${hdid}`
                 )
                 .then((requestResult) => {

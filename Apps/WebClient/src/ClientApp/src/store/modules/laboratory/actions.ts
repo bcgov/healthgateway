@@ -4,7 +4,9 @@ import BannerError from "@/models/bannerError";
 import { StringISODate } from "@/models/dateWrapper";
 import {
     Covid19LaboratoryOrder,
+    Covid19LaboratoryOrderResult,
     LaboratoryOrder,
+    LaboratoryOrderResult,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import RequestResult, { ResultError } from "@/models/requestResult";
@@ -21,7 +23,7 @@ export const actions: LaboratoryActions = {
     retrieveCovid19LaboratoryOrders(
         context,
         params: { hdid: string }
-    ): Promise<RequestResult<Covid19LaboratoryOrder[]>> {
+    ): Promise<RequestResult<Covid19LaboratoryOrderResult>> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         const laboratoryService: ILaboratoryService =
             container.get<ILaboratoryService>(
@@ -40,7 +42,11 @@ export const actions: LaboratoryActions = {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
-                    resourcePayload: covid19LaboratoryOrders,
+                    resourcePayload: {
+                        loaded: true,
+                        retryin: 0,
+                        orders: covid19LaboratoryOrders,
+                    },
                     resultStatus: ResultType.Success,
                     totalResultCount: covid19LaboratoryOrders.length,
                 });
@@ -50,15 +56,37 @@ export const actions: LaboratoryActions = {
                 laboratoryService
                     .getCovid19LaboratoryOrders(params.hdid)
                     .then((result) => {
+                        const payload = result.resourcePayload;
                         if (result.resultStatus === ResultType.Success) {
                             EventTracker.loadData(
                                 EntryType.Covid19LaboratoryOrder,
-                                result.resourcePayload.length
+                                result.totalResultCount
                             );
                             context.commit(
                                 "setCovid19LaboratoryOrders",
-                                result.resourcePayload
+                                payload.orders
                             );
+                            resolve(result);
+                        } else if (
+                            result.resultError?.actionCode ===
+                                ActionType.Refresh &&
+                            !payload.loaded &&
+                            payload.retryin > 0
+                        ) {
+                            logger.info(
+                                "COVID-19 Laboratory Orders not loaded"
+                            );
+                            setTimeout(() => {
+                                logger.info(
+                                    "Re-querying for COVID-19 Laboratory Orders"
+                                );
+                                context.dispatch(
+                                    "retrieveCovid19LaboratoryOrders",
+                                    {
+                                        hdid: params.hdid,
+                                    }
+                                );
+                            }, payload.retryin);
                             resolve(result);
                         } else {
                             context.dispatch(
@@ -90,7 +118,7 @@ export const actions: LaboratoryActions = {
     retrieveLaboratoryOrders(
         context,
         params: { hdid: string }
-    ): Promise<RequestResult<LaboratoryOrder[]>> {
+    ): Promise<RequestResult<LaboratoryOrderResult>> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         const laboratoryService: ILaboratoryService =
             container.get<ILaboratoryService>(
@@ -105,7 +133,11 @@ export const actions: LaboratoryActions = {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
-                    resourcePayload: laboratoryOrders,
+                    resourcePayload: {
+                        loaded: true,
+                        retryin: 0,
+                        orders: laboratoryOrders,
+                    },
                     resultStatus: ResultType.Success,
                     totalResultCount: laboratoryOrders.length,
                 });
@@ -115,15 +147,32 @@ export const actions: LaboratoryActions = {
                 laboratoryService
                     .getLaboratoryOrders(params.hdid)
                     .then((result) => {
+                        const payload = result.resourcePayload;
                         if (result.resultStatus === ResultType.Success) {
                             EventTracker.loadData(
                                 EntryType.LaboratoryOrder,
-                                result.resourcePayload.length
+                                result.totalResultCount
                             );
                             context.commit(
                                 "setLaboratoryOrders",
-                                result.resourcePayload
+                                payload.orders
                             );
+                            resolve(result);
+                        } else if (
+                            result.resultError?.actionCode ===
+                                ActionType.Refresh &&
+                            !payload.loaded &&
+                            payload.retryin > 0
+                        ) {
+                            logger.info("Laboratory Orders not loaded");
+                            setTimeout(() => {
+                                logger.info(
+                                    "Re-querying for Laboratory Orders"
+                                );
+                                context.dispatch("retrieveLaboratoryOrders", {
+                                    hdid: params.hdid,
+                                });
+                            }, payload.retryin);
                             resolve(result);
                         } else {
                             context.dispatch(

@@ -90,25 +90,25 @@ namespace HealthGateway.LaboratoryTests
                 },
             };
 
-            RequestResult<IEnumerable<PhsaCovid19Order>> delegateResult = new()
+            RequestResult<PHSAResult<List<PhsaCovid19Order>>> delegateResult = new()
             {
                 ResultStatus = expectedResultType,
                 PageSize = 100,
                 PageIndex = 1,
-                ResourcePayload = covid19Orders,
+                ResourcePayload = new() { Result = covid19Orders },
             };
 
             Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
 
             ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
 
-            Task<RequestResult<IEnumerable<Covid19Order>>> actualResult = service.GetCovid19Orders(HDID, 0);
+            Task<RequestResult<Covid19OrderResult>> actualResult = service.GetCovid19Orders(HDID, 0);
 
             if (expectedResultType == ResultType.Success)
             {
                 Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
                 int count = 0;
-                foreach (Covid19Order model in actualResult.Result!.ResourcePayload!)
+                foreach (Covid19Order model in actualResult.Result!.ResourcePayload!.Covid19Orders)
                 {
                     count++;
                     Assert.True(model.MessageID.Equals(MockedMessageID + count, StringComparison.Ordinal));
@@ -183,14 +183,16 @@ namespace HealthGateway.LaboratoryTests
                         },
                     },
                 },
+                LabOrderCount = 2,
             };
 
-            RequestResult<PhsaLaboratorySummary> delegateResult = new()
+            RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult = new()
             {
                 ResultStatus = expectedResultType,
                 PageSize = 100,
                 PageIndex = 1,
-                ResourcePayload = laboratorySummary,
+                ResourcePayload = new() { Result = laboratorySummary },
+                TotalResultCount = 2,
             };
 
             Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
@@ -198,18 +200,19 @@ namespace HealthGateway.LaboratoryTests
             ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
 
             // Act
-            Task<RequestResult<IEnumerable<LaboratoryOrder>>> actualResult = service.GetLaboratoryOrders(HDID);
+            Task<RequestResult<LaboratoryOrderResult>> actualResult = service.GetLaboratoryOrders(HDID);
 
             // Assert
             if (expectedResultType == ResultType.Success)
             {
                 Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
                 Assert.Equal(expectedOrderCount, actualResult.Result.TotalResultCount);
-                Assert.Equal(expectedOrderCount, actualResult.Result.ResourcePayload.Count());
-                Assert.Equal(expectedReportId1, actualResult.Result.ResourcePayload.ToList()[0].ReportId);
-                Assert.Equal(expectedLabTestCount, actualResult.Result.ResourcePayload.ToList()[0].LaboratoryTests.Count);
-                Assert.Equal(expectedReportId2, actualResult.Result.ResourcePayload.ToList()[1].ReportId);
-                Assert.Equal(expectedLabTestCount, actualResult.Result.ResourcePayload.ToList()[1].LaboratoryTests.Count);
+                Assert.NotNull(actualResult.Result.ResourcePayload);
+                Assert.Equal(expectedOrderCount, actualResult.Result.ResourcePayload!.LaboratoryOrders.Count());
+                Assert.Equal(expectedReportId1, actualResult.Result.ResourcePayload!.LaboratoryOrders.ToList()[0].ReportId);
+                Assert.Equal(expectedLabTestCount, actualResult.Result.ResourcePayload!.LaboratoryOrders.ToList()[0].LaboratoryTests.Count);
+                Assert.Equal(expectedReportId2, actualResult.Result.ResourcePayload!.LaboratoryOrders.ToList()[1].ReportId);
+                Assert.Equal(expectedLabTestCount, actualResult.Result.ResourcePayload!.LaboratoryOrders.ToList()[1].LaboratoryTests.Count);
             }
             else
             {
@@ -230,14 +233,16 @@ namespace HealthGateway.LaboratoryTests
             {
                 LastRefreshDate = DateTime.Now,
                 LabOrders = null,
+                LabOrderCount = 0,
             };
 
-            RequestResult<PhsaLaboratorySummary> delegateResult = new()
+            RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
                 PageSize = 100,
                 PageIndex = 1,
-                ResourcePayload = laboratorySummary,
+                ResourcePayload = new() { Result = laboratorySummary },
+                TotalResultCount = 0,
             };
 
             Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
@@ -245,12 +250,13 @@ namespace HealthGateway.LaboratoryTests
             ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
 
             // Act
-            Task<RequestResult<IEnumerable<LaboratoryOrder>>> actualResult = service.GetLaboratoryOrders(HDID);
+            Task<RequestResult<LaboratoryOrderResult>> actualResult = service.GetLaboratoryOrders(HDID);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
             Assert.Equal(expectedOrderCount, actualResult.Result.TotalResultCount);
-            Assert.Equal(expectedOrderCount, actualResult.Result.ResourcePayload.Count());
+            Assert.NotNull(actualResult.Result.ResourcePayload);
+            Assert.Equal(expectedOrderCount, actualResult.Result.ResourcePayload!.LaboratoryOrders.Count());
         }
 
         /// <summary>
@@ -262,18 +268,20 @@ namespace HealthGateway.LaboratoryTests
             int expectedOrderCount = 0;
 
             // Arrange
-            PhsaLaboratorySummary laboratorySummary = new PhsaLaboratorySummary()
+            PhsaLaboratorySummary laboratorySummary = new()
             {
                 LastRefreshDate = DateTime.Now,
                 LabOrders = new List<PhsaLaboratoryOrder>(),
+                LabOrderCount = 0,
             };
 
-            RequestResult<PhsaLaboratorySummary> delegateResult = new()
+            RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
                 PageSize = 100,
                 PageIndex = 1,
-                ResourcePayload = laboratorySummary,
+                ResourcePayload = new() { Result = laboratorySummary },
+                TotalResultCount = 0,
             };
 
             Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
@@ -281,12 +289,13 @@ namespace HealthGateway.LaboratoryTests
             ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
 
             // Act
-            Task<RequestResult<IEnumerable<LaboratoryOrder>>> actualResult = service.GetLaboratoryOrders(HDID);
+            Task<RequestResult<LaboratoryOrderResult>> actualResult = service.GetLaboratoryOrders(HDID);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
             Assert.Equal(expectedOrderCount, actualResult.Result.TotalResultCount);
-            Assert.Equal(expectedOrderCount, actualResult.Result.ResourcePayload.Count());
+            Assert.NotNull(actualResult.Result.ResourcePayload);
+            Assert.Equal(expectedOrderCount, actualResult.Result.ResourcePayload!.LaboratoryOrders.Count());
         }
 
         /// <summary>

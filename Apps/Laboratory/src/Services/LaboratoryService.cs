@@ -98,9 +98,14 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<Covid19Order>>> GetCovid19Orders(string hdid, int pageIndex = 0)
+        public async Task<RequestResult<Covid19OrderResult>> GetCovid19Orders(string hdid, int pageIndex = 0)
         {
-            RequestResult<IEnumerable<Covid19Order>> retVal = new();
+            RequestResult<Covid19OrderResult> retVal = new()
+            {
+                ResourcePayload = new(),
+                ResultStatus = ResultType.Error,
+                ResultError = UnauthorizedResultError(),
+            };
 
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
@@ -109,26 +114,82 @@ namespace HealthGateway.Laboratory.Services
 
                 if (accessToken != null)
                 {
-                    RequestResult<IEnumerable<PhsaCovid19Order>> delegateResult = await this.laboratoryDelegate.GetCovid19Orders(accessToken, hdid, pageIndex).ConfigureAwait(true);
+                    RequestResult<PHSAResult<List<PhsaCovid19Order>>> delegateResult = await this.laboratoryDelegate.GetCovid19Orders(accessToken, hdid, pageIndex).ConfigureAwait(true);
+
+                    retVal.ResultStatus = delegateResult.ResultStatus;
+                    retVal.ResultError = delegateResult.ResultError;
+                    retVal.PageIndex = delegateResult.PageIndex;
+                    retVal.PageSize = delegateResult.PageSize;
+                    retVal.TotalResultCount = delegateResult.TotalResultCount;
+
+                    IEnumerable<PhsaCovid19Order> payload = delegateResult.ResourcePayload?.Result ?? Enumerable.Empty<PhsaCovid19Order>();
                     if (delegateResult.ResultStatus == ResultType.Success)
                     {
-                        retVal.ResultStatus = delegateResult.ResultStatus;
-                        retVal.ResourcePayload = Covid19Order.FromPHSAModelList(delegateResult.ResourcePayload);
-                        retVal.PageIndex = delegateResult.PageIndex;
-                        retVal.PageSize = delegateResult.PageSize;
-                        retVal.TotalResultCount = delegateResult.TotalResultCount;
-                        return retVal;
+                        retVal.ResourcePayload.Covid19Orders = Covid19Order.FromPhsaModelCollection(payload);
                     }
-                    else
+
+                    PHSALoadState? loadState = delegateResult.ResourcePayload?.LoadState;
+                    if (loadState != null)
                     {
-                        retVal.ResultStatus = delegateResult.ResultStatus;
-                        retVal.ResultError = delegateResult.ResultError;
-                        return retVal;
+                        retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
+                        if (loadState.RefreshInProgress)
+                        {
+                            retVal.ResultStatus = ResultType.ActionRequired;
+                            retVal.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
+                            retVal.ResourcePayload.RetryIn = Math.Max(loadState.BackOffMilliseconds, this.labConfig.BackOffMilliseconds);
+                        }
                     }
                 }
             }
 
-            retVal.ResultError = UnauthorizedResultError();
+            return retVal;
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<LaboratoryOrderResult>> GetLaboratoryOrders(string hdid)
+        {
+            RequestResult<LaboratoryOrderResult> retVal = new()
+            {
+                ResourcePayload = new(),
+                ResultStatus = ResultType.Error,
+                ResultError = UnauthorizedResultError(),
+            };
+
+            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
+            if (httpContext != null)
+            {
+                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+
+                if (accessToken != null)
+                {
+                    RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult = await this.laboratoryDelegate.GetLaboratorySummary(hdid, accessToken).ConfigureAwait(true);
+
+                    retVal.ResultStatus = delegateResult.ResultStatus;
+                    retVal.ResultError = delegateResult.ResultError;
+                    retVal.PageIndex = delegateResult.PageIndex;
+                    retVal.PageSize = delegateResult.PageSize;
+                    retVal.TotalResultCount = delegateResult.TotalResultCount;
+
+                    PhsaLaboratorySummary? payload = delegateResult.ResourcePayload?.Result;
+                    if (delegateResult.ResultStatus == ResultType.Success && payload != null)
+                    {
+                        retVal.ResourcePayload.LaboratoryOrders = LaboratoryOrder.FromPhsaModelCollection(payload.LabOrders);
+                    }
+
+                    PHSALoadState? loadState = delegateResult.ResourcePayload?.LoadState;
+                    if (loadState != null)
+                    {
+                        retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
+                        if (loadState.RefreshInProgress)
+                        {
+                            retVal.ResultStatus = ResultType.ActionRequired;
+                            retVal.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
+                            retVal.ResourcePayload.RetryIn = Math.Max(loadState.BackOffMilliseconds, this.labConfig.BackOffMilliseconds);
+                        }
+                    }
+                }
+            }
+
             return retVal;
         }
 
@@ -149,43 +210,6 @@ namespace HealthGateway.Laboratory.Services
             }
 
             retVal.ResultError = UnauthorizedResultError();
-            return retVal;
-        }
-
-        /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string hdid)
-        {
-            RequestResult<IEnumerable<LaboratoryOrder>> retVal = new()
-            {
-                ResultStatus = ResultType.Error,
-                ResultError = UnauthorizedResultError(),
-            };
-
-            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
-            if (httpContext != null)
-            {
-                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-
-                if (accessToken != null)
-                {
-                    RequestResult<PhsaLaboratorySummary> delegateResult = await this.laboratoryDelegate.GetLaboratorySummary(hdid, accessToken).ConfigureAwait(true);
-                    if (delegateResult.ResultStatus == ResultType.Success && delegateResult.ResourcePayload != null)
-                    {
-                        retVal.ResultStatus = delegateResult.ResultStatus;
-                        retVal.ResultError = null;
-                        retVal.ResourcePayload = LaboratoryOrder.FromPhsaModelList(delegateResult.ResourcePayload.LabOrders);
-                        retVal.PageIndex = delegateResult.PageIndex;
-                        retVal.PageSize = delegateResult.PageSize;
-                        retVal.TotalResultCount = delegateResult.ResourcePayload.LabOrders?.Count() ?? 0;
-                    }
-                    else
-                    {
-                        retVal.ResultStatus = delegateResult.ResultStatus;
-                        retVal.ResultError = delegateResult.ResultError;
-                    }
-                }
-            }
-
             return retVal;
         }
 

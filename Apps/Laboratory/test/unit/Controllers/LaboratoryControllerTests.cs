@@ -16,7 +16,6 @@
 namespace HealthGateway.LaboratoryTests
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -45,11 +44,11 @@ namespace HealthGateway.LaboratoryTests
         public async Task ShouldGetCovid19Orders()
         {
             Mock<ILaboratoryService> svcMock = new();
-            svcMock.Setup(s => s.GetCovid19Orders(Hdid, 0)).ReturnsAsync(new RequestResult<IEnumerable<Covid19Order>>()
+            svcMock.Setup(s => s.GetCovid19Orders(Hdid, 0)).ReturnsAsync(new RequestResult<Covid19OrderResult>()
             {
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 0,
-                ResourcePayload = new List<Covid19Order>(),
+                ResourcePayload = new(),
             });
 
             LaboratoryController controller = new(
@@ -57,7 +56,7 @@ namespace HealthGateway.LaboratoryTests
                 svcMock.Object);
 
             // Act
-            RequestResult<IEnumerable<Covid19Order>> actual = await controller.GetCovid19Orders(Hdid).ConfigureAwait(true);
+            RequestResult<Covid19OrderResult> actual = await controller.GetCovid19Orders(Hdid).ConfigureAwait(true);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
@@ -71,11 +70,11 @@ namespace HealthGateway.LaboratoryTests
         public async Task ShouldGetLaboratoryOrders()
         {
             Mock<ILaboratoryService> svcMock = new();
-            svcMock.Setup(s => s.GetLaboratoryOrders(Hdid)).ReturnsAsync(new RequestResult<IEnumerable<LaboratoryOrder>>()
+            svcMock.Setup(s => s.GetLaboratoryOrders(Hdid)).ReturnsAsync(new RequestResult<LaboratoryOrderResult>()
             {
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 0,
-                ResourcePayload = new List<LaboratoryOrder>(),
+                ResourcePayload = new(),
             });
 
             LaboratoryController controller = new(
@@ -83,21 +82,21 @@ namespace HealthGateway.LaboratoryTests
                 svcMock.Object);
 
             // Act
-            RequestResult<IEnumerable<LaboratoryOrder>> actual = await controller.GetLaboratoryOrders(Hdid).ConfigureAwait(true);
+            RequestResult<LaboratoryOrderResult> actual = await controller.GetLaboratoryOrders(Hdid).ConfigureAwait(true);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
         }
 
         /// <summary>
-        /// Test for GetLabOrderError.
+        /// Test for GetCovid19Order errors.
         /// </summary>
         /// <returns>Task.</returns>
         [Fact]
-        public async Task ShouldGetLabOrderError()
+        public async Task ShouldGetCovid19OrderError()
         {
             Mock<ILaboratoryService> svcMock = new();
-            svcMock.Setup(s => s.GetCovid19Orders(Hdid, 0)).ReturnsAsync(new RequestResult<IEnumerable<Covid19Order>>()
+            svcMock.Setup(s => s.GetCovid19Orders(Hdid, 0)).ReturnsAsync(new RequestResult<Covid19OrderResult>()
             {
                 ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = "Test Error" },
@@ -109,7 +108,33 @@ namespace HealthGateway.LaboratoryTests
                 svcMock.Object);
 
             // Act
-            RequestResult<IEnumerable<Covid19Order>> actual = await controller.GetCovid19Orders(Hdid).ConfigureAwait(true);
+            RequestResult<Covid19OrderResult> actual = await controller.GetCovid19Orders(Hdid).ConfigureAwait(true);
+
+            // Verify
+            Assert.True(actual != null && actual.ResultStatus == ResultType.Error);
+        }
+
+        /// <summary>
+        /// Test for GetLaboratoryOrder errors.
+        /// </summary>
+        /// <returns>Task.</returns>
+        [Fact]
+        public async Task ShouldGetLaboratoryOrderError()
+        {
+            Mock<ILaboratoryService> svcMock = new();
+            svcMock.Setup(s => s.GetLaboratoryOrders(Hdid)).ReturnsAsync(new RequestResult<LaboratoryOrderResult>()
+            {
+                ResultStatus = ResultType.Error,
+                ResultError = new RequestResultError() { ResultMessage = "Test Error" },
+                TotalResultCount = 0,
+            });
+
+            LaboratoryController controller = new(
+                new Mock<ILogger<LaboratoryController>>().Object,
+                svcMock.Object);
+
+            // Act
+            RequestResult<LaboratoryOrderResult> actual = await controller.GetLaboratoryOrders(Hdid).ConfigureAwait(true);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Error);

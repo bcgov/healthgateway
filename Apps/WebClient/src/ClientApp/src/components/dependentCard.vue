@@ -117,10 +117,10 @@ export default class DependentCardComponent extends Vue {
         this.isLoading = true;
         this.laboratoryService
             .getCovid19LaboratoryOrders(this.dependent.ownerId)
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
+            .then((result) => {
+                if (result.resultStatus == ResultType.Success) {
                     this.testRows =
-                        results.resourcePayload.flatMap<Covid19LaboratoryTestRow>(
+                        result.resourcePayload.orders.flatMap<Covid19LaboratoryTestRow>(
                             (o) => {
                                 return o.labResults.map<Covid19LaboratoryTestRow>(
                                     (r) => {
@@ -137,13 +137,13 @@ export default class DependentCardComponent extends Vue {
                     this.isDataLoaded = true;
                 } else {
                     this.logger.error(
-                        "Error returned from the laboratory call: " +
-                            JSON.stringify(results.resultError)
+                        "Error returned from the COVID-19 Laboratory Orders call: " +
+                            JSON.stringify(result.resultError)
                     );
                     this.addError(
                         ErrorTranslator.toBannerError(
-                            "Fetch Laboratory Error",
-                            results.resultError
+                            "Fetch COVID-19 Laboratory Orders Error",
+                            result.resultError
                         )
                     );
                 }

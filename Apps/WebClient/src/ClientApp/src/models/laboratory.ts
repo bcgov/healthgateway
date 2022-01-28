@@ -1,5 +1,12 @@
 import { StringISODate, StringISODateTime } from "@/models/dateWrapper";
 
+// result model for retrieving COVID-19 lab orders
+export interface Covid19LaboratoryOrderResult {
+    loaded: boolean;
+    retryin: number;
+    orders: Covid19LaboratoryOrder[];
+}
+
 // COVID-19 lab order model
 export interface Covid19LaboratoryOrder {
     id: string;
@@ -30,6 +37,13 @@ export interface Covid19LaboratoryTest {
     resultDateTime: StringISODateTime;
     loinc: string | null;
     loincName: string | null;
+}
+
+// result model for retrieving lab orders
+export interface LaboratoryOrderResult {
+    loaded: boolean;
+    retryin: number;
+    orders: LaboratoryOrder[];
 }
 
 // laboratory order model

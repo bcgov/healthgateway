@@ -10,7 +10,9 @@ import BannerError from "@/models/bannerError";
 import { StringISODate } from "@/models/dateWrapper";
 import {
     Covid19LaboratoryOrder,
+    Covid19LaboratoryOrderResult,
     LaboratoryOrder,
+    LaboratoryOrderResult,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import RequestResult, { ResultError } from "@/models/requestResult";
@@ -62,7 +64,7 @@ export interface LaboratoryActions
     retrieveCovid19LaboratoryOrders(
         context: StoreContext,
         params: { hdid: string }
-    ): Promise<RequestResult<Covid19LaboratoryOrder[]>>;
+    ): Promise<RequestResult<Covid19LaboratoryOrderResult>>;
     handleCovid19LaboratoryError(
         context: StoreContext,
         error: ResultError
@@ -70,7 +72,7 @@ export interface LaboratoryActions
     retrieveLaboratoryOrders(
         context: StoreContext,
         params: { hdid: string }
-    ): Promise<RequestResult<LaboratoryOrder[]>>;
+    ): Promise<RequestResult<LaboratoryOrderResult>>;
     handleLaboratoryError(context: StoreContext, error: ResultError): void;
     retrievePublicCovidTests(
         context: StoreContext,

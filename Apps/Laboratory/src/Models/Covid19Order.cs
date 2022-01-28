@@ -17,6 +17,7 @@ namespace HealthGateway.Laboratory.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text.Json.Serialization;
     using HealthGateway.Laboratory.Models.PHSA;
 
@@ -102,7 +103,7 @@ namespace HealthGateway.Laboratory.Models
         /// </summary>
         /// <param name="model">The laboratory result to convert.</param>
         /// <returns>The newly created laboratory object.</returns>
-        public static Covid19Order FromPHSAModel(PhsaCovid19Order model)
+        public static Covid19Order FromPhsaModel(PhsaCovid19Order model)
         {
             return new Covid19Order()
             {
@@ -122,22 +123,13 @@ namespace HealthGateway.Laboratory.Models
         }
 
         /// <summary>
-        /// Creates a collection of COVID-19 order models from a collection of PHSA models.
+        /// Creates a collection of <see cref="Covid19Order"/> models from a collection of PHSA models.
         /// </summary>
-        /// <param name="phsaOrders">The list of PHSA models to convert.</param>
-        /// <returns>A collection of COVID-19 order models.</returns>
-        public static IEnumerable<Covid19Order> FromPHSAModelList(IEnumerable<PhsaCovid19Order>? phsaOrders)
+        /// <param name="phsaOrders">The collection of PHSA models to convert.</param>
+        /// <returns>A collection of <see cref="Covid19Order"/> models.</returns>
+        public static IEnumerable<Covid19Order> FromPhsaModelCollection(IEnumerable<PhsaCovid19Order>? phsaOrders)
         {
-            List<Covid19Order> objects = new();
-            if (phsaOrders != null)
-            {
-                foreach (PhsaCovid19Order phsaOrder in phsaOrders)
-                {
-                    objects.Add(FromPHSAModel(phsaOrder));
-                }
-            }
-
-            return objects;
+            return phsaOrders != null ? phsaOrders.Select(FromPhsaModel) : Enumerable.Empty<Covid19Order>();
         }
 
         private static string MaskPHN(string phn)

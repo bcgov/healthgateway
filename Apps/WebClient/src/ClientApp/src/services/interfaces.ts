@@ -20,8 +20,8 @@ import type ImmunizationResult from "@/models/immunizationResult";
 import {
     AuthenticatedRapidTestRequest,
     AuthenticatedRapidTestResponse,
-    Covid19LaboratoryOrder,
-    LaboratoryOrder,
+    Covid19LaboratoryOrderResult,
+    LaboratoryOrderResult,
     LaboratoryReport,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
@@ -116,10 +116,10 @@ export interface ILaboratoryService {
     ): Promise<RequestResult<PublicCovidTestResponseResult>>;
     getCovid19LaboratoryOrders(
         hdid: string
-    ): Promise<RequestResult<Covid19LaboratoryOrder[]>>;
+    ): Promise<RequestResult<Covid19LaboratoryOrderResult>>;
     getLaboratoryOrders(
         hdid: string
-    ): Promise<RequestResult<LaboratoryOrder[]>>;
+    ): Promise<RequestResult<LaboratoryOrderResult>>;
     getReportDocument(
         reportId: string,
         hdid: string,

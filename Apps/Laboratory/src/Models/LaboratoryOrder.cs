@@ -99,7 +99,7 @@ public class LaboratoryOrder
     public IList<LaboratoryTest> LaboratoryTests { get; }
 
     /// <summary>
-    /// Creates a LaboratoryOrder object from a PHSA model.
+    /// Creates a <see cref="LaboratoryOrder"/> object from a PHSA model.
     /// </summary>
     /// <param name="model">The laboratory order result to convert.</param>
     /// <returns>The newly created laboratory order object.</returns>
@@ -122,15 +122,12 @@ public class LaboratoryOrder
     }
 
     /// <summary>
-    /// Creates a collection of Laboratory Order models from a collection of PHSA models.
+    /// Creates a collection of <see cref="LaboratoryOrder"/> models from a collection of PHSA models.
     /// </summary>
     /// <param name="phsaOrders">The list of PHSA models to convert.</param>
-    /// <returns>A collection of COVID-19 order models.</returns>
-    public static IEnumerable<LaboratoryOrder> FromPhsaModelList(IEnumerable<PhsaLaboratoryOrder>? phsaOrders)
+    /// <returns>A collection of <see cref="LaboratoryOrder"/> models.</returns>
+    public static IEnumerable<LaboratoryOrder> FromPhsaModelCollection(IEnumerable<PhsaLaboratoryOrder>? phsaOrders)
     {
-        IEnumerable<LaboratoryOrder> orders = phsaOrders != null
-            ? phsaOrders.Select(LaboratoryOrder.FromPhsaModel)
-            : Enumerable.Empty<LaboratoryOrder>();
-        return orders;
+        return phsaOrders != null ? phsaOrders.Select(FromPhsaModel) : Enumerable.Empty<LaboratoryOrder>();
     }
 }
