@@ -2,6 +2,7 @@ import { injectable } from "inversify";
 
 import { ExternalConfiguration } from "@/models/configData";
 import { ServiceName } from "@/models/errorInterfaces";
+import RegisterTestKitPublicRequest from "@/models/registerTestKitPublicRequest";
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import RequestResult from "@/models/requestResult";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -37,7 +38,7 @@ export class RestPCRTestService implements IPCRTestService {
                 }
                 this.http
                     .post<RequestResult<RegisterTestKitRequest>>(
-                        `${this.BASE_URI}/Public/LabTestKit/Registration`,
+                        `${this.BASE_URI}/LabTestKits/Registration?hdid=${hdid}`,
                         testKit
                     )
                     .then((requestResult) => {
@@ -53,7 +54,48 @@ export class RestPCRTestService implements IPCRTestService {
                         );
                     })
                     .catch((err) => {
-                        this.logger.error(err);
+                        this.logger.error("registerTestKit Error: " + err);
+                        return reject(
+                            ErrorTranslator.internalNetworkError(
+                                err,
+                                ServiceName.HealthGatewayUser
+                            )
+                        );
+                    });
+            }
+        );
+    }
+
+    public registerTestKitPublic(
+        testKit: RegisterTestKitPublicRequest
+    ): Promise<RegisterTestKitPublicRequest | undefined> {
+        return new Promise<RegisterTestKitPublicRequest | undefined>(
+            (resolve, reject) => {
+                if (!this.isEnabled) {
+                    resolve(undefined);
+                    return;
+                }
+                this.http
+                    .post<RequestResult<RegisterTestKitPublicRequest>>(
+                        `${this.BASE_URI}/Public/LabTestKits/Registration`,
+                        testKit
+                    )
+                    .then((requestResult) => {
+                        this.logger.verbose(
+                            `registerTestKitPublic result: ${JSON.stringify(
+                                requestResult
+                            )}`
+                        );
+                        return RequestResultUtil.handleResult(
+                            requestResult,
+                            resolve,
+                            reject
+                        );
+                    })
+                    .catch((err) => {
+                        this.logger.error(
+                            "registerTestKitPublic error: " + err
+                        );
                         return reject(
                             ErrorTranslator.internalNetworkError(
                                 err,
