@@ -392,12 +392,15 @@ export default class PCRTest extends Vue {
                 var testKitPublicRequest: RegisterTestKitPublicRequest = {
                     firstName: this.pcrTest.firstName,
                     lastName: this.pcrTest.lastName,
-                    phn: this.pcrTest.phn,
+                    phn: this.pcrTest.phn.replace(/\D/g, ""),
                     dob: this.pcrTest.dob,
-                    contactPhoneNumber: this.pcrTest.contactPhoneNumber,
+                    contactPhoneNumber: this.pcrTest.contactPhoneNumber.replace(
+                        /\D/g,
+                        ""
+                    ),
                     streetAddress: this.pcrTest.streetAddress,
                     city: this.pcrTest.city,
-                    postalOrZip: this.pcrTest.postalOrZip,
+                    postalOrZip: this.pcrTest.postalOrZip.replace(/\D/g, ""),
                     testTakenMinutesAgo: this.pcrTest.testTakenMinutesAgo,
                     testKitId: this.pcrTest.testKitId,
                 };
@@ -585,7 +588,7 @@ export default class PCRTest extends Vue {
                                     id="testKitId"
                                     v-model="pcrTest.testKitId"
                                     type="text"
-                                    placeholder="1451424123"
+                                    placeholder="Serial Number"
                                     :state="isValid($v.pcrTest.testKitId)"
                                     @blur.native="$v.pcrTest.testKitId.$touch()"
                                 />
@@ -615,7 +618,7 @@ export default class PCRTest extends Vue {
                                             id="pcrFirstName"
                                             v-model="pcrTest.firstName"
                                             type="text"
-                                            placeholder="Jay"
+                                            placeholder="First Name"
                                             :state="
                                                 isValid($v.pcrTest.firstName)
                                             "
@@ -644,7 +647,7 @@ export default class PCRTest extends Vue {
                                             id="pcrLastName"
                                             v-model="pcrTest.lastName"
                                             type="text"
-                                            placeholder="Doe"
+                                            placeholder="Last Name"
                                             :state="
                                                 isValid($v.pcrTest.lastName)
                                             "
@@ -682,7 +685,7 @@ export default class PCRTest extends Vue {
                                                 id="phn"
                                                 v-model="pcrTest.phn"
                                                 v-mask="phnMask"
-                                                placeholder="9737 364 347"
+                                                placeholder="PHN"
                                                 data-testid="phnInput"
                                                 aria-label="Personal Health Number"
                                                 :state="isValid($v.pcrTest.phn)"
@@ -754,7 +757,7 @@ export default class PCRTest extends Vue {
                                             id="pcrStreetAddress"
                                             v-model="pcrTest.streetAddress"
                                             type="text"
-                                            placeholder="123 Some Street"
+                                            placeholder="Address"
                                             :state="
                                                 isValid(
                                                     $v.pcrTest.streetAddress
@@ -785,7 +788,7 @@ export default class PCRTest extends Vue {
                                             id="pcrCity"
                                             v-model="pcrTest.city"
                                             type="text"
-                                            placeholder="This Town"
+                                            placeholder="City"
                                             :state="isValid($v.pcrTest.city)"
                                             @blur.native="
                                                 $v.pcrTest.city.$touch()
@@ -813,7 +816,7 @@ export default class PCRTest extends Vue {
                                             v-model="pcrTest.postalOrZip"
                                             v-mask="'A#A #A#'"
                                             type="text"
-                                            placeholder="V0V 0V0"
+                                            placeholder="Postal Code"
                                             :state="
                                                 isValid($v.pcrTest.postalOrZip)
                                             "
