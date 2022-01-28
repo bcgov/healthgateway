@@ -29,7 +29,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     public class StartupConfiguration
     {
         private readonly IWebHostEnvironment environment;
-        public readonly IConfiguration configuration;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StartupConfiguration"/> class.
@@ -41,6 +41,14 @@ namespace HealthGateway.Common.AspNetConfiguration
             this.environment = env;
             this.configuration = config;
             this.Logger = ProgramConfiguration.GetInitialLogger(this.configuration);
+        }
+
+        /// <summary>
+        /// Gets the startup configuration.
+        /// </summary>
+        public IConfiguration Configuration
+        {
+            get => this.configuration;
         }
 
         /// <summary>

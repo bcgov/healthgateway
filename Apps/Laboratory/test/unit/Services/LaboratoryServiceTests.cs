@@ -117,22 +117,14 @@ namespace HealthGateway.LaboratoryTests
             Mock<ILaboratoryDelegateFactory> mockLaboratoryDelegateFactory = new();
             mockLaboratoryDelegateFactory.Setup(s => s.CreateInstance()).Returns(mockLaboratoryDelegate.Object);
 
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
-            DefaultHttpContext context = new()
-            {
-                Connection =
-                {
-                    RemoteIpAddress = IPAddress.Parse(IpAddress),
-                },
-            };
-            context.Request.Headers.Add("Authorization", "MockJWTHeader");
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
 
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 mockLaboratoryDelegateFactory.Object,
-                new Mock<ITokenCacheService>().Object);
+                mockAuthDelegate.Object);
 
             Task<RequestResult<LaboratoryReport>> actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, BearerToken);
 
@@ -284,11 +276,14 @@ namespace HealthGateway.LaboratoryTests
         [Fact]
         public void GetCovidTestsWithInvalidPhn()
         {
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
+
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new Mock<ILaboratoryDelegateFactory>().Object,
-                new Mock<ITokenCacheService>().Object);
+                mockAuthDelegate.Object);
 
             string invalidPhn = "123";
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -309,11 +304,14 @@ namespace HealthGateway.LaboratoryTests
         [InlineData("dd/MM/yyyy")]
         public void GetCovidTestsWithInvalidDateOfBirth(string dateFormat)
         {
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
+
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new Mock<ILaboratoryDelegateFactory>().Object,
-                new Mock<ITokenCacheService>().Object);
+                mockAuthDelegate.Object);
 
             string invalidDateOfBirthString = this.dateOfBirth.ToString(dateFormat, CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -333,13 +331,13 @@ namespace HealthGateway.LaboratoryTests
         [InlineData("dd/MM/yyyy")]
         public void GetCovidTestsWithInvalidCollectionDate(string dateFormat)
         {
-            Mock<ITokenCacheService> mockTokenCacheService = new();
-            mockTokenCacheService.Setup(s => s.RetrieveAccessToken()).Returns(this.accessToken);
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new Mock<ILaboratoryDelegateFactory>().Object,
-                mockTokenCacheService.Object);
+                mockAuthDelegate.Object);
 
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string invalidCollectionDateString = this.collectionDate.ToString(dateFormat, CultureInfo.CurrentCulture);
@@ -422,14 +420,14 @@ namespace HealthGateway.LaboratoryTests
             context.Request.Headers.Add("Authorization", "MockJWTHeader");
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
 
-            Mock<ITokenCacheService> mockTokenCacheService = new();
-            mockTokenCacheService.Setup(s => s.RetrieveAccessToken()).Returns(this.accessToken);
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
 
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 mockLaboratoryDelegateFactory.Object,
-                mockTokenCacheService.Object);
+                mockAuthDelegate.Object);
 
             return service;
         }
@@ -442,13 +440,13 @@ namespace HealthGateway.LaboratoryTests
             Mock<ILaboratoryDelegateFactory> mockLaboratoryDelegateFactory = new();
             mockLaboratoryDelegateFactory.Setup(s => s.CreateInstance()).Returns(mockLaboratoryDelegate.Object);
 
-            Mock<ITokenCacheService> mockTokenCacheService = new();
-            mockTokenCacheService.Setup(s => s.RetrieveAccessToken()).Returns(this.accessToken);
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 mockLaboratoryDelegateFactory.Object,
-                mockTokenCacheService.Object);
+                mockAuthDelegate.Object);
 
             return service;
         }

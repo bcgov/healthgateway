@@ -72,7 +72,7 @@ namespace HealthGateway.Laboratory
 
             // Add API Clients
             LaboratoryConfig labConfig = new();
-            this.startupConfig.configuration.Bind(LaboratoryService.LabConfigSectionKey, labConfig);
+            this.startupConfig.Configuration.Bind(LaboratoryService.LabConfigSectionKey, labConfig);
             services.AddRefitClient<ILabTestKitClient>()
                 .ConfigureHttpClient(c => c.BaseAddress = labConfig.BaseUrl);
         }

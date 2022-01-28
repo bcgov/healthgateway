@@ -35,12 +35,28 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         JWTModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest);
 
         /// <summary>
+        /// Authenticates a resource owner user with direct grant from configuration.
+        /// </summary>
+        /// <returns>The access token for the user information provided in configuration.</returns>
+        string? AccessTokenAsUser();
+
+        /// <summary>
+        /// Authenticates a resource owner user with direct grant, no user intervention.
+        /// Proxies to AuthenticateAsUser.
+        /// </summary>
+        /// <param name="tokenUri">Uri to request the the token from.</param>
+        /// <param name="tokenRequest">Token request configuration.</param>
+        /// <param name="cacheEnabled">if true caches the result.</param>
+        /// <returns>The access token for the user tokenRequest.</returns>
+        string? AccessTokenAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = true);
+
+        /// <summary>
         /// Authenticates a resource owner user with direct grant, no user intervention.
         /// </summary>
         /// <param name="tokenUri">Uri to request the the token from.</param>
         /// <param name="tokenRequest">Token request configuration.</param>
         /// <param name="cacheEnabled">if true caches the result.</param>
-        /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>
+        /// <returns>An instance of the <see cref="JWTModel"/> class.</returns>
         JWTModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = false);
 
         /// <summary>
@@ -51,5 +67,11 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <param name="cacheEnabled">if true caches the result.</param>
         /// <returns>An instance fo the <see cref="JWTModel"/> class and a bool representing if the objecft was cached or not.</returns>
         (JWTModel JwtModel, bool Cached) AuthenticateUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled);
+
+        /// <summary>
+        /// Fetches the access token for the authenticated user from the http context.
+        /// </summary>
+        /// <returns>The access token for the user.</returns>
+        string? FetchAuthenticatedUserToken();
     }
 }

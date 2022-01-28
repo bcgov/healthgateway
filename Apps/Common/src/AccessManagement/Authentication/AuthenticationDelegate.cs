@@ -23,6 +23,8 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Services;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -38,6 +40,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         private readonly IHttpClientService httpClientService;
         private readonly IMemoryCache? memoryCache;
         private readonly int tokenCacheMinutes;
+        private readonly IHttpContextAccessor? httpContextAccessor;
+        private readonly ClientCredentialsTokenRequest tokenRequest;
+        private readonly Uri tokenUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticationDelegate"/> class.
@@ -46,17 +51,25 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="memoryCache">The injected memory cache provider.</param>
+        /// <param name="httpContextAccessor">The Http Context accessor.</param>
         public AuthenticationDelegate(
             ILogger<IAuthenticationDelegate> logger,
             IHttpClientService httpClientService,
             IConfiguration? configuration,
-            IMemoryCache? memoryCache)
+            IMemoryCache? memoryCache,
+            IHttpContextAccessor? httpContextAccessor)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
+            this.memoryCache = memoryCache;
+            this.httpContextAccessor = httpContextAccessor;
+
             IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
             this.tokenCacheMinutes = configSection?.GetValue<int>("TokenCacheExpireMinutes", 0) ?? 0;
-            this.memoryCache = memoryCache;
+            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
+            this.tokenCacheMinutes = configSection.GetValue<int>("TokenCacheExpireMinutes", 20);
+            this.tokenRequest = new();
+            configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
         }
 
         /// <inheritdoc/>
@@ -72,6 +85,18 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             }
 
             return jwtModel;
+        }
+
+        /// <inheritdoc/>
+        public string? AccessTokenAsUser()
+        {
+            return this.AuthenticateAsUser(this.tokenUri, this.tokenRequest, true)?.AccessToken;
+        }
+
+        /// <inheritdoc/>
+        public string? AccessTokenAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = true)
+        {
+            return this.AuthenticateAsUser(tokenUri, tokenRequest, cacheEnabled)?.AccessToken;
         }
 
         /// <inheritdoc/>
@@ -126,6 +151,14 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             }
 
             return (jwtModel, cached);
+        }
+
+        /// <inheritdoc/>
+        public string? FetchAuthenticatedUserToken()
+        {
+            HttpContext? httpContext = this.httpContextAccessor?.HttpContext;
+            string? accessToken = httpContext.GetTokenAsync("access_token").Result;
+            return accessToken;
         }
 
         private JWTModel? ClientCredentialsGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)

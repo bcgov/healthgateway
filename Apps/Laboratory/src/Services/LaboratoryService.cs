@@ -20,6 +20,7 @@ namespace HealthGateway.Laboratory.Services
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
@@ -45,8 +46,8 @@ namespace HealthGateway.Laboratory.Services
         public const string LabConfigSectionKey = "Laboratory";
 
         private readonly ILaboratoryDelegate laboratoryDelegate;
-        private readonly ITokenCacheService tokenCacheService;
         private readonly ILogger<LaboratoryService> logger;
+        private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly LaboratoryConfig labConfig;
 
         /// <summary>
@@ -55,16 +56,16 @@ namespace HealthGateway.Laboratory.Services
         /// <param name="configuration">The injected configuration.</param>
         /// <param name="logger">The injected logger.</param>
         /// <param name="laboratoryDelegateFactory">The laboratory delegate factory.</param>
-        /// <param name="tokenCacheService">The cache to use to reduce lookups.</param>
+        /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
         public LaboratoryService(
             IConfiguration configuration,
             ILogger<LaboratoryService> logger,
             ILaboratoryDelegateFactory laboratoryDelegateFactory,
-            ITokenCacheService tokenCacheService)
+            IAuthenticationDelegate authenticationDelegate)
         {
             this.logger = logger;
             this.laboratoryDelegate = laboratoryDelegateFactory.CreateInstance();
-            this.tokenCacheService = tokenCacheService;
+            this.authenticationDelegate = authenticationDelegate;
 
             this.labConfig = new();
             configuration.Bind(LabConfigSectionKey, this.labConfig);
@@ -172,7 +173,7 @@ namespace HealthGateway.Laboratory.Services
                 return retVal;
             }
 
-            string? accessToken = this.tokenCacheService.RetrieveAccessToken();
+            string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
             if (string.IsNullOrEmpty(accessToken))
             {
                 this.logger.LogCritical("The auth token is null or empty - unable to cache or proceed");

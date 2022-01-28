@@ -18,41 +18,35 @@ namespace HealthGateway.Laboratory.Services
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Models.PHSA;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
-    using Refit;
 
     /// <inheritdoc/>
     public class LabTestKitService : ILabTestKitService
     {
         private readonly ILogger<LabTestKitService> logger;
-        private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly ITokenCacheService tokenCacheService;
+        private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ILabTestKitClient labTestKitClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LabTestKitService"/> class.
         /// </summary>
         /// <param name="logger">The injected logger.</param>
-        /// <param name="httpContextAccessor">The Http Context accessor.</param>
-        /// <param name="tokenCacheService">The cache to use to reduce lookups.</param>
+        /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
         /// <param name="labTestKitClient">The client to use for lab tests.</param>
         public LabTestKitService(
             ILogger<LabTestKitService> logger,
-            IHttpContextAccessor httpContextAccessor,
-            ITokenCacheService tokenCacheService,
+            IAuthenticationDelegate authenticationDelegate,
             ILabTestKitClient labTestKitClient)
         {
             this.logger = logger;
-            this.httpContextAccessor = httpContextAccessor;
-            this.tokenCacheService = tokenCacheService;
+            this.authenticationDelegate = authenticationDelegate;
             this.labTestKitClient = labTestKitClient;
         }
 
@@ -62,12 +56,24 @@ namespace HealthGateway.Laboratory.Services
             RequestResult<PublicLabTestKit> requestResult = InitializeResult<PublicLabTestKit>(testKit);
 
             // Use a system token
-            string? accessToken = this.tokenCacheService.RetrieveAccessToken();
+            string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
             if (accessToken != null)
             {
-                HttpResponseMessage response =
-                    await this.labTestKitClient.RegisterLabTest(testKit, accessToken).ConfigureAwait(true);
-                ProcessResponse<PublicLabTestKit>(requestResult, response);
+                try
+                {
+                    HttpResponseMessage response =
+                        await this.labTestKitClient.RegisterLabTest(testKit, accessToken).ConfigureAwait(true);
+                    ProcessResponse<PublicLabTestKit>(requestResult, response);
+                }
+                catch (HttpRequestException e)
+                {
+                    this.logger.LogCritical("HTTP Request Exception {e}");
+                    requestResult.ResultError = new RequestResultError()
+                    {
+                        ResultMessage = $"Error with HTTP Request",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    };
+                }
             }
             else
             {
@@ -86,13 +92,22 @@ namespace HealthGateway.Laboratory.Services
         public async Task<RequestResult<LabTestKit>> RegisterLabTestKitAsync(string hdid, LabTestKit testKit)
         {
             RequestResult<LabTestKit> requestResult = InitializeResult<LabTestKit>(testKit);
-
-            // Use the users token
-            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
-            string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-            HttpResponseMessage response =
-                await this.labTestKitClient.RegisterLabTest(hdid, testKit, accessToken).ConfigureAwait(true);
-            ProcessResponse<LabTestKit>(requestResult, response);
+            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            try
+            {
+                HttpResponseMessage response =
+                    await this.labTestKitClient.RegisterLabTest(hdid, testKit, accessToken).ConfigureAwait(true);
+                ProcessResponse<LabTestKit>(requestResult, response);
+            }
+            catch (HttpRequestException e)
+            {
+                this.logger.LogCritical("HTTP Request Exception {e}");
+                requestResult.ResultError = new RequestResultError()
+                {
+                    ResultMessage = $"Error with HTTP Request",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                };
+            }
 
             return requestResult;
         }

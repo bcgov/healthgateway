@@ -19,6 +19,7 @@ namespace HealthGateway.LaboratoryTests
     using System.Net;
     using System.Net.Http;
     using System.Security.Claims;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
@@ -54,7 +55,7 @@ namespace HealthGateway.LaboratoryTests
         }
 
         /// <summary>
-        /// Tests a valid public test kit registration.
+        /// Tests a valid public test kit registration which results in an HTTP exception.
         /// </summary>
         [Fact]
         public void RegisterPublicLabTestOk()
@@ -65,6 +66,26 @@ namespace HealthGateway.LaboratoryTests
             };
             RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(new PublicLabTestKit()).Result;
             Assert.True(actualResult.ResultStatus == ResultType.Success);
+        }
+
+        /// <summary>
+        /// Tests a valid public test kit registration.
+        /// </summary>
+        [Fact]
+        public void RegisterPublicLabTestHttpException()
+        {
+            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitServiceException().RegisterLabTestKitAsync(new PublicLabTestKit()).Result;
+            Assert.True(actualResult.ResultStatus == ResultType.Error);
+        }
+
+        /// <summary>
+        /// Tests an authenticated test kit registration which results in an HTTP exception.
+        /// </summary>
+        [Fact]
+        public void RegisterLabTestHttpException()
+        {
+            RequestResult<LabTestKit> actualResult = this.GetLabTestKitServiceException().RegisterLabTestKitAsync("hdid", new LabTestKit()).Result;
+            Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
@@ -155,46 +176,24 @@ namespace HealthGateway.LaboratoryTests
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
-        private static Mock<IHttpContextAccessor> CreateValidHttpContext(string token, string userId, string hdid)
+        private LabTestKitService GetLabTestKitServiceException()
         {
-            IHeaderDictionary headerDictionary = new HeaderDictionary
-            {
-                { "Authorization", token },
-                { "referer", "http://localhost/" },
-            };
-            Mock<HttpRequest> httpRequestMock = new();
-            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
+            HttpRequestException httpRequestException = new("Error with HTTP Request");
+            Mock<ILabTestKitClient> mockLabTestKitClient = new();
+            mockLabTestKitClient.Setup(s => s.RegisterLabTest(It.IsAny<PublicLabTestKit>(), It.IsAny<string>()))
+                .ThrowsAsync(httpRequestException);
+            mockLabTestKitClient.Setup(s => s.RegisterLabTest(It.IsAny<string>(), It.IsAny<LabTestKit>(), It.IsAny<string>()))
+                .ThrowsAsync(httpRequestException);
 
-            List<Claim> claims = new()
-            {
-                new Claim(ClaimTypes.Name, "username"),
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim("hdid", hdid),
-                new Claim("auth_time", "123"),
-                new Claim("access_token", token),
-            };
-            ClaimsIdentity identity = new(claims, "TestAuth");
-            ClaimsPrincipal claimsPrincipal = new(identity);
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
 
-            Mock<HttpContext> httpContextMock = new();
-            httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
-            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new();
-            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
-            Mock<IAuthenticationService> authenticationMock = new();
-            AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
-            authResult.Properties.StoreTokens(new[]
-            {
-                new AuthenticationToken { Name = "access_token", Value = token },
-            });
-            authenticationMock
-                .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
-                .ReturnsAsync(authResult);
+            LabTestKitService labTestKitService = new(
+                new Mock<ILogger<LabTestKitService>>().Object,
+                mockAuthDelegate.Object,
+                mockLabTestKitClient.Object);
 
-            httpContextAccessorMock
-                .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
-                .Returns(authenticationMock.Object);
-            return httpContextAccessorMock;
+            return labTestKitService;
         }
 
         private LabTestKitService GetLabTestKitService(HttpResponseMessage responseMessage, bool nullToken = false)
@@ -205,24 +204,18 @@ namespace HealthGateway.LaboratoryTests
             mockLabTestKitClient.Setup(s => s.RegisterLabTest(It.IsAny<string>(), It.IsAny<LabTestKit>(), It.IsAny<string>()))
                 .ReturnsAsync(responseMessage);
 
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            if (!nullToken)
+            {
+                mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
+            }
+
             LabTestKitService labTestKitService = new(
                 new Mock<ILogger<LabTestKitService>>().Object,
-                CreateValidHttpContext("token", "userid", "hdid").Object,
-                this.GetTokenCacheService(nullToken).Object,
+                mockAuthDelegate.Object,
                 mockLabTestKitClient.Object);
 
             return labTestKitService;
-        }
-
-        private Mock<ITokenCacheService> GetTokenCacheService(bool nullToken)
-        {
-            Mock<ITokenCacheService> mockTokenCacheService = new();
-            if (!nullToken)
-            {
-                mockTokenCacheService.Setup(s => s.RetrieveAccessToken()).Returns(this.accessToken);
-            }
-
-            return mockTokenCacheService;
         }
     }
 }
