@@ -3,7 +3,13 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
-import { required } from "vuelidate/lib/validators";
+import {
+    maxLength,
+    minLength,
+    minValue,
+    required,
+    requiredIf,
+} from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
@@ -17,6 +23,7 @@ import BannerError from "@/models/bannerError";
 import { IdentityProviderConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import PCRTestData from "@/models/pcrTestData";
+import RegisterTestKitPublicRequest from "@/models/registerTestKitPublicRequest";
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import User, { OidcUserProfile } from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -25,8 +32,14 @@ import { IAuthenticationService, ILogger } from "@/services/interfaces";
 import { IPCRTestService } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { Mask, phnMask, smsMask } from "@/utility/masks";
+import PHNValidator from "@/utility/phnValidator";
 
 library.add(faInfoCircle);
+
+interface ISelectOption {
+    text: string;
+    value: unknown;
+}
 
 @Component({
     components: {
@@ -52,6 +65,18 @@ export default class PCRTest extends Vue {
         redirectPath: string;
     }) => Promise<void>;
 
+    @Action("setHeaderButtonState", { namespace: "navbar" })
+    setHeaderButtonState!: (visible: boolean) => void;
+
+    @Action("setSidebarButtonState", { namespace: "navbar" })
+    setSidebarButtonState!: (visible: boolean) => void;
+
+    @Action("toggleSidebar", { namespace: "navbar" })
+    toggleSidebar!: () => void;
+
+    @Getter("isSidebarShown", { namespace: "navbar" })
+    isSidebarShown!: boolean;
+
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated!: boolean;
 
@@ -59,11 +84,14 @@ export default class PCRTest extends Vue {
     identityProviders!: IdentityProviderConfiguration[];
 
     // Service
-
     private pcrTestService!: IPCRTestService;
 
     // Data
     private redirectPath = "/pcrtest/" + this.serialNumber;
+
+    private noSerialNumber = false;
+
+    private noPhn = false;
 
     private oidcUser!: OidcUserProfile;
 
@@ -75,6 +103,44 @@ export default class PCRTest extends Vue {
 
     private bcsclogo: string = Image06;
 
+    private testTakenMinutesAgoValues = [
+        { value: 1, text: "1 minute ago" },
+        { value: 5, text: "5 minutes ago" },
+        { value: 10, text: "10 minutes ago" },
+        { value: 15, text: "15 minutes ago" },
+        { value: 30, text: "30 minutes ago" },
+        { value: 60, text: "1 hour ago" },
+        { value: 120, text: "2 hours ago" },
+        { value: 180, text: "3 hours ago" },
+        { value: 240, text: "4 hours ago" },
+        { value: 300, text: "5 hours ago" },
+        { value: 360, text: "6 hours ago" },
+        { value: 420, text: "7 hours ago" },
+        { value: 480, text: "8 hours ago" },
+        { value: 540, text: "9 hours ago" },
+        { value: 600, text: "10 hours ago" },
+        { value: 660, text: "11 hours ago" },
+        { value: 720, text: "12 hours ago" },
+        { value: 780, text: "13 hours ago" },
+        { value: 840, text: "14 hours ago" },
+        { value: 900, text: "15 hours ago" },
+        { value: 960, text: "16 hours ago" },
+        { value: 1020, text: "17 hours ago" },
+        { value: 1080, text: "18 hours ago" },
+        { value: 1140, text: "19 hours ago" },
+        { value: 1200, text: "20 hours ago" },
+        { value: 1260, text: "21 hours ago" },
+        { value: 1320, text: "22 hours ago" },
+        { value: 1380, text: "23 hours ago" },
+        { value: 1440, text: "1 day ago" },
+        { value: 2880, text: "2 days ago" },
+        { value: 4320, text: "3 days ago" },
+        { value: 5760, text: "4 days ago" },
+        { value: 7200, text: "5 days ago" },
+        { value: 8640, text: "6 days ago" },
+        { value: 10080, text: "7 days ago" },
+    ];
+
     private pcrTest: PCRTestData = {
         firstName: "",
         lastName: "",
@@ -84,8 +150,7 @@ export default class PCRTest extends Vue {
         streetAddress: "",
         city: "",
         postalCode: "",
-        dateOfTest: "",
-        timeOfTest: "",
+        testTakenMinutesAgo: -1,
         hdid: "",
         testKitCid: this.serialNumber,
     };
@@ -104,10 +169,20 @@ export default class PCRTest extends Vue {
         this.pcrTestService = container.get<IPCRTestService>(
             SERVICE_IDENTIFIER.PCRTestService
         );
+        this.setSidebarButtonState(false);
+        this.setHeaderButtonState(false);
+    }
+
+    private destroyed() {
+        this.setSidebarButtonState(true);
+        this.setHeaderButtonState(true);
     }
 
     @Watch("oidcIsAuthenticated")
     private mounted() {
+        if (!this.serialNumber || this.serialNumber === "") {
+            this.noSerialNumber = true;
+        }
         if (this.oidcIsAuthenticated) {
             this.dataSource = this.DSKEYCLOAK;
         }
@@ -124,7 +199,6 @@ export default class PCRTest extends Vue {
                     // Load oidc user details
                     if (results[0]) {
                         this.oidcUser = results[0];
-                        console.log(this.oidcUser);
                         this.pcrTest.hdid = this.oidcUser.hdid;
                     }
                     this.loading = false;
@@ -164,6 +238,27 @@ export default class PCRTest extends Vue {
         }
     }
 
+    private get oidcRedirectPath() {
+        return this.noSerialNumber ? "/pcrtest" : this.redirectPath;
+    }
+
+    private get testTakenMinutesAgoOptions() {
+        let testTakenMinutesAgoOptions: ISelectOption[] = [
+            { value: -1, text: "Time" },
+        ];
+        for (var i = 0; i < this.testTakenMinutesAgoValues.length; i++) {
+            testTakenMinutesAgoOptions.push({
+                value: this.testTakenMinutesAgoValues[i].value,
+                text: this.testTakenMinutesAgoValues[i].text,
+            });
+        }
+        return testTakenMinutesAgoOptions;
+    }
+
+    private setHasNoPhn(value: boolean) {
+        this.noPhn = value;
+    }
+
     // Sets the data source to either NONE (landing), KEYCLOAK (login), or MANUAL (registration)
     private setDataSource(dataSource: PCRDataSource) {
         this.loading = true;
@@ -175,38 +270,77 @@ export default class PCRTest extends Vue {
         } else {
             this.loading = false;
         }
-        this.pcrTest = {
-            firstName: "",
-            lastName: "",
-            phn: "",
-            dob: "",
-            contactPhoneNumber: "",
-            streetAddress: "",
-            city: "",
-            postalCode: "",
-            dateOfTest: "",
-            timeOfTest: "",
-            hdid: "",
-            testKitCid: this.serialNumber,
-        };
+        this.resetForm();
         this.dataSource = dataSource;
     }
 
     // Validation
+    private isManualInputValidator = requiredIf(
+        () => this.dataSource === this.DSMANUAL
+    );
+
+    private noPhnInputValidator = requiredIf(
+        () => this.dataSource === this.DSMANUAL && this.noPhn
+    );
+
+    private phnValidator = (value: string) => {
+        if (this.dataSource === this.DSMANUAL && !this.noPhn) {
+            var phn = value.replace(/\D/g, "");
+            return PHNValidator.IsValid(phn);
+        } else {
+            return true;
+        }
+    };
+
     private validations() {
         return {
-            dateOfBirth: {
-                required: required,
-                maxValue: (value: string) =>
-                    new DateWrapper(value).isBefore(new DateWrapper()),
-            },
-            dateOfTest: {
-                required: required,
-                maxValue: (value: string) =>
-                    new DateWrapper(value).isBefore(new DateWrapper()),
-            },
-            timeOfTest: {
-                required: required,
+            pcrTest: {
+                firstName: {
+                    required: this.isManualInputValidator,
+                },
+                lastName: {
+                    required: this.isManualInputValidator,
+                },
+                phn: {
+                    // issue
+                    required: this.isManualInputValidator,
+                    phnValidator: this.phnValidator,
+                },
+                dob: {
+                    // issue
+                    required: this.isManualInputValidator,
+                    maxValue: (value: string) => {
+                        if (this.dataSource === this.DSMANUAL) {
+                            return new DateWrapper(value).isBefore(
+                                new DateWrapper()
+                            );
+                        } else {
+                            return true;
+                        }
+                    },
+                },
+                contactPhoneNumber: {
+                    required: false,
+                    minLength: minLength(14),
+                    maxLength: maxLength(14),
+                },
+                streetAddress: {
+                    required: this.noPhnInputValidator,
+                },
+                city: {
+                    required: this.noPhnInputValidator,
+                },
+                postalCode: {
+                    required: this.noPhnInputValidator,
+                    minLength: minLength(7),
+                },
+                testTakenMinutesAgo: {
+                    required: required,
+                    minValue: minValue(0),
+                },
+                testKitCid: {
+                    required: requiredIf(() => this.noSerialNumber),
+                },
             },
         };
     }
@@ -217,24 +351,78 @@ export default class PCRTest extends Vue {
 
     // Form actions
     private handleSubmit() {
-        console.log("Submitting...", this.pcrTest);
         switch (this.dataSource) {
             case this.DSKEYCLOAK:
-                console.log("KEYCLOAK");
+                var testKitRequest: RegisterTestKitRequest = {
+                    hdid: this.oidcUser.hdid,
+                    testKitCid: this.pcrTest.testKitCid,
+                    testTakenMinutesAgo: this.pcrTest.testTakenMinutesAgo,
+                };
+                console.log(testKitRequest);
+                this.loading = true;
+                const hdid = this.user.hdid;
+                this.pcrTestService
+                    .registerTestKit(hdid, testKitRequest)
+                    .then((response) => {
+                        console.log("registerTestKit Response: ", response);
+                        this.loading = false;
+                        this.registrationComplete = true;
+                    })
+                    .catch((err) => {
+                        this.logger.error(`registerTestKit Error: ${err}`);
+                        this.addError(
+                            ErrorTranslator.toBannerError(
+                                "Test kit registration",
+                                err
+                            )
+                        );
+                        this.loading = false;
+                    });
                 break;
             case this.DSMANUAL:
-                var request: RegisterTestKitRequest = {};
-                console.log(request);
-                console.log("MANUAL");
-                // Submit the manual test kit registration
+                var testKitPublicRequest: RegisterTestKitPublicRequest = {
+                    firstName: this.pcrTest.firstName,
+                    lastName: this.pcrTest.lastName,
+                    phn: this.pcrTest.phn,
+                    dob: this.pcrTest.dob,
+                    contactPhoneNumber: this.pcrTest.contactPhoneNumber,
+                    streetAddress: this.pcrTest.streetAddress,
+                    city: this.pcrTest.city,
+                    postalCode: this.pcrTest.postalCode,
+                    testTakenMinutesAgo: this.pcrTest.testTakenMinutesAgo,
+                    testKitCid: this.pcrTest.testKitCid,
+                };
+                console.log(testKitPublicRequest);
+                this.loading = true;
+                this.pcrTestService
+                    .registerTestKitPublic(testKitPublicRequest)
+                    .then((response) => {
+                        console.log(
+                            "registerTestKitPublic Response: ",
+                            response
+                        );
+                        this.loading = false;
+                        this.registrationComplete = true;
+                    })
+                    .catch((err) => {
+                        this.logger.error(
+                            `registerTestKitPublic Error: ${err}`
+                        );
+                        this.addError(
+                            ErrorTranslator.toBannerError(
+                                "Test kit registration",
+                                err
+                            )
+                        );
+                        this.loading = false;
+                    });
                 break;
             default:
-                console.log("NONE");
                 break;
         }
     }
 
-    private handleCancel() {
+    private resetForm() {
         this.pcrTest = {
             firstName: "",
             lastName: "",
@@ -244,11 +432,14 @@ export default class PCRTest extends Vue {
             streetAddress: "",
             city: "",
             postalCode: "",
-            dateOfTest: "",
-            timeOfTest: "",
+            testTakenMinutesAgo: -1,
             hdid: "",
-            testKitCid: this.serialNumber,
+            testKitCid: this.noSerialNumber ? "" : this.serialNumber,
         };
+    }
+
+    private handleCancel() {
+        this.resetForm();
         this.dataSource = PCRDataSource.None;
     }
 
@@ -257,7 +448,7 @@ export default class PCRTest extends Vue {
         // if the login action returns it means that the user already had credentials.
         await this.authenticateOidc({
             idpHint: hint,
-            redirectPath: this.redirectPath,
+            redirectPath: this.oidcRedirectPath,
         })
             .then(() => {
                 if (this.oidcIsAuthenticated) {
@@ -297,9 +488,6 @@ export default class PCRTest extends Vue {
                                 the following methods:
                             </strong></b-col
                         >
-                    </b-row>
-                    <b-row class="pt-2">
-                        <b-col>Kit's serial #: {{ serialNumber }} </b-col>
                     </b-row>
                 </b-col>
             </b-row>
@@ -378,6 +566,33 @@ export default class PCRTest extends Vue {
                                 </strong>
                             </b-col>
                         </b-row>
+                        <b-row v-if="noSerialNumber" class="mt-2">
+                            <b-col>
+                                <label for="testKitCid">
+                                    Test Kit Serial Number
+                                </label>
+                                <b-form-input
+                                    id="testKitCid"
+                                    v-model="pcrTest.testKitCid"
+                                    type="text"
+                                    placeholder="1451424123"
+                                    :state="isValid($v.pcrTest.testKitCid)"
+                                    @blur.native="
+                                        $v.pcrTest.testKitCid.$touch()
+                                    "
+                                />
+                                <b-form-invalid-feedback
+                                    v-if="
+                                        $v.pcrTest.testKitCid.$dirty &&
+                                        !$v.pcrTest.testKitCid.required
+                                    "
+                                    aria-label="Invalid Test Kit ID"
+                                    force-show
+                                >
+                                    Invalid PCR Test Kit ID.
+                                </b-form-invalid-feedback>
+                            </b-col>
+                        </b-row>
                         <b-row
                             v-if="pcrDataSource === DSMANUAL"
                             data-testid="pcrName"
@@ -393,8 +608,23 @@ export default class PCRTest extends Vue {
                                             v-model="pcrTest.firstName"
                                             type="text"
                                             placeholder="Jay"
-                                            required
+                                            :state="
+                                                isValid($v.pcrTest.firstName)
+                                            "
+                                            @blur.native="
+                                                $v.pcrTest.firstName.$touch()
+                                            "
                                         />
+                                        <b-form-invalid-feedback
+                                            v-if="
+                                                $v.pcrTest.firstName.$dirty &&
+                                                !$v.pcrTest.firstName.required
+                                            "
+                                            aria-label="First name is required"
+                                            force-show
+                                        >
+                                            First name is required.
+                                        </b-form-invalid-feedback>
                                     </b-col>
                                 </b-row>
                                 <b-row class="mt-2">
@@ -407,8 +637,23 @@ export default class PCRTest extends Vue {
                                             v-model="pcrTest.lastName"
                                             type="text"
                                             placeholder="Doe"
-                                            required
+                                            :state="
+                                                isValid($v.pcrTest.lastName)
+                                            "
+                                            @blur.native="
+                                                $v.pcrTest.lastName.$touch()
+                                            "
                                         />
+                                        <b-form-invalid-feedback
+                                            v-if="
+                                                $v.pcrTest.lastName.$dirty &&
+                                                !$v.pcrTest.lastName.required
+                                            "
+                                            aria-label="Last name is required"
+                                            force-show
+                                        >
+                                            Last name is required.
+                                        </b-form-invalid-feedback>
                                     </b-col>
                                 </b-row>
                             </b-col>
@@ -432,29 +677,66 @@ export default class PCRTest extends Vue {
                                                 placeholder="9737 364 347"
                                                 data-testid="phnInput"
                                                 aria-label="Personal Health Number"
+                                                :state="isValid($v.pcrTest.phn)"
+                                                :disabled="noPhn"
+                                                @blur.native="
+                                                    $v.pcrTest.phn.$touch()
+                                                "
                                             />
+                                            <b-form-invalid-feedback
+                                                :state="isValid($v.pcrTest.phn)"
+                                            >
+                                                Valid PHN is required.
+                                            </b-form-invalid-feedback>
                                         </b-form-group>
                                     </b-col>
                                 </b-row>
                             </b-col>
                         </b-row>
                         <!-- NO PHN -->
+                        <b-row>
+                            <b-col>
+                                <!-- Checkbox for PHN or no PHN -->
+                                <b-form-checkbox
+                                    v-if="dataSource == DSMANUAL"
+                                    id="phnCheckbox"
+                                    v-model="noPhn"
+                                    @change="setHasNoPhn($event)"
+                                >
+                                    I don't have a PHN
+                                    <hg-button
+                                        :id="'pcr-no-phn-info-button'"
+                                        aria-label="Result Description"
+                                        href="#"
+                                        variant="link"
+                                        data-testid="pcr-no-phn-info-button"
+                                        class="shadow-none p-0 ml-1"
+                                    >
+                                        <hg-icon
+                                            icon="info-circle"
+                                            size="small"
+                                        />
+                                    </hg-button>
+                                    <b-popover
+                                        :target="'pcr-no-phn-info-button'"
+                                        triggers="hover focus"
+                                        placement="bottomleft"
+                                        data-testid="pcr-no-phn-info-popover"
+                                    >
+                                        You can find your personal health number
+                                        (PHN) on your BC Services Card. If you
+                                        do not have a PHN, please enter your
+                                        address so we can register your PCR test
+                                        kit to you.
+                                    </b-popover>
+                                </b-form-checkbox>
+                            </b-col>
+                        </b-row>
                         <b-row
-                            v-if="
-                                pcrDataSource === DSMANUAL && pcrTest.phn === ''
-                            "
+                            v-if="pcrDataSource === DSMANUAL && noPhn"
                             data-testid="pcrHomeAddress"
                         >
                             <b-col>
-                                <b-row>
-                                    <b-col
-                                        ><span class="phn-info">
-                                            If you don't have a Personal Health
-                                            Number, please enter your home
-                                            address.
-                                        </span></b-col
-                                    >
-                                </b-row>
                                 <b-row class="mt-2">
                                     <b-col>
                                         <label for="pcrStreetAddress"
@@ -465,7 +747,27 @@ export default class PCRTest extends Vue {
                                             v-model="pcrTest.streetAddress"
                                             type="text"
                                             placeholder="123 Some Street"
+                                            :state="
+                                                isValid(
+                                                    $v.pcrTest.streetAddress
+                                                )
+                                            "
+                                            @blur.native="
+                                                $v.pcrTest.streetAddress.$touch()
+                                            "
                                         />
+                                        <b-form-invalid-feedback
+                                            v-if="
+                                                $v.pcrTest.streetAddress
+                                                    .$dirty &&
+                                                !$v.pcrTest.streetAddress
+                                                    .required
+                                            "
+                                            aria-label="Street address is required"
+                                            force-show
+                                        >
+                                            Street address is required.
+                                        </b-form-invalid-feedback>
                                     </b-col>
                                 </b-row>
                                 <b-row class="mt-2">
@@ -476,7 +778,21 @@ export default class PCRTest extends Vue {
                                             v-model="pcrTest.city"
                                             type="text"
                                             placeholder="This Town"
+                                            :state="isValid($v.pcrTest.city)"
+                                            @blur.native="
+                                                $v.pcrTest.city.$touch()
+                                            "
                                         />
+                                        <b-form-invalid-feedback
+                                            v-if="
+                                                $v.pcrTest.city.$dirty &&
+                                                !$v.pcrTest.city.required
+                                            "
+                                            aria-label="City is required"
+                                            force-show
+                                        >
+                                            City is required.
+                                        </b-form-invalid-feedback>
                                     </b-col>
                                 </b-row>
                                 <b-row class="mt-2">
@@ -490,7 +806,33 @@ export default class PCRTest extends Vue {
                                             v-mask="'A#A #A#'"
                                             type="text"
                                             placeholder="V0V 0V0"
+                                            :state="
+                                                isValid($v.pcrTest.postalCode)
+                                            "
+                                            @blur.native="
+                                                $v.pcrTest.postalCode.$touch()
+                                            "
                                         />
+                                        <b-form-invalid-feedback
+                                            v-if="
+                                                $v.pcrTest.postalCode.$dirty &&
+                                                !$v.pcrTest.postalCode.required
+                                            "
+                                            aria-label="Postal code is required"
+                                            force-show
+                                        >
+                                            Postal code is required.
+                                        </b-form-invalid-feedback>
+                                        <b-form-invalid-feedback
+                                            v-else-if="
+                                                $v.pcrTest.postalCode.$dirty &&
+                                                !$v.pcrTest.postalCode.minLength
+                                            "
+                                            aria-label="Postal code is required"
+                                            force-show
+                                        >
+                                            Postal code is required.
+                                        </b-form-invalid-feedback>
                                     </b-col>
                                 </b-row>
                             </b-col>
@@ -500,22 +842,22 @@ export default class PCRTest extends Vue {
                             <b-col v-if="pcrDataSource === DSMANUAL">
                                 <b-form-group
                                     label="Date of Birth"
-                                    label-for="dateOfBirth"
-                                    :state="isValid($v.dateOfBirth)"
+                                    label-for="dob"
+                                    :state="isValid($v.pcrTest.dob)"
                                 >
                                     <hg-date-dropdown
-                                        id="dateOfBirth"
+                                        id="dob"
                                         v-model="pcrTest.dob"
-                                        :state="isValid($v.dateOfBirth)"
+                                        :state="isValid($v.pcrTest.dob)"
                                         :allow-future="false"
-                                        data-testid="dateOfBirthInput"
+                                        data-testid="dobInput"
                                         aria-label="Date of Birth"
-                                        @blur="$v.dateOfBirth.$touch()"
+                                        @blur="$v.pcrTest.dob.$touch()"
                                     />
                                     <b-form-invalid-feedback
                                         v-if="
-                                            $v.dateOfBirth.$dirty &&
-                                            !$v.dateOfBirth.required
+                                            $v.pcrTest.dob.$dirty &&
+                                            !$v.pcrTest.dob.required
                                         "
                                         aria-label="Invalid Date of Birth"
                                         data-testid="feedbackDobIsRequired"
@@ -525,8 +867,8 @@ export default class PCRTest extends Vue {
                                     </b-form-invalid-feedback>
                                     <b-form-invalid-feedback
                                         v-else-if="
-                                            $v.dateOfBirth.$dirty &&
-                                            !$v.dateOfBirth.maxValue
+                                            $v.pcrTest.dob.$dirty &&
+                                            !$v.pcrTest.dob.maxValue
                                         "
                                         aria-label="Invalid Date of Birth"
                                         force-show
@@ -541,14 +883,7 @@ export default class PCRTest extends Vue {
                             <b-col>
                                 <b-row class="mt-2">
                                     <b-col>
-                                        <label
-                                            v-if="pcrDataSource === DSMANUAL"
-                                            for="pcrMobileNumber"
-                                            >Mobile Number</label
-                                        >
-                                        <label
-                                            v-if="pcrDataSource === DSKEYCLOAK"
-                                            for="pcrMobileNumber"
+                                        <label for="pcrMobileNumber"
                                             >Mobile Number (optional)
                                         </label>
                                         <b-form-input
@@ -557,96 +892,72 @@ export default class PCRTest extends Vue {
                                             v-mask="smsMask"
                                             type="tel"
                                             placeholder="(250) 908 4345"
-                                            required
+                                            :state="
+                                                isValid(
+                                                    $v.pcrTest
+                                                        .contactPhoneNumber
+                                                )
+                                            "
+                                            @blur.native="
+                                                $v.pcrTest.contactPhoneNumber.$touch()
+                                            "
                                         />
+                                        <b-form-invalid-feedback
+                                            v-if="
+                                                $v.pcrTest.contactPhoneNumber
+                                                    .$dirty &&
+                                                (!$v.pcrTest.contactPhoneNumber
+                                                    .maxLength ||
+                                                    !$v.pcrTest
+                                                        .contactPhoneNumber
+                                                        .minLength)
+                                            "
+                                            aria-label="Phone number must be valid."
+                                            force-show
+                                        >
+                                            Phone number must be valid.
+                                        </b-form-invalid-feedback>
                                     </b-col>
                                 </b-row>
                             </b-col>
                         </b-row>
-                        <!-- DATE OF TEST -->
-                        <b-row data-testid="pcrDateOfTest" class="mt-2">
+                        <!-- TIME SINCE TEST TAKEN -->
+                        <b-row class="mt-2">
                             <b-col>
-                                <b-form-group
-                                    label="Date of Test"
-                                    label-for="dateOfTest"
-                                    :state="isValid($v.dateOfTest)"
+                                <!-- Time since test taken -->
+                                <label for="testTakenMinutesAgo"
+                                    >Time since test taken</label
                                 >
-                                    <hg-date-dropdown
-                                        id="dateOfTest"
-                                        v-model="pcrTest.dateOfTest"
-                                        :state="isValid($v.dateOfTest)"
-                                        :allow-future="false"
-                                        data-testid="dateOfTestInput"
-                                        aria-label="Date of Test"
-                                        @blur="$v.dateOfTest.$touch()"
-                                    />
-                                    <b-form-invalid-feedback
-                                        v-if="
-                                            $v.dateOfTest.$dirty &&
-                                            !$v.dateOfTest.required
-                                        "
-                                        aria-label="Invalid Date of Test"
-                                        data-testid="feedbackDobIsRequired"
-                                        force-show
-                                    >
-                                        A valid test date is required.
-                                    </b-form-invalid-feedback>
-                                    <b-form-invalid-feedback
-                                        v-else-if="
-                                            $v.dateOfTest.$dirty &&
-                                            !$v.dateOfTest.maxValue
-                                        "
-                                        aria-label="Invalid Date of Test"
-                                        force-show
-                                    >
-                                        Test date must be in the past.
-                                    </b-form-invalid-feedback>
-                                </b-form-group>
-                            </b-col>
-                        </b-row>
-                        <!-- TIME OF TEST -->
-                        <b-row data-testid="pcrTimeOfTest">
-                            <b-col>
-                                <b-form-group
-                                    label="Time of Test"
-                                    label-for="timeOfTest"
-                                    :state="isValid($v.timeOfTest)"
+                                <b-form-select
+                                    id="testTakenMinutesAgo"
+                                    v-model="pcrTest.testTakenMinutesAgo"
+                                    data-testid="testTakenMinutesAgo"
+                                    :options="testTakenMinutesAgoOptions"
+                                    :state="
+                                        isValid($v.pcrTest.testTakenMinutesAgo)
+                                    "
+                                    @blur.native="
+                                        $v.pcrTest.testTakenMinutesAgo.$touch()
+                                    "
                                 >
-                                    <hg-time-dropdown
-                                        id="timeOfTest"
-                                        v-model="pcrTest.timeOfTest"
-                                        :state="isValid($v.timeOfTest)"
-                                        :allow-future="false"
-                                        data-testid="timeOfTestInput"
-                                        aria-label="Time of Test"
-                                        @blur="$v.timeOfTest.$touch()"
-                                    />
-                                    <b-form-invalid-feedback
-                                        v-if="
-                                            $v.timeOfTest.$dirty &&
-                                            !$v.timeOfTest.required
-                                        "
-                                        aria-label="Invalid Time of Test"
-                                        data-testid="feedbackTotIsRequired"
-                                        force-show
-                                    >
-                                        A valid test time is required.
-                                    </b-form-invalid-feedback>
-                                    <b-form-invalid-feedback
-                                        v-else-if="
-                                            $v.timeOfTest.$dirty &&
-                                            !$v.timeOfTest.maxValue
-                                        "
-                                        aria-label="Invalid Time of Test"
-                                        force-show
-                                    >
-                                        Test date must be in the past.
-                                    </b-form-invalid-feedback>
-                                </b-form-group>
+                                </b-form-select>
+                                <b-form-invalid-feedback
+                                    v-if="
+                                        $v.pcrTest.testTakenMinutesAgo.$dirty &&
+                                        (!$v.pcrTest.testTakenMinutesAgo
+                                            .required ||
+                                            !$v.pcrTest.testTakenMinutesAgo
+                                                .minValue)
+                                    "
+                                    aria-label="Postal code is required"
+                                    force-show
+                                >
+                                    Time since test taken is required.
+                                </b-form-invalid-feedback>
                             </b-col>
                         </b-row>
                         <!-- PRIVACY STATEMENT -->
-                        <b-row data-testid="pcrPrivacyStatement">
+                        <b-row data-testid="pcrPrivacyStatement" class="pt-2">
                             <b-col
                                 ><hg-button
                                     id="privacy-statement"
@@ -704,7 +1015,7 @@ export default class PCRTest extends Vue {
                                     block
                                     variant="primary"
                                     data-testid="btnSubmit"
-                                    :disabled="!$v.$invalid"
+                                    :disabled="$v.pcrTest.$invalid"
                                     @click="handleSubmit"
                                 >
                                     Submit
