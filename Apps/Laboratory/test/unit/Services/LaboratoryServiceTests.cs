@@ -117,23 +117,14 @@ namespace HealthGateway.LaboratoryTests
             Mock<ILaboratoryDelegateFactory> mockLaboratoryDelegateFactory = new();
             mockLaboratoryDelegateFactory.Setup(s => s.CreateInstance()).Returns(mockLaboratoryDelegate.Object);
 
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
-            DefaultHttpContext context = new()
-            {
-                Connection =
-                {
-                    RemoteIpAddress = IPAddress.Parse(IpAddress),
-                },
-            };
-            context.Request.Headers.Add("Authorization", "MockJWTHeader");
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
 
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 mockLaboratoryDelegateFactory.Object,
-                null!,
-                null!);
+                mockAuthDelegate.Object);
 
             Task<RequestResult<LaboratoryReport>> actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, BearerToken);
 
@@ -285,12 +276,14 @@ namespace HealthGateway.LaboratoryTests
         [Fact]
         public void GetCovidTestsWithInvalidPhn()
         {
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
+
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new Mock<ILaboratoryDelegateFactory>().Object,
-                new Mock<IAuthenticationDelegate>().Object,
-                GetMemoryCache());
+                mockAuthDelegate.Object);
 
             string invalidPhn = "123";
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -311,12 +304,14 @@ namespace HealthGateway.LaboratoryTests
         [InlineData("dd/MM/yyyy")]
         public void GetCovidTestsWithInvalidDateOfBirth(string dateFormat)
         {
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
+
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new Mock<ILaboratoryDelegateFactory>().Object,
-                new Mock<IAuthenticationDelegate>().Object,
-                GetMemoryCache());
+                mockAuthDelegate.Object);
 
             string invalidDateOfBirthString = this.dateOfBirth.ToString(dateFormat, CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -336,12 +331,13 @@ namespace HealthGateway.LaboratoryTests
         [InlineData("dd/MM/yyyy")]
         public void GetCovidTestsWithInvalidCollectionDate(string dateFormat)
         {
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new Mock<ILaboratoryDelegateFactory>().Object,
-                new Mock<IAuthenticationDelegate>().Object,
-                GetMemoryCache());
+                mockAuthDelegate.Object);
 
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string invalidCollectionDateString = this.collectionDate.ToString(dateFormat, CultureInfo.CurrentCulture);
@@ -424,23 +420,20 @@ namespace HealthGateway.LaboratoryTests
             context.Request.Headers.Add("Authorization", "MockJWTHeader");
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
 
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
+
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 mockLaboratoryDelegateFactory.Object,
-                null!,
-                null!);
+                mockAuthDelegate.Object);
 
             return service;
         }
 
         private ILaboratoryService GetLabServiceForCovidTests(RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> delegateResult)
         {
-            JWTModel jwtModel = new()
-            {
-                AccessToken = this.accessToken,
-            };
-
             Mock<ILaboratoryDelegate> mockLaboratoryDelegate = new();
             mockLaboratoryDelegate.Setup(s => s.GetPublicTestResults(this.accessToken, It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<DateOnly>())).Returns(Task.FromResult(delegateResult));
 
@@ -448,14 +441,12 @@ namespace HealthGateway.LaboratoryTests
             mockLaboratoryDelegateFactory.Setup(s => s.CreateInstance()).Returns(mockLaboratoryDelegate.Object);
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), false)).Returns(jwtModel);
-
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 mockLaboratoryDelegateFactory.Object,
-                mockAuthDelegate.Object,
-                GetMemoryCache());
+                mockAuthDelegate.Object);
 
             return service;
         }

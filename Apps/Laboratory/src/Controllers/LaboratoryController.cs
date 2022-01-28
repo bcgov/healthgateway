@@ -22,6 +22,7 @@ namespace HealthGateway.Laboratory.Controllers
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
     using HealthGateway.Laboratory.Models;
+    using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
@@ -40,30 +41,26 @@ namespace HealthGateway.Laboratory.Controllers
     public class LaboratoryController : ControllerBase
     {
         private readonly ILogger logger;
-
-        /// <summary>
-        /// Gets or sets the laboratory data service.
-        /// </summary>
-        private readonly ILaboratoryService service;
-
-        /// <summary>
-        /// Gets or sets the http context accessor.
-        /// </summary>
+        private readonly ILaboratoryService labService;
+        private readonly ILabTestKitService labTestKitService;
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryController"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="svc">The laboratory data service.</param>
+        /// <param name="labService">The laboratory data service.</param>
+        /// <param name="labTestKitService">The lab testkit service to use.</param>
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
         public LaboratoryController(
             ILogger<LaboratoryController> logger,
-            ILaboratoryService svc,
+            ILaboratoryService labService,
+            ILabTestKitService labTestKitService,
             IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
-            this.service = svc;
+            this.labService = labService;
+            this.labTestKitService = labTestKitService;
             this.httpContextAccessor = httpContextAccessor;
         }
 
@@ -90,7 +87,7 @@ namespace HealthGateway.Laboratory.Controllers
 
                 if (accessToken != null)
                 {
-                    RequestResult<IEnumerable<LaboratoryModel>> result = await this.service.GetLaboratoryOrders(accessToken, hdid).ConfigureAwait(true);
+                    RequestResult<IEnumerable<LaboratoryModel>> result = await this.labService.GetLaboratoryOrders(accessToken, hdid).ConfigureAwait(true);
                     this.logger.LogDebug($"Finished getting lab orders from controller... {hdid}");
 
                     return new JsonResult(result);
@@ -125,7 +122,7 @@ namespace HealthGateway.Laboratory.Controllers
 
                 if (accessToken != null)
                 {
-                    RequestResult<LaboratoryReport> result = await this.service.GetLabReport(reportId, hdid, accessToken).ConfigureAwait(true);
+                    RequestResult<LaboratoryReport> result = await this.labService.GetLabReport(reportId, hdid, accessToken).ConfigureAwait(true);
                     this.logger.LogDebug($"Finished getting pdf report from controller... {hdid}");
 
                     return new JsonResult(result);
@@ -158,13 +155,32 @@ namespace HealthGateway.Laboratory.Controllers
                 string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
                 if (accessToken != null)
                 {
-                    result = await this.service.CreateRapidTestAsync(hdid, accessToken, rapidTestRequest).ConfigureAwait(true);
+                    result = await this.labService.CreateRapidTestAsync(hdid, accessToken, rapidTestRequest).ConfigureAwait(true);
                     this.logger.LogDebug($"Finished submitting a rapid test from controller... {hdid}");
                     return result;
                 }
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Registers a lab test for an authenticated user.
+        /// </summary>
+        /// <param name="hdid">The hdid to apply the LabTestKit against.</param>
+        /// <param name="labTestKit">The labTestKit to register.</param>
+        /// <returns>A LabTestKit  Result object wrapped in a request result.</returns>
+        /// <response code="200">The LabTestKit was processed.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="503">The service is unavailable for use.</response>
+        [HttpPost]
+        [Produces("application/json")]
+        [Route("{hdid}/LabTestKit")]
+        [Authorize(Policy = LaboratoryPolicy.Write)]
+        public async Task<RequestResult<LabTestKit>> AddLabTestKit(string hdid, [FromBody]LabTestKit labTestKit)
+        {
+            return await this.labTestKitService.RegisterLabTestKitAsync(hdid, labTestKit).ConfigureAwait(true);
         }
     }
 }

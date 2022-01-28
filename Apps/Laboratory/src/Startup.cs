@@ -18,12 +18,15 @@ namespace HealthGateway.Laboratory
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
+    using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Refit;
 
     /// <summary>
     /// Configures the application during startup.
@@ -62,9 +65,16 @@ namespace HealthGateway.Laboratory
             // Add services
             services.AddSingleton<ILaboratoryDelegateFactory, LaboratoryDelegateFactory>();
             services.AddTransient<ILaboratoryService, LaboratoryService>();
+            services.AddTransient<ILabTestKitService, LabTestKitService>();
 
             // Add delegates
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+
+            // Add API Clients
+            LaboratoryConfig labConfig = new();
+            this.startupConfig.Configuration.Bind(LaboratoryService.LabConfigSectionKey, labConfig);
+            services.AddRefitClient<ILabTestKitClient>()
+                .ConfigureHttpClient(c => c.BaseAddress = labConfig.BaseUrl);
         }
 
         /// <summary>

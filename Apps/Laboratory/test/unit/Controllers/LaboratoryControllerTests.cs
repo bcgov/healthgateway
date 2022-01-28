@@ -80,9 +80,13 @@ namespace HealthGateway.LaboratoryTests
                 TotalResultCount = 0,
                 ResourcePayload = new List<LaboratoryModel>(),
             });
+
+            Mock<ILabTestKitService> mockLabTestKitService = new();
+
             LaboratoryController controller = new(
                 new Mock<ILogger<LaboratoryController>>().Object,
                 svcMock.Object,
+                mockLabTestKitService.Object,
                 httpContextAccessorMock.Object);
 
             // Act
@@ -113,9 +117,12 @@ namespace HealthGateway.LaboratoryTests
                 TotalResultCount = 0,
             });
 
+            Mock<ILabTestKitService> mockLabTestKitService = new();
+
             LaboratoryController controller = new(
                 new Mock<ILogger<LaboratoryController>>().Object,
                 svcMock.Object,
+                mockLabTestKitService.Object,
                 httpContextAccessorMock.Object);
 
             // Act
@@ -142,9 +149,12 @@ namespace HealthGateway.LaboratoryTests
             MockLaboratoryDelegate laboratoryDelegate = new();
             svcMock.Setup(s => s.GetLabReport(guid, Hdid, Token)).ReturnsAsync(await laboratoryDelegate.GetLabReport(guid, Hdid, Token).ConfigureAwait(true));
 
+            Mock<ILabTestKitService> mockLabTestKitService = new();
+
             LaboratoryController controller = new(
                 new Mock<ILogger<LaboratoryController>>().Object,
                 svcMock.Object,
+                mockLabTestKitService.Object,
                 httpContextAccessorMock.Object);
 
             // Act
@@ -175,9 +185,12 @@ namespace HealthGateway.LaboratoryTests
                 TotalResultCount = 0,
             });
 
+            Mock<ILabTestKitService> mockLabTestKitService = new();
+
             LaboratoryController controller = new(
                 new Mock<ILogger<LaboratoryController>>().Object,
                 svcMock.Object,
+                mockLabTestKitService.Object,
                 httpContextAccessorMock.Object);
 
             // Act

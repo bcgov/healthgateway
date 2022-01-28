@@ -82,6 +82,22 @@ namespace HealthGateway.Common.Data.Models.ErrorHandling
         }
 
         /// <summary>
+        /// Gets the general data validation error.
+        /// </summary>
+        public static ActionType Validation
+        {
+            get { return new ActionType("VALIDATION"); }
+        }
+
+        /// <summary>
+        /// Gets the action that the request was already processed.
+        /// </summary>
+        public static ActionType Processed
+        {
+            get { return new ActionType("PROCESSED"); }
+        }
+
+        /// <summary>
         /// Gets or sets the value that holds the internal representation of the ActionType.
         /// </summary>
         public string Value { get; set; }
