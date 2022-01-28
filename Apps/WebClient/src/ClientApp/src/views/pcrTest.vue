@@ -373,6 +373,7 @@ export default class PCRTest extends Vue {
                     .registerTestKit(hdid, testKitRequest)
                     .then((response) => {
                         console.log("registerTestKit Response: ", response);
+                        this.resetForm();
                         this.loading = false;
                         this.registrationComplete = true;
                     })
@@ -415,6 +416,7 @@ export default class PCRTest extends Vue {
                             "registerTestKitPublic Response: ",
                             response
                         );
+                        this.resetForm();
                         this.loading = false;
                         this.registrationComplete = true;
                     })
