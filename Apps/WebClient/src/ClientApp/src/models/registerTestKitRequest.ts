@@ -6,5 +6,5 @@ export default interface RegisterTestKitRequest {
     testTakenMinutesAgo?: number;
 
     // ID of the test kit
-    testKitCid?: string;
+    testKitId?: string;
 }

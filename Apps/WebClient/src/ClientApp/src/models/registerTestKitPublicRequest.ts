@@ -15,7 +15,7 @@ export default interface RegisterTestKitPublicRequest {
     testTakenMinutesAgo?: number;
 
     // ID of the test kit
-    testKitCid?: string;
+    testKitId?: string;
 
     // The patient's phone number
     contactPhoneNumber?: string;
@@ -27,5 +27,5 @@ export default interface RegisterTestKitPublicRequest {
     city?: string;
 
     // Postal or ZIP code of patient (only required if no phn provided)
-    postalCode?: string;
+    postalOrZip?: string;
 }

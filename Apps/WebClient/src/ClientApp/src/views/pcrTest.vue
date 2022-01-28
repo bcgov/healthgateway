@@ -149,10 +149,10 @@ export default class PCRTest extends Vue {
         contactPhoneNumber: "",
         streetAddress: "",
         city: "",
-        postalCode: "",
+        postalOrZip: "",
         testTakenMinutesAgo: -1,
         hdid: "",
-        testKitCid: this.serialNumber,
+        testKitId: this.serialNumber,
     };
 
     // Variables for PCRDataSource enum referenced in render
@@ -336,7 +336,7 @@ export default class PCRTest extends Vue {
                 city: {
                     required: this.noPhnInputValidator,
                 },
-                postalCode: {
+                postalOrZip: {
                     required: this.noPhnInputValidator,
                     minLength: minLength(7),
                 },
@@ -344,7 +344,7 @@ export default class PCRTest extends Vue {
                     required: required,
                     minValue: minValue(0),
                 },
-                testKitCid: {
+                testKitId: {
                     required: requiredIf(() => this.noSerialNumber),
                 },
             },
@@ -362,7 +362,7 @@ export default class PCRTest extends Vue {
             case this.DSKEYCLOAK:
                 var testKitRequest: RegisterTestKitRequest = {
                     hdid: this.oidcUser.hdid,
-                    testKitCid: this.pcrTest.testKitCid,
+                    testKitId: this.pcrTest.testKitId,
                     testTakenMinutesAgo: this.pcrTest.testTakenMinutesAgo,
                 };
                 console.log(testKitRequest);
@@ -397,9 +397,9 @@ export default class PCRTest extends Vue {
                     contactPhoneNumber: this.pcrTest.contactPhoneNumber,
                     streetAddress: this.pcrTest.streetAddress,
                     city: this.pcrTest.city,
-                    postalCode: this.pcrTest.postalCode,
+                    postalOrZip: this.pcrTest.postalOrZip,
                     testTakenMinutesAgo: this.pcrTest.testTakenMinutesAgo,
-                    testKitCid: this.pcrTest.testKitCid,
+                    testKitId: this.pcrTest.testKitId,
                 };
                 console.log(testKitPublicRequest);
                 this.loading = true;
@@ -440,10 +440,10 @@ export default class PCRTest extends Vue {
             contactPhoneNumber: "",
             streetAddress: "",
             city: "",
-            postalCode: "",
+            postalOrZip: "",
             testTakenMinutesAgo: -1,
             hdid: "",
-            testKitCid: this.noSerialNumber ? "" : this.serialNumber,
+            testKitId: this.noSerialNumber ? "" : this.serialNumber,
         };
     }
 
@@ -578,23 +578,21 @@ export default class PCRTest extends Vue {
                         </b-row>
                         <b-row v-if="noSerialNumber" class="mt-2">
                             <b-col>
-                                <label for="testKitCid">
+                                <label for="testKitId">
                                     Test Kit Serial Number
                                 </label>
                                 <b-form-input
-                                    id="testKitCid"
-                                    v-model="pcrTest.testKitCid"
+                                    id="testKitId"
+                                    v-model="pcrTest.testKitId"
                                     type="text"
                                     placeholder="1451424123"
-                                    :state="isValid($v.pcrTest.testKitCid)"
-                                    @blur.native="
-                                        $v.pcrTest.testKitCid.$touch()
-                                    "
+                                    :state="isValid($v.pcrTest.testKitId)"
+                                    @blur.native="$v.pcrTest.testKitId.$touch()"
                                 />
                                 <b-form-invalid-feedback
                                     v-if="
-                                        $v.pcrTest.testKitCid.$dirty &&
-                                        !$v.pcrTest.testKitCid.required
+                                        $v.pcrTest.testKitId.$dirty &&
+                                        !$v.pcrTest.testKitId.required
                                     "
                                     aria-label="Invalid Test Kit ID"
                                     force-show
@@ -812,21 +810,21 @@ export default class PCRTest extends Vue {
                                         >
                                         <b-form-input
                                             id="pcrZip"
-                                            v-model="pcrTest.postalCode"
+                                            v-model="pcrTest.postalOrZip"
                                             v-mask="'A#A #A#'"
                                             type="text"
                                             placeholder="V0V 0V0"
                                             :state="
-                                                isValid($v.pcrTest.postalCode)
+                                                isValid($v.pcrTest.postalOrZip)
                                             "
                                             @blur.native="
-                                                $v.pcrTest.postalCode.$touch()
+                                                $v.pcrTest.postalOrZip.$touch()
                                             "
                                         />
                                         <b-form-invalid-feedback
                                             v-if="
-                                                $v.pcrTest.postalCode.$dirty &&
-                                                !$v.pcrTest.postalCode.required
+                                                $v.pcrTest.postalOrZip.$dirty &&
+                                                !$v.pcrTest.postalOrZip.required
                                             "
                                             aria-label="Postal code is required"
                                             force-show
@@ -835,8 +833,9 @@ export default class PCRTest extends Vue {
                                         </b-form-invalid-feedback>
                                         <b-form-invalid-feedback
                                             v-else-if="
-                                                $v.pcrTest.postalCode.$dirty &&
-                                                !$v.pcrTest.postalCode.minLength
+                                                $v.pcrTest.postalOrZip.$dirty &&
+                                                !$v.pcrTest.postalOrZip
+                                                    .minLength
                                             "
                                             aria-label="Postal code is required"
                                             force-show

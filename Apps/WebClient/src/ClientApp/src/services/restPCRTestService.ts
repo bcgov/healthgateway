@@ -14,9 +14,14 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 @injectable()
 export class RestPCRTestService implements IPCRTestService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly BASE_URI: string = "/v1/api";
+
+    private readonly LABORATORY_BASE_URI: string = "v1/api/Laboratory";
+    private readonly PUBLIC_LABORATORY_BASE_URI: string =
+        "v1/api/PublicLaboratory";
+
     private http!: IHttpDelegate;
     private isEnabled = false;
+    private baseUri = "";
 
     public initialize(
         config: ExternalConfiguration,
@@ -24,6 +29,7 @@ export class RestPCRTestService implements IPCRTestService {
     ): void {
         this.http = http;
         this.isEnabled = config.webClient.modules["PCRTest"];
+        this.baseUri = config.serviceEndpoints["Laboratory"];
     }
 
     public registerTestKit(
@@ -38,7 +44,7 @@ export class RestPCRTestService implements IPCRTestService {
                 }
                 this.http
                     .post<RequestResult<RegisterTestKitRequest>>(
-                        `${this.BASE_URI}/LabTestKits/Registration?hdid=${hdid}`,
+                        `${this.baseUri}${this.LABORATORY_BASE_URI}/${hdid}/LabTestKit`,
                         testKit
                     )
                     .then((requestResult) => {
@@ -77,7 +83,7 @@ export class RestPCRTestService implements IPCRTestService {
                 }
                 this.http
                     .post<RequestResult<RegisterTestKitPublicRequest>>(
-                        `${this.BASE_URI}/Public/LabTestKits/Registration`,
+                        `${this.baseUri}${this.PUBLIC_LABORATORY_BASE_URI}/LabTestKit`,
                         testKit
                     )
                     .then((requestResult) => {

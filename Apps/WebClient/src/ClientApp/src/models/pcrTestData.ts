@@ -6,8 +6,8 @@ export default interface PCRTestData {
     contactPhoneNumber?: string;
     streetAddress?: string;
     city?: string;
-    postalCode?: string;
+    postalOrZip?: string;
     testTakenMinutesAgo: number;
     hdid?: string;
-    testKitCid: string;
+    testKitId: string;
 }
