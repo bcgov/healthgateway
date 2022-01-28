@@ -18,14 +18,12 @@ namespace HealthGateway.Laboratory.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
-    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// Implementation that uses HTTP to retrieve laboratory information.
@@ -34,15 +32,15 @@ namespace HealthGateway.Laboratory.Delegates
     public class MockLaboratoryDelegate : ILaboratoryDelegate
     {
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<PhsaCovid19Order>>> GetCovid19Orders(string bearerToken, string hdid, int pageIndex = 0)
+        public async Task<RequestResult<PHSAResult<List<PhsaCovid19Order>>>> GetCovid19Orders(string bearerToken, string hdid, int pageIndex = 0)
         {
-            RequestResult<IEnumerable<PhsaCovid19Order>> retVal = new()
+            RequestResult<PHSAResult<List<PhsaCovid19Order>>> retVal = new()
             {
                 PageIndex = 0,
                 PageSize = 10000,
                 ResultStatus = ResultType.Success,
             };
-            PhsaCovid19Order[] mockData =
+            List<PhsaCovid19Order> mockData = new()
             {
                 new PhsaCovid19Order()
                 {
@@ -76,8 +74,8 @@ namespace HealthGateway.Laboratory.Delegates
                 },
             };
 
-            retVal.TotalResultCount = mockData.Length;
-            retVal.ResourcePayload = mockData.AsEnumerable();
+            retVal.TotalResultCount = mockData.Count;
+            retVal.ResourcePayload = new() { Result = mockData };
             await Task.Delay(0).ConfigureAwait(true);
             return retVal;
         }
@@ -101,7 +99,7 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public Task<RequestResult<PhsaLaboratorySummary>> GetLaboratorySummary(string hdid, string bearerToken)
+        public Task<RequestResult<PHSAResult<PhsaLaboratorySummary>>> GetLaboratorySummary(string hdid, string bearerToken)
         {
             throw new NotImplementedException();
         }

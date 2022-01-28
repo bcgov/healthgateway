@@ -74,11 +74,11 @@ namespace HealthGateway.Laboratory.Delegates
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestLaboratoryDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<PhsaCovid19Order>>> GetCovid19Orders(string bearerToken, string hdid, int pageIndex = 0)
+        public async Task<RequestResult<PHSAResult<List<PhsaCovid19Order>>>> GetCovid19Orders(string bearerToken, string hdid, int pageIndex = 0)
         {
             using (Source.StartActivity("GetCovid19Orders"))
             {
-                RequestResult<IEnumerable<PhsaCovid19Order>> retVal = new()
+                RequestResult<PHSAResult<List<PhsaCovid19Order>>> retVal = new()
                 {
                     ResultStatus = ResultType.Error,
                     PageIndex = pageIndex,
@@ -89,7 +89,7 @@ namespace HealthGateway.Laboratory.Delegates
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
                 client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                        new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 Dictionary<string, string?> query = new()
                 {
                     ["limit"] = this.labConfig.FetchSize,
@@ -107,11 +107,11 @@ namespace HealthGateway.Laboratory.Delegates
                         case HttpStatusCode.OK:
                             this.logger.LogTrace($"Response payload: {payload}");
                             PHSAResult<List<PhsaCovid19Order>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<List<PhsaCovid19Order>>>(payload);
-                            if (phsaResult != null && phsaResult.Result != null)
+                            if (phsaResult != null)
                             {
                                 retVal.ResultStatus = ResultType.Success;
-                                retVal.ResourcePayload = phsaResult.Result;
-                                retVal.TotalResultCount = phsaResult.Result.Count;
+                                retVal.ResourcePayload = phsaResult;
+                                retVal.TotalResultCount = phsaResult.Result?.Count ?? 0;
 #pragma warning disable CA1305 // Specify IFormatProvider
                                 retVal.PageSize = int.Parse(this.labConfig.FetchSize);
 #pragma warning restore CA1305 // Specify IFormatProvider
@@ -124,7 +124,7 @@ namespace HealthGateway.Laboratory.Delegates
                             break;
                         case HttpStatusCode.NoContent: // No Lab exits for this user
                             retVal.ResultStatus = ResultType.Success;
-                            retVal.ResourcePayload = new List<PhsaCovid19Order>();
+                            retVal.ResourcePayload = new() { Result = new() };
                             retVal.TotalResultCount = 0;
 #pragma warning disable CA1305 // Specify IFormatProvider
                             retVal.PageSize = int.Parse(this.labConfig.FetchSize);
@@ -239,11 +239,11 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PhsaLaboratorySummary>> GetLaboratorySummary(string hdid, string bearerToken)
+        public async Task<RequestResult<PHSAResult<PhsaLaboratorySummary>>> GetLaboratorySummary(string hdid, string bearerToken)
         {
             using Activity? activity = Source.StartActivity();
 
-            RequestResult<PhsaLaboratorySummary> retVal = new()
+            RequestResult<PHSAResult<PhsaLaboratorySummary>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -270,11 +270,11 @@ namespace HealthGateway.Laboratory.Delegates
                     case HttpStatusCode.OK:
                         this.logger.LogTrace($"Response payload: {payload}");
                         PHSAResult<PhsaLaboratorySummary>? phsaResult = JsonSerializer.Deserialize<PHSAResult<PhsaLaboratorySummary>>(payload);
-                        if (phsaResult != null && phsaResult.Result != null)
+                        if (phsaResult != null)
                         {
                             retVal.ResultStatus = ResultType.Success;
-                            retVal.ResourcePayload = phsaResult.Result;
-                            retVal.TotalResultCount = 1;
+                            retVal.ResourcePayload = phsaResult;
+                            retVal.TotalResultCount = phsaResult.Result != null ? phsaResult.Result.LabOrderCount : 0;
 #pragma warning disable CA1305 // Specify IFormatProvider
                             retVal.PageSize = int.Parse(this.labConfig.FetchSize);
 #pragma warning restore CA1305 // Specify IFormatProvider
@@ -287,7 +287,7 @@ namespace HealthGateway.Laboratory.Delegates
                         break;
                     case HttpStatusCode.NoContent: // No Lab exits for this user
                         retVal.ResultStatus = ResultType.Success;
-                        retVal.ResourcePayload = new PhsaLaboratorySummary();
+                        retVal.ResourcePayload = new() { Result = new() };
                         retVal.TotalResultCount = 0;
 #pragma warning disable CA1305 // Specify IFormatProvider
                         retVal.PageSize = int.Parse(this.labConfig.FetchSize);
@@ -303,12 +303,12 @@ namespace HealthGateway.Laboratory.Delegates
                 }
             }
 #pragma warning disable CA1031 // Do not catch general exception types
-                catch (Exception e)
+            catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
-                {
-                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting laboratory summary: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
-                    this.logger.LogError($"Unexpected exception in getting laboratory summary {e}");
-                }
+            {
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting laboratory summary: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                this.logger.LogError($"Unexpected exception in getting laboratory summary {e}");
+            }
 
             this.logger.LogDebug($"Finished getting Laboratory Orders");
             return retVal;
@@ -411,91 +411,91 @@ namespace HealthGateway.Laboratory.Delegates
             string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
 
             RequestResult<RapidTestResponse> retVal = new()
-                {
-                    ResultStatus = ResultType.Error,
-                    PageIndex = 0,
-                };
+            {
+                ResultStatus = ResultType.Error,
+                PageIndex = 0,
+            };
 
             try
+            {
+                Dictionary<string, string?> query = new()
                 {
-                    Dictionary<string, string?> query = new()
-                    {
-                        ["subjectHdid"] = hdid,
-                    };
+                    ["subjectHdid"] = hdid,
+                };
 
-                    JsonSerializerOptions serializerOptions = new()
-                    {
-                        Converters = { new DateOnlyJsonConverter() },
-                    };
+                JsonSerializerOptions serializerOptions = new()
+                {
+                    Converters = { new DateOnlyJsonConverter() },
+                };
 
-                    string json = JsonSerializer.Serialize(rapidTestRequest, serializerOptions);
-                    using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+                string json = JsonSerializer.Serialize(rapidTestRequest, serializerOptions);
+                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
 
-                    string endpointString = $"{this.labConfig.BaseUrl}{this.labConfig.AuthenticatedRapidTestEndPoint}";
-                    Uri endpoint = new(QueryHelpers.AddQueryString(endpointString, query));
-                    using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
+                string endpointString = $"{this.labConfig.BaseUrl}{this.labConfig.AuthenticatedRapidTestEndPoint}";
+                Uri endpoint = new(QueryHelpers.AddQueryString(endpointString, query));
+                using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
 
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-                    client.DefaultRequestHeaders.Add("X-Forward-For", ipAddress);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+                client.DefaultRequestHeaders.Add("X-Forward-For", ipAddress);
 
-                    HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
-                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    this.logger.LogTrace($"Response: {response}");
+                HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
+                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                this.logger.LogTrace($"Response: {response}");
 
-                    switch (response.StatusCode)
-                    {
-                        case HttpStatusCode.OK:
-                            this.logger.LogTrace($"Response payload: {payload}");
-                            RapidTestResponse? phsaResult = JsonSerializer.Deserialize<RapidTestResponse>(payload);
-                            if (phsaResult != null)
-                            {
-                                retVal.ResultStatus = ResultType.Success;
-                                retVal.ResourcePayload = phsaResult;
-                                retVal.TotalResultCount = phsaResult.RapidTestResults.Count();
-                            }
-                            else
-                            {
-                                retVal.ResultError = new RequestResultError()
-                                {
-                                    ResultMessage = "Error with JSON data",
-                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                                };
-                            }
-
-                            break;
-                        case HttpStatusCode.Forbidden:
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                        this.logger.LogTrace($"Response payload: {payload}");
+                        RapidTestResponse? phsaResult = JsonSerializer.Deserialize<RapidTestResponse>(payload);
+                        if (phsaResult != null)
+                        {
+                            retVal.ResultStatus = ResultType.Success;
+                            retVal.ResourcePayload = phsaResult;
+                            retVal.TotalResultCount = phsaResult.RapidTestResults.Count();
+                        }
+                        else
+                        {
                             retVal.ResultError = new RequestResultError()
                             {
-                                ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
+                                ResultMessage = "Error with JSON data",
                                 ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                             };
-                            break;
-                        case HttpStatusCode.Conflict:
-                            retVal.ResultError = new RequestResultError()
-                            {
-                                ResultMessage = $"Conflict or can not resolve PHN and Serial Number, HTTP Error {response.StatusCode}",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                            };
-                            break;
-                        default:
-                            retVal.ResultError = new RequestResultError()
-                            {
-                                ResultMessage = $"Unable to connect to Laboratory Authenticated Rapid Tests, HTTP Error {response.StatusCode}",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                            };
-                            this.logger.LogError($"Unable to connect to endpoint {endpointString}, HTTP Error {response.StatusCode}\n{payload}");
-                            break;
-                    }
+                        }
+
+                        break;
+                    case HttpStatusCode.Forbidden:
+                        retVal.ResultError = new RequestResultError()
+                        {
+                            ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
+                        break;
+                    case HttpStatusCode.Conflict:
+                        retVal.ResultError = new RequestResultError()
+                        {
+                            ResultMessage = $"Conflict or can not resolve PHN and Serial Number, HTTP Error {response.StatusCode}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
+                        break;
+                    default:
+                        retVal.ResultError = new RequestResultError()
+                        {
+                            ResultMessage = $"Unable to connect to Laboratory Authenticated Rapid Tests, HTTP Error {response.StatusCode}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
+                        this.logger.LogError($"Unable to connect to endpoint {endpointString}, HTTP Error {response.StatusCode}\n{payload}");
+                        break;
                 }
+            }
 #pragma warning disable CA1031 // Do not catch general exception types
-                catch (Exception e)
+            catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
-                {
-                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception in Submitting Rapid Test: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
-                    this.logger.LogError($"Unexpected exception in Submitting Rapid Test {e}");
-                }
+            {
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception in Submitting Rapid Test: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                this.logger.LogError($"Unexpected exception in Submitting Rapid Test {e}");
+            }
 
             return retVal;
         }

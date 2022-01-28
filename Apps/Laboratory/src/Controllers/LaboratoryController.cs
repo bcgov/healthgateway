@@ -16,7 +16,6 @@
 namespace HealthGateway.Laboratory.Controllers
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
@@ -58,11 +57,11 @@ namespace HealthGateway.Laboratory.Controllers
         }
 
         /// <summary>
-        /// Gets a json list of COVID-19 orders.
+        /// Gets a result containing a collection of COVID-19 laboratory orders.
         /// </summary>
-        /// <param name="hdid">The hdid resource to request the COVID-19 orders for.</param>
-        /// <returns>A list of COVID-19 records wrapped in a request result.</returns>
-        /// <response code="200">Returns the list of COVID-19 records.</response>
+        /// <param name="hdid">The hdid resource to request the COVID-19 laboratory orders for.</param>
+        /// <returns>Returns collection of COVID-19 laboratory orders if available and information about whether the orders could be retrieved.</returns>
+        /// <response code="200">Returns the result model.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
@@ -70,20 +69,20 @@ namespace HealthGateway.Laboratory.Controllers
         [Produces("application/json")]
         [Route("Covid19Orders")]
         [Authorize(Policy = LaboratoryPolicy.Read)]
-        public async Task<RequestResult<IEnumerable<Covid19Order>>> GetCovid19Orders([FromQuery] string hdid)
+        public async Task<RequestResult<Covid19OrderResult>> GetCovid19Orders([FromQuery] string hdid)
         {
-            this.logger.LogDebug($"Getting list of COVID-19 orders... ");
-            RequestResult<IEnumerable<Covid19Order>> result = await this.service.GetCovid19Orders(hdid).ConfigureAwait(true);
-            this.logger.LogDebug($"Finished getting COVID-19 orders from controller... {hdid}");
+            this.logger.LogDebug($"Getting COVID-19 laboratory orders...");
+            RequestResult<Covid19OrderResult> result = await this.service.GetCovid19Orders(hdid).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished getting COVID-19 laboratory orders from controller for HDID: {hdid}");
             return result;
         }
 
         /// <summary>
-        /// Gets a json list of Laboratory orders.
+        /// Gets a result containing a collection of laboratory orders.
         /// </summary>
-        /// <param name="hdid">The hdid resource to request the Laboratory orders for.</param>
-        /// <returns>Returns List of lab orders.</returns>
-        /// <response code="200">Returns a list of Laboratory orders.</response>
+        /// <param name="hdid">The hdid resource to request the laboratory orders for.</param>
+        /// <returns>Returns collection of laboratory orders if available and information about whether the orders could be retrieved.</returns>
+        /// <response code="200">Returns the result model.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
@@ -91,11 +90,11 @@ namespace HealthGateway.Laboratory.Controllers
         [Produces("application/json")]
         [Route("LaboratoryOrders")]
         [Authorize(Policy = LaboratoryPolicy.Read)]
-        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders([FromQuery] string hdid)
+        public async Task<RequestResult<LaboratoryOrderResult>> GetLaboratoryOrders([FromQuery] string hdid)
         {
-            this.logger.LogDebug($"Getting laboratory summary... ");
-            RequestResult<IEnumerable<LaboratoryOrder>> result = await this.service.GetLaboratoryOrders(hdid).ConfigureAwait(true);
-            this.logger.LogDebug("Finished getting laboratory summary from controller for Hdid: {Hdid}...", hdid);
+            this.logger.LogDebug($"Getting laboratory orders...");
+            RequestResult<LaboratoryOrderResult> result = await this.service.GetLaboratoryOrders(hdid).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished getting laboratory orders from controller for HDID: {hdid}");
             return result;
         }
 
