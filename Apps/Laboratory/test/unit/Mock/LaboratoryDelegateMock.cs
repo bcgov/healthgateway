@@ -34,7 +34,7 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// Initializes a new instance of the <see cref="LaboratoryDelegateMock"/> class.
         /// </summary>
         /// <param name="delegateResult">List of COVID-19 Orders.</param>
-        public LaboratoryDelegateMock(RequestResult<IEnumerable<PhsaCovid19Order>> delegateResult)
+        public LaboratoryDelegateMock(RequestResult<PHSAResult<List<PhsaCovid19Order>>> delegateResult)
         {
             this.Setup(s => s.GetCovid19Orders(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
         }
@@ -63,7 +63,7 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// Initializes a new instance of the <see cref="LaboratoryDelegateMock"/> class.
         /// </summary>
         /// <param name="delegateResult">List of Laboratory Orders.</param>
-        public LaboratoryDelegateMock(RequestResult<PhsaLaboratorySummary> delegateResult)
+        public LaboratoryDelegateMock(RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult)
         {
             this.Setup(s => s.GetLaboratorySummary(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
         }

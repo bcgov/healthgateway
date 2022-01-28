@@ -20,7 +20,6 @@ namespace HealthGateway.LaboratoryTests.Mock
     using System.Security.Claims;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
-    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Factories;
@@ -65,7 +64,7 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// <param name="token">token needed for authentication.</param>
         /// <param name="mockHttpContextAccessor">IHttpContextAccessor Mock.</param>
         /// <param name="claimsPrincipal">exposes a collection of identities.</param>
-        public LaboratoryServiceMock(RequestResult<IEnumerable<PhsaCovid19Order>> delegateResult, Mock<IHttpContextAccessor> mockHttpContextAccessor, string token, ClaimsPrincipal claimsPrincipal)
+        public LaboratoryServiceMock(RequestResult<PHSAResult<List<PhsaCovid19Order>>> delegateResult, Mock<IHttpContextAccessor> mockHttpContextAccessor, string token, ClaimsPrincipal claimsPrincipal)
         {
             SetupAuthenticationMock(mockHttpContextAccessor, token, claimsPrincipal);
 
@@ -133,7 +132,7 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// <param name="token">token needed for authentication.</param>
         /// <param name="mockHttpContextAccessor">IHttpContextAccessor Mock.</param>
         /// <param name="claimsPrincipal">exposes a collection of identities.</param>
-        public LaboratoryServiceMock(RequestResult<PhsaLaboratorySummary> delegateResult, Mock<IHttpContextAccessor> mockHttpContextAccessor, string token, ClaimsPrincipal claimsPrincipal)
+        public LaboratoryServiceMock(RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult, Mock<IHttpContextAccessor> mockHttpContextAccessor, string token, ClaimsPrincipal claimsPrincipal)
         {
             SetupAuthenticationMock(mockHttpContextAccessor, token, claimsPrincipal);
 
