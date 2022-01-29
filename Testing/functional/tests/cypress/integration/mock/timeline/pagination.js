@@ -1,6 +1,5 @@
 require("cypress-xpath");
 const { AuthMethod } = require("../../../support/constants");
-
 describe("Pagination", () => {
     beforeEach(() => {
         cy.enableModules(["Medication", "Note"]);
@@ -24,7 +23,7 @@ describe("Pagination", () => {
 
     it("Validating Navigation", () => {
         cy.get("[data-testid=entryCardDate]")
-            .first()
+            .eq(3)
             .then((firstPageDateElement) => {
                 cy.get("[data-testid=pagination]").contains("Next").click();
 
@@ -40,12 +39,12 @@ describe("Pagination", () => {
             });
 
         cy.get("[data-testid=entryCardDate]")
-            .first()
+            .eq(3)
             .then((secondPageDateElement) => {
                 cy.get("[data-testid=pagination]").contains("Prev").click();
 
                 cy.get("[data-testid=entryCardDate]")
-                    .first()
+                    .eq(3)
                     .then((firstPageDateElement) => {
                         const firstDate = new Date(firstPageDateElement.text());
                         const secondDate = new Date(
