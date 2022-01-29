@@ -109,7 +109,6 @@ export default class HeaderComponent extends Vue {
 
     private mounted() {
         this.loadOidcUserOnChange();
-        console.log("#### IS HEADER BUTTON SHOWN? " + this.isHeaderButtonShown);
     }
 
     private destroyed() {
