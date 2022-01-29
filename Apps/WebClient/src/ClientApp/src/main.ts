@@ -57,6 +57,7 @@ import {
     ILogger,
     IMedicationService,
     IPatientService,
+    IPCRTestService,
     IReportService,
     IStoreProvider,
     IUserCommentService,
@@ -153,6 +154,9 @@ configService.getConfiguration().then((config: ExternalConfiguration) => {
     const storeProvider: IStoreProvider = container.get(
         STORE_IDENTIFIER.StoreProvider
     );
+    const pcrTestKitService: IPCRTestService = container.get(
+        SERVICE_IDENTIFIER.PCRTestService
+    );
 
     const store = storeProvider.getStore();
     store.dispatch("config/initialize", config);
@@ -173,6 +177,7 @@ configService.getConfiguration().then((config: ExternalConfiguration) => {
     userCommentService.initialize(config, httpDelegate);
     userRatingService.initialize(httpDelegate);
     dependentService.initialize(config, httpDelegate);
+    pcrTestKitService.initialize(config, httpDelegate);
     reportService.initialize(httpDelegate);
     vaccinationStatusService.initialize(config, httpDelegate);
 

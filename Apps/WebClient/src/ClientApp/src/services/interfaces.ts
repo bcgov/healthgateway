@@ -28,6 +28,7 @@ import {
 import MedicationRequest from "@/models/MedicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import PatientData from "@/models/patientData";
+import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
@@ -236,6 +237,17 @@ export interface IHttpDelegate {
         payload?: unknown,
         headers?: Dictionary<string>
     ): Promise<T>;
+}
+
+export interface IPCRTestService {
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
+    registerTestKit(
+        hdid: string,
+        testKit: RegisterTestKitRequest
+    ): Promise<RegisterTestKitRequest | undefined>;
+    registerTestKitPublic(
+        testKit: RegisterTestKitRequest
+    ): Promise<RegisterTestKitRequest | undefined>;
 }
 
 export interface IReportService {

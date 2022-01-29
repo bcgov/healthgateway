@@ -11,6 +11,8 @@ import { RootState } from "@/store/types";
 export interface NavbarState {
     isSidebarOpen: boolean;
     isHeaderShown: boolean;
+    isSidebarButtonShown: boolean;
+    isHeaderButtonShown: boolean;
 }
 
 export interface NavbarGetters extends GetterTree<NavbarState, RootState> {
@@ -32,6 +34,8 @@ export interface NavbarGetters extends GetterTree<NavbarState, RootState> {
         // eslint-disable-next-line
         rootGetters: any
     ): boolean;
+    isSidebarButtonShown(state: NavbarState): boolean;
+    isHeaderButtonShown(state: NavbarState): boolean;
 }
 
 type StoreContext = ActionContext<NavbarState, RootState>;
@@ -40,6 +44,8 @@ export interface NavbarActions extends ActionTree<NavbarState, RootState> {
     setSidebarState(context: StoreContext, isOpen: boolean): void;
     toggleHeader(context: StoreContext): void;
     setHeaderState(context: StoreContext, isOpen: boolean): void;
+    setSidebarButtonState(context: StoreContext, visible: boolean): void;
+    setHeaderButtonState(context: StoreContext, visible: boolean): void;
 }
 
 export interface NavbarMutations extends MutationTree<NavbarState> {
@@ -47,6 +53,8 @@ export interface NavbarMutations extends MutationTree<NavbarState> {
     setSidebarState(state: NavbarState, isOpen: boolean): void;
     toggleHeader(state: NavbarState): void;
     setHeaderState(state: NavbarState, isOpen: boolean): void;
+    setSidebarButtonState(state: NavbarState, visible: boolean): void;
+    setHeaderButtonState(state: NavbarState, visible: boolean): void;
 }
 
 export interface NavbarModule extends Module<NavbarState, RootState> {
