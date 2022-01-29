@@ -72,6 +72,11 @@ namespace HealthGateway.WebClient.Models
         /// Indicates a Notes template type.
         /// </summary>
         Notes,
+
+        /// <summary>
+        /// Indicates a Laboratory template type.
+        /// </summary>
+        Laboratory,
     }
 
     /// <summary>
