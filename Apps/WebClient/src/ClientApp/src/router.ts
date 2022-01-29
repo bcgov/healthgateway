@@ -123,6 +123,7 @@ export enum ClientModule {
     FederalCardButton = "FederalCardButton",
     PublicLaboratoryResult = "PublicLaboratoryResult",
     AuthenticatedSubmitRapidTest = "AuthenticatedSubmitRapidTest",
+    AllLaboratory = "AllLaboratory",
 }
 
 function getAvailableModules() {

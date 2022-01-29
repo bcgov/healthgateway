@@ -10,9 +10,10 @@ import { Operation } from "@/models/storeOperations";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import User from "@/models/user";
 
+import Covid19LaboratoryOrderTimelineComponent from "./covid19LaboratoryOrder.vue";
 import EncounterTimelineComponent from "./encounter.vue";
 import ImmunizationTimelineComponent from "./immunization.vue";
-import LaboratoryTimelineComponent from "./laboratory.vue";
+import LaboratoryOrderTimelineComponent from "./laboratoryOrder.vue";
 import MedicationTimelineComponent from "./medication.vue";
 import MedicationRequestTimelineComponent from "./medicationRequest.vue";
 import NoteTimelineComponent from "./note.vue";
@@ -24,7 +25,9 @@ library.add(faArrowLeft);
         MedicationRequestComponent: MedicationRequestTimelineComponent,
         MedicationComponent: MedicationTimelineComponent,
         ImmunizationComponent: ImmunizationTimelineComponent,
-        LaboratoryComponent: LaboratoryTimelineComponent,
+        Covid19LaboratoryOrderComponent:
+            Covid19LaboratoryOrderTimelineComponent,
+        LaboratoryOrderComponent: LaboratoryOrderTimelineComponent,
         EncounterComponent: EncounterTimelineComponent,
         NoteComponent: NoteTimelineComponent,
     },
@@ -100,8 +103,11 @@ export default class EntryDetailsComponent extends Vue {
             case EntryType.Immunization:
                 return "ImmunizationComponent";
 
-            case EntryType.Laboratory:
-                return "LaboratoryComponent";
+            case EntryType.Covid19LaboratoryOrder:
+                return "Covid19LaboratoryOrderComponent";
+
+            case EntryType.LaboratoryOrder:
+                return "LaboratoryOrderComponent";
 
             case EntryType.Encounter:
                 return "EncounterComponent";

@@ -1,14 +1,14 @@
 import { DateWrapper } from "@/models/dateWrapper";
 import {
-    LaboratoryOrder,
-    LaboratoryResult,
+    Covid19LaboratoryOrder,
+    Covid19LaboratoryTest,
     LaboratoryUtil,
 } from "@/models/laboratory";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
-// The laboratory timeline entry model
-export default class LaboratoryTimelineEntry extends TimelineEntry {
+// The COVID-19 laboratory order timeline entry model
+export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
     public orderingProviderIds: string | null;
     public orderingProviders: string | null;
     public reportingLab: string | null;
@@ -22,17 +22,17 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
     public summaryDescription: string;
     public summaryStatus: string;
 
-    public resultList: LaboratoryResultViewModel[];
+    public tests: Covid19LaboratoryTestViewModel[];
 
     private getComments: (entyId: string) => UserComment[] | null;
 
     public constructor(
-        model: LaboratoryOrder,
+        model: Covid19LaboratoryOrder,
         getComments: (entyId: string) => UserComment[] | null
     ) {
         super(
             model.id,
-            EntryType.Laboratory,
+            EntryType.Covid19LaboratoryOrder,
             new DateWrapper(model.labResults[0].collectedDateTime, {
                 hasTime: true,
             })
@@ -44,14 +44,14 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
         this.location = model.location;
         this.reportAvailable = model.reportAvailable;
 
-        this.resultList = [];
-        model.labResults.forEach((result) => {
-            this.resultList.push(new LaboratoryResultViewModel(result));
+        this.tests = [];
+        model.labResults.forEach((test) => {
+            this.tests.push(new Covid19LaboratoryTestViewModel(test));
         });
 
         this.sortResults();
 
-        const firstResult = this.resultList[0];
+        const firstResult = this.tests[0];
         this.displayDate = firstResult.collectedDateTime;
 
         this.summaryTitle = firstResult.loincName || "";
@@ -76,7 +76,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
     }
 
     private sortResults() {
-        this.resultList.sort((a, b) =>
+        this.tests.sort((a, b) =>
             a.collectedDateTime > b.collectedDateTime
                 ? -1
                 : a.collectedDateTime < b.collectedDateTime
@@ -86,7 +86,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
     }
 }
 
-export class LaboratoryResultViewModel {
+export class Covid19LaboratoryTestViewModel {
     public id: string;
     public testType: string | null;
     public outOfRange: string;
@@ -101,7 +101,7 @@ export class LaboratoryResultViewModel {
     public loinc: string | null;
     public loincName: string | null;
 
-    constructor(model: LaboratoryResult) {
+    constructor(model: Covid19LaboratoryTest) {
         this.id = model.id;
         this.testType = model.testType;
         this.outOfRange = model.outOfRange ? "True" : "False";

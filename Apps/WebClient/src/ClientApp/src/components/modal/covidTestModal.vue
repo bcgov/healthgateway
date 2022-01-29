@@ -5,7 +5,7 @@ import { Action, Getter } from "vuex-class";
 
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
-import { LaboratoryOrder } from "@/models/laboratory";
+import { Covid19LaboratoryOrder } from "@/models/laboratory";
 import { EntryType } from "@/models/timelineEntry";
 import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
@@ -24,8 +24,8 @@ export default class CovidTestModalComponent extends Vue {
 
     @Getter("user", { namespace: "user" }) user!: User;
 
-    @Getter("laboratoryOrders", { namespace: "laboratory" })
-    laboratoryOrders!: LaboratoryOrder[];
+    @Getter("covid19LaboratoryOrders", { namespace: "laboratory" })
+    covid19LaboratoryOrders!: Covid19LaboratoryOrder[];
 
     @Getter("getPreference", { namespace: "user" })
     getPreference!: (preferenceName: string) => UserPreference | undefined;
@@ -38,14 +38,14 @@ export default class CovidTestModalComponent extends Vue {
         if (this.isLoading || this.isDismissed) {
             return false;
         }
-        if (this.laboratoryOrders.length > 0) {
+        if (this.covid19LaboratoryOrders.length > 0) {
             const preference = this.getPreference(
                 UserPreferenceType.ActionedCovidModalAt
             );
             if (preference != undefined) {
                 const actionedCovidModalAt = new DateWrapper(preference.value);
                 const mostRecentLabTime = new DateWrapper(
-                    this.laboratoryOrders[0].messageDateTime
+                    this.covid19LaboratoryOrders[0].messageDateTime
                 );
 
                 if (actionedCovidModalAt.isAfter(mostRecentLabTime)) {
@@ -90,7 +90,9 @@ export default class CovidTestModalComponent extends Vue {
         this.updateCovidPreference();
 
         this.setFilter(
-            TimelineFilterBuilder.create().withEntryType(EntryType.Laboratory)
+            TimelineFilterBuilder.create().withEntryType(
+                EntryType.Covid19LaboratoryOrder
+            )
         );
 
         // Trigger submit handler

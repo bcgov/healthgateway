@@ -26,6 +26,165 @@ namespace HealthGateway.Database.Migrations
                 .HasMax(999999L)
                 .IsCyclic();
 
+            modelBuilder.Entity("HealthGateway.Common.Data.Models.Email", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("EmailId");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("EmailStatusCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("FormatCode")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)");
+
+                    b.Property<string>("From")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
+
+                    b.Property<DateTime?>("LastRetryDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("SentDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("SmtpStatusCode")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("To")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailStatusCode");
+
+                    b.HasIndex("FormatCode");
+
+                    b.ToTable("Email");
+                });
+
+            modelBuilder.Entity("HealthGateway.Common.Data.Models.MessagingVerification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("MessagingVerificationId");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("EmailId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ExpireDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("InviteKey")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SMSNumber")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("SMSValidationCode")
+                        .HasMaxLength(6)
+                        .HasColumnType("character varying(6)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UserProfileId")
+                        .IsRequired()
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)")
+                        .HasColumnName("HdId");
+
+                    b.Property<bool>("Validated")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("VerificationAttempts")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("VerificationType")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailId");
+
+                    b.HasIndex("UserProfileId");
+
+                    b.HasIndex("VerificationType");
+
+                    b.ToTable("MessagingVerification");
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.ActiveIngredient", b =>
                 {
                     b.Property<Guid>("Id")
@@ -562,6 +721,16 @@ namespace HealthGateway.Database.Migrations
                             CommentEntryCode = "Lab",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Comment for a Covid 19 Laboratory Entry",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            CommentEntryCode = "ALO",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Comment for a Laboratory Entry",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -1072,88 +1241,6 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("FileDownloadId");
 
                     b.ToTable("DrugProduct");
-                });
-
-            modelBuilder.Entity("HealthGateway.Database.Models.Email", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("EmailId");
-
-                    b.Property<int>("Attempts")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Body")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("EmailStatusCode")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<string>("FormatCode")
-                        .IsRequired()
-                        .HasMaxLength(4)
-                        .HasColumnType("character varying(4)");
-
-                    b.Property<string>("From")
-                        .IsRequired()
-                        .HasMaxLength(254)
-                        .HasColumnType("character varying(254)");
-
-                    b.Property<DateTime?>("LastRetryDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("SentDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("SmtpStatusCode")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Subject")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("To")
-                        .IsRequired()
-                        .HasMaxLength(254)
-                        .HasColumnType("character varying(254)");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmailStatusCode");
-
-                    b.HasIndex("FormatCode");
-
-                    b.ToTable("Email");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.EmailFormatCode", b =>
@@ -1817,83 +1904,6 @@ namespace HealthGateway.Database.Migrations
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
                         });
-                });
-
-            modelBuilder.Entity("HealthGateway.Database.Models.MessagingVerification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("MessagingVerificationId");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid?>("EmailId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("ExpireDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid>("InviteKey")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("SMSNumber")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<string>("SMSValidationCode")
-                        .HasMaxLength(6)
-                        .HasColumnType("character varying(6)");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("UserProfileId")
-                        .IsRequired()
-                        .HasMaxLength(52)
-                        .HasColumnType("character varying(52)")
-                        .HasColumnName("HdId");
-
-                    b.Property<bool>("Validated")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("VerificationAttempts")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("VerificationType")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmailId");
-
-                    b.HasIndex("UserProfileId");
-
-                    b.HasIndex("VerificationType");
-
-                    b.ToTable("MessagingVerification");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.MessagingVerificationTypeCode", b =>
@@ -3172,6 +3182,42 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("VeterinarySpecies");
                 });
 
+            modelBuilder.Entity("HealthGateway.Common.Data.Models.Email", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.EmailStatusCode", null)
+                        .WithMany()
+                        .HasForeignKey("EmailStatusCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthGateway.Database.Models.EmailFormatCode", null)
+                        .WithMany()
+                        .HasForeignKey("FormatCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HealthGateway.Common.Data.Models.MessagingVerification", b =>
+                {
+                    b.HasOne("HealthGateway.Common.Data.Models.Email", "Email")
+                        .WithMany()
+                        .HasForeignKey("EmailId");
+
+                    b.HasOne("HealthGateway.Database.Models.UserProfile", null)
+                        .WithMany("Verifications")
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthGateway.Database.Models.MessagingVerificationTypeCode", null)
+                        .WithMany()
+                        .HasForeignKey("VerificationType")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Email");
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.ActiveIngredient", b =>
                 {
                     b.HasOne("HealthGateway.Database.Models.DrugProduct", null)
@@ -3245,7 +3291,7 @@ namespace HealthGateway.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HealthGateway.Database.Models.Email", "Email")
+                    b.HasOne("HealthGateway.Common.Data.Models.Email", "Email")
                         .WithMany()
                         .HasForeignKey("EmailId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3284,21 +3330,6 @@ namespace HealthGateway.Database.Migrations
                     b.Navigation("FileDownload");
                 });
 
-            modelBuilder.Entity("HealthGateway.Database.Models.Email", b =>
-                {
-                    b.HasOne("HealthGateway.Database.Models.EmailStatusCode", null)
-                        .WithMany()
-                        .HasForeignKey("EmailStatusCode")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HealthGateway.Database.Models.EmailFormatCode", null)
-                        .WithMany()
-                        .HasForeignKey("FormatCode")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("HealthGateway.Database.Models.EmailTemplate", b =>
                 {
                     b.HasOne("HealthGateway.Database.Models.EmailFormatCode", null)
@@ -3333,27 +3364,6 @@ namespace HealthGateway.Database.Migrations
                         .HasForeignKey("LegalAgreementCode")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("HealthGateway.Database.Models.MessagingVerification", b =>
-                {
-                    b.HasOne("HealthGateway.Database.Models.Email", "Email")
-                        .WithMany()
-                        .HasForeignKey("EmailId");
-
-                    b.HasOne("HealthGateway.Database.Models.UserProfile", null)
-                        .WithMany("Verifications")
-                        .HasForeignKey("UserProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HealthGateway.Database.Models.MessagingVerificationTypeCode", null)
-                        .WithMany()
-                        .HasForeignKey("VerificationType")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Email");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Note", b =>

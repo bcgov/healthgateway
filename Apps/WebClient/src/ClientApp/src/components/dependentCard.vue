@@ -10,7 +10,7 @@ import Vue from "vue";
 import { Component, Emit, Prop, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import LaboratoryResultDescriptionComponent from "@/components/laboratory/laboratoryResultDescription.vue";
+import Covid19LaboratoryTestDescriptionComponent from "@/components/laboratory/covid19LaboratoryTestDescription.vue";
 import DeleteModalComponent from "@/components/modal/deleteConfirmation.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import { ResultType } from "@/constants/resulttype";
@@ -18,8 +18,11 @@ import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
-import { LaboratoryReport, LaboratoryUtil } from "@/models/laboratory";
-import { LaboratoryResult } from "@/models/laboratory";
+import {
+    Covid19LaboratoryTest,
+    LaboratoryReport,
+    LaboratoryUtil,
+} from "@/models/laboratory";
 import { ResultError } from "@/models/requestResult";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -33,10 +36,10 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 library.add(faEllipsisV, faDownload, faInfoCircle);
 
-interface LaboratoryResultRow {
+interface Covid19LaboratoryTestRow {
     id: string;
     reportAvailable: boolean;
-    result: LaboratoryResult;
+    test: Covid19LaboratoryTest;
 }
 
 @Component({
@@ -45,7 +48,7 @@ interface LaboratoryResultRow {
         BTab,
         MessageModalComponent,
         DeleteModalComponent,
-        LaboratoryResultDescriptionComponent,
+        Covid19LaboratoryTestDescriptionComponent,
     },
 })
 export default class DependentCardComponent extends Vue {
@@ -76,10 +79,10 @@ export default class DependentCardComponent extends Vue {
     private logger!: ILogger;
     private laboratoryService!: ILaboratoryService;
     private dependentService!: IDependentService;
-    private labResultRows: LaboratoryResultRow[] = [];
+    private testRows: Covid19LaboratoryTestRow[] = [];
     private isDataLoaded = false;
 
-    private selectedLabResultRow!: LaboratoryResultRow;
+    private selectedTestRow!: Covid19LaboratoryTestRow;
 
     private get isExpired() {
         let birthDate = new DateWrapper(
@@ -102,29 +105,29 @@ export default class DependentCardComponent extends Vue {
         );
     }
 
-    private showSensitiveDocumentDownloadModal(row: LaboratoryResultRow) {
-        this.selectedLabResultRow = row;
+    private showSensitiveDocumentDownloadModal(row: Covid19LaboratoryTestRow) {
+        this.selectedTestRow = row;
         this.sensitivedocumentDownloadModal.showModal();
     }
 
-    private fetchLaboratoryResults() {
+    private fetchCovid19LaboratoryTests() {
         if (this.isDataLoaded) {
             return;
         }
         this.isLoading = true;
         this.laboratoryService
-            .getOrders(this.dependent.ownerId)
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    this.labResultRows =
-                        results.resourcePayload.flatMap<LaboratoryResultRow>(
+            .getCovid19LaboratoryOrders(this.dependent.ownerId)
+            .then((result) => {
+                if (result.resultStatus == ResultType.Success) {
+                    this.testRows =
+                        result.resourcePayload.orders.flatMap<Covid19LaboratoryTestRow>(
                             (o) => {
-                                return o.labResults.map<LaboratoryResultRow>(
+                                return o.labResults.map<Covid19LaboratoryTestRow>(
                                     (r) => {
                                         return {
                                             id: o.id,
                                             reportAvailable: o.reportAvailable,
-                                            result: r,
+                                            test: r,
                                         };
                                     }
                                 );
@@ -134,13 +137,13 @@ export default class DependentCardComponent extends Vue {
                     this.isDataLoaded = true;
                 } else {
                     this.logger.error(
-                        "Error returned from the laboratory call: " +
-                            JSON.stringify(results.resultError)
+                        "Error returned from the COVID-19 Laboratory Orders call: " +
+                            JSON.stringify(result.resultError)
                     );
                     this.addError(
                         ErrorTranslator.toBannerError(
-                            "Fetch Laboratory Error",
-                            results.resultError
+                            "Fetch COVID-19 Laboratory Orders Error",
+                            result.resultError
                         )
                     );
                 }
@@ -157,25 +160,26 @@ export default class DependentCardComponent extends Vue {
     }
 
     private sortEntries() {
-        this.labResultRows.sort((a, b) => {
-            let dateA = new DateWrapper(a.result.collectedDateTime);
-            let dateB = new DateWrapper(b.result.collectedDateTime);
+        this.testRows.sort((a, b) => {
+            let dateA = new DateWrapper(a.test.collectedDateTime);
+            let dateB = new DateWrapper(b.test.collectedDateTime);
             return dateA.isAfter(dateB) ? -1 : dateA.isBefore(dateB) ? 1 : 0;
         });
     }
 
     private getReport() {
-        let labResult = this.selectedLabResultRow.result;
+        let test = this.selectedTestRow.test;
         this.laboratoryService
             .getReportDocument(
-                this.selectedLabResultRow.id,
-                this.dependent.ownerId
+                this.selectedTestRow.id,
+                this.dependent.ownerId,
+                true
             )
             .then((result) => {
                 const link = document.createElement("a");
                 let report: LaboratoryReport = result.resourcePayload;
                 link.href = `data:${report.mediaType};${report.encoding},${report.data}`;
-                link.download = `COVID_Result_${this.dependent.dependentInformation.firstname}${this.dependent.dependentInformation.lastname}_${labResult.collectedDateTime}.pdf`;
+                link.download = `COVID_Result_${this.dependent.dependentInformation.firstname}${this.dependent.dependentInformation.lastname}_${test.collectedDateTime}.pdf`;
                 link.click();
                 URL.revokeObjectURL(link.href);
             })
@@ -223,13 +227,13 @@ export default class DependentCardComponent extends Vue {
         return new DateWrapper(date).format();
     }
 
-    private checkResultReady(labResult: LaboratoryResult): boolean {
-        return LaboratoryUtil.isTestResultReady(labResult.testStatus);
+    private checkResultReady(test: Covid19LaboratoryTest): boolean {
+        return LaboratoryUtil.isTestResultReady(test.testStatus);
     }
 
-    private formatResult(labResult: LaboratoryResult): string {
-        if (this.checkResultReady(labResult)) {
-            return labResult?.labResultOutcome ?? "";
+    private formatResult(test: Covid19LaboratoryTest): string {
+        if (this.checkResultReady(test)) {
+            return test?.labResultOutcome ?? "";
         } else {
             return "";
         }
@@ -324,7 +328,7 @@ export default class DependentCardComponent extends Vue {
                     :disabled="isExpired"
                     data-testid="covid19Tab"
                     class="tableTab mt-2"
-                    @click="fetchLaboratoryResults()"
+                    @click="fetchCovid19LaboratoryTests()"
                 >
                     <template #title>
                         <div data-testid="covid19TabTitle">COVID-19</div>
@@ -332,7 +336,7 @@ export default class DependentCardComponent extends Vue {
                     <b-row v-if="isLoading" class="m-2">
                         <b-col><b-spinner /></b-col>
                     </b-row>
-                    <b-row v-else-if="labResultRows.length == 0" class="m-2">
+                    <b-row v-else-if="testRows.length == 0" class="m-2">
                         <b-col data-testid="covid19NoRecords">
                             No records found.
                         </b-col>
@@ -353,34 +357,34 @@ export default class DependentCardComponent extends Vue {
                             <th scope="col">Result</th>
                             <th scope="col">Report</th>
                         </tr>
-                        <tr v-for="(row, index) in labResultRows" :key="index">
+                        <tr v-for="(row, index) in testRows" :key="index">
                             <td data-testid="dependentCovidTestDate">
-                                {{ formatDate(row.result.collectedDateTime) }}
+                                {{ formatDate(row.test.collectedDateTime) }}
                             </td>
                             <td
                                 data-testid="dependentCovidTestType"
                                 class="d-none d-sm-table-cell"
                             >
-                                {{ row.result.testType }}
+                                {{ row.test.testType }}
                             </td>
                             <td
                                 data-testid="dependentCovidTestStatus"
                                 class="d-none d-sm-table-cell"
                             >
-                                {{ row.result.testStatus }}
+                                {{ row.test.testStatus }}
                             </td>
                             <td data-testid="dependentCovidTestLabResult">
                                 <span
                                     class="font-weight-bold"
                                     :class="
                                         getOutcomeClasses(
-                                            row.result.labResultOutcome
+                                            row.test.labResultOutcome
                                         )
                                     "
                                 >
-                                    {{ formatResult(row.result) }}
+                                    {{ formatResult(row.test) }}
                                 </span>
-                                <span v-if="checkResultReady(row.result)">
+                                <span v-if="checkResultReady(row.test)">
                                     <hg-button
                                         :id="
                                             'dependent-covid-test-info-button-' +
@@ -406,12 +410,12 @@ export default class DependentCardComponent extends Vue {
                                         placement="bottomleft"
                                         data-testid="dependent-covid-test-info-popover"
                                     >
-                                        <LaboratoryResultDescriptionComponent
+                                        <Covid19LaboratoryTestDescriptionComponent
                                             class="p-2"
                                             :description="
-                                                row.result.resultDescription
+                                                row.test.resultDescription
                                             "
-                                            :link="row.result.resultLink"
+                                            :link="row.test.resultLink"
                                         />
                                     </b-popover>
                                 </span>
@@ -420,7 +424,7 @@ export default class DependentCardComponent extends Vue {
                                 <hg-button
                                     v-if="
                                         row.reportAvailable &&
-                                        checkResultReady(row.result)
+                                        checkResultReady(row.test)
                                     "
                                     data-testid="dependentCovidReportDownloadBtn"
                                     variant="link"

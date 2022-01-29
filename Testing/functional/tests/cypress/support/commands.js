@@ -234,7 +234,7 @@ Cypress.Commands.add("readConfig", () => {
 
 Cypress.Commands.add("checkTimelineHasLoaded", () => {
     cy.get("#subject").should("have.text", "Timeline");
-    cy.get("[data-testid=timelineLoading]").should("not.be.visible");
+    cy.get("[data-testid=loading-in-progress]").should("not.exist");
 });
 
 Cypress.Commands.add("checkVaccineRecordHasLoaded", () => {

@@ -36,9 +36,14 @@ namespace HealthGateway.Database.Constants
         public const string Immunization = "Imm";
 
         /// <summary>
-        /// The code representing Laboratory.
+        /// The code representing COVID-19 Laboratory orders.
         /// </summary>
-        public const string Laboratory = "Lab";
+        public const string Covid19Laboratory = "Lab";
+
+        /// <summary>
+        /// The code representing all Laboratory orders.
+        /// </summary>
+        public const string Laboratory = "ALO";
 
         /// <summary>
         /// The code representing Encounter.

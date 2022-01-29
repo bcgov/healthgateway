@@ -19,12 +19,13 @@ import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
+import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
 import Encounter from "@/models/encounter";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
-import { LaboratoryOrder } from "@/models/laboratory";
-import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
+import { Covid19LaboratoryOrder, LaboratoryOrder } from "@/models/laboratory";
+import LaboratoryOrderTimelineEntry from "@/models/laboratoryOrderTimelineEntry";
 import MedicationRequest from "@/models/MedicationRequest";
 import MedicationRequestTimelineEntry from "@/models/medicationRequestTimelineEntry";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
@@ -76,8 +77,13 @@ export default class TimelineView extends Vue {
     @Action("retrieve", { namespace: "note" })
     retrieveNotes!: (params: { hdid: string }) => Promise<void>;
 
-    @Action("retrieve", { namespace: "laboratory" })
-    retrieveLaboratory!: (params: { hdid: string }) => Promise<void>;
+    @Action("retrieveCovid19LaboratoryOrders", { namespace: "laboratory" })
+    retrieveCovid19LaboratoryOrders!: (params: {
+        hdid: string;
+    }) => Promise<void>;
+
+    @Action("retrieveLaboratoryOrders", { namespace: "laboratory" })
+    retrieveLaboratoryOrders!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieveMedicationStatements", { namespace: "medication" })
     retrieveMedications!: (params: {
@@ -100,7 +106,10 @@ export default class TimelineView extends Vue {
     @Getter("isLoading", { namespace: "comment" })
     isCommentLoading!: boolean;
 
-    @Getter("isLoading", { namespace: "laboratory" })
+    @Getter("covid19LaboratoryOrdersAreLoading", { namespace: "laboratory" })
+    isCovid19LaboratoryLoading!: boolean;
+
+    @Getter("laboratoryOrdersAreLoading", { namespace: "laboratory" })
     isLaboratoryLoading!: boolean;
 
     @Getter("isLoading", { namespace: "encounter" })
@@ -129,6 +138,9 @@ export default class TimelineView extends Vue {
 
     @Getter("medicationRequests", { namespace: "medication" })
     medicationRequests!: MedicationRequest[];
+
+    @Getter("covid19LaboratoryOrders", { namespace: "laboratory" })
+    covid19LaboratoryOrders!: Covid19LaboratoryOrder[];
 
     @Getter("laboratoryOrders", { namespace: "laboratory" })
     laboratoryOrders!: LaboratoryOrder[];
@@ -199,10 +211,20 @@ export default class TimelineView extends Vue {
             );
         }
 
+        // Add the COVID-19 Laboratory entries to the timeline list
+        for (let order of this.covid19LaboratoryOrders) {
+            timelineEntries.push(
+                new Covid19LaboratoryOrderTimelineEntry(
+                    order,
+                    this.getEntryComments
+                )
+            );
+        }
+
         // Add the Laboratory entries to the timeline list
         for (let order of this.laboratoryOrders) {
             timelineEntries.push(
-                new LaboratoryTimelineEntry(order, this.getEntryComments)
+                new LaboratoryOrderTimelineEntry(order, this.getEntryComments)
             );
         }
 
@@ -247,6 +269,7 @@ export default class TimelineView extends Vue {
             !this.isMedicationStatementLoading &&
             !this.isImmunizationLoading &&
             !this.isImmunizationDeferred &&
+            !this.isCovid19LaboratoryLoading &&
             !this.isLaboratoryLoading &&
             !this.isEncounterLoading &&
             !this.isNoteLoading &&
@@ -277,7 +300,8 @@ export default class TimelineView extends Vue {
             this.retrieveMedications({ hdid: this.user.hdid }),
             this.retrieveMedicationRequests({ hdid: this.user.hdid }),
             this.retrieveImmunizations({ hdid: this.user.hdid }),
-            this.retrieveLaboratory({ hdid: this.user.hdid }),
+            this.retrieveCovid19LaboratoryOrders({ hdid: this.user.hdid }),
+            this.retrieveLaboratoryOrders({ hdid: this.user.hdid }),
             this.retrieveEncounters({ hdid: this.user.hdid }),
             this.retrieveNotes({ hdid: this.user.hdid }),
             this.retrieveComments({ hdid: this.user.hdid }),
@@ -309,9 +333,15 @@ export default class TimelineView extends Vue {
             no-auto-hide
             no-close-button
             is-status
+            data-testid="loading-toast"
         >
             <div class="text-center">Retrieving your health records</div>
         </b-toast>
+        <div
+            v-if="!isFullyLoaded"
+            v-show="false"
+            data-testid="loading-in-progress"
+        />
         <BreadcrumbComponent :items="breadcrumbItems" />
         <b-row>
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
@@ -423,7 +453,7 @@ export default class TimelineView extends Vue {
             </b-col>
         </b-row>
         <resource-centre />
-        <CovidTestModalComponent :is-loading="isLaboratoryLoading" />
+        <CovidTestModalComponent :is-loading="isCovid19LaboratoryLoading" />
         <ProtectiveWordComponent :is-loading="isMedicationStatementLoading" />
         <NoteEditComponent :is-loading="isNoteLoading" />
         <EntryDetailsComponent />

@@ -21,7 +21,6 @@ namespace HealthGateway.Laboratory.Services
     using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
-    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
@@ -33,104 +32,187 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
+    using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Parsers;
-    using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     public class LaboratoryService : ILaboratoryService
     {
-        private const string LabConfigSectionKey = "Laboratory";
-        private const string AuthConfigSectionName = "ClientAuthentication";
-        private const string TokenCacheKey = "TokenCacheKey";
+        /// <summary>
+        /// The configuration section name for Laboratory.
+        /// </summary>
+        public const string LabConfigSectionKey = "Laboratory";
+
+        private const string IsNullOrEmptyTokenErrorMessage = "The auth token is null or empty - unable to cache or proceed";
 
         private readonly ILaboratoryDelegate laboratoryDelegate;
-        private readonly IAuthenticationDelegate authDelegate;
-        private readonly IMemoryCache memoryCache;
         private readonly ILogger<LaboratoryService> logger;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
+        private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly LaboratoryConfig labConfig;
-        private readonly Uri tokenUri;
-        private readonly int tokenCacheMinutes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryService"/> class.
         /// </summary>
-        /// <param name="configuration">The configuration to use.</param>
+        /// <param name="configuration">The injected configuration.</param>
         /// <param name="logger">The injected logger.</param>
         /// <param name="laboratoryDelegateFactory">The laboratory delegate factory.</param>
-        /// <param name="authDelegate">The OAuth2 authentication service.</param>
-        /// <param name="memoryCache">The cache to use to reduce lookups.</param>
+        /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
         public LaboratoryService(
             IConfiguration configuration,
             ILogger<LaboratoryService> logger,
             ILaboratoryDelegateFactory laboratoryDelegateFactory,
-            IAuthenticationDelegate authDelegate,
-            IMemoryCache memoryCache)
+            IAuthenticationDelegate authenticationDelegate)
         {
+            this.logger = logger;
             this.laboratoryDelegate = laboratoryDelegateFactory.CreateInstance();
-            this.authDelegate = authDelegate;
-
-            IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
-            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
-            this.tokenCacheMinutes = configSection.GetValue<int>("TokenCacheExpireMinutes", 20);
-            this.tokenRequest = new ClientCredentialsTokenRequest();
-            configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
+            this.authenticationDelegate = authenticationDelegate;
 
             this.labConfig = new();
             configuration.Bind(LabConfigSectionKey, this.labConfig);
-
-            this.memoryCache = memoryCache;
-            this.logger = logger;
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<LaboratoryModel>>> GetLaboratoryOrders(string bearerToken, string hdid, int pageIndex = 0)
+        public async Task<RequestResult<Covid19OrderResult>> GetCovid19Orders(string hdid, int pageIndex = 0)
         {
-            RequestResult<IEnumerable<LaboratoryOrder>> delegateResult = await this.laboratoryDelegate.GetLaboratoryOrders(bearerToken, hdid, pageIndex).ConfigureAwait(true);
-            if (delegateResult.ResultStatus == ResultType.Success)
+            RequestResult<Covid19OrderResult> retVal = new()
             {
-                return new RequestResult<IEnumerable<LaboratoryModel>>()
-                {
-                    ResultStatus = delegateResult.ResultStatus,
-                    ResourcePayload = LaboratoryModel.FromPHSAModelList(delegateResult.ResourcePayload),
-                    PageIndex = delegateResult.PageIndex,
-                    PageSize = delegateResult.PageSize,
-                    TotalResultCount = delegateResult.TotalResultCount,
-                };
-            }
-            else
+                ResourcePayload = new(),
+                ResultStatus = ResultType.Error,
+                ResultError = UnauthorizedResultError(),
+            };
+
+            string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
+
+            if (accessToken != null)
             {
-                return new RequestResult<IEnumerable<LaboratoryModel>>()
+                RequestResult<PHSAResult<List<PhsaCovid19Order>>> delegateResult = await this.laboratoryDelegate
+                    .GetCovid19Orders(accessToken, hdid, pageIndex).ConfigureAwait(true);
+
+                retVal.ResultStatus = delegateResult.ResultStatus;
+                retVal.ResultError = delegateResult.ResultError;
+                retVal.PageIndex = delegateResult.PageIndex;
+                retVal.PageSize = delegateResult.PageSize;
+                retVal.TotalResultCount = delegateResult.TotalResultCount;
+
+                IEnumerable<PhsaCovid19Order> payload =
+                    delegateResult.ResourcePayload?.Result ?? Enumerable.Empty<PhsaCovid19Order>();
+                if (delegateResult.ResultStatus == ResultType.Success)
                 {
-                    ResultStatus = delegateResult.ResultStatus,
-                    ResultError = delegateResult.ResultError,
-                };
+                    retVal.ResourcePayload.Covid19Orders = Covid19Order.FromPhsaModelCollection(payload);
+                }
+
+                PHSALoadState? loadState = delegateResult.ResourcePayload?.LoadState;
+                if (loadState != null)
+                {
+                    retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
+                    if (loadState.RefreshInProgress)
+                    {
+                        retVal.ResultStatus = ResultType.ActionRequired;
+                        retVal.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
+                        retVal.ResourcePayload.RetryIn = Math.Max(
+                            loadState.BackOffMilliseconds,
+                            this.labConfig.BackOffMilliseconds);
+                    }
+                }
             }
+
+            return retVal;
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, string bearerToken)
+        public async Task<RequestResult<LaboratoryOrderResult>> GetLaboratoryOrders(string hdid)
         {
-            return await this.laboratoryDelegate.GetLabReport(id, hdid, bearerToken).ConfigureAwait(true);
+            RequestResult<LaboratoryOrderResult> retVal = new()
+            {
+                ResourcePayload = new(),
+                ResultStatus = ResultType.Error,
+                ResultError = UnauthorizedResultError(),
+            };
+
+            string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
+
+            if (accessToken != null)
+            {
+                RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult =
+                    await this.laboratoryDelegate.GetLaboratorySummary(hdid, accessToken).ConfigureAwait(true);
+
+                retVal.ResultStatus = delegateResult.ResultStatus;
+                retVal.ResultError = delegateResult.ResultError;
+                retVal.PageIndex = delegateResult.PageIndex;
+                retVal.PageSize = delegateResult.PageSize;
+                retVal.TotalResultCount = delegateResult.TotalResultCount;
+
+                PhsaLaboratorySummary? payload = delegateResult.ResourcePayload?.Result;
+                if (delegateResult.ResultStatus == ResultType.Success && payload != null)
+                {
+                    retVal.ResourcePayload.LaboratoryOrders =
+                        LaboratoryOrder.FromPhsaModelCollection(payload.LabOrders);
+                }
+
+                PHSALoadState? loadState = delegateResult.ResourcePayload?.LoadState;
+                if (loadState != null)
+                {
+                    retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
+                    if (loadState.RefreshInProgress)
+                    {
+                        retVal.ResultStatus = ResultType.ActionRequired;
+                        retVal.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
+                        retVal.ResourcePayload.RetryIn = Math.Max(
+                            loadState.BackOffMilliseconds,
+                            this.labConfig.BackOffMilliseconds);
+                    }
+                }
+            }
+
+            return retVal;
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<AuthenticatedRapidTestResponse>> CreateRapidTestAsync(string hdid, string bearerToken, AuthenticatedRapidTestRequest rapidTestRequest)
+        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, bool isCovid19)
+        {
+            RequestResult<LaboratoryReport> retVal = new();
+
+            string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
+
+            if (accessToken != null)
+            {
+                return await this.laboratoryDelegate.GetLabReport(id, hdid, accessToken, isCovid19)
+                    .ConfigureAwait(true);
+            }
+
+            retVal.ResultError = UnauthorizedResultError();
+            return retVal;
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<AuthenticatedRapidTestResponse>> CreateRapidTestAsync(string hdid, AuthenticatedRapidTestRequest rapidTestRequest)
         {
             RequestResult<AuthenticatedRapidTestResponse> retVal = new()
             {
                 ResultStatus = ResultType.Error,
+                ResultError = UnauthorizedResultError(),
                 ResourcePayload = new AuthenticatedRapidTestResponse(),
             };
 
-            RequestResult<RapidTestResponse> result = await this.laboratoryDelegate.SubmitRapidTestAsync(hdid, bearerToken, rapidTestRequest).ConfigureAwait(true);
-            RapidTestResponse payload = result.ResourcePayload ?? new RapidTestResponse();
+            string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
+            if (accessToken != null)
+            {
+                RequestResult<RapidTestResponse> result = await this.laboratoryDelegate
+                    .SubmitRapidTestAsync(hdid, accessToken, rapidTestRequest).ConfigureAwait(true);
+                RapidTestResponse payload = result.ResourcePayload ?? new RapidTestResponse();
 
-            retVal.ResultStatus = result.ResultStatus;
-            retVal.ResultError = result.ResultError;
-            retVal.ResourcePayload = new AuthenticatedRapidTestResponse() { Phn = payload.Phn, Records = PhsaModelParser.FromPhsaModelList(payload.RapidTestResults) };
+                retVal.ResultStatus = result.ResultStatus;
+                retVal.ResultError = result.ResultError;
+                retVal.ResourcePayload = new AuthenticatedRapidTestResponse()
+                {
+                    Phn = payload.Phn,
+                    Records = PhsaModelParser.FromPhsaModelList(payload.RapidTestResults),
+                };
+            }
 
             return retVal;
         }
@@ -187,15 +269,11 @@ namespace HealthGateway.Laboratory.Services
                 return retVal;
             }
 
-            string? accessToken = this.RetrieveAccessToken();
+            string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
             if (string.IsNullOrEmpty(accessToken))
             {
-                this.logger.LogCritical("The auth token is null or empty - unable to cache or proceed");
-                retVal.ResultError = new()
-                {
-                    ResultMessage = "Error authenticating with KeyCloak",
-                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-                };
+                this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
+                retVal.ResultError = UnauthorizedResultError();
                 return retVal;
             }
 
@@ -242,23 +320,13 @@ namespace HealthGateway.Laboratory.Services
             return retVal;
         }
 
-        private string? RetrieveAccessToken()
+        private static RequestResultError UnauthorizedResultError()
         {
-            this.memoryCache.TryGetValue(TokenCacheKey, out string? accessToken);
-            if (accessToken == null)
+            return new()
             {
-                this.logger.LogInformation("Access token not found in cache");
-                accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest).AccessToken;
-                if (!string.IsNullOrEmpty(accessToken))
-                {
-                    this.logger.LogInformation("Attempting to store Access token in cache");
-                    MemoryCacheEntryOptions cacheEntryOptions = new();
-                    cacheEntryOptions.AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddMinutes(this.tokenCacheMinutes));
-                    this.memoryCache.Set(TokenCacheKey, accessToken, cacheEntryOptions);
-                }
-            }
-
-            return accessToken;
+                ResultMessage = "Error authenticating with KeyCloak",
+                ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+            };
         }
     }
 }

@@ -13,37 +13,37 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Laboratory.Models
+namespace HealthGateway.Laboratory.Models.PHSA
 {
     using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The user representation of laboratory data.
+    /// The user representation of COVID-19 data.
     /// </summary>
-    public class LaboratoryResult
+    public class PhsaCovid19Test
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LaboratoryResult"/> class.
+        /// Initializes a new instance of the <see cref="PhsaCovid19Test"/> class.
         /// </summary>
-        public LaboratoryResult()
+        public PhsaCovid19Test()
         {
             this.ResultDescription = new List<string>();
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LaboratoryResult"/> class.
+        /// Initializes a new instance of the <see cref="PhsaCovid19Test"/> class.
         /// </summary>
         /// <param name="resultDescription">The list of result descriptions.</param>
         [JsonConstructor]
-        public LaboratoryResult(IList<string> resultDescription)
+        public PhsaCovid19Test(IList<string> resultDescription)
         {
             this.ResultDescription = resultDescription;
         }
 
         /// <summary>
-        /// Gets or sets the id for the lab result.
+        /// Gets or sets the id for the COVID-19 result.
         /// </summary>
         [JsonPropertyName("id")]
         public Guid Id { get; set; }

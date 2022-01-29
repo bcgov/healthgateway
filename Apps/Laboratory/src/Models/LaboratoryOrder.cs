@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,93 +13,121 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Laboratory.Models
+namespace HealthGateway.Laboratory.Models;
+
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using HealthGateway.Laboratory.Models.PHSA;
+
+/// <summary>
+/// An instance of a Laboratory Order.
+/// </summary>
+public class LaboratoryOrder
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text.Json.Serialization;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LaboratoryOrder"/> class.
+    /// </summary>
+    public LaboratoryOrder()
+    {
+        this.LaboratoryTests = new List<LaboratoryTest>();
+    }
 
     /// <summary>
-    /// An instance of a Laboratory Order.
+    /// Initializes a new instance of the <see cref="LaboratoryOrder"/> class.
     /// </summary>
-    public class LaboratoryOrder
+    /// <param name="laboratoryTests">The list of Laboratory Test records.</param>
+    [JsonConstructor]
+    public LaboratoryOrder(IList<LaboratoryTest> laboratoryTests)
     {
-        /// <summary>
-        /// Gets or sets the id for the lab order.
-        /// </summary>
-        [JsonPropertyName("id")]
-        public Guid Id { get; set; }
+        this.LaboratoryTests = laboratoryTests;
+    }
 
-        /// <summary>
-        /// Gets or sets the sourceSystemId for the lab order.
-        /// </summary>
-        [JsonPropertyName("sourceSystemId")]
-        public string SourceSystemId { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets the id for the laboratory report.
+    /// </summary>
+    [JsonPropertyName("laboratoryReportId")]
+    public Guid LaboratoryReportId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the PHN the report is for.
-        /// </summary>
-        [JsonPropertyName("phn")]
-        public string PHN { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets a value for reporting source.
+    /// </summary>
+    [JsonPropertyName("reportingSource")]
+    public string ReportingSource { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Gets or sets the Provider IDs for the Order.
-        /// </summary>
-        [JsonPropertyName("orderingProviderIds")]
-        public string OrderProviderIDs { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets the id for the report.
+    /// </summary>
+    [JsonPropertyName("reportId")]
+    public string ReportId { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Gets or sets the providers names.
-        /// </summary>
-        [JsonPropertyName("orderingProviders")]
-        public string OrderingProviders { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets the date time when the lab collection took place.
+    /// </summary>
+    [JsonPropertyName("collectionDateTime")]
+    public DateTime CollectionDateTime { get; set; }
 
-        /// <summary>
-        /// Gets or sets the name of the reporting lab.
-        /// </summary>
-        [JsonPropertyName("reportingLab")]
-        public string ReportingLab { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets a value for common name.
+    /// </summary>
+    [JsonPropertyName("commonName")]
+    public string CommonName { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Gets or sets the location.
-        /// </summary>
-        [JsonPropertyName("location")]
-        public string Location { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets a value for ordering provider.
+    /// </summary>
+    [JsonPropertyName("orderingProvider")]
+    public string OrderingProvider { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Gets or sets if this is an Order or Result.
-        /// </summary>
-        [JsonPropertyName("ormOrOru")]
-        public string LabType { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets a value for test status.
+    /// </summary>
+    [JsonPropertyName("testStatus")]
+    public string TestStatus { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Gets or sets the Message datetime.
-        /// </summary>
-        [JsonPropertyName("messageDateTime")]
-        public DateTime MessageDateTime { get; set; }
+    /// <summary>
+    /// Gets or sets a value indicating whether report is available.
+    /// </summary>
+    [JsonPropertyName("reportAvailable")]
+    public bool ReportAvailable { get; set; }
 
-        /// <summary>
-        /// Gets or sets the message id.
-        /// </summary>
-        [JsonPropertyName("messageId")]
-        public string MessageID { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets a list of PHSA Laboratory Tests.
+    /// </summary>
+    [JsonPropertyName("laboratoryTests")]
+    public IList<LaboratoryTest> LaboratoryTests { get; }
 
-        /// <summary>
-        /// Gets or sets additional related data.
-        /// </summary>
-        [JsonPropertyName("additionalData")]
-        public string AdditionalData { get; set; } = string.Empty;
+    /// <summary>
+    /// Creates a <see cref="LaboratoryOrder"/> object from a PHSA model.
+    /// </summary>
+    /// <param name="model">The laboratory order result to convert.</param>
+    /// <returns>The newly created laboratory order object.</returns>
+    public static LaboratoryOrder FromPhsaModel(PhsaLaboratoryOrder model)
+    {
+        IList<LaboratoryTest> laboratoryTests =
+            model.LabBatteries != null ? model.LabBatteries.Select(LaboratoryTest.FromPhsaModel).ToList() : new List<LaboratoryTest>();
 
-        /// <summary>
-        /// Gets or sets a value indicating whether a report is available.
-        /// </summary>
-        [JsonPropertyName("reportAvailable")]
-        public bool ReportAvailable { get; set; } = false;
+        return new LaboratoryOrder(laboratoryTests)
+        {
+            LaboratoryReportId = model.LabPdfGuid,
+            ReportingSource = model.ReportingSource,
+            ReportId = model.ReportId,
+            CollectionDateTime = model.CollectionDateTime,
+            CommonName = model.CommonName,
+            OrderingProvider = model.OrderingProvider,
+            TestStatus = model.PlisTestStatus,
+            ReportAvailable = model.PdfReportAvailable,
+        };
+    }
 
-        /// <summary>
-        /// Gets or sets the list of lab results.
-        /// </summary>
-        [JsonPropertyName("labResults")]
-        public IEnumerable<LaboratoryResult>? LabResults { get; set; }
+    /// <summary>
+    /// Creates a collection of <see cref="LaboratoryOrder"/> models from a collection of PHSA models.
+    /// </summary>
+    /// <param name="phsaOrders">The list of PHSA models to convert.</param>
+    /// <returns>A collection of <see cref="LaboratoryOrder"/> models.</returns>
+    public static IEnumerable<LaboratoryOrder> FromPhsaModelCollection(IEnumerable<PhsaLaboratoryOrder>? phsaOrders)
+    {
+        return phsaOrders != null ? phsaOrders.Select(FromPhsaModel) : Enumerable.Empty<LaboratoryOrder>();
     }
 }
