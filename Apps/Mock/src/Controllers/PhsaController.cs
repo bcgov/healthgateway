@@ -36,9 +36,9 @@ namespace HealthGateway.Mock.Controllers
         /// <param name="limit">The limit on the number of records returned.</param>
         /// <returns>The mocked laboratory order json.</returns>
         [HttpGet]
-        [Route("LaboratoryOrders")]
+        [Route("LaboratoryOrders/LabSummary")]
         [Produces("application/json")]
-        public ContentResult LaboratoryOrders([FromQuery] string subjectHdid, [FromQuery] string limit)
+        public ContentResult LaboratoryOrders([FromQuery] string subjectHdid)
         {
             string? payload = AssetReader.Read("HealthGateway.Mock.Assets.LaboratoryOrders.json");
             return new ContentResult { Content = payload!, ContentType = "application/json" };
@@ -60,13 +60,28 @@ namespace HealthGateway.Mock.Controllers
         }
 
         /// <summary>
+        /// Gets mock data for COVID-19 reports.
+        /// </summary>
+        /// <param name="id">The laboratory order ID.</param>
+        /// <param name="subjectHdid">The HDID of the patient.</param>
+        /// <returns>The mocked COVID-19 report json.</returns>
+        [HttpGet]
+        [Route("laboratoryOrder/{id}/LabReportDocument")]
+        [Produces("application/json")]
+        public ContentResult Covid19Report(string id, [FromQuery] string subjectHdid)
+        {
+            string? payload = AssetReader.Read("HealthGateway.Mock.Assets.LabReport.json");
+            return new ContentResult { Content = payload!, ContentType = "application/json" };
+        }
+
+        /// <summary>
         /// Gets mock data for laboratory reports.
         /// </summary>
         /// <param name="id">The laboratory order ID.</param>
         /// <param name="subjectHdid">The HDID of the patient.</param>
         /// <returns>The mocked laboratory report json.</returns>
         [HttpGet]
-        [Route("laboratoryOrder/{id}/LabReportDocument")]
+        [Route("LaboratoryOrders/{id}/LabReportDocument")]
         [Produces("application/json")]
         public ContentResult LabReport(string id, [FromQuery] string subjectHdid)
         {
