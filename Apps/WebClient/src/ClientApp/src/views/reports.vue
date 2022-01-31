@@ -205,7 +205,7 @@ export default class ReportsView extends Vue {
                 text: "My Notes",
             });
         }
-        if (this.config.modules["Laboratory"]) {
+        if (this.config.modules["AllLaboratory"]) {
             this.reportTypeOptions.push({
                 value: laboratoryReport,
                 text: "Laboratory Tests",

@@ -127,6 +127,7 @@ describe("Report view", () => {
             ["Immunization"]: true,
             ["MedicationRequest"]: true,
             ["Note"]: true,
+            ["AllLaboratory"]: true,
         };
         const options = new StoreOptionsStub();
         options.modules.config.getters.webClient = (): WebClientConfiguration =>
@@ -147,6 +148,8 @@ describe("Report view", () => {
             ["Laboratory"]: true,
             ["Immunization"]: true,
             ["MedicationRequest"]: true,
+            ["Note"]: true,
+            ["AllLaboratory"]: true,
         };
         const storeOptions = new StoreOptionsStub();
         storeOptions.modules.config.getters.webClient =
@@ -171,6 +174,8 @@ describe("Report view", () => {
             ["Laboratory"]: true,
             ["Immunization"]: true,
             ["MedicationRequest"]: true,
+            ["Note"]: true,
+            ["AllLaboratory"]: true,
         };
         const storeOptions = new StoreOptionsStub();
         storeOptions.modules.config.getters.webClient =
@@ -203,6 +208,8 @@ describe("Report view", () => {
             ["Laboratory"]: true,
             ["Immunization"]: true,
             ["MedicationRequest"]: true,
+            ["Note"]: true,
+            ["AllLaboratory"]: true,
         };
         const storeOptions = new StoreOptionsStub();
         storeOptions.modules.config.getters.webClient =
@@ -243,6 +250,7 @@ describe("Report view", () => {
             ["Immunization"]: true,
             ["MedicationRequest"]: true,
             ["Note"]: true,
+            ["AllLaboratory"]: true,
         };
         const storeOptions = new StoreOptionsStub();
         storeOptions.modules.config.getters.webClient =
@@ -330,7 +338,7 @@ describe("Report view", () => {
         expect(mockedImmzMethod).toHaveBeenCalledTimes(1);
         expect(mockedMedRequestMethod).toHaveBeenCalledTimes(1);
         expect(mockedNoteMethod).toHaveBeenCalledTimes(1);
-        //expect(mockedLaboratoryMethod).toHaveBeenCalledTimes(1);
+        expect(mockedLabMethod).toHaveBeenCalledTimes(1);
     });
 
     test("Medication filter", async () => {
