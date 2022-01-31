@@ -136,7 +136,7 @@ describe("Report view", () => {
         // Check values
         expect(
             wrapperMultipleReport.find(reportIdTag).props()["options"].length
-        ).toBe(7);
+        ).toBe(8);
     });
 
     test("Select med report", async () => {
@@ -280,11 +280,11 @@ describe("Report view", () => {
 
         await wrapper.find(testIdModal).trigger("submit");
 
-        // Execute Lab report
+        // Execute Covid19 report
         await comboOptions.at(3).setSelected();
-        const mockedLabMethod = jest.fn().mockResolvedValue(result);
+        const mockedCovid19Method = jest.fn().mockResolvedValue(result);
         (wrapper.vm.$refs.report as ReportComponent).generateReport =
-            mockedLabMethod;
+            mockedCovid19Method;
 
         await wrapper.find(testIdModal).trigger("submit");
 
@@ -312,16 +312,25 @@ describe("Report view", () => {
 
         await wrapper.find(testIdModal).trigger("submit");
 
+        // Execute Laboratory report
+        await comboOptions.at(7).setSelected();
+        const mockedLabMethod = jest.fn().mockResolvedValue(result);
+        (wrapper.vm.$refs.report as ReportComponent).generateReport =
+            mockedLabMethod;
+
+        await wrapper.find(testIdModal).trigger("submit");
+
         // Execute No recors does nothing
         await comboOptions.at(0).setSelected();
         await wrapper.find(testIdModal).trigger("submit");
 
         expect(mockedMedMethod).toHaveBeenCalledTimes(1);
         expect(mockedEncMethod).toHaveBeenCalledTimes(1);
-        expect(mockedLabMethod).toHaveBeenCalledTimes(1);
+        expect(mockedCovid19Method).toHaveBeenCalledTimes(1);
         expect(mockedImmzMethod).toHaveBeenCalledTimes(1);
         expect(mockedMedRequestMethod).toHaveBeenCalledTimes(1);
         expect(mockedNoteMethod).toHaveBeenCalledTimes(1);
+        //expect(mockedLaboratoryMethod).toHaveBeenCalledTimes(1);
     });
 
     test("Medication filter", async () => {
