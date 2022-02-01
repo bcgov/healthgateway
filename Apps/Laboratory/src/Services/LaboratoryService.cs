@@ -85,7 +85,7 @@ namespace HealthGateway.Laboratory.Services
                 ResultError = UnauthorizedResultError(),
             };
 
-            string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
+            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
 
             if (accessToken != null)
             {
@@ -133,7 +133,7 @@ namespace HealthGateway.Laboratory.Services
                 ResultError = UnauthorizedResultError(),
             };
 
-            string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
+            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
 
             if (accessToken != null)
             {
@@ -176,7 +176,7 @@ namespace HealthGateway.Laboratory.Services
         {
             RequestResult<LaboratoryReport> retVal = new();
 
-            string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
+            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
 
             if (accessToken != null)
             {
@@ -198,7 +198,7 @@ namespace HealthGateway.Laboratory.Services
                 ResourcePayload = new AuthenticatedRapidTestResponse(),
             };
 
-            string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
+            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
             if (accessToken != null)
             {
                 RequestResult<RapidTestResponse> result = await this.laboratoryDelegate
