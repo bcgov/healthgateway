@@ -66,7 +66,7 @@ namespace HealthGateway.Mock.Controllers
         /// <param name="subjectHdid">The HDID of the patient.</param>
         /// <returns>The mocked COVID-19 report json.</returns>
         [HttpGet]
-        [Route("laboratoryOrder/{id}/LabReportDocument")]
+        [Route("Covid19Orders/{id}/LabReportDocument")]
         [Produces("application/json")]
         public ContentResult Covid19Report(string id, [FromQuery] string subjectHdid)
         {
