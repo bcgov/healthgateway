@@ -1,0 +1,13 @@
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">Are you still there?</MudText>
+    </TitleContent>
+    <DialogContent>
+        You will be automatically logged out in @CountdownTicksRemaining @(CountdownTicksRemaining == 1 ? "second" : "seconds").
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="RefreshSessionAsync">I'm here!</MudButton>
+    </DialogActions>
+</MudDialog>
