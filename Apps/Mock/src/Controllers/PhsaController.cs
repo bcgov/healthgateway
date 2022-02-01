@@ -33,7 +33,6 @@ namespace HealthGateway.Mock.Controllers
         /// Gets mock data for laboratory orders.
         /// </summary>
         /// <param name="subjectHdid">The HDID of the patient.</param>
-        /// <param name="limit">The limit on the number of records returned.</param>
         /// <returns>The mocked laboratory order json.</returns>
         [HttpGet]
         [Route("LaboratoryOrders/LabSummary")]
@@ -85,8 +84,8 @@ namespace HealthGateway.Mock.Controllers
         [Produces("application/json")]
         public ContentResult LabReport(string id, [FromQuery] string subjectHdid)
         {
-            string? payload = AssetReader.Read("HealthGateway.Mock.Assets.LabReport.json");
-            return new ContentResult { Content = payload!, ContentType = "application/json" };
+            string? labReportPayload = AssetReader.Read("HealthGateway.Mock.Assets.LabReport.json");
+            return new ContentResult { Content = labReportPayload!, ContentType = "application/json" };
         }
 
         /// <summary>
