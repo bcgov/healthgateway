@@ -1,0 +1,245 @@
+{
+    "resourcePayload": {
+        "loaded": true,
+        "retryin": 0,
+        "orders": [
+            {
+                "laboratoryReportId": "ccee5028-6d51-4474-ce18-08d91c31b95b",
+                "reportingSource": "Vancouver Coastal Health",
+                "reportId": "341L56330T278085",
+                "collectionDateTime": "2021-10-11T11:57:00",
+                "commonName": "Lab Test",
+                "orderingProvider": "PLISBVCC, TREVOR",
+                "testStatus": "Not Set",
+                "reportAvailable": false,
+                "laboratoryTests": [
+                    {
+                        "batteryType": "Alanine Aminotransferase",
+                        "obxId": "341L56330T278085ALT",
+                        "outOfRange": false,
+                        "loinc": null,
+                        "testStatus": "Partial"
+                    },
+                    {
+                        "batteryType": "Aspartate Aminotransferase",
+                        "obxId": "341L56330T278085AST",
+                        "outOfRange": false,
+                        "loinc": null,
+                        "testStatus": "Partial"
+                    },
+                    {
+                        "batteryType": "CBC & Differential",
+                        "obxId": "341L56330T278085CBCD",
+                        "outOfRange": false,
+                        "loinc": "XCA01592-5",
+                        "testStatus": "Partial"
+                    },
+                    {
+                        "batteryType": "Creatinine & Glomerular Filtration Rate Predicted Panel",
+                        "obxId": "341L56330T278085CREE",
+                        "outOfRange": false,
+                        "loinc": null,
+                        "testStatus": "Partial"
+                    },
+                    {
+                        "batteryType": "Glucose Random",
+                        "obxId": "341L56330T278085GLUC",
+                        "outOfRange": false,
+                        "loinc": "14749-6",
+                        "testStatus": "Partial"
+                    },
+                    {
+                        "batteryType": "Urea",
+                        "obxId": "341L56330T278085URE",
+                        "outOfRange": false,
+                        "loinc": "22664-7",
+                        "testStatus": "Partial"
+                    }
+                ]
+            },
+            {
+                "laboratoryReportId": "7452919b-7411-40e4-ce19-08d91c31b95b",
+                "reportingSource": "Vancouver Coastal Health",
+                "reportId": "341L52341T275612",
+                "collectionDateTime": "2021-05-11T06:00:00",
+                "commonName": "Lab Test",
+                "orderingProvider": "PLISBVCC, TREVOR",
+                "testStatus": "Not Set",
+                "reportAvailable": false,
+                "laboratoryTests": [
+                    {
+                        "batteryType": "Alanine Aminotransferase",
+                        "obxId": "341L52341T275612ALT",
+                        "outOfRange": false,
+                        "loinc": null,
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Albumin",
+                        "obxId": "341L52341T275612ALB",
+                        "outOfRange": true,
+                        "loinc": "1751-7",
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Alkaline Phosphatase",
+                        "obxId": "341L52341T275612ALKP",
+                        "outOfRange": false,
+                        "loinc": "6768-6",
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Amylase",
+                        "obxId": "341L52341T275612AMY",
+                        "outOfRange": true,
+                        "loinc": "1798-8",
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "APTT",
+                        "obxId": "341L52341T275612PTTB",
+                        "outOfRange": false,
+                        "loinc": "14979-9",
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Aspartate Aminotransferase",
+                        "obxId": "341L52341T275612AST",
+                        "outOfRange": true,
+                        "loinc": null,
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Bilirubin Panel",
+                        "obxId": "341L52341T275612BILI",
+                        "outOfRange": true,
+                        "loinc": "XBC1197-2",
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Calcium Ionized",
+                        "obxId": "341L52341T275612CAI",
+                        "outOfRange": true,
+                        "loinc": "1995-0",
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "CBC & Differential",
+                        "obxId": "341L52341T275612CBCD",
+                        "outOfRange": true,
+                        "loinc": "XCA01592-5",
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Creatine Kinase",
+                        "obxId": "341L52341T275612CK",
+                        "outOfRange": false,
+                        "loinc": "2157-6",
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Electrolyte, Urea & Creatinine Panel",
+                        "obxId": "341L52341T275612REN",
+                        "outOfRange": true,
+                        "loinc": null,
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Gamma Glutamyl Transferase",
+                        "obxId": "341L52341T275612GGT",
+                        "outOfRange": true,
+                        "loinc": "17858-2",
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "INR",
+                        "obxId": "341L52341T275612INRB",
+                        "outOfRange": true,
+                        "loinc": "6301-6",
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Lactate",
+                        "obxId": "341L52341T275612LACT",
+                        "outOfRange": true,
+                        "loinc": "2524-7",
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Lactate Dehydrogenase",
+                        "obxId": "341L52341T275612LD",
+                        "outOfRange": true,
+                        "loinc": "2532-0",
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Magnesium",
+                        "obxId": "341L52341T275612MG",
+                        "outOfRange": false,
+                        "loinc": "2601-3",
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Peripheral Blood Film Review",
+                        "obxId": "341L52341T275612MORFX",
+                        "outOfRange": false,
+                        "loinc": "XXX-2600",
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Phosphate",
+                        "obxId": "341L52341T275612PO4",
+                        "outOfRange": false,
+                        "loinc": "14879-1",
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Protein",
+                        "obxId": "341L52341T275612TP",
+                        "outOfRange": false,
+                        "loinc": "2885-2",
+                        "testStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Triacylglycerol Lipase",
+                        "obxId": "341L52341T275612LIPA",
+                        "outOfRange": true,
+                        "loinc": "3040-3",
+                        "testStatus": "Final"
+                    }
+                ]
+            },
+            {
+                "laboratoryReportId": "aec5015c-fcf0-4ab5-ce1a-08d91c31b95b",
+                "reportingSource": "Vancouver Coastal Health",
+                "reportId": "341L47099T274701",
+                "collectionDateTime": "2021-07-11T06:00:00",
+                "commonName": "Lab Test",
+                "orderingProvider": "PLISBVCC, TREVOR",
+                "testStatus": "Not Set",
+                "reportAvailable": false,
+                "laboratoryTests": [
+                    {
+                        "batteryType": "CBC",
+                        "obxId": "341L47099T274701CBC",
+                        "outOfRange": false,
+                        "loinc": "58410-2",
+                        "testStatus": "Cancelled"
+                    },
+                    {
+                        "batteryType": "Electrolyte, Urea & Creatinine Panel",
+                        "obxId": "341L47099T274701REN",
+                        "outOfRange": false,
+                        "loinc": null,
+                        "testStatus": "Cancelled"
+                    }
+                ]
+            }
+        ]
+    },
+    "totalResultCount": 3,
+    "pageIndex": null,
+    "pageSize": 25,
+    "resultStatus": 1,
+    "resultError": null
+}
