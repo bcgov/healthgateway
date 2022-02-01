@@ -12,6 +12,7 @@ describe("Reports", () => {
             "Immunization",
             "MedicationRequest",
             "Note",
+            "AllLaboratory",
         ]);
         cy.login(
             Cypress.env("keycloak.username"),
@@ -211,6 +212,38 @@ describe("Reports", () => {
             .select("My Notes");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
+
+        cy.viewport("iphone-6");
+        cy.get("[data-testid=reportSample]").should("not.be.visible");
+        cy.viewport(1440, 600);
+
+        cy.get("[data-testid=exportRecordBtn] button")
+            .should("be.enabled", "be.visible")
+            .click();
+
+        cy.get("[data-testid=exportRecordBtn] a").first().click();
+
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+
+        cy.get("[data-testid=genericMessageText]").should(
+            "have.text",
+            sensitiveDocText
+        );
+
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+        cy.get("[data-testid=genericMessageModal]").should("not.exist");
+    });
+
+    it("Validate Laboratory Report", () => {
+        cy.get("[data-testid=reportType]")
+            .should("be.enabled", "be.visible")
+            .select("Laboratory Tests");
+
+        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=labResultDateItem]")
+            .last()
+            .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
         cy.viewport("iphone-6");
         cy.get("[data-testid=reportSample]").should("not.be.visible");
