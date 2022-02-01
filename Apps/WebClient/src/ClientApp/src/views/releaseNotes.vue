@@ -35,9 +35,9 @@ export default class ReleaseNotesView extends Vue {
         >
             <ul>
                 <li>
-                    We replaced the loading spinner with a loading alert
-                    so you can view your records as they are loaded into
-                    the Health Gateway timeline. 
+                    We replaced the loading spinner with a loading alert so you
+                    can view your records as they are loaded into the Health
+                    Gateway timeline.
                 </li>
             </ul>
         </release-note>
