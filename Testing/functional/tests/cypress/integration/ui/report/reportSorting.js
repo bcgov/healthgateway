@@ -102,6 +102,7 @@ describe("Reports - Covid19", () => {
             "Laboratory",
             "Immunization",
             "MedicationRequest",
+            "AllLaboratory",
         ]);
         cy.login(
             Cypress.env("keycloak.username"),
@@ -112,11 +113,15 @@ describe("Reports - Covid19", () => {
     });
 
     it("Validate Covid19 Report with Unsorted Data", () => {
-        cy.intercept("GET", `**/v1/api/Laboratory?hdid=${HDID}`, (req) => {
-            req.reply({
-                fixture: "Report/covid19UnSorted.json",
-            });
-        });
+        cy.intercept(
+            "GET",
+            `**/v1/api/Laboratory/Covid19Orders?hdid=${HDID}`,
+            (req) => {
+                req.reply({
+                    fixture: "Report/covid19UnSorted.json",
+                });
+            }
+        );
         cy.get("[data-testid=reportType]")
             .should("be.enabled", "be.visible")
             .select("COVID-19 Test Results");
@@ -330,6 +335,68 @@ describe("Reports - Notes (User-Entered)", () => {
                         expect(firstDate).to.be.gte(secondDate);
                         // Column date in the last row in the table
                         cy.get("[data-testid=user-note-date]")
+                            .eq(2)
+                            .then(($dateItem) => {
+                                // Column date in the last row in the table
+                                const lastDate = new Date(
+                                    $dateItem.text().trim()
+                                );
+                                expect(firstDate).to.be.gte(lastDate);
+                                expect(secondDate).to.be.gte(lastDate);
+                            });
+                    });
+            });
+    });
+});
+
+describe("Reports - Laboratory Tests", () => {
+    beforeEach(() => {
+        cy.enableModules([
+            "Encounter",
+            "Medication",
+            "Laboratory",
+            "Immunization",
+            "MedicationRequest",
+            "Note",
+            "AllLaboratory",
+        ]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/reports"
+        );
+    });
+
+    it("Validate Laboratory Report with Unsorted Data", () => {
+        cy.intercept(
+            "GET",
+            `**/v1/api/Laboratory/LaboratoryOrders?hdid=${HDID}`,
+            (req) => {
+                req.reply({
+                    fixture: "Report/laboratoryUnSorted.json",
+                });
+            }
+        );
+        cy.get("[data-testid=reportType]")
+            .should("be.enabled", "be.visible")
+            .select("Laboratory Tests");
+
+        cy.get("[data-testid=reportSample]").should("be.visible");
+
+        cy.get("[data-testid=labResultDateItem]")
+            .first()
+            .then(($dateItem) => {
+                // Column date in the 1st row in the table
+                const firstDate = new Date($dateItem.text().trim());
+                cy.get("[data-testid=labResultDateItem]")
+                    .eq(1)
+                    .then(($dateItem) => {
+                        // Column date in the 2nd row in the table
+                        const secondDate = new Date($dateItem.text().trim());
+                        expect(firstDate).to.be.gte(secondDate);
+                        // Column date in the last row in the table
+                        cy.get("[data-testid=labResultDateItem]")
                             .eq(2)
                             .then(($dateItem) => {
                                 // Column date in the last row in the table

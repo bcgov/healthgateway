@@ -1,91 +1,151 @@
 {
-    "resourcePayload": [
-        {
-            "id": "8a0f0405-ca77-4216-a743-059adf432804",
-            "phn": "973535****",
-            "orderingProviderIds": "383410821",
-            "orderingProviders": "EZSGWZEQ Monica",
-            "reportingLab": "Excelleris",
-            "location": "Excelleris",
-            "ormOrOru": "ORU",
-            "messageDateTime": "2020-09-04T16:53:57+00:00",
-            "messageId": "13921638391",
-            "additionalData": "This test was performed at Cam Coady Building - 7455-130th Street, Surrey, British Columbia, V3W 1H8\u003Cbr\u003E",
-            "reportAvailable": true,
-            "labResults": [
-                {
-                    "id": "e7ad8590-cd03-41fd-95b9-45e6f60d3060",
-                    "testType": null,
-                    "outOfRange": false,
-                    "collectedDateTime": "2020-09-03T10:00:00+00:00",
-                    "testStatus": "Final",
-                    "labResultOutcome": "Negative",
-                    "resultDescription": "NEGATIVE for COVID-19 virus (SARS-CoV-2)\nby NAAT.\n\nThis is a validated laboratory developed\nassay.\n",
-                    "receivedDateTime": "2020-09-03T23:40:00+00:00",
-                    "resultDateTime": "2020-09-04T16:45:09+00:00",
-                    "loinc": "94309-2",
-                    "loincName": "COVID-19 Coronavirus RNA (PCR/NAAT)"
-                }
-            ]
-        },
-        {
-            "id": "cfd2d90a-a8f8-4080-8301-078fbb780115",
-            "phn": "973535****",
-            "orderingProviderIds": "249381347",
-            "orderingProviders": "WIW Sue",
-            "reportingLab": "Iha",
-            "location": "Iha",
-            "ormOrOru": "ORU",
-            "messageDateTime": "2020-09-16T09:43:00+00:00",
-            "messageId": "169161987",
-            "additionalData": null,
-            "reportAvailable": true,
-            "labResults": [
-                {
-                    "id": "576655fe-658e-44ac-9972-ad08b43c4ce0",
-                    "testType": "Nasopharynx Swab",
-                    "outOfRange": true,
-                    "collectedDateTime": "2020-07-14T16:48:00+00:00",
-                    "testStatus": "Amended",
-                    "labResultOutcome": "Positive",
-                    "resultDescription": "ORGANISM 1                     COVID-19 VIRUS (2019-NCOV)*\u003Cbr\u003EDETECTED BY NAT",
-                    "receivedDateTime": "2020-07-15T05:35:00+00:00",
-                    "resultDateTime": "2020-07-15T05:35:00+00:00",
-                    "loinc": "XXX-1927",
-                    "loincName": "Microbiology Report"
-                }
-            ]
-        },
-        {
-            "id": "edae73ba-671c-4463-a0c1-10926ed0c387",
-            "phn": "973535****",
-            "orderingProviderIds": "51001",
-            "orderingProviders": "PLISVIHA ROCCO",
-            "reportingLab": "Viha",
-            "location": "Viha",
-            "ormOrOru": "ORU",
-            "messageDateTime": "2020-12-21T18:22:00+00:00",
-            "messageId": "Q961215152T113790716",
-            "additionalData": "COVID-19 virus (2019 n-CoV) detected by NAT. This is a validated laboratory developed test. Communicable Disease and Infection Prevention and Control programs notified.",
-            "reportAvailable": true,
-            "labResults": [
-                {
-                    "id": "ec6c0df8-4fc4-4fc8-85dc-947120cf49c3",
-                    "testType": "BAL",
-                    "outOfRange": true,
-                    "collectedDateTime": "2020-12-21T15:30:00+00:00",
-                    "testStatus": "Final",
-                    "labResultOutcome": "Positive",
-                    "resultDescription": "Positive",
-                    "receivedDateTime": "2020-12-21T18:06:00+00:00",
-                    "resultDateTime": "2020-12-21T18:21:59+00:00",
-                    "loinc": "94309-2",
-                    "loincName": "COVID-19"
-                }
-            ]
-        }
-    ],
-    "totalResultCount": 3,
+    "resourcePayload": {
+        "loaded": true,
+        "retryin": 0,
+        "orders": [
+            {
+                "id": "8a0f0405-ca77-4216-a743-059adf432804",
+                "phn": "973535****",
+                "orderingProviderIds": "383410821",
+                "orderingProviders": "EZSGWZEQ Monica",
+                "reportingLab": "LifeLabs",
+                "location": "Excelleris",
+                "ormOrOru": "ORU",
+                "messageDateTime": "2020-12-04T08:53:57-08:00",
+                "messageId": "13921638391",
+                "additionalData": "This test was performed at Cam Coady Building - 7455-130th Street, Surrey, British Columbia, V3W 1H8<br>",
+                "reportAvailable": true,
+                "labResults": [
+                    {
+                        "id": "e7ad8590-cd03-41fd-95b9-45e6f60d3060",
+                        "testType": null,
+                        "outOfRange": false,
+                        "collectedDateTime": "2020-12-03T02:00:00-08:00",
+                        "testStatus": "Final",
+                        "labResultOutcome": "Negative",
+                        "resultDescription": [
+                            "Your test result for COVID-19 is Negative. If your symptoms get worse, contact your health care provider or call 8-1-1 for further information.",
+                            "For more information visit "
+                        ],
+                        "resultLink": "http://www.bccdc.ca/results",
+                        "receivedDateTime": "2020-01-03T15:40:00-08:00",
+                        "resultDateTime": "2020-01-04T08:45:09-08:00",
+                        "loinc": "94309-2",
+                        "loincName": "COVID-19 Coronavirus RNA (PCR/NAAT)"
+                    }
+                ]
+            },
+            {
+                "id": "cfd2d90a-a8f8-4080-8301-078fbb780115",
+                "phn": "973535****",
+                "orderingProviderIds": "249381347",
+                "orderingProviders": "WIW Sue",
+                "reportingLab": "Interior Health Authority",
+                "location": "Iha",
+                "ormOrOru": "ORU",
+                "messageDateTime": "2020-07-16T02:43:00-07:00",
+                "messageId": "169161987",
+                "additionalData": null,
+                "reportAvailable": true,
+                "labResults": [
+                    {
+                        "id": "576655fe-658e-44ac-9972-ad08b43c4ce0",
+                        "testType": "Nasopharynx Swab",
+                        "outOfRange": true,
+                        "collectedDateTime": "2020-07-14T09:48:00-07:00",
+                        "testStatus": "Amended",
+                        "labResultOutcome": "Positive",
+                        "resultDescription": [
+                            "Your test result for COVID-19 is Positive.",
+                            "Please self-isolate immediately and follow these steps: http://www.bccdc.ca/ifyouhavecovid ",
+                            "Fill out this online form to report your result to public health: https://reportcovidresults.bccdc.ca/ ",
+                            "The people you live with are close contacts. Please tell them to self-isolate if they are not fully immunized. Close contacts may also include people you were near while sick or in the two days before showing symptoms or going for your test. You can tell your close contacts to take these steps: http://www.bccdc.ca/covid19closecontacts ",
+                            "Call 8-1-1 at any time to talk to a nurse",
+                            "Call 9-1-1 in a health emergency, including if you have difficulty breathing or chest pain."
+                        ],
+                        "resultLink": "",
+                        "receivedDateTime": "2020-07-14T22:35:00-07:00",
+                        "resultDateTime": "2020-07-14T22:35:00-07:00",
+                        "loinc": "XXX-1927",
+                        "loincName": "Microbiology Report"
+                    }
+                ]
+            },
+            {
+                "id": "edae73ba-671c-4463-a0c1-10926ed0c387",
+                "phn": "973535****",
+                "orderingProviderIds": "51001",
+                "orderingProviders": "PLISVIHA ROCCO",
+                "reportingLab": "Vancouver Island Health Authority",
+                "location": "Viha",
+                "ormOrOru": "ORU",
+                "messageDateTime": "2020-08-21T11:22:00-07:00",
+                "messageId": "Q961215152T113790716",
+                "additionalData": "COVID-19 virus (2019 n-CoV) detected by NAT. This is a validated laboratory developed test. Communicable Disease and Infection Prevention and Control programs notified.",
+                "reportAvailable": true,
+                "labResults": [
+                    {
+                        "id": "ec6c0df8-4fc4-4fc8-85dc-947120cf49c3",
+                        "testType": "BAL",
+                        "outOfRange": true,
+                        "collectedDateTime": "2020-08-21T08:30:00-07:00",
+                        "testStatus": "Final",
+                        "labResultOutcome": "Positive",
+                        "resultDescription": [
+                            "Your test result for COVID-19 is Positive.",
+                            "Please self-isolate immediately and follow these steps: http://www.bccdc.ca/ifyouhavecovid ",
+                            "Fill out this online form to report your result to public health: https://reportcovidresults.bccdc.ca/ ",
+                            "The people you live with are close contacts. Please tell them to self-isolate if they are not fully immunized. Close contacts may also include people you were near while sick or in the two days before showing symptoms or going for your test. You can tell your close contacts to take these steps: http://www.bccdc.ca/covid19closecontacts ",
+                            "Call 8-1-1 at any time to talk to a nurse",
+                            "Call 9-1-1 in a health emergency, including if you have difficulty breathing or chest pain."
+                        ],
+                        "resultLink": "",
+                        "receivedDateTime": "2020-08-21T11:06:00-07:00",
+                        "resultDateTime": "2020-08-21T11:21:59-07:00",
+                        "loinc": "94309-2",
+                        "loincName": "COVID-19"
+                    }
+                ]
+            },
+            {
+                "id": "8b54e54d-bdf8-48a0-b0e5-262eaeb0c3d7",
+                "phn": "973535****",
+                "orderingProviderIds": "61003",
+                "orderingProviders": "PLISBVCC TREVOR",
+                "reportingLab": "Interior Health Authority",
+                "location": "Iha",
+                "ormOrOru": "ORU",
+                "messageDateTime": "2021-08-04T04:24:00-07:00",
+                "messageId": "191754130",
+                "additionalData": null,
+                "reportAvailable": true,
+                "labResults": [
+                    {
+                        "id": "aab38bb9-3617-4a04-8052-c277fed569f5",
+                        "testType": "Nasopharynx Swab",
+                        "outOfRange": true,
+                        "collectedDateTime": "2021-01-03T02:00:00-07:00",
+                        "testStatus": "Final",
+                        "labResultOutcome": "Positive",
+                        "resultDescription": [
+                            "Your test result for COVID-19 is Positive.",
+                            "Please self-isolate immediately and follow these steps: http://www.bccdc.ca/ifyouhavecovid ",
+                            "Fill out this online form to report your result to public health: https://reportcovidresults.bccdc.ca/ ",
+                            "The people you live with are close contacts. Please tell them to self-isolate if they are not fully immunized. Close contacts may also include people you were near while sick or in the two days before showing symptoms or going for your test. You can tell your close contacts to take these steps: http://www.bccdc.ca/covid19closecontacts ",
+                            "Call 8-1-1 at any time to talk to a nurse",
+                            "Call 9-1-1 in a health emergency, including if you have difficulty breathing or chest pain."
+                        ],
+                        "resultLink": "",
+                        "receivedDateTime": "2021-01-03T04:47:00-07:00",
+                        "resultDateTime": "2021-01-03T09:27:00-07:00",
+                        "loinc": "XXX-1927",
+                        "loincName": "Microbiology Report"
+                    }
+                ]
+            }
+        ]
+    },
+    "totalResultCount": 4,
     "pageIndex": 0,
     "pageSize": 25,
     "resultStatus": 1,
