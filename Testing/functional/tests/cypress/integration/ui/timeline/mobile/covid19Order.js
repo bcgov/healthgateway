@@ -1,7 +1,7 @@
 const { AuthMethod } = require("../../../../support/constants");
 
 describe("COVID-19 Orders", () => {
-    before(() => {
+    beforeEach(() => {
         cy.viewport("iphone-6");
         cy.restoreAuthCookies();
         cy.enableModules("Laboratory");
@@ -13,6 +13,7 @@ describe("COVID-19 Orders", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        cy.checkTimelineHasLoaded();
     });
 
     it("Validate Card", () => {
