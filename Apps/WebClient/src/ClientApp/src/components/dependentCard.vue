@@ -13,6 +13,7 @@ import { Action, Getter } from "vuex-class";
 import Covid19LaboratoryTestDescriptionComponent from "@/components/laboratory/covid19LaboratoryTestDescription.vue";
 import DeleteModalComponent from "@/components/modal/deleteConfirmation.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -118,9 +119,10 @@ export default class DependentCardComponent extends Vue {
         this.laboratoryService
             .getCovid19LaboratoryOrders(this.dependent.ownerId)
             .then((result) => {
+                const payload = result.resourcePayload;
                 if (result.resultStatus == ResultType.Success) {
                     this.testRows =
-                        result.resourcePayload.orders.flatMap<Covid19LaboratoryTestRow>(
+                        payload.orders.flatMap<Covid19LaboratoryTestRow>(
                             (o) => {
                                 return o.labResults.map<Covid19LaboratoryTestRow>(
                                     (r) => {
@@ -135,6 +137,18 @@ export default class DependentCardComponent extends Vue {
                         );
                     this.sortEntries();
                     this.isDataLoaded = true;
+                    this.isLoading = false;
+                } else if (
+                    result.resultError?.actionCode === ActionType.Refresh &&
+                    !payload.loaded &&
+                    payload.retryin > 0
+                ) {
+                    this.logger.info(
+                        "Re-querying for COVID-19 Laboratory Orders"
+                    );
+                    setTimeout(() => {
+                        this.fetchCovid19LaboratoryTests();
+                    }, payload.retryin);
                 } else {
                     this.logger.error(
                         "Error returned from the COVID-19 Laboratory Orders call: " +
@@ -146,6 +160,7 @@ export default class DependentCardComponent extends Vue {
                             result.resultError
                         )
                     );
+                    this.isLoading = false;
                 }
             })
             .catch((err) => {
@@ -153,8 +168,6 @@ export default class DependentCardComponent extends Vue {
                 this.addError(
                     ErrorTranslator.toBannerError("Fetch Laboratory Error", err)
                 );
-            })
-            .finally(() => {
                 this.isLoading = false;
             });
     }
