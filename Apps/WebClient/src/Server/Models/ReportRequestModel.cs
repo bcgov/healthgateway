@@ -16,10 +16,12 @@
 namespace HealthGateway.WebClient.Models
 {
     using System.Text.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// The report format type enum.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum ReportFormatType
     {
         /// <summary>
@@ -41,6 +43,7 @@ namespace HealthGateway.WebClient.Models
     /// <summary>
     /// The report template type enum.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum TemplateType
     {
         /// <summary>
