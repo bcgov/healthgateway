@@ -27,10 +27,17 @@ function createWrapper(
 
     store = new Vuex.Store(options);
 
+    const LoadingComponentStub = {
+        name: "LoadingComponent",
+        template: "<div v-show='isLoading' id='loadingStub'/>",
+        props: ["isLoading"],
+    };
+
     return shallowMount(HealthInsightsView, {
         localVue,
         store: store,
         stubs: {
+            LoadingComponent: LoadingComponentStub,
             "hg-icon": true,
             "hg-button": true,
             "page-title": true,
@@ -54,7 +61,7 @@ describe("HealthInsights view", () => {
             () => true;
         const wrapper = createWrapper(options);
         // Check values
-        expect(wrapper.find("loadingcomponent-stub").exists()).toBe(true);
+        expect(wrapper.find("#loadingStub").isVisible()).toBe(true);
         expect(wrapper.find("linechart-stub").exists()).toBe(false);
     });
 
@@ -79,7 +86,7 @@ describe("HealthInsights view", () => {
             ];
         const wrapper = createWrapper(options);
 
-        expect(wrapper.find("loadingcomponent-stub").exists()).toBe(false);
+        expect(wrapper.find("#loadingStub").isVisible()).toBe(false);
         expect(wrapper.find("linechart-stub").isVisible()).toBe(true);
     });
 });

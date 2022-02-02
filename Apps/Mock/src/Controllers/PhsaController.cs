@@ -33,14 +33,43 @@ namespace HealthGateway.Mock.Controllers
         /// Gets mock data for laboratory orders.
         /// </summary>
         /// <param name="subjectHdid">The HDID of the patient.</param>
-        /// <param name="limit">The limit on the number of records returned.</param>
         /// <returns>The mocked laboratory order json.</returns>
         [HttpGet]
-        [Route("laboratoryOrder")]
+        [Route("LaboratoryOrders/LabSummary")]
         [Produces("application/json")]
-        public ContentResult LaboratoryOrders([FromQuery] string subjectHdid, [FromQuery] string limit)
+        public ContentResult LaboratoryOrders([FromQuery] string subjectHdid)
         {
             string? payload = AssetReader.Read("HealthGateway.Mock.Assets.LaboratoryOrders.json");
+            return new ContentResult { Content = payload!, ContentType = "application/json" };
+        }
+
+        /// <summary>
+        /// Gets mock data for COVID-19 orders.
+        /// </summary>
+        /// <param name="subjectHdid">The HDID of the patient.</param>
+        /// <param name="limit">The limit on the number of records returned.</param>
+        /// <returns>The mocked COVID-19 order json.</returns>
+        [HttpGet]
+        [Route("Covid19Orders")]
+        [Produces("application/json")]
+        public ContentResult Covid19Orders([FromQuery] string subjectHdid, [FromQuery] string limit)
+        {
+            string? payload = AssetReader.Read("HealthGateway.Mock.Assets.Covid19Orders.json");
+            return new ContentResult { Content = payload!, ContentType = "application/json" };
+        }
+
+        /// <summary>
+        /// Gets mock data for COVID-19 reports.
+        /// </summary>
+        /// <param name="id">The laboratory order ID.</param>
+        /// <param name="subjectHdid">The HDID of the patient.</param>
+        /// <returns>The mocked COVID-19 report json.</returns>
+        [HttpGet]
+        [Route("Covid19Orders/{id}/LabReportDocument")]
+        [Produces("application/json")]
+        public ContentResult Covid19Report(string id, [FromQuery] string subjectHdid)
+        {
+            string? payload = AssetReader.Read("HealthGateway.Mock.Assets.LabReport.json");
             return new ContentResult { Content = payload!, ContentType = "application/json" };
         }
 
@@ -51,12 +80,12 @@ namespace HealthGateway.Mock.Controllers
         /// <param name="subjectHdid">The HDID of the patient.</param>
         /// <returns>The mocked laboratory report json.</returns>
         [HttpGet]
-        [Route("laboratoryOrder/{id}/LabReportDocument")]
+        [Route("LaboratoryOrders/{id}/LabReportDocument")]
         [Produces("application/json")]
         public ContentResult LabReport(string id, [FromQuery] string subjectHdid)
         {
-            string? payload = AssetReader.Read("HealthGateway.Mock.Assets.LabReport.json");
-            return new ContentResult { Content = payload!, ContentType = "application/json" };
+            string? labReportPayload = AssetReader.Read("HealthGateway.Mock.Assets.LabReport.json");
+            return new ContentResult { Content = labReportPayload!, ContentType = "application/json" };
         }
 
         /// <summary>

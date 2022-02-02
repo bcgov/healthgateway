@@ -1,12 +1,12 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCheckCircle, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { BToast } from "bootstrap-vue";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import ErrorCardComponent from "@/components/errorCard.vue";
-import LoadingComponent from "@/components/loading.vue";
 import CovidTestModalComponent from "@/components/modal/covidTestModal.vue";
 import NoteEditComponent from "@/components/modal/noteEdit.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
@@ -19,12 +19,13 @@ import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
+import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
 import Encounter from "@/models/encounter";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
-import { LaboratoryOrder } from "@/models/laboratory";
-import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
+import { Covid19LaboratoryOrder, LaboratoryOrder } from "@/models/laboratory";
+import LaboratoryOrderTimelineEntry from "@/models/laboratoryOrderTimelineEntry";
 import MedicationRequest from "@/models/MedicationRequest";
 import MedicationRequestTimelineEntry from "@/models/medicationRequestTimelineEntry";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
@@ -43,8 +44,8 @@ library.add(faSearch, faCheckCircle);
 
 @Component({
     components: {
+        BToast,
         BreadcrumbComponent,
-        LoadingComponent,
         ProtectiveWordComponent,
         CovidTestModalComponent,
         NoteEditComponent,
@@ -76,8 +77,13 @@ export default class TimelineView extends Vue {
     @Action("retrieve", { namespace: "note" })
     retrieveNotes!: (params: { hdid: string }) => Promise<void>;
 
-    @Action("retrieve", { namespace: "laboratory" })
-    retrieveLaboratory!: (params: { hdid: string }) => Promise<void>;
+    @Action("retrieveCovid19LaboratoryOrders", { namespace: "laboratory" })
+    retrieveCovid19LaboratoryOrders!: (params: {
+        hdid: string;
+    }) => Promise<void>;
+
+    @Action("retrieveLaboratoryOrders", { namespace: "laboratory" })
+    retrieveLaboratoryOrders!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieveMedicationStatements", { namespace: "medication" })
     retrieveMedications!: (params: {
@@ -100,7 +106,10 @@ export default class TimelineView extends Vue {
     @Getter("isLoading", { namespace: "comment" })
     isCommentLoading!: boolean;
 
-    @Getter("isLoading", { namespace: "laboratory" })
+    @Getter("covid19LaboratoryOrdersAreLoading", { namespace: "laboratory" })
+    isCovid19LaboratoryLoading!: boolean;
+
+    @Getter("laboratoryOrdersAreLoading", { namespace: "laboratory" })
     isLaboratoryLoading!: boolean;
 
     @Getter("isLoading", { namespace: "encounter" })
@@ -109,11 +118,11 @@ export default class TimelineView extends Vue {
     @Getter("isLoading", { namespace: "immunization" })
     isImmunizationLoading!: boolean;
 
+    @Getter("isDeferredLoad", { namespace: "immunization" })
+    isImmunizationDeferred!: boolean;
+
     @Getter("isLoading", { namespace: "note" })
     isNoteLoading!: boolean;
-
-    @Getter("isDeferredLoad", { namespace: "immunization" })
-    immunizationIsDeferred!: boolean;
 
     @Getter("immunizations", { namespace: "immunization" })
     patientImmunizations!: ImmunizationEvent[];
@@ -129,6 +138,9 @@ export default class TimelineView extends Vue {
 
     @Getter("medicationRequests", { namespace: "medication" })
     medicationRequests!: MedicationRequest[];
+
+    @Getter("covid19LaboratoryOrders", { namespace: "laboratory" })
+    covid19LaboratoryOrders!: Covid19LaboratoryOrder[];
 
     @Getter("laboratoryOrders", { namespace: "laboratory" })
     laboratoryOrders!: LaboratoryOrder[];
@@ -154,9 +166,6 @@ export default class TimelineView extends Vue {
 
     private filterText = "";
     private logger!: ILogger;
-    private readonly dismissImmunizationBannerSeconds = 5;
-    private dismissImmunizationBannerCountdown = 0;
-    private initialImmunizationCount = 0;
 
     private breadcrumbItems: BreadcrumbItem[] = [
         {
@@ -172,12 +181,6 @@ export default class TimelineView extends Vue {
         this.setKeyword(this.filterText);
     }
 
-    @Watch("immunizationIsDeferred")
-    private whenImmunizationIsDeferred() {
-        this.dismissImmunizationBannerCountdown =
-            this.dismissImmunizationBannerSeconds;
-    }
-
     @Watch("isLinearView")
     private onIsLinearView() {
         if (this.isLinearView) {
@@ -188,10 +191,6 @@ export default class TimelineView extends Vue {
     }
 
     private get timelineEntries(): TimelineEntry[] {
-        if (this.isLoading) {
-            return [];
-        }
-
         this.logger.debug("Updating timeline Entries");
 
         let timelineEntries = [];
@@ -212,10 +211,20 @@ export default class TimelineView extends Vue {
             );
         }
 
+        // Add the COVID-19 Laboratory entries to the timeline list
+        for (let order of this.covid19LaboratoryOrders) {
+            timelineEntries.push(
+                new Covid19LaboratoryOrderTimelineEntry(
+                    order,
+                    this.getEntryComments
+                )
+            );
+        }
+
         // Add the Laboratory entries to the timeline list
         for (let order of this.laboratoryOrders) {
             timelineEntries.push(
-                new LaboratoryTimelineEntry(order, this.getEntryComments)
+                new LaboratoryOrderTimelineEntry(order, this.getEntryComments)
             );
         }
 
@@ -254,16 +263,22 @@ export default class TimelineView extends Vue {
         return filteredEntries;
     }
 
-    private get isLoading(): boolean {
+    private get isFullyLoaded(): boolean {
         return (
-            this.isMedicationRequestLoading ||
-            this.isMedicationStatementLoading ||
-            this.isImmunizationLoading ||
-            this.isLaboratoryLoading ||
-            this.isEncounterLoading ||
-            this.isNoteLoading ||
-            this.isCommentLoading
+            !this.isMedicationRequestLoading &&
+            !this.isMedicationStatementLoading &&
+            !this.isImmunizationLoading &&
+            !this.isImmunizationDeferred &&
+            !this.isCovid19LaboratoryLoading &&
+            !this.isLaboratoryLoading &&
+            !this.isEncounterLoading &&
+            !this.isNoteLoading &&
+            !this.isCommentLoading
         );
+    }
+
+    private get showTimelineEntries(): boolean {
+        return this.timelineEntries.length > 0 || this.isFullyLoaded;
     }
 
     private get isNoteEnabled(): boolean {
@@ -284,11 +299,9 @@ export default class TimelineView extends Vue {
             this.getPatientData(),
             this.retrieveMedications({ hdid: this.user.hdid }),
             this.retrieveMedicationRequests({ hdid: this.user.hdid }),
-            this.retrieveImmunizations({ hdid: this.user.hdid }).then(() => {
-                this.initialImmunizationCount =
-                    this.patientImmunizations.length;
-            }),
-            this.retrieveLaboratory({ hdid: this.user.hdid }),
+            this.retrieveImmunizations({ hdid: this.user.hdid }),
+            this.retrieveCovid19LaboratoryOrders({ hdid: this.user.hdid }),
+            this.retrieveLaboratoryOrders({ hdid: this.user.hdid }),
             this.retrieveEncounters({ hdid: this.user.hdid }),
             this.retrieveNotes({ hdid: this.user.hdid }),
             this.retrieveComments({ hdid: this.user.hdid }),
@@ -311,37 +324,27 @@ export default class TimelineView extends Vue {
 
 <template>
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+        <b-toast
+            id="loading-toast"
+            :visible="!isFullyLoaded"
+            toaster="b-toaster-top-center"
+            variant="info"
+            solid
+            no-auto-hide
+            no-close-button
+            is-status
+            data-testid="loading-toast"
+        >
+            <div class="text-center">Retrieving your health records</div>
+        </b-toast>
+        <div
+            v-if="!isFullyLoaded"
+            v-show="false"
+            data-testid="loading-in-progress"
+        />
         <BreadcrumbComponent :items="breadcrumbItems" />
-        <LoadingComponent :is-custom="true" :is-loading="isLoading" />
         <b-row>
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
-                <b-alert
-                    :show="dismissImmunizationBannerCountdown"
-                    dismissible
-                    variant="info"
-                    class="no-print"
-                    @dismissed="dismissImmunizationBannerCountdown = 0"
-                >
-                    <h4
-                        v-if="immunizationIsDeferred"
-                        data-testid="immunizationLoading"
-                    >
-                        Still searching for immunization records
-                    </h4>
-                    <h4
-                        v-else-if="
-                            patientImmunizations.length >
-                            initialImmunizationCount
-                        "
-                        data-testid="immunizationReady"
-                    >
-                        Additional immunization records found. Loading into
-                        timeline
-                    </h4>
-                    <h4 v-else data-testid="immunizationEmpty">
-                        No additional records found
-                    </h4>
-                </b-alert>
                 <page-title title="Timeline">
                     <router-link to="/covid19">
                         <hg-button
@@ -360,6 +363,7 @@ export default class TimelineView extends Vue {
                     </router-link>
                 </page-title>
                 <div
+                    v-if="showTimelineEntries"
                     class="sticky-top sticky-offset px-2"
                     :class="{ 'header-offset': isHeaderShown }"
                 >
@@ -379,7 +383,7 @@ export default class TimelineView extends Vue {
                                         placeholder=""
                                         maxlength="50"
                                         debounce="250"
-                                    ></b-form-input>
+                                    />
                                     <b-input-group-append>
                                         <hg-button
                                             v-show="filterText"
@@ -397,19 +401,21 @@ export default class TimelineView extends Vue {
                                 </b-input-group>
                             </div>
                         </b-col>
-                        <b-col v-if="!isLoading" class="col-auto pl-2">
+                        <b-col class="col-auto pl-2">
                             <Filters />
                         </b-col>
                     </b-row>
                 </div>
                 <LinearTimeline
-                    v-show="isLinearView && !isLoading"
+                    v-show="isLinearView && showTimelineEntries"
                     :timeline-entries="filteredTimelineEntries"
                     :total-entries="getTotalCount()"
                 >
                     <template #add-note>
                         <b-col
-                            v-if="isNoteEnabled && isLinearView && !isLoading"
+                            v-if="
+                                isNoteEnabled && isLinearView && !isNoteLoading
+                            "
                             col
                             cols="auto"
                         >
@@ -418,13 +424,15 @@ export default class TimelineView extends Vue {
                     </template>
                 </LinearTimeline>
                 <CalendarTimeline
-                    v-show="!isLinearView && !isLoading"
+                    v-show="!isLinearView && showTimelineEntries"
                     :timeline-entries="filteredTimelineEntries"
                     :total-entries="getTotalCount()"
                 >
                     <template #add-note>
                         <b-col
-                            v-if="isNoteEnabled && !isLinearView && !isLoading"
+                            v-if="
+                                isNoteEnabled && !isLinearView && !isNoteLoading
+                            "
                             col
                             cols="auto"
                         >
@@ -432,19 +440,12 @@ export default class TimelineView extends Vue {
                         </b-col>
                     </template>
                 </CalendarTimeline>
-                <b-row v-if="isLoading">
+                <b-row v-if="!showTimelineEntries">
                     <b-col>
-                        <br />
                         <div class="px-2">
                             <content-placeholders>
                                 <content-placeholders-heading :img="true" />
                                 <content-placeholders-text :lines="3" />
-                            </content-placeholders>
-                            <br />
-                            <br />
-                            <content-placeholders>
-                                <content-placeholders-heading :img="true" />
-                                <content-placeholders-img />
                             </content-placeholders>
                         </div>
                     </b-col>
@@ -452,10 +453,10 @@ export default class TimelineView extends Vue {
             </b-col>
         </b-row>
         <resource-centre />
-        <CovidTestModalComponent :is-loading="isLoading" />
-        <ProtectiveWordComponent :is-loading="isLoading" />
-        <NoteEditComponent :is-loading="isLoading" />
-        <EntryDetailsComponent :is-loading="isLoading" />
+        <CovidTestModalComponent :is-loading="isCovid19LaboratoryLoading" />
+        <ProtectiveWordComponent :is-loading="isMedicationStatementLoading" />
+        <NoteEditComponent :is-loading="isNoteLoading" />
+        <EntryDetailsComponent />
     </div>
 </template>
 

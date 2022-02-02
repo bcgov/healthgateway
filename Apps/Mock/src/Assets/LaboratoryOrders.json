@@ -1,219 +1,474 @@
 {
     "loadState": {
-        "signalRUrl": "Disabled",
-        "signalRMethod": "Disabled",
-        "refreshInProgress": false
+        "signalRUrl": "",
+        "signalRMethod": "",
+        "refreshInProgress": false,
+        "backOffMilliseconds": 0
     },
-    "result": [
-        {
-            "id": "8a0f0405-ca77-4216-a743-059adf432804",
-            "sourceSystemId": "Excelleris-20-350338332",
-            "phn": "9735353315",
-            "orderingProviderIds": "383410821",
-            "orderingProviders": "EZSGWZEQ Monica",
-            "reportingLab": "Excelleris",
-            "location": "Excelleris",
-            "ormOrOru": "ORU",
-            "messageDateTime": "2020-12-04T16:53:57+00:00",
-            "messageId": "13921638391",
-            "additionalData": "This test was performed at Cam Coady Building - 7455-130th Street, Surrey, British Columbia, V3W 1H8<br>",
-            "reportAvailable": true,
-            "labResults": [
-                {
-                    "id": "e7ad8590-cd03-41fd-95b9-45e6f60d3060",
-                    "testType": null,
-                    "outOfRange": false,
-                    "collectedDateTime": "2020-12-03T10:00:00+00:00",
-                    "testStatus": "Final",
-                    "resultDescription": [ "NEGATIVE for COVID-19 virus (SARS-CoV-2) by NAAT.", "This is a validated laboratory developed assay." ],
-                    "labResultOutcome": "Negative",
-                    "receivedDateTime": "2020-12-03T23:40:00+00:00",
-                    "resultDateTime": "2020-12-04T16:45:09+00:00",
-                    "loinc": "94309-2",
-                    "loincName": "COVID-19 Coronavirus RNA (PCR/NAAT)",
-                    "resultLink": null
-                }
-            ]
-        },
-        {
-            "id": "cfd2d90a-a8f8-4080-8301-078fbb780115",
-            "sourceSystemId": "Iha-IHKGH-2020-16040459",
-            "phn": "9735353315",
-            "orderingProviderIds": "249381347",
-            "orderingProviders": "WIW Sue",
-            "reportingLab": "Iha",
-            "location": "Iha",
-            "ormOrOru": "ORU",
-            "messageDateTime": "2020-07-16T09:43:00+00:00",
-            "messageId": "169161987",
-            "additionalData": null,
-            "reportAvailable": true,
-            "labResults": [
-                {
-                    "id": "576655fe-658e-44ac-9972-ad08b43c4ce0",
-                    "testType": "Nasopharynx Swab",
-                    "outOfRange": true,
-                    "collectedDateTime": "2020-07-14T16:48:00+00:00",
-                    "testStatus": "Amended",
-                    "resultDescription": [ "ORGANISM 1 COVID-19 VIRUS (2019-NCOV)*", "DETECTED BY NAT" ],
-                    "labResultOutcome": "Positive",
-                    "receivedDateTime": "2020-07-15T05:35:00+00:00",
-                    "resultDateTime": "2020-07-15T05:35:00+00:00",
-                    "loinc": "XXX-1927",
-                    "loincName": "Microbiology Report",
-                    "resultLink": null
-                }
-            ]
-        },
-        {
-            "id": "edae73ba-671c-4463-a0c1-10926ed0c387",
-            "sourceSystemId": "Viha-20-234-030013",
-            "phn": "9735353315",
-            "orderingProviderIds": "51001",
-            "orderingProviders": "PLISVIHA ROCCO",
-            "reportingLab": "Viha",
-            "location": "Viha",
-            "ormOrOru": "ORU",
-            "messageDateTime": "2020-08-21T18:22:00+00:00",
-            "messageId": "Q961215152T113790716",
-            "additionalData": "COVID-19 virus (2019 n-CoV) detected by NAT. This is a validated laboratory developed test. Communicable Disease and Infection Prevention and Control programs notified.",
-            "reportAvailable": true,
-            "labResults": [
-                {
-                    "id": "ec6c0df8-4fc4-4fc8-85dc-947120cf49c3",
-                    "testType": "BAL",
-                    "outOfRange": true,
-                    "collectedDateTime": "2020-08-21T15:30:00+00:00",
-                    "testStatus": "Final",
-                    "resultDescription": [ "Positive" ],
-                    "labResultOutcome": "Positive",
-                    "receivedDateTime": "2020-08-21T18:06:00+00:00",
-                    "resultDateTime": "2020-08-21T18:21:59+00:00",
-                    "loinc": "94309-2",
-                    "loincName": "COVID-19",
-                    "resultLink": null
-                }
-            ]
-        },
-        {
-            "id": "5ce65be7-a0b3-4fe2-acdc-6dfae4b34419",
-            "sourceSystemId": "Fha-20-30145300",
-            "phn": "9735353315",
-            "orderingProviderIds": "794261211",
-            "orderingProviders": "KGCRVEJW Scott",
-            "reportingLab": "Fha",
-            "location": "Fha",
-            "ormOrOru": "ORU",
-            "messageDateTime": "2020-10-04T21:08:00+00:00",
-            "messageId": "20000001442319514",
-            "additionalData": "Positive for COVID-19 (SARS-CoV-2) RNA by molecular assay<br>method.<br><br>This assay targets the E and ORF1/a gene regions of the<br>COVID-19 (SARS-CoV-2) virus.<br><br>A copy of the result has been sent to Infection Prevention<br>and Control.<br><br>As required by the regulation for the control of<br>communicable disease, this case will be reported to the<br>Medical Health Officer.<br><br>",
-            "reportAvailable": true,
-            "labResults": [
-                {
-                    "id": "40a6e571-62b6-4cb3-89ed-afe7a322ccb2",
-                    "testType": "Nasopharyngeal Swab",
-                    "outOfRange": true,
-                    "collectedDateTime": "2020-10-03T15:45:00+00:00",
-                    "testStatus": "Final",
-                    "resultDescription": [ "POSITIVE" ],
-                    "labResultOutcome": "Positive",
-                    "receivedDateTime": "2020-10-04T11:30:00+00:00",
-                    "resultDateTime": "2020-10-04T21:08:00+00:00",
-                    "loinc": "94309-2",
-                    "loincName": "COVID-19 Virus PCR (FH)",
-                    "resultLink": null
-                }
-            ]
-        },
-        {
-            "id": "bd78121c-bfd4-4408-a096-b319344fec6e",
-            "sourceSystemId": "Vcha-330L110558M219903",
-            "phn": "9735353315",
-            "orderingProviderIds": "340868507",
-            "orderingProviders": "W Mitzi",
-            "reportingLab": "Vcha",
-            "location": "Vcha",
-            "ormOrOru": "ORU",
-            "messageDateTime": "2020-06-16T10:10:30+00:00",
-            "messageId": "20201680030862",
-            "additionalData": "No COVID-19 virus (2019-nCoV) detected by NAT.",
-            "reportAvailable": false,
-            "labResults": [
-                {
-                    "id": "195ebeaf-6dd3-4768-9d19-b501cec01889",
-                    "testType": "Nasopharynx",
-                    "outOfRange": false,
-                    "collectedDateTime": "2020-06-15T05:47:00+00:00",
-                    "testStatus": "Final",
-                    "resultDescription": [ "Negative." ],
-                    "labResultOutcome": "Negative",
-                    "receivedDateTime": "2020-06-16T05:47:00+00:00",
-                    "resultDateTime": "2020-06-16T10:10:00+00:00",
-                    "loinc": "XXX-3286",
-                    "loincName": "COVID-19 n-Coronavirus  NAT",
-                    "resultLink": null
-                }
-            ]
-        },
-        {
-            "id": "b36d4abc-5d61-49fb-bff8-bc0bb1b907bd",
-            "sourceSystemId": "Fha-20-30218679",
-            "phn": "9735353315",
-            "orderingProviderIds": "216998945",
-            "orderingProviders": "YCOYACGPO Judith",
-            "reportingLab": "Fha",
-            "location": "Fha",
-            "ormOrOru": "ORU",
-            "messageDateTime": "2020-06-15T03:52:00+00:00",
-            "messageId": "20000001445282844",
-            "additionalData": "Negative for COVID-19 (SARS-CoV-2) RNA by molecular assay<br>method.<br><br>This assay targets the E and ORF1/a gene regions of the<br>COVID-19 (SARS-CoV-2) virus.<br>",
-            "reportAvailable": false,
-            "labResults": [
-                {
-                    "id": "82fb154e-32ad-48d3-95a7-14fad0d20182",
-                    "testType": "Nasopharyngeal Swab",
-                    "outOfRange": false,
-                    "collectedDateTime": "2020-06-14T17:45:00+00:00",
-                    "testStatus": "Final",
-                    "resultDescription": [ "Negative" ],
-                    "labResultOutcome": "NotSet",
-                    "receivedDateTime": "2020-06-14T19:42:00+00:00",
-                    "resultDateTime": "2020-06-15T03:52:00+00:00",
-                    "loinc": "94309-2",
-                    "loincName": "COVID-19 Virus PCR (FH)",
-                    "resultLink": null
-                }
-            ]
-        },
-        {
-            "id": "01a3821a-e38c-4345-8af4-d75376b522f1",
-            "sourceSystemId": "Excelleris-20-287340080",
-            "phn": "9735353315",
-            "orderingProviderIds": "272655097",
-            "orderingProviders": "AAACYU Garland",
-            "reportingLab": "Excelleris",
-            "location": "Excelleris",
-            "ormOrOru": "ORU",
-            "messageDateTime": "2020-12-06T09:47:10+00:00",
-            "messageId": "13922077370",
-            "additionalData": "This test was performed at Cam Coady Building - 7455-130th Street, Surrey, British Columbia, V3W 1H8<br>",
-            "reportAvailable": true,
-            "labResults": [
-                {
-                    "id": "eeab8e99-8385-485f-9f8b-ceb0af0c73f4",
-                    "testType": null,
-                    "outOfRange": true,
-                    "collectedDateTime": "2020-12-05T12:00:00+00:00",
-                    "testStatus": "Corrected",
-                    "resultDescription": [ "POSITIVE for COVID-19 virus (SARS-CoV-2) by NAAT.", "This is a validated laboratory developed assay.", "Result sent to Public Health. For patients residing outside British Columbia, ordering practitioners must report this result to Public Health Office specific to the province of residence." ],
-                    "labResultOutcome": "Positive",
-                    "receivedDateTime": "2020-12-05T17:26:00+00:00",
-                    "resultDateTime": "2020-12-06T09:45:00+00:00",
-                    "loinc": "94309-2",
-                    "loincName": "COVID-19 Coronavirus RNA (PCR/NAAT)",
-                    "resultLink": null
-                }
-            ]
-        }
-    ]
+    "result": {
+        "plisLabOrders": [
+            {
+                "labPdfGuid": "ccee5028-6d51-4474-ce18-08d91c31b95b",
+                "reportingSource": "Vancouver Coastal Health",
+                "reportId": "341L56330T278085",
+                "collectionDateTime": "2021-05-11T11:57:00",
+                "commonName": "Lab Test",
+                "orderingProvider": "PLISBVCC, TREVOR",
+                "plisTestStatus": "Not Set",
+                "labBatteries": [
+                    {
+                        "batteryType": "Alanine Aminotransferase",
+                        "obxId": "341L56330T278085ALT",
+                        "outOfRange": false,
+                        "loinc": null,
+                        "plisTestStatus": "Partial"
+                    },
+                    {
+                        "batteryType": "Aspartate Aminotransferase",
+                        "obxId": "341L56330T278085AST",
+                        "outOfRange": false,
+                        "loinc": null,
+                        "plisTestStatus": "Partial"
+                    },
+                    {
+                        "batteryType": "CBC & Differential",
+                        "obxId": "341L56330T278085CBCD",
+                        "outOfRange": false,
+                        "loinc": "XCA01592-5",
+                        "plisTestStatus": "Partial"
+                    },
+                    {
+                        "batteryType": "Creatinine & Glomerular Filtration Rate Predicted Panel",
+                        "obxId": "341L56330T278085CREE",
+                        "outOfRange": false,
+                        "loinc": null,
+                        "plisTestStatus": "Partial"
+                    },
+                    {
+                        "batteryType": "Glucose Random",
+                        "obxId": "341L56330T278085GLUC",
+                        "outOfRange": false,
+                        "loinc": "14749-6",
+                        "plisTestStatus": "Partial"
+                    },
+                    {
+                        "batteryType": "Urea",
+                        "obxId": "341L56330T278085URE",
+                        "outOfRange": false,
+                        "loinc": "22664-7",
+                        "plisTestStatus": "Partial"
+                    }
+                ],
+                "pdfReportAvailable": false
+            },
+            {
+                "labPdfGuid": "7452919b-7411-40e4-ce19-08d91c31b95b",
+                "reportingSource": "Vancouver Coastal Health",
+                "reportId": "341L52341T275612",
+                "collectionDateTime": "2021-05-11T06:00:00",
+                "commonName": "Lab Test",
+                "orderingProvider": "PLISBVCC, TREVOR",
+                "plisTestStatus": "Not Set",
+                "labBatteries": [
+                    {
+                        "batteryType": "Alanine Aminotransferase",
+                        "obxId": "341L52341T275612ALT",
+                        "outOfRange": false,
+                        "loinc": null,
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Albumin",
+                        "obxId": "341L52341T275612ALB",
+                        "outOfRange": true,
+                        "loinc": "1751-7",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Alkaline Phosphatase",
+                        "obxId": "341L52341T275612ALKP",
+                        "outOfRange": false,
+                        "loinc": "6768-6",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Amylase",
+                        "obxId": "341L52341T275612AMY",
+                        "outOfRange": true,
+                        "loinc": "1798-8",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "APTT",
+                        "obxId": "341L52341T275612PTTB",
+                        "outOfRange": false,
+                        "loinc": "14979-9",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Aspartate Aminotransferase",
+                        "obxId": "341L52341T275612AST",
+                        "outOfRange": true,
+                        "loinc": null,
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Bilirubin Panel",
+                        "obxId": "341L52341T275612BILI",
+                        "outOfRange": true,
+                        "loinc": "XBC1197-2",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Calcium Ionized",
+                        "obxId": "341L52341T275612CAI",
+                        "outOfRange": true,
+                        "loinc": "1995-0",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "CBC & Differential",
+                        "obxId": "341L52341T275612CBCD",
+                        "outOfRange": true,
+                        "loinc": "XCA01592-5",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Creatine Kinase",
+                        "obxId": "341L52341T275612CK",
+                        "outOfRange": false,
+                        "loinc": "2157-6",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Electrolyte, Urea & Creatinine Panel",
+                        "obxId": "341L52341T275612REN",
+                        "outOfRange": true,
+                        "loinc": null,
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Gamma Glutamyl Transferase",
+                        "obxId": "341L52341T275612GGT",
+                        "outOfRange": true,
+                        "loinc": "17858-2",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "INR",
+                        "obxId": "341L52341T275612INRB",
+                        "outOfRange": true,
+                        "loinc": "6301-6",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Lactate",
+                        "obxId": "341L52341T275612LACT",
+                        "outOfRange": true,
+                        "loinc": "2524-7",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Lactate Dehydrogenase",
+                        "obxId": "341L52341T275612LD",
+                        "outOfRange": true,
+                        "loinc": "2532-0",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Magnesium",
+                        "obxId": "341L52341T275612MG",
+                        "outOfRange": false,
+                        "loinc": "2601-3",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Peripheral Blood Film Review",
+                        "obxId": "341L52341T275612MORFX",
+                        "outOfRange": false,
+                        "loinc": "XXX-2600",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Phosphate",
+                        "obxId": "341L52341T275612PO4",
+                        "outOfRange": false,
+                        "loinc": "14879-1",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Protein",
+                        "obxId": "341L52341T275612TP",
+                        "outOfRange": false,
+                        "loinc": "2885-2",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Triacylglycerol Lipase",
+                        "obxId": "341L52341T275612LIPA",
+                        "outOfRange": true,
+                        "loinc": "3040-3",
+                        "plisTestStatus": "Final"
+                    }
+                ],
+                "pdfReportAvailable": false
+            },
+            {
+                "labPdfGuid": "aec5015c-fcf0-4ab5-ce1a-08d91c31b95b",
+                "reportingSource": "Vancouver Coastal Health",
+                "reportId": "341L47099T274701",
+                "collectionDateTime": "2021-05-11T06:00:00",
+                "commonName": "Lab Test",
+                "orderingProvider": "PLISBVCC, TREVOR",
+                "plisTestStatus": "Not Set",
+                "labBatteries": [
+                    {
+                        "batteryType": "CBC",
+                        "obxId": "341L47099T274701CBC",
+                        "outOfRange": false,
+                        "loinc": "58410-2",
+                        "plisTestStatus": "Cancelled"
+                    },
+                    {
+                        "batteryType": "Electrolyte, Urea & Creatinine Panel",
+                        "obxId": "341L47099T274701REN",
+                        "outOfRange": false,
+                        "loinc": null,
+                        "plisTestStatus": "Cancelled"
+                    }
+                ],
+                "pdfReportAvailable": false
+            },
+            {
+                "labPdfGuid": "292647ea-5fb7-4270-ce1b-08d91c31b95b",
+                "reportingSource": "Vancouver Coastal Health",
+                "reportId": "341L52334T275610",
+                "collectionDateTime": "2021-05-11T06:00:00",
+                "commonName": "Lab Test",
+                "orderingProvider": "PLISBVCC, TREVOR",
+                "plisTestStatus": "Not Set",
+                "labBatteries": [
+                    {
+                        "batteryType": "Gas Panel & Oxyhemoglobin; Arterial",
+                        "obxId": "341L52334T275610ABGO",
+                        "outOfRange": true,
+                        "loinc": "XXX-2133",
+                        "plisTestStatus": "Final"
+                    }
+                ],
+                "pdfReportAvailable": false
+            },
+            {
+                "labPdfGuid": "34075168-4982-4c1a-ce1c-08d91c31b95b",
+                "reportingSource": "Vancouver Coastal Health",
+                "reportId": "341L53984T275983",
+                "collectionDateTime": "2021-05-11T02:00:00",
+                "commonName": "Lab Test",
+                "orderingProvider": "PLISBVCC, TREVOR",
+                "plisTestStatus": "Not Set",
+                "labBatteries": [
+                    {
+                        "batteryType": "Gas Panel & Oxyhemoglobin; Arterial",
+                        "obxId": "341L53984T275983ABGO",
+                        "outOfRange": true,
+                        "loinc": "XXX-2133",
+                        "plisTestStatus": "Final"
+                    }
+                ],
+                "pdfReportAvailable": false
+            },
+            {
+                "labPdfGuid": "f3122fe1-08ce-48d6-ce1d-08d91c31b95b",
+                "reportingSource": "Vancouver Coastal Health",
+                "reportId": "341L54565T276529",
+                "collectionDateTime": "2021-05-11T00:00:00",
+                "commonName": "Lab Test",
+                "orderingProvider": "PLISBVCC, TREVOR",
+                "plisTestStatus": "Not Set",
+                "labBatteries": [
+                    {
+                        "batteryType": "ABO & Rh Group",
+                        "obxId": "341L54565T276529ABR",
+                        "outOfRange": false,
+                        "loinc": null,
+                        "plisTestStatus": "Final"
+                    }
+                ],
+                "pdfReportAvailable": false
+            },
+            {
+                "labPdfGuid": "aa3070d8-23ca-4060-ce1e-08d91c31b95b",
+                "reportingSource": "Vancouver Coastal Health",
+                "reportId": "341L52336T275611",
+                "collectionDateTime": "2021-05-11T00:00:00",
+                "commonName": "Lab Test",
+                "orderingProvider": "PLISBVCC, TREVOR",
+                "plisTestStatus": "Not Set",
+                "labBatteries": [
+                    {
+                        "batteryType": "Alanine Aminotransferase",
+                        "obxId": "341L52336T275611ALT",
+                        "outOfRange": false,
+                        "loinc": null,
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Albumin",
+                        "obxId": "341L52336T275611ALB",
+                        "outOfRange": true,
+                        "loinc": "1751-7",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Alkaline Phosphatase",
+                        "obxId": "341L52336T275611ALKP",
+                        "outOfRange": false,
+                        "loinc": "6768-6",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Amylase",
+                        "obxId": "341L52336T275611AMY",
+                        "outOfRange": true,
+                        "loinc": "1798-8",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "APTT",
+                        "obxId": "341L52336T275611PTTB",
+                        "outOfRange": false,
+                        "loinc": "14979-9",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Aspartate Aminotransferase",
+                        "obxId": "341L52336T275611AST",
+                        "outOfRange": true,
+                        "loinc": null,
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Bilirubin Panel",
+                        "obxId": "341L52336T275611BILI",
+                        "outOfRange": true,
+                        "loinc": "XBC1197-2",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Calcium Ionized",
+                        "obxId": "341L52336T275611CAI",
+                        "outOfRange": true,
+                        "loinc": "1995-0",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "CBC & Differential",
+                        "obxId": "341L52336T275611CBCD",
+                        "outOfRange": true,
+                        "loinc": "XCA01592-5",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Creatine Kinase",
+                        "obxId": "341L52336T275611CK",
+                        "outOfRange": false,
+                        "loinc": "2157-6",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Gamma Glutamyl Transferase",
+                        "obxId": "341L52336T275611GGT",
+                        "outOfRange": true,
+                        "loinc": "17858-2",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "INR",
+                        "obxId": "341L52336T275611INRB",
+                        "outOfRange": true,
+                        "loinc": "6301-6",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Lactate",
+                        "obxId": "341L52336T275611LACT",
+                        "outOfRange": false,
+                        "loinc": "2524-7",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Lactate Dehydrogenase",
+                        "obxId": "341L52336T275611LD",
+                        "outOfRange": false,
+                        "loinc": "2532-0",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Magnesium",
+                        "obxId": "341L52336T275611MG",
+                        "outOfRange": false,
+                        "loinc": "2601-3",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Peripheral Blood Film Review",
+                        "obxId": "341L52336T275611MORFX",
+                        "outOfRange": false,
+                        "loinc": "XXX-2600",
+                        "plisTestStatus": "Final"
+                    },
+                    {
+                        "batteryType": "Phosphate",
+                        "obxId": "341L52336T275611PO4",
+                        "outOfRange": false,
+                        "loinc": "14879-1",
+                        "plisTestStatus": "Final"
+                    }
+                ],
+                "pdfReportAvailable": false
+            },
+            {
+                "labPdfGuid": "4cbcf288-8ed8-427d-ce1f-08d91c31b95b",
+                "reportingSource": "Vancouver Coastal Health",
+                "reportId": "341L53942T275943",
+                "collectionDateTime": "2021-05-11T00:00:00",
+                "commonName": "Lab Test",
+                "orderingProvider": "PLISBVCC, TREVOR",
+                "plisTestStatus": "Not Set",
+                "labBatteries": [
+                    {
+                        "batteryType": "Electrolyte, Urea & Creatinine Panel",
+                        "obxId": "341L53942T275943REN",
+                        "outOfRange": true,
+                        "loinc": null,
+                        "plisTestStatus": "Final"
+                    }
+                ],
+                "pdfReportAvailable": false
+            },
+            {
+                "labPdfGuid": "3c955e6e-65ac-408d-ce20-08d91c31b95b",
+                "reportingSource": "Vancouver Coastal Health",
+                "reportId": "341L52331T275607",
+                "collectionDateTime": "2021-05-11T00:00:00",
+                "commonName": "Lab Test",
+                "orderingProvider": "PLISBVCC, TREVOR",
+                "plisTestStatus": "Not Set",
+                "labBatteries": [
+                    {
+                        "batteryType": "Gas Panel & Oxyhemoglobin; Arterial",
+                        "obxId": "341L52331T275607ABGO",
+                        "outOfRange": true,
+                        "loinc": "XXX-2133",
+                        "plisTestStatus": "Final"
+                    }
+                ],
+                "pdfReportAvailable": false
+            }
+        ],
+        "lastRefreshDate": "0001-01-01T00:00:00",
+        "hash": null,
+        "batteryCount": 0,
+        "labOrderCount": 0
+    }
 }

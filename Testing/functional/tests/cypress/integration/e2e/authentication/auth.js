@@ -73,11 +73,11 @@ describe("Authentication", () => {
                 .click();
             cy.get("#user").type(Cypress.env("idir.username"));
             cy.get("#password").type(Cypress.env("idir.password"));
-            cy.get('input[name="btnSubmit"').click();
+            cy.get('input[name="btnSubmit"]').click();
             cy.contains("h1", "403");
             cy.contains("h2", "IDIR Login");
         } else {
-            cy.log("Skipped Logout Test as running locally");
+            cy.log("Skipped IDIR Blocked Test as running locally");
         }
     });
 

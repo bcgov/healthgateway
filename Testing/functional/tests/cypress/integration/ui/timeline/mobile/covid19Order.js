@@ -1,18 +1,19 @@
 const { AuthMethod } = require("../../../../support/constants");
 
-describe("Laboratory", () => {
-    before(() => {
+describe("COVID-19 Orders", () => {
+    beforeEach(() => {
         cy.viewport("iphone-6");
         cy.restoreAuthCookies();
         cy.enableModules("Laboratory");
-        cy.intercept("GET", "**/v1/api/Laboratory*", {
-            fixture: "LaboratoryService/laboratory.json",
+        cy.intercept("GET", "**/v1/api/Laboratory/Covid19Orders*", {
+            fixture: "LaboratoryService/covid19Orders.json",
         });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        cy.checkTimelineHasLoaded();
     });
 
     it("Validate Card", () => {

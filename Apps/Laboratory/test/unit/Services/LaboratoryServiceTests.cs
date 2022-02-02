@@ -18,25 +18,20 @@ namespace HealthGateway.LaboratoryTests
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Net;
+    using System.Linq;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.AccessManagement.Authentication;
-    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Laboratory.Delegates;
-    using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
+    using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;
+    using HealthGateway.LaboratoryTests.Mock;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Caching.Memory;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -45,57 +40,269 @@ namespace HealthGateway.LaboratoryTests
     /// </summary>
     public class LaboratoryServiceTests
     {
-        private const string HdId = "123";
-        private const string BearerToken = "mockBearerToken123";
-        private const string IpAddress = "127.0.0.1";
+        private const string HDID = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+        private const string TOKEN = "Fake Access Token";
+        private const string USERID = "1001";
         private const string MockedMessageID = "mockedMessageID";
         private const string MockedReportContent = "mockedReportContent";
-
-        private readonly IConfiguration configuration = GetIConfigurationRoot();
         private readonly string phn = "9735353315";
         private readonly DateOnly dateOfBirth = new(1967, 06, 02);
         private readonly DateOnly collectionDate = new(2021, 07, 04);
-        private readonly string accessToken = "XXDDXX";
+
+        private readonly ClaimsPrincipal claimsPrincipal = new(
+            new ClaimsIdentity(
+                new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, "username"),
+                    new Claim(ClaimTypes.NameIdentifier, USERID),
+                    new Claim("hdid", HDID),
+                },
+                "TestAuth"));
 
         /// <summary>
-        /// GetLabOrders test.
+        /// GetCovid19Orders test.
         /// </summary>
-        [Fact]
-        public void GetLabOrders()
+        /// <param name="expectedResultType"> result type from service.</param>
+        [Theory]
+        [InlineData(ResultType.Success)]
+        [InlineData(ResultType.Error)]
+        public void ShouldGetCovid19Orders(ResultType expectedResultType)
         {
-            ILaboratoryService service = this.GetLabServiceForLabOrdersTests(ResultType.Success);
-
-            Task<RequestResult<IEnumerable<LaboratoryModel>>> actualResult = service.GetLaboratoryOrders(BearerToken, HdId, 0);
-
-            Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
-            int count = 0;
-            foreach (LaboratoryModel model in actualResult.Result!.ResourcePayload!)
+            List<PhsaCovid19Order> covid19Orders = new()
             {
-                count++;
-                Assert.True(model.MessageID.Equals(MockedMessageID + count, StringComparison.Ordinal));
-            }
+                new PhsaCovid19Order()
+                {
+                    Id = Guid.NewGuid(),
+                    Location = "Vancouver",
+                    PHN = "001",
+                    MessageDateTime = DateTime.Now,
+                    MessageID = MockedMessageID + "1",
+                    ReportAvailable = true,
+                },
+                new PhsaCovid19Order()
+                {
+                    Id = Guid.NewGuid(),
+                    Location = "Vancouver",
+                    PHN = "002",
+                    MessageDateTime = DateTime.Now,
+                    MessageID = MockedMessageID + "2",
+                    ReportAvailable = false,
+                },
+            };
 
-            Assert.Equal(2, count);
+            RequestResult<PHSAResult<List<PhsaCovid19Order>>> delegateResult = new()
+            {
+                ResultStatus = expectedResultType,
+                PageSize = 100,
+                PageIndex = 1,
+                ResourcePayload = new() { Result = covid19Orders },
+            };
+
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
+
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
+
+            Task<RequestResult<Covid19OrderResult>> actualResult = service.GetCovid19Orders(HDID, 0);
+
+            if (expectedResultType == ResultType.Success)
+            {
+                Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
+                int count = 0;
+                foreach (Covid19Order model in actualResult.Result!.ResourcePayload!.Covid19Orders)
+                {
+                    count++;
+                    Assert.True(model.MessageID.Equals(MockedMessageID + count, StringComparison.Ordinal));
+                }
+
+                Assert.Equal(2, count);
+            }
+            else
+            {
+                Assert.Equal(ResultType.Error, actualResult.Result.ResultStatus);
+            }
         }
 
         /// <summary>
-        /// GetLabOrdersWithError test.
+        /// GetLaboratoryOrders test.
+        /// </summary>
+        /// <param name="expectedResultType"> result type from service.</param>
+        [Theory]
+        [InlineData(ResultType.Success)]
+        [InlineData(ResultType.Error)]
+        public void ShouldGetLaboratoryOrders(ResultType expectedResultType)
+        {
+            string expectedReportId1 = "341L56330T278085";
+            string expectedReportId2 = "341L54565T276529";
+            int expectedOrderCount = 2;
+            int expectedLabTestCount = 1;
+
+            // Arrange
+            PhsaLaboratorySummary laboratorySummary = new PhsaLaboratorySummary()
+            {
+                LastRefreshDate = DateTime.Now,
+                LabOrders = new List<PhsaLaboratoryOrder>()
+                {
+                    new PhsaLaboratoryOrder()
+                    {
+                        ReportId = expectedReportId1,
+                        LabPdfGuid = Guid.NewGuid(),
+                        CommonName = "Lab Test",
+                        OrderingProvider = "PLISBVCC, TREVOR",
+                        CollectionDateTime = DateTime.Now,
+                        PdfReportAvailable = true,
+                        LabBatteries = new List<PhsaLaboratoryTest>()
+                        {
+                            new PhsaLaboratoryTest()
+                            {
+                                BatteryType = "Gas Panel & Oxyhemoglobin; Arterial",
+                                Loinc = "XXX-2133",
+                                ObxId = "341L52331T275607ABGO",
+                                OutOfRange = true,
+                                PlisTestStatus = "Final",
+                            },
+                        },
+                    },
+                    new PhsaLaboratoryOrder()
+                    {
+                        ReportId = expectedReportId2,
+                        LabPdfGuid = Guid.NewGuid(),
+                        CommonName = "Lab Test",
+                        OrderingProvider = "PLISBVCC, TREVOR",
+                        CollectionDateTime = DateTime.Now,
+                        PdfReportAvailable = true,
+                        LabBatteries = new List<PhsaLaboratoryTest>()
+                        {
+                            new PhsaLaboratoryTest()
+                            {
+                                BatteryType = "Gas Panel & Oxyhemoglobin; Arterial",
+                                Loinc = "XXX-2133",
+                                ObxId = "341L52331T275607ABGO",
+                                OutOfRange = true,
+                                PlisTestStatus = "Final",
+                            },
+                        },
+                    },
+                },
+                LabOrderCount = 2,
+            };
+
+            RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult = new()
+            {
+                ResultStatus = expectedResultType,
+                PageSize = 100,
+                PageIndex = 1,
+                ResourcePayload = new() { Result = laboratorySummary },
+                TotalResultCount = 2,
+            };
+
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
+
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
+
+            // Act
+            Task<RequestResult<LaboratoryOrderResult>> actualResult = service.GetLaboratoryOrders(HDID);
+
+            // Assert
+            if (expectedResultType == ResultType.Success)
+            {
+                Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
+                Assert.Equal(expectedOrderCount, actualResult.Result.TotalResultCount);
+                Assert.NotNull(actualResult.Result.ResourcePayload);
+                Assert.Equal(expectedOrderCount, actualResult.Result.ResourcePayload!.LaboratoryOrders.Count());
+                Assert.Equal(expectedReportId1, actualResult.Result.ResourcePayload!.LaboratoryOrders.ToList()[0].ReportId);
+                Assert.Equal(expectedLabTestCount, actualResult.Result.ResourcePayload!.LaboratoryOrders.ToList()[0].LaboratoryTests.Count);
+                Assert.Equal(expectedReportId2, actualResult.Result.ResourcePayload!.LaboratoryOrders.ToList()[1].ReportId);
+                Assert.Equal(expectedLabTestCount, actualResult.Result.ResourcePayload!.LaboratoryOrders.ToList()[1].LaboratoryTests.Count);
+            }
+            else
+            {
+                Assert.Equal(ResultType.Error, actualResult.Result.ResultStatus);
+            }
+        }
+
+        /// <summary>
+        /// GetLaboratoryOrders test given delegate returns null list.
         /// </summary>
         [Fact]
-        public void GetLabOrdersWithError()
+        public void ShouldGetLaboratoryOrdersGivenNullListReturnsZeroCount()
         {
-            ILaboratoryService service = this.GetLabServiceForLabOrdersTests(ResultType.Error);
+            int expectedOrderCount = 0;
 
-            Task<RequestResult<IEnumerable<LaboratoryModel>>> actualResult = service.GetLaboratoryOrders(BearerToken, HdId, 0);
+            // Arrange
+            PhsaLaboratorySummary laboratorySummary = new PhsaLaboratorySummary()
+            {
+                LastRefreshDate = DateTime.Now,
+                LabOrders = null,
+                LabOrderCount = 0,
+            };
 
-            Assert.Equal(ResultType.Error, actualResult.Result.ResultStatus);
+            RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult = new()
+            {
+                ResultStatus = ResultType.Success,
+                PageSize = 100,
+                PageIndex = 1,
+                ResourcePayload = new() { Result = laboratorySummary },
+                TotalResultCount = 0,
+            };
+
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
+
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
+
+            // Act
+            Task<RequestResult<LaboratoryOrderResult>> actualResult = service.GetLaboratoryOrders(HDID);
+
+            // Assert
+            Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
+            Assert.Equal(expectedOrderCount, actualResult.Result.TotalResultCount);
+            Assert.NotNull(actualResult.Result.ResourcePayload);
+            Assert.Equal(expectedOrderCount, actualResult.Result.ResourcePayload!.LaboratoryOrders.Count());
+        }
+
+        /// <summary>
+        /// GetLaboratoryOrders test given delegate returns empty list.
+        /// </summary>
+        [Fact]
+        public void ShouldGetLaboratoryOrdersGivenEmptyListReturnsZeroCount()
+        {
+            int expectedOrderCount = 0;
+
+            // Arrange
+            PhsaLaboratorySummary laboratorySummary = new()
+            {
+                LastRefreshDate = DateTime.Now,
+                LabOrders = new List<PhsaLaboratoryOrder>(),
+                LabOrderCount = 0,
+            };
+
+            RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult = new()
+            {
+                ResultStatus = ResultType.Success,
+                PageSize = 100,
+                PageIndex = 1,
+                ResourcePayload = new() { Result = laboratorySummary },
+                TotalResultCount = 0,
+            };
+
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
+
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
+
+            // Act
+            Task<RequestResult<LaboratoryOrderResult>> actualResult = service.GetLaboratoryOrders(HDID);
+
+            // Assert
+            Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
+            Assert.Equal(expectedOrderCount, actualResult.Result.TotalResultCount);
+            Assert.NotNull(actualResult.Result.ResourcePayload);
+            Assert.Equal(expectedOrderCount, actualResult.Result.ResourcePayload!.LaboratoryOrders.Count());
         }
 
         /// <summary>
         /// GetLabReport test.
         /// </summary>
         [Fact]
-        public void GetLabReport()
+        public void ShouldGetLabReport()
         {
             LaboratoryReport labReport = new()
             {
@@ -111,31 +318,11 @@ namespace HealthGateway.LaboratoryTests
                 ResourcePayload = labReport,
             };
 
-            Mock<ILaboratoryDelegate> mockLaboratoryDelegate = new();
-            mockLaboratoryDelegate.Setup(s => s.GetLabReport(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
 
-            Mock<ILaboratoryDelegateFactory> mockLaboratoryDelegateFactory = new();
-            mockLaboratoryDelegateFactory.Setup(s => s.CreateInstance()).Returns(mockLaboratoryDelegate.Object);
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
 
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
-            DefaultHttpContext context = new()
-            {
-                Connection =
-                {
-                    RemoteIpAddress = IPAddress.Parse(IpAddress),
-                },
-            };
-            context.Request.Headers.Add("Authorization", "MockJWTHeader");
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
-
-            ILaboratoryService service = new LaboratoryService(
-                this.configuration,
-                new Mock<ILogger<LaboratoryService>>().Object,
-                mockLaboratoryDelegateFactory.Object,
-                null!,
-                null!);
-
-            Task<RequestResult<LaboratoryReport>> actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, BearerToken);
+            Task<RequestResult<LaboratoryReport>> actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, true);
 
             Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
             Assert.Equal(MockedReportContent, actualResult.Result.ResourcePayload!.Report);
@@ -145,7 +332,7 @@ namespace HealthGateway.LaboratoryTests
         /// GetPublicTestResults - Happy Path.
         /// </summary>
         [Fact]
-        public void GetCovidTests()
+        public void ShouldGetCovidTests()
         {
             RequestResult<PublicCovidTestResponse> expectedResult = new()
             {
@@ -171,7 +358,9 @@ namespace HealthGateway.LaboratoryTests
                 },
             };
 
-            ILaboratoryService service = this.GetLabServiceForCovidTests(delegateResult);
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
+
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
 
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -188,7 +377,7 @@ namespace HealthGateway.LaboratoryTests
         [Theory]
         [InlineData(nameof(LabIndicatorType.DataMismatch))]
         [InlineData(nameof(LabIndicatorType.NotFound))]
-        public void GetCovidTestsWithDataMismatchError(string statusIndicator)
+        public void ShouldGetCovidTestsWithValidError(string statusIndicator)
         {
             RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> delegateResult = new()
             {
@@ -203,7 +392,9 @@ namespace HealthGateway.LaboratoryTests
                 },
             };
 
-            ILaboratoryService service = this.GetLabServiceForCovidTests(delegateResult);
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
+
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
 
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -222,7 +413,7 @@ namespace HealthGateway.LaboratoryTests
         [Theory]
         [InlineData(nameof(LabIndicatorType.Threshold))]
         [InlineData(nameof(LabIndicatorType.Blocked))]
-        public void GetCovidTestsWithInvalidError(string statusIndicator)
+        public void ShouldGetCovidTestsWithInvalidError(string statusIndicator)
         {
             RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> delegateResult = new()
             {
@@ -237,7 +428,9 @@ namespace HealthGateway.LaboratoryTests
                 },
             };
 
-            ILaboratoryService service = this.GetLabServiceForCovidTests(delegateResult);
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
+
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
 
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -253,7 +446,7 @@ namespace HealthGateway.LaboratoryTests
         /// GetPublicTestResults - should return an error code for a refresh in progress when that load state is returned by the delegate.
         /// </summary>
         [Fact]
-        public void GetCovidTestsWithRefreshInProgress()
+        public void ShouldGetCovidTestsWithRefreshInProgress()
         {
             const int backOffMiliseconds = 500;
 
@@ -267,7 +460,9 @@ namespace HealthGateway.LaboratoryTests
                 },
             };
 
-            ILaboratoryService service = this.GetLabServiceForCovidTests(delegateResult);
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
+
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
 
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -283,14 +478,9 @@ namespace HealthGateway.LaboratoryTests
         /// GetPublicTestResults - Invalid PHN.
         /// </summary>
         [Fact]
-        public void GetCovidTestsWithInvalidPhn()
+        public void ShouldGetCovidTestsWithInvalidPhn()
         {
-            ILaboratoryService service = new LaboratoryService(
-                this.configuration,
-                new Mock<ILogger<LaboratoryService>>().Object,
-                new Mock<ILaboratoryDelegateFactory>().Object,
-                new Mock<IAuthenticationDelegate>().Object,
-                GetMemoryCache());
+            ILaboratoryService service = new LaboratoryServiceMock().LaboratoryServiceMockInstance();
 
             string invalidPhn = "123";
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -309,14 +499,9 @@ namespace HealthGateway.LaboratoryTests
         [InlineData("yyyyMMdd")]
         [InlineData("yyyy-MMM-dd")]
         [InlineData("dd/MM/yyyy")]
-        public void GetCovidTestsWithInvalidDateOfBirth(string dateFormat)
+        public void ShouldGetCovidTestsWithInvalidDateOfBirth(string dateFormat)
         {
-            ILaboratoryService service = new LaboratoryService(
-                this.configuration,
-                new Mock<ILogger<LaboratoryService>>().Object,
-                new Mock<ILaboratoryDelegateFactory>().Object,
-                new Mock<IAuthenticationDelegate>().Object,
-                GetMemoryCache());
+            ILaboratoryService service = new LaboratoryServiceMock().LaboratoryServiceMockInstance();
 
             string invalidDateOfBirthString = this.dateOfBirth.ToString(dateFormat, CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -334,14 +519,9 @@ namespace HealthGateway.LaboratoryTests
         [InlineData("yyyyMMdd")]
         [InlineData("yyyy-MMM-dd")]
         [InlineData("dd/MM/yyyy")]
-        public void GetCovidTestsWithInvalidCollectionDate(string dateFormat)
+        public void ShouldGetCovidTestsWithInvalidCollectionDate(string dateFormat)
         {
-            ILaboratoryService service = new LaboratoryService(
-                this.configuration,
-                new Mock<ILogger<LaboratoryService>>().Object,
-                new Mock<ILaboratoryDelegateFactory>().Object,
-                new Mock<IAuthenticationDelegate>().Object,
-                GetMemoryCache());
+            ILaboratoryService service = new LaboratoryServiceMock().LaboratoryServiceMockInstance();
 
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string invalidCollectionDateString = this.collectionDate.ToString(dateFormat, CultureInfo.CurrentCulture);
@@ -349,115 +529,6 @@ namespace HealthGateway.LaboratoryTests
             RequestResult<PublicCovidTestResponse>? actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, invalidCollectionDateString).ConfigureAwait(true)).Result;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-        }
-
-        private static IConfigurationRoot GetIConfigurationRoot()
-        {
-            Dictionary<string, string>? myConfiguration = new()
-            {
-                { "Laboratory:BackOffMilliseconds", "0" },
-            };
-
-            return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
-                .AddInMemoryCollection(myConfiguration)
-                .Build();
-        }
-
-        private static IMemoryCache? GetMemoryCache()
-        {
-            ServiceCollection services = new();
-            services.AddMemoryCache();
-            ServiceProvider serviceProvider = services.BuildServiceProvider();
-
-            return serviceProvider.GetService<IMemoryCache>();
-        }
-
-        private ILaboratoryService GetLabServiceForLabOrdersTests(ResultType expectedResultType)
-        {
-            List<LaboratoryOrder> labOrders = new()
-            {
-                new LaboratoryOrder()
-                {
-                    Id = Guid.NewGuid(),
-                    Location = "Vancouver",
-                    PHN = "001",
-                    MessageDateTime = DateTime.Now,
-                    MessageID = MockedMessageID + "1",
-                    ReportAvailable = true,
-                },
-                new LaboratoryOrder()
-                {
-                    Id = Guid.NewGuid(),
-                    Location = "Vancouver",
-                    PHN = "002",
-                    MessageDateTime = DateTime.Now,
-                    MessageID = MockedMessageID + "2",
-                    ReportAvailable = false,
-                },
-            };
-
-            RequestResult<IEnumerable<LaboratoryOrder>> delegateResult = new()
-            {
-                ResultStatus = expectedResultType,
-                PageSize = 100,
-                PageIndex = 1,
-                ResourcePayload = labOrders,
-            };
-
-            Mock<ILaboratoryDelegate> mockLaboratoryDelegate = new();
-            mockLaboratoryDelegate.Setup(s => s.GetLaboratoryOrders(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
-
-            Mock<ILaboratoryDelegateFactory> mockLaboratoryDelegateFactory = new();
-            mockLaboratoryDelegateFactory.Setup(s => s.CreateInstance()).Returns(mockLaboratoryDelegate.Object);
-
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
-            DefaultHttpContext? context = new()
-            {
-                Connection =
-                {
-                    RemoteIpAddress = IPAddress.Parse(IpAddress),
-                },
-            };
-            context.Request.Headers.Add("Authorization", "MockJWTHeader");
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
-
-            ILaboratoryService service = new LaboratoryService(
-                this.configuration,
-                new Mock<ILogger<LaboratoryService>>().Object,
-                mockLaboratoryDelegateFactory.Object,
-                null!,
-                null!);
-
-            return service;
-        }
-
-        private ILaboratoryService GetLabServiceForCovidTests(RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> delegateResult)
-        {
-            JWTModel jwtModel = new()
-            {
-                AccessToken = this.accessToken,
-            };
-
-            Mock<ILaboratoryDelegate> mockLaboratoryDelegate = new();
-            mockLaboratoryDelegate.Setup(s => s.GetPublicTestResults(this.accessToken, It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<DateOnly>())).Returns(Task.FromResult(delegateResult));
-
-            Mock<ILaboratoryDelegateFactory> mockLaboratoryDelegateFactory = new();
-            mockLaboratoryDelegateFactory.Setup(s => s.CreateInstance()).Returns(mockLaboratoryDelegate.Object);
-
-            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), false)).Returns(jwtModel);
-
-            ILaboratoryService service = new LaboratoryService(
-                this.configuration,
-                new Mock<ILogger<LaboratoryService>>().Object,
-                mockLaboratoryDelegateFactory.Object,
-                mockAuthDelegate.Object,
-                GetMemoryCache());
-
-            return service;
         }
     }
 }

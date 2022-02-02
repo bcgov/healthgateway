@@ -192,7 +192,7 @@ export default class LoadingComponent extends Vue {
 @keyframes sk-bounce {
     0% {
         opacity: 1;
-        transform: scale(0);
+        transform: scale(0.01);
     }
     50% {
         opacity: 1;
@@ -200,7 +200,7 @@ export default class LoadingComponent extends Vue {
     }
     100% {
         opacity: 1;
-        transform: scale(0);
+        transform: scale(0.01);
     }
 }
 </style>

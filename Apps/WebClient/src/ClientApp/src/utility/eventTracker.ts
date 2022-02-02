@@ -22,8 +22,11 @@ export default abstract class EventTracker {
             case EntryType.Immunization:
                 loadType = "immunizations";
                 break;
-            case EntryType.Laboratory:
+            case EntryType.Covid19LaboratoryOrder:
                 loadType = "covid_test";
+                break;
+            case EntryType.LaboratoryOrder:
+                loadType = "all_laboratory";
                 break;
             case EntryType.Encounter:
                 loadType = "health_visits";
