@@ -19,27 +19,18 @@ namespace HealthGateway.Admin.Client.Components
     using System.Timers;
     using Fluxor.Blazor.Web.Components;
     using Microsoft.AspNetCore.Components;
-    using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
     using MudBlazor;
 
     /// <summary>
     /// Backing logic for the InactivityDialog component.
+    /// If the button is pressed, the dialog's Result will have the Data property populated with a bool value of true.
+    /// Otherwise, the dialog's Result will have the Cancelled property set to true.
     /// </summary>
     public partial class InactivityDialog : FluxorComponent
     {
         private readonly Timer timer = new(1000);
 
         private int CountdownTicksRemaining { get; set; } = 60;
-
-        [Inject]
-        private IAccessTokenProvider AccessTokenProvider { get; set; } = default!;
-
-        [Inject]
-        private NavigationManager NavigationManager { get; set; } = default!;
-
-        [Inject]
-        private SignOutSessionStateManager SignOutManager { get; set; } = default!;
-
 
         [CascadingParameter]
         private MudDialogInstance MudDialog { get; set; } = default!;
@@ -48,7 +39,7 @@ namespace HealthGateway.Admin.Client.Components
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync().ConfigureAwait(true);
-            this.timer.Elapsed += new ElapsedEventHandler(this.CountdownTimerTickAsync);
+            this.timer.Elapsed += new ElapsedEventHandler(this.CountdownTimerTick);
             this.timer.AutoReset = true;
             this.timer.Start();
         }
@@ -61,35 +52,20 @@ namespace HealthGateway.Admin.Client.Components
             this.timer.Dispose();
         }
 
-        private async void CountdownTimerTickAsync(object? sender, ElapsedEventArgs e)
+        private void CountdownTimerTick(object? sender, ElapsedEventArgs e)
         {
             this.CountdownTicksRemaining--;
             if (this.CountdownTicksRemaining <= 0)
             {
-                await this.LogOutAsync().ConfigureAwait(true);
+                this.MudDialog.Cancel();
             }
 
             this.StateHasChanged();
         }
 
-        private async Task LogOutAsync()
+        private void HandleClick()
         {
-            await this.SignOutManager.SetSignOutState().ConfigureAwait(true);
-            this.NavigationManager.NavigateTo("authentication/logout");
-            this.MudDialog.Close(DialogResult.Ok(false));
-        }
-
-        private async Task RefreshSessionAsync()
-        {
-            AccessTokenResult? tokenResult = await this.AccessTokenProvider.RequestAccessToken().ConfigureAwait(true);
-            if (tokenResult.TryGetToken(out _))
-            {
-                this.MudDialog.Close(DialogResult.Ok(true));
-            }
-            else
-            {
-                await this.LogOutAsync().ConfigureAwait(true);
-            }
+            this.MudDialog.Close(true);
         }
     }
 }
