@@ -17,13 +17,11 @@ namespace HealthGateway.WebClient.Controllers
 {
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -92,10 +90,9 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Route("Rating")]
-        public IActionResult CreateRating(Rating rating)
+        public RequestResult<Rating> CreateRating(Rating rating)
         {
-            RequestResult<Rating> result = this.userFeedbackService.CreateRating(rating);
-            return new JsonResult(result);
+            return this.userFeedbackService.CreateRating(rating);
         }
     }
 }
