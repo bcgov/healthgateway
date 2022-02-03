@@ -40,6 +40,7 @@ Cypress.Commands.add(
                 cy.log(`Performing Keycloak logout`);
                 cy.request({
                     url: `${config.openIdConnect.authority}/protocol/openid-connect/logout`,
+                    failOnStatusCode: false,
                 });
                 let stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
                 let codeVerifier = generateRandomString(96);
