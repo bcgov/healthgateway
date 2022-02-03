@@ -55,9 +55,9 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             NoteController controller = new(noteServiceMock.Object);
 
-            IActionResult actualResult = controller.CreateNote(Hdid, expectedResult.ResourcePayload);
+            RequestResult<UserNote> actualResult = controller.CreateNote(Hdid, expectedResult.ResourcePayload);
 
-            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
+            expectedResult.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -81,9 +81,9 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             NoteController controller = new(noteServiceMock.Object);
 
-            IActionResult actualResult = controller.UpdateNote(Hdid, expectedResult.ResourcePayload);
+            RequestResult<UserNote> actualResult = controller.UpdateNote(Hdid, expectedResult.ResourcePayload);
 
-            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
+            expectedResult.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -107,9 +107,9 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             NoteController controller = new(noteServiceMock.Object);
 
-            IActionResult actualResult = controller.DeleteNote(expectedResult.ResourcePayload);
+            RequestResult<UserNote> actualResult = controller.DeleteNote(expectedResult.ResourcePayload);
 
-            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
+            expectedResult.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -139,12 +139,10 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             NoteController service = new(noteServiceMock.Object);
 
-            IActionResult actualResult = service.GetAll(Hdid);
+            RequestResult<IEnumerable<UserNote>> actualResult = service.GetAll(Hdid);
 
-            JsonResult? jsonResult = actualResult as JsonResult;
-            RequestResult<IEnumerable<UserNote>>? actualRequestResult = jsonResult?.Value as RequestResult<IEnumerable<UserNote>>;
-            Assert.NotNull(actualRequestResult);
-            Assert.Equal(ResultType.Success, actualRequestResult?.ResultStatus);
+            Assert.NotNull(actualResult);
+            Assert.Equal(ResultType.Success, actualResult?.ResultStatus);
         }
     }
 }

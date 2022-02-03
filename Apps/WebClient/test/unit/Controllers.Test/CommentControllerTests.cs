@@ -54,9 +54,8 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             CommentController service = new(commentServiceMock.Object);
 
-            IActionResult actualResult = service.Create(Hdid, expectedResult.ResourcePayload);
-
-            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
+            ActionResult<RequestResult<UserComment>> actualResult = service.Create(Hdid, expectedResult.ResourcePayload);
+            expectedResult.ShouldDeepEqual(actualResult.Value);
         }
 
         /// <summary>
@@ -76,9 +75,9 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             CommentController service = new(commentServiceMock.Object);
 
-            IActionResult actualResult = service.Create(Hdid, expectedResult.ResourcePayload);
+            ActionResult<RequestResult<UserComment>> actualResult = service.Create(Hdid, expectedResult.ResourcePayload);
 
-            Assert.IsType<BadRequestResult>(actualResult);
+            Assert.IsType<BadRequestResult>(actualResult.Result);
         }
 
         /// <summary>
@@ -102,10 +101,9 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             CommentController service = new(commentServiceMock.Object);
 
-            IActionResult actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
+            ActionResult<RequestResult<UserComment>> actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
 
-            JsonResult? jsonResult = actualResult as JsonResult;
-            RequestResult<UserComment>? actualRequestResult = jsonResult?.Value as RequestResult<UserComment>;
+            RequestResult<UserComment>? actualRequestResult = actualResult?.Value;
             Assert.True(actualRequestResult != null && actualRequestResult.ResultStatus == ResultType.Success);
             Assert.Equal(Hdid, actualRequestResult?.ResourcePayload!.UpdatedBy);
         }
@@ -130,9 +128,9 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             CommentController service = new(commentServiceMock.Object);
 
-            IActionResult actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
+            ActionResult<RequestResult<UserComment>> actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
 
-            Assert.IsType<ForbidResult>(actualResult);
+            Assert.IsType<ForbidResult>(actualResult.Result);
         }
 
         /// <summary>
@@ -152,9 +150,9 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             CommentController service = new(commentServiceMock.Object);
 
-            IActionResult actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
+            ActionResult<RequestResult<UserComment>> actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
 
-            Assert.IsType<BadRequestResult>(actualResult);
+            Assert.IsType<BadRequestResult>(actualResult.Result);
         }
 
         /// <summary>
@@ -178,10 +176,9 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             CommentController service = new(commentServiceMock.Object);
 
-            IActionResult actualResult = service.Delete(Hdid, expectedResult.ResourcePayload);
+            ActionResult<RequestResult<UserComment>> actualResult = service.Delete(Hdid, expectedResult.ResourcePayload);
 
-            JsonResult? jsonResult = actualResult as JsonResult;
-            RequestResult<UserComment>? actualRequestResult = jsonResult?.Value as RequestResult<UserComment>;
+            RequestResult<UserComment>? actualRequestResult = actualResult?.Value;
             Assert.NotNull(actualRequestResult);
             Assert.Equal(ResultType.Success, actualRequestResult?.ResultStatus);
             expectedResult.ShouldDeepEqual(actualRequestResult);
@@ -207,9 +204,9 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             CommentController service = new(commentServiceMock.Object);
 
-            IActionResult actualResult = service.Delete(Hdid, expectedResult.ResourcePayload);
+            ActionResult<RequestResult<UserComment>> actualResult = service.Delete(Hdid, expectedResult.ResourcePayload);
 
-            Assert.IsType<ForbidResult>(actualResult);
+            Assert.IsType<ForbidResult>(actualResult.Result);
         }
 
         /// <summary>
@@ -239,12 +236,10 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             CommentController service = new(commentServiceMock.Object);
 
-            IActionResult actualResult = service.GetAllForEntry(Hdid, "parentEntryIdMock");
+            RequestResult<IEnumerable<UserComment>> actualResult = service.GetAllForEntry(Hdid, "parentEntryIdMock");
 
-            JsonResult? jsonResult = actualResult as JsonResult;
-            RequestResult<IEnumerable<UserComment>>? actualRequestResult = jsonResult?.Value as RequestResult<IEnumerable<UserComment>>;
-            Assert.NotNull(actualRequestResult);
-            Assert.Equal(ResultType.Success, actualRequestResult?.ResultStatus);
+            Assert.NotNull(actualResult);
+            Assert.Equal(ResultType.Success, actualResult?.ResultStatus);
         }
     }
 }

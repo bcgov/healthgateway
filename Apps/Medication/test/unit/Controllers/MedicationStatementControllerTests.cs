@@ -95,14 +95,11 @@ namespace HealthGateway.Medication.Controllers.Test
             MedicationStatementController controller = new(svcMock.Object);
 
             // Act
-            IActionResult actual = await controller.GetMedicationStatements(hdid).ConfigureAwait(true);
+            RequestResult<IList<MedicationStatementHistory>> actual = await controller.GetMedicationStatements(hdid).ConfigureAwait(true);
 
             // Verify
-            Assert.IsType<JsonResult>(actual);
-            JsonResult? jsonResult = actual as JsonResult;
-            RequestResult<IList<MedicationStatementHistory>>? requestResult = jsonResult?.Value as RequestResult<IList<MedicationStatementHistory>>;
-            Assert.NotNull(requestResult);
-            expectedResult.ShouldDeepEqual(requestResult);
+            Assert.NotNull(actual);
+            expectedResult.ShouldDeepEqual(actual);
         }
     }
 }

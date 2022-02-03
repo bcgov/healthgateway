@@ -51,9 +51,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             communicationServiceMock.Setup(s => s.GetActiveBanner(CommunicationType.Banner)).Returns(expectedResult);
 
             CommunicationController controller = new(communicationServiceMock.Object);
-            IActionResult actualResult = controller.Get();
+            RequestResult<Communication> actualResult = controller.Get();
 
-            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
+            expectedResult.ShouldDeepEqual(actualResult);
         }
     }
 }

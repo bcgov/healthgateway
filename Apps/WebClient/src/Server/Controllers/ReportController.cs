@@ -17,7 +17,6 @@ namespace HealthGateway.WebClient.Controllers
 {
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.CDogs;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -51,10 +50,9 @@ namespace HealthGateway.WebClient.Controllers
         /// <returns>The report data.</returns>
         /// <response code="200">Returns the report data.</response>
         [HttpPost]
-        public IActionResult GenerateReport([FromBody] ReportRequestModel reportRequest)
+        public RequestResult<ReportModel> GenerateReport([FromBody] ReportRequestModel reportRequest)
         {
-            RequestResult<ReportModel> result = this.reportService.GetReport(reportRequest);
-            return new JsonResult(result);
+            return this.reportService.GetReport(reportRequest);
         }
     }
 }

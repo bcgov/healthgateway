@@ -84,7 +84,7 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPost]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<IActionResult> CreateUserProfile(string hdid, [FromBody] CreateUserRequest createUserRequest)
+        public async Task<ActionResult<RequestResult<UserProfileModel>>> CreateUserProfile(string hdid, [FromBody] CreateUserRequest createUserRequest)
         {
             // Validate that the query parameter matches the post body
             if (!hdid.Equals(createUserRequest.Profile.HdId, StringComparison.OrdinalIgnoreCase))
@@ -98,8 +98,7 @@ namespace HealthGateway.WebClient.Controllers
                 ClaimsPrincipal user = httpContext.User;
                 DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
                 string jwtEmailAddress = user.FindFirstValue(ClaimTypes.Email);
-                RequestResult<UserProfileModel> result = await this.userProfileService.CreateUserProfile(createUserRequest, jwtAuthTime, jwtEmailAddress).ConfigureAwait(true);
-                return new JsonResult(result);
+                return await this.userProfileService.CreateUserProfile(createUserRequest, jwtAuthTime, jwtEmailAddress).ConfigureAwait(true);
             }
 
             return this.Unauthorized();
@@ -116,16 +115,9 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        public IActionResult GetUserProfile(string hdid)
+        public RequestResult<UserProfileModel> GetUserProfile(string hdid)
         {
             ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
-            var jsonSettings = new JsonSerializerSettings()
-            {
-                Converters = new List<JsonConverter>() { new JsonClaimConverter(), new JsonClaimsPrincipalConverter(), new JsonClaimsIdentityConverter() },
-            };
-
-            this.logger.LogTrace($"HTTP context user: {JsonConvert.SerializeObject(user, jsonSettings)}");
-
             DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
 
             RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid, jwtAuthTime);
@@ -142,7 +134,7 @@ namespace HealthGateway.WebClient.Controllers
                 }
             }
 
-            return new JsonResult(result);
+            return result;
         }
 
         /// <summary>
@@ -156,10 +148,9 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}/Validate")]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        public async Task<IActionResult> Validate(string hdid)
+        public async Task<PrimitiveRequestResult<bool>> Validate(string hdid)
         {
-            PrimitiveRequestResult<bool> result = await this.userProfileService.ValidateMinimumAge(hdid).ConfigureAwait(true);
-            return new JsonResult(result);
+            return await this.userProfileService.ValidateMinimumAge(hdid).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -173,14 +164,13 @@ namespace HealthGateway.WebClient.Controllers
         [HttpDelete]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult CloseUserProfile(string hdid)
+        public RequestResult<UserProfileModel> CloseUserProfile(string hdid)
         {
             // Retrieve the user identity id from the claims
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext!.User;
             Guid userId = new Guid(user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-            RequestResult<UserProfileModel> result = this.userProfileService.CloseUserProfile(hdid, userId);
-            return new JsonResult(result);
+            return this.userProfileService.CloseUserProfile(hdid, userId);
         }
 
         /// <summary>
@@ -194,10 +184,9 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}/recover")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult RecoverUserProfile(string hdid)
+        public RequestResult<UserProfileModel> RecoverUserProfile(string hdid)
         {
-            RequestResult<UserProfileModel> result = this.userProfileService.RecoverUserProfile(hdid);
-            return new JsonResult(result);
+            return this.userProfileService.RecoverUserProfile(hdid);
         }
 
         /// <summary>
@@ -211,10 +200,9 @@ namespace HealthGateway.WebClient.Controllers
         [Route("termsofservice")]
         [AllowAnonymous]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 3600)]
-        public IActionResult GetLastTermsOfService()
+        public RequestResult<TermsOfServiceModel> GetLastTermsOfService()
         {
-            RequestResult<TermsOfServiceModel> result = this.userProfileService.GetActiveTermsOfService();
-            return new JsonResult(result);
+            return this.userProfileService.GetActiveTermsOfService();
         }
 
         /// <summary>
@@ -229,7 +217,7 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}/email/validate/{verificationKey}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<IActionResult> ValidateEmail(string hdid, Guid verificationKey)
+        public async Task<ActionResult<PrimitiveRequestResult<bool>>> ValidateEmail(string hdid, Guid verificationKey)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
@@ -238,8 +226,7 @@ namespace HealthGateway.WebClient.Controllers
 
                 if (accessToken != null)
                 {
-                    PrimitiveRequestResult<bool> result = this.userEmailService.ValidateEmail(hdid, verificationKey);
-                    return new JsonResult(result);
+                    return this.userEmailService.ValidateEmail(hdid, verificationKey);
                 }
             }
 
@@ -258,7 +245,7 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}/sms/validate/{validationCode}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<IActionResult> ValidateSMS(string hdid, string validationCode)
+        public async Task<ActionResult<PrimitiveRequestResult<bool>>> ValidateSMS(string hdid, string validationCode)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
@@ -269,7 +256,7 @@ namespace HealthGateway.WebClient.Controllers
                     await Task.Delay(5000).ConfigureAwait(true);
                 }
 
-                return new JsonResult(result);
+                return result;
             }
 
             return this.Unauthorized();
@@ -287,10 +274,9 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPut]
         [Route("{hdid}/email")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult UpdateUserEmail(string hdid, [FromBody] string emailAddress)
+        public bool UpdateUserEmail(string hdid, [FromBody] string emailAddress)
         {
-            bool result = this.userEmailService.UpdateUserEmail(hdid, emailAddress);
-            return new JsonResult(result);
+            return this.userEmailService.UpdateUserEmail(hdid, emailAddress);
         }
 
         /// <summary>
@@ -305,10 +291,9 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPut]
         [Route("{hdid}/sms")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult UpdateUserSMSNumber(string hdid, [FromBody] string smsNumber)
+        public bool UpdateUserSMSNumber(string hdid, [FromBody] string smsNumber)
         {
-            bool result = this.userSMSService.UpdateUserSMS(hdid, smsNumber);
-            return new JsonResult(result);
+            return this.userSMSService.UpdateUserSMS(hdid, smsNumber);
         }
 
         /// <summary>
@@ -323,7 +308,7 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPut]
         [Route("{hdid}/preference")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult UpdateUserPreference(string hdid, [FromBody] UserPreferenceModel userPreferenceModel)
+        public ActionResult<RequestResult<UserPreferenceModel>> UpdateUserPreference(string hdid, [FromBody] UserPreferenceModel userPreferenceModel)
         {
             if (userPreferenceModel == null || string.IsNullOrEmpty(userPreferenceModel.Preference))
             {
@@ -336,8 +321,7 @@ namespace HealthGateway.WebClient.Controllers
             }
 
             userPreferenceModel.UpdatedBy = hdid;
-            RequestResult<UserPreferenceModel> result = this.userProfileService.UpdateUserPreference(userPreferenceModel);
-            return new JsonResult(result);
+            return this.userProfileService.UpdateUserPreference(userPreferenceModel);
         }
 
         /// <summary>
@@ -352,7 +336,7 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPost]
         [Route("{hdid}/preference")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult CreateUserPreference(string hdid, [FromBody] UserPreferenceModel userPreferenceModel)
+        public ActionResult<RequestResult<UserPreferenceModel>> CreateUserPreference(string hdid, [FromBody] UserPreferenceModel userPreferenceModel)
         {
             if (userPreferenceModel == null)
             {
@@ -362,8 +346,7 @@ namespace HealthGateway.WebClient.Controllers
             userPreferenceModel.HdId = hdid;
             userPreferenceModel.CreatedBy = hdid;
             userPreferenceModel.UpdatedBy = hdid;
-            RequestResult<UserPreferenceModel> result = this.userProfileService.CreateUserPreference(userPreferenceModel);
-            return new JsonResult(result);
+            return this.userProfileService.CreateUserPreference(userPreferenceModel);
         }
     }
 }
