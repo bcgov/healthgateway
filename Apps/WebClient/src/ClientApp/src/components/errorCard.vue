@@ -9,6 +9,7 @@ import { Action, Getter } from "vuex-class";
 
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import BannerError from "@/models/bannerError";
+import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";
 
 library.add(faChevronDown, faChevronUp, farCopy);
@@ -59,12 +60,13 @@ export default class ErrorCardComponent extends Vue {
 
     private get errorDetails(): string[] {
         let result: string[] = [];
+        let isoNow = new DateWrapper().format("yyyy-MMM-dd");
         let hdid = this.user.hdid !== undefined ? this.user.hdid : "";
         for (var error of this.errors.filter((c) => c.traceId)) {
             let source = error.source !== undefined ? error.source.trim() : "";
             let traceId =
                 error.traceId !== undefined ? error.traceId.trim() : "";
-            result.push(`${source}/${hdid}:${traceId}`);
+            result.push(`${source}/${isoNow}/${hdid}:${traceId}`);
         }
         return result;
     }
