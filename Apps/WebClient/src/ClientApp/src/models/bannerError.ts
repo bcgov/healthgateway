@@ -5,4 +5,11 @@ export default interface BannerError {
     errorCode: string;
     source?: string;
     traceId?: string;
+    source: string;
+}
+
+export interface CustomBannerError {
+    title: string;
+    description: string;
+    detail?: string;
 }

@@ -6,6 +6,7 @@ import {
     MutationTree,
 } from "vuex";
 
+import { ErrorType } from "@/constants/errorType";
 import Encounter from "@/models/encounter";
 import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
@@ -32,7 +33,10 @@ export interface EncounterActions
         context: StoreContext,
         params: { hdid: string }
     ): Promise<RequestResult<Encounter[]>>;
-    handleError(context: StoreContext, error: ResultError): void;
+    handleError(
+        context: StoreContext,
+        params: { error: ResultError; errorType: ErrorType }
+    ): void;
 }
 
 export interface EncounterMutations extends MutationTree<EncounterState> {
@@ -41,7 +45,7 @@ export interface EncounterMutations extends MutationTree<EncounterState> {
         state: EncounterState,
         patientEncounters: Encounter[]
     ): void;
-    encounterError(state: EncounterState, error: Error): void;
+    encounterError(state: EncounterState, error: ResultError): void;
 }
 
 export interface EncounterModule extends Module<EncounterState, RootState> {

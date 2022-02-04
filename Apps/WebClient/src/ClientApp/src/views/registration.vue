@@ -9,9 +9,10 @@ import { Action, Getter } from "vuex-class";
 
 import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
 import LoadingComponent from "@/components/loading.vue";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { RegistrationStatus } from "@/constants/registrationStatus";
-import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
+import { ResultError } from "@/models/requestResult";
 import type { OidcUserProfile } from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
@@ -20,7 +21,6 @@ import {
     ILogger,
     IUserProfileService,
 } from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
 
 library.add(faExclamationTriangle);
 
@@ -43,7 +43,18 @@ export default class RegistrationView extends Vue {
     webClientConfig!: WebClientConfiguration;
 
     @Action("addError", { namespace: "errorBanner" })
-    addError!: (error: BannerError) => void;
+    addError!: (params: {
+        errorType: ErrorType;
+        source: ErrorSourceType;
+        traceId: string | undefined;
+    }) => void;
+
+    @Action("addCustomError", { namespace: "errorBanner" })
+    addCustomError!: (params: {
+        title: string;
+        source: ErrorSourceType;
+        traceId: string | undefined;
+    }) => void;
 
     private accepted = false;
     private email = "";
@@ -107,28 +118,28 @@ export default class RegistrationView extends Vue {
                             this.isValidAge = isValid;
                             this.loadingUserData = false;
                         })
-                        .catch((err) => {
+                        .catch(() => {
                             this.loadingUserData = false;
                             this.clientRegistryError = true;
-                            this.addError(
-                                ErrorTranslator.toBannerError(
-                                    "Validating user",
-                                    err
-                                )
-                            );
+                            this.addCustomError({
+                                title:
+                                    "Unable to validate " +
+                                    ErrorSourceType.User.toLowerCase(),
+                                source: ErrorSourceType.User,
+                                traceId: undefined,
+                            });
                         });
                 } else {
                     this.loadingUserData = false;
                 }
             })
-            .catch((err) => {
+            .catch(() => {
                 this.loadingUserData = false;
-                this.addError(
-                    ErrorTranslator.toBannerError(
-                        "Retrieving User profile",
-                        err
-                    )
-                );
+                this.addError({
+                    errorType: ErrorType.Retrieve,
+                    source: ErrorSourceType.Profile,
+                    traceId: undefined,
+                });
             });
 
         this.loadTermsOfService();
@@ -193,12 +204,11 @@ export default class RegistrationView extends Vue {
             })
             .catch((err) => {
                 this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError(
-                        "Loading Terms of service",
-                        err
-                    )
-                );
+                this.addError({
+                    errorType: ErrorType.Retrieve,
+                    source: ErrorSourceType.TermsOfService,
+                    traceId: undefined,
+                });
             })
             .finally(() => {
                 this.loadingTermsOfService = false;
@@ -241,10 +251,12 @@ export default class RegistrationView extends Vue {
                 );
                 this.redirect();
             })
-            .catch((err) => {
-                this.addError(
-                    ErrorTranslator.toBannerError("User profile creation", err)
-                );
+            .catch((err: ResultError) => {
+                this.addError({
+                    errorType: ErrorType.Create,
+                    source: ErrorSourceType.Profile,
+                    traceId: err.traceId,
+                });
             })
             .finally(() => {
                 this.loadingTermsOfService = false;
@@ -257,10 +269,9 @@ export default class RegistrationView extends Vue {
         this.checkRegistration().then((isRegistered: boolean) => {
             if (!isRegistered) {
                 this.addError({
-                    title: "User profile creation",
-                    description: "Profile already created",
-                    detail: "",
-                    errorCode: "",
+                    errorType: ErrorType.Create,
+                    source: ErrorSourceType.Profile,
+                    traceId: undefined,
                 });
                 return;
             }

@@ -6,6 +6,7 @@ import {
     MutationTree,
 } from "vuex";
 
+import { ErrorType } from "@/constants/errorType";
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import ImmunizationResult from "@/models/immunizationResult";
 import { ResultError } from "@/models/requestResult";
@@ -35,7 +36,10 @@ type StoreContext = ActionContext<ImmunizationState, RootState>;
 export interface ImmunizationActions
     extends ActionTree<ImmunizationState, RootState> {
     retrieve(context: StoreContext, params: { hdid: string }): Promise<void>;
-    handleError(context: StoreContext, error: ResultError): void;
+    handleError(
+        context: StoreContext,
+        params: { error: ResultError; errorType: ErrorType }
+    ): void;
 }
 
 export interface ImmunizationMutations extends MutationTree<ImmunizationState> {

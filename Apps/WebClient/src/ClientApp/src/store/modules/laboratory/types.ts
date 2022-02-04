@@ -6,7 +6,8 @@ import {
     MutationTree,
 } from "vuex";
 
-import BannerError from "@/models/bannerError";
+import { ErrorType } from "@/constants/errorType";
+import { CustomBannerError } from "@/models/bannerError";
 import { StringISODate } from "@/models/dateWrapper";
 import {
     Covid19LaboratoryOrder,
@@ -23,7 +24,7 @@ export interface LaboratoryState {
     publicCovid19: {
         publicCovidTestResponseResult?: PublicCovidTestResponseResult;
         statusMessage: string;
-        error?: BannerError;
+        error?: CustomBannerError;
         status?: LoadStatus;
     };
     authenticatedCovid19: {
@@ -54,7 +55,7 @@ export interface LaboratoryGetters
     isPublicCovidTestResponseResultLoading(state: LaboratoryState): boolean;
     publicCovidTestResponseResultError(
         state: LaboratoryState
-    ): BannerError | undefined;
+    ): CustomBannerError | undefined;
     publicCovidTestResponseResultStatusMessage(state: LaboratoryState): string;
 }
 
@@ -65,15 +66,14 @@ export interface LaboratoryActions
         context: StoreContext,
         params: { hdid: string }
     ): Promise<RequestResult<Covid19LaboratoryOrderResult>>;
-    handleCovid19LaboratoryError(
-        context: StoreContext,
-        error: ResultError
-    ): void;
     retrieveLaboratoryOrders(
         context: StoreContext,
         params: { hdid: string }
     ): Promise<RequestResult<LaboratoryOrderResult>>;
-    handleLaboratoryError(context: StoreContext, error: ResultError): void;
+    handleError(
+        context: StoreContext,
+        params: { error: ResultError; errorType: ErrorType }
+    ): void;
     retrievePublicCovidTests(
         context: StoreContext,
         params: {
@@ -109,7 +109,7 @@ export interface LaboratoryMutations extends MutationTree<LaboratoryState> {
     ): void;
     setPublicCovidTestResponseResultError(
         state: LaboratoryState,
-        error: BannerError
+        error: CustomBannerError
     ): void;
     setPublicCovidTestResponseResultStatusMessage(
         state: LaboratoryState,

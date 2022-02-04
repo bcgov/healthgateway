@@ -28,20 +28,20 @@ export interface AuthGetters extends GetterTree<AuthState, RootState> {
     isValidIdentityProvider(state: AuthState): boolean;
 }
 
-type AuthContext = ActionContext<AuthState, RootState>;
+type StoreContext = ActionContext<AuthState, RootState>;
 export interface AuthActions extends ActionTree<AuthState, RootState> {
-    oidcCheckUser(context: AuthContext): Promise<boolean>;
+    oidcCheckUser(context: StoreContext): Promise<boolean>;
     authenticateOidc(
-        context: AuthContext,
+        context: StoreContext,
         params: { idpHint: string; redirectPath: string }
     ): Promise<void>;
-    oidcSignInCallback(context: AuthContext): Promise<string>;
-    authenticateOidcSilent(context: AuthContext): Promise<void>;
-    oidcWasAuthenticated(context: AuthContext, oidcUser: OidcUser): void;
-    getOidcUser(context: AuthContext): Promise<void>;
+    oidcSignInCallback(context: StoreContext): Promise<string>;
+    authenticateOidcSilent(context: StoreContext): Promise<void>;
+    oidcWasAuthenticated(context: StoreContext, oidcUser: OidcUser): void;
+    getOidcUser(context: StoreContext): Promise<void>;
     signOutOidc(): void;
-    signOutOidcCallback(context: AuthContext): Promise<string>;
-    clearStorage(context: AuthContext): void;
+    signOutOidcCallback(context: StoreContext): Promise<string>;
+    clearStorage(context: StoreContext): void;
 }
 
 export interface AuthMutations extends MutationTree<AuthState> {

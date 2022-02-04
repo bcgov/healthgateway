@@ -1,3 +1,4 @@
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
@@ -27,7 +28,10 @@ export const actions: CommentActions = {
                     .getCommentsForProfile(params.hdid)
                     .then((result) => {
                         if (result.resultStatus === ResultType.Error) {
-                            context.dispatch("handleError", result.resultError);
+                            context.dispatch("handleError", {
+                                error: result.resultError,
+                                errorType: ErrorType.Retrieve,
+                            });
                             reject(result.resultError);
                         } else {
                             context.commit(
@@ -37,8 +41,11 @@ export const actions: CommentActions = {
                             resolve();
                         }
                     })
-                    .catch((error) => {
-                        context.dispatch("handleError", error);
+                    .catch((error: ResultError) => {
+                        context.dispatch("handleError", {
+                            error,
+                            errorType: ErrorType.Retrieve,
+                        });
                         reject(error);
                     });
             }
@@ -59,8 +66,11 @@ export const actions: CommentActions = {
                     context.commit("addComment", resultComment);
                     resolve(resultComment);
                 })
-                .catch((error) => {
-                    context.dispatch("handleError", error);
+                .catch((error: ResultError) => {
+                    context.dispatch("handleError", {
+                        error,
+                        errorType: ErrorType.Create,
+                    });
                     reject(error);
                 });
         });
@@ -80,8 +90,11 @@ export const actions: CommentActions = {
                     context.commit("updateComment", resultComment);
                     resolve(resultComment);
                 })
-                .catch((error) => {
-                    context.dispatch("handleError", error);
+                .catch((error: ResultError) => {
+                    context.dispatch("handleError", {
+                        error,
+                        errorType: ErrorType.Update,
+                    });
                     reject(error);
                 });
         });
@@ -101,20 +114,27 @@ export const actions: CommentActions = {
                     context.commit("deleteComment", params.comment);
                     resolve();
                 })
-                .catch((error) => {
-                    context.dispatch("handleError", error);
+                .catch((error: ResultError) => {
+                    context.dispatch("handleError", {
+                        error,
+                        errorType: ErrorType.Delete,
+                    });
                     reject(error);
                 });
         });
     },
-    handleError(context, error: ResultError) {
+    handleError(context, params: { error: ResultError; errorType: ErrorType }) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-        logger.error(`ERROR: ${JSON.stringify(error)}`);
-        context.commit("commentError", error);
+        logger.error(`ERROR: ${JSON.stringify(params.error)}`);
+        context.commit("commentError", params.error);
         context.dispatch(
-            "errorBanner/addResultError",
-            { message: "Fetch Comment Error", error },
+            "errorBanner/addError",
+            {
+                errorType: params.errorType,
+                source: ErrorSourceType.Comment,
+                traceId: params.error.traceId,
+            },
             { root: true }
         );
     },
