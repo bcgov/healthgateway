@@ -1,5 +1,6 @@
 import { Commit } from "vuex";
 
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -214,7 +215,7 @@ export const actions: UserActions = {
                 });
         });
     },
-    getPatientData(context): Promise<void> {
+    retrievePatientData(context): Promise<void> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         const patientService: IPatientService = container.get<IPatientService>(
             SERVICE_IDENTIFIER.PatientService
@@ -229,7 +230,10 @@ export const actions: UserActions = {
                     .getPatientData(context.state.user.hdid)
                     .then((result) => {
                         if (result.resultStatus === ResultType.Error) {
-                            context.dispatch("handleError", result.resultError);
+                            context.dispatch("handleError", {
+                                error: result.resultError,
+                                errorType: ErrorType.Retrieve,
+                            });
                             reject(result.resultError);
                         } else {
                             context.commit(
@@ -239,21 +243,28 @@ export const actions: UserActions = {
                             resolve();
                         }
                     })
-                    .catch((error) => {
-                        context.dispatch("handleError", error);
+                    .catch((error: ResultError) => {
+                        context.dispatch("handleError", {
+                            error,
+                            errorType: ErrorType.Retrieve,
+                        });
                         reject(error);
                     });
             }
         });
     },
-    handleError(context, error: ResultError) {
+    handleError(context, params: { error: ResultError; errorType: ErrorType }) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        logger.error(`ERROR: ${JSON.stringify(error)}`);
-        context.commit("userError", error);
+        logger.error(`ERROR: ${JSON.stringify(params.error)}`);
+        context.commit("userError", params.error);
 
         context.dispatch(
-            "errorBanner/addResultError",
-            { message: "Fetch User Error", error },
+            "errorBanner/addError",
+            {
+                errorType: params.errorType,
+                source: ErrorSourceType.Patient,
+                traceId: params.error.traceId,
+            },
             { root: true }
         );
     },

@@ -1,4 +1,4 @@
-import BannerError from "@/models/bannerError";
+import { CustomBannerError } from "@/models/bannerError";
 import {
     Covid19LaboratoryOrder,
     LaboratoryOrder,
@@ -37,7 +37,7 @@ export const getters: LaboratoryGetters = {
     },
     publicCovidTestResponseResultError(
         state: LaboratoryState
-    ): BannerError | undefined {
+    ): CustomBannerError | undefined {
         return state.publicCovid19.error;
     },
     publicCovidTestResponseResultStatusMessage(state: LaboratoryState): string {

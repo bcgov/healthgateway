@@ -1,4 +1,5 @@
 import Encounter from "@/models/encounter";
+import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 
 import { EncounterMutations, EncounterState } from "./types";
@@ -16,8 +17,9 @@ export const mutations: EncounterMutations = {
         state.statusMessage = "success";
         state.status = LoadStatus.LOADED;
     },
-    encounterError(state: EncounterState, error: Error) {
-        state.statusMessage = error.message;
+    encounterError(state: EncounterState, error: ResultError) {
+        state.error = error;
+        state.statusMessage = error.resultMessage;
         state.status = LoadStatus.ERROR;
     },
 };

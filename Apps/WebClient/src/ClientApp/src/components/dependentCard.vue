@@ -14,8 +14,8 @@ import Covid19LaboratoryTestDescriptionComponent from "@/components/laboratory/c
 import DeleteModalComponent from "@/components/modal/deleteConfirmation.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import { ActionType } from "@/constants/actionType";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
-import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
@@ -33,7 +33,6 @@ import {
     ILaboratoryService,
     ILogger,
 } from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
 
 library.add(faEllipsisV, faDownload, faInfoCircle);
 
@@ -61,7 +60,11 @@ export default class DependentCardComponent extends Vue {
     webClientConfig!: WebClientConfiguration;
 
     @Action("addError", { namespace: "errorBanner" })
-    addError!: (error: BannerError) => void;
+    addError!: (params: {
+        errorType: ErrorType;
+        source: ErrorSourceType;
+        traceId: string | undefined;
+    }) => void;
 
     @Ref("sensitivedocumentDownloadModal")
     readonly sensitivedocumentDownloadModal!: MessageModalComponent;
@@ -154,20 +157,21 @@ export default class DependentCardComponent extends Vue {
                         "Error returned from the COVID-19 Laboratory Orders call: " +
                             JSON.stringify(result.resultError)
                     );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch COVID-19 Laboratory Orders Error",
-                            result.resultError
-                        )
-                    );
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Covid19Laboratory,
+                        traceId: result.resultError?.traceId,
+                    });
                     this.isLoading = false;
                 }
             })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError("Fetch Laboratory Error", err)
-                );
+            .catch((err: ResultError) => {
+                this.logger.error(err.resultMessage);
+                this.addError({
+                    errorType: ErrorType.Retrieve,
+                    source: ErrorSourceType.Covid19Laboratory,
+                    traceId: err.traceId,
+                });
                 this.isLoading = false;
             });
     }
@@ -196,14 +200,13 @@ export default class DependentCardComponent extends Vue {
                 link.click();
                 URL.revokeObjectURL(link.href);
             })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError(
-                        "Download Laboratory Report Error",
-                        err
-                    )
-                );
+            .catch((err: ResultError) => {
+                this.logger.error(err.resultMessage);
+                this.addError({
+                    errorType: ErrorType.Download,
+                    source: ErrorSourceType.Covid19LaboratoryReport,
+                    traceId: err.traceId,
+                });
             });
     }
 
@@ -215,12 +218,11 @@ export default class DependentCardComponent extends Vue {
                 this.needsUpdate();
             })
             .catch((err: ResultError) => {
-                this.addError(
-                    ErrorTranslator.toBannerError(
-                        "Error removing dependent",
-                        err
-                    )
-                );
+                this.addError({
+                    errorType: ErrorType.Delete,
+                    source: ErrorSourceType.Dependent,
+                    traceId: err.traceId,
+                });
             })
             .finally(() => {
                 this.isLoading = false;

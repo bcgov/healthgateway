@@ -18,7 +18,7 @@ import { Action, Getter } from "vuex-class";
 import LoadingComponent from "@/components/loading.vue";
 import VerifySMSComponent from "@/components/modal/verifySMS.vue";
 import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
-import BannerError from "@/models/bannerError";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -32,7 +32,6 @@ import {
     ILogger,
     IUserProfileService,
 } from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
 
 library.add(faExclamationTriangle);
 
@@ -80,10 +79,21 @@ export default class ProfileView extends Vue {
     webClientConfig!: WebClientConfiguration;
 
     @Action("addError", { namespace: "errorBanner" })
-    addError!: (error: BannerError) => void;
+    addError!: (params: {
+        errorType: ErrorType;
+        source: ErrorSourceType;
+        traceId: string | undefined;
+    }) => void;
 
-    @Action("getPatientData", { namespace: "user" })
-    getPatientData!: () => Promise<void>;
+    @Action("addCustomError", { namespace: "errorBanner" })
+    addCustomError!: (params: {
+        title: string;
+        source: ErrorSourceType;
+        traceId: string | undefined;
+    }) => void;
+
+    @Action("retrievePatientData", { namespace: "user" })
+    retrievePatientData!: () => Promise<void>;
 
     @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
@@ -164,7 +174,7 @@ export default class ProfileView extends Vue {
         );
 
         this.isLoading = true;
-        var patientPromise = this.getPatientData();
+        var patientPromise = this.retrievePatientData();
         var oidcUserPromise = authenticationService.getOidcUserProfile();
         var userProfilePromise = this.userProfileService.getProfile(
             this.user.hdid
@@ -199,9 +209,11 @@ export default class ProfileView extends Vue {
             })
             .catch((err) => {
                 this.logger.error(`Error loading profile: ${err}`);
-                this.addError(
-                    ErrorTranslator.toBannerError("Profile loading", err)
-                );
+                this.addError({
+                    errorType: ErrorType.Retrieve,
+                    source: ErrorSourceType.Profile,
+                    traceId: undefined,
+                });
                 this.isLoading = false;
             });
 
@@ -392,9 +404,11 @@ export default class ProfileView extends Vue {
             })
             .catch((err) => {
                 this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError("Profile Update", err)
-                );
+                this.addError({
+                    errorType: ErrorType.Update,
+                    source: ErrorSourceType.Profile,
+                    traceId: undefined,
+                });
             })
             .finally(() => {
                 this.isLoading = false;
@@ -432,9 +446,13 @@ export default class ProfileView extends Vue {
             })
             .catch((err) => {
                 this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError("Profile Recover", err)
-                );
+                this.addCustomError({
+                    title:
+                        "Unable to recover " +
+                        ErrorSourceType.Profile.toLowerCase(),
+                    source: ErrorSourceType.Profile,
+                    traceId: undefined,
+                });
             })
             .finally(() => {
                 this.isLoading = false;
@@ -458,9 +476,13 @@ export default class ProfileView extends Vue {
             })
             .catch((err) => {
                 this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError("Profile Close", err)
-                );
+                this.addCustomError({
+                    title:
+                        "Unable to close " +
+                        ErrorSourceType.Profile.toLowerCase(),
+                    source: ErrorSourceType.Profile,
+                    traceId: undefined,
+                });
             })
             .finally(() => {
                 this.isLoading = false;

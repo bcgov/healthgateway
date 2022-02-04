@@ -3,9 +3,8 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import BannerError from "@/models/bannerError";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import RequestResult from "@/models/requestResult";
+import RequestResult, { ResultError } from "@/models/requestResult";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
@@ -14,9 +13,6 @@ import { ILogger } from "@/services/interfaces";
 const med = "medication";
 @Component
 export default class ProtectiveWordComponent extends Vue {
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (error: BannerError) => void;
-
     @Action("retrieveMedicationStatements", { namespace: med })
     retrieveMedications!: (params: {
         hdid: string;
@@ -62,7 +58,7 @@ export default class ProtectiveWordComponent extends Vue {
         this.retrieveMedications({
             hdid: this.user.hdid,
             protectiveWord: this.protectiveWord,
-        }).catch((err) => {
+        }).catch((err: ResultError) => {
             this.logger.error(
                 "Error retrieving medications: " + JSON.stringify(err)
             );

@@ -46,7 +46,7 @@ const medicationStatementGetters: MedicationStatementGetters = {
 
 const medicationStatementActions: MedicationStatementActions = {
     retrieveMedicationStatements: voidPromise,
-    handleStatementError: voidMethod,
+    handleMedicationStatementError: voidMethod,
 };
 
 const medicationStatementMutations: MedicationStatementMutations = {
@@ -82,7 +82,7 @@ const medicationRequestGetters: MedicationRequestGetters = {
 
 const medicationRequestActions: MedicationRequestActions = {
     retrieveMedicationRequests: voidPromise,
-    handleRequestError: voidMethod,
+    handleMedicationRequestError: voidMethod,
 };
 
 const medicationRequestMutations: MedicationRequestMutations = {
