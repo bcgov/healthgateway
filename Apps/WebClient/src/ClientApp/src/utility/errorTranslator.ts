@@ -16,9 +16,6 @@ export default class ErrorTranslator {
             title,
             source: formattedSource,
             traceId,
-            description: "",
-            detail: "",
-            errorCode: "",
         };
     }
 
@@ -31,9 +28,6 @@ export default class ErrorTranslator {
             title,
             source,
             traceId,
-            description: "",
-            detail: "",
-            errorCode: "",
         };
     }
 

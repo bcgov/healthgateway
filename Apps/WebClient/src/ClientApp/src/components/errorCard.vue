@@ -45,14 +45,14 @@ export default class ErrorCardComponent extends Vue {
     }
     private get haveMultipleErrors(): boolean {
         if (this.haveError) {
-            return this.errors.filter((c) => c.traceId).length > 1;
+            return this.errorDetails.length > 1;
         }
         return false;
     }
 
     private get errorTitle(): string {
         let title = "";
-        if (this.errors !== undefined && this.errors.length === 1) {
+        if (this.errorDetails !== undefined && this.errorDetails.length === 1) {
             title = this.errors[0].title;
         }
         return title;
@@ -62,7 +62,7 @@ export default class ErrorCardComponent extends Vue {
         let result: string[] = [];
         let isoNow = new DateWrapper().format("yyyy-MMM-dd");
         let hdid = this.user.hdid !== undefined ? this.user.hdid : "";
-        for (var error of this.errors.filter((c) => c.traceId)) {
+        for (var error of this.errors.filter((c) => c.traceId !== undefined)) {
             let source = error.source !== undefined ? error.source.trim() : "";
             let traceId =
                 error.traceId !== undefined ? error.traceId.trim() : "";
@@ -95,10 +95,10 @@ export default class ErrorCardComponent extends Vue {
         @dismissed="dismissBanner"
     >
         <div>
-            <div v-if="haveMultipleErrors">
+            <div v-if="haveMultipleErrors" data-testid="multipleErrorsHeader">
                 <h4>Multiple errors have occurred</h4>
             </div>
-            <div v-if="!haveMultipleErrors">
+            <div v-if="!haveMultipleErrors" data-testid="singleErrorHeader">
                 <h4>{{ errorTitle }}</h4>
             </div>
             <hg-button
@@ -112,6 +112,7 @@ export default class ErrorCardComponent extends Vue {
                     size="medium"
                     aria-hidden="true"
                     class="when-closed mr-2"
+                    data-testid="viewDetailsIcon"
                 />
                 <span class="when-closed">View Details</span>
                 <hg-icon
@@ -119,6 +120,7 @@ export default class ErrorCardComponent extends Vue {
                     size="medium"
                     aria-hidden="true"
                     class="when-opened mr-2"
+                    data-testid="hideDetailsIcon"
                 />
                 <span class="when-opened">Hide Details</span>
             </hg-button>
@@ -131,6 +133,7 @@ export default class ErrorCardComponent extends Vue {
                             v-clipboard:copy="errorDetailsCopyToClipboard"
                             v-clipboard:success="onCopy"
                             variant="secondary"
+                            data-testid="copyToClipBoardBtn"
                         >
                             <hg-icon :icon="['far', 'copy']" size="small" />
                             Copy
@@ -140,6 +143,7 @@ export default class ErrorCardComponent extends Vue {
                         v-for="(error, index) in errorDetails"
                         :key="index"
                         class="break-word"
+                        :data-testid="'error-details-span-' + (index + 1)"
                     >
                         {{ error }}
                     </p>
