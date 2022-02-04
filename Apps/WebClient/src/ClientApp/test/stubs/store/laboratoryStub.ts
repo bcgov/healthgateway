@@ -3,8 +3,8 @@ import { voidMethod, voidPromise } from "@test/stubs/util";
 import BannerError from "@/models/bannerError";
 import {
     Covid19LaboratoryOrder,
-    PublicCovidTestResponseResult,
     LaboratoryOrder,
+    PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import { LoadStatus } from "@/models/storeOperations";
 import {
