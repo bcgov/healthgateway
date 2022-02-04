@@ -1,5 +1,4 @@
-import BannerError from "@/models/bannerError";
-import { ResultError } from "@/models/requestResult";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 import { ErrorBannerActions } from "./types";
@@ -11,16 +10,33 @@ export const actions: ErrorBannerActions = {
     show(context) {
         context.commit("show");
     },
-    setError(context, error: BannerError) {
-        context.commit("setError", error);
-    },
-    addError(context, error: BannerError) {
-        context.commit("addError", error);
-    },
-    addResultError(context, param: { message: string; error: ResultError }) {
+    addError(
+        context,
+        params: {
+            errorType: ErrorType;
+            source: ErrorSourceType;
+            traceId: string | undefined;
+        }
+    ) {
         const bannerError = ErrorTranslator.toBannerError(
-            param.message,
-            param.error
+            params.errorType,
+            params.source,
+            params.traceId
+        );
+        context.commit("addError", bannerError);
+    },
+    addCustomError(
+        context,
+        params: {
+            title: string;
+            source: ErrorSourceType;
+            traceId: string | undefined;
+        }
+    ) {
+        const bannerError = ErrorTranslator.toCustomBannerError(
+            params.title,
+            params.source,
+            params.traceId
         );
         context.commit("addError", bannerError);
     },

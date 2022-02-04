@@ -6,8 +6,8 @@ import {
     MutationTree,
 } from "vuex";
 
+import { ErrorType } from "@/constants/errorType";
 import BannerError from "@/models/bannerError";
-import { ResultError } from "@/models/requestResult";
 import { RootState } from "@/store/types";
 
 export interface ErrorBannerState {
@@ -26,18 +26,27 @@ export interface ErrorBannerActions
     extends ActionTree<ErrorBannerState, RootState> {
     dismiss(context: StoreContext): void;
     show(context: StoreContext): void;
-    setError(context: StoreContext, error: BannerError): void;
-    addError(context: StoreContext, error: BannerError): void;
-    addResultError(
+    addError(
         context: StoreContext,
-        param: { message: string; error: ResultError }
+        params: {
+            errorType: ErrorType;
+            source: string;
+            traceId: string | undefined;
+        }
+    ): void;
+    addCustomError(
+        context: StoreContext,
+        params: {
+            title: string;
+            source: string;
+            traceId: string | undefined;
+        }
     ): void;
 }
 
 export interface ErrorBannerMutations extends MutationTree<ErrorBannerState> {
     dismiss(state: ErrorBannerState): void;
     show(state: ErrorBannerState): void;
-    setError(state: ErrorBannerState, bannerError: BannerError): void;
     addError(state: ErrorBannerState, bannerError: BannerError): void;
 }
 

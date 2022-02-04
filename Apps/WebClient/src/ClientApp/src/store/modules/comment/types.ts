@@ -6,6 +6,7 @@ import {
     MutationTree,
 } from "vuex";
 
+import { ErrorType } from "@/constants/errorType";
 import { Dictionary } from "@/models/baseTypes";
 import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
@@ -43,7 +44,10 @@ export interface CommentActions extends ActionTree<CommentState, RootState> {
         context: StoreContext,
         params: { hdid: string; comment: UserComment }
     ): Promise<void>;
-    handleError(context: StoreContext, error: ResultError): void;
+    handleError(
+        context: StoreContext,
+        params: { error: ResultError; errorType: ErrorType }
+    ): void;
 }
 
 export interface CommentMutations extends MutationTree<CommentState> {
@@ -55,7 +59,7 @@ export interface CommentMutations extends MutationTree<CommentState> {
     addComment(state: CommentState, userComment: UserComment): void;
     updateComment(state: CommentState, userComment: UserComment): void;
     deleteComment(state: CommentState, userComment: UserComment): void;
-    commentError(state: CommentState, error: Error): void;
+    commentError(state: CommentState, error: ResultError): void;
 }
 
 export interface CommentModule extends Module<CommentState, RootState> {

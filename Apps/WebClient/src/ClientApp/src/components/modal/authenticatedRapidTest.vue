@@ -28,8 +28,8 @@ library.add(faInfoCircle);
     },
 })
 export default class AuthenticatedRapidTestComponent extends Vue {
-    @Action("getPatientData", { namespace: "user" })
-    getPatientData!: () => Promise<void>;
+    @Action("retrievePatientData", { namespace: "user" })
+    retrievePatientData!: () => Promise<void>;
 
     @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
@@ -58,8 +58,8 @@ export default class AuthenticatedRapidTestComponent extends Vue {
             SERVICE_IDENTIFIER.LaboratoryService
         );
         this.isLoading = true;
-        this.getPatientData()
-            .catch((err) => {
+        this.retrievePatientData()
+            .catch((err: ResultError) => {
                 this.isLoading = false;
                 this.hideModal();
                 this.logger.error(`Error loading patient data: ${err}`);

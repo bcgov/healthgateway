@@ -26,15 +26,13 @@ const errorBannerGetters: ErrorBannerGetters = {
 const errorBannerActions: ErrorBannerActions = {
     dismiss: voidMethod,
     show: voidMethod,
-    setError: voidMethod,
     addError: voidMethod,
-    addResultError: voidMethod,
+    addCustomError: voidMethod,
 };
 
 const errorBannerMutations: ErrorBannerMutations = {
     dismiss: voidMethod,
     show: voidMethod,
-    setError: voidMethod,
     addError: voidMethod,
 };
 

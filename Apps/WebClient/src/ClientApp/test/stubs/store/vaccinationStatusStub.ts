@@ -1,7 +1,8 @@
 import { voidMethod, voidPromise } from "@test/stubs/util";
 
-import BannerError from "@/models/bannerError";
+import { CustomBannerError } from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
+import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import {
@@ -41,16 +42,16 @@ const vaccinationStatusState: VaccinationStatusState = {
 };
 
 const vaccinationStatusGetters: VaccinationStatusGetters = {
-    vaccinationStatus(): VaccinationStatus | undefined {
+    publicVaccinationStatus(): VaccinationStatus | undefined {
         return undefined;
     },
-    isLoading(): boolean {
+    publicIsLoading(): boolean {
         return false;
     },
-    error(): BannerError | undefined {
+    publicError(): CustomBannerError | undefined {
         return undefined;
     },
-    statusMessage(): string {
+    publicStatusMessage(): string {
         return "";
     },
     publicVaccineRecordIsLoading(): boolean {
@@ -62,7 +63,7 @@ const vaccinationStatusGetters: VaccinationStatusGetters = {
     publicVaccineRecord(): CovidVaccineRecord | undefined {
         return undefined;
     },
-    publicVaccineRecordError(): BannerError | undefined {
+    publicVaccineRecordError(): CustomBannerError | undefined {
         return undefined;
     },
     authenticatedVaccinationStatus(): VaccinationStatus | undefined {
@@ -71,7 +72,7 @@ const vaccinationStatusGetters: VaccinationStatusGetters = {
     authenticatedIsLoading(): boolean {
         return false;
     },
-    authenticatedError(): BannerError | undefined {
+    authenticatedError(): ResultError | undefined {
         return undefined;
     },
     authenticatedStatusMessage(): string {
@@ -83,7 +84,7 @@ const vaccinationStatusGetters: VaccinationStatusGetters = {
     authenticatedVaccineRecordIsLoading(): boolean {
         return false;
     },
-    authenticatedVaccineRecordError(): BannerError | undefined {
+    authenticatedVaccineRecordError(): ResultError | undefined {
         return undefined;
     },
     authenticatedVaccineRecordStatusMessage(): string {
@@ -95,8 +96,8 @@ const vaccinationStatusGetters: VaccinationStatusGetters = {
 };
 
 const vaccinationStatusActions: VaccinationStatusActions = {
-    retrieveVaccineStatus: voidPromise,
-    handleError: voidMethod,
+    retrievePublicVaccineStatus: voidPromise,
+    handlePublicError: voidMethod,
     retrievePublicVaccineRecord: voidPromise,
     handlePdfError: voidMethod,
     retrieveAuthenticatedVaccineStatus: voidPromise,
@@ -106,10 +107,10 @@ const vaccinationStatusActions: VaccinationStatusActions = {
 };
 
 const vaccinationStatusMutations: VaccinationStatusMutations = {
-    setRequested: voidMethod,
-    setVaccinationStatus: voidMethod,
-    vaccinationStatusError: voidMethod,
-    setStatusMessage: voidMethod,
+    setPublicRequested: voidMethod,
+    setPublicVaccinationStatus: voidMethod,
+    publicVaccinationStatusError: voidMethod,
+    setPublicStatusMessage: voidMethod,
     setPublicVaccineRecordRequested: voidMethod,
     setPublicVaccineRecord: voidMethod,
     setPublicVaccineRecordError: voidMethod,

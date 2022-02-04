@@ -16,7 +16,6 @@ import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import VaccineCardComponent from "@/components/vaccineCard.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
-import BannerError from "@/models/bannerError";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
@@ -80,7 +79,7 @@ export default class Covid19View extends Vue {
     vaccinationStatus!: VaccinationStatus | undefined;
 
     @Getter("authenticatedError", { namespace: "vaccinationStatus" })
-    vaccinationStatusError!: BannerError | undefined;
+    vaccinationStatusError!: ResultError | undefined;
 
     @Getter("authenticatedStatusMessage", { namespace: "vaccinationStatus" })
     vaccinationStatusMessage!: string;

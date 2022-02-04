@@ -1,10 +1,3 @@
-export const enum ErrorType {
-    Concurreny = "C",
-    ExternalCommunication = "CE",
-    InternalCommunication = "CI",
-    InvalidState = "I",
-}
-
 export const enum ServiceName {
     DataBase = "DB",
     ClientRegistries = "CR",
