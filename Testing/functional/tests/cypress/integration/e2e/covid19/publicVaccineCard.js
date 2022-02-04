@@ -127,8 +127,6 @@ describe("Public Vaccine Card Downloads", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.wait(5000);
-
         cy.verifyDownload("VaccineProof.pdf");
     });
 });
