@@ -3,7 +3,7 @@ const { AuthMethod } = require("../../../support/constants");
 const homeUrl = "/home";
 
 describe("Federal Proof of Vaccination", () => {
-    it("Save Federal Proof of Vaccination with Retry", () => {
+    it("Save Federal Proof of Vaccination", () => {
         deleteDownloadsFolder();
 
         cy.enableModules(["Immunization", "FederalCardButton"]);
@@ -15,6 +15,11 @@ describe("Federal Proof of Vaccination", () => {
             homeUrl
         );
 
+        cy.intercept(
+            "GET",
+            "**/v1/api/AuthenticatedVaccineStatus/pdf?hdid=*"
+        ).as("getVaccineProof");
+
         cy.get("[data-testid=proof-vaccination-card-btn]")
             .should("be.visible", "be.enabled")
             .click();
@@ -22,6 +27,8 @@ describe("Federal Proof of Vaccination", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("VaccineProof.pdf");
+        cy.wait("@getVaccineProof").then(() => {
+            cy.verifyDownload("VaccineProof.pdf");
+        });
     });
 });
