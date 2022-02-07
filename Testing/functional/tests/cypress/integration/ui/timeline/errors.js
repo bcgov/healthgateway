@@ -30,9 +30,7 @@ describe("Banner Error", () => {
         cy.get("[data-testid=viewDetailsIcon]").should("be.not.visible");
         cy.get("[data-testid=hideDetailsIcon]").should("be.visible");
 
-        cy.get("[data-testid=error-details-span-1]").contains(
-            "note/2022-Feb-04/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A:123456789"
-        );
+        cy.get("[data-testid=error-details-span-1]").should("be.visible");
 
         cy.get("[data-testid=copyToClipBoardBtn]").should("be.visible").click();
 
