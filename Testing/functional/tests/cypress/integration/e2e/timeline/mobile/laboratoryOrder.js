@@ -5,7 +5,7 @@ function selectorShouldBeVisible(selector) {
 }
 
 describe("Laboratory Orders", () => {
-    before(() => {
+    beforeEach(() => {
         cy.viewport("iphone-6");
         cy.restoreAuthCookies();
         cy.enableModules("AllLaboratory");
@@ -14,6 +14,7 @@ describe("Laboratory Orders", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        cy.checkTimelineHasLoaded();
     });
 
     it("Validate Card", () => {

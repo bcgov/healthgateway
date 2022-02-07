@@ -40,6 +40,7 @@
     <EmbeddedResource Include="Assets\ProtectiveWord.json" />
     <EmbeddedResource Include="Assets\Patient.xml" />
     <EmbeddedResource Include="Assets\VaccineStatus.json" />
+    <EmbeddedResource Include="Assets\Covid19Orders.json" />
   </ItemGroup>
 
   <ItemGroup>

@@ -13,6 +13,7 @@ import MultiSelectComponent, {
 import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import Covid19ReportComponent from "@/components/report/covid19.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
+import LaboratoryReportComponent from "@/components/report/laboratory.vue";
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MedicationRequestReportComponent from "@/components/report/medicationRequest.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
@@ -40,6 +41,7 @@ const covid19Report = "covid19-report";
 const immunizationReport = "immunization-report";
 const medicationRequestReport = "medication-request-report";
 const noteReport = "note-report";
+const laboratoryReport = "laboratory-report";
 
 @Component({
     components: {
@@ -55,6 +57,7 @@ const noteReport = "note-report";
         MultiSelectComponent,
         "resource-centre": ResourceCentreComponent,
         noteReport: NotesReportComponent,
+        laboratoryReport: LaboratoryReportComponent,
     },
 })
 export default class ReportsView extends Vue {
@@ -202,6 +205,12 @@ export default class ReportsView extends Vue {
                 text: "My Notes",
             });
         }
+        if (this.config.modules["AllLaboratory"]) {
+            this.reportTypeOptions.push({
+                value: laboratoryReport,
+                text: "Laboratory Tests",
+            });
+        }
     }
 
     private clearFilter() {
@@ -302,6 +311,9 @@ export default class ReportsView extends Vue {
                 break;
             case noteReport:
                 reportName = "Notes";
+                break;
+            case laboratoryReport:
+                reportName = "Laboratory Tests";
                 break;
             default:
                 reportName = "";

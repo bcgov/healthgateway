@@ -1,10 +1,10 @@
 const { AuthMethod } = require("../../../support/constants");
 
-describe("Laboratory", () => {
+describe("COVID-19", () => {
     before(() => {
         cy.enableModules(["CovidLabResults", "Laboratory", "Dependent"]);
         cy.intercept("GET", "**/v1/api/Laboratory/Covid19Orders*", {
-            fixture: "LaboratoryService/laboratory.json",
+            fixture: "LaboratoryService/covid19Orders.json",
         });
         cy.intercept("GET", "**/v1/api/UserProfile/*/Dependent", {
             fixture: "UserProfileService/dependent.json",

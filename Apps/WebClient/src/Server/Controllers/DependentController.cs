@@ -19,7 +19,6 @@ namespace HealthGateway.WebClient.Controllers
     using System.Security.Claims;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -67,10 +66,9 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Authorize(Policy = UserProfilePolicy.Read)]
         [Route("{hdid}/[controller]")]
-        public IActionResult GetAll(string hdid)
+        public RequestResult<IEnumerable<DependentModel>> GetAll(string hdid)
         {
-            RequestResult<IEnumerable<DependentModel>> result = this.dependentService.GetDependents(hdid);
-            return new JsonResult(result);
+            return this.dependentService.GetDependents(hdid);
         }
 
         /// <summary>
@@ -85,12 +83,11 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPost]
         [Authorize(Policy = UserProfilePolicy.Write)]
         [Route("{hdid}/[controller]")]
-        public IActionResult AddDependent([FromBody] AddDependentRequest addDependentRequest)
+        public RequestResult<DependentModel> AddDependent([FromBody] AddDependentRequest addDependentRequest)
         {
             ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
             string? delegateHdId = user?.FindFirst("hdid")?.Value;
-            RequestResult<DependentModel> result = this.dependentService.AddDependent(delegateHdId ?? string.Empty, addDependentRequest);
-            return new JsonResult(result);
+            return this.dependentService.AddDependent(delegateHdId ?? string.Empty, addDependentRequest);
         }
 
         /// <summary>
@@ -101,12 +98,13 @@ namespace HealthGateway.WebClient.Controllers
         /// <param name="dependentHdid">The Dependent hdid.</param>
         /// <param name="dependent">The dependent model object to be delted.</param>
         /// <response code="200">The Dependent record was deleted.</response>
+        /// <response code="400">The request is invalid.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
         [Authorize(Policy = UserProfilePolicy.Write)]
         [Route("{hdid}/[controller]/{dependentHdid}")]
-        public IActionResult Delete(string hdid, string dependentHdid, [FromBody] DependentModel dependent)
+        public ActionResult<RequestResult<DependentModel>> Delete(string hdid, string dependentHdid, [FromBody] DependentModel dependent)
         {
             if (dependent.OwnerId != dependentHdid || dependent.DelegateId != hdid)
             {
@@ -114,8 +112,7 @@ namespace HealthGateway.WebClient.Controllers
                 return new BadRequestResult();
             }
 
-            RequestResult<DependentModel> result = this.dependentService.Remove(dependent);
-            return new JsonResult(result);
+            return this.dependentService.Remove(dependent);
         }
     }
 }

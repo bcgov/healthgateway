@@ -15,8 +15,11 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Controllers
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
+    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -56,9 +59,9 @@ namespace HealthGateway.Medication.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = MedicationPolicy.MedicationRequestRead)]
-        public async Task<IActionResult> GetMedicationRequests(string hdid)
+        public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequests(string hdid)
         {
-            return new JsonResult(await this.medicationRequestService.GetMedicationRequests(hdid).ConfigureAwait(true));
+            return await this.medicationRequestService.GetMedicationRequests(hdid).ConfigureAwait(true);
         }
     }
 }

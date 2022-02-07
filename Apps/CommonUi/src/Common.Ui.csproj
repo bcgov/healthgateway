@@ -9,6 +9,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MudBlazor" Version="6.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
       <Value>$(MSBuildProjectFullPath)</Value>
     </SonarQubeSetting>

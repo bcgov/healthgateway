@@ -69,13 +69,13 @@ namespace HealthGateway.Encounter.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = EncounterPolicy.Read)]
-        public async Task<IActionResult> GetEncounters(string hdid)
+        public async Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid)
         {
             this.logger.LogDebug($"Getting claims from controller... {hdid}");
             RequestResult<IEnumerable<EncounterModel>> result = await this.service.GetEncounters(hdid).ConfigureAwait(true);
 
             this.logger.LogDebug($"Finished getting claims from controller... {hdid}");
-            return new JsonResult(result);
+            return result;
         }
     }
 }
