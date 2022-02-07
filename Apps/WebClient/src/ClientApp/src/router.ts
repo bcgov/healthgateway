@@ -120,7 +120,6 @@ export enum ClientModule {
     VaccinationExportPdf = "VaccinationExportPdf",
     FederalCardButton = "FederalCardButton",
     PublicLaboratoryResult = "PublicLaboratoryResult",
-    AuthenticatedSubmitRapidTest = "AuthenticatedSubmitRapidTest",
     AllLaboratory = "AllLaboratory",
 }
 
