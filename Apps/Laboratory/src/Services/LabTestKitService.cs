@@ -21,6 +21,7 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Laboratory.Delegates;
@@ -54,35 +55,42 @@ namespace HealthGateway.Laboratory.Services
         public async Task<RequestResult<PublicLabTestKit>> RegisterLabTestKitAsync(PublicLabTestKit testKit)
         {
             RequestResult<PublicLabTestKit> requestResult = InitializeResult<PublicLabTestKit>(testKit);
-
-            // Use a system token
-            string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
-            if (accessToken != null)
+            if (PhnValidator.IsValid(testKit.Phn))
             {
-                try
+                // Use a system token
+                string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
+                if (accessToken != null)
                 {
-                    HttpResponseMessage response =
-                        await this.labTestKitClient.RegisterLabTest(testKit, accessToken).ConfigureAwait(true);
-                    ProcessResponse<PublicLabTestKit>(requestResult, response);
+                    try
+                    {
+                        HttpResponseMessage response =
+                            await this.labTestKitClient.RegisterLabTest(testKit, accessToken).ConfigureAwait(true);
+                        ProcessResponse<PublicLabTestKit>(requestResult, response);
+                    }
+                    catch (HttpRequestException e)
+                    {
+                        this.logger.LogCritical($"HTTP Request Exception {e}");
+                        requestResult.ResultError = new RequestResultError()
+                        {
+                            ResultMessage = $"Error with HTTP Request",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
+                    }
                 }
-                catch (HttpRequestException e)
+                else
                 {
-                    this.logger.LogCritical($"HTTP Request Exception {e}");
                     requestResult.ResultError = new RequestResultError()
                     {
-                        ResultMessage = $"Error with HTTP Request",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        ResultMessage = $"Unable to acquire authentication token",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
                     };
+                    this.logger.LogError("Unable to acquire authentication token");
                 }
             }
             else
             {
-                requestResult.ResultError = new RequestResultError()
-                {
-                    ResultMessage = $"Unable to acquire authentication token",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
-                };
-                this.logger.LogError("Unable to acquire authentication token");
+                requestResult.ResultError = ErrorTranslator.ActionRequired("The PHN is invalid", ActionType.Validation);
+                requestResult.ResultStatus = ResultType.ActionRequired;
             }
 
             return requestResult;
