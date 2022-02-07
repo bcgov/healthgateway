@@ -28,7 +28,7 @@ export class RestPCRTestService implements IPCRTestService {
         http: IHttpDelegate
     ): void {
         this.http = http;
-        this.isEnabled = config.webClient.modules["PCRTest"];
+        this.isEnabled = config.webClient.modules["PcrTest"];
         this.baseUri = config.serviceEndpoints["Laboratory"];
     }
 

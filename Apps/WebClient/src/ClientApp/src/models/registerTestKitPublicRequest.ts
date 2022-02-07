@@ -15,7 +15,13 @@ export default interface RegisterTestKitPublicRequest {
     testTakenMinutesAgo?: number;
 
     // ID of the test kit
-    testKitId?: string;
+    testKitCid?: string;
+
+    // First short code
+    shortCodeFirst?: string;
+
+    // Second short code
+    shortCodeSecond?: string;
 
     // The patient's phone number
     contactPhoneNumber?: string;

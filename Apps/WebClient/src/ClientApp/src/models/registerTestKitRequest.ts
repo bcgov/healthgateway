@@ -6,5 +6,11 @@ export default interface RegisterTestKitRequest {
     testTakenMinutesAgo?: number;
 
     // ID of the test kit
-    testKitId?: string;
+    testKitCid?: string;
+
+    // First short code
+    shortCodeFirst?: string;
+
+    // Second short code
+    shortCodeSecond?: string;
 }

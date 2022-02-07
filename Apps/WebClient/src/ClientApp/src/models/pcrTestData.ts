@@ -9,5 +9,6 @@ export default interface PCRTestData {
     postalOrZip?: string;
     testTakenMinutesAgo: number;
     hdid?: string;
-    testKitId: string;
+    testKitCid: string;
+    testKitCode: string;
 }
