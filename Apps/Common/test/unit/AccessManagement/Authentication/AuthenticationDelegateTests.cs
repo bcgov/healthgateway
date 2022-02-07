@@ -129,7 +129,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
-            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object, null, null, null);
+            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object, CreateConfiguration(null), null, null);
             JWTModel actualModel = authDelegate.AuthenticateAsSystem(tokenUri, tokenRequest);
             expected.ShouldDeepEqual(actualModel);
         }
