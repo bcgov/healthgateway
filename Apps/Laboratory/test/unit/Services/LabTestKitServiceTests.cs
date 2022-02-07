@@ -64,7 +64,7 @@ namespace HealthGateway.LaboratoryTests
             {
                 StatusCode = HttpStatusCode.OK,
             };
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(new PublicLabTestKit()).Result;
+            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
             Assert.True(actualResult.ResultStatus == ResultType.Success);
         }
 
@@ -74,7 +74,7 @@ namespace HealthGateway.LaboratoryTests
         [Fact]
         public void RegisterPublicLabTestHttpException()
         {
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitServiceException().RegisterLabTestKitAsync(new PublicLabTestKit()).Result;
+            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitServiceException().RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
@@ -98,7 +98,7 @@ namespace HealthGateway.LaboratoryTests
             {
                 StatusCode = HttpStatusCode.OK,
             };
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse, true).RegisterLabTestKitAsync(new PublicLabTestKit()).Result;
+            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse, true).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
@@ -112,7 +112,7 @@ namespace HealthGateway.LaboratoryTests
             {
                 StatusCode = HttpStatusCode.Conflict,
             };
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(new PublicLabTestKit()).Result;
+            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
             Assert.True(actualResult.ResultStatus == ResultType.ActionRequired &&
                         actualResult.ResultError != null &&
                         actualResult.ResultError.ActionCodeValue == ActionType.Processed.Value);
@@ -128,7 +128,23 @@ namespace HealthGateway.LaboratoryTests
             {
                 StatusCode = HttpStatusCode.UnprocessableEntity,
             };
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(new PublicLabTestKit()).Result;
+            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
+            Assert.True(actualResult.ResultStatus == ResultType.ActionRequired &&
+                        actualResult.ResultError != null &&
+                        actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
+        }
+
+        /// <summary>
+        /// Tests when bad data is sent.
+        /// </summary>
+        [Fact]
+        public void RegisterPublicLabTestBadPhn()
+        {
+            using HttpResponseMessage httpResponse = new()
+            {
+                StatusCode = HttpStatusCode.OK,
+            };
+            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("BADPHN")).Result;
             Assert.True(actualResult.ResultStatus == ResultType.ActionRequired &&
                         actualResult.ResultError != null &&
                         actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
@@ -144,7 +160,7 @@ namespace HealthGateway.LaboratoryTests
             {
                 StatusCode = HttpStatusCode.Unauthorized,
             };
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(new PublicLabTestKit()).Result;
+            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
@@ -158,7 +174,7 @@ namespace HealthGateway.LaboratoryTests
             {
                 StatusCode = HttpStatusCode.Forbidden,
             };
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(new PublicLabTestKit()).Result;
+            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
@@ -172,8 +188,18 @@ namespace HealthGateway.LaboratoryTests
             {
                 StatusCode = HttpStatusCode.BadGateway,
             };
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(new PublicLabTestKit()).Result;
+            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
             Assert.True(actualResult.ResultStatus == ResultType.Error);
+        }
+
+        private static PublicLabTestKit CreatePublicLabTestKit(string phn)
+        {
+            PublicLabTestKit testKit = new()
+            {
+                Phn = phn,
+            };
+
+            return testKit;
         }
 
         private LabTestKitService GetLabTestKitServiceException()
