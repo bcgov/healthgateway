@@ -107,6 +107,7 @@ namespace HealthGateway.Admin.Services
             };
 
             DBResult<IEnumerable<MessagingVerification>>? dbResult = null;
+            string phn = string.Empty;
             switch (queryType)
             {
                 case UserQueryType.PHN:
@@ -129,16 +130,36 @@ namespace HealthGateway.Admin.Services
                     dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.SMS, queryString);
                     break;
                 case UserQueryType.HDID:
-                    dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, queryString);
+                    RequestResult<PatientModel> patientResultHdid = Task.Run(async () => await this.patientService.GetPatient(queryString).ConfigureAwait(true)).Result; 
+                    if (patientResultHdid.ResultStatus == ResultType.Success && patientResultHdid.ResourcePayload != null)
+                    {
+                        phn = patientResultHdid.ResourcePayload.PersonalHealthNumber;
+                        dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, queryString);
+                    }
+                    else
+                    {
+                        retVal.ResultError = patientResultHdid.ResultError;
+                    }
+
                     break;
             }
 
             if (dbResult != null && dbResult.Status == Database.Constants.DBStatusCode.Read)
             {
                 retVal.ResultStatus = ResultType.Success;
+                List<MessagingVerificationModel> results = new();
                 if (dbResult.Payload != null)
                 {
-                    retVal.ResourcePayload = dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel);
+                    results.AddRange(dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel));
+                    if (queryType == UserQueryType.HDID)
+                    {
+                        foreach (var item in results)
+                        {
+                            item.PersonalHealthNumber = phn;
+                        }
+                    }
+
+                    retVal.ResourcePayload = results;
                 }
             }
 
