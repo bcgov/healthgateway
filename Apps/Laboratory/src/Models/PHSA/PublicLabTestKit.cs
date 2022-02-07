@@ -56,7 +56,7 @@ namespace HealthGateway.Laboratory.Models.PHSA
         /// <summary>
         /// Gets or sets the test kit id.
         /// </summary>
-        [JsonPropertyName("testKitCId")]
+        [JsonPropertyName("testKitCid")]
         public string? TestKitId { get; set; } = string.Empty;
 
         /// <summary>
