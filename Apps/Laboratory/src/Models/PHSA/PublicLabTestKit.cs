@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Models.PHSA
 {
+    using System;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -32,7 +33,7 @@ namespace HealthGateway.Laboratory.Models.PHSA
         /// Gets or sets the date of birth for the identified PHN.
         /// </summary>
         [JsonPropertyName("dob")]
-        public string Dob { get; set; } = string.Empty;
+        public DateTime Dob { get; set; }
 
         /// <summary>
         /// Gets or sets the first name for the identified PHN.
@@ -56,43 +57,43 @@ namespace HealthGateway.Laboratory.Models.PHSA
         /// Gets or sets the test kit id.
         /// </summary>
         [JsonPropertyName("testKitCId")]
-        public string TestKitId { get; set; } = string.Empty;
+        public string? TestKitId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets first portion of the short code.
         /// </summary>
-        [JsonPropertyName("testKitId")]
-        public string shortCodeFirst { get; set; } = string.Empty;
+        [JsonPropertyName("shortCodeFirst")]
+        public string? ShortCodeFirst { get; set; }
 
         /// <summary>
         /// Gets or sets the second partion of the short code.
         /// </summary>
-        [JsonPropertyName("testKitId")]
-        public string shortCodeSecond { get; set; } = string.Empty;
+        [JsonPropertyName("shortCodeSecond")]
+        public string? ShortCodeSecond { get; set; }
 
         /// <summary>
         /// Gets or sets the contacts phone number.
         /// </summary>
         [JsonPropertyName("contactPhoneNumber")]
-        public string ContactPhoneNumber { get; set; } = string.Empty;
+        public string? ContactPhoneNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the contacts street address.
         /// This field is optional if the PHN is supplied.
         /// </summary>
         [JsonPropertyName("streetAddress")]
-        public string StreetAddress { get; set; } = string.Empty;
+        public string? StreetAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the city for the contact.
         /// </summary>
         [JsonPropertyName("city")]
-        public string City { get; set; } = string.Empty;
+        public string? City { get; set; }
 
         /// <summary>
         /// Gets or sets the postal code for the contact.
         /// </summary>
         [JsonPropertyName("postalOrZip")]
-        public string PostalOrZip { get; set; } = string.Empty;
+        public string? PostalOrZip { get; set; }
     }
 }
