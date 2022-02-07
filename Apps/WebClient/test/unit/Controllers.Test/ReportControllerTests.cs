@@ -57,9 +57,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             reportServiceMock.Setup(s => s.GetReport(request)).Returns(expectedResult);
 
             ReportController controller = new(reportServiceMock.Object);
-            IActionResult actualResult = controller.GenerateReport(request);
+            RequestResult<ReportModel> actualResult = controller.GenerateReport(request);
 
-            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
+            expectedResult.ShouldDeepEqual(actualResult);
         }
     }
 }

@@ -29,6 +29,19 @@ export default class ReleaseNotesView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
         <release-note
+            date="February 2, 2022"
+            version="v1.5.2"
+            title="Records Loading Indicator"
+        >
+            <ul>
+                <li>
+                    We replaced the loading spinner with a loading alert so you
+                    can view your records as they are loaded into the Health
+                    Gateway timeline.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
             date="January 19, 2022"
             version="v1.5.1"
             title="COVID Tests Update, Export Notes"

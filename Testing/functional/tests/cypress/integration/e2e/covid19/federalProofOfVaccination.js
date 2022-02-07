@@ -21,8 +21,7 @@ describe("Federal Proof of Vaccination", () => {
 
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
-        cy.get("[data-testid=loadingSpinner]").should("be.visible");
-        cy.wait(1000);
+
         cy.verifyDownload("VaccineProof.pdf");
     });
 });

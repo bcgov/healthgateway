@@ -49,10 +49,9 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="200">Returns the communication json.</response>
         [HttpGet]
         [Route("{bannerType}")]
-        public IActionResult Get(CommunicationType bannerType = CommunicationType.Banner)
+        public RequestResult<Communication> Get(CommunicationType bannerType = CommunicationType.Banner)
         {
-            RequestResult<Communication> result = this.communicationService.GetActiveBanner(bannerType);
-            return new JsonResult(result);
+            return this.communicationService.GetActiveBanner(bannerType);
         }
     }
 }
