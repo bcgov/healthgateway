@@ -115,6 +115,7 @@ namespace HealthGateway.Admin.Services
                     if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                     {
                         string hdid = patientResult.ResourcePayload.HdId;
+                        phn = patientResult.ResourcePayload.PersonalHealthNumber;
                         dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, hdid);
                     }
                     else
@@ -151,7 +152,7 @@ namespace HealthGateway.Admin.Services
                 if (dbResult.Payload != null)
                 {
                     results.AddRange(dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel));
-                    if (queryType == UserQueryType.HDID)
+                    if (queryType == UserQueryType.HDID || queryType == UserQueryType.PHN)
                     {
                         foreach (var item in results)
                         {
