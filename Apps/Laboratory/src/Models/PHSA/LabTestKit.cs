@@ -33,5 +33,17 @@ namespace HealthGateway.Laboratory.Models.PHSA
         /// </summary>
         [JsonPropertyName("testKitId")]
         public string TestKitId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets first portion of the short code.
+        /// </summary>
+        [JsonPropertyName("testKitId")]
+        public string shortCodeFirst { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the second partion of the short code.
+        /// </summary>
+        [JsonPropertyName("testKitId")]
+        public string shortCodeSecond { get; set; } = string.Empty;
     }
 }
