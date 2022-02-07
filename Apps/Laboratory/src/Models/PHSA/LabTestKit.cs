@@ -45,6 +45,5 @@ namespace HealthGateway.Laboratory.Models.PHSA
         /// </summary>
         [JsonPropertyName("shortCodeSecond")]
         public string? ShortCodeSecond { get; set; }
-
     }
 }
