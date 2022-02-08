@@ -18,12 +18,24 @@ describe("Banner Error", () => {
     });
 
     it("Verify banner error", () => {
-        cy.get("[data-testid=errorTextDescription]").contains(
-            `ClientApp got a Internal Communication error while processing a ${"Data Base"} request.`
+        cy.get("[data-testid=singleErrorHeader]").should("be.visible");
+        cy.get("[data-testid=singleErrorHeader]").contains(
+            "Unable to retrieve notes"
         );
-        cy.get("[data-testid=errorTextDetails]").contains("Error ABC");
-        cy.get("[data-testid=errorSupportDetails]").contains(
-            "If this issue persists, contact HealthGateway@gov.bc.ca and provide 123456789"
-        );
+        cy.get("[data-testid=errorDetailsBtn]").should("be.visible");
+        cy.get("[data-testid=viewDetailsIcon]").should("be.visible");
+
+        cy.get("[data-testid=errorDetailsBtn]").click();
+
+        cy.get("[data-testid=viewDetailsIcon]").should("be.not.visible");
+        cy.get("[data-testid=hideDetailsIcon]").should("be.visible");
+
+        cy.get("[data-testid=error-details-span-1]").should("be.visible");
+
+        cy.get("[data-testid=copyToClipBoardBtn]").should("be.visible").click();
+
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageOkBtn]").click();
+        cy.get("[data-testid=genericMessageModal]").should("not.exist");
     });
 });
