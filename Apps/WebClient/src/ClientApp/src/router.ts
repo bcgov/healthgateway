@@ -123,6 +123,7 @@ export enum ClientModule {
     FederalCardButton = "FederalCardButton",
     PublicLaboratoryResult = "PublicLaboratoryResult",
     AllLaboratory = "AllLaboratory",
+    PcrTest = "PcrTest",
 }
 
 function getAvailableModules() {
@@ -257,6 +258,7 @@ const routes = [
                 UserState.notRegistered,
                 UserState.pendingDeletion,
             ],
+            requiredModules: [ClientModule.PcrTest],
         },
     },
     {
@@ -270,6 +272,7 @@ const routes = [
                 UserState.notRegistered,
                 UserState.pendingDeletion,
             ],
+            requiredModules: [ClientModule.PcrTest],
         },
     },
     {
