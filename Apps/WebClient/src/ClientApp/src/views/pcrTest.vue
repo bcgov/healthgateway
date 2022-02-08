@@ -18,19 +18,19 @@ import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
 import HgTimeDropdownComponent from "@/components/shared/hgTimeDropdown.vue";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { PcrDataSource } from "@/constants/pcrTestDataSource";
-import BannerError from "@/models/bannerError";
 import { IdentityProviderConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import PcrTestData from "@/models/pcrTestData";
 import RegisterTestKitPublicRequest from "@/models/registerTestKitPublicRequest";
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
+import { ResultError } from "@/models/requestResult";
 import User, { OidcUserProfile } from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { IAuthenticationService, ILogger } from "@/services/interfaces";
 import { IPcrTestService } from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
 import { Mask, phnMask, smsMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
 
@@ -55,7 +55,18 @@ export default class PcrTestView extends Vue {
 
     // ### Store ###
     @Action("addError", { namespace: "errorBanner" })
-    addError!: (error: BannerError) => void;
+    addError!: (params: {
+        errorType: ErrorType;
+        source: ErrorSourceType;
+        traceId: string | undefined;
+    }) => void;
+
+    @Action("addCustomError", { namespace: "errorBanner" })
+    addCustomError!: (params: {
+        title: string;
+        source: ErrorSourceType;
+        traceId: string | undefined;
+    }) => void;
 
     @Action("authenticateOidc", { namespace: "auth" })
     authenticateOidc!: (params: {
@@ -181,9 +192,11 @@ export default class PcrTestView extends Vue {
                 })
                 .catch((err) => {
                     this.logger.error(`Error loading profile: ${err}`);
-                    this.addError(
-                        ErrorTranslator.toBannerError("Profile loading", err)
-                    );
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
                 })
                 .finally(() => (this.loading = false));
         }
@@ -394,14 +407,13 @@ export default class PcrTestView extends Vue {
                         this.loading = false;
                         this.registrationComplete = true;
                     })
-                    .catch((err) => {
+                    .catch((err: ResultError) => {
                         this.logger.error(`registerTestKit Error: ${err}`);
-                        this.addError(
-                            ErrorTranslator.toBannerError(
-                                "Test kit registration",
-                                err
-                            )
-                        );
+                        this.addCustomError({
+                            title: "Unable to register test kit",
+                            source: ErrorSourceType.TestKit,
+                            traceId: err.traceId,
+                        });
                         this.loading = false;
                     });
                 break;
@@ -440,16 +452,15 @@ export default class PcrTestView extends Vue {
                         this.loading = false;
                         this.registrationComplete = true;
                     })
-                    .catch((err) => {
+                    .catch((err: ResultError) => {
                         this.logger.error(
                             `registerTestKitPublic Error: ${err}`
                         );
-                        this.addError(
-                            ErrorTranslator.toBannerError(
-                                "Test kit registration",
-                                err
-                            )
-                        );
+                        this.addCustomError({
+                            title: "Unable to register test kit",
+                            source: ErrorSourceType.TestKit,
+                            traceId: err.traceId,
+                        });
                         this.loading = false;
                     });
                 break;
@@ -485,10 +496,13 @@ export default class PcrTestView extends Vue {
         return this.authenticateOidc({
             idpHint: hint,
             redirectPath: this.oidcRedirectPath,
-        }).catch((error) => {
-            this.addError(
-                ErrorTranslator.toBannerError("User Information loading", error)
-            );
+        }).catch((err) => {
+            this.logger.error(`oidcLogin Error: ${err}`);
+            this.addError({
+                errorType: ErrorType.Retrieve,
+                source: ErrorSourceType.User,
+                traceId: undefined,
+            });
         });
     }
 }
