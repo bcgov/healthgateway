@@ -7,12 +7,12 @@ import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import RequestResult from "@/models/requestResult";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
-import { IHttpDelegate, ILogger, IPCRTestService } from "@/services/interfaces";
+import { IHttpDelegate, ILogger, IPcrTestService } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
-export class RestPCRTestService implements IPCRTestService {
+export class RestPcrTestService implements IPcrTestService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
     private readonly LABORATORY_BASE_URI: string = "v1/api/Laboratory";

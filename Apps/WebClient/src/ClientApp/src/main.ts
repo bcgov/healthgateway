@@ -57,7 +57,7 @@ import {
     ILogger,
     IMedicationService,
     IPatientService,
-    IPCRTestService,
+    IPcrTestService,
     IReportService,
     IStoreProvider,
     IUserCommentService,
@@ -154,8 +154,8 @@ configService.getConfiguration().then((config: ExternalConfiguration) => {
     const storeProvider: IStoreProvider = container.get(
         STORE_IDENTIFIER.StoreProvider
     );
-    const pcrTestKitService: IPCRTestService = container.get(
-        SERVICE_IDENTIFIER.PCRTestService
+    const pcrTestKitService: IPcrTestService = container.get(
+        SERVICE_IDENTIFIER.PcrTestService
     );
 
     const store = storeProvider.getStore();

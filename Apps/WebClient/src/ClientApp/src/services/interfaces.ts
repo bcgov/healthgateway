@@ -239,7 +239,7 @@ export interface IHttpDelegate {
     ): Promise<T>;
 }
 
-export interface IPCRTestService {
+export interface IPcrTestService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     registerTestKit(
         hdid: string,

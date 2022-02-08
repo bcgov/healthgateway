@@ -70,7 +70,7 @@ const ContactUsView = () =>
 const DependentsView = () =>
     import(/* webpackChunkName: "dependents" */ "@/views/dependents.vue");
 const FAQView = () => import(/* webpackChunkName: "faq" */ "@/views/faq.vue");
-const PCRTestView = () =>
+const PcrTestView = () =>
     import(/* webpackChunkName: "pcrTest" */ "@/views/pcrTest.vue");
 
 export enum UserState {
@@ -249,7 +249,7 @@ const routes = [
     },
     {
         path: "/pcrtest",
-        component: PCRTestView,
+        component: PcrTestView,
         props: false,
         meta: {
             validStates: [
@@ -262,7 +262,7 @@ const routes = [
     },
     {
         path: "/pcrtest/:serialNumber",
-        component: PCRTestView,
+        component: PcrTestView,
         props: true,
         meta: {
             validStates: [

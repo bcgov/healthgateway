@@ -1,4 +1,4 @@
-export default interface PCRTestData {
+export default interface PcrTestData {
     firstName?: string;
     lastName?: string;
     phn?: string;

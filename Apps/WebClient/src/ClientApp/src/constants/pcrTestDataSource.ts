@@ -1,4 +1,4 @@
-export const enum PCRDataSource {
+export const enum PcrDataSource {
     None = "NONE",
     Keycloak = "KEYCLOAK",
     Manual = "MANUAL",

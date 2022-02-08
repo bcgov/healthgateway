@@ -18,18 +18,18 @@ import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
 import HgTimeDropdownComponent from "@/components/shared/hgTimeDropdown.vue";
-import { PCRDataSource } from "@/constants/pcrTestDataSource";
+import { PcrDataSource } from "@/constants/pcrTestDataSource";
 import BannerError from "@/models/bannerError";
 import { IdentityProviderConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
-import PCRTestData from "@/models/pcrTestData";
+import PcrTestData from "@/models/pcrTestData";
 import RegisterTestKitPublicRequest from "@/models/registerTestKitPublicRequest";
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import User, { OidcUserProfile } from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { IAuthenticationService, ILogger } from "@/services/interfaces";
-import { IPCRTestService } from "@/services/interfaces";
+import { IPcrTestService } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { Mask, phnMask, smsMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
@@ -49,7 +49,7 @@ interface ISelectOption {
         "hg-time-dropdown": HgTimeDropdownComponent,
     },
 })
-export default class PCRTest extends Vue {
+export default class PcrTestView extends Vue {
     // ### Props ###
     @Prop() serialNumber!: string;
 
@@ -84,7 +84,7 @@ export default class PCRTest extends Vue {
     identityProviders!: IdentityProviderConfiguration[];
 
     // ### Service ###
-    private pcrTestService!: IPCRTestService;
+    private pcrTestService!: IPcrTestService;
 
     // ### Data ###
     private redirectPath = "/pcrtest/" + this.serialNumber;
@@ -114,7 +114,7 @@ export default class PCRTest extends Vue {
         { value: 4320, text: "Within 36 hours" },
     ];
 
-    private pcrTest: PCRTestData = {
+    private pcrTest: PcrTestData = {
         firstName: "",
         lastName: "",
         phn: "",
@@ -129,19 +129,19 @@ export default class PCRTest extends Vue {
         testKitCode: "",
     };
 
-    // Variables for PCRDataSource enum referenced in render
-    private DSNONE = PCRDataSource.None;
-    private DSKEYCLOAK = PCRDataSource.Keycloak;
-    private DSMANUAL = PCRDataSource.Manual;
+    // Variables for PcrDataSource enum referenced in render
+    private DSNONE = PcrDataSource.None;
+    private DSKEYCLOAK = PcrDataSource.Keycloak;
+    private DSMANUAL = PcrDataSource.Manual;
 
     // Set this to none initially to show options
-    private dataSource: PCRDataSource = this.DSNONE;
+    private dataSource: PcrDataSource = this.DSNONE;
 
     // ### Lifecycle ###
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.pcrTestService = container.get<IPCRTestService>(
-            SERVICE_IDENTIFIER.PCRTestService
+        this.pcrTestService = container.get<IPcrTestService>(
+            SERVICE_IDENTIFIER.PcrTestService
         );
         this.setSidebarButtonState(false);
         this.setHeaderButtonState(false);
@@ -190,7 +190,7 @@ export default class PCRTest extends Vue {
     }
 
     // ### Getters ###
-    private get pcrDataSource(): PCRDataSource {
+    private get pcrDataSource(): PcrDataSource {
         return this.dataSource;
     }
 
@@ -245,9 +245,9 @@ export default class PCRTest extends Vue {
     }
 
     // Sets the data source to either NONE (landing), KEYCLOAK (login), or MANUAL (registration)
-    private setDataSource(dataSource: PCRDataSource) {
+    private setDataSource(dataSource: PcrDataSource) {
         if (
-            dataSource === PCRDataSource.Keycloak &&
+            dataSource === PcrDataSource.Keycloak &&
             !this.oidcIsAuthenticated
         ) {
             this.loading = true;
@@ -477,7 +477,7 @@ export default class PCRTest extends Vue {
 
     private handleCancel() {
         this.resetForm();
-        this.dataSource = PCRDataSource.None;
+        this.dataSource = PcrDataSource.None;
     }
 
     // Auth
