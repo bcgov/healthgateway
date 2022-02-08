@@ -75,9 +75,8 @@ export default class SupportView extends Vue {
     }
 
     private getEmailOrSms(email: Email | null, sms: string | null): string {
-        let emailTo = email !== null ? email.to : "N/A";
-        let smsValue = sms !== null ? sms : "N/A";
-        return emailTo && smsValue === "N/A" ? "N/A" : `${emailTo}/${smsValue}`;
+        let smsValue = sms !== null ? sms : "";
+        return email !== null ? email.to : smsValue;
     }
 
     private getVerificationDate(updatedDateTime: string): string {
