@@ -609,10 +609,20 @@ export default class PCRTest extends Vue {
                                 <b-form-invalid-feedback
                                     v-if="
                                         $v.pcrTest.testKitCode.$dirty &&
+                                        !$v.pcrTest.testKitCode.required
+                                    "
+                                    aria-label="PCR Test Kit Code is required"
+                                    data-testid="test-kit-code-is-required"
+                                >
+                                    PCR Test Kit Code is required.
+                                </b-form-invalid-feedback>
+                                <b-form-invalid-feedback
+                                    v-else-if="
+                                        $v.pcrTest.testKitCode.$dirty &&
                                         !$v.pcrTest.testKitCode.formatted
                                     "
                                     aria-label="PCR Test Kit Code is invalid"
-                                    data-testid="test-kit-code-is-valid"
+                                    data-testid="test-kit-code-is-invalid"
                                 >
                                     PCR Test Kit Code is invalid.
                                 </b-form-invalid-feedback>
