@@ -151,6 +151,22 @@ namespace HealthGateway.LaboratoryTests
         }
 
         /// <summary>
+        /// Tests when bad data is sent.
+        /// </summary>
+        [Fact]
+        public void RegisterPublicLabTestAddrReqd()
+        {
+            using HttpResponseMessage httpResponse = new()
+            {
+                StatusCode = HttpStatusCode.OK,
+            };
+            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit(null)).Result;
+            Assert.True(actualResult.ResultStatus == ResultType.ActionRequired &&
+                        actualResult.ResultError != null &&
+                        actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
+        }
+
+        /// <summary>
         /// Tests for authorization failure.
         /// </summary>
         [Fact]
@@ -192,7 +208,7 @@ namespace HealthGateway.LaboratoryTests
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
-        private static PublicLabTestKit CreatePublicLabTestKit(string phn)
+        private static PublicLabTestKit CreatePublicLabTestKit(string? phn)
         {
             PublicLabTestKit testKit = new()
             {

@@ -27,7 +27,7 @@ namespace HealthGateway.Laboratory.Models.PHSA
         /// Gets or sets the Personal Health Number this test will be registered against.
         /// </summary>
         [JsonPropertyName("phn")]
-        public string Phn { get; set; } = string.Empty;
+        public string? Phn { get; set; }
 
         /// <summary>
         /// Gets or sets the date of birth for the identified PHN.

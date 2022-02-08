@@ -55,7 +55,22 @@ namespace HealthGateway.Laboratory.Services
         public async Task<RequestResult<PublicLabTestKit>> RegisterLabTestKitAsync(PublicLabTestKit testKit)
         {
             RequestResult<PublicLabTestKit> requestResult = InitializeResult<PublicLabTestKit>(testKit);
-            if (PhnValidator.IsValid(testKit.Phn))
+            bool validated;
+            if (!string.IsNullOrEmpty(testKit.Phn))
+            {
+                validated = PhnValidator.IsValid(testKit.Phn) &&
+                            string.IsNullOrEmpty(testKit.StreetAddress) &&
+                            string.IsNullOrEmpty(testKit.City) &&
+                            string.IsNullOrEmpty(testKit.PostalOrZip);
+            }
+            else
+            {
+                validated = !string.IsNullOrEmpty(testKit.StreetAddress) &&
+                            !string.IsNullOrEmpty(testKit.City) &&
+                            !string.IsNullOrEmpty(testKit.PostalOrZip);
+            }
+
+            if (validated)
             {
                 // Use a system token
                 string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
@@ -89,7 +104,7 @@ namespace HealthGateway.Laboratory.Services
             }
             else
             {
-                requestResult.ResultError = ErrorTranslator.ActionRequired("The PHN is invalid", ActionType.Validation);
+                requestResult.ResultError = ErrorTranslator.ActionRequired("Form data did not pass validation", ActionType.Validation);
                 requestResult.ResultStatus = ResultType.ActionRequired;
             }
 
