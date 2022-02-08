@@ -3,6 +3,7 @@ import VueRouter, {
     NavigationGuardNext,
     Route,
 } from "vue-router";
+import { Position, PositionResult } from "vue-router/types/router";
 
 import { Dictionary } from "@/models/baseTypes";
 import { SnowplowWindow } from "@/plugins/extensions";
@@ -454,9 +455,22 @@ function getDefaultPath(
     }
 }
 
+function scrollBehaviour(
+    to: Route,
+    from: Route,
+    savedPosition: void | Position
+): PositionResult {
+    if (savedPosition) {
+        return savedPosition;
+    } else {
+        return { x: 0, y: 0 };
+    }
+}
+
 const router = new VueRouter({
     mode: "history",
     routes,
+    scrollBehavior: scrollBehaviour,
 });
 
 router.beforeEach(beforeEachGuard);
