@@ -42,6 +42,14 @@ export default class ErrorTranslator {
         };
     }
 
+    public static moduleDisabledError(service: ServiceName): ResultError {
+        return {
+            errorCode: "ClientApp-I-" + service,
+            resultMessage: "Module Disabled",
+            traceId: "",
+        };
+    }
+
     private static getErrorTitle(
         errorType: ErrorType,
         source: ErrorSourceType
