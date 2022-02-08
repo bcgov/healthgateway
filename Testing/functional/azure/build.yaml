@@ -16,7 +16,7 @@ variables:
 jobs:
   - job: "PackageTests"
     pool:
-      name: "HealthGateway"
+      name: "ubuntu-20.04"
     displayName: "Packaging Functional Tests"
     steps:
       - script: |
