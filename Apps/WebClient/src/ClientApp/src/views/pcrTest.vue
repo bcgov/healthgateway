@@ -264,7 +264,9 @@ export default class PcrTestView extends Vue {
             !this.oidcIsAuthenticated
         ) {
             this.loading = true;
-            this.oidcLogin(this.identityProviders[0].hint).finally(
+            // don't need to reset loading property if login succeeds
+            // since redirect will kick in and component will be recreated after
+            this.oidcLogin(this.identityProviders[0].hint).catch(
                 () => (this.loading = false)
             );
         }
