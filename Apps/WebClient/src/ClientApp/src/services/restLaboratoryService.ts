@@ -48,7 +48,9 @@ export class RestLaboratoryService implements ILaboratoryService {
     ): Promise<RequestResult<PublicCovidTestResponseResult>> {
         return new Promise((resolve, reject) => {
             if (!this.isCovid19Enabled) {
-                reject();
+                reject(
+                    ErrorTranslator.moduleDisabledError(ServiceName.Laboratory)
+                );
                 return;
             }
             const headers: Dictionary<string> = {};
