@@ -5,12 +5,12 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import EventBus, { EventMessageName } from "@/eventbus";
-import BannerError from "@/models/bannerError";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
+import { ResultError } from "@/models/requestResult";
 import User from "@/models/user";
 import UserNote from "@/models/userNote";
-import ErrorTranslator from "@/utility/errorTranslator";
 
 import EntrycardTimelineComponent from "./entrycard.vue";
 
@@ -23,7 +23,11 @@ library.add(faEdit, faEllipsisV);
 })
 export default class NoteTimelineComponent extends Vue {
     @Action("addError", { namespace: "errorBanner" })
-    addError!: (error: BannerError) => void;
+    addError!: (params: {
+        errorType: ErrorType;
+        source: ErrorSourceType;
+        traceId: string | undefined;
+    }) => void;
 
     @Action("deleteNote", { namespace: "note" })
     deleteNote!: (params: { hdid: string; note: UserNote }) => Promise<void>;
@@ -50,10 +54,12 @@ export default class NoteTimelineComponent extends Vue {
                 hdid: this.user.hdid,
                 note: this.entry.toModel(),
             })
-                .catch((err) => {
-                    this.addError(
-                        ErrorTranslator.toBannerError("Delete Note Error", err)
-                    );
+                .catch((err: ResultError) => {
+                    this.addError({
+                        errorType: ErrorType.Delete,
+                        source: ErrorSourceType.Note,
+                        traceId: err.traceId,
+                    });
                 })
                 .finally(() => {
                     this.isSaving = false;

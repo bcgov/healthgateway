@@ -1,3 +1,4 @@
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
@@ -36,15 +37,21 @@ export const actions: NoteActions = {
                     .getNotes(params.hdid)
                     .then((result) => {
                         if (result.resultStatus === ResultType.Error) {
-                            context.dispatch("handleError", result.resultError);
+                            context.dispatch("handleError", {
+                                error: result.resultError,
+                                errorType: ErrorType.Retrieve,
+                            });
                             reject(result.resultError);
                         } else {
                             context.commit("setNotes", result.resourcePayload);
                             resolve(result);
                         }
                     })
-                    .catch((error) => {
-                        context.dispatch("handleError", error);
+                    .catch((error: ResultError) => {
+                        context.dispatch("handleError", {
+                            error,
+                            errorType: ErrorType.Retrieve,
+                        });
                         reject(error);
                     });
             }
@@ -65,8 +72,11 @@ export const actions: NoteActions = {
                     context.commit("addNote", result);
                     resolve(result);
                 })
-                .catch((error) => {
-                    context.dispatch("handleError", error);
+                .catch((error: ResultError) => {
+                    context.dispatch("handleError", {
+                        error,
+                        errorType: ErrorType.Create,
+                    });
                     reject(error);
                 });
         });
@@ -85,8 +95,11 @@ export const actions: NoteActions = {
                     context.commit("updateNote", result);
                     resolve(result);
                 })
-                .catch((error) => {
-                    context.dispatch("handleError", error);
+                .catch((error: ResultError) => {
+                    context.dispatch("handleError", {
+                        error,
+                        errorType: ErrorType.Update,
+                    });
                     reject(error);
                 });
         });
@@ -105,20 +118,27 @@ export const actions: NoteActions = {
                     context.commit("deleteNote", params.note);
                     resolve();
                 })
-                .catch((error) => {
-                    context.dispatch("handleError", error);
+                .catch((error: ResultError) => {
+                    context.dispatch("handleError", {
+                        error,
+                        errorType: ErrorType.Delete,
+                    });
                     reject(error);
                 });
         });
     },
-    handleError(context, error: ResultError) {
+    handleError(context, params: { error: ResultError; errorType: ErrorType }) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-        logger.error(`ERROR: ${JSON.stringify(error)}`);
-        context.commit("noteError", error);
+        logger.error(`ERROR: ${JSON.stringify(params.error)}`);
+        context.commit("noteError", params.error);
         context.dispatch(
-            "errorBanner/addResultError",
-            { message: "Fetch Notes Error", error },
+            "errorBanner/addError",
+            {
+                errorType: params.errorType,
+                source: ErrorSourceType.Note,
+                traceId: params.error.traceId,
+            },
             { root: true }
         );
     },

@@ -7,6 +7,7 @@ import {
     MutationTree,
 } from "vuex";
 
+import { ErrorType } from "@/constants/errorType";
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
 import { ResultError } from "@/models/requestResult";
@@ -37,29 +38,32 @@ export interface UserGetters extends GetterTree<UserState, RootState> {
     isLoading(state: UserState): boolean;
 }
 
-type UserContext = ActionContext<UserState, RootState>;
+type StoreContext = ActionContext<UserState, RootState>;
 export interface UserActions extends ActionTree<UserState, RootState> {
-    checkRegistration(context: UserContext): Promise<boolean>;
+    checkRegistration(context: StoreContext): Promise<boolean>;
     updateUserEmail(
-        context: UserContext,
+        context: StoreContext,
         params: { emailAddress: string }
     ): Promise<void>;
     updateSMSResendDateTime(
-        context: UserContext,
+        context: StoreContext,
         params: { dateTime: DateWrapper }
     ): void;
     updateUserPreference(
-        context: UserContext,
+        context: StoreContext,
         params: { userPreference: UserPreference }
     ): Promise<void>;
     createUserPreference(
-        context: UserContext,
+        context: StoreContext,
         params: { userPreference: UserPreference }
     ): Promise<void>;
-    closeUserAccount(context: UserContext): Promise<void>;
-    recoverUserAccount(context: UserContext): Promise<void>;
-    getPatientData(context: UserContext): Promise<void>;
-    handleError(context: UserContext, error: ResultError): void;
+    closeUserAccount(context: StoreContext): Promise<void>;
+    recoverUserAccount(context: StoreContext): Promise<void>;
+    retrievePatientData(context: StoreContext): Promise<void>;
+    handleError(
+        context: StoreContext,
+        params: { error: ResultError; errorType: ErrorType }
+    ): void;
 }
 
 export interface UserMutation extends MutationTree<UserState> {

@@ -42,4 +42,10 @@ export const getters: NavbarGetters = {
             !isOffline && isAuthenticated && isValid && isRegistered && isActive
         );
     },
+    isHeaderButtonShown(state: NavbarState): boolean {
+        return state.isHeaderButtonShown;
+    },
+    isSidebarButtonShown(state: NavbarState): boolean {
+        return state.isSidebarButtonShown;
+    },
 };

@@ -1,4 +1,4 @@
-import { StringISODate, StringISODateTime } from "@/models/dateWrapper";
+import { StringISODateTime } from "@/models/dateWrapper";
 
 // result model for retrieving COVID-19 lab orders
 export interface Covid19LaboratoryOrderResult {

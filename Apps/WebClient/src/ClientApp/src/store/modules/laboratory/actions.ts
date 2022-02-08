@@ -1,6 +1,7 @@
 import { ActionType } from "@/constants/actionType";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
-import BannerError from "@/models/bannerError";
+import { CustomBannerError } from "@/models/bannerError";
 import { StringISODate } from "@/models/dateWrapper";
 import {
     Covid19LaboratoryOrder,
@@ -89,31 +90,25 @@ export const actions: LaboratoryActions = {
                             }, payload.retryin);
                             resolve(result);
                         } else {
-                            context.dispatch(
-                                "handleCovid19LaboratoryError",
-                                result.resultError
-                            );
+                            context.dispatch("handleError", {
+                                error: result.resultError,
+                                errorType: ErrorType.Retrieve,
+                                errorSourceType:
+                                    ErrorSourceType.Covid19Laboratory,
+                            });
                             reject(result.resultError);
                         }
                     })
-                    .catch((error) => {
-                        context.dispatch("handleCovid19LaboratoryError", error);
+                    .catch((error: ResultError) => {
+                        context.dispatch("handleError", {
+                            error,
+                            errorType: ErrorType.Retrieve,
+                            errorSourceType: ErrorSourceType.Covid19Laboratory,
+                        });
                         reject(error);
                     });
             }
         });
-    },
-    handleCovid19LaboratoryError(context, error: ResultError) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
-        logger.error(`ERROR: ${JSON.stringify(error)}`);
-        context.commit("covid19LaboratoryError", error);
-
-        context.dispatch(
-            "errorBanner/addResultError",
-            { message: "Fetch COVID-19 Laboratory Orders Error", error },
-            { root: true }
-        );
     },
     retrieveLaboratoryOrders(
         context,
@@ -175,29 +170,55 @@ export const actions: LaboratoryActions = {
                             }, payload.retryin);
                             resolve(result);
                         } else {
-                            context.dispatch(
-                                "handleLaboratoryError",
-                                result.resultError
-                            );
+                            context.dispatch("handleError", {
+                                error: result.resultError,
+                                errorType: ErrorType.Retrieve,
+                                errorSourceType: ErrorSourceType.Laboratory,
+                            });
                             reject(result.resultError);
                         }
                     })
-                    .catch((error) => {
-                        context.dispatch("handleLaboratoryError", error);
+                    .catch((error: ResultError) => {
+                        context.dispatch("handleError", {
+                            error,
+                            errorType: ErrorType.Retrieve,
+                            errorSourceType: ErrorSourceType.Laboratory,
+                        });
                         reject(error);
                     });
             }
         });
     },
-    handleLaboratoryError(context, error: ResultError) {
+    handleError(
+        context,
+        params: {
+            error: ResultError;
+            errorType: ErrorType;
+            errorSourceType: ErrorSourceType;
+        }
+    ) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-        logger.error(`ERROR: ${JSON.stringify(error)}`);
-        context.commit("laboratoryError", error);
+        logger.error(`ERROR: ${JSON.stringify(params.error)}`);
+
+        switch (params.errorSourceType) {
+            case ErrorSourceType.Laboratory:
+                context.commit("laboratoryError", params.error);
+                break;
+            case ErrorSourceType.Covid19Laboratory:
+                context.commit("covid19LaboratoryError", params.error);
+                break;
+            default:
+                break;
+        }
 
         context.dispatch(
-            "errorBanner/addResultError",
-            { message: "Fetch Laboratory Orders Error", error },
+            "errorBanner/addError",
+            {
+                errorType: params.errorType,
+                source: params.errorSourceType,
+                traceId: params.error.traceId,
+            },
             { root: true }
         );
     },
@@ -261,7 +282,7 @@ export const actions: LaboratoryActions = {
                         reject(result.resultError);
                     }
                 })
-                .catch((error) => {
+                .catch((error: ResultError) => {
                     context.dispatch("handlePublicCovidTestsError", error);
                     reject(error);
                 });
@@ -271,23 +292,24 @@ export const actions: LaboratoryActions = {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(error)}`);
-        const bannerError: BannerError = {
+        const customBannerError: CustomBannerError = {
             title: "Our Apologies",
             description:
                 "We've found an issue and the Health Gateway team is working hard to fix it.",
-            detail: "",
-            errorCode: "",
         };
 
         if (error.actionCode === ActionType.DataMismatch) {
-            bannerError.title = "Data Mismatch";
-            bannerError.description =
+            customBannerError.title = "Data Mismatch";
+            customBannerError.description =
                 "The information you entered does not match our records. Please try again.";
-            bannerError.detail =
+            customBannerError.detail =
                 "Please note that it can take up to 48 hours from the time of test before a result is available. If it has been at least 48 hours since you tested, please contact the COVID-19 Results Line (1‐833‐707‐2792) to investigate the issue.";
         }
 
-        context.commit("setPublicCovidTestResponseResultError", bannerError);
+        context.commit(
+            "setPublicCovidTestResponseResultError",
+            customBannerError
+        );
     },
     resetPublicCovidTestResponseResult(context) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
