@@ -51,12 +51,13 @@ namespace HealthGateway.WebClient.Controllers
         /// <param name="hdid">The user hdid.</param>
         /// <param name="comment">The Comment request model.</param>
         /// <response code="200">The comment record was saved.</response>
+        /// <response code="400">The request is bad.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Route("{hdid}/[controller]")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult Create(string hdid, [FromBody] UserComment comment)
+        public ActionResult<RequestResult<UserComment>> Create(string hdid, [FromBody] UserComment comment)
         {
             if (comment == null)
             {
@@ -66,8 +67,7 @@ namespace HealthGateway.WebClient.Controllers
             comment.UserProfileId = hdid;
             comment.CreatedBy = hdid;
             comment.UpdatedBy = hdid;
-            RequestResult<UserComment> result = this.commentService.Add(comment);
-            return new JsonResult(result);
+            return this.commentService.Add(comment);
         }
 
         /// <summary>
@@ -77,12 +77,13 @@ namespace HealthGateway.WebClient.Controllers
         /// <param name="hdid">The user hdid.</param>
         /// <param name="comment">The Comment to be updated.</param>
         /// <response code="200">The comment was saved.</response>
+        /// <response code="400">The request is bad.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
         [Route("{hdid}/[controller]")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult Update(string hdid, [FromBody] UserComment comment)
+        public ActionResult<RequestResult<UserComment>> Update(string hdid, [FromBody] UserComment comment)
         {
             if (comment == null)
             {
@@ -95,8 +96,7 @@ namespace HealthGateway.WebClient.Controllers
             }
 
             comment.UpdatedBy = hdid;
-            RequestResult<UserComment> result = this.commentService.Update(comment);
-            return new JsonResult(result);
+            return this.commentService.Update(comment);
         }
 
         /// <summary>
@@ -106,20 +106,20 @@ namespace HealthGateway.WebClient.Controllers
         /// <param name="hdid">The user hdid.</param>
         /// <param name="comment">The comment to be deleted.</param>
         /// <response code="200">The note was deleted.</response>
+        /// <response code="400">The request is bad.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
         [Route("{hdid}/[controller]")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult Delete(string hdid, [FromBody] UserComment comment)
+        public ActionResult<RequestResult<UserComment>> Delete(string hdid, [FromBody] UserComment comment)
         {
             if (comment.UserProfileId != hdid)
             {
                 return new ForbidResult();
             }
 
-            RequestResult<UserComment> result = this.commentService.Delete(comment);
-            return new JsonResult(result);
+            return this.commentService.Delete(comment);
         }
 
         /// <summary>
@@ -134,10 +134,9 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}/[controller]/Entry")]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        public IActionResult GetAllForEntry(string hdid, [FromQuery] string parentEntryId)
+        public RequestResult<IEnumerable<UserComment>> GetAllForEntry(string hdid, [FromQuery] string parentEntryId)
         {
-            RequestResult<IEnumerable<UserComment>> result = this.commentService.GetEntryComments(hdid, parentEntryId);
-            return new JsonResult(result);
+            return this.commentService.GetEntryComments(hdid, parentEntryId);
         }
 
         /// <summary>
@@ -151,10 +150,9 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}/[controller]")]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        public IActionResult GetAll(string hdid)
+        public RequestResult<IDictionary<string, IEnumerable<UserComment>>> GetAll(string hdid)
         {
-            RequestResult<IDictionary<string, IEnumerable<UserComment>>> result = this.commentService.GetProfileComments(hdid);
-            return new JsonResult(result);
+            return this.commentService.GetProfileComments(hdid);
         }
     }
 }

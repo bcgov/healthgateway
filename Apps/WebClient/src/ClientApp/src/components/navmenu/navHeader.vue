@@ -52,6 +52,12 @@ export default class HeaderComponent extends Vue {
     @Getter("isSidebarShown", { namespace: "navbar" })
     isSidebarShown!: boolean;
 
+    @Getter("isHeaderButtonShown", { namespace: "navbar" })
+    isHeaderButtonShown!: boolean;
+
+    @Getter("isSidebarButtonShown", { namespace: "navbar" })
+    isSidebarButtonShown!: boolean;
+
     @Getter("user", { namespace: "user" })
     user!: User;
 
@@ -172,7 +178,7 @@ export default class HeaderComponent extends Vue {
         <b-navbar toggleable="md" type="dark">
             <!-- Hamburger toggle -->
             <hg-button
-                v-if="isSidebarShown && isMobileWidth"
+                v-if="isSidebarShown && isMobileWidth && isSidebarButtonShown"
                 class="mr-2"
                 variant="icon"
                 @click="handleToggleClick"
@@ -218,7 +224,7 @@ export default class HeaderComponent extends Vue {
             <!-- Navbar links -->
             <b-navbar-nav class="ml-auto">
                 <b-nav-item-dropdown
-                    v-if="oidcIsAuthenticated"
+                    v-if="oidcIsAuthenticated && isHeaderButtonShown"
                     id="menuBtnLogout"
                     menu-class="drop-menu-position"
                     data-testid="headerDropdownBtn"
@@ -284,7 +290,7 @@ export default class HeaderComponent extends Vue {
                 </b-nav-item-dropdown>
 
                 <router-link
-                    v-else-if="!isOffline"
+                    v-else-if="!isOffline && isHeaderButtonShown"
                     id="menuBtnLogin"
                     data-testid="loginBtn"
                     class="nav-link d-flex align-items-center"

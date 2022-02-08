@@ -134,9 +134,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             userFeedbackServiceMock.Setup(s => s.CreateRating(It.IsAny<Rating>())).Returns(expectedResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
-            IActionResult actualResult = controller.CreateRating(rating);
+            RequestResult<Rating> actualResult = controller.CreateRating(rating);
 
-            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
+            expectedResult.ShouldDeepEqual(actualResult);
         }
     }
 }

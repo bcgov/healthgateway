@@ -1,5 +1,7 @@
 /* eslint-disable */
 const CompressionPlugin = require("compression-webpack-plugin");
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+
 module.exports = {
     productionSourceMap: false,
     lintOnSave: true,
@@ -29,5 +31,12 @@ module.exports = {
             options[0].include = "allChunks";
             return options;
         });
+
+        config.plugin('fork-ts-checker')
+            .tap(args => {
+                let allowUseMem=1024;
+                args[0].memoryLimit = allowUseMem;
+                return args
+            });
     },
 };

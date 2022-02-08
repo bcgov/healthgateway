@@ -44,6 +44,14 @@ namespace HealthGateway.Common.AspNetConfiguration
         }
 
         /// <summary>
+        /// Gets the startup configuration.
+        /// </summary>
+        public IConfiguration Configuration
+        {
+            get => this.configuration;
+        }
+
+        /// <summary>
         /// Gets the Startup Logger.
         /// </summary>
         public ILogger Logger { get; private set; }

@@ -6,6 +6,8 @@ import { NavbarModule, NavbarState } from "./types";
 const state: NavbarState = {
     isSidebarOpen: false,
     isHeaderShown: true,
+    isHeaderButtonShown: true,
+    isSidebarButtonShown: true,
 };
 
 const namespaced = true;

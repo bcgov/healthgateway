@@ -23,6 +23,8 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Services;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -32,12 +34,21 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     /// </summary>
     public class AuthenticationDelegate : IAuthenticationDelegate
     {
-        private const string AuthConfigSectionName = "AuthCache";
+        /// <summary>
+        /// The default configuration section to retrieve auth information from.
+        /// </summary>
+        public const string DefaultAuthConfigSectionName = "ClientAuthentication";
+
+        private const string CacheConfigSectionName = "AuthCache";
 
         private readonly ILogger<IAuthenticationDelegate> logger;
         private readonly IHttpClientService httpClientService;
+        private readonly IConfiguration? configuration;
         private readonly IMemoryCache? memoryCache;
         private readonly int tokenCacheMinutes;
+        private readonly IHttpContextAccessor? httpContextAccessor;
+        private readonly ClientCredentialsTokenRequest tokenRequest;
+        private readonly Uri tokenUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticationDelegate"/> class.
@@ -46,17 +57,23 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="memoryCache">The injected memory cache provider.</param>
+        /// <param name="httpContextAccessor">The Http Context accessor.</param>
         public AuthenticationDelegate(
             ILogger<IAuthenticationDelegate> logger,
             IHttpClientService httpClientService,
             IConfiguration? configuration,
-            IMemoryCache? memoryCache)
+            IMemoryCache? memoryCache,
+            IHttpContextAccessor? httpContextAccessor)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
-            IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
-            this.tokenCacheMinutes = configSection?.GetValue<int>("TokenCacheExpireMinutes", 0) ?? 0;
+            this.configuration = configuration;
             this.memoryCache = memoryCache;
+            this.httpContextAccessor = httpContextAccessor;
+
+            IConfigurationSection? configSection = configuration?.GetSection(CacheConfigSectionName);
+            this.tokenCacheMinutes = configSection?.GetValue<int>("TokenCacheExpireMinutes", 0) ?? 0;
+            (this.tokenUri, this.tokenRequest) = this.GetConfiguration(DefaultAuthConfigSectionName);
         }
 
         /// <inheritdoc/>
@@ -72,6 +89,35 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             }
 
             return jwtModel;
+        }
+
+        /// <inheritdoc/>
+        public string? AccessTokenAsUser()
+        {
+            return this.AccessTokenAsUser(this.tokenUri, this.tokenRequest);
+        }
+
+        /// <inheritdoc/>
+        public string? AccessTokenAsUser(string sectionName)
+        {
+            (Uri tokenUri, ClientCredentialsTokenRequest tokenRequest) = this.GetConfiguration(sectionName);
+            return this.AccessTokenAsUser(tokenUri, tokenRequest);
+        }
+
+        /// <inheritdoc/>
+        public string? AccessTokenAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = true)
+        {
+            string? accessToken = null;
+            try
+            {
+                accessToken = this.AuthenticateAsUser(tokenUri, tokenRequest, cacheEnabled)?.AccessToken;
+            }
+            catch (InvalidOperationException e)
+            {
+                this.logger.LogDebug($"Internal issue - returning null access token {e}");
+            }
+
+            return accessToken;
         }
 
         /// <inheritdoc/>
@@ -128,6 +174,23 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             return (jwtModel, cached);
         }
 
+        /// <inheritdoc/>
+        public string? FetchAuthenticatedUserToken()
+        {
+            HttpContext? httpContext = this.httpContextAccessor?.HttpContext;
+            string? accessToken = httpContext.GetTokenAsync("access_token").Result;
+            return accessToken;
+        }
+
+        private (Uri TokenUri, ClientCredentialsTokenRequest TokenRequest) GetConfiguration(string sectionName)
+        {
+            IConfigurationSection? configSection = this.configuration?.GetSection(sectionName);
+            Uri configUri = configSection.GetValue<Uri>(@"TokenUri");
+            ClientCredentialsTokenRequest configTokenRequest = new();
+            configSection.Bind(configTokenRequest); // Client ID, Client Secret, Audience, Username, Password
+            return (configUri, configTokenRequest);
+        }
+
         private JWTModel? ClientCredentialsGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
             JWTModel? authModel = null;
@@ -154,6 +217,10 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse)!;
             }
             catch (HttpRequestException e)
+            {
+                this.logger.LogError($"Error Message {e.Message}");
+            }
+            catch (InvalidOperationException e)
             {
                 this.logger.LogError($"Error Message {e.Message}");
             }
@@ -193,6 +260,10 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 }
             }
             catch (HttpRequestException e)
+            {
+                this.logger.LogError($"Error Message {e.Message}");
+            }
+            catch (InvalidOperationException e)
             {
                 this.logger.LogError($"Error Message {e.Message}");
             }

@@ -63,10 +63,9 @@ namespace HealthGateway.WebClient.Test.Controllers
                 new Mock<ILogger<UserProfileController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
-            IActionResult actualResult = dependentController.GetAll(this.hdid);
+            RequestResult<IEnumerable<DependentModel>> actualResult = dependentController.GetAll(this.hdid);
 
-            Assert.IsType<JsonResult>(actualResult);
-            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
+            expectedResult.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -101,9 +100,9 @@ namespace HealthGateway.WebClient.Test.Controllers
                 new Mock<ILogger<UserProfileController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
-            IActionResult actualResult = dependentController.AddDependent(new AddDependentRequest());
+            RequestResult<DependentModel> actualResult = dependentController.AddDependent(new AddDependentRequest());
 
-            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
+            expectedResult.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -131,10 +130,8 @@ namespace HealthGateway.WebClient.Test.Controllers
                 new Mock<ILogger<UserProfileController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
-            IActionResult actualResult = dependentController.Delete(delegateId, dependentId, dependentModel);
-
-            Assert.IsType<JsonResult>(actualResult);
-            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
+            ActionResult<RequestResult<DependentModel>> actualResult = dependentController.Delete(delegateId, dependentId, dependentModel);
+            expectedResult.ShouldDeepEqual(actualResult.Value);
         }
 
         /// <summary>
@@ -163,9 +160,9 @@ namespace HealthGateway.WebClient.Test.Controllers
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
 
-            IActionResult actualResult = dependentController.Delete("anotherId", "wrongId", dependentModel);
+            ActionResult<RequestResult<DependentModel>> actualResult = dependentController.Delete("anotherId", "wrongId", dependentModel);
 
-            Assert.IsType<BadRequestResult>(actualResult);
+            Assert.IsType<BadRequestResult>(actualResult.Result);
         }
 
         private static IEnumerable<DependentModel> GetMockDependends()

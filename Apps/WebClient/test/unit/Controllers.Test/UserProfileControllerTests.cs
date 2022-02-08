@@ -51,10 +51,9 @@ namespace HealthGateway.WebClient.Test.Controllers
         public void ShouldGetUserProfile()
         {
             RequestResult<UserProfileModel> expected = this.GetUserProfileExpectedRequestResultMock(ResultType.Success);
-            IActionResult actualResult = this.GetUserProfile(expected, new Dictionary<string, UserPreferenceModel>() { });
+            RequestResult<UserProfileModel> actualResult = this.GetUserProfile(expected, new Dictionary<string, UserPreferenceModel>() { });
 
-            Assert.IsType<JsonResult>(actualResult);
-            expected.ShouldDeepEqual(((JsonResult)actualResult).Value);
+            expected.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -65,15 +64,12 @@ namespace HealthGateway.WebClient.Test.Controllers
         {
             RequestResult<UserProfileModel> expected = this.GetUserProfileExpectedRequestResultMock(ResultType.Success);
 
-            IActionResult actualResult = this.GetUserProfile(expected, null);
+            RequestResult<UserProfileModel> actualResult = this.GetUserProfile(expected, null);
 
-            Assert.IsType<JsonResult>(actualResult);
-            JsonResult? jsonResult = actualResult as JsonResult;
-            RequestResult<UserProfileModel>? reqResult = jsonResult?.Value as RequestResult<UserProfileModel>;
-            Assert.NotNull(reqResult);
-            Assert.Equal(ResultType.Success, reqResult?.ResultStatus);
-            Assert.NotNull(reqResult?.ResourcePayload);
-            Assert.Empty(reqResult?.ResourcePayload?.Preferences);
+            Assert.NotNull(actualResult);
+            Assert.Equal(ResultType.Success, actualResult?.ResultStatus);
+            Assert.NotNull(actualResult?.ResourcePayload);
+            Assert.Empty(actualResult?.ResourcePayload?.Preferences);
         }
 
         /// <summary>
@@ -114,10 +110,8 @@ namespace HealthGateway.WebClient.Test.Controllers
                 emailServiceMock.Object,
                 smsServiceMock.Object);
 
-            IActionResult actualResult = await service.CreateUserProfile(this.hdid, createUserRequest).ConfigureAwait(true);
-
-            Assert.IsType<JsonResult>(actualResult);
-            expected.ShouldDeepEqual(((JsonResult)actualResult).Value);
+            ActionResult<RequestResult<UserProfileModel>> actualResult = await service.CreateUserProfile(this.hdid, createUserRequest).ConfigureAwait(true);
+            expected.ShouldDeepEqual(actualResult.Value);
         }
 
         /// <summary>
@@ -140,10 +134,9 @@ namespace HealthGateway.WebClient.Test.Controllers
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object);
 
-            IActionResult actualResult = await controller.Validate(this.hdid).ConfigureAwait(true);
+            PrimitiveRequestResult<bool> actualResult = await controller.Validate(this.hdid).ConfigureAwait(true);
 
-            Assert.IsType<JsonResult>(actualResult);
-            Assert.Equal(expected, ((JsonResult)actualResult).Value);
+            Assert.Equal(expected, actualResult);
         }
 
         /// <summary>
@@ -159,10 +152,9 @@ namespace HealthGateway.WebClient.Test.Controllers
                 Value = "Body value",
             };
 
-            IActionResult actualResult = this.CreateUserPreference(userPref);
+            ActionResult<RequestResult<UserPreferenceModel>> actualResult = this.CreateUserPreference(userPref);
 
-            Assert.IsType<JsonResult>(actualResult);
-            RequestResult<UserPreferenceModel>? reqResult = ((JsonResult)actualResult).Value as RequestResult<UserPreferenceModel>;
+            RequestResult<UserPreferenceModel>? reqResult = actualResult.Value;
             Assert.NotNull(reqResult);
             Assert.Equal(ResultType.Success, reqResult!.ResultStatus);
             Assert.Equal(this.hdid, reqResult.ResourcePayload!.HdId);
@@ -176,9 +168,9 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldCreateUserPreferenceWithBadRequestResultError()
         {
-            IActionResult actualResult = this.CreateUserPreference(null);
+            ActionResult<RequestResult<UserPreferenceModel>> actualResult = this.CreateUserPreference(null);
 
-            Assert.IsType<BadRequestResult>(actualResult);
+            Assert.IsType<BadRequestResult>(actualResult.Result);
         }
 
         /// <summary>
@@ -194,10 +186,9 @@ namespace HealthGateway.WebClient.Test.Controllers
                 Value = "Body value",
             };
 
-            IActionResult actualResult = this.UpdateUserPreference(userPref);
+            ActionResult<RequestResult<UserPreferenceModel>> actualResult = this.UpdateUserPreference(userPref);
 
-            Assert.IsType<JsonResult>(actualResult);
-            RequestResult<UserPreferenceModel>? reqResult = ((JsonResult)actualResult).Value as RequestResult<UserPreferenceModel>;
+            RequestResult<UserPreferenceModel>? reqResult = actualResult.Value;
             Assert.NotNull(reqResult);
             Assert.Equal(ResultType.Success, reqResult!.ResultStatus);
         }
@@ -208,9 +199,9 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldUpdateUserPreferenceWithBadRequestResultError()
         {
-            IActionResult actualResult = this.UpdateUserPreference(null);
+            ActionResult<RequestResult<UserPreferenceModel>> actualResult = this.UpdateUserPreference(null);
 
-            Assert.IsType<BadRequestResult>(actualResult);
+            Assert.IsType<BadRequestResult>(actualResult.Result);
         }
 
         /// <summary>
@@ -228,9 +219,9 @@ namespace HealthGateway.WebClient.Test.Controllers
                 Value = "Body value",
             };
 
-            IActionResult actualResult = this.UpdateUserPreference(userPref);
+            ActionResult<RequestResult<UserPreferenceModel>> actualResult = this.UpdateUserPreference(userPref);
 
-            Assert.IsType<BadRequestResult>(actualResult);
+            Assert.IsType<BadRequestResult>(actualResult.Result);
         }
 
         /// <summary>
@@ -246,9 +237,9 @@ namespace HealthGateway.WebClient.Test.Controllers
                 Value = "Body value",
             };
 
-            IActionResult actualResult = this.UpdateUserPreference(userPref);
+            ActionResult<RequestResult<UserPreferenceModel>> actualResult = this.UpdateUserPreference(userPref);
 
-            Assert.IsType<ForbidResult>(actualResult);
+            Assert.IsType<ForbidResult>(actualResult.Result);
         }
 
         /// <summary>
@@ -284,10 +275,8 @@ namespace HealthGateway.WebClient.Test.Controllers
                 emailServiceMock.Object,
                 smsServiceMock.Object);
 
-            IActionResult actualResult = service.GetLastTermsOfService();
-
-            Assert.IsType<JsonResult>(actualResult);
-            expectedResult.ShouldDeepEqual(((JsonResult)actualResult).Value);
+            RequestResult<TermsOfServiceModel> actualResult = service.GetLastTermsOfService();
+            expectedResult.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
@@ -307,10 +296,9 @@ namespace HealthGateway.WebClient.Test.Controllers
                 emailServiceMock.Object,
                 new Mock<IUserSMSService>().Object);
 
-            IActionResult actualResult = controller.UpdateUserEmail(this.hdid, "emailadd@hgw.ca");
+            bool actualResult = controller.UpdateUserEmail(this.hdid, "emailadd@hgw.ca");
 
-            object? userUpdated = (actualResult as JsonResult)?.Value;
-            Assert.True(userUpdated != null && (bool)userUpdated);
+            Assert.True(actualResult);
         }
 
         /// <summary>
@@ -338,10 +326,8 @@ namespace HealthGateway.WebClient.Test.Controllers
                 emailServiceMock.Object,
                 new Mock<IUserSMSService>().Object);
 
-            IActionResult actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
-
-            PrimitiveRequestResult<bool>? result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
-            Assert.Equal(ResultType.Success, result?.ResultStatus);
+            ActionResult<PrimitiveRequestResult<bool>> actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
+            Assert.Equal(ResultType.Success, actualResult.Value?.ResultStatus);
         }
 
         /// <summary>
@@ -368,10 +354,8 @@ namespace HealthGateway.WebClient.Test.Controllers
                 emailServiceMock.Object,
                 new Mock<IUserSMSService>().Object);
 
-            IActionResult actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
-
-            PrimitiveRequestResult<bool>? result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
-            Assert.Equal(ResultType.Error, result!.ResultStatus);
+            ActionResult<PrimitiveRequestResult<bool>> actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
+            Assert.Equal(ResultType.Error, actualResult.Value?.ResultStatus);
         }
 
         /// <summary>
@@ -391,10 +375,8 @@ namespace HealthGateway.WebClient.Test.Controllers
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object);
 
-            IActionResult actualResult = controller.UpdateUserSMSNumber(this.hdid, "250 123 456");
-
-            object? smsUpdated = (actualResult as JsonResult)?.Value;
-            Assert.True(smsUpdated != null && (bool)smsUpdated);
+            bool actualResult = controller.UpdateUserSMSNumber(this.hdid, "250 123 456");
+            Assert.True(actualResult);
         }
 
         /// <summary>
@@ -420,9 +402,9 @@ namespace HealthGateway.WebClient.Test.Controllers
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object);
 
-            IActionResult actualResult = Task.Run(async () => await controller.ValidateSMS(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
+            ActionResult<PrimitiveRequestResult<bool>> actualResult = Task.Run(async () => await controller.ValidateSMS(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
 
-            PrimitiveRequestResult<bool>? result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
+            PrimitiveRequestResult<bool>? result = actualResult?.Value;
             Assert.Equal(ResultType.Success, result?.ResultStatus);
             Assert.Equal(true, result?.ResourcePayload);
         }
@@ -450,9 +432,9 @@ namespace HealthGateway.WebClient.Test.Controllers
                 new Mock<IUserEmailService>().Object,
                 smsServiceMock.Object);
 
-            IActionResult actualResult = Task.Run(async () => await controller.ValidateSMS(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
+            ActionResult<PrimitiveRequestResult<bool>> actualResult = Task.Run(async () => await controller.ValidateSMS(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
 
-            PrimitiveRequestResult<bool>? result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
+            PrimitiveRequestResult<bool>? result = actualResult.Value;
             Assert.Equal(ResultType.Success, result?.ResultStatus);
             Assert.Equal(false, result?.ResourcePayload);
         }
@@ -514,7 +496,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             };
         }
 
-        private IActionResult GetUserProfile(
+        private RequestResult<UserProfileModel> GetUserProfile(
             RequestResult<UserProfileModel> expected,
             Dictionary<string, UserPreferenceModel>? userPreferencePayloadMock)
         {
@@ -538,7 +520,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             return service.GetUserProfile(this.hdid);
         }
 
-        private IActionResult UpdateUserPreference(UserPreferenceModel? userPref)
+        private ActionResult<RequestResult<UserPreferenceModel>> UpdateUserPreference(UserPreferenceModel? userPref)
         {
             // Setup
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
@@ -564,7 +546,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             return service.UpdateUserPreference(this.hdid, userPref);
         }
 
-        private IActionResult CreateUserPreference(UserPreferenceModel? userPref)
+        private ActionResult<RequestResult<UserPreferenceModel>> CreateUserPreference(UserPreferenceModel? userPref)
         {
             // Setup
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
