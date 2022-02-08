@@ -7,6 +7,7 @@ export const enum VerificationType {
 
 export default interface MessageVerification {
     id: string;
+    personalHealthNumber: string;
     userProfileId: string;
     validated: boolean;
     emailId?: string;
