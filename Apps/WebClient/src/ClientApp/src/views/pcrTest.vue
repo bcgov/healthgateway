@@ -672,6 +672,7 @@ export default class PcrTestView extends Vue {
                                             "
                                             aria-label="First name is required"
                                             force-show
+                                            data-testid="first-name-is-required"
                                         >
                                             First name is required.
                                         </b-form-invalid-feedback>
@@ -702,6 +703,7 @@ export default class PcrTestView extends Vue {
                                             "
                                             aria-label="Last name is required"
                                             force-show
+                                            data-testid="last-name-is-required"
                                         >
                                             Last name is required.
                                         </b-form-invalid-feedback>
@@ -737,6 +739,7 @@ export default class PcrTestView extends Vue {
                                             <b-form-invalid-feedback
                                                 aria-label="Valid PHN is required"
                                                 :state="isValid($v.pcrTest.phn)"
+                                                data-testid="phn-is-required"
                                             >
                                                 Valid PHN is required.
                                             </b-form-invalid-feedback>
@@ -929,6 +932,7 @@ export default class PcrTestView extends Vue {
                                         "
                                         aria-label="Invalid Date of Birth"
                                         force-show
+                                        data-testid="feedback-dob-is-valid"
                                     >
                                         Date of birth must be in the past.
                                     </b-form-invalid-feedback>
@@ -975,6 +979,7 @@ export default class PcrTestView extends Vue {
                                             "
                                             aria-label="Phone number must be valid."
                                             force-show
+                                            data-testid="feedback-phone-number-valid"
                                         >
                                             Phone number must be valid.
                                         </b-form-invalid-feedback>
