@@ -24,9 +24,11 @@ export default class ErrorTranslator {
         source: ErrorSourceType,
         traceId: string | undefined
     ): BannerError {
+        const formattedSource = this.formatSourceType(source, false, true);
+
         return {
             title,
-            source,
+            source: formattedSource,
             traceId,
         };
     }
