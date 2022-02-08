@@ -11,7 +11,7 @@ import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
-import BannerError from "@/models/bannerError";
+import { CustomBannerError } from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import {
     DateWrapper,
@@ -67,7 +67,7 @@ export default class PublicCovidTestView extends Vue {
     isPublicCovidTestResponseResultLoading!: boolean;
 
     @Getter("publicCovidTestResponseResultError", { namespace: "laboratory" })
-    publicCovidTestResponseResultError!: BannerError | undefined;
+    publicCovidTestResponseResultError!: CustomBannerError | undefined;
 
     @Getter("publicCovidTestResponseResultStatusMessage", {
         namespace: "laboratory",

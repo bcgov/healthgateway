@@ -47,7 +47,7 @@ const validPersonalHealthNumber = (value: string): boolean => {
 export default class PublicVaccineCardView extends Vue {
     private vaccinationStatusService!: IVaccinationStatusService;
 
-    @Action("retrieveVaccineStatus", { namespace: "vaccinationStatus" })
+    @Action("retrievePublicVaccineStatus", { namespace: "vaccinationStatus" })
     retrieveVaccineStatus!: (params: {
         phn: string;
         dateOfBirth: StringISODate;
@@ -64,19 +64,19 @@ export default class PublicVaccineCardView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
-    @Getter("vaccinationStatus", { namespace: "vaccinationStatus" })
+    @Getter("publicVaccinationStatus", { namespace: "vaccinationStatus" })
     status!: VaccinationStatus | undefined;
 
-    @Getter("isLoading", { namespace: "vaccinationStatus" })
+    @Getter("publicIsLoading", { namespace: "vaccinationStatus" })
     isVaccinationStatusLoading!: boolean;
 
-    @Getter("error", { namespace: "vaccinationStatus" })
+    @Getter("publicError", { namespace: "vaccinationStatus" })
     vaccinationStatusError!: BannerError | undefined;
 
     @Getter("publicVaccineRecordError", { namespace: "vaccinationStatus" })
-    publicVaccineRecordError!: BannerError | undefined;
+    vaccineRecordError!: BannerError | undefined;
 
-    @Getter("statusMessage", { namespace: "vaccinationStatus" })
+    @Getter("publicStatusMessage", { namespace: "vaccinationStatus" })
     statusMessage!: string;
 
     @Getter("publicVaccineRecord", { namespace: "vaccinationStatus" })
@@ -117,15 +117,15 @@ export default class PublicVaccineCardView extends Vue {
     private get bannerError(): BannerError | undefined {
         if (
             this.vaccinationStatusError !== undefined &&
-            this.publicVaccineRecordError === undefined
+            this.vaccineRecordError === undefined
         ) {
             return this.vaccinationStatusError;
         }
         if (
             this.vaccinationStatusError === undefined &&
-            this.publicVaccineRecordError !== undefined
+            this.vaccineRecordError !== undefined
         ) {
-            return this.publicVaccineRecordError;
+            return this.vaccineRecordError;
         }
     }
     private bcsclogo: string = Image06;

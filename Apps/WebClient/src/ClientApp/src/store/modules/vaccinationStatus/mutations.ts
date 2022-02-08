@@ -1,18 +1,19 @@
-import BannerError from "@/models/bannerError";
+import { CustomBannerError } from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
 
 import { VaccinationStatusMutations, VaccinationStatusState } from "./types";
 
 export const mutations: VaccinationStatusMutations = {
-    setRequested(state: VaccinationStatusState) {
+    setPublicRequested(state: VaccinationStatusState) {
         state.public.error = undefined;
         state.public.status = LoadStatus.REQUESTED;
         state.public.statusMessage = "";
     },
-    setVaccinationStatus(
+    setPublicVaccinationStatus(
         state: VaccinationStatusState,
         vaccinationStatus: VaccinationStatus
     ) {
@@ -23,13 +24,19 @@ export const mutations: VaccinationStatusMutations = {
         state.public.status = LoadStatus.LOADED;
         state.public.statusMessage = "";
     },
-    vaccinationStatusError(state: VaccinationStatusState, error: BannerError) {
+    publicVaccinationStatusError(
+        state: VaccinationStatusState,
+        error: CustomBannerError
+    ) {
         state.public.vaccinationStatus = undefined;
         state.public.error = error;
         state.public.status = LoadStatus.ERROR;
         state.public.statusMessage = "";
     },
-    setStatusMessage(state: VaccinationStatusState, statusMessage: string) {
+    setPublicStatusMessage(
+        state: VaccinationStatusState,
+        statusMessage: string
+    ) {
         state.public.statusMessage = statusMessage;
     },
     setPublicVaccineRecordRequested(state: VaccinationStatusState) {
@@ -48,7 +55,7 @@ export const mutations: VaccinationStatusMutations = {
     },
     setPublicVaccineRecordError(
         state: VaccinationStatusState,
-        error: BannerError
+        error: CustomBannerError
     ) {
         state.publicVaccineRecord.error = error;
         state.publicVaccineRecord.status = LoadStatus.ERROR;
@@ -77,7 +84,7 @@ export const mutations: VaccinationStatusMutations = {
     },
     authenticatedVaccinationStatusError(
         state: VaccinationStatusState,
-        error: BannerError
+        error: ResultError
     ) {
         state.authenticated.vaccinationStatus = undefined;
         state.authenticated.error = error;
@@ -107,7 +114,7 @@ export const mutations: VaccinationStatusMutations = {
     },
     setAuthenticatedVaccineRecordError(
         state: VaccinationStatusState,
-        error: BannerError
+        error: ResultError
     ) {
         state.authenticatedVaccineRecord.error = error;
         state.authenticatedVaccineRecord.status = LoadStatus.ERROR;

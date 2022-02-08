@@ -1,117 +1,98 @@
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BannerError from "@/models/bannerError";
-import { ErrorType, ServiceName } from "@/models/errorInterfaces";
+import { ServiceName } from "@/models/errorInterfaces";
 import { ResultError } from "@/models/requestResult";
 
 export default class ErrorTranslator {
+    public static toBannerError(
+        errorType: ErrorType,
+        source: ErrorSourceType,
+        traceId: string | undefined
+    ): BannerError {
+        const title = this.getErrorTitle(errorType, source);
+        const formattedSource = this.formatSourceType(source, false, true);
+
+        return {
+            title,
+            source: formattedSource,
+            traceId,
+        };
+    }
+
+    public static toCustomBannerError(
+        title: string,
+        source: ErrorSourceType,
+        traceId: string | undefined
+    ): BannerError {
+        return {
+            title,
+            source,
+            traceId,
+        };
+    }
+
     public static internalNetworkError(
         resultMessage: string,
         service: ServiceName
     ): ResultError {
         return {
-            errorCode:
-                "ClientApp-" + ErrorType.InternalCommunication + "-" + service,
+            errorCode: "ClientApp-CI-" + service,
             resultMessage: resultMessage,
             traceId: "",
         };
     }
 
-    public static toBannerError(
-        title: string,
-        error?: ResultError | string
-    ): BannerError {
-        const resultError = error as ResultError;
-        if (resultError?.errorCode) {
-            return {
-                title,
-                description: this.getDisplayMessage(resultError.errorCode),
-                detail: resultError.resultMessage,
-                errorCode: resultError.errorCode,
-                traceId: resultError.traceId,
-            };
-        } else if (typeof error == "string") {
-            return {
-                title,
-                description: error as string,
-                detail: "",
-                errorCode: "",
-                traceId: "",
-            };
-        } else {
-            return {
-                title,
-                description: "",
-                detail: "",
-                errorCode: "",
-                traceId: "",
-            };
-        }
-    }
+    private static getErrorTitle(
+        errorType: ErrorType,
+        source: ErrorSourceType
+    ): string {
+        const formattedSource = this.formatSourceType(
+            source,
+            errorType === ErrorType.Retrieve,
+            false
+        );
 
-    public static getDisplayMessage(errorCode: string): string {
-        if (errorCode !== undefined && errorCode.length > 0) {
-            const sections = errorCode.split("-");
-            if (sections.length === 1) {
-                return sections[0];
-            } else if (sections.length === 2) {
-                return (
-                    sections[0] +
-                    " got a " +
-                    this.getErrorType(sections[1]) +
-                    " Error."
-                );
-            } else if (sections.length === 3) {
-                return (
-                    sections[0] +
-                    " got a " +
-                    this.getErrorType(sections[1]) +
-                    " error while processing a " +
-                    this.getServiceName(sections[2]) +
-                    " request."
-                );
-            } else {
-                return errorCode;
-            }
-        }
-        return "Unknown Errror";
-    }
-
-    private static getErrorType(errorType: string): string {
         switch (errorType) {
-            case ErrorType.Concurreny:
-                return "Concurreny";
-            case ErrorType.ExternalCommunication:
-                return "External Communication";
-            case ErrorType.InternalCommunication:
-                return "Internal Communication";
-            case ErrorType.InvalidState:
-                return "Invalid State";
-            default:
-                return "Unknown";
+            case ErrorType.Create:
+                return "Unable to add " + formattedSource;
+            case ErrorType.Retrieve:
+                return "Unable to retrieve " + formattedSource;
+            case ErrorType.Update:
+                return "Unable to save changes to " + formattedSource;
+            case ErrorType.Delete:
+                return "Unable to remove " + formattedSource;
+            case ErrorType.Download:
+                return "Unable to download " + formattedSource;
+            case ErrorType.Custom:
+                return "An error has occurred";
         }
     }
 
-    private static getServiceName(serviceName: string): string {
-        switch (serviceName) {
-            case ServiceName.HealthGatewayUser:
-                return "User Profile";
-            case ServiceName.DataBase:
-                return "Data Base";
-            case ServiceName.ClientRegistries:
-                return "Client Registries";
-            case ServiceName.ODR:
-                return "ODR Services";
-            case ServiceName.Medication:
-                return "Medication Service";
-            case ServiceName.Laboratory:
-                return "Laboratory Service";
-            case ServiceName.Immunization:
-                return "Immunization Service";
-            case ServiceName.Patient:
-                return "Patient Service";
-            case ServiceName.PHSA:
-                return "PHSA Services";
+    private static pluralizeErrorSourceType(source: ErrorSourceType) {
+        switch (source) {
+            case ErrorSourceType.MedicationRequests:
+                return "special authorities";
+            case ErrorSourceType.TermsOfService:
+                return "terms of service";
             default:
-                return "Unknown";
+                return `${source}s`;
         }
+    }
+
+    private static formatSourceType(
+        source: ErrorSourceType,
+        pluralize: boolean,
+        simplify: boolean
+    ) {
+        let formattedSource: string = source;
+        if (pluralize) {
+            formattedSource = this.pluralizeErrorSourceType(source);
+        }
+
+        if (simplify) {
+            formattedSource = formattedSource.toLowerCase().replace(" ", "‑");
+        }
+
+        return formattedSource;
     }
 }

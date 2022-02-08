@@ -2,6 +2,7 @@ import Vue from "vue";
 
 import { Dictionary } from "@/models/baseTypes";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import { UserComment } from "@/models/userComment";
 
@@ -72,8 +73,9 @@ export const mutations: CommentMutations = {
         }
     },
 
-    commentError(state: CommentState, error: Error) {
-        state.statusMessage = error.message;
+    commentError(state: CommentState, error: ResultError) {
+        state.error = error;
+        state.statusMessage = error.resultMessage;
         state.status = LoadStatus.ERROR;
     },
 };
