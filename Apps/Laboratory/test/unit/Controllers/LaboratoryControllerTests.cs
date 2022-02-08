@@ -53,7 +53,8 @@ namespace HealthGateway.LaboratoryTests
 
             LaboratoryController controller = new(
                 new Mock<ILogger<LaboratoryController>>().Object,
-                svcMock.Object);
+                svcMock.Object,
+                null!);
 
             // Act
             RequestResult<Covid19OrderResult> actual = await controller.GetCovid19Orders(Hdid).ConfigureAwait(true);
@@ -77,9 +78,12 @@ namespace HealthGateway.LaboratoryTests
                 ResourcePayload = new(),
             });
 
+            Mock<ILabTestKitService> mockLabTestKitService = new();
+
             LaboratoryController controller = new(
                 new Mock<ILogger<LaboratoryController>>().Object,
-                svcMock.Object);
+                svcMock.Object,
+                mockLabTestKitService.Object);
 
             // Act
             RequestResult<LaboratoryOrderResult> actual = await controller.GetLaboratoryOrders(Hdid).ConfigureAwait(true);
@@ -103,9 +107,12 @@ namespace HealthGateway.LaboratoryTests
                 TotalResultCount = 0,
             });
 
+            Mock<ILabTestKitService> mockLabTestKitService = new();
+
             LaboratoryController controller = new(
                 new Mock<ILogger<LaboratoryController>>().Object,
-                svcMock.Object);
+                svcMock.Object,
+                mockLabTestKitService.Object);
 
             // Act
             RequestResult<Covid19OrderResult> actual = await controller.GetCovid19Orders(Hdid).ConfigureAwait(true);
@@ -131,7 +138,8 @@ namespace HealthGateway.LaboratoryTests
 
             LaboratoryController controller = new(
                 new Mock<ILogger<LaboratoryController>>().Object,
-                svcMock.Object);
+                svcMock.Object,
+                null!);
 
             // Act
             RequestResult<LaboratoryOrderResult> actual = await controller.GetLaboratoryOrders(Hdid).ConfigureAwait(true);
@@ -152,9 +160,12 @@ namespace HealthGateway.LaboratoryTests
             MockLaboratoryDelegate laboratoryDelegate = new();
             svcMock.Setup(s => s.GetLabReport(guid, Hdid, It.IsAny<bool>())).ReturnsAsync(await laboratoryDelegate.GetLabReport(guid, Hdid, Token, It.IsAny<bool>()).ConfigureAwait(true));
 
+            Mock<ILabTestKitService> mockLabTestKitService = new();
+
             LaboratoryController controller = new(
                 new Mock<ILogger<LaboratoryController>>().Object,
-                svcMock.Object);
+                svcMock.Object,
+                mockLabTestKitService.Object);
 
             // Act
             RequestResult<LaboratoryReport> actual = await controller.GetLaboratoryReport(guid, Hdid, It.IsAny<bool>()).ConfigureAwait(true);
@@ -179,9 +190,12 @@ namespace HealthGateway.LaboratoryTests
                 TotalResultCount = 0,
             });
 
+            Mock<ILabTestKitService> mockLabTestKitService = new();
+
             LaboratoryController controller = new(
                 new Mock<ILogger<LaboratoryController>>().Object,
-                svcMock.Object);
+                svcMock.Object,
+                mockLabTestKitService.Object);
 
             // Act
             RequestResult<LaboratoryReport> actual = await controller.GetLaboratoryReport(guid, Hdid, It.IsAny<bool>()).ConfigureAwait(true);
