@@ -7,9 +7,7 @@ import LoadingComponent from "@/components/core/Loading.vue";
 import { ResultType } from "@/constants/resulttype";
 import BannerFeedback from "@/models/bannerFeedback";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
-import MessageVerification, {
-    VerificationType,
-} from "@/models/messageVerification";
+import MessageVerification, { Email } from "@/models/messageVerification";
 import { QueryType } from "@/models/userQuery";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -18,13 +16,10 @@ import PHNValidator from "@/utility/phnValidator";
 
 interface UserSearchRow {
     hdid: string;
-    email: string;
-    emailVerified: string;
-    emailVerificationDate: string;
-    sms: string;
-    smsVerified: string;
-    smsVerificationCode: string;
-    smsVerificationDate: string;
+    personalHealthNumber: string;
+    emailOrSms: string;
+    verificationCode: string;
+    verificationDate: string;
 }
 
 @Component({
@@ -54,32 +49,20 @@ export default class SupportView extends Vue {
             value: "hdid",
         },
         {
-            text: "Email",
-            value: "email",
+            text: "PHN",
+            value: "personalHealthNumber",
         },
         {
-            text: "Email Verified",
-            value: "emailVerified",
+            text: "Email/SMS",
+            value: "emailOrSms",
         },
         {
-            text: "Email Verification Date",
-            value: "emailVerificationDate",
+            text: "Verification Code",
+            value: "verificationCode",
         },
         {
-            text: "SMS",
-            value: "sms",
-        },
-        {
-            text: "SMS Verified",
-            value: "smsVerified",
-        },
-        {
-            text: "SMS Verification Code",
-            value: "smsVerificationCode",
-        },
-        {
-            text: "SMS Verification Date",
-            value: "smsVerificationDate",
+            text: "Verification Date",
+            value: "verificationDate",
         },
     ];
 
@@ -91,33 +74,28 @@ export default class SupportView extends Vue {
         return Object.keys(QueryType).filter((x) => isNaN(Number(x)) !== false);
     }
 
+    private getEmailOrSms(email: Email | null, sms: string | null): string {
+        let smsValue = sms !== null ? sms : "";
+        return email !== null ? email.to : smsValue;
+    }
+
+    private getVerificationDate(updatedDateTime: string): string {
+        return this.formatDateTime(updatedDateTime);
+    }
+
+    private getPhn(phn: string): string {
+        return phn !== null ? phn : "-";
+    }
+
     private get userInfo(): UserSearchRow[] {
         return this.emailList.map<UserSearchRow>((x) => {
-            if (x.verificationType === VerificationType.Email) {
-                return {
-                    hdid: x.userProfileId,
-                    email: x.email !== null ? x.email.to : "N/A",
-                    emailVerified: x.validated ? "true" : "false",
-                    emailVerificationDate: this.formatDateTime(
-                        x.updatedDateTime
-                    ),
-                    sms: "-",
-                    smsVerified: "-",
-                    smsVerificationCode: "-",
-                    smsVerificationDate: "-",
-                };
-            } else {
-                return {
-                    hdid: x.userProfileId,
-                    email: "-",
-                    emailVerified: "-",
-                    emailVerificationDate: "-",
-                    sms: x.smsNumber !== null ? x.smsNumber : "N/A",
-                    smsVerified: x.validated ? "true" : "false",
-                    smsVerificationCode: x.smsValidationCode,
-                    smsVerificationDate: this.formatDateTime(x.updatedDateTime),
-                };
-            }
+            return {
+                hdid: x.userProfileId,
+                personalHealthNumber: this.getPhn(x.personalHealthNumber),
+                emailOrSms: this.getEmailOrSms(x.email, x.smsNumber),
+                verificationDate: this.getVerificationDate(x.updatedDateTime),
+                verificationCode: x.smsValidationCode,
+            };
         });
     }
 
