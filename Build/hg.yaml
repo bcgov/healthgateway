@@ -19,7 +19,7 @@ parameters:
       - CommonData
       - NotSpecified
 
-  - name: OpenShiftName
+  - name: ImageName
     type: string
     default: ""
 
@@ -39,14 +39,14 @@ parameters:
     type: boolean
     default: false
 
-  - name: EnableGoldCluster
-    type: boolean
-    default: false
-
-  - name: EnableSilverCluster
+  - name: EnableOpenShift
     type: boolean
     default: true
 
+  - name: EnableAzure
+    type: boolean
+    default: false
+    
   - name: WASMBuild
     type: boolean
     default: false
@@ -59,37 +59,37 @@ variables:
   NPMTests: ${{ parameters.NPMTests }}
   UnitTests: ${{ parameters.DotNetTests }}
   Library: ${{ parameters.Library }}
-  EnableGold: ${{ parameters.EnableGoldCluster }}
-  EnableSilver: ${{ parameters.EnableSilverCluster }}
+  EnableOpenShift: ${{ parameters.EnableOpenShift }}
+  EnableAzure: ${{ parameters.EnableAzure }}
   App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
-  ${{ if parameters.OpenShiftName }}:
-    OpenShift.Name: $[lower('${{ parameters.OpenShiftName }}')]
+  ${{ if parameters.ImageName }}:
+    Image.Name: $[lower('${{ parameters.ImageName }}')]
   ${{ if not(parameters.OpenShiftName) }}:
-    OpenShift.Name: $[lower(variables['App.Name'])]
+    Image.Name: $[lower(variables['App.Name'])]
   App.UnitTests: $(App.Home)/test/unit
   PullRequest: $[eq(variables['Build.Reason'], 'PullRequest')]
-  RunOpenShift: $[and(eq(variables['Library'],false), eq(variables['PullRequest'],false))]
+  CreateImage: $[and(eq(variables['Library'],false), eq(variables['PullRequest'],false))]
   ${{ if eq(variables['PullRequest'], true) }}:
     BuildPrefix: "PR-$(SourceBranchName)"
   ${{ if eq(variables['PullRequest'], false) }}:
     BuildPrefix: "$(SourceBranchName)"
 
 jobs:
-  - job: "GoldCluster"
+  - job: "Azure"
     pool:
-      name: "HealthGateway"
-    displayName: "Build ${{ parameters.Application }} in Gold Cluster"
-    condition: eq(variables['EnableGold'], true)
+      vmImage: "ubuntu-20.04"
+    displayName: "Build ${{ parameters.Application }} in Azure Cloud"
+    condition: eq(variables['EnableAzure'], true)
     steps:
       - template: /Build/hg-steps-template.yaml
         parameters:
-          toolsNamespace: "q6qfzk"
+          toolsNamespace: "azure"
 
-  - job: "SilverCluster"
+  - job: "OpenShift"
     pool:
       name: "HealthGateway"
-    displayName: "Build ${{ parameters.Application }} in Silver Cluster"
-    condition: eq(variables['EnableSilver'], true)
+    displayName: "Build ${{ parameters.Application }} in Openshift"
+    condition: eq(variables['EnableOpenShift'], true)
     steps:
       - template: /Build/hg-steps-template.yaml
         parameters:
