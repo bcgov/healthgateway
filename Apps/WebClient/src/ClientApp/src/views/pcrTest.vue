@@ -1074,13 +1074,13 @@ export default class PcrTestView extends Vue {
                             </b-col>
                             <b-col cols="8">
                                 <hg-button
-                                    id="btn-submit"
+                                    id="btn-register-kit"
                                     block
                                     type="submit"
                                     variant="primary"
-                                    data-testid="btn-submit"
+                                    data-testid="btn-register-kit"
                                 >
-                                    Submit
+                                    Register Kit
                                 </hg-button>
                             </b-col>
                         </b-row>
