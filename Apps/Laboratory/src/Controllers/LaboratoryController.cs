@@ -123,27 +123,6 @@ namespace HealthGateway.Laboratory.Controllers
         }
 
         /// <summary>
-        /// Post a rapid test.
-        /// </summary>
-        /// <param name="hdid">The requested HDID which owns the rapid test request.</param>
-        /// <param name="rapidTestRequest">The rapid test request model.</param>
-        /// <returns>A Rapid Test Result object wrapped in a request result.</returns>
-        /// <response code="200">Return the Submission status is completed successfully.</response>
-        /// <response code="403">DID Claim is missing or can not resolve PHN.</response>
-        /// <response code="409">Combination of Phn and Serial number already exists.</response>
-        [HttpPost]
-        [Produces("application/json")]
-        [Route("{hdid}/rapidTest")]
-        [Authorize(Policy = LaboratoryPolicy.Write)]
-        public async Task<RequestResult<AuthenticatedRapidTestResponse>> CreateRapidTestAsync(string hdid, [FromBody] AuthenticatedRapidTestRequest rapidTestRequest)
-        {
-            this.logger.LogDebug($"Post rapid test for hdid {hdid}");
-            RequestResult<AuthenticatedRapidTestResponse> result = await this.labService.CreateRapidTestAsync(hdid, rapidTestRequest).ConfigureAwait(true);
-            this.logger.LogDebug($"Finished submitting a rapid test from controller... {hdid}");
-            return result;
-        }
-
-        /// <summary>
         /// Registers a lab test for an authenticated user.
         /// </summary>
         /// <param name="hdid">The hdid to apply the LabTestKit against.</param>

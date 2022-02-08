@@ -1,4 +1,4 @@
-import { StringISODate, StringISODateTime } from "@/models/dateWrapper";
+import { StringISODateTime } from "@/models/dateWrapper";
 
 // result model for retrieving COVID-19 lab orders
 export interface Covid19LaboratoryOrderResult {
@@ -93,31 +93,6 @@ export interface PublicCovidTestResponseResult {
     loaded: boolean;
     retryin: number;
     records: PublicCovidTestRecord[];
-}
-
-export interface RapidTestRecord {
-    testResult: string;
-    serialNumber: string;
-    testTakenDate: StringISODate;
-}
-
-export interface AuthenticatedRapidTestRequest {
-    // rapid test serial number.
-    labSerialNumber: string;
-
-    // customer personal health number.
-    phn?: string;
-
-    // result of the rapid test.
-    positive?: boolean;
-
-    // date rapid test was taken.
-    dateTestTaken: StringISODate;
-}
-
-export interface AuthenticatedRapidTestResponse {
-    phn: string;
-    records: RapidTestRecord[];
 }
 
 export abstract class LaboratoryUtil {

@@ -33,7 +33,6 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
-    using HealthGateway.Laboratory.Parsers;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
@@ -185,35 +184,6 @@ namespace HealthGateway.Laboratory.Services
             }
 
             retVal.ResultError = UnauthorizedResultError();
-            return retVal;
-        }
-
-        /// <inheritdoc/>
-        public async Task<RequestResult<AuthenticatedRapidTestResponse>> CreateRapidTestAsync(string hdid, AuthenticatedRapidTestRequest rapidTestRequest)
-        {
-            RequestResult<AuthenticatedRapidTestResponse> retVal = new()
-            {
-                ResultStatus = ResultType.Error,
-                ResultError = UnauthorizedResultError(),
-                ResourcePayload = new AuthenticatedRapidTestResponse(),
-            };
-
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
-            if (accessToken != null)
-            {
-                RequestResult<RapidTestResponse> result = await this.laboratoryDelegate
-                    .SubmitRapidTestAsync(hdid, accessToken, rapidTestRequest).ConfigureAwait(true);
-                RapidTestResponse payload = result.ResourcePayload ?? new RapidTestResponse();
-
-                retVal.ResultStatus = result.ResultStatus;
-                retVal.ResultError = result.ResultError;
-                retVal.ResourcePayload = new AuthenticatedRapidTestResponse()
-                {
-                    Phn = payload.Phn,
-                    Records = PhsaModelParser.FromPhsaModelList(payload.RapidTestResults),
-                };
-            }
-
             return retVal;
         }
 
