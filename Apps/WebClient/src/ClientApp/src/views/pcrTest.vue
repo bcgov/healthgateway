@@ -206,7 +206,7 @@ export default class PCRTest extends Vue {
         return smsMask;
     }
 
-    private getfullName(): string {
+    private getFullName(): string {
         if (this.oidcUser !== undefined) {
             return this.oidcUser.given_name + " " + this.oidcUser.family_name;
         } else {
@@ -588,7 +588,7 @@ export default class PCRTest extends Vue {
                             <b-col>
                                 <label for="pcrTestFullName">Name:</label>
                                 <strong id="prcTestFullName">
-                                    {{ getfullName() }}
+                                    {{ getFullName() }}
                                 </strong>
                             </b-col>
                         </b-row>
