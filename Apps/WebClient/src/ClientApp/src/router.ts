@@ -122,8 +122,8 @@ export enum ClientModule {
     VaccinationExportPdf = "VaccinationExportPdf",
     FederalCardButton = "FederalCardButton",
     PublicLaboratoryResult = "PublicLaboratoryResult",
-    AuthenticatedSubmitRapidTest = "AuthenticatedSubmitRapidTest",
     AllLaboratory = "AllLaboratory",
+    PcrTest = "PcrTest",
 }
 
 function getAvailableModules() {
@@ -258,6 +258,7 @@ const routes = [
                 UserState.notRegistered,
                 UserState.pendingDeletion,
             ],
+            requiredModules: [ClientModule.PcrTest],
         },
     },
     {
@@ -271,6 +272,7 @@ const routes = [
                 UserState.notRegistered,
                 UserState.pendingDeletion,
             ],
+            requiredModules: [ClientModule.PcrTest],
         },
     },
     {

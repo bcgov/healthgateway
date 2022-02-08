@@ -264,7 +264,9 @@ export default class PcrTestView extends Vue {
             !this.oidcIsAuthenticated
         ) {
             this.loading = true;
-            this.oidcLogin(this.identityProviders[0].hint).finally(
+            // don't need to reset loading property if login succeeds
+            // since redirect will kick in and component will be recreated after
+            this.oidcLogin(this.identityProviders[0].hint).catch(
                 () => (this.loading = false)
             );
         }
@@ -590,7 +592,7 @@ export default class PcrTestView extends Vue {
             <b-row id="title" class="mt-4">
                 <b-col>
                     <h1 class="h4 mb-2 font-weight-normal">
-                        <strong>Register a test kit</strong>
+                        <strong>Register a Test Kit</strong>
                     </h1>
                 </b-col>
             </b-row>
@@ -1077,13 +1079,13 @@ export default class PcrTestView extends Vue {
                             </b-col>
                             <b-col cols="8">
                                 <hg-button
-                                    id="btn-submit"
+                                    id="btn-register-kit"
                                     block
                                     type="submit"
                                     variant="primary"
-                                    data-testid="btn-submit"
+                                    data-testid="btn-register-kit"
                                 >
-                                    Submit
+                                    Register Kit
                                 </hg-button>
                             </b-col>
                         </b-row>
