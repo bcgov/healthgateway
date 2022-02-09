@@ -11,9 +11,6 @@ parameters:
     type: boolean
     default: true
 
-variables:
-  - group: Secrets
-
 steps:
   - bash: |
     set -e

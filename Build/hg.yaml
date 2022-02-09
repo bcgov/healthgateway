@@ -53,26 +53,43 @@ parameters:
 
 #Build variables
 variables:
-  App.Name: ${{ parameters.Application }}
-  WASMBuild: ${{ parameters.WASMBuild }}
-  NPMInstall: ${{ parameters.NPMInstall }}
-  NPMTests: ${{ parameters.NPMTests }}
-  UnitTests: ${{ parameters.DotNetTests }}
-  Library: ${{ parameters.Library }}
-  EnableOpenShift: ${{ parameters.EnableOpenShift }}
-  EnableAzure: ${{ parameters.EnableAzure }}
-  App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
-  ${{ if parameters.ImageName }}:
-    Image.Name: $[lower('${{ parameters.ImageName }}')]
-  ${{ if not(parameters.ImageName) }}:
-    Image.Name: $[lower(variables['App.Name'])]
-  App.UnitTests: $(App.Home)/test/unit
-  PullRequest: $[eq(variables['Build.Reason'], 'PullRequest')]
-  CreateImage: $[and(eq(variables['Library'],false), eq(variables['PullRequest'],false))]
+  - group: Secrets
+  - name: App.Name
+    value: ${{ parameters.Application }}
+  - name: WASMBuild
+    value: ${{ parameters.WASMBuild }}
+  - name: NPMInstall
+    value: ${{ parameters.NPMInstall }}
+  - name: NPMTests
+    value: ${{ parameters.NPMTests }}
+  - name: UnitTests
+    value: ${{ parameters.DotNetTests }}
+  - name: Library
+    value: ${{ parameters.Library }}
+  - name: EnableOpenShift
+    value: ${{ parameters.EnableOpenShift }}
+  - name: EnableAzure 
+    value: ${{ parameters.EnableAzure }}
+  - name: App.Home 
+    value: $(Build.SourcesDirectory)/Apps/$(App.Name)
+  ${{ if parameters.ImageName }}
+    - name: Image.Name 
+      value: $[lower('${{ parameters.ImageName }}')]
+  ${{ if not(parameters.ImageName) }}
+    - name: Image.Name 
+      value: $[lower(variables['App.Name'])]
+  - name: App.UnitTests
+    value: $(App.Home)/test/unit
+  - name: PullRequest 
+    value: $[eq(variables['Build.Reason'], 'PullRequest')]
+  - name: CreateImage 
+    value: $[and(eq(variables['Library'],false), eq(variables['PullRequest'],false))]
   ${{ if eq(variables['PullRequest'], true) }}:
-    BuildPrefix: "PR-$(SourceBranchName)"
+    - name: BuildPrefix 
+      value: "PR-$(SourceBranchName)"
   ${{ if eq(variables['PullRequest'], false) }}:
-    BuildPrefix: "$(SourceBranchName)"
+    - name: BuildPrefix 
+      value: "$(SourceBranchName)"
 
 jobs:
   - job: "Azure OpenShift Silver"
