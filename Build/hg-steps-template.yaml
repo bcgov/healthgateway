@@ -11,7 +11,16 @@ parameters:
     type: boolean
     default: true
 
+variables:
+  - group: Secrets
+
 steps:
+  - bash: |
+    set -e
+    oc login --token=$(OpenShiftToken) --server=https://api.silver.devops.gov.bc.ca:6443
+    oc projects
+    displayName: Test
+
   - task: DotNetCoreCLI@2
     displayName: "Compiling code for $(App.Name)"
     condition: eq(variables['WASMBuild'], false)
