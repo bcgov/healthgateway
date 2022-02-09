@@ -1,6 +1,7 @@
 import { ActionType } from "@/constants/actionType";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
-import BannerError from "@/models/bannerError";
+import { CustomBannerError } from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
 import { ResultError } from "@/models/requestResult";
@@ -8,12 +9,11 @@ import { LoadStatus } from "@/models/storeOperations";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger, IVaccinationStatusService } from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
 
 import { VaccinationStatusActions } from "./types";
 
 export const actions: VaccinationStatusActions = {
-    retrieveVaccineStatus(
+    retrievePublicVaccineStatus(
         context,
         params: {
             phn: string;
@@ -29,7 +29,7 @@ export const actions: VaccinationStatusActions = {
 
         return new Promise((resolve, reject) => {
             logger.debug(`Retrieving Vaccination Status`);
-            context.commit("setRequested");
+            context.commit("setPublicRequested");
             vaccinationStatusService
                 .getPublicVaccineStatus(
                     params.phn,
@@ -39,7 +39,7 @@ export const actions: VaccinationStatusActions = {
                 .then((result) => {
                     const payload = result.resourcePayload;
                     if (result.resultStatus === ResultType.Success) {
-                        context.commit("setVaccinationStatus", payload);
+                        context.commit("setPublicVaccinationStatus", payload);
                         resolve();
                     } else if (
                         result.resultError?.actionCode === ActionType.Refresh &&
@@ -48,12 +48,12 @@ export const actions: VaccinationStatusActions = {
                     ) {
                         logger.info("VaccinationStatus not loaded");
                         context.commit(
-                            "setStatusMessage",
+                            "setPublicStatusMessage",
                             "We're busy but will continue to try to fetch your record...."
                         );
                         setTimeout(() => {
                             logger.info("Re-querying for vaccination status");
-                            context.dispatch("retrieveVaccineStatus", {
+                            context.dispatch("retrievePublicVaccineStatus", {
                                 phn: params.phn,
                                 dateOfBirth: params.dateOfBirth,
                                 dateOfVaccine: params.dateOfVaccine,
@@ -61,34 +61,35 @@ export const actions: VaccinationStatusActions = {
                         }, payload.retryin);
                         resolve();
                     } else {
-                        context.dispatch("handleError", result.resultError);
+                        context.dispatch(
+                            "handlePublicError",
+                            result.resultError
+                        );
                         reject(result.resultError);
                     }
                 })
-                .catch((error) => {
-                    context.dispatch("handleError", error);
+                .catch((error: ResultError) => {
+                    context.dispatch("handlePublicError", error);
                     reject(error);
                 });
         });
     },
-    handleError(context, error: ResultError) {
+    handlePublicError(context, error: ResultError) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(error)}`);
-        const bannerError: BannerError = {
+        const customBannerError: CustomBannerError = {
             title: "Our Apologies",
             description:
                 "We've found an issue and the Health Gateway team is working hard to fix it.",
-            detail: "",
-            errorCode: "",
         };
 
         if (error.actionCode === ActionType.DataMismatch) {
-            bannerError.title = "Data Mismatch";
-            bannerError.description = error.resultMessage;
+            customBannerError.title = "Data Mismatch";
+            customBannerError.description = error.resultMessage;
         }
 
-        context.commit("vaccinationStatusError", bannerError);
+        context.commit("publicVaccinationStatusError", customBannerError);
     },
     retrievePublicVaccineRecord(
         context,
@@ -144,7 +145,7 @@ export const actions: VaccinationStatusActions = {
                         reject(result.resultError);
                     }
                 })
-                .catch((error) => {
+                .catch((error: ResultError) => {
                     context.dispatch("handlePdfError", error);
                     reject(error);
                 });
@@ -154,15 +155,13 @@ export const actions: VaccinationStatusActions = {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(error)}`);
-        const bannerError: BannerError = {
+        const customBannerError: CustomBannerError = {
             title: "Our Apologies",
             description:
                 "We've found an issue and the Health Gateway team is working hard to fix it.",
-            detail: "",
-            errorCode: "",
         };
 
-        context.commit("setPublicVaccineRecordError", bannerError);
+        context.commit("setPublicVaccineRecordError", customBannerError);
     },
     retrieveAuthenticatedVaccineStatus(
         context,
@@ -217,34 +216,39 @@ export const actions: VaccinationStatusActions = {
                             }, payload.retryin);
                             resolve();
                         } else {
-                            context.dispatch(
-                                "handleAuthenticatedError",
-                                result.resultError
-                            );
+                            context.dispatch("handleAuthenticatedError", {
+                                error: result.resultError,
+                                errorType: ErrorType.Retrieve,
+                            });
                             reject(result.resultError);
                         }
                     })
-                    .catch((error) => {
-                        context.dispatch("handleAuthenticatedError", error);
+                    .catch((error: ResultError) => {
+                        context.dispatch("handleAuthenticatedError", {
+                            error,
+                            errorType: ErrorType.Retrieve,
+                        });
                         reject(error);
                     });
             }
         });
     },
-    handleAuthenticatedError(context, error: ResultError) {
+    handleAuthenticatedError(
+        context,
+        params: { error: ResultError; errorType: ErrorType }
+    ) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-        logger.error(`ERROR: ${JSON.stringify(error)}`);
+        logger.error(`ERROR: ${JSON.stringify(params.error)}`);
+        context.commit("authenticatedVaccinationStatusError", params.error);
 
-        const title = "Error Retrieving Vaccine Card";
-
-        context.commit(
-            "authenticatedVaccinationStatusError",
-            ErrorTranslator.toBannerError(title, error)
-        );
         context.dispatch(
-            "errorBanner/addResultError",
-            { message: title, error },
+            "errorBanner/addError",
+            {
+                errorType: params.errorType,
+                source: ErrorSourceType.VaccineCard,
+                traceId: params.error.traceId,
+            },
             { root: true }
         );
     },
@@ -303,32 +307,34 @@ export const actions: VaccinationStatusActions = {
                         reject(result.resultError);
                     }
                 })
-                .catch((error) => {
+                .catch((error: ResultError) => {
                     context.dispatch("handleAuthenticatedPdfError", error);
                     reject(error);
                 });
         });
     },
-    handleAuthenticatedPdfError(context, error: ResultError) {
+    handleAuthenticatedPdfError(
+        context,
+        params: { error: ResultError; errorType: ErrorType }
+    ) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-        const title = "Error Retrieving Vaccine Record";
+        logger.error(`ERROR: ${JSON.stringify(params.error)}`);
+        context.commit("setAuthenticatedVaccineRecordError", params.error);
 
-        logger.error(`ERROR: ${JSON.stringify(error)}`);
-        context.commit(
-            "setAuthenticatedVaccineRecordError",
-            ErrorTranslator.toBannerError(title, error)
-        );
-
-        if (error.actionCode === ActionType.Invalid) {
+        if (params.error.actionCode === ActionType.Invalid) {
             context.commit(
                 "setAuthenticatedVaccineRecordResultMessage",
                 "No records found"
             );
         } else {
             context.dispatch(
-                "errorBanner/addResultError",
-                { message: title, error },
+                "errorBanner/addError",
+                {
+                    errorType: params.errorType,
+                    source: ErrorSourceType.VaccineRecord,
+                    traceId: params.error.traceId,
+                },
                 { root: true }
             );
         }

@@ -16,4 +16,12 @@ export const actions: NavbarActions = {
     setHeaderState(context, isOpen: boolean) {
         context.commit("setHeaderState", isOpen);
     },
+
+    setHeaderButtonState(context, visible: boolean) {
+        context.commit("setHeaderButtonState", visible);
+    },
+
+    setSidebarButtonState(context, visible: boolean) {
+        context.commit("setSidebarButtonState", visible);
+    },
 };

@@ -1,3 +1,4 @@
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult, { ResultError } from "@/models/requestResult";
@@ -48,10 +49,10 @@ export const actions: MedicationStatementActions = {
                     )
                     .then((result) => {
                         if (result.resultStatus === ResultType.Error) {
-                            context.dispatch(
-                                "handleStatementError",
-                                result.resultError
-                            );
+                            context.dispatch("handleMedicationStatementError", {
+                                error: result.resultError,
+                                errorType: ErrorType.Retrieve,
+                            });
                             reject(result.resultError);
                         } else {
                             if (result.resultStatus === ResultType.Success) {
@@ -67,22 +68,32 @@ export const actions: MedicationStatementActions = {
                             resolve(result);
                         }
                     })
-                    .catch((error) => {
-                        context.dispatch("handleStatementError", error);
+                    .catch((error: ResultError) => {
+                        context.dispatch("handleMedicationStatementError", {
+                            error,
+                            errorType: ErrorType.Retrieve,
+                        });
                         reject(error);
                     });
             }
         });
     },
-    handleStatementError(context, error: ResultError) {
+    handleMedicationStatementError(
+        context,
+        params: { error: ResultError; errorType: ErrorType }
+    ) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-        logger.error(`ERROR: ${JSON.stringify(error)}`);
-        context.commit("medicationStatementError", error);
+        logger.error(`ERROR: ${JSON.stringify(params.error)}`);
+        context.commit("medicationStatementError", params.error);
 
         context.dispatch(
-            "errorBanner/addResultError",
-            { message: "Fetch Medication Statements Error", error },
+            "errorBanner/addError",
+            {
+                errorType: params.errorType,
+                source: ErrorSourceType.MedicationStatements,
+                traceId: params.error.traceId,
+            },
             { root: true }
         );
     },

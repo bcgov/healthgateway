@@ -1,10 +1,10 @@
 import { voidMethod, voidPromise } from "@test/stubs/util";
 
-import BannerError from "@/models/bannerError";
+import { CustomBannerError } from "@/models/bannerError";
 import {
     Covid19LaboratoryOrder,
-    PublicCovidTestResponseResult,
     LaboratoryOrder,
+    PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import { LoadStatus } from "@/models/storeOperations";
 import {
@@ -59,7 +59,7 @@ const laboratoryGetters: LaboratoryGetters = {
     isPublicCovidTestResponseResultLoading(): boolean {
         return false;
     },
-    publicCovidTestResponseResultError(): BannerError | undefined {
+    publicCovidTestResponseResultError(): CustomBannerError | undefined {
         return undefined;
     },
     publicCovidTestResponseResultStatusMessage(): string {
@@ -69,9 +69,8 @@ const laboratoryGetters: LaboratoryGetters = {
 
 const laboratoryActions: LaboratoryActions = {
     retrieveCovid19LaboratoryOrders: voidPromise,
-    handleCovid19LaboratoryError: voidMethod,
     retrieveLaboratoryOrders: voidPromise,
-    handleLaboratoryError: voidMethod,
+    handleError: voidMethod,
     retrievePublicCovidTests: voidPromise,
     handlePublicCovidTestsError: voidMethod,
     resetPublicCovidTestResponseResult: voidMethod,

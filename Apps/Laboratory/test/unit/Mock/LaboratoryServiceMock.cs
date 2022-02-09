@@ -26,12 +26,8 @@ namespace HealthGateway.LaboratoryTests.Mock
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Moq;
 
@@ -52,9 +48,7 @@ namespace HealthGateway.LaboratoryTests.Mock
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new Mock<ILaboratoryDelegateFactory>().Object,
-                new Mock<IAuthenticationDelegate>().Object,
-                GetMemoryCache(),
-                new Mock<IHttpContextAccessor>().Object);
+                new Mock<IAuthenticationDelegate>().Object);
         }
 
         /// <summary>
@@ -62,19 +56,13 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// </summary>
         /// <param name="delegateResult">return object of the delegate service.</param>
         /// <param name="token">token needed for authentication.</param>
-        /// <param name="mockHttpContextAccessor">IHttpContextAccessor Mock.</param>
-        /// <param name="claimsPrincipal">exposes a collection of identities.</param>
-        public LaboratoryServiceMock(RequestResult<PHSAResult<List<PhsaCovid19Order>>> delegateResult, Mock<IHttpContextAccessor> mockHttpContextAccessor, string token, ClaimsPrincipal claimsPrincipal)
+        public LaboratoryServiceMock(RequestResult<PHSAResult<List<PhsaCovid19Order>>> delegateResult, string token)
         {
-            SetupAuthenticationMock(mockHttpContextAccessor, token, claimsPrincipal);
-
             this.laboratoryService = new LaboratoryService(
                  this.configuration,
                  new Mock<ILogger<LaboratoryService>>().Object,
                  new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult)).Object,
-                 null!,
-                 null!,
-                 mockHttpContextAccessor.Object);
+                 GetMockAuthDelegate(token));
         }
 
         /// <summary>
@@ -82,47 +70,27 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// </summary>
         /// <param name="delegateResult">return object of the delegate service.</param>
         /// <param name="token">token needed for authentication.</param>
-        /// <param name="mockHttpContextAccessor">IHttpContextAccessor Mock.</param>
-        /// <param name="claimsPrincipal">exposes a collection of identities.</param>
-        public LaboratoryServiceMock(RequestResult<LaboratoryReport> delegateResult, Mock<IHttpContextAccessor> mockHttpContextAccessor, string token, ClaimsPrincipal claimsPrincipal)
+        public LaboratoryServiceMock(RequestResult<LaboratoryReport> delegateResult, string token)
         {
-            SetupAuthenticationMock(mockHttpContextAccessor, token, claimsPrincipal);
-
             this.laboratoryService = new LaboratoryService(
                  this.configuration,
                  new Mock<ILogger<LaboratoryService>>().Object,
                  new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult)).Object,
-                 null!,
-                 null!,
-                 mockHttpContextAccessor.Object);
+                 GetMockAuthDelegate(token));
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryServiceMock"/> class.
         /// </summary>
         /// <param name="delegateResult">list of COVID-19 Test Results.</param>
-        /// <param name="mockHttpContextAccessor">IHttpContextAccessor Mock.</param>
         /// <param name="token">token needed for authentication.</param>
-        /// <param name="claimsPrincipal">exposes a collection of identities.</param>
-        public LaboratoryServiceMock(RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> delegateResult, Mock<IHttpContextAccessor> mockHttpContextAccessor, string token, ClaimsPrincipal claimsPrincipal)
+        public LaboratoryServiceMock(RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> delegateResult, string token)
         {
-            SetupAuthenticationMock(mockHttpContextAccessor, token, claimsPrincipal);
-
-            JWTModel jwtModel = new()
-            {
-                AccessToken = token,
-            };
-
-            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), false)).Returns(jwtModel);
-
             this.laboratoryService = new LaboratoryService(
                  this.configuration,
                  new Mock<ILogger<LaboratoryService>>().Object,
                  new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult, token)).Object,
-                 mockAuthDelegate.Object,
-                 GetMemoryCache(),
-                 mockHttpContextAccessor.Object);
+                 GetMockAuthDelegate(token));
         }
 
         /// <summary>
@@ -130,19 +98,13 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// </summary>
         /// <param name="delegateResult">return object of the delegate service.</param>
         /// <param name="token">token needed for authentication.</param>
-        /// <param name="mockHttpContextAccessor">IHttpContextAccessor Mock.</param>
-        /// <param name="claimsPrincipal">exposes a collection of identities.</param>
-        public LaboratoryServiceMock(RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult, Mock<IHttpContextAccessor> mockHttpContextAccessor, string token, ClaimsPrincipal claimsPrincipal)
+        public LaboratoryServiceMock(RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult, string token)
         {
-            SetupAuthenticationMock(mockHttpContextAccessor, token, claimsPrincipal);
-
             this.laboratoryService = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult)).Object,
-                null!,
-                null!,
-                mockHttpContextAccessor.Object);
+                GetMockAuthDelegate(token));
         }
 
         /// <summary>
@@ -152,15 +114,6 @@ namespace HealthGateway.LaboratoryTests.Mock
         public LaboratoryService LaboratoryServiceMockInstance()
         {
             return this.laboratoryService;
-        }
-
-        private static IMemoryCache? GetMemoryCache()
-        {
-            ServiceCollection services = new();
-            services.AddMemoryCache();
-            ServiceProvider serviceProvider = services.BuildServiceProvider();
-
-            return serviceProvider.GetService<IMemoryCache>();
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
@@ -178,20 +131,12 @@ namespace HealthGateway.LaboratoryTests.Mock
                 .Build();
         }
 
-        private static void SetupAuthenticationMock(Mock<IHttpContextAccessor> mockHttpContextAccessor, string token, ClaimsPrincipal claimsPrincipal)
+        private static IAuthenticationDelegate GetMockAuthDelegate(string token)
         {
-            Mock<IAuthenticationService> authenticationMock = new();
-            mockHttpContextAccessor
-                .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
-                .Returns(authenticationMock.Object);
-            AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
-            authResult.Properties!.StoreTokens(new[]
-            {
-                new AuthenticationToken { Name = "access_token", Value = token, },
-            });
-            authenticationMock
-                .Setup(x => x.AuthenticateAsync(mockHttpContextAccessor.Object!.HttpContext!, It.IsAny<string>()))
-                .ReturnsAsync(authResult);
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(token);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(token);
+            return mockAuthDelegate.Object;
         }
     }
 }

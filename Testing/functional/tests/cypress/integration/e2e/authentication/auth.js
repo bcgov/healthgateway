@@ -71,9 +71,13 @@ describe("Authentication", () => {
                 .should("be.visible")
                 .should("not.be.disabled")
                 .click();
-            cy.get("#user").type(Cypress.env("idir.username"));
-            cy.get("#password").type(Cypress.env("idir.password"));
-            cy.get('input[name="btnSubmit"]').click();
+            cy.get("#user")
+                .should("be.visible")
+                .type(Cypress.env("idir.username"));
+            cy.get("#password")
+                .should("be.visible")
+                .type(Cypress.env("idir.password"));
+            cy.get('input[name="btnSubmit"]').should("be.visible").click();
             cy.contains("h1", "403");
             cy.contains("h2", "IDIR Login");
         } else {

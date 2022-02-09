@@ -80,8 +80,8 @@ export default class ReportsView extends Vue {
         ) => Promise<RequestResult<Report>>;
     };
 
-    @Action("getPatientData", { namespace: "user" })
-    getPatientData!: () => Promise<void>;
+    @Action("retrievePatientData", { namespace: "user" })
+    retrievePatientData!: () => Promise<void>;
 
     private ReportFormatType: unknown = ReportFormatType;
     private isLoading = false;
@@ -167,7 +167,7 @@ export default class ReportsView extends Vue {
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.getPatientData();
+        this.retrievePatientData();
 
         if (this.config.modules["Medication"]) {
             this.reportTypeOptions.push({

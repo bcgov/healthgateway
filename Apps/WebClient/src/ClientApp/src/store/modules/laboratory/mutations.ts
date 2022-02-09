@@ -1,4 +1,4 @@
-import BannerError from "@/models/bannerError";
+import { CustomBannerError } from "@/models/bannerError";
 import {
     Covid19LaboratoryOrder,
     LaboratoryOrder,
@@ -59,7 +59,7 @@ export const mutations: LaboratoryMutations = {
     },
     setPublicCovidTestResponseResultError(
         state: LaboratoryState,
-        error: BannerError
+        error: CustomBannerError
     ) {
         state.publicCovid19.error = error;
         state.publicCovid19.status = LoadStatus.ERROR;

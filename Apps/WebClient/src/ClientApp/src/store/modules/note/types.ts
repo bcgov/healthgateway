@@ -6,6 +6,7 @@ import {
     MutationTree,
 } from "vuex";
 
+import { ErrorType } from "@/constants/errorType";
 import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus, Operation } from "@/models/storeOperations";
 import UserNote from "@/models/userNote";
@@ -32,7 +33,10 @@ export interface NoteActions extends ActionTree<NoteState, RootState> {
         context: StoreContext,
         params: { hdid: string }
     ): Promise<RequestResult<UserNote[]>>;
-    handleError(context: StoreContext, error: ResultError): void;
+    handleError(
+        context: StoreContext,
+        params: { error: ResultError; errorType: ErrorType }
+    ): void;
 }
 
 export interface NoteMutations extends MutationTree<NoteState> {

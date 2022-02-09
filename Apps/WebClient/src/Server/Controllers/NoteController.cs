@@ -58,13 +58,12 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPost]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult CreateNote(string hdid, [FromBody] UserNote note)
+        public RequestResult<UserNote> CreateNote(string hdid, [FromBody] UserNote note)
         {
             note.HdId = hdid;
             note.CreatedBy = hdid;
             note.UpdatedBy = hdid;
-            RequestResult<UserNote> result = this.noteService.CreateNote(note);
-            return new JsonResult(result);
+            return this.noteService.CreateNote(note);
         }
 
         /// <summary>
@@ -79,11 +78,10 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPut]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult UpdateNote(string hdid, [FromBody] UserNote note)
+        public RequestResult<UserNote> UpdateNote(string hdid, [FromBody] UserNote note)
         {
             note.UpdatedBy = hdid;
-            RequestResult<UserNote> result = this.noteService.UpdateNote(note);
-            return new JsonResult(result);
+            return this.noteService.UpdateNote(note);
         }
 
         /// <summary>
@@ -97,10 +95,9 @@ namespace HealthGateway.WebClient.Controllers
         [HttpDelete]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult DeleteNote([FromBody] UserNote note)
+        public RequestResult<UserNote> DeleteNote([FromBody] UserNote note)
         {
-            RequestResult<UserNote> result = this.noteService.DeleteNote(note);
-            return new JsonResult(result);
+            return this.noteService.DeleteNote(note);
         }
 
         /// <summary>
@@ -114,10 +111,9 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        public IActionResult GetAll(string hdid)
+        public RequestResult<IEnumerable<UserNote>> GetAll(string hdid)
         {
-            RequestResult<IEnumerable<UserNote>> result = this.noteService.GetNotes(hdid);
-            return new JsonResult(result);
+            return this.noteService.GetNotes(hdid);
         }
     }
 }

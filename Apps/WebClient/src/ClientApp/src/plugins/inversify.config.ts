@@ -20,6 +20,7 @@ import {
     ILogger,
     IMedicationService,
     IPatientService,
+    IPcrTestService,
     IReportService,
     IStoreProvider,
     IUserCommentService,
@@ -44,6 +45,7 @@ import { RestUserNoteService } from "@/services/restUserNoteService";
 import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserRatingService } from "@/services/restUserRatingService";
 import { RestReportService } from "@/services/restReportService";
+import { RestPcrTestService } from "@/services/restPcrTestService";
 import { RestVaccinationStatusService } from "@/services/restVaccinationStatusService";
 import { WinstonLogger } from "@/services/winstonLogger";
 import StoreProvider from "@/store/provider";
@@ -133,3 +135,7 @@ container
     .bind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
     .to(StoreOptions)
     .inRequestScope();
+container
+    .bind<IPcrTestService>(SERVICE_IDENTIFIER.PcrTestService)
+    .to(RestPcrTestService)
+    .inSingletonScope();

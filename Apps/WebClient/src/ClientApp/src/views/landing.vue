@@ -22,7 +22,6 @@ import Image05 from "@/assets/images/landing/005_reduced-family.jpeg";
 import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
-import router from "@/router";
 
 library.add(
     faClipboardCheck,
@@ -175,11 +174,6 @@ export default class LandingView extends Vue {
 
     private getTileClass(index: number): string {
         return index % 2 == 0 ? "order-md-1" : "order-md-2";
-    }
-
-    private covidTest() {
-        router.push("/covidtest");
-        window.scrollTo(0, 0);
     }
 }
 </script>
@@ -341,9 +335,10 @@ export default class LandingView extends Vue {
                     variant="secondary"
                     class="my-2 text-center"
                     data-testid="covid-test-button"
-                    @click="covidTest()"
-                    >Get Result</hg-button
-                >   
+                    to="/covidtest"
+                >
+                    Get Result
+                </hg-button>
             </b-col>
         </b-row>
         <b-row class="tile-section my-0 my-md-1">

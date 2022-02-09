@@ -6,6 +6,7 @@ import {
     MutationTree,
 } from "vuex";
 
+import { ErrorType } from "@/constants/errorType";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
@@ -37,7 +38,10 @@ export interface MedicationStatementActions
         context: StoreContext,
         params: { hdid: string; protectiveWord?: string }
     ): Promise<RequestResult<MedicationStatementHistory[]>>;
-    handleStatementError(context: StoreContext, error: ResultError): void;
+    handleMedicationStatementError(
+        context: StoreContext,
+        params: { error: ResultError; errorType: ErrorType }
+    ): void;
 }
 
 export interface MedicationStatementMutations

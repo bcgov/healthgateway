@@ -16,7 +16,7 @@
     <None Remove="UnitTest.json" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="coverlet.msbuild" Version="3.1.0">
+    <PackageReference Include="coverlet.msbuild" Version="3.1.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
