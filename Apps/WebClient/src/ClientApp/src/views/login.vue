@@ -47,10 +47,8 @@ export default class LoginView extends Vue {
     private mounted() {
         if (this.$route.query.redirect && this.$route.query.redirect !== "") {
             this.redirectPath = this.$route.query.redirect.toString();
-        } else if (this.config.modules["VaccinationStatus"]) {
-            this.redirectPath = "/home";
         } else {
-            this.redirectPath = "/timeline";
+            this.redirectPath = "/home";
         }
 
         this.routeHandler = this.$router;
