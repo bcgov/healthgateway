@@ -77,7 +77,12 @@ steps:
 
   - script: |
       set -e
-      dotnet tool install -g dotnet-reportgenerator-globaltool
+      if [ "$(EnableAzure)" = true ] ; then
+          echo Running in Azure, Installing dotnet-reportgenerator
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+      else
+          echo Running in OpenShift, skipping dotnet-reportgenerator tool install
+      fi
       reportgenerator -reports:$(App.Home)/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
     displayName: "Creating Code Coverage Report for Blazor Solution $(App.Name)"
     condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
