@@ -73,10 +73,10 @@ variables:
   - name: App.Home 
     value: $(Build.SourcesDirectory)/Apps/$(App.Name)
   - name: Image.Name 
-  ${{ if parameters.ImageName }}:
-    value: $[lower('${{ parameters.ImageName }}')]
-  ${{ if not(parameters.ImageName) }}: 
-    value: $[lower(variables['App.Name'])]
+    ${{ if parameters.ImageName }}:
+      value: $[lower('${{ parameters.ImageName }}')]
+    ${{ if not(parameters.ImageName) }}: 
+      value: $[lower(variables['App.Name'])]
   - name: App.UnitTests
     value: $(App.Home)/test/unit
   - name: PullRequest 
@@ -84,10 +84,10 @@ variables:
   - name: CreateImage 
     value: $[and(eq(variables['Library'],false), eq(variables['PullRequest'],false))]
   - name: BuildPrefix
-  ${{ if eq(variables['PullRequest'], true) }}:
-    value: "PR-$(SourceBranchName)"
-  ${{ if eq(variables['PullRequest'], false) }}:
-    value: "$(SourceBranchName)"
+    ${{ if eq(variables['PullRequest'], true) }}:
+      value: "PR-$(SourceBranchName)"
+    ${{ if eq(variables['PullRequest'], false) }}:
+      value: "$(SourceBranchName)"
 
 jobs:
   - job: "Azure OpenShift Silver"
