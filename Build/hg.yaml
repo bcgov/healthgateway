@@ -46,6 +46,10 @@ parameters:
   - name: EnableAzure
     type: boolean
     default: true
+
+  - name: EnableDocker
+    type: boolean
+    default: false
     
   - name: WASMBuild
     type: boolean
@@ -70,6 +74,8 @@ variables:
     value: ${{ parameters.EnableOpenShift }}
   - name: EnableAzure 
     value: ${{ parameters.EnableAzure }}
+  - name: EnableDocker
+    value: ${{ parameters.EnableDocker }}    
   - name: App.Home 
     value: $(Build.SourcesDirectory)/Apps/$(App.Name)
   - name: Image.Name 
