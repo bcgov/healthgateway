@@ -26,8 +26,6 @@ describe("Authenticated User - Home Page", () => {
             homeUrl
         );
 
-        cy.get("[data-testid=bc-vaccine-card-btn]").should("be.visible");
-        cy.get("[data-testid=health-records-card-btn]").should("be.visible");
         cy.get("[data-testid=proof-vaccination-card-btn]").should("be.visible");
     });
 
@@ -71,8 +69,7 @@ describe("Authenticated User - Home Page", () => {
             AuthMethod.KeyCloak,
             homeUrl
         );
-        cy.get("[data-testid=bc-vaccine-card-btn]").should("be.visible");
-        cy.get("[data-testid=health-records-card-btn]").should("be.visible");
+
         cy.get("[data-testid=proof-vaccination-card-btn]").should("not.exist");
     });
 });
