@@ -19,9 +19,6 @@ trigger:
     include:
       - Apps/Encounter
 
-pool:
-  name: "HealthGateway"
-
 extends:
   template: /Build/hg.yaml
   parameters:
