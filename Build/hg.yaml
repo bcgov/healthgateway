@@ -64,7 +64,7 @@ variables:
   App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
   ${{ if parameters.ImageName }}:
     Image.Name: $[lower('${{ parameters.ImageName }}')]
-  ${{ if not(parameters.OpenShiftName) }}:
+  ${{ if not(parameters.ImageName) }}:
     Image.Name: $[lower(variables['App.Name'])]
   App.UnitTests: $(App.Home)/test/unit
   PullRequest: $[eq(variables['Build.Reason'], 'PullRequest')]
