@@ -6,6 +6,7 @@ import {
     MutationTree,
 } from "vuex";
 
+import { ErrorType } from "@/constants/errorType";
 import MedicationRequest from "@/models/MedicationRequest";
 import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
@@ -25,19 +26,16 @@ export interface MedicationRequestGetters
     isMedicationRequestLoading(state: MedicationRequestState): boolean;
 }
 
-type MedicationRequestContext = ActionContext<
-    MedicationRequestState,
-    RootState
->;
+type StoreContext = ActionContext<MedicationRequestState, RootState>;
 export interface MedicationRequestActions
     extends ActionTree<MedicationRequestState, RootState> {
     retrieveMedicationRequests(
-        context: MedicationRequestContext,
+        context: StoreContext,
         params: { hdid: string }
     ): Promise<RequestResult<MedicationRequest[]>>;
-    handleRequestError(
-        context: MedicationRequestContext,
-        error: ResultError
+    handleMedicationRequestError(
+        context: StoreContext,
+        params: { error: ResultError; errorType: ErrorType }
     ): void;
 }
 

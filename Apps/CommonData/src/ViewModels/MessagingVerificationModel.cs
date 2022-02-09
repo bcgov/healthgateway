@@ -29,6 +29,11 @@ namespace HealthGateway.Common.Data.ViewModels
         public Guid Id { get; set; }
 
         /// <summary>
+        /// Gets or sets the patient's PHN.
+        /// </summary>
+        public string? PersonalHealthNumber { get; set; }
+
+        /// <summary>
         /// Gets or sets the user's directed identifier.
         /// </summary>
         public string? UserProfileId { get; set; }

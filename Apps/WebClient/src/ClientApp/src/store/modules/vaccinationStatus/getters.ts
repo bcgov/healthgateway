@@ -1,23 +1,24 @@
-import BannerError from "@/models/bannerError";
+import { CustomBannerError } from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
 
+import { ResultError } from "./../../../models/requestResult";
 import { VaccinationStatusGetters, VaccinationStatusState } from "./types";
 
 export const getters: VaccinationStatusGetters = {
-    vaccinationStatus(
+    publicVaccinationStatus(
         state: VaccinationStatusState
     ): VaccinationStatus | undefined {
         return state.public.vaccinationStatus;
     },
-    isLoading(state: VaccinationStatusState): boolean {
+    publicIsLoading(state: VaccinationStatusState): boolean {
         return state.public.status === LoadStatus.REQUESTED;
     },
-    error(state: VaccinationStatusState): BannerError | undefined {
+    publicError(state: VaccinationStatusState): CustomBannerError | undefined {
         return state.public.error;
     },
-    statusMessage(state: VaccinationStatusState): string {
+    publicStatusMessage(state: VaccinationStatusState): string {
         return state.public.statusMessage;
     },
     publicVaccineRecord(
@@ -30,7 +31,7 @@ export const getters: VaccinationStatusGetters = {
     },
     publicVaccineRecordError(
         state: VaccinationStatusState
-    ): BannerError | undefined {
+    ): CustomBannerError | undefined {
         return state.publicVaccineRecord.error;
     },
     publicVaccineRecordStatusMessage(state: VaccinationStatusState): string {
@@ -44,7 +45,7 @@ export const getters: VaccinationStatusGetters = {
     authenticatedIsLoading(state: VaccinationStatusState): boolean {
         return state.authenticated.status === LoadStatus.REQUESTED;
     },
-    authenticatedError(state: VaccinationStatusState): BannerError | undefined {
+    authenticatedError(state: VaccinationStatusState): ResultError | undefined {
         return state.authenticated.error;
     },
     authenticatedStatusMessage(state: VaccinationStatusState): string {
@@ -62,7 +63,7 @@ export const getters: VaccinationStatusGetters = {
     },
     authenticatedVaccineRecordError(
         state: VaccinationStatusState
-    ): BannerError | undefined {
+    ): ResultError | undefined {
         return state.authenticatedVaccineRecord.error;
     },
     authenticatedVaccineRecordStatusMessage(

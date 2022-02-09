@@ -21,6 +21,7 @@ namespace HealthGateway.Laboratory.Controllers
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
     using HealthGateway.Laboratory.Models;
+    using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -37,23 +38,23 @@ namespace HealthGateway.Laboratory.Controllers
     public class LaboratoryController : ControllerBase
     {
         private readonly ILogger logger;
-
-        /// <summary>
-        /// Gets or sets the laboratory data service.
-        /// </summary>
-        private readonly ILaboratoryService service;
+        private readonly ILaboratoryService labService;
+        private readonly ILabTestKitService labTestKitService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryController"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="svc">The laboratory data service.</param>
+        /// <param name="labService">The laboratory data service.</param>
+        /// <param name="labTestKitService">The lab testkit service to use.</param>
         public LaboratoryController(
             ILogger<LaboratoryController> logger,
-            ILaboratoryService svc)
+            ILaboratoryService labService,
+            ILabTestKitService labTestKitService)
         {
             this.logger = logger;
-            this.service = svc;
+            this.labService = labService;
+            this.labTestKitService = labTestKitService;
         }
 
         /// <summary>
@@ -72,7 +73,7 @@ namespace HealthGateway.Laboratory.Controllers
         public async Task<RequestResult<Covid19OrderResult>> GetCovid19Orders([FromQuery] string hdid)
         {
             this.logger.LogDebug($"Getting COVID-19 laboratory orders...");
-            RequestResult<Covid19OrderResult> result = await this.service.GetCovid19Orders(hdid).ConfigureAwait(true);
+            RequestResult<Covid19OrderResult> result = await this.labService.GetCovid19Orders(hdid).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting COVID-19 laboratory orders from controller for HDID: {hdid}");
             return result;
         }
@@ -93,7 +94,7 @@ namespace HealthGateway.Laboratory.Controllers
         public async Task<RequestResult<LaboratoryOrderResult>> GetLaboratoryOrders([FromQuery] string hdid)
         {
             this.logger.LogDebug($"Getting laboratory orders...");
-            RequestResult<LaboratoryOrderResult> result = await this.service.GetLaboratoryOrders(hdid).ConfigureAwait(true);
+            RequestResult<LaboratoryOrderResult> result = await this.labService.GetLaboratoryOrders(hdid).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting laboratory orders from controller for HDID: {hdid}");
             return result;
         }
@@ -116,31 +117,30 @@ namespace HealthGateway.Laboratory.Controllers
         public async Task<RequestResult<LaboratoryReport>> GetLaboratoryReport(Guid reportId, [FromQuery] string hdid, bool isCovid19 = true)
         {
             this.logger.LogDebug("Getting PDF version of Laboratory Report for Hdid: {Hdid} and isCovid19: {IsCovid10}...", hdid, isCovid19.ToString());
-
-            RequestResult<LaboratoryReport> result = await this.service.GetLabReport(reportId, hdid, isCovid19).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> result = await this.labService.GetLabReport(reportId, hdid, isCovid19).ConfigureAwait(true);
             this.logger.LogDebug("Finished getting pdf report from controller for Hdid: {Hdid} and isCovid19: {IsCovid19}...", hdid, isCovid19.ToString());
-
             return result;
         }
 
         /// <summary>
-        /// Post a rapid test.
+        /// Registers a lab test for an authenticated user.
         /// </summary>
-        /// <param name="hdid">The requested HDID which owns the rapid test request.</param>
-        /// <param name="rapidTestRequest">The rapid test request model.</param>
-        /// <returns>A Rapid Test Result object wrapped in a request result.</returns>
-        /// <response code="200">Return the Submission status is completed successfully.</response>
-        /// <response code="403">DID Claim is missing or can not resolve PHN.</response>
-        /// <response code="409">Combination of Phn and Serial number already exists.</response>
+        /// <param name="hdid">The hdid to apply the LabTestKit against.</param>
+        /// <param name="labTestKit">The labTestKit to register.</param>
+        /// <returns>A LabTestKit  Result object wrapped in a request result.</returns>
+        /// <response code="200">The LabTestKit was processed.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="503">The service is unavailable for use.</response>
         [HttpPost]
         [Produces("application/json")]
-        [Route("{hdid}/rapidTest")]
+        [Route("{hdid}/LabTestKit")]
         [Authorize(Policy = LaboratoryPolicy.Write)]
-        public async Task<RequestResult<AuthenticatedRapidTestResponse>> CreateRapidTestAsync(string hdid, [FromBody] AuthenticatedRapidTestRequest rapidTestRequest)
+        public async Task<RequestResult<LabTestKit>> AddLabTestKit(string hdid, [FromBody]LabTestKit labTestKit)
         {
-            this.logger.LogDebug($"Post rapid test for hdid {hdid}");
-            RequestResult<AuthenticatedRapidTestResponse> result = await this.service.CreateRapidTestAsync(hdid, rapidTestRequest).ConfigureAwait(true);
-            this.logger.LogDebug($"Finished submitting a rapid test from controller... {hdid}");
+            this.logger.LogDebug($"Post AddLabTestKit {hdid}");
+            RequestResult<LabTestKit> result = await this.labTestKitService.RegisterLabTestKitAsync(hdid, labTestKit).ConfigureAwait(true);
+            this.logger.LogDebug($"Finishing submitting lab test kit from controller ... {hdid}");
             return result;
         }
     }

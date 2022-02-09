@@ -21,7 +21,6 @@ namespace HealthGateway.Laboratory.Services
     using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
-    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
@@ -34,67 +33,45 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
-    using HealthGateway.Laboratory.Parsers;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     public class LaboratoryService : ILaboratoryService
     {
-        private const string LabConfigSectionKey = "Laboratory";
-        private const string AuthConfigSectionName = "ClientAuthentication";
-        private const string TokenCacheKey = "TokenCacheKey";
+        /// <summary>
+        /// The configuration section name for Laboratory.
+        /// </summary>
+        public const string LabConfigSectionKey = "Laboratory";
+
         private const string IsNullOrEmptyTokenErrorMessage = "The auth token is null or empty - unable to cache or proceed";
 
         private readonly ILaboratoryDelegate laboratoryDelegate;
-        private readonly IAuthenticationDelegate authDelegate;
-        private readonly IMemoryCache memoryCache;
         private readonly ILogger<LaboratoryService> logger;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
+        private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly LaboratoryConfig labConfig;
-        private readonly Uri tokenUri;
-        private readonly int tokenCacheMinutes;
-
-        /// <summary>
-        /// Gets or sets the http context accessor.
-        /// </summary>
-        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryService"/> class.
         /// </summary>
-        /// <param name="configuration">The configuration to use.</param>
+        /// <param name="configuration">The injected configuration.</param>
         /// <param name="logger">The injected logger.</param>
         /// <param name="laboratoryDelegateFactory">The laboratory delegate factory.</param>
-        /// <param name="authDelegate">The OAuth2 authentication service.</param>
-        /// <param name="memoryCache">The cache to use to reduce lookups.</param>
-        /// <param name="httpContextAccessor">The Http Context accessor.</param>
+        /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
         public LaboratoryService(
             IConfiguration configuration,
             ILogger<LaboratoryService> logger,
             ILaboratoryDelegateFactory laboratoryDelegateFactory,
-            IAuthenticationDelegate authDelegate,
-            IMemoryCache memoryCache,
-            IHttpContextAccessor httpContextAccessor)
+            IAuthenticationDelegate authenticationDelegate)
         {
+            this.logger = logger;
             this.laboratoryDelegate = laboratoryDelegateFactory.CreateInstance();
-            this.authDelegate = authDelegate;
-
-            IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
-            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
-            this.tokenCacheMinutes = configSection.GetValue<int>("TokenCacheExpireMinutes", 20);
-            this.tokenRequest = new ClientCredentialsTokenRequest();
-            configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
+            this.authenticationDelegate = authenticationDelegate;
 
             this.labConfig = new();
             configuration.Bind(LabConfigSectionKey, this.labConfig);
-
-            this.memoryCache = memoryCache;
-            this.logger = logger;
-            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <inheritdoc/>
@@ -107,37 +84,37 @@ namespace HealthGateway.Laboratory.Services
                 ResultError = UnauthorizedResultError(),
             };
 
-            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
-            if (httpContext != null)
+            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+
+            if (accessToken != null)
             {
-                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+                RequestResult<PHSAResult<List<PhsaCovid19Order>>> delegateResult = await this.laboratoryDelegate
+                    .GetCovid19Orders(accessToken, hdid, pageIndex).ConfigureAwait(true);
 
-                if (accessToken != null)
+                retVal.ResultStatus = delegateResult.ResultStatus;
+                retVal.ResultError = delegateResult.ResultError;
+                retVal.PageIndex = delegateResult.PageIndex;
+                retVal.PageSize = delegateResult.PageSize;
+                retVal.TotalResultCount = delegateResult.TotalResultCount;
+
+                IEnumerable<PhsaCovid19Order> payload =
+                    delegateResult.ResourcePayload?.Result ?? Enumerable.Empty<PhsaCovid19Order>();
+                if (delegateResult.ResultStatus == ResultType.Success)
                 {
-                    RequestResult<PHSAResult<List<PhsaCovid19Order>>> delegateResult = await this.laboratoryDelegate.GetCovid19Orders(accessToken, hdid, pageIndex).ConfigureAwait(true);
+                    retVal.ResourcePayload.Covid19Orders = Covid19Order.FromPhsaModelCollection(payload);
+                }
 
-                    retVal.ResultStatus = delegateResult.ResultStatus;
-                    retVal.ResultError = delegateResult.ResultError;
-                    retVal.PageIndex = delegateResult.PageIndex;
-                    retVal.PageSize = delegateResult.PageSize;
-                    retVal.TotalResultCount = delegateResult.TotalResultCount;
-
-                    IEnumerable<PhsaCovid19Order> payload = delegateResult.ResourcePayload?.Result ?? Enumerable.Empty<PhsaCovid19Order>();
-                    if (delegateResult.ResultStatus == ResultType.Success)
+                PHSALoadState? loadState = delegateResult.ResourcePayload?.LoadState;
+                if (loadState != null)
+                {
+                    retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
+                    if (loadState.RefreshInProgress)
                     {
-                        retVal.ResourcePayload.Covid19Orders = Covid19Order.FromPhsaModelCollection(payload);
-                    }
-
-                    PHSALoadState? loadState = delegateResult.ResourcePayload?.LoadState;
-                    if (loadState != null)
-                    {
-                        retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
-                        if (loadState.RefreshInProgress)
-                        {
-                            retVal.ResultStatus = ResultType.ActionRequired;
-                            retVal.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
-                            retVal.ResourcePayload.RetryIn = Math.Max(loadState.BackOffMilliseconds, this.labConfig.BackOffMilliseconds);
-                        }
+                        retVal.ResultStatus = ResultType.ActionRequired;
+                        retVal.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
+                        retVal.ResourcePayload.RetryIn = Math.Max(
+                            loadState.BackOffMilliseconds,
+                            this.labConfig.BackOffMilliseconds);
                     }
                 }
             }
@@ -155,37 +132,37 @@ namespace HealthGateway.Laboratory.Services
                 ResultError = UnauthorizedResultError(),
             };
 
-            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
-            if (httpContext != null)
+            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+
+            if (accessToken != null)
             {
-                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+                RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult =
+                    await this.laboratoryDelegate.GetLaboratorySummary(hdid, accessToken).ConfigureAwait(true);
 
-                if (accessToken != null)
+                retVal.ResultStatus = delegateResult.ResultStatus;
+                retVal.ResultError = delegateResult.ResultError;
+                retVal.PageIndex = delegateResult.PageIndex;
+                retVal.PageSize = delegateResult.PageSize;
+                retVal.TotalResultCount = delegateResult.TotalResultCount;
+
+                PhsaLaboratorySummary? payload = delegateResult.ResourcePayload?.Result;
+                if (delegateResult.ResultStatus == ResultType.Success && payload != null)
                 {
-                    RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult = await this.laboratoryDelegate.GetLaboratorySummary(hdid, accessToken).ConfigureAwait(true);
+                    retVal.ResourcePayload.LaboratoryOrders =
+                        LaboratoryOrder.FromPhsaModelCollection(payload.LabOrders);
+                }
 
-                    retVal.ResultStatus = delegateResult.ResultStatus;
-                    retVal.ResultError = delegateResult.ResultError;
-                    retVal.PageIndex = delegateResult.PageIndex;
-                    retVal.PageSize = delegateResult.PageSize;
-                    retVal.TotalResultCount = delegateResult.TotalResultCount;
-
-                    PhsaLaboratorySummary? payload = delegateResult.ResourcePayload?.Result;
-                    if (delegateResult.ResultStatus == ResultType.Success && payload != null)
+                PHSALoadState? loadState = delegateResult.ResourcePayload?.LoadState;
+                if (loadState != null)
+                {
+                    retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
+                    if (loadState.RefreshInProgress)
                     {
-                        retVal.ResourcePayload.LaboratoryOrders = LaboratoryOrder.FromPhsaModelCollection(payload.LabOrders);
-                    }
-
-                    PHSALoadState? loadState = delegateResult.ResourcePayload?.LoadState;
-                    if (loadState != null)
-                    {
-                        retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
-                        if (loadState.RefreshInProgress)
-                        {
-                            retVal.ResultStatus = ResultType.ActionRequired;
-                            retVal.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
-                            retVal.ResourcePayload.RetryIn = Math.Max(loadState.BackOffMilliseconds, this.labConfig.BackOffMilliseconds);
-                        }
+                        retVal.ResultStatus = ResultType.ActionRequired;
+                        retVal.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
+                        retVal.ResourcePayload.RetryIn = Math.Max(
+                            loadState.BackOffMilliseconds,
+                            this.labConfig.BackOffMilliseconds);
                     }
                 }
             }
@@ -198,44 +175,12 @@ namespace HealthGateway.Laboratory.Services
         {
             RequestResult<LaboratoryReport> retVal = new();
 
-            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
-            if (httpContext != null)
+            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+
+            if (accessToken != null)
             {
-                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-
-                if (accessToken != null)
-                {
-                    return await this.laboratoryDelegate.GetLabReport(id, hdid, accessToken, isCovid19).ConfigureAwait(true);
-                }
-            }
-
-            retVal.ResultError = UnauthorizedResultError();
-            return retVal;
-        }
-
-        /// <inheritdoc/>
-        public async Task<RequestResult<AuthenticatedRapidTestResponse>> CreateRapidTestAsync(string hdid, AuthenticatedRapidTestRequest rapidTestRequest)
-        {
-            RequestResult<AuthenticatedRapidTestResponse> retVal = new()
-            {
-                ResultStatus = ResultType.Error,
-                ResourcePayload = new AuthenticatedRapidTestResponse(),
-            };
-
-            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
-            if (httpContext != null)
-            {
-                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-
-                if (accessToken != null)
-                {
-                    RequestResult<RapidTestResponse> result = await this.laboratoryDelegate.SubmitRapidTestAsync(hdid, accessToken, rapidTestRequest).ConfigureAwait(true);
-                    RapidTestResponse payload = result.ResourcePayload ?? new RapidTestResponse();
-
-                    retVal.ResultStatus = result.ResultStatus;
-                    retVal.ResultError = result.ResultError;
-                    retVal.ResourcePayload = new AuthenticatedRapidTestResponse() { Phn = payload.Phn, Records = PhsaModelParser.FromPhsaModelList(payload.RapidTestResults) };
-                }
+                return await this.laboratoryDelegate.GetLabReport(id, hdid, accessToken, isCovid19)
+                    .ConfigureAwait(true);
             }
 
             retVal.ResultError = UnauthorizedResultError();
@@ -294,7 +239,7 @@ namespace HealthGateway.Laboratory.Services
                 return retVal;
             }
 
-            string? accessToken = this.RetrieveAccessToken();
+            string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
             if (string.IsNullOrEmpty(accessToken))
             {
                 this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
@@ -352,25 +297,6 @@ namespace HealthGateway.Laboratory.Services
                 ResultMessage = "Error authenticating with KeyCloak",
                 ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
             };
-        }
-
-        private string? RetrieveAccessToken()
-        {
-            this.memoryCache.TryGetValue(TokenCacheKey, out string? accessToken);
-            if (accessToken == null)
-            {
-                this.logger.LogInformation("Access token not found in cache");
-                accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest).AccessToken;
-                if (!string.IsNullOrEmpty(accessToken))
-                {
-                    this.logger.LogInformation("Attempting to store Access token in cache");
-                    MemoryCacheEntryOptions cacheEntryOptions = new();
-                    cacheEntryOptions.AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddMinutes(this.tokenCacheMinutes));
-                    this.memoryCache.Set(TokenCacheKey, accessToken, cacheEntryOptions);
-                }
-            }
-
-            return accessToken;
         }
     }
 }

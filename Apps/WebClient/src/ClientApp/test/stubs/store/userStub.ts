@@ -29,7 +29,7 @@ const userActions: UserActions = {
     createUserPreference: voidPromise,
     closeUserAccount: voidPromise,
     recoverUserAccount: voidPromise,
-    getPatientData: voidPromise,
+    retrievePatientData: voidPromise,
     handleError: voidMethod,
 };
 

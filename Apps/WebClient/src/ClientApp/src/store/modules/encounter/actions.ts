@@ -1,3 +1,4 @@
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import Encounter from "@/models/encounter";
 import RequestResult, { ResultError } from "@/models/requestResult";
@@ -40,7 +41,10 @@ export const actions: EncounterActions = {
                     .getPatientEncounters(params.hdid)
                     .then((result) => {
                         if (result.resultStatus === ResultType.Error) {
-                            context.dispatch("handleError", result.resultError);
+                            context.dispatch("handleError", {
+                                error: result.resultError,
+                                errorType: ErrorType.Retrieve,
+                            });
                             reject(result.resultError);
                         } else {
                             EventTracker.loadData(
@@ -54,21 +58,28 @@ export const actions: EncounterActions = {
                             resolve(result);
                         }
                     })
-                    .catch((error) => {
-                        context.dispatch("handleError", error);
+                    .catch((error: ResultError) => {
+                        context.dispatch("handleError", {
+                            error,
+                            errorType: ErrorType.Retrieve,
+                        });
                         reject(error);
                     });
             }
         });
     },
-    handleError(context, error: ResultError) {
+    handleError(context, params: { error: ResultError; errorType: ErrorType }) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-        logger.error(`ERROR: ${JSON.stringify(error)}`);
-        context.commit("encounterError", error);
+        logger.error(`ERROR: ${JSON.stringify(params.error)}`);
+        context.commit("encounterError", params.error);
         context.dispatch(
-            "errorBanner/addResultError",
-            { message: "Fetch Encounter Error", error },
+            "errorBanner/addError",
+            {
+                errorType: params.errorType,
+                source: ErrorSourceType.Encounter,
+                traceId: params.error.traceId,
+            },
             { root: true }
         );
     },

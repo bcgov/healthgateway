@@ -10,15 +10,15 @@ import LoadingComponent from "@/components/loading.vue";
 import NewDependentComponent from "@/components/modal/newDependent.vue";
 import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import ResourceCentreComponent from "@/components/resourceCentre.vue";
-import BannerError from "@/models/bannerError";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import type { Dependent } from "@/models/dependent";
+import { ResultError } from "@/models/requestResult";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { IDependentService, ILogger } from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
 
 library.add(faUserPlus);
 
@@ -41,7 +41,11 @@ export default class DependentsView extends Vue {
     webClientConfig!: WebClientConfiguration;
 
     @Action("addError", { namespace: "errorBanner" })
-    addError!: (error: BannerError) => void;
+    addError!: (params: {
+        errorType: ErrorType;
+        source: ErrorSourceType;
+        traceId: string | undefined;
+    }) => void;
 
     private logger!: ILogger;
     private dependentService!: IDependentService;
@@ -76,11 +80,13 @@ export default class DependentsView extends Vue {
             .then((results) => {
                 this.dependents = results;
             })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError("Fetch Dependents Error", err)
-                );
+            .catch((error: ResultError) => {
+                this.logger.error(error.resultMessage);
+                this.addError({
+                    errorType: ErrorType.Retrieve,
+                    source: ErrorSourceType.Dependent,
+                    traceId: error.traceId,
+                });
             })
             .finally(() => {
                 this.isLoading = false;

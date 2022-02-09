@@ -5,8 +5,6 @@ import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
 import { ServiceName } from "@/models/errorInterfaces";
 import {
-    AuthenticatedRapidTestRequest,
-    AuthenticatedRapidTestResponse,
     Covid19LaboratoryOrderResult,
     LaboratoryOrderResult,
     LaboratoryReport,
@@ -50,7 +48,9 @@ export class RestLaboratoryService implements ILaboratoryService {
     ): Promise<RequestResult<PublicCovidTestResponseResult>> {
         return new Promise((resolve, reject) => {
             if (!this.isCovid19Enabled) {
-                reject();
+                reject(
+                    ErrorTranslator.moduleDisabledError(ServiceName.Laboratory)
+                );
                 return;
             }
             const headers: Dictionary<string> = {};
@@ -177,41 +177,6 @@ export class RestLaboratoryService implements ILaboratoryService {
                         ErrorTranslator.internalNetworkError(
                             err,
                             ServiceName.Laboratory
-                        )
-                    );
-                });
-        });
-    }
-
-    public postAuthenticatedRapidTest(
-        hdid: string,
-        request: AuthenticatedRapidTestRequest
-    ): Promise<RequestResult<AuthenticatedRapidTestResponse>> {
-        return new Promise((resolve, reject) => {
-            if (!this.isCovid19Enabled) {
-                reject();
-                return;
-            }
-
-            this.http
-                .post<RequestResult<AuthenticatedRapidTestResponse>>(
-                    `${this.baseUri}${this.LABORATORY_BASE_URI}/${hdid}/rapidTest`,
-                    request
-                )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                    this.logger.debug(
-                        `CreateRapidTest ${requestResult.resultStatus}`
-                    );
-                })
-                .catch((err) => {
-                    this.logger.error(
-                        `Post Authenticated Rapid Test Error: ${err}`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceName.HealthGatewayUser
                         )
                     );
                 });

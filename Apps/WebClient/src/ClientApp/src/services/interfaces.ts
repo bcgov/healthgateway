@@ -18,8 +18,6 @@ import type { Dependent } from "@/models/dependent";
 import Encounter from "@/models/encounter";
 import type ImmunizationResult from "@/models/immunizationResult";
 import {
-    AuthenticatedRapidTestRequest,
-    AuthenticatedRapidTestResponse,
     Covid19LaboratoryOrderResult,
     LaboratoryOrderResult,
     LaboratoryReport,
@@ -28,6 +26,7 @@ import {
 import MedicationRequest from "@/models/MedicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import PatientData from "@/models/patientData";
+import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
@@ -125,10 +124,6 @@ export interface ILaboratoryService {
         hdid: string,
         isCovid19: boolean
     ): Promise<RequestResult<LaboratoryReport>>;
-    postAuthenticatedRapidTest(
-        hdid: string,
-        request: AuthenticatedRapidTestRequest
-    ): Promise<RequestResult<AuthenticatedRapidTestResponse>>;
 }
 
 export interface IConfigService {
@@ -236,6 +231,17 @@ export interface IHttpDelegate {
         payload?: unknown,
         headers?: Dictionary<string>
     ): Promise<T>;
+}
+
+export interface IPcrTestService {
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
+    registerTestKit(
+        hdid: string,
+        testKit: RegisterTestKitRequest
+    ): Promise<RegisterTestKitRequest | undefined>;
+    registerTestKitPublic(
+        testKit: RegisterTestKitRequest
+    ): Promise<RegisterTestKitRequest | undefined>;
 }
 
 export interface IReportService {

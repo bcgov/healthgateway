@@ -214,11 +214,15 @@ export default class SidebarComponent extends Vue {
     private get isDependents(): boolean {
         return this.$route.path == "/dependents";
     }
+
+    private get isPcrTest(): boolean {
+        return this.$route.path.toLowerCase().startsWith("/pcrtest");
+    }
 }
 </script>
 
 <template>
-    <div v-show="isSidebarShown" class="wrapper">
+    <div v-show="isSidebarShown && !isPcrTest" class="wrapper">
         <!-- Sidebar -->
         <nav id="sidebar" data-testid="sidebar" :class="{ collapsed: !isOpen }">
             <b-row class="row-container">

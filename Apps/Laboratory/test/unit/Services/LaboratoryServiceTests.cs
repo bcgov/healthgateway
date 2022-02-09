@@ -19,19 +19,21 @@ namespace HealthGateway.LaboratoryTests
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;
     using HealthGateway.LaboratoryTests.Mock;
-    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -42,22 +44,12 @@ namespace HealthGateway.LaboratoryTests
     {
         private const string HDID = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
         private const string TOKEN = "Fake Access Token";
-        private const string USERID = "1001";
         private const string MockedMessageID = "mockedMessageID";
         private const string MockedReportContent = "mockedReportContent";
+        private readonly IConfiguration configuration = GetIConfigurationRoot();
         private readonly string phn = "9735353315";
         private readonly DateOnly dateOfBirth = new(1967, 06, 02);
         private readonly DateOnly collectionDate = new(2021, 07, 04);
-
-        private readonly ClaimsPrincipal claimsPrincipal = new(
-            new ClaimsIdentity(
-                new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, "username"),
-                    new Claim(ClaimTypes.NameIdentifier, USERID),
-                    new Claim("hdid", HDID),
-                },
-                "TestAuth"));
 
         /// <summary>
         /// GetCovid19Orders test.
@@ -98,9 +90,7 @@ namespace HealthGateway.LaboratoryTests
                 ResourcePayload = new() { Result = covid19Orders },
             };
 
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
-
-            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, TOKEN).LaboratoryServiceMockInstance();
 
             Task<RequestResult<Covid19OrderResult>> actualResult = service.GetCovid19Orders(HDID, 0);
 
@@ -195,9 +185,7 @@ namespace HealthGateway.LaboratoryTests
                 TotalResultCount = 2,
             };
 
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
-
-            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, TOKEN).LaboratoryServiceMockInstance();
 
             // Act
             Task<RequestResult<LaboratoryOrderResult>> actualResult = service.GetLaboratoryOrders(HDID);
@@ -245,9 +233,7 @@ namespace HealthGateway.LaboratoryTests
                 TotalResultCount = 0,
             };
 
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
-
-            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, TOKEN).LaboratoryServiceMockInstance();
 
             // Act
             Task<RequestResult<LaboratoryOrderResult>> actualResult = service.GetLaboratoryOrders(HDID);
@@ -284,9 +270,7 @@ namespace HealthGateway.LaboratoryTests
                 TotalResultCount = 0,
             };
 
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
-
-            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, TOKEN).LaboratoryServiceMockInstance();
 
             // Act
             Task<RequestResult<LaboratoryOrderResult>> actualResult = service.GetLaboratoryOrders(HDID);
@@ -318,9 +302,7 @@ namespace HealthGateway.LaboratoryTests
                 ResourcePayload = labReport,
             };
 
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
-
-            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, TOKEN).LaboratoryServiceMockInstance();
 
             Task<RequestResult<LaboratoryReport>> actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, true);
 
@@ -358,9 +340,7 @@ namespace HealthGateway.LaboratoryTests
                 },
             };
 
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
-
-            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, TOKEN).LaboratoryServiceMockInstance();
 
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -392,9 +372,7 @@ namespace HealthGateway.LaboratoryTests
                 },
             };
 
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
-
-            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, TOKEN).LaboratoryServiceMockInstance();
 
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -428,9 +406,7 @@ namespace HealthGateway.LaboratoryTests
                 },
             };
 
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
-
-            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, TOKEN).LaboratoryServiceMockInstance();
 
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -460,9 +436,7 @@ namespace HealthGateway.LaboratoryTests
                 },
             };
 
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new HttpContextAccessorMock(TOKEN, this.claimsPrincipal);
-
-            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, mockHttpContextAccessor, TOKEN, this.claimsPrincipal).LaboratoryServiceMockInstance();
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, TOKEN).LaboratoryServiceMockInstance();
 
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -480,7 +454,14 @@ namespace HealthGateway.LaboratoryTests
         [Fact]
         public void ShouldGetCovidTestsWithInvalidPhn()
         {
-            ILaboratoryService service = new LaboratoryServiceMock().LaboratoryServiceMockInstance();
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(TOKEN);
+
+            ILaboratoryService service = new LaboratoryService(
+                this.configuration,
+                new Mock<ILogger<LaboratoryService>>().Object,
+                new Mock<ILaboratoryDelegateFactory>().Object,
+                mockAuthDelegate.Object);
 
             string invalidPhn = "123";
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -501,7 +482,14 @@ namespace HealthGateway.LaboratoryTests
         [InlineData("dd/MM/yyyy")]
         public void ShouldGetCovidTestsWithInvalidDateOfBirth(string dateFormat)
         {
-            ILaboratoryService service = new LaboratoryServiceMock().LaboratoryServiceMockInstance();
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(TOKEN);
+
+            ILaboratoryService service = new LaboratoryService(
+                this.configuration,
+                new Mock<ILogger<LaboratoryService>>().Object,
+                new Mock<ILaboratoryDelegateFactory>().Object,
+                mockAuthDelegate.Object);
 
             string invalidDateOfBirthString = this.dateOfBirth.ToString(dateFormat, CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -521,7 +509,13 @@ namespace HealthGateway.LaboratoryTests
         [InlineData("dd/MM/yyyy")]
         public void ShouldGetCovidTestsWithInvalidCollectionDate(string dateFormat)
         {
-            ILaboratoryService service = new LaboratoryServiceMock().LaboratoryServiceMockInstance();
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(TOKEN);
+            ILaboratoryService service = new LaboratoryService(
+                this.configuration,
+                new Mock<ILogger<LaboratoryService>>().Object,
+                new Mock<ILaboratoryDelegateFactory>().Object,
+                mockAuthDelegate.Object);
 
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string invalidCollectionDateString = this.collectionDate.ToString(dateFormat, CultureInfo.CurrentCulture);
@@ -529,6 +523,21 @@ namespace HealthGateway.LaboratoryTests
             RequestResult<PublicCovidTestResponse>? actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, invalidCollectionDateString).ConfigureAwait(true)).Result;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+        }
+
+        private static IConfigurationRoot GetIConfigurationRoot()
+        {
+            Dictionary<string, string>? myConfiguration = new()
+            {
+                { "Laboratory:BackOffMilliseconds", "0" },
+            };
+
+            return new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true)
+                .AddJsonFile("appsettings.Development.json", optional: true)
+                .AddJsonFile("appsettings.local.json", optional: true)
+                .AddInMemoryCollection(myConfiguration)
+                .Build();
         }
     }
 }

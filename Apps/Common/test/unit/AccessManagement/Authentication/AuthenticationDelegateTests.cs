@@ -84,7 +84,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
-            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object, configuration, memoryCache);
+            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object, configuration, memoryCache, null);
             JWTModel actualModel = authDelegate.AuthenticateAsUser(tokenUri, tokenRequest, false);
             expected.ShouldDeepEqual(actualModel);
 
@@ -128,8 +128,8 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
                .Verifiable();
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-
-            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object, null, null);
+            Dictionary<string, string> extraConfig = new();
+            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object, CreateConfiguration(extraConfig), null, null);
             JWTModel actualModel = authDelegate.AuthenticateAsSystem(tokenUri, tokenRequest);
             expected.ShouldDeepEqual(actualModel);
         }

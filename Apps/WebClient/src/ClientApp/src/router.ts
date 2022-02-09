@@ -3,6 +3,7 @@ import VueRouter, {
     NavigationGuardNext,
     Route,
 } from "vue-router";
+import { Position, PositionResult } from "vue-router/types/router";
 
 import { Dictionary } from "@/models/baseTypes";
 import { SnowplowWindow } from "@/plugins/extensions";
@@ -70,6 +71,8 @@ const ContactUsView = () =>
 const DependentsView = () =>
     import(/* webpackChunkName: "dependents" */ "@/views/dependents.vue");
 const FAQView = () => import(/* webpackChunkName: "faq" */ "@/views/faq.vue");
+const PcrTestView = () =>
+    import(/* webpackChunkName: "pcrTest" */ "@/views/pcrTest.vue");
 
 export enum UserState {
     unauthenticated = "unauthenticated",
@@ -120,8 +123,8 @@ export enum ClientModule {
     VaccinationExportPdf = "VaccinationExportPdf",
     FederalCardButton = "FederalCardButton",
     PublicLaboratoryResult = "PublicLaboratoryResult",
-    AuthenticatedSubmitRapidTest = "AuthenticatedSubmitRapidTest",
     AllLaboratory = "AllLaboratory",
+    PcrTest = "PcrTest",
 }
 
 function getAvailableModules() {
@@ -243,6 +246,34 @@ const routes = [
                 UserState.pendingDeletion,
             ],
             requiredModules: [ClientModule.PublicLaboratoryResult],
+        },
+    },
+    {
+        path: "/pcrtest",
+        component: PcrTestView,
+        props: false,
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.registered,
+                UserState.notRegistered,
+                UserState.pendingDeletion,
+            ],
+            requiredModules: [ClientModule.PcrTest],
+        },
+    },
+    {
+        path: "/pcrtest/:serialNumber",
+        component: PcrTestView,
+        props: true,
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.registered,
+                UserState.notRegistered,
+                UserState.pendingDeletion,
+            ],
+            requiredModules: [ClientModule.PcrTest],
         },
     },
     {
@@ -424,9 +455,22 @@ function getDefaultPath(
     }
 }
 
+function scrollBehaviour(
+    to: Route,
+    from: Route,
+    savedPosition: void | Position
+): PositionResult {
+    if (savedPosition) {
+        return savedPosition;
+    } else {
+        return { x: 0, y: 0 };
+    }
+}
+
 const router = new VueRouter({
     mode: "history",
     routes,
+    scrollBehavior: scrollBehaviour,
 });
 
 router.beforeEach(beforeEachGuard);

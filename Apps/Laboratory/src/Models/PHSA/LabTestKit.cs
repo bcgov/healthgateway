@@ -13,32 +13,37 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Laboratory.Models
+namespace HealthGateway.Laboratory.Models.PHSA
 {
-    using System;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The representation of a rapid test record for authenticated access.
+    /// Model object representing an authenticated lab test kit.
     /// </summary>
-    public class RapidTestRecord
+    public class LabTestKit
     {
         /// <summary>
-        /// Gets or sets the rapid test result of the patient.
+        /// Gets or sets when the test was used.
         /// </summary>
-        [JsonPropertyName("testOutcome")]
-        public string TestResult { get; set; } = string.Empty;
+        [JsonPropertyName("testTakenMinutesAgo")]
+        public int TestTakenMinutesAgo { get; set; }
 
         /// <summary>
-        /// Gets or sets the serial number of the rapid test kit.
+        /// Gets or sets the test kit id.
         /// </summary>
-        [JsonPropertyName("labSerialNumber")]
-        public string SerialNumber { get; set; } = string.Empty;
+        [JsonPropertyName("testKitCid")]
+        public string? TestKitId { get; set; }
 
         /// <summary>
-        /// Gets or sets the date when the rapid test is taken.
+        /// Gets or sets first portion of the short code.
         /// </summary>
-        [JsonPropertyName("dateTestTaken")]
-        public DateTime TestTakenDate { get; set; }
+        [JsonPropertyName("shortCodeFirst")]
+        public string? ShortCodeFirst { get; set; }
+
+        /// <summary>
+        /// Gets or sets the second partion of the short code.
+        /// </summary>
+        [JsonPropertyName("shortCodeSecond")]
+        public string? ShortCodeSecond { get; set; }
     }
 }
