@@ -90,7 +90,7 @@ variables:
       value: "$(SourceBranchName)"
 
 jobs:
-  - job: "Azure OpenShift Silver"
+  - job: "Azure_OpenShiftSilver"
     pool:
       vmImage: "ubuntu-20.04"
     displayName: "Build ${{ parameters.Application }} in Azure Cloud"
@@ -100,7 +100,7 @@ jobs:
         parameters:
           licenseplate: "0bd5ad"
 
-  - job: "OpenShift Silver"
+  - job: "OpenShiftSilver"
     pool:
       name: "HealthGateway"
     displayName: "Build ${{ parameters.Application }} in Openshift"
