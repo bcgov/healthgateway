@@ -13,9 +13,9 @@ parameters:
 
 steps:
   - bash: |
-    set -e
-    oc login --token=$(OpenShiftToken) --server=https://api.silver.devops.gov.bc.ca:6443
-    oc projects
+      set -e
+      oc login --token=$(OpenShiftToken) --server=https://api.silver.devops.gov.bc.ca:6443
+      oc projects
     displayName: Test
 
   - task: DotNetCoreCLI@2
