@@ -14,7 +14,13 @@ parameters:
 steps:
   - bash: |
       set -e
-      oc login --token=$(OpenShiftToken) --server=https://api.silver.devops.gov.bc.ca:6443
+      echo EnableAzure set to $(EnableAzure)
+      if [ "$(EnableAzure)" = true ] ; then
+          echo Running in Azure, Installing dotnet-reportgenerator
+      else
+          echo Running in OpenShift, skipping dotnet-reportgenerator tool install
+      fi
+      oc login --token=$(OpenShiftToken) --server=$(OpenShiftUri)
       oc projects
     displayName: Test
 
