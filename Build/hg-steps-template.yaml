@@ -15,7 +15,7 @@ steps:
   - bash: |
       set -e
       echo EnableAzure set to $(EnableAzure)
-      if [ "$(EnableAzure)" = true ] ; then
+      if [ "$(EnableAzure)" = True ] ; then
           echo Running in Azure, Installing dotnet-reportgenerator
       else
           echo Running in OpenShift, skipping dotnet-reportgenerator tool install
@@ -82,7 +82,7 @@ steps:
 
   - script: |
       set -e
-      if [ "$(EnableAzure)" = true ] ; then
+      if [ "$(EnableAzure)" = True ] ; then
           echo Running in Azure, Installing dotnet-reportgenerator
           dotnet tool install -g dotnet-reportgenerator-globaltool
       else
@@ -94,7 +94,7 @@ steps:
 
   - script: |
       set -e
-      if [ "$(EnableAzure)" = true ] ; then
+      if [ "$(EnableAzure)" = True ] ; then
           echo Running in Azure, Installing dotnet-reportgenerator
           dotnet tool install -g dotnet-reportgenerator-globaltool
       else
@@ -148,7 +148,7 @@ steps:
     
   - script: |
       set -e
-      if [ "$(EnableAzure)" = true ] ; then
+      if [ "$(EnableAzure)" = True ] ; then
           echo Running in Azure, authenticating with OpenShift
           oc login --token=$(OpenShiftToken) --server=https://api.silver.devops.gov.bc.ca:6443
       else
