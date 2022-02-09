@@ -1,5 +1,5 @@
 parameters:
-  - name: "toolsNamespace" # defaults for any parameters that aren't specified
+  - name: "licenseplate" # defaults for any parameters that aren't specified
     type: string
     default: 0bd5ad
     values:
@@ -132,14 +132,22 @@ steps:
       buildContext: '$(Build.BinariesDirectory)'
       tags: '$(Build.BuildNumber)'
     condition: and(succeeded(), and(eq(variables['CreateImage'], true),eq(variables['EnableAzure'], true)))
+    enabled: false
     
   - script: |
       set -e
+      if [ "$(EnableAzure)" = true ] ; then
+          echo Running in Azure, authenticating with OpenShift
+          oc login --token=$(OpenShiftToken) --server=https://api.silver.devops.gov.bc.ca:6443
+      else
+          echo Running in OpenShift, skipping auth
+      fi
       oc projects
-      oc project ${{ parameters.toolsNamespace }}-tools
+      oc project ${{ parameters.licenseplate }}-tools
       cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
       oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(Image.Name) | oc apply -f -
       oc start-build $(Image.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
       oc tag $(Image.Name):latest $(Image.Name):$(Build.BuildNumber)
     displayName: "Building Image for $(App.Name) and pushing to OpenShift Image Stream"
-    condition: and(succeeded(), and(eq(variables['CreateImage'], true),eq(variables['EnableOpenShift'], true)))
+    condition: and(succeeded(), eq(variables['CreateImage'], true))
+    #condition: and(succeeded(), and(eq(variables['CreateImage'], true),eq(variables['EnableOpenShift'], true)))
