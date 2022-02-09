@@ -1,10 +1,11 @@
 parameters:
-  - name: "toolsNamespace" # defaults for any parameters that aren't specified
+  - name: "licenseplate" # defaults for any parameters that aren't specified
     type: string
     default: 0bd5ad
     values:
-      - q6qfzk #OCP3 Namespace
-      - 0bd5ad #Silver Cluster Namespace
+      - c8055e  #Gold Cluster Namespace
+      - 0bd5ad  #Silver Cluster Namespace
+      - azure   #Azure
 
   - name: publish
     type: boolean
@@ -25,9 +26,18 @@ steps:
       projects: "$(App.Home)"
       arguments: "--no-incremental /warnaserror"
 
+  - task: Cache@2
+    displayName: 'Fetch NPM Cache'
+    condition: and(succeeded(), eq(variables['NPMInstall'], true))
+    inputs:
+      key: 'npm | "$(Agent.OS)" | $(App.Home)/src/ClientApp/package-lock.json'
+      path: '$(App.Home)/src/ClientApp/node_modules'
+      cacheHitVar: 'CACHE_RESTORED'
+      restoreKeys: 'npm | "$(Agent.OS)"'
+
   - task: Npm@1
     displayName: "Installing NPM Packages"
-    condition: and(succeeded(), eq(variables['NPMInstall'], true))
+    condition: and(succeeded(), and(ne(variables.CACHE_RESTORED, 'true'), eq(variables['NPMInstall'], true)))
     inputs:
       command: "install"
       workingDir: "$(App.Home)/src/ClientApp"
@@ -60,12 +70,24 @@ steps:
 
   - script: |
       set -e
+      if [ "$(EnableAzure)" = True ] ; then
+          echo Running in Azure, Installing dotnet-reportgenerator
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+      else
+          echo Running in OpenShift, skipping dotnet-reportgenerator tool install
+      fi
       reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
     displayName: "Creating Code Coverage Report for $(App.Name)"
     condition: and(succeeded(), and(eq(variables['WASMBuild'], false),eq(variables['UnitTests'], true)))
 
   - script: |
       set -e
+      if [ "$(EnableAzure)" = True ] ; then
+          echo Running in Azure, Installing dotnet-reportgenerator
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+      else
+          echo Running in OpenShift, skipping dotnet-reportgenerator tool install
+      fi
       reportgenerator -reports:$(App.Home)/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
     displayName: "Creating Code Coverage Report for Blazor Solution $(App.Name)"
     condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
@@ -101,13 +123,30 @@ steps:
       arguments: "-o $(Build.BinariesDirectory)"
       zipAfterPublish: false
 
+  - task: Docker@2
+    displayName: 'Building Image for $(App.Name) and pushing to Docker Hub'
+    inputs:
+      containerRegistry: 'docker-health'
+      repository: healthopenshift/$(Image.Name)
+      Dockerfile: '$(App.Home)/Dockerfile'
+      buildContext: '$(Build.BinariesDirectory)'
+      tags: '$(Build.BuildNumber)'
+    condition: and(succeeded(), and(eq(variables['CreateImage'], true),eq(variables['EnableDocker'], true)))
+    enabled: true
+    
   - script: |
       set -e
+      if [ "$(EnableAzure)" = True ] ; then
+          echo Running in Azure, authenticating with OpenShift
+          oc login --token=$(OpenShiftToken) --server=$(OpenShiftUri)
+      else
+          echo Running in OpenShift, skipping auth
+      fi
       oc projects
-      oc project ${{ parameters.toolsNamespace }}-tools
+      oc project ${{ parameters.licenseplate }}-tools
       cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
-      oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(OpenShift.Name) | oc apply -f -
-      oc start-build $(OpenShift.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
-      oc tag $(OpenShift.Name):latest $(OpenShift.Name):$(Build.BuildNumber)
-    displayName: "Building OpenShift Image for $(App.Name) and pushing to Image Stream"
-    condition: and(succeeded(), eq(variables['RunOpenShift'], true))
+      oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(Image.Name) | oc apply -f -
+      oc start-build $(Image.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
+      oc tag $(Image.Name):$(Build.BuildNumber)
+    displayName: "Building Image for $(App.Name) and pushing to OpenShift Image Stream"
+    condition: and(succeeded(), eq(variables['CreateImage'], true))
