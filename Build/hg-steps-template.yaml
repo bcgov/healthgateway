@@ -147,6 +147,6 @@ steps:
       cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
       oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(Image.Name) | oc apply -f -
       oc start-build $(Image.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
-      oc tag $(Image.Name):latest $(Image.Name):$(Build.BuildNumber)
+      oc tag $(Image.Name):$(Build.BuildNumber)
     displayName: "Building Image for $(App.Name) and pushing to OpenShift Image Stream"
     condition: and(succeeded(), eq(variables['CreateImage'], true))
