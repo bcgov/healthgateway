@@ -1,0 +1,18 @@
+{
+    "resourcePayload": {
+        "testTakenMinutesAgo": 5,
+        "testKitCid": null,
+        "shortCodeFirst": "45YFKE7",
+        "shortCodeSecond": "XWRQN"
+    },
+    "totalResultCount": 0,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 2,
+    "resultError": {
+        "resultMessage": "The identified lab test has already been registered",
+        "errorCode": "LaboratoryServer-I",
+        "traceId": "1135aa7a081b48ac761efe57d126cc3d",
+        "actionCode": "PROCESSED"
+    }
+}
