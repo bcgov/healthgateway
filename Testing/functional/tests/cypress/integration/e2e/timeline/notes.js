@@ -13,6 +13,7 @@ describe("Notes", () => {
 
     it("Validate Add - Edit - Delete", () => {
         // Add Note
+        cy.intercept("POST", "**/v1/api/Note/*").as("createNote");
         cy.log("Adding Note.");
         cy.get("[data-testid=addNoteBtn]").click();
         cy.get("[data-testid=noteTitleInput]").type("Note Title!");
@@ -23,22 +24,33 @@ describe("Notes", () => {
         cy.get("[data-testid=noteTextInput]").type("Test");
         cy.get("[data-testid=saveNoteBtn]").click();
 
+        // Confirm added note - notes are sorted by date in descending order
+        cy.wait("@createNote").then(() => {
+            cy.get("[data-testid=entryCardDate]")
+                .last()
+                .should("have.text", "1950-Jan-01");
+            cy.get("[data-testid=noteTitle]")
+                .last()
+                .should("have.text", "Note Title!");
+        });
+
         // Edit Note
+        cy.intercept("PUT", "**/v1/api/Note/*").as("updateNote");
         cy.log("Editing Note.");
         cy.get("[data-testid=noteMenuBtn]").first().click();
         cy.get("[data-testid=editNoteMenuBtn]").first().click();
         cy.get("[data-testid=noteTitleInput]").clear().type("Test Edit");
         cy.get("[data-testid=saveNoteBtn]").click();
 
-        // Confirm added note - notes are sorted by date in descending order
-        cy.get("[data-testid=entryCardDate]")
-            .last()
-            .should("have.text", "1950-Jan-01");
-        cy.get("[data-testid=noteTitle]")
-            .last()
-            .should("have.text", "Note Title!");
+        // Confirm edited note
+        cy.wait("@updateNote").then(() => {
+            cy.get("[data-testid=noteTitle]")
+                .first()
+                .should("have.text", "Test Edit");
+        });
 
         // Delete Note
+        cy.intercept("DELETE", "**/v1/api/Note/*").as("deleteNote");
         cy.log("Deleting Note.");
         cy.get("[data-testid=noteMenuBtn]").last().click();
         cy.on("window:confirm", (str) => {
@@ -46,15 +58,12 @@ describe("Notes", () => {
         });
         cy.get("[data-testid=deleteNoteMenuBtn]").last().click();
 
-        // Confirm edited note
-        cy.get("[data-testid=noteTitle]")
-            .first()
-            .should("have.text", "Test Edit");
-
         // Confirm deleted note
-        cy.get("[data-testid=entryCardDetailsTitle]")
-            .last()
-            .contains("Note Title!")
-            .should("not.exist");
+        cy.wait("@deleteNote").then(() => {
+            cy.get("[data-testid=entryCardDetailsTitle]")
+                .last()
+                .contains("Note Title!")
+                .should("not.exist");
+        });
     });
 });
