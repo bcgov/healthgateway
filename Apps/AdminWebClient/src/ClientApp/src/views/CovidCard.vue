@@ -1,6 +1,10 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import {
+    faClipboardList,
+    faEye,
+    faEyeSlash,
+} from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import { Component, Vue, Watch } from "vue-property-decorator";
 
@@ -23,7 +27,7 @@ import { Mask, phnMask, postalCodeMask, zipCodeMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
 import SnowPlow from "@/utility/snowPlow";
 
-library.add(faEye, faEyeSlash);
+library.add(faEye, faEyeSlash, faClipboardList);
 
 interface ImmunizationRow {
     date: string;
@@ -677,7 +681,10 @@ export default class CovidCardView extends Vue {
                     <v-row dense>
                         <v-col class="text-right">
                             <v-btn type="submit" class="mx-2 success">
-                                <span>START COVID THERAPY ASSESSMENT</span>
+                                <span>Start COVID-19 Therapy Assessment</span>
+                                <v-icon class="ml-2" size="sm"
+                                    >fas fa-clipboard-list</v-icon
+                                >
                             </v-btn>
                         </v-col>
                     </v-row>
