@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Services
 {
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models.CovidSupport;
+    using HealthGateway.Admin.Server.Models.CovidSupport;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
 
@@ -46,5 +47,19 @@ namespace HealthGateway.Admin.Services
         /// <param name="phn">The personal health number that matches the person to retrieve.</param>
         /// <returns>The encoded document.</returns>
         Task<RequestResult<ReportModel>> RetrieveVaccineRecordAsync(string phn);
+
+        /// <summary>
+        /// Submits a covid therapy assessment request.
+        /// </summary>
+        /// <param name="request">The request containing.</param>
+        /// <returns>Returns the covid therapy assessment response.</returns>
+        Task<RequestResult<CovidTherapyAssessmentResponse>> SubmitCovidTherapyAssessment(CovidTherapyAssessmentRequest request);
+
+        /// <summary>
+        /// Gets the covid therapy assessment details for the given phn.
+        /// </summary>
+        /// <param name="phn">The phn to associate the covid therapy assessment against.</param>
+        /// <returns>Returns the covid therapy assessment details.</returns>
+        Task<RequestResult<CovidTherapyAssessmentDetails>> GetCovidTherapyAssessmentDetails(string phn);
     }
 }
