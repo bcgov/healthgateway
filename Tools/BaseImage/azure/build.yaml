@@ -50,8 +50,8 @@ steps:
    docker push $(ImageRegistry)/$(SilverLicense)-tools/$(App.Name):latest
   displayName: Tag and Push to OpenShift
 
-  - task: PublishPipelineArtifact@0
-    displayName: "Publish Pipeline Artifact"
-    inputs:
-      targetPath: "$(Build.ArtifactStagingDirectory)"
-    enabled: false
+- task: PublishPipelineArtifact@0
+  displayName: "Publish Pipeline Artifact"
+  inputs:
+    targetPath: "$(Build.ArtifactStagingDirectory)"
+  enabled: false
