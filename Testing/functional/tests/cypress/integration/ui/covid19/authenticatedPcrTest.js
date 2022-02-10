@@ -90,7 +90,7 @@ describe("Authenticated Pcr Test Registration", () => {
         selectorShouldBeVisible(registrationSuccessBanner);
         selectorShouldBeVisible(backToHomeBtn);
         cy.get(backToHomeBtn).click();
-        cy.url().should("include", Cypress.env("baseUrl"));
+        cy.url().should("include", Cypress.config("baseUrl"));
     });
 });
 
