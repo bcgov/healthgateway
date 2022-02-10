@@ -32,7 +32,7 @@ pool:
 
 steps:
 - task: Docker@2
-  displayName: 'Build and Push'
+  displayName: "Build Image and push to Docker"
   inputs:
     containerRegistry: 'docker-health'
     repository: '$(DockerRepo)/$(App.Name)'
@@ -41,7 +41,6 @@ steps:
     tags: |
      $(Build.BuildNumber)
      latest
-  displayName: "Build Image and push to Docker"
 
 - bash: |
    docker tag $(DockerRepo)/$(App.Name):$(Build.BuildNumber) $(ImageRegistry)/$(SilverLicense)-tools/$(App.Name):$(Build.BuildNumber)
@@ -50,7 +49,6 @@ steps:
    docker push $(ImageRegistry)/$(SilverLicense)-tools/$(App.Name):$(Build.BuildNumber)
    docker push $(ImageRegistry)/$(SilverLicense)-tools/$(App.Name):latest
   displayName: Tag and Push to OpenShift
-
 
   - task: PublishPipelineArtifact@0
     displayName: "Publish Pipeline Artifact"
