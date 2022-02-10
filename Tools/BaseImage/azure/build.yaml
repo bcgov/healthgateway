@@ -43,10 +43,9 @@ steps:
      latest
 
 - bash: |
-   docker tag $(DockerRepo)/$(App.Name):$(Build.BuildNumber) $(ImageRegistry)/$(SilverLicense)-tools/$(App.Name):$(Build.BuildNumber)
-   docker tag $(DockerRepo)/$(App.Name):$(Build.BuildNumber) $(ImageRegistry)/$(SilverLicense)-tools/$(App.Name):latest
-   docker login $(ImageRegistry) --username=azure --password=$(OpenShiftToken)
-   docker push $(ImageRegistry)/$(SilverLicense)-tools/$(App.Name):$(Build.BuildNumber)
-   docker push $(ImageRegistry)/$(SilverLicense)-tools/$(App.Name):latest
-  displayName: Tag and Push to OpenShift
-  
+    set -e
+    oc login --token=$(OpenShiftToken) --server=$(OpenShiftUri)
+    oc project $(SilverLicense)-tools
+    oc import-image $(DockerRepo)/$(App.Name):$(Build.BuildNumber) --from=$(DockerRepo)/$(App.Name):$(Build.BuildNumber) --confirm
+    oc tag $(App.Name):$(Build.BuildNumber) $(App.Name):latest
+  displayName: Pull Image to OpenShift
