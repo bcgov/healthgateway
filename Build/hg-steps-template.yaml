@@ -127,13 +127,20 @@ steps:
     displayName: 'Building Image for $(App.Name) and pushing to Docker Hub'
     inputs:
       containerRegistry: 'docker-health'
-      repository: healthopenshift/$(Image.Name)
+      repository: $(DockerRepo)/$(Image.Name)
       Dockerfile: '$(App.Home)/Dockerfile'
       buildContext: '$(Build.BinariesDirectory)'
       tags: '$(Build.BuildNumber)'
-    condition: and(succeeded(), and(eq(variables['CreateImage'], true),eq(variables['EnableDocker'], true)))
-    enabled: true
-    
+    condition: and(succeeded(), and(eq(variables['CreateImage'], true),ne(variables['EnableOpenShift'], true)))
+
+  - bash: |
+      set -e
+      oc login --token=$(OpenShiftToken) --server=$(OpenShiftUri)
+      oc project $(SilverLicense)-tools
+      oc import-image $(DockerRepo)/$(Image.Name):$(Build.BuildNumber) --from=$(DockerRepo)/$(Image.Name):$(Build.BuildNumber) --confirm
+    displayName: Pull Image to OpenShift
+    condition: and(succeeded(), and(eq(variables['CreateImage'], true),ne(variables['EnableOpenShift'], true)))
+
   - script: |
       set -e
       if [ "$(EnableAzure)" = True ] ; then
@@ -149,4 +156,4 @@ steps:
       oc start-build $(Image.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
       oc tag $(Image.Name):latest $(Image.Name):$(Build.BuildNumber)
     displayName: "Building Image for $(App.Name) and pushing to OpenShift Image Stream"
-    condition: and(succeeded(), eq(variables['CreateImage'], true))
+    condition: and(succeeded(), and(eq(variables['CreateImage'], true),eq(variables['EnableOpenShift'], true)))
