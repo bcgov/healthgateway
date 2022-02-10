@@ -2,12 +2,15 @@ name: 1.0.0$(Rev:.r) #Build number
 
 #Build variables
 variables:
-  App.Home: $(Build.SourcesDirectory)/Tools/BaseImage/
-  App.Name: hg-base
+  - group: Secrets
+  - name: App.Home
+    value: $(Build.SourcesDirectory)/Tools/BaseImage/
+  - name: App.Name 
+    value: hg-base
 
 schedules:
   - cron: "0 0 * * *"
-    displayName: "Daily Base Image Build"
+    displayName: "Health Gateway Base Image Build"
     branches:
       include: 
         - dev
@@ -25,18 +28,32 @@ trigger:
       - Tools/BaseImage
 
 pool:
-  name: "HealthGateway"
+  vmImage: "ubuntu-20.04"
 
 steps:
-  - script: |
-      set -e
-      oc process -f $(App.Home)/build.yaml | oc apply -f -
-      oc start-build $(App.Name) --wait --follow 
-      oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
-      echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
-    displayName: "Build OpenShift Image and push to Image Stream"
+- task: Docker@2
+  displayName: 'Build and Push'
+  inputs:
+    containerRegistry: 'docker-health'
+    repository: '$(DockerRepo)/$(App.Name)'
+    Dockerfile: Tools/BaseImage/docker/Dockerfile
+    buildContext: '$(Build.BinariesDirectory)'
+    tags: |
+     $(Build.BuildNumber)
+     latest
+  displayName: "Build Image and push to Docker"
+
+- bash: |
+   docker tag $(DockerRepo)/$(App.Name):$(Build.BuildNumber) $(ImageRegistry)/$(SilverLicense)-tools/$(App.Name):$(Build.BuildNumber)
+   docker tag $(DockerRepo)/$(App.Name):$(Build.BuildNumber) $(ImageRegistry)/$(SilverLicense)-tools/$(App.Name):latest
+   docker login $(ImageRegistry) --username=azure --password=$(OpenShiftToken)
+   docker push $(ImageRegistry)/$(SilverLicense)-tools/$(App.Name):$(Build.BuildNumber)
+   docker push $(ImageRegistry)/$(SilverLicense)-tools/$(App.Name):latest
+  displayName: Tag and Push to OpenShift
+
 
   - task: PublishPipelineArtifact@0
     displayName: "Publish Pipeline Artifact"
     inputs:
       targetPath: "$(Build.ArtifactStagingDirectory)"
+    enabled: false
