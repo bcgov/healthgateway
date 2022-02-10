@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Models.CovidSupport;
 
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -45,4 +46,10 @@ public class CovidTherapyAssessmentDetails
     /// </summary>
     [JsonPropertyName("hasDocumentedChronicCondition")]
     public bool HasDocumentedChronicCondition { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of previous assessment details.
+    /// </summary>
+    [JsonPropertyName("previousAssessmentDetailsList")]
+    public IEnumerable<PreviousAssessmentDetails>? PreviousAssessmentDetailsList { get; set; }
 }
