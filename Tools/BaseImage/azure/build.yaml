@@ -47,5 +47,7 @@ steps:
     oc login --token=$(OpenShiftToken) --server=$(OpenShiftUri)
     oc project $(SilverLicense)-tools
     oc tag $(App.Name):latest $(App.Name):previous
-    oc import-image $(App.Name):latest --from=$(DockerRepo)/$(App.Name):$(Build.BuildNumber) --confirm
+    docker tag $(DockerRepo)/$(App.Name):$(Build.BuildNumber) $(ImageRegistry)/$(SilverLicense)-tools/$(App.Name):latest
+    docker login $(ImageRegistry) --username=azure --password=$(OpenShiftToken)
+    docker push $(ImageRegistry)/$(SilverLicense)-tools/$(App.Name):latest
   displayName: Pull Image to OpenShift
