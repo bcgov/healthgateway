@@ -17,10 +17,14 @@
 namespace HealthGateway.Admin.Services
 {
     using System;
+    using System.Net;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models.CovidSupport;
+    using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Server.Models.CovidSupport;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
@@ -35,6 +39,7 @@ namespace HealthGateway.Admin.Services
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Refit;
 
     /// <summary>
     /// Service that provides COVID-19 Support functionality.
@@ -51,6 +56,8 @@ namespace HealthGateway.Admin.Services
         private readonly IVaccineProofDelegate vaccineProofDelegate;
         private readonly BCMailPlusConfig bcmpConfig;
         private readonly VaccineCardConfig vaccineCardConfig;
+        private readonly IImmunizationAdminClient immunizationAdminClient;
+        private readonly IAuthenticationDelegate authenticationDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CovidSupportService"/> class.
@@ -62,6 +69,8 @@ namespace HealthGateway.Admin.Services
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="vaccineProofDelegate">The injected delegate to get the vaccine proof.</param>
+        /// <param name="immunizationAdminClient">The api client to use for immunization.</param>
+        /// /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
         public CovidSupportService(
             ILogger<CovidSupportService> logger,
             IPatientService patientService,
@@ -69,7 +78,9 @@ namespace HealthGateway.Admin.Services
             IVaccineStatusDelegate vaccineStatusDelegate,
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
-            IVaccineProofDelegate vaccineProofDelegate)
+            IVaccineProofDelegate vaccineProofDelegate,
+            IImmunizationAdminClient immunizationAdminClient,
+            IAuthenticationDelegate authenticationDelegate)
         {
             this.logger = logger;
             this.patientService = patientService;
@@ -77,6 +88,8 @@ namespace HealthGateway.Admin.Services
             this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.httpContextAccessor = httpContextAccessor;
             this.vaccineProofDelegate = vaccineProofDelegate;
+            this.immunizationAdminClient = immunizationAdminClient;
+            this.authenticationDelegate = authenticationDelegate;
 
             this.bcmpConfig = new();
             configuration.Bind(BCMailPlusConfigSectionKey, this.bcmpConfig);
@@ -312,15 +325,107 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public Task<RequestResult<CovidTherapyAssessmentResponse>> SubmitCovidTherapyAssessment(CovidTherapyAssessmentRequest request)
+        public async Task<RequestResult<CovidTherapyAssessmentResponse>> SubmitCovidTherapyAssessment(CovidTherapyAssessmentRequest request)
         {
-            throw new NotImplementedException();
+            RequestResult<CovidTherapyAssessmentResponse> requestResult = new()
+            {
+                TotalResultCount = 0,
+                ResultStatus = ResultType.Error,
+            };
+
+            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            try
+            {
+                ApiResponse<CovidTherapyAssessmentResponse> response =
+                    await this.immunizationAdminClient.SubmitCovidTherapyAssessment(request, accessToken).ConfigureAwait(true);
+                ProcessResponse(requestResult, response);
+            }
+            catch (HttpRequestException e)
+            {
+                this.logger.LogCritical("HTTP Request Exception {Error}...", e.ToString());
+                requestResult.ResultError = new RequestResultError()
+                {
+                    ResultMessage = $"Error with HTTP Request",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                };
+            }
+
+            return requestResult;
         }
 
         /// <inheritdoc />
-        public Task<RequestResult<CovidTherapyAssessmentDetails>> GetCovidTherapyAssessmentDetails(string phn)
+        public async Task<RequestResult<CovidTherapyAssessmentDetails>> GetCovidTherapyAssessmentDetails(string phn)
         {
-            throw new NotImplementedException();
+            RequestResult<CovidTherapyAssessmentDetails> requestResult = new()
+            {
+                TotalResultCount = 0,
+                ResultStatus = ResultType.Error,
+            };
+
+            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            try
+            {
+                ApiResponse<CovidTherapyAssessmentDetails> response =
+                    await this.immunizationAdminClient.GetCovidTherapyAssessmentDetails(phn, accessToken).ConfigureAwait(true);
+                ProcessResponse(requestResult, response);
+            }
+            catch (HttpRequestException e)
+            {
+                this.logger.LogCritical("HTTP Request Exception {Error}...", e.ToString());
+                requestResult.ResultError = new RequestResultError()
+                {
+                    ResultMessage = $"Error with HTTP Request",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                };
+            }
+
+            return requestResult;
+        }
+
+        private static void ProcessResponse<T>(RequestResult<T> requestResult, ApiResponse<T> response)
+            where T : class
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    requestResult.ResultStatus = ResultType.Success;
+                    requestResult.ResourcePayload = response.Content;
+                    break;
+
+                // Only GetCovidTherapyAssessmentDetails can return HttpStatusCode.NoContent
+                case HttpStatusCode.NoContent:
+                    requestResult.ResultError = new RequestResultError()
+                    {
+                        ResultMessage = $"No Details found",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    };
+                    break;
+
+                // SubmitCovidTherapyAssessment and GetCovidTherapyAssessmentDetails can return HttpStatusCode.Unauthorized
+                case HttpStatusCode.Unauthorized:
+                    requestResult.ResultError = new RequestResultError()
+                    {
+                        ResultMessage = $"Request was not authorized",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    };
+                    break;
+
+                // SubmitCovidTherapyAssessment and GetCovidTherapyAssessmentDetails can return HttpStatusCode.Forbidde
+                case HttpStatusCode.Forbidden:
+                    requestResult.ResultError = new RequestResultError()
+                    {
+                        ResultMessage = $"Missing Required Data Element, HTTP Error {response.StatusCode}",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    };
+                    break;
+                default:
+                    requestResult.ResultError = new RequestResultError()
+                    {
+                        ResultMessage = $"An unexpected error occurred, HTTP Error {response.StatusCode}",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    };
+                    break;
+            }
         }
 
         private async Task<RequestResult<ReportModel>> RetrieveVaccineCardAsync(string phn, DateTime birthdate, string bearerToken)

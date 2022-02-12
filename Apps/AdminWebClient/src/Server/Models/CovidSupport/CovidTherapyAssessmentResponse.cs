@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Server.Models.CovidSupport;
 
 using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -25,62 +24,8 @@ using System.Text.Json.Serialization;
 public class CovidTherapyAssessmentResponse
 {
     /// <summary>
-    /// Gets or sets the phn.
+    /// Gets or sets the id for covid therapy assessment response.
     /// </summary>
-    [JsonPropertyName("phn")]
-    public string? Phn { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether there has been a reent positive covid result.
-    /// </summary>
-    [JsonPropertyName("hasRecentPositiveCovidResult")]
-    public bool HasRecentPositiveCovidResult { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether cev 10 or cev 2 has been found.
-    /// </summary>
-    [JsonPropertyName("foundCev1OrCev2")]
-    public bool FoundCev1OrCev2 { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether there have been any chronic conditions found.
-    /// </summary>
-    [JsonPropertyName("foundChronicConditions")]
-    public bool FoundChronicConditions { get; set; }
-
-    /// <summary>
-    /// Gets or sets the chronic condition count.
-    /// </summary>
-    [JsonPropertyName("chronicConditionCount")]
-    public int ChronicConditionCount { get; set; }
-
-    /// <summary>
-    /// Gets or sets the dose count.
-    /// </summary>
-    [JsonPropertyName("doseCount")]
-    public int DoseCount { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether there are three doses and 14 days.
-    /// </summary>
-    [JsonPropertyName("threeDoseAnd14Days")]
-    public bool ThreeDoseAnd14Days { get; set; }
-
-    /// <summary>
-    /// Gets or sets the calculated age.
-    /// </summary>
-    [JsonPropertyName("calculatedAge")]
-    public int CalculatedAge { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether previous anti viral submissions have been found.
-    /// </summary>
-    [JsonPropertyName("previousAvSubmissionFound")]
-    public bool PreviousAvSubmissionFound { get; set; }
-
-    /// <summary>
-    /// Gets or sets the list of most recent anti viral submission date times.
-    /// </summary>
-    [JsonPropertyName("mostRecentAvSubmissionDateTime")]
-    public IEnumerable<DateTime>? MostRecentAvSubmissionDateTime { get; set; }
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
 }

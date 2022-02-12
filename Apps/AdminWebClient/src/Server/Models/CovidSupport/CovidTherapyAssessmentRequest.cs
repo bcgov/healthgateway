@@ -35,12 +35,12 @@ public class CovidTherapyAssessmentRequest
     /// <summary>
     /// Initializes a new instance of the <see cref="CovidTherapyAssessmentRequest"/> class.
     /// </summary>
-    /// <param name="streetLines">The list of address street lines.</param>
+    /// <param name="streetAddresses">The list of address street lines.</param>
     [JsonConstructor]
     public CovidTherapyAssessmentRequest(
-        IList<string> streetLines)
+        IList<string> streetAddresses)
     {
-        this.StreetAddress = streetLines;
+        this.StreetAddresses = streetAddresses;
     }
 
     /// <summary>
@@ -72,6 +72,18 @@ public class CovidTherapyAssessmentRequest
     /// </summary>
     [JsonPropertyName("identifiesIndigenous")]
     public CovidTherapyAssessmentOption IdentifiesIndigenous { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifies has a family doctor or np option.
+    /// </summary>
+    [JsonPropertyName("hasAFamilyDoctorOrNp")]
+    public CovidTherapyAssessmentOption HasAFamilyDoctorOrNp { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifies the confirms over 12 option.
+    /// </summary>
+    [JsonPropertyName("confirmsOver12")]
+    public CovidTherapyAssessmentOption ConfirmsOver12 { get; set; }
 
     /// <summary>
     /// Gets or sets the has severe covid 19 symptoms option.
@@ -118,8 +130,8 @@ public class CovidTherapyAssessmentRequest
     /// <summary>
     /// Gets street address.
     /// </summary>
-    [JsonPropertyName("streetAddress")]
-    public IList<string>? StreetAddress { get; } = new List<string>();
+    [JsonPropertyName("streetAddresses")]
+    public IList<string>? StreetAddresses { get; } = new List<string>();
 
     /// <summary>
     /// Gets or sets the city.
