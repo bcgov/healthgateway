@@ -53,13 +53,13 @@ namespace HealthGateway.Admin.Services
         /// </summary>
         /// <param name="request">The request containing.</param>
         /// <returns>Returns the covid therapy assessment response.</returns>
-        Task<RequestResult<CovidTherapyAssessmentResponse>> SubmitCovidTherapyAssessment(CovidTherapyAssessmentRequest request);
+        Task<RequestResult<CovidAssessmentResponse>> SubmitCovidAssessmentAsync(CovidAssessmentRequest request);
 
         /// <summary>
         /// Gets the covid therapy assessment details for the given phn.
         /// </summary>
         /// <param name="phn">The phn to associate the covid therapy assessment against.</param>
         /// <returns>Returns the covid therapy assessment details.</returns>
-        Task<RequestResult<CovidTherapyAssessmentDetails>> GetCovidTherapyAssessmentDetails(string phn);
+        Task<RequestResult<CovidAssessmentDetailsResponse>> GetCovidAssessmentDetailsAsync(string phn);
     }
 }
