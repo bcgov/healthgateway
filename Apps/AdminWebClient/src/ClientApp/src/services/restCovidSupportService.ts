@@ -3,6 +3,7 @@ import { injectable } from "inversify";
 import CovidCardDocumentResult from "@/models/covidCardDocumentResult";
 import CovidCardMailRequest from "@/models/covidCardMailRequest";
 import CovidCardPatientResult from "@/models/covidCardPatientResult";
+import CovidTherapyAssessmentDetails from "@/models/covidTherapyAssessmentDetails";
 import CovidTherapyAssessmentRequest from "@/models/CovidTherapyAssessmentRequest";
 import RequestResult from "@/models/requestResult";
 import { ICovidSupportService, IHttpDelegate } from "@/services/interfaces";
@@ -72,6 +73,31 @@ export class RestCovidSupportService implements ICovidSupportService {
                 .then((submitResult) => {
                     return RequestResultUtil.handleResult(
                         submitResult,
+                        resolve,
+                        reject
+                    );
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return reject(err);
+                });
+        });
+    }
+
+    public getCovidTherapyAssessmentDetails(
+        phn: string
+    ): Promise<CovidTherapyAssessmentDetails> {
+        return new Promise((resolve, reject) => {
+            this.http
+                .post<RequestResult<CovidTherapyAssessmentDetails>>(
+                    `${this.BASE_URI}/history`,
+                    {
+                        phn: phn,
+                    }
+                )
+                .then((historyResult) => {
+                    return RequestResultUtil.handleResult(
+                        historyResult,
                         resolve,
                         reject
                     );

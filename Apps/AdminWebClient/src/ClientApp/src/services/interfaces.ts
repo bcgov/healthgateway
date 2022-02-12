@@ -6,6 +6,7 @@ import CovidCardDocumentResult from "@/models/covidCardDocumentResult";
 import CovidCardMailRequest from "@/models/covidCardMailRequest";
 import CovidCardPatientResult from "@/models/covidCardPatientResult";
 import CovidTherapyAssessmentRequest from "@/models/CovidTherapyAssessmentRequest";
+import CovidTherapyAssessmentDetails from "@/models/covidTherapyAssessmentDetails";
 import Email from "@/models/email";
 import ExternalConfiguration from "@/models/externalConfiguration";
 import MessageVerification from "@/models/messageVerification";
@@ -81,6 +82,9 @@ export interface ICovidSupportService {
     submitCovidTherapyAssessment(
         covidTherapyAssessmentRequest: CovidTherapyAssessmentRequest
     ): Promise<string>;
+    getCovidTherapyAssessmentDetails(
+        phn: string
+    ): Promise<CovidTherapyAssessmentDetails>;
 }
 
 export interface IHttpDelegate {
