@@ -15,17 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Models.CovidSupport;
 
-using System;
 using System.Text.Json.Serialization;
 
-/// <summary>
-/// Model object representing an anti viral screener support submission response.
-/// </summary>
-public class CovidTherapyAssessmentResponse
+public class CovidAssessmentDetailsRequest
 {
     /// <summary>
-    /// Gets or sets the id for covid therapy assessment response.
+    /// Gets or sets the phn used.
     /// </summary>
-    [JsonPropertyName("id")]
-    public Guid Id { get; set; }
+    [JsonPropertyName("phn")]
+    public string? Phn { get; set; }
 }
