@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Api;
 
-using System.Net.Http;
 using System.Threading.Tasks;
 using HealthGateway.Admin.Server.Models.CovidSupport;
 using Refit;
@@ -28,18 +27,18 @@ public interface IImmunizationAdminClient
     /// <summary>
     /// Submit a completed Anti Viral screening form.
     /// </summary>
-    /// <param name="request">The covid therapy assessment request to use for submission.</param>
+    /// <param name="request">The covid assessment request to use for submission.</param>
     /// <param name="token">The bearer token to authorize the call.</param>
     /// <returns>The response to the submitted covid anti viral therapeutic assessment form.</returns>
     [Post("/api/v1/Support/Immunizations/AntiViralSupportDetails")]
-    Task<ApiResponse<CovidTherapyAssessmentResponse>> SubmitCovidTherapyAssessment([Body] CovidTherapyAssessmentRequest request, [Authorize("Bearer")] string token);
+    Task<ApiResponse<CovidAssessmentResponse>> SubmitCovidAssessment([Body] CovidAssessmentRequest request, [Authorize("Bearer")] string token);
 
     /// <summary>
     /// Get details to help support the covid anti viral therapeutic assessment form for a phn.
     /// </summary>
-    /// <param name="phn">The phn used to identity the covid therapy assessment.</param>
+    /// <param name="request">The covid assessment details request to identity the covid therapy assessment.</param>
     /// <param name="token">The bearer token to authorize the call.</param>
     /// <returns>The details to help support covid anti viral therapeutic assessment.</returns>
     [Post("/api/v1/Support/Immunizations/AntiViralSupportDetails")]
-    Task<ApiResponse<CovidTherapyAssessmentDetails>> GetCovidTherapyAssessmentDetails(string phn, [Authorize("Bearer")] string token);
+    Task<ApiResponse<CovidAssessmentDetailsResponse>> GetCovidAssessmentDetails([Body] CovidAssessmentDetailsRequest request, [Authorize("Bearer")] string token);
 }

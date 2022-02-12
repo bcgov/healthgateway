@@ -95,33 +95,33 @@ namespace HealthGateway.Admin.Controllers
         /// Submitting a completed anti viral screening form.
         /// </summary>
         /// <param name="request">The covid therapy assessment request to use for submission.</param>
-        /// <returns>A CovidTherapyAssessmentResponse object wrapped in a request result.</returns>
-        /// <response code="200">The CovidTherapyAssessmentRequest was submitted.</response>
+        /// <returns>A CovidAssessmentResponse object wrapped in a request result.</returns>
+        /// <response code="200">The CovidAssessmentRequest was submitted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpPost]
         [Produces("application/json")]
         [Route("CovidAssessment")]
-        public async Task<RequestResult<CovidTherapyAssessmentResponse>> SubmitCovidTherapyAssessment([FromBody] CovidTherapyAssessmentRequest request)
+        public async Task<RequestResult<CovidAssessmentResponse>> SubmitCovidAssessment([FromBody] CovidAssessmentRequest request)
         {
-            return await this.covidSupportService.SubmitCovidTherapyAssessment(request).ConfigureAwait(true);
+            return await this.covidSupportService.SubmitCovidAssessmentAsync(request).ConfigureAwait(true);
         }
 
         /// <summary>
         /// Get details to help support the covid anti viral therapeutic assessment form for a phn.
         /// </summary>
         /// <param name="phn">The covid therapy assessment request to use for submission.</param>
-        /// <returns>A CovidTherapyAssessmentResponse object wrapped in a request result.</returns>
-        /// <response code="200">The CovidTherapyAssessmentRequest was submitted.</response>
+        /// <returns>A CovidAssessmentResponse object wrapped in a request result.</returns>
+        /// <response code="200">The CovidAssessmentRequest was submitted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Route("CovidAssessmentDetails")]
-        public async Task<RequestResult<CovidTherapyAssessmentDetails>> GetCovidTherapyAssessmentDetails([FromHeader] string phn)
+        public async Task<RequestResult<CovidAssessmentDetailsResponse>> GetCovidAssessmentDetails([FromHeader] string phn)
         {
-            return await this.covidSupportService.GetCovidTherapyAssessmentDetails(phn).ConfigureAwait(true);
+            return await this.covidSupportService.GetCovidAssessmentDetailsAsync(phn).ConfigureAwait(true);
         }
     }
 }

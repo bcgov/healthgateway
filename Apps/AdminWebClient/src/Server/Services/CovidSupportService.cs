@@ -28,6 +28,8 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
@@ -109,14 +111,14 @@ namespace HealthGateway.Admin.Services
 
             if (patientResult.ResultStatus == ResultType.Success)
             {
-                this.logger.LogDebug($"Sucessfully retrieved patient.");
+                this.logger.LogDebug($"Successfully retrieved patient.");
 
                 RequestResult<VaccineDetails> vaccineDetailsResult =
                     await this.immunizationDelegate.GetVaccineDetailsWithRetries(patientResult.ResourcePayload, refresh).ConfigureAwait(true);
 
                 if (vaccineDetailsResult.ResultStatus == ResultType.Success && vaccineDetailsResult.ResourcePayload != null)
                 {
-                    this.logger.LogDebug($"Sucessfully retrieved vaccine details.");
+                    this.logger.LogDebug($"Successfully retrieved vaccine details.");
 
                     CovidInformation covidInformation = new()
                     {
@@ -325,9 +327,9 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<CovidTherapyAssessmentResponse>> SubmitCovidTherapyAssessment(CovidTherapyAssessmentRequest request)
+        public async Task<RequestResult<CovidAssessmentResponse>> SubmitCovidAssessmentAsync(CovidAssessmentRequest request)
         {
-            RequestResult<CovidTherapyAssessmentResponse> requestResult = new()
+            RequestResult<CovidAssessmentResponse> requestResult = new()
             {
                 TotalResultCount = 0,
                 ResultStatus = ResultType.Error,
@@ -336,13 +338,13 @@ namespace HealthGateway.Admin.Services
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
             try
             {
-                ApiResponse<CovidTherapyAssessmentResponse> response =
-                    await this.immunizationAdminClient.SubmitCovidTherapyAssessment(request, accessToken).ConfigureAwait(true);
+                ApiResponse<CovidAssessmentResponse> response =
+                    await this.immunizationAdminClient.SubmitCovidAssessment(request, accessToken).ConfigureAwait(true);
                 ProcessResponse(requestResult, response);
             }
             catch (HttpRequestException e)
             {
-                this.logger.LogCritical("HTTP Request Exception {Error}...", e.ToString());
+                this.logger.LogCritical($"HTTP Request Exception {e}");
                 requestResult.ResultError = new RequestResultError()
                 {
                     ResultMessage = $"Error with HTTP Request",
@@ -354,29 +356,43 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<CovidTherapyAssessmentDetails>> GetCovidTherapyAssessmentDetails(string phn)
+        public async Task<RequestResult<CovidAssessmentDetailsResponse>> GetCovidAssessmentDetailsAsync(string phn)
         {
-            RequestResult<CovidTherapyAssessmentDetails> requestResult = new()
+            RequestResult<CovidAssessmentDetailsResponse> requestResult = new()
             {
                 TotalResultCount = 0,
                 ResultStatus = ResultType.Error,
             };
 
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
-            try
+            bool validated = false;
+            if (!string.IsNullOrEmpty(phn))
             {
-                ApiResponse<CovidTherapyAssessmentDetails> response =
-                    await this.immunizationAdminClient.GetCovidTherapyAssessmentDetails(phn, accessToken).ConfigureAwait(true);
-                ProcessResponse(requestResult, response);
+                validated = PhnValidator.IsValid(phn);
             }
-            catch (HttpRequestException e)
+
+            if (validated)
             {
-                this.logger.LogCritical("HTTP Request Exception {Error}...", e.ToString());
-                requestResult.ResultError = new RequestResultError()
+                string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+                try
                 {
-                    ResultMessage = $"Error with HTTP Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                };
+                    ApiResponse<CovidAssessmentDetailsResponse> response =
+                        await this.immunizationAdminClient.GetCovidAssessmentDetails(new CovidAssessmentDetailsRequest() { Phn = phn, }, accessToken).ConfigureAwait(true);
+                    ProcessResponse(requestResult, response);
+                }
+                catch (HttpRequestException e)
+                {
+                    this.logger.LogCritical($"HTTP Request Exception {e}");
+                    requestResult.ResultError = new RequestResultError()
+                    {
+                        ResultMessage = $"Error with HTTP Request",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    };
+                }
+            }
+            else
+            {
+                requestResult.ResultError = ErrorTranslator.ActionRequired("Form data did not pass validation", ActionType.Validation);
+                requestResult.ResultStatus = ResultType.ActionRequired;
             }
 
             return requestResult;
@@ -392,7 +408,7 @@ namespace HealthGateway.Admin.Services
                     requestResult.ResourcePayload = response.Content;
                     break;
 
-                // Only GetCovidTherapyAssessmentDetails can return HttpStatusCode.NoContent
+                // Only GetCovidAssessmentDetailsAsync can return HttpStatusCode.NoContent
                 case HttpStatusCode.NoContent:
                     requestResult.ResultError = new RequestResultError()
                     {
@@ -401,7 +417,7 @@ namespace HealthGateway.Admin.Services
                     };
                     break;
 
-                // SubmitCovidTherapyAssessment and GetCovidTherapyAssessmentDetails can return HttpStatusCode.Unauthorized
+                // SubmitCovidAssessmentAsync and GetCovidAssessmentDetailsAsync can return HttpStatusCode.Unauthorized
                 case HttpStatusCode.Unauthorized:
                     requestResult.ResultError = new RequestResultError()
                     {
@@ -410,7 +426,7 @@ namespace HealthGateway.Admin.Services
                     };
                     break;
 
-                // SubmitCovidTherapyAssessment and GetCovidTherapyAssessmentDetails can return HttpStatusCode.Forbidde
+                // SubmitCovidAssessmentAsync and GetCovidAssessmentDetailsAsync can return HttpStatusCode.Forbidden
                 case HttpStatusCode.Forbidden:
                     requestResult.ResultError = new RequestResultError()
                     {
