@@ -11,6 +11,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="27.2.1" />
+    <PackageReference Include="Refit" Version="6.2.16" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="6.2.16" />
     <PackageReference Include="SSH.NET" Version="2020.0.1" />
     <PackageReference Include="UAParser" Version="3.1.47" />
     <PackageReference Include="VueCliMiddleware" Version="6.0.0" />
