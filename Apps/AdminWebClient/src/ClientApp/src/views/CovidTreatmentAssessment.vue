@@ -52,8 +52,8 @@ export default class CovidTreatmentAssessment extends Vue {
     }
 
     private submit() {
-        alert(this.covidTherapyAssessmentRequest.testedPositiveInPast7Days);
         alert(this.covidTherapyAssessmentRequest.identifiesIndigenous);
+        alert(this.covidTherapyAssessmentRequest.hasAFamilyDoctorOrNp);
     }
 }
 </script>
@@ -99,9 +99,6 @@ export default class CovidTreatmentAssessment extends Vue {
                             v-model="
                                 covidTherapyAssessmentRequest.identifiesIndigenous
                             "
-                            v-bind-value="
-                                covidTherapyAssessmentRequest.identifiesIndigenous
-                            "
                             :question-sequence="questionSequenceA"
                             :has-additional-response="false"
                         />
@@ -109,9 +106,6 @@ export default class CovidTreatmentAssessment extends Vue {
                     <Card :question-sequence="questionSequenceB">
                         <RadioButton
                             v-model="
-                                covidTherapyAssessmentRequest.hasAFamilyDoctorOrNp
-                            "
-                            v-bind-value="
                                 covidTherapyAssessmentRequest.hasAFamilyDoctorOrNp
                             "
                             :question-sequence="questionSequenceB"
@@ -126,9 +120,6 @@ export default class CovidTreatmentAssessment extends Vue {
                             v-model="
                                 covidTherapyAssessmentRequest.confirmsOver12
                             "
-                            v-bind-value="
-                                covidTherapyAssessmentRequest.confirmsOver12
-                            "
                             :question-sequence="questionSequence1"
                             :has-not-sure-option="false"
                             :has-additional-response="true"
@@ -137,9 +128,6 @@ export default class CovidTreatmentAssessment extends Vue {
                     <Card :question-sequence="questionSequence2">
                         <RadioButton
                             v-model="
-                                covidTherapyAssessmentRequest.testedPositiveInPast7Days
-                            "
-                            v-bind-value="
                                 covidTherapyAssessmentRequest.testedPositiveInPast7Days
                             "
                             :question-sequence="questionSequence2"
@@ -152,9 +140,6 @@ export default class CovidTreatmentAssessment extends Vue {
                             v-model="
                                 covidTherapyAssessmentRequest.hasSevereCovid19Symptoms
                             "
-                            v-bind-value="
-                                covidTherapyAssessmentRequest.hasSevereCovid19Symptoms
-                            "
                             :question-sequence="questionSequence3"
                             :has-not-sure-option="true"
                         />
@@ -162,9 +147,6 @@ export default class CovidTreatmentAssessment extends Vue {
                     <Card :question-sequence="questionSequence4">
                         <RadioButton
                             v-model="
-                                covidTherapyAssessmentRequest.hasMildOrModerateCovid19Symptoms
-                            "
-                            v-bind-value="
                                 covidTherapyAssessmentRequest.hasMildOrModerateCovid19Symptoms
                             "
                             :question-sequence="questionSequence4"
@@ -205,9 +187,6 @@ export default class CovidTreatmentAssessment extends Vue {
                             v-model="
                                 covidTherapyAssessmentRequest.hasImmunityCompromisingMedicalConditionAntiViralTri
                             "
-                            v-bind-value="
-                                covidTherapyAssessmentRequest.hasImmunityCompromisingMedicalConditionAntiViralTri
-                            "
                             :question-sequence="questionSequence6"
                             :has-not-sure-option="true"
                             :has-additional-response="true"
@@ -222,9 +201,6 @@ export default class CovidTreatmentAssessment extends Vue {
                             v-model="
                                 covidTherapyAssessmentRequest.reports3DosesC19Vaccine
                             "
-                            v-bind-value="
-                                covidTherapyAssessmentRequest.reports3DosesC19Vaccine
-                            "
                             :question-sequence="questionSequence7"
                             :has-not-sure-option="true"
                             :has-additional-response="true"
@@ -237,9 +213,6 @@ export default class CovidTreatmentAssessment extends Vue {
                     >
                         <RadioButton
                             v-model="
-                                covidTherapyAssessmentRequest.hasChronicConditionDiagnoses
-                            "
-                            v-bind-value="
                                 covidTherapyAssessmentRequest.hasChronicConditionDiagnoses
                             "
                             :question-sequence="questionSequence8"

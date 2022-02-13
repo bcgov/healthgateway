@@ -8,6 +8,9 @@ export default class RadioButton extends Vue {
     @Prop() hasNotSureOption!: boolean;
     @Prop() hasAdditionalResponse!: boolean;
 
+    private yesValue = "Yes";
+    private noValue = "No";
+    private notSureValue = "NotSure";
     private optionBenefit = false;
     private optionNoBenefit = false;
     private optionChange(value: string) {
@@ -30,29 +33,32 @@ export default class RadioButton extends Vue {
 <template>
     <div>
         <input
+            :v-bind="yesValue"
             type="radio"
             :name="questionSequence"
-            value="Yes"
+            :value="yesValue"
             class="mr-2"
             @change="optionChange('Yes')"
             @input="$emit('input', $event.target.value)"
         />
         <label class="pr-2">Yes</label>
         <input
+            :v-bind="noValue"
             type="radio"
             :name="questionSequence"
             class="mr-2"
-            value="No"
+            :value="noValue"
             @change="optionChange('No')"
             @input="$emit('input', $event.target.value)"
         />
         <label class="pr-2">No</label>
         <input
             v-if="hasNotSureOption"
+            :v-bind="notSureValue"
             type="radio"
             :name="questionSequence"
             class="mr-2"
-            value="NotSure"
+            :value="notSureValue"
             @change="optionChange('NotSure')"
             @input="$emit('input', $event.target.value)"
         />
