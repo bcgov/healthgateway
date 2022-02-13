@@ -3,7 +3,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { DateTime } from "luxon";
 import { extend, ValidationObserver, ValidationProvider } from "vee-validate";
-import { required } from "vee-validate/dist/rules";
+import { oneOf, required } from "vee-validate/dist/rules";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 
@@ -12,6 +12,11 @@ import RadioButton from "@/components/covidTreatmentAssessment/RadioButton.vue";
 import { CovidTreatmentAssessmentOption } from "@/constants/CovidTreatmentAssessmentOption";
 import CovidTreatmentAssessmentRequest from "@/models/CovidTreatmentAssessmentRequest";
 library.add(faEye, faEyeSlash);
+
+extend("oneOf", {
+    ...oneOf,
+    message: "Choose one",
+});
 
 extend("required", {
     ...required,
@@ -41,7 +46,7 @@ export default class CovidTreatmentAssessment extends Vue {
         phn: "9233238391",
         firstName: "Princess",
         lastName: "Agustin",
-        phoneNumber: "778-222-3369",
+        phoneNumber: "",
         identifiesIndigenous: CovidTreatmentAssessmentOption.Unspecified,
         hasAFamilyDoctorOrNp: CovidTreatmentAssessmentOption.Unspecified,
         confirmsOver12: false,
@@ -62,6 +67,35 @@ export default class CovidTreatmentAssessment extends Vue {
         changeAddressFlag: false,
     };
 
+    private resetCovidTreatmentAssessmentRequest(): CovidTreatmentAssessmentRequest {
+        return {
+            phn: "",
+            firstName: "",
+            lastName: "",
+            phoneNumber: "",
+            identifiesIndigenous: CovidTreatmentAssessmentOption.Unspecified,
+            hasAFamilyDoctorOrNp: CovidTreatmentAssessmentOption.Unspecified,
+            confirmsOver12: false,
+            testedPositiveInPast7Days:
+                CovidTreatmentAssessmentOption.Unspecified,
+            hasSevereCovid19Symptoms:
+                CovidTreatmentAssessmentOption.Unspecified,
+            hasMildOrModerateCovid19Symptoms: false,
+            symptomOnSetDate: "",
+            hasImmunityCompromisingMedicalConditionAntiViralTri:
+                CovidTreatmentAssessmentOption.Unspecified,
+            reports3DosesC19Vaccine: CovidTreatmentAssessmentOption.Unspecified,
+            hasChronicConditionDiagnoses:
+                CovidTreatmentAssessmentOption.Unspecified,
+            agentComments: "",
+            streetAddress: "",
+            provOrState: "",
+            postalCode: "",
+            country: "",
+            changeAddressFlag: false,
+        };
+    }
+
     private get patientFullName() {
         return `${this.covidTreatmentAssessmentRequest.firstName} ${this.covidTreatmentAssessmentRequest.lastName} `;
     }
@@ -75,6 +109,12 @@ export default class CovidTreatmentAssessment extends Vue {
         //alert(this.covidTreatmentAssessmentRequest.identifiesIndigenous);
         //alert(this.covidTreatmentAssessmentRequest.hasAFamilyDoctorOrNp);
         //alert(this.covidTreatmentAssessmentRequest.symptomOnSetDate);
+    }
+
+    private cancel() {
+        this.$refs.observer.reset();
+        this.covidTreatmentAssessmentRequest =
+            this.resetCovidTreatmentAssessmentRequest();
     }
 }
 </script>
@@ -155,6 +195,9 @@ export default class CovidTreatmentAssessment extends Vue {
                                     />
                                     <v-text-field
                                         v-else
+                                        v-model="
+                                            covidTreatmentAssessmentRequest.phoneNumber
+                                        "
                                         dense
                                         label="No Phone Number"
                                     />
@@ -174,45 +217,86 @@ export default class CovidTreatmentAssessment extends Vue {
                             />
                         </Card>
                         <Card :question-sequence="questionSequenceB">
-                            <RadioButton
-                                v-model="
-                                    covidTreatmentAssessmentRequest.hasAFamilyDoctorOrNp
-                                "
-                                :question-sequence="questionSequenceB"
-                            />
+                            <ValidationProvider
+                                ref="hasAFamilyDoctorOrNp"
+                                v-slot="{ errors }"
+                                rules="oneOf:Yes,No"
+                                v-bind="$attrs"
+                            >
+                                <RadioButton
+                                    v-model="
+                                        covidTreatmentAssessmentRequest.hasAFamilyDoctorOrNp
+                                    "
+                                    :question-sequence="questionSequenceB"
+                                />
+                                <span class="error-message">{{
+                                    errors[0]
+                                }}</span>
+                            </ValidationProvider>
                         </Card>
                         <Card
                             :question-sequence="questionSequence1"
                             :have-additional-info="true"
                             additional-info="This citizen is 71 years old."
                         >
-                            <RadioButton
-                                v-model="
-                                    covidTreatmentAssessmentRequest.confirmsOver12
-                                "
-                                :question-sequence="questionSequence1"
-                                :has-not-sure-option="false"
-                                :has-additional-response="true"
-                            />
+                            <ValidationProvider
+                                ref="confirmsOver12"
+                                v-slot="{ errors }"
+                                rules="oneOf:Yes,No"
+                                v-bind="$attrs"
+                                name="Confirms Over 12"
+                            >
+                                <RadioButton
+                                    v-model="
+                                        covidTreatmentAssessmentRequest.confirmsOver12
+                                    "
+                                    :question-sequence="questionSequence1"
+                                    :has-not-sure-option="false"
+                                    :has-additional-response="true"
+                                />
+                                <span class="error-message">{{
+                                    errors[0]
+                                }}</span>
+                            </ValidationProvider>
                         </Card>
                         <Card :question-sequence="questionSequence2">
-                            <RadioButton
-                                v-model="
-                                    covidTreatmentAssessmentRequest.testedPositiveInPast7Days
-                                "
-                                :question-sequence="questionSequence2"
-                                :has-not-sure-option="false"
-                                :has-additional-response="true"
-                            />
+                            <ValidationProvider
+                                ref="testedPositiveInPast7Days"
+                                v-slot="{ errors }"
+                                rules="oneOf:Yes,No,NotSure"
+                                v-bind="$attrs"
+                            >
+                                <RadioButton
+                                    v-model="
+                                        covidTreatmentAssessmentRequest.testedPositiveInPast7Days
+                                    "
+                                    :question-sequence="questionSequence2"
+                                    :has-not-sure-option="true"
+                                    :has-additional-response="true"
+                                />
+                                <span class="error-message">{{
+                                    errors[0]
+                                }}</span>
+                            </ValidationProvider>
                         </Card>
                         <Card :question-sequence="questionSequence3">
-                            <RadioButton
-                                v-model="
-                                    covidTreatmentAssessmentRequest.hasSevereCovid19Symptoms
-                                "
-                                :question-sequence="questionSequence3"
-                                :has-not-sure-option="true"
-                            />
+                            <ValidationProvider
+                                ref="hasSevereCovid19Symptoms"
+                                v-slot="{ errors }"
+                                rules="oneOf:Yes,No,NotSure"
+                                v-bind="$attrs"
+                            >
+                                <RadioButton
+                                    v-model="
+                                        covidTreatmentAssessmentRequest.hasSevereCovid19Symptoms
+                                    "
+                                    :question-sequence="questionSequence3"
+                                    :has-not-sure-option="true"
+                                />
+                                <span class="error-message">{{
+                                    errors[0]
+                                }}</span>
+                            </ValidationProvider>
                         </Card>
                         <Card :question-sequence="questionSequence4">
                             <RadioButton
@@ -287,28 +371,48 @@ export default class CovidTreatmentAssessment extends Vue {
                             have-additional-info="true"
                             additional-info="Citizen is considered immunocompromised."
                         >
-                            <RadioButton
-                                v-model="
-                                    covidTreatmentAssessmentRequest.hasImmunityCompromisingMedicalConditionAntiViralTri
-                                "
-                                :question-sequence="questionSequence6"
-                                :has-not-sure-option="true"
-                                :has-additional-response="true"
-                            />
+                            <ValidationProvider
+                                ref="hasMedicalCondition"
+                                v-slot="{ errors }"
+                                rules="oneOf:Yes,No,NotSure"
+                                v-bind="$attrs"
+                            >
+                                <RadioButton
+                                    v-model="
+                                        covidTreatmentAssessmentRequest.hasImmunityCompromisingMedicalConditionAntiViralTri
+                                    "
+                                    :question-sequence="questionSequence6"
+                                    :has-not-sure-option="true"
+                                    :has-additional-response="true"
+                                />
+                                <span class="error-message">{{
+                                    errors[0]
+                                }}</span>
+                            </ValidationProvider>
                         </Card>
                         <Card
                             :question-sequence="questionSequence7"
                             have-additional-info="true"
                             additional-info="Citizen has had 3 doses of vaccine for more than 14 days."
                         >
-                            <RadioButton
-                                v-model="
-                                    covidTreatmentAssessmentRequest.reports3DosesC19Vaccine
-                                "
-                                :question-sequence="questionSequence7"
-                                :has-not-sure-option="true"
-                                :has-additional-response="true"
-                            />
+                            <ValidationProvider
+                                ref="reports3DosesC19Vaccine"
+                                v-slot="{ errors }"
+                                rules="oneOf:Yes,No,NotSure"
+                                v-bind="$attrs"
+                            >
+                                <RadioButton
+                                    v-model="
+                                        covidTreatmentAssessmentRequest.reports3DosesC19Vaccine
+                                    "
+                                    :question-sequence="questionSequence7"
+                                    :has-not-sure-option="true"
+                                    :has-additional-response="true"
+                                />
+                                <span class="error-message">{{
+                                    errors[0]
+                                }}</span>
+                            </ValidationProvider>
                         </Card>
                         <Card
                             :question-sequence="questionSequence8"
@@ -347,6 +451,7 @@ export default class CovidTreatmentAssessment extends Vue {
                             <v-btn
                                 color="secondary"
                                 class="font-weight-light mr-4"
+                                @click="cancel"
                             >
                                 Cancel
                             </v-btn>

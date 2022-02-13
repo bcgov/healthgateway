@@ -84,7 +84,4 @@ export default class Card extends Vue {
 .form-group {
     border: none !important;
 }
-.font-color {
-    color: #e49b0f;
-}
 </style>
