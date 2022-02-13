@@ -16,6 +16,7 @@ export default interface CovidTherapyAssessmentRequest {
     symptomOnSetDate: StringISODateTime;
     hasImmunityCompromisingMedicalConditionAntiViralTri: CovidTherapyAssessmentOption;
     reports3DosesC19Vaccine: CovidTherapyAssessmentOption;
+    hasChronicConditionDiagnoses: CovidTherapyAssessmentOption;
     agentComments?: string;
     streetAddress?: string;
     provOrState?: string;

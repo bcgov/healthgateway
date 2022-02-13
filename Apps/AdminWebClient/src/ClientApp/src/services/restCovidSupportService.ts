@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+import { Dictionary } from "vue-router/types/router";
 
 import CovidCardDocumentResult from "@/models/covidCardDocumentResult";
 import CovidCardMailRequest from "@/models/covidCardMailRequest";
@@ -87,13 +88,13 @@ export class RestCovidSupportService implements ICovidSupportService {
     public getCovidTherapyAssessmentDetails(
         phn: string
     ): Promise<CovidTherapyAssessmentDetails> {
+        const headers: Dictionary<string> = {};
+        headers["phn"] = phn;
         return new Promise((resolve, reject) => {
             this.http
-                .post<RequestResult<CovidTherapyAssessmentDetails>>(
-                    `${this.BASE_URI}/history`,
-                    {
-                        phn: phn,
-                    }
+                .get<RequestResult<CovidTherapyAssessmentDetails>>(
+                    `${this.BASE_URI}/CovidAssessmentDetails`,
+                    headers
                 )
                 .then((historyResult) => {
                     return RequestResultUtil.handleResult(
@@ -114,10 +115,13 @@ export class RestCovidSupportService implements ICovidSupportService {
     ): Promise<string> {
         return new Promise((resolve, reject) => {
             this.http
-                .post<RequestResult<string>>(`${this.BASE_URI}/submit`, {
-                    covidTherapyAssessmentRequest:
-                        covidTherapyAssessmentRequest,
-                })
+                .post<RequestResult<string>>(
+                    `${this.BASE_URI}/CovidAssessment`,
+                    {
+                        covidTherapyAssessmentRequest:
+                            covidTherapyAssessmentRequest,
+                    }
+                )
                 .then((covidTherapyResult) => {
                     return RequestResultUtil.handleResult(
                         covidTherapyResult,

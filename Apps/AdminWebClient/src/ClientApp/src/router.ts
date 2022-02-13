@@ -5,6 +5,7 @@ import { UserRoles } from "@/constants/userRoles";
 import store from "@/store/store";
 import CommunicationView from "@/views/Communication.vue";
 import CovidCardView from "@/views/CovidCard.vue";
+import CovidTreatmentAssessment from "@/views/CovidTreatmentAssessment.vue";
 import DashboardView from "@/views/Dashboard.vue";
 import FeedbackView from "@/views/Feedback.vue";
 import LoginView from "@/views/Login.vue";
@@ -92,6 +93,15 @@ const routes = [
         path: "/covidcard",
         name: "BC Vaccine Card",
         component: CovidCardView,
+        meta: {
+            requiresAuth: true,
+            validRoles: [UserRoles.SupportUser],
+        },
+    },
+    {
+        path: "/covidtreatment",
+        name: "COVID-19 Treatment Assessment",
+        component: CovidTreatmentAssessment,
         meta: {
             requiresAuth: true,
             validRoles: [UserRoles.SupportUser],

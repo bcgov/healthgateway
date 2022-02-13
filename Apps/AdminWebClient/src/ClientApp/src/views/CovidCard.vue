@@ -681,7 +681,7 @@ export default class CovidCardView extends Vue {
                     <v-row dense>
                         <v-col class="text-right">
                             <v-btn type="submit" class="mx-2 success">
-                                <span>Start COVID-19 Therapy Assessment</span>
+                                <span>Start COVID-19 Treatment Assessment</span>
                                 <v-icon class="ml-2" size="sm"
                                     >fas fa-clipboard-list</v-icon
                                 >

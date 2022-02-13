@@ -1,6 +1,6 @@
 export const enum CovidTherapyAssessmentOption {
-    Unspecified,
-    Yes,
-    No,
-    NotSure,
+    Unspecified = "Unspecified",
+    Yes = "Yes",
+    No = "No",
+    NotSure = "NotSure",
 }
