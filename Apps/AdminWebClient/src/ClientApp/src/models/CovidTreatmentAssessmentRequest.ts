@@ -1,4 +1,4 @@
-import { CovidTherapyAssessmentOption } from "@/constants/covidTherapyAssessmentOption";
+import { CovidTreatmentAssessmentOption } from "@/constants/CovidTreatmentAssessmentOption";
 
 import { StringISODateTime } from "./dateWrapper";
 
@@ -7,16 +7,16 @@ export default interface CovidTherapyAssessmentRequest {
     firstName?: string;
     lastName?: string;
     phoneNumber?: string;
-    identifiesIndigenous: CovidTherapyAssessmentOption;
-    hasAFamilyDoctorOrNp: CovidTherapyAssessmentOption;
+    identifiesIndigenous: CovidTreatmentAssessmentOption;
+    hasAFamilyDoctorOrNp: CovidTreatmentAssessmentOption;
     confirmsOver12: boolean;
-    testedPositiveInPast7Days: CovidTherapyAssessmentOption;
-    hasSevereCovid19Symptoms: CovidTherapyAssessmentOption;
+    testedPositiveInPast7Days: CovidTreatmentAssessmentOption;
+    hasSevereCovid19Symptoms: CovidTreatmentAssessmentOption;
     hasMildOrModerateCovid19Symptoms: boolean;
     symptomOnSetDate: StringISODateTime;
-    hasImmunityCompromisingMedicalConditionAntiViralTri: CovidTherapyAssessmentOption;
-    reports3DosesC19Vaccine: CovidTherapyAssessmentOption;
-    hasChronicConditionDiagnoses: CovidTherapyAssessmentOption;
+    hasImmunityCompromisingMedicalConditionAntiViralTri: CovidTreatmentAssessmentOption;
+    reports3DosesC19Vaccine: CovidTreatmentAssessmentOption;
+    hasChronicConditionDiagnoses: CovidTreatmentAssessmentOption;
     agentComments?: string;
     streetAddress?: string;
     provOrState?: string;

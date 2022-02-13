@@ -4,8 +4,8 @@ import { Dictionary } from "vue-router/types/router";
 import CovidCardDocumentResult from "@/models/covidCardDocumentResult";
 import CovidCardMailRequest from "@/models/covidCardMailRequest";
 import CovidCardPatientResult from "@/models/covidCardPatientResult";
-import CovidTherapyAssessmentDetails from "@/models/covidTherapyAssessmentDetails";
-import CovidTherapyAssessmentRequest from "@/models/CovidTherapyAssessmentRequest";
+import CovidTreatmentAssessmentDetails from "@/models/CovidTreatmentAssessmentDetails";
+import CovidTreatmentAssessmentRequest from "@/models/CovidTreatmentAssessmentRequest";
 import RequestResult from "@/models/requestResult";
 import { ICovidSupportService, IHttpDelegate } from "@/services/interfaces";
 import RequestResultUtil from "@/utility/requestResultUtil";
@@ -85,14 +85,14 @@ export class RestCovidSupportService implements ICovidSupportService {
         });
     }
 
-    public getCovidTherapyAssessmentDetails(
+    public getCovidTreatmentAssessmentDetails(
         phn: string
-    ): Promise<CovidTherapyAssessmentDetails> {
+    ): Promise<CovidTreatmentAssessmentDetails> {
         const headers: Dictionary<string> = {};
         headers["phn"] = phn;
         return new Promise((resolve, reject) => {
             this.http
-                .get<RequestResult<CovidTherapyAssessmentDetails>>(
+                .get<RequestResult<CovidTreatmentAssessmentDetails>>(
                     `${this.BASE_URI}/CovidAssessmentDetails`,
                     headers
                 )
@@ -110,21 +110,21 @@ export class RestCovidSupportService implements ICovidSupportService {
         });
     }
 
-    public submitCovidTherapyAssessment(
-        covidTherapyAssessmentRequest: CovidTherapyAssessmentRequest
+    public submitCovidTreatmentAssessment(
+        covidTreatmentAssessmentRequest: CovidTreatmentAssessmentRequest
     ): Promise<string> {
         return new Promise((resolve, reject) => {
             this.http
                 .post<RequestResult<string>>(
                     `${this.BASE_URI}/CovidAssessment`,
                     {
-                        covidTherapyAssessmentRequest:
-                            covidTherapyAssessmentRequest,
+                        covidTreatmentAssessmentRequest:
+                            covidTreatmentAssessmentRequest,
                     }
                 )
-                .then((covidTherapyResult) => {
+                .then((covidTreatmentResult) => {
                     return RequestResultUtil.handleResult(
-                        covidTherapyResult,
+                        covidTreatmentResult,
                         resolve,
                         reject
                     );
