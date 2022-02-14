@@ -9,7 +9,7 @@ import { Component } from "vue-property-decorator";
 
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import Card from "@/components/covidTreatmentAssessment/Card.vue";
-import RadioButton from "@/components/covidTreatmentAssessment/RadioButton.vue";
+import OptionDetails from "@/components/covidTreatmentAssessment/OptionDetails.vue";
 import { CovidTreatmentAssessmentOption } from "@/constants/CovidTreatmentAssessmentOption";
 import { ResultType } from "@/constants/resulttype";
 import { SnackbarPosition } from "@/constants/snackbarPosition";
@@ -32,7 +32,7 @@ extend("required", {
 @Component({
     components: {
         Card,
-        RadioButton,
+        OptionDetails,
         ValidationProvider,
         ValidationObserver,
         BannerFeedbackComponent,
@@ -263,7 +263,7 @@ export default class CovidTreatmentAssessment extends Vue {
                             </v-col>
                         </v-row>
                         <Card :question-sequence="questionSequenceA">
-                            <RadioButton
+                            <OptionDetails
                                 v-model="
                                     covidTreatmentAssessmentRequest.identifiesIndigenous
                                 "
@@ -278,7 +278,7 @@ export default class CovidTreatmentAssessment extends Vue {
                                 rules="oneOf:Yes,No"
                                 v-bind="$attrs"
                             >
-                                <RadioButton
+                                <OptionDetails
                                     v-model="
                                         covidTreatmentAssessmentRequest.hasAFamilyDoctorOrNp
                                     "
@@ -301,7 +301,7 @@ export default class CovidTreatmentAssessment extends Vue {
                                 v-bind="$attrs"
                                 name="Confirms Over 12"
                             >
-                                <RadioButton
+                                <OptionDetails
                                     v-model="
                                         covidTreatmentAssessmentRequest.confirmsOver12
                                     "
@@ -321,7 +321,7 @@ export default class CovidTreatmentAssessment extends Vue {
                                 rules="oneOf:Yes,No,NotSure"
                                 v-bind="$attrs"
                             >
-                                <RadioButton
+                                <OptionDetails
                                     v-model="
                                         covidTreatmentAssessmentRequest.testedPositiveInPast7Days
                                     "
@@ -341,7 +341,7 @@ export default class CovidTreatmentAssessment extends Vue {
                                 rules="oneOf:Yes,No,NotSure"
                                 v-bind="$attrs"
                             >
-                                <RadioButton
+                                <OptionDetails
                                     v-model="
                                         covidTreatmentAssessmentRequest.hasSevereCovid19Symptoms
                                     "
@@ -354,7 +354,7 @@ export default class CovidTreatmentAssessment extends Vue {
                             </ValidationProvider>
                         </Card>
                         <Card :question-sequence="questionSequence4">
-                            <RadioButton
+                            <OptionDetails
                                 v-model="
                                     covidTreatmentAssessmentRequest.hasMildOrModerateCovid19Symptoms
                                 "
@@ -432,7 +432,7 @@ export default class CovidTreatmentAssessment extends Vue {
                                 rules="oneOf:Yes,No,NotSure"
                                 v-bind="$attrs"
                             >
-                                <RadioButton
+                                <OptionDetails
                                     v-model="
                                         covidTreatmentAssessmentRequest.hasImmunityCompromisingMedicalConditionAntiViralTri
                                     "
@@ -456,7 +456,7 @@ export default class CovidTreatmentAssessment extends Vue {
                                 rules="oneOf:Yes,No,NotSure"
                                 v-bind="$attrs"
                             >
-                                <RadioButton
+                                <OptionDetails
                                     v-model="
                                         covidTreatmentAssessmentRequest.reports3DosesC19Vaccine
                                     "
@@ -474,7 +474,7 @@ export default class CovidTreatmentAssessment extends Vue {
                             have-additional-info="true"
                             additional-info="Citizen has a chronic condition."
                         >
-                            <RadioButton
+                            <OptionDetails
                                 v-model="
                                     covidTreatmentAssessmentRequest.hasChronicConditionDiagnoses
                                 "
