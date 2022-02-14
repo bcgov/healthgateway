@@ -18,7 +18,9 @@ import { States } from "@/constants/states";
 import Address from "@/models/address";
 import BannerFeedback from "@/models/bannerFeedback";
 import CovidCardPatientResult from "@/models/covidCardPatientResult";
+import CovidTreatmentAssessmentDetails from "@/models/CovidTreatmentAssessmentDetails";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import PreviousAssessmentDetailsList from "@/models/previousAssessmentDetailsList";
 import SelectItem from "@/models/selectItem";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -93,17 +95,18 @@ export default class CovidCardView extends Vue {
     private assessmentHistoryTableHeaders = [
         {
             text: "Date",
-            value: "date",
+            value: "dateOfAssessment",
         },
         {
             text: "Time",
-            value: "time",
+            value: "timeOfAssessment",
         },
         {
             text: "ID",
-            value: "id",
+            value: "formId",
         },
     ];
+
     private get internationalDestinations(): SelectItem[] {
         // sort destinations alphabetically except place Canada and US at the top
         const destinations = Object.keys(InternationalDestinations)
@@ -418,6 +421,25 @@ export default class CovidCardView extends Vue {
         }
         return new DateWrapper(date).format(DateWrapper.defaultFormat);
     }
+    private history() {
+        this.$router.push({ path: "/covidtreatment" });
+    }
+
+    private previousAssessmentDetailsList: PreviousAssessmentDetailsList[] = [
+        {
+            dateOfAssessment: "2021-01-01",
+            timeOfAssessment: "10:00 AM",
+            formId: "123456",
+        },
+    ];
+
+    private covidTreatmentAssessmentDetails: CovidTreatmentAssessmentDetails = {
+        hasKnownPositiveC19Past7Days: false,
+        citizenIsConsideredImmunoCompromised: false,
+        has3DoseMoreThan14Days: false,
+        hasDocumentedChronicCondition: false,
+        previousAssessmentDetailsList: this.previousAssessmentDetailsList,
+    };
 }
 </script>
 
@@ -680,7 +702,11 @@ export default class CovidCardView extends Vue {
                     </v-row>
                     <v-row dense>
                         <v-col class="text-right">
-                            <v-btn type="submit" class="mx-2 success">
+                            <v-btn
+                                type="submit"
+                                class="mx-2 success"
+                                @click="history"
+                            >
                                 <span>Start COVID-19 Treatment Assessment</span>
                                 <v-icon class="ml-2" size="sm"
                                     >fas fa-clipboard-list</v-icon
@@ -697,11 +723,10 @@ export default class CovidCardView extends Vue {
                         <v-col no-gutters>
                             <v-data-table
                                 :headers="assessmentHistoryTableHeaders"
-                                :items="[]"
+                                :items="previousAssessmentDetailsList"
                                 :items-per-page="5"
                                 :hide-default-footer="true"
                             >
-                                <span>{{}}</span>
                             </v-data-table>
                         </v-col>
                     </v-row>
