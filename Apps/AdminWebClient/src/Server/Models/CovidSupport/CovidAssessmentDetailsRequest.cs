@@ -17,6 +17,9 @@ namespace HealthGateway.Admin.Server.Models.CovidSupport;
 
 using System.Text.Json.Serialization;
 
+/// <summary>
+/// The Covid Assessment Details request object.
+/// </summary>
 public class CovidAssessmentDetailsRequest
 {
     /// <summary>
