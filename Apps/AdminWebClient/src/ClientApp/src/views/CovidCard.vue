@@ -10,6 +10,7 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import LoadingComponent from "@/components/core/Loading.vue";
+import CovidTreatmentAssessmentComponent from "@/components/covidTreatmentAssessment/CovidTreatmentAssessment.vue";
 import { Countries, InternationalDestinations } from "@/constants/countries";
 import { Provinces } from "@/constants/provinces";
 import { ResultType } from "@/constants/resulttype";
@@ -50,12 +51,14 @@ const emptyAddress: Address = {
     components: {
         LoadingComponent,
         BannerFeedbackComponent,
+        CovidTreatmentAssessmentComponent,
     },
 })
 export default class CovidCardView extends Vue {
     private isEditMode = false;
     private isLoading = false;
     private showFeedback = false;
+    private showCovidTreatmentAssessment = false;
 
     private phn = "";
     private activePhn = "";
@@ -421,8 +424,17 @@ export default class CovidCardView extends Vue {
         }
         return new DateWrapper(date).format(DateWrapper.defaultFormat);
     }
-    private history() {
-        this.$router.push({ path: "/covidtreatment" });
+
+    private startCovidTreatmentAssessment(): void {
+        this.showCovidTreatmentAssessment = true;
+    }
+
+    private covidTreatmentAssessmentCancelled(): void {
+        this.showCovidTreatmentAssessment = false;
+    }
+
+    private covidTreatmentAssessmentSubmitted(): void {
+        this.showCovidTreatmentAssessment = false;
     }
 
     private previousAssessmentDetailsList: PreviousAssessmentDetailsList[] = [
@@ -451,7 +463,12 @@ export default class CovidCardView extends Vue {
             :feedback="bannerFeedback"
             :position="snackbarPosition"
         />
-        <v-row no-gutters>
+        <CovidTreatmentAssessmentComponent
+            v-if="showCovidTreatmentAssessment"
+            @on-cancel="covidTreatmentAssessmentCancelled"
+            @on-submit="covidTreatmentAssessmentSubmitted"
+        />
+        <v-row v-else no-gutters>
             <v-col cols="12" sm="12" md="10" offset-md="1">
                 <form @submit.prevent="handleSearch()">
                     <v-row align="center" dense>
@@ -694,9 +711,9 @@ export default class CovidCardView extends Vue {
                                 :disabled="immunizations.length === 0"
                             >
                                 <span>Mail</span>
-                                <v-icon class="ml-2" size="sm"
-                                    >fas fa-paper-plane</v-icon
-                                >
+                                <v-icon class="ml-2" size="sm">
+                                    fas fa-paper-plane
+                                </v-icon>
                             </v-btn>
                         </v-col>
                     </v-row>
@@ -705,12 +722,12 @@ export default class CovidCardView extends Vue {
                             <v-btn
                                 type="submit"
                                 class="mx-2 success"
-                                @click="history"
+                                @click="startCovidTreatmentAssessment"
                             >
                                 <span>Start COVID-19 Treatment Assessment</span>
-                                <v-icon class="ml-2" size="sm"
-                                    >fas fa-clipboard-list</v-icon
-                                >
+                                <v-icon class="ml-2" size="sm">
+                                    fas fa-clipboard-list
+                                </v-icon>
                             </v-btn>
                         </v-col>
                     </v-row>

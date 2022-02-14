@@ -5,7 +5,7 @@ import { DateTime } from "luxon";
 import { extend, ValidationObserver, ValidationProvider } from "vee-validate";
 import { oneOf, regex, required } from "vee-validate/dist/rules";
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Emit } from "vue-property-decorator";
 
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import Card from "@/components/covidTreatmentAssessment/Card.vue";
@@ -15,18 +15,27 @@ import { ResultType } from "@/constants/resulttype";
 import { SnackbarPosition } from "@/constants/snackbarPosition";
 import BannerFeedback from "@/models/bannerFeedback";
 import CovidTreatmentAssessmentRequest from "@/models/CovidTreatmentAssessmentRequest";
+import { Mask, phoneNumberMaskTemplate } from "@/utility/masks";
+
 library.add(faEye, faEyeSlash);
+
+const errorMessage = "This is a required field. Please select an answer.";
 
 extend("regex", regex);
 
 extend("oneOf", {
     ...oneOf,
-    message: "Choose one",
+    message: errorMessage,
 });
 
 extend("required", {
     ...required,
-    message: "{_field_} is required",
+    message: errorMessage,
+});
+
+extend("requiredPhoneNumber", {
+    ...required,
+    message: "This is a required field. Please enter a phone number.",
 });
 
 @Component({
@@ -38,28 +47,16 @@ extend("required", {
         BannerFeedbackComponent,
     },
 })
-export default class CovidTreatmentAssessment extends Vue {
-    //Define the questioner sequence.
-    questionSequenceA = "a";
-    questionSequenceB = "b";
-    questionSequence1 = "1";
-    questionSequence2 = "2";
-    questionSequence3 = "3";
-    questionSequence4 = "4";
-    questionSequence5 = "5";
-    questionSequence6 = "6";
-    questionSequence7 = "7";
-    questionSequence8 = "8";
-
-    private maskPhoneNumber = true;
+export default class CovidTreatmentAssessmentComponent extends Vue {
     private showFeedback = false;
-
     private today = DateTime.local();
+    private dailyDataDatesModal = false;
+
     private covidTreatmentAssessmentRequest: CovidTreatmentAssessmentRequest = {
         phn: "9233238391",
-        firstName: "Princess",
-        lastName: "Agustin",
-        phoneNumber: "",
+        firstName: "Angel",
+        lastName: "Leonardo",
+        phoneNumber: "7782223688",
         identifiesIndigenous: CovidTreatmentAssessmentOption.Unspecified,
         hasAFamilyDoctorOrNp: CovidTreatmentAssessmentOption.Unspecified,
         confirmsOver12: false,
@@ -73,10 +70,10 @@ export default class CovidTreatmentAssessment extends Vue {
         hasChronicConditionDiagnoses:
             CovidTreatmentAssessmentOption.Unspecified,
         agentComments: "",
-        streetAddress: "",
-        provOrState: "",
-        postalCode: "",
-        country: "",
+        streetAddress: "3082 E 2nd Avenue Vancouver",
+        provOrState: "BC",
+        postalCode: "V5M 1E7",
+        country: "Canada",
         changeAddressFlag: false,
     };
 
@@ -113,24 +110,29 @@ export default class CovidTreatmentAssessment extends Vue {
         return `${this.covidTreatmentAssessmentRequest.firstName} ${this.covidTreatmentAssessmentRequest.lastName} `;
     }
 
-    private dailyDataDatesModal = false;
-    private showPhoneNumber(): boolean {
-        if (this.covidTreatmentAssessmentRequest.phoneNumber !== undefined) {
-            return this.covidTreatmentAssessmentRequest.phoneNumber.length > 0;
-        }
-        return false;
+    private get snackbarPosition(): string {
+        return SnackbarPosition.Bottom;
     }
+
+    private get phoneNumberMask(): Mask {
+        return phoneNumberMaskTemplate;
+    }
+
     private bannerFeedback: BannerFeedback = {
         type: ResultType.NONE,
         title: "",
         message: "",
     };
 
-    private get snackbarPosition(): string {
-        return SnackbarPosition.Bottom;
+    private resetForm() {
+        if (this.$refs.observer !== undefined) {
+            (this.$refs.observer as Vue & { reset: () => boolean }).reset();
+            this.covidTreatmentAssessmentRequest =
+                this.resetCovidTreatmentAssessmentRequest();
+        }
     }
 
-    private async submit() {
+    private async onSubmit() {
         if (this.$refs.observer !== undefined) {
             const isValid = await (
                 this.$refs.observer as Vue & { validate: () => boolean }
@@ -144,27 +146,16 @@ export default class CovidTreatmentAssessment extends Vue {
                     message:
                         "COVID-19 Treatment Assessment Form is Successfully Submitted.",
                 };
-
-                setTimeout(
-                    () => this.$router.push({ path: "/covidcard" }),
-                    2000
-                );
+                this.$emit("on-submit");
             } else {
                 console.log("Error validation");
             }
         }
-
-        //alert(this.covidTreatmentAssessmentRequest.identifiesIndigenous);
-        //alert(this.covidTreatmentAssessmentRequest.hasAFamilyDoctorOrNp);
-        //alert(this.covidTreatmentAssessmentRequest.symptomOnSetDate);
     }
 
-    private cancel() {
-        if (this.$refs.observer !== undefined) {
-            (this.$refs.observer as Vue & { reset: () => boolean }).reset();
-            this.covidTreatmentAssessmentRequest =
-                this.resetCovidTreatmentAssessmentRequest();
-        }
+    @Emit()
+    private onCancel() {
+        this.resetForm();
     }
 }
 </script>
@@ -176,7 +167,7 @@ export default class CovidTreatmentAssessment extends Vue {
             :position="snackbarPosition"
         />
         <v-row no-gutters>
-            <v-col cols="12" sm="12" md="10">
+            <v-col cols="12" sm="12" md="10" offset-md="1">
                 <ValidationObserver ref="observer">
                     <v-form ref="form" lazy-validation>
                         <v-row>
@@ -216,82 +207,53 @@ export default class CovidTreatmentAssessment extends Vue {
                                     ref="phoneNumber"
                                     v-slot="{ errors }"
                                     :rules="{
-                                        required: true,
+                                        requiredPhoneNumber: true,
                                         regex: /^[2-9]\d{2}[2-9]\d{2}\d{4}$/,
                                     }"
                                     v-bind="$attrs"
                                     name="Phone Number"
                                 >
                                     <v-text-field
-                                        v-if="showPhoneNumber()"
                                         v-model="
                                             covidTreatmentAssessmentRequest.phoneNumber
-                                        "
-                                        :value="
-                                            maskPhoneNumber
-                                                ? '        '
-                                                : covidTreatmentAssessmentRequest.phoneNumber
-                                        "
-                                        :type="
-                                            maskPhoneNumber
-                                                ? 'password'
-                                                : 'text'
-                                        "
-                                        :append-outer-icon="
-                                            maskPhoneNumber
-                                                ? 'fa-eye-slash'
-                                                : 'fa-eye'
                                         "
                                         dense
                                         label="Phone Number"
-                                        @click:append-outer="
-                                            maskPhoneNumber = !maskPhoneNumber
-                                        "
                                     />
-                                    <v-text-field
-                                        v-else
-                                        v-model="
-                                            covidTreatmentAssessmentRequest.phoneNumber
-                                        "
-                                        dense
-                                        label="No Phone Number"
-                                    />
-                                    <span class="error-message">{{
-                                        errors[0]
-                                    }}</span>
+                                    <span class="error-message">
+                                        {{ errors[0] }}
+                                    </span>
                                 </ValidationProvider>
                             </v-col>
                         </v-row>
-                        <Card :question-sequence="questionSequenceA">
+                        <Card title="Do you identify as Indigenous?">
                             <OptionDetails
-                                v-model="
+                                :has-additional-response="false"
+                                :value.sync="
                                     covidTreatmentAssessmentRequest.identifiesIndigenous
                                 "
-                                :question-sequence="questionSequenceA"
-                                :has-additional-response="false"
                             />
                         </Card>
-                        <Card :question-sequence="questionSequenceB">
+                        <Card
+                            title="Do you have a family doctor or nurse practitioner?"
+                        >
                             <ValidationProvider
                                 ref="hasAFamilyDoctorOrNp"
                                 v-slot="{ errors }"
                                 rules="oneOf:Yes,No"
-                                v-bind="$attrs"
                             >
                                 <OptionDetails
-                                    v-model="
+                                    :value.sync="
                                         covidTreatmentAssessmentRequest.hasAFamilyDoctorOrNp
                                     "
-                                    :question-sequence="questionSequenceB"
                                 />
-                                <span class="error-message">{{
-                                    errors[0]
-                                }}</span>
+                                <span class="error-message">
+                                    {{ errors[0] }}
+                                </span>
                             </ValidationProvider>
                         </Card>
                         <Card
-                            :question-sequence="questionSequence1"
-                            :have-additional-info="true"
+                            title="1. Please confirm that you are over 12 years or older."
                             additional-info="This citizen is 71 years old."
                         >
                             <ValidationProvider
@@ -302,19 +264,20 @@ export default class CovidTreatmentAssessment extends Vue {
                                 name="Confirms Over 12"
                             >
                                 <OptionDetails
-                                    v-model="
+                                    :value.sync="
                                         covidTreatmentAssessmentRequest.confirmsOver12
                                     "
-                                    :question-sequence="questionSequence1"
                                     :has-not-sure-option="false"
                                     :has-additional-response="true"
                                 />
-                                <span class="error-message">{{
-                                    errors[0]
-                                }}</span>
+                                <span class="error-message">
+                                    {{ errors[0] }}
+                                </span>
                             </ValidationProvider>
                         </Card>
-                        <Card :question-sequence="questionSequence2">
+                        <Card
+                            title="2. Have you recently tested positive for COVID-19 in the last 7 days?"
+                        >
                             <ValidationProvider
                                 ref="testedPositiveInPast7Days"
                                 v-slot="{ errors }"
@@ -322,19 +285,19 @@ export default class CovidTreatmentAssessment extends Vue {
                                 v-bind="$attrs"
                             >
                                 <OptionDetails
-                                    v-model="
+                                    :value.sync="
                                         covidTreatmentAssessmentRequest.testedPositiveInPast7Days
                                     "
-                                    :question-sequence="questionSequence2"
-                                    :has-not-sure-option="true"
                                     :has-additional-response="true"
                                 />
-                                <span class="error-message">{{
-                                    errors[0]
-                                }}</span>
+                                <span class="error-message">
+                                    {{ errors[0] }}
+                                </span>
                             </ValidationProvider>
                         </Card>
-                        <Card :question-sequence="questionSequence3">
+                        <Card
+                            title="3. Do you have any severe symptoms of COVID-19?"
+                        >
                             <ValidationProvider
                                 ref="hasSevereCovid19Symptoms"
                                 v-slot="{ errors }"
@@ -342,29 +305,28 @@ export default class CovidTreatmentAssessment extends Vue {
                                 v-bind="$attrs"
                             >
                                 <OptionDetails
-                                    v-model="
+                                    :value.sync="
                                         covidTreatmentAssessmentRequest.hasSevereCovid19Symptoms
                                     "
-                                    :question-sequence="questionSequence3"
-                                    :has-not-sure-option="true"
                                 />
-                                <span class="error-message">{{
-                                    errors[0]
-                                }}</span>
+                                <span class="error-message">
+                                    {{ errors[0] }}
+                                </span>
                             </ValidationProvider>
                         </Card>
-                        <Card :question-sequence="questionSequence4">
+                        <Card
+                            title="4. COVID-19 symptoms can range from mild to moderate. Mild and moderate symptoms are symptoms that can be managed at home. Do you have any symptoms of COVID-19?"
+                        >
                             <OptionDetails
-                                v-model="
+                                :value.sync="
                                     covidTreatmentAssessmentRequest.hasMildOrModerateCovid19Symptoms
                                 "
-                                :question-sequence="questionSequence4"
                                 :has-not-sure-option="true"
                                 :has-additional-response="true"
                             />
                         </Card>
-                        <Card :question-sequence="questionSequence5">
-                            <div style="width: 250px">
+                        <Card title="5. When did your symptoms first start?">
+                            <div style="max-width: 250px" class="pt-2">
                                 <v-dialog
                                     ref="dailyDialog"
                                     v-model="dailyDataDatesModal"
@@ -422,8 +384,7 @@ export default class CovidTreatmentAssessment extends Vue {
                             </div>
                         </Card>
                         <Card
-                            :question-sequence="questionSequence6"
-                            have-additional-info="true"
+                            title="6. Do you have a medical condition or are you taking medications that suppress or weaken your immune system?"
                             additional-info="Citizen is considered immunocompromised."
                         >
                             <ValidationProvider
@@ -433,21 +394,19 @@ export default class CovidTreatmentAssessment extends Vue {
                                 v-bind="$attrs"
                             >
                                 <OptionDetails
-                                    v-model="
+                                    :value.sync="
                                         covidTreatmentAssessmentRequest.hasImmunityCompromisingMedicalConditionAntiViralTri
                                     "
-                                    :question-sequence="questionSequence6"
                                     :has-not-sure-option="true"
                                     :has-additional-response="true"
                                 />
-                                <span class="error-message">{{
-                                    errors[0]
-                                }}</span>
+                                <span class="error-message">
+                                    {{ errors[0] }}
+                                </span>
                             </ValidationProvider>
                         </Card>
                         <Card
-                            :question-sequence="questionSequence7"
-                            have-additional-info="true"
+                            title="7. Have you had 3 doses of the vaccine?"
                             additional-info="Citizen has had 3 doses of vaccine for more than 14 days."
                         >
                             <ValidationProvider
@@ -457,69 +416,63 @@ export default class CovidTreatmentAssessment extends Vue {
                                 v-bind="$attrs"
                             >
                                 <OptionDetails
-                                    v-model="
+                                    :value.sync="
                                         covidTreatmentAssessmentRequest.reports3DosesC19Vaccine
                                     "
-                                    :question-sequence="questionSequence7"
                                     :has-not-sure-option="true"
                                     :has-additional-response="true"
                                 />
-                                <span class="error-message">{{
-                                    errors[0]
-                                }}</span>
+                                <span class="error-message">
+                                    {{ errors[0] }}
+                                </span>
                             </ValidationProvider>
                         </Card>
                         <Card
-                            :question-sequence="questionSequence8"
-                            have-additional-info="true"
+                            title="8. Have you been diagnosed by a health care provider with a chronic condition?"
                             additional-info="Citizen has a chronic condition."
                         >
                             <OptionDetails
-                                v-model="
+                                :value.sync="
                                     covidTreatmentAssessmentRequest.hasChronicConditionDiagnoses
                                 "
-                                :question-sequence="questionSequence8"
                                 :has-not-sure-option="true"
                                 :has-additional-response="true"
                             />
                         </Card>
-                        <Card>
-                            <div>Notes</div>
+                        <Card title="Notes">
                             <div class="pt-2">
-                                <b-form-textarea
-                                    v-model="
+                                <v-textarea
+                                    maxlength="2000"
+                                    counter="2000"
+                                    filled
+                                    auto-grow
+                                    rows="4"
+                                    :value="
                                         covidTreatmentAssessmentRequest.agentComments
                                     "
-                                    class="comment-input"
-                                    rows="6"
-                                    max-rows="15"
-                                    maxlength="2000"
-                                    style="overflow: auto"
-                                ></b-form-textarea>
+                                />
                             </div>
                         </Card>
                     </v-form>
                 </ValidationObserver>
-                <v-card-actions>
-                    <v-row>
-                        <v-col align="right">
-                            <v-btn
-                                color="secondary"
-                                class="font-weight-light mr-4"
-                                @click="cancel"
-                            >
-                                Cancel
-                            </v-btn>
+                <v-row class="py-3">
+                    <v-col align="right">
+                        <v-btn
+                            color="secondary"
+                            class="font-weight-light mr-4"
+                            @click="onCancel"
+                        >
+                            Cancel
+                        </v-btn>
 
-                            <v-btn
-                                color="success"
-                                class="font-weight-light"
-                                @click="submit"
-                                >Submit</v-btn
-                            >
-                        </v-col>
-                    </v-row>
-                </v-card-actions>
+                        <v-btn
+                            color="success"
+                            class="font-weight-light"
+                            @click="onSubmit"
+                            >Submit</v-btn
+                        >
+                    </v-col>
+                </v-row>
             </v-col>
         </v-row>
     </v-container>
@@ -527,9 +480,7 @@ export default class CovidTreatmentAssessment extends Vue {
 
 <style scoped lang="scss">
 .comment-input {
-    border-right: 0px;
     background-color: white;
-    width: 560px;
 }
 .error-message {
     color: #ff5252 !important;

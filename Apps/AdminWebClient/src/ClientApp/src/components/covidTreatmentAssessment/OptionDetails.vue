@@ -1,93 +1,79 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 
+import { CovidTreatmentAssessmentOption } from "@/constants/CovidTreatmentAssessmentOption";
+
 @Component
-export default class RadioButton extends Vue {
-    @Prop() questionSequence!: string;
-    @Prop() modelBinding!: string;
-    @Prop() hasNotSureOption!: boolean;
-    @Prop() hasAdditionalResponse!: boolean;
+export default class OptionDetails extends Vue {
+    @Prop({ required: true }) value!: CovidTreatmentAssessmentOption;
+    @Prop({ required: false, default: false }) hasNotSureOption!: boolean;
+    @Prop({ required: false, default: false }) hasAdditionalResponse!: boolean;
 
-    //Radio buttons values
-    private yesValue = "Yes";
-    private noValue = "No";
-    private notSureValue = "NotSure";
-
-    private optionBenefit = false;
-    private optionNoBenefit = false;
-
-    private optionChange(value: string) {
-        switch (value) {
-            case this.yesValue: {
-                this.optionBenefit = true;
-                this.optionNoBenefit = false;
-                break;
-            }
-            case this.noValue: {
-                this.optionBenefit = false;
-                this.optionNoBenefit = true;
-                break;
-            }
-            default: {
-                this.optionBenefit = false;
-                this.optionNoBenefit = false;
-            }
+    private get options(): CovidTreatmentAssessmentOption[] {
+        let options = [
+            CovidTreatmentAssessmentOption.Yes,
+            CovidTreatmentAssessmentOption.No,
+        ];
+        if (this.hasNotSureOption) {
+            options.push(CovidTreatmentAssessmentOption.NotSure);
         }
+        return options;
+    }
+
+    private getLabel(option: CovidTreatmentAssessmentOption): string {
+        switch (option) {
+            case CovidTreatmentAssessmentOption.Yes:
+                return "Yes";
+            case CovidTreatmentAssessmentOption.No:
+                return "No";
+            case CovidTreatmentAssessmentOption.NotSure:
+                return "Not Sure";
+            default:
+                return CovidTreatmentAssessmentOption.Unspecified;
+        }
+    }
+
+    private get hasOptionBenefit(): boolean {
+        return this.value === CovidTreatmentAssessmentOption.Yes;
+    }
+
+    private get hasOptionNoBenefit(): boolean {
+        return this.value === CovidTreatmentAssessmentOption.No;
+    }
+
+    private optionChange(value: CovidTreatmentAssessmentOption) {
+        this.$emit("update:value", value);
     }
 }
 </script>
 
 <template>
     <div>
-        <input
-            :v-bind="yesValue"
-            type="radio"
-            :name="questionSequence"
-            :value="yesValue"
-            class="mr-2"
-            @change="optionChange(yesValue)"
-            @input="$emit('input', $event.target.value)"
-        />
-        <label class="pr-2">{{ yesValue }}</label>
-        <input
-            :v-bind="noValue"
-            type="radio"
-            :name="questionSequence"
-            class="mr-2"
-            :value="noValue"
-            @change="optionChange(noValue)"
-            @input="$emit('input', $event.target.value)"
-        />
-        <label class="pr-2">{{ noValue }}</label>
-        <input
-            v-if="hasNotSureOption"
-            :v-bind="notSureValue"
-            type="radio"
-            :name="questionSequence"
-            class="mr-2"
-            :value="notSureValue"
-            @change="optionChange(notSureValue)"
-            @input="$emit('input', $event.target.value)"
-        />
-        <label v-if="hasNotSureOption" class="pr-2">{{ notSureValue }}</label>
-
+        <v-radio-group :value="value" row>
+            <v-radio
+                v-for="(option, index) in options"
+                :key="index"
+                :label="getLabel(option)"
+                :value="option"
+                @change="optionChange(option)"
+            />
+        </v-radio-group>
         <div v-if="hasAdditionalResponse">
-            <div v-if="optionBenefit">
-                <span class="font-color"
-                    >Citizen may benefit from COVID-19 treatment.</span
-                >
+            <div v-if="hasOptionBenefit">
+                <span class="option-message-color">
+                    Citizen may benefit from COVID-19 treatment.
+                </span>
             </div>
-            <div v-if="optionNoBenefit">
-                <span class="font-color"
-                    >Citizen would likely not benefit from COVID-19
-                    treatment.</span
-                >
+            <div v-if="hasOptionNoBenefit">
+                <span class="option-message-color">
+                    Citizen would likely not benefit from COVID-19 treatment.
+                </span>
             </div>
         </div>
     </div>
 </template>
 <style scoped lang="scss">
-.font-color {
-    color: #e49b0f;
+.option-message-color {
+    color: #ff9800;
 }
 </style>
