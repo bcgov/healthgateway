@@ -954,7 +954,9 @@ export default class PcrTestView extends Vue {
                                 <b-row class="mt-2">
                                     <b-col>
                                         <label for="pcrMobileNumber"
-                                            >Mobile Number (optional)
+                                            >Mobile Number (To receive a
+                                            notification once your COVID-19 test
+                                            result is available)
                                         </label>
                                         <b-form-input
                                             id="pcrMobileNumber"
