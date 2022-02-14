@@ -8,7 +8,24 @@ export function zipCodeMask(value: string): MaskCharacter[] {
     return numbers.length > 5 ? extendedFormat : zipFormat;
 }
 
+export function phoneNumberMaskTemplate(): MaskCharacter[] {
+    return [
+        "(",
+        /\d/,
+        /\d/,
+        /\d/,
+        ")",
+        " ",
+        /\d/,
+        /\d/,
+        /\d/,
+        "-",
+        /\d/,
+        /\d/,
+        /\d/,
+        /\d/,
+    ];
+}
 const phnMask = "#### ### ###";
 const postalCodeMask = "A#A #A#";
-
 export { phnMask, postalCodeMask };

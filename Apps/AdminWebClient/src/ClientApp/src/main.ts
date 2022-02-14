@@ -1,7 +1,9 @@
 import "core-js/stable";
 import "tiptap-vuetify/dist/main.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import BootstrapVue, { IconsPlugin } from "bootstrap-vue";
 import { TiptapVuetifyPlugin } from "tiptap-vuetify";
 import { VueMaskDirective } from "v-mask";
 import Vue from "vue";
@@ -28,7 +30,8 @@ import {
 import store from "@/store/store";
 
 Vue.config.productionTip = false;
-
+Vue.use(BootstrapVue);
+Vue.use(IconsPlugin);
 Vue.use(DatetimePicker);
 Vue.use(TiptapVuetifyPlugin, {
     vuetify,
