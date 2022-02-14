@@ -4,11 +4,8 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 @Component
 export default class Card extends Vue {
     @Prop() questionSequence!: string;
-    @Prop() value!: string;
     @Prop() haveAdditionalInfo!: boolean;
     @Prop() additionalInfo!: string;
-    @Prop() haveNotSureOption!: boolean;
-    @Prop() selected!: string;
 
     private getQuestioner(): string {
         switch (this.questionSequence) {
@@ -68,8 +65,7 @@ export default class Card extends Vue {
                 </div>
                 <div
                     v-if="haveAdditionalInfo"
-                    class="ml-5 pl-6 pt-2"
-                    style="color: #4a8bc8"
+                    class="ml-5 pl-6 pt-2 additionalInfo-color"
                 >
                     {{ additionalInfo }}
                 </div>
@@ -83,5 +79,8 @@ export default class Card extends Vue {
 <style scoped lang="scss">
 .form-group {
     border: none !important;
+}
+.additionalInfo-color {
+    color: #4a8bc8;
 }
 </style>

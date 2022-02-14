@@ -8,23 +8,30 @@ export default class RadioButton extends Vue {
     @Prop() hasNotSureOption!: boolean;
     @Prop() hasAdditionalResponse!: boolean;
 
+    //Radio buttons values
     private yesValue = "Yes";
     private noValue = "No";
     private notSureValue = "NotSure";
+
     private optionBenefit = false;
     private optionNoBenefit = false;
+
     private optionChange(value: string) {
-        if (value === "Yes") {
-            this.optionBenefit = true;
-            this.optionNoBenefit = false;
-        }
-        if (value === "No") {
-            this.optionBenefit = false;
-            this.optionNoBenefit = true;
-        }
-        if (value === "NotSure") {
-            this.optionBenefit = false;
-            this.optionNoBenefit = false;
+        switch (value) {
+            case this.yesValue: {
+                this.optionBenefit = true;
+                this.optionNoBenefit = false;
+                break;
+            }
+            case this.noValue: {
+                this.optionBenefit = false;
+                this.optionNoBenefit = true;
+                break;
+            }
+            default: {
+                this.optionBenefit = false;
+                this.optionNoBenefit = false;
+            }
         }
     }
 }
@@ -38,20 +45,20 @@ export default class RadioButton extends Vue {
             :name="questionSequence"
             :value="yesValue"
             class="mr-2"
-            @change="optionChange('Yes')"
+            @change="optionChange(yesValue)"
             @input="$emit('input', $event.target.value)"
         />
-        <label class="pr-2">Yes</label>
+        <label class="pr-2">{{ yesValue }}</label>
         <input
             :v-bind="noValue"
             type="radio"
             :name="questionSequence"
             class="mr-2"
             :value="noValue"
-            @change="optionChange('No')"
+            @change="optionChange(noValue)"
             @input="$emit('input', $event.target.value)"
         />
-        <label class="pr-2">No</label>
+        <label class="pr-2">{{ noValue }}</label>
         <input
             v-if="hasNotSureOption"
             :v-bind="notSureValue"
@@ -59,10 +66,10 @@ export default class RadioButton extends Vue {
             :name="questionSequence"
             class="mr-2"
             :value="notSureValue"
-            @change="optionChange('NotSure')"
+            @change="optionChange(notSureValue)"
             @input="$emit('input', $event.target.value)"
         />
-        <label v-if="hasNotSureOption" class="pr-2">Not Sure</label>
+        <label v-if="hasNotSureOption" class="pr-2">{{ notSureValue }}</label>
 
         <div v-if="hasAdditionalResponse">
             <div v-if="optionBenefit">

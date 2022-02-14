@@ -3,15 +3,21 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { DateTime } from "luxon";
 import { extend, ValidationObserver, ValidationProvider } from "vee-validate";
-import { oneOf, required } from "vee-validate/dist/rules";
+import { oneOf, regex, required } from "vee-validate/dist/rules";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 
+import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import Card from "@/components/covidTreatmentAssessment/Card.vue";
 import RadioButton from "@/components/covidTreatmentAssessment/RadioButton.vue";
 import { CovidTreatmentAssessmentOption } from "@/constants/CovidTreatmentAssessmentOption";
+import { ResultType } from "@/constants/resulttype";
+import { SnackbarPosition } from "@/constants/snackbarPosition";
+import BannerFeedback from "@/models/bannerFeedback";
 import CovidTreatmentAssessmentRequest from "@/models/CovidTreatmentAssessmentRequest";
 library.add(faEye, faEyeSlash);
+
+extend("regex", regex);
 
 extend("oneOf", {
     ...oneOf,
@@ -24,7 +30,13 @@ extend("required", {
 });
 
 @Component({
-    components: { Card, RadioButton, ValidationProvider, ValidationObserver },
+    components: {
+        Card,
+        RadioButton,
+        ValidationProvider,
+        ValidationObserver,
+        BannerFeedbackComponent,
+    },
 })
 export default class CovidTreatmentAssessment extends Vue {
     //Define the questioner sequence.
@@ -40,6 +52,7 @@ export default class CovidTreatmentAssessment extends Vue {
     questionSequence8 = "8";
 
     private maskPhoneNumber = true;
+    private showFeedback = false;
 
     private today = DateTime.local();
     private covidTreatmentAssessmentRequest: CovidTreatmentAssessmentRequest = {
@@ -101,25 +114,67 @@ export default class CovidTreatmentAssessment extends Vue {
     }
 
     private dailyDataDatesModal = false;
+    private showPhoneNumber(): boolean {
+        if (this.covidTreatmentAssessmentRequest.phoneNumber !== undefined) {
+            return this.covidTreatmentAssessmentRequest.phoneNumber.length > 0;
+        }
+        return false;
+    }
+    private bannerFeedback: BannerFeedback = {
+        type: ResultType.NONE,
+        title: "",
+        message: "",
+    };
 
-    private selectedDates: string[] = [this.today.toISO()];
+    private get snackbarPosition(): string {
+        return SnackbarPosition.Bottom;
+    }
 
-    private submit() {
-        this.$refs.observer.validate();
+    private async submit() {
+        if (this.$refs.observer !== undefined) {
+            const isValid = await (
+                this.$refs.observer as Vue & { validate: () => boolean }
+            ).validate();
+
+            if (isValid) {
+                this.showFeedback = true;
+                this.bannerFeedback = {
+                    type: ResultType.Success,
+                    title: "Success",
+                    message:
+                        "COVID-19 Treatment Assessment Form is Successfully Submitted.",
+                };
+
+                setTimeout(
+                    () => this.$router.push({ path: "/covidcard" }),
+                    2000
+                );
+            } else {
+                console.log("Error validation");
+            }
+        }
+
         //alert(this.covidTreatmentAssessmentRequest.identifiesIndigenous);
         //alert(this.covidTreatmentAssessmentRequest.hasAFamilyDoctorOrNp);
         //alert(this.covidTreatmentAssessmentRequest.symptomOnSetDate);
     }
 
     private cancel() {
-        this.$refs.observer.reset();
-        this.covidTreatmentAssessmentRequest =
-            this.resetCovidTreatmentAssessmentRequest();
+        if (this.$refs.observer !== undefined) {
+            (this.$refs.observer as Vue & { reset: () => boolean }).reset();
+            this.covidTreatmentAssessmentRequest =
+                this.resetCovidTreatmentAssessmentRequest();
+        }
     }
 }
 </script>
 <template>
     <v-container>
+        <BannerFeedbackComponent
+            :show-feedback.sync="showFeedback"
+            :feedback="bannerFeedback"
+            :position="snackbarPosition"
+        />
         <v-row no-gutters>
             <v-col cols="12" sm="12" md="10">
                 <ValidationObserver ref="observer">
@@ -160,15 +215,15 @@ export default class CovidTreatmentAssessment extends Vue {
                                 <ValidationProvider
                                     ref="phoneNumber"
                                     v-slot="{ errors }"
-                                    :rules="{ required: true }"
+                                    :rules="{
+                                        required: true,
+                                        regex: /^[2-9]\d{2}[2-9]\d{2}\d{4}$/,
+                                    }"
                                     v-bind="$attrs"
                                     name="Phone Number"
                                 >
                                     <v-text-field
-                                        v-if="
-                                            covidTreatmentAssessmentRequest
-                                                .phoneNumber.length > 0
-                                        "
+                                        v-if="showPhoneNumber()"
                                         v-model="
                                             covidTreatmentAssessmentRequest.phoneNumber
                                         "

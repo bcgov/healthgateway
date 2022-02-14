@@ -2,7 +2,7 @@ import { CovidTreatmentAssessmentOption } from "@/constants/CovidTreatmentAssess
 
 import { StringISODateTime } from "./dateWrapper";
 
-export default interface CovidTherapyAssessmentRequest {
+export default interface CovidTreatmentAssessmentRequest {
     phn?: string;
     firstName?: string;
     lastName?: string;
