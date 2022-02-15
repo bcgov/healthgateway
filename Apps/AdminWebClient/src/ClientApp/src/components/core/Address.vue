@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Watch } from "vue-property-decorator";
+import { Component, Prop, PropSync, Watch } from "vue-property-decorator";
 
 import { Countries, InternationalDestinations } from "@/constants/countries";
 import { Provinces } from "@/constants/provinces";
@@ -15,10 +15,10 @@ import {
 @Component
 export default class AddressComponent extends Vue {
     @Prop({ default: "" }) streetLines!: string[];
-    @Prop({ default: "" }) city!: string;
-    @Prop({ default: "" }) state!: string;
-    @Prop({ default: "" }) postalCode!: string;
-    @Prop({ default: "" }) country!: string;
+    @PropSync("city", { default: "" }) cityModel!: string;
+    @PropSync("state", { default: "" }) stateModel!: string;
+    @PropSync("postalCode", { default: "" }) postalCodeModel!: string;
+    @PropSync("country", { default: "" }) countryModel!: string;
     @Prop() isDisabled!: boolean;
 
     private selectedDestination = "";
@@ -47,13 +47,13 @@ export default class AddressComponent extends Vue {
 
     @Watch("country")
     private onCountryChanged(): void {
-        if (this.selectedCountryCode === this.country) {
+        if (this.selectedCountryCode === this.countryModel) {
             return;
         }
 
         // select destination matching first name associated with country code
-        this.selectedDestination = Countries[this.country]
-            ? Countries[this.country][0]
+        this.selectedDestination = Countries[this.countryModel]
+            ? Countries[this.countryModel][0]
             : "";
     }
 
@@ -107,14 +107,6 @@ export default class AddressComponent extends Vue {
         this.$emit("update:streetLines", this.streetLines);
     }
 
-    private get postalCodeModel(): string {
-        return this.postalCode;
-    }
-
-    private set postalCodeModel(model: string) {
-        this.$emit("update:postalCode", model);
-    }
-
     private mounted(): void {
         this.onCountryChanged();
     }
@@ -138,30 +130,27 @@ export default class AddressComponent extends Vue {
         <v-row align="center" dense>
             <v-col cols sm="6" md="4">
                 <v-text-field
-                    :value="city"
+                    v-model="cityModel"
                     label="City"
                     :disabled="isDisabled"
                     autocomplete="chrome-off"
-                    @change="$emit('update:city', $event)"
                 />
             </v-col>
             <v-col v-if="provinceStateList.length > 0" cols sm="6" md="4">
                 <v-select
-                    :value="state"
+                    v-model="stateModel"
                     :items="provinceStateList"
                     label="Province/State"
                     :disabled="isDisabled"
                     autocomplete="chrome-off"
-                    @change="$emit('update:state', $event)"
                 />
             </v-col>
             <v-col v-else cols sm="6" md="4">
                 <v-text-field
-                    :value="state"
+                    v-model="stateModel"
                     label="Province/State"
                     :disabled="isDisabled"
                     autocomplete="chrome-off"
-                    @change="$emit('update:state', $event)"
                 />
             </v-col>
             <v-col cols md="4">
