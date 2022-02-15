@@ -19,9 +19,8 @@ import { SnackbarPosition } from "@/constants/snackbarPosition";
 import type Address from "@/models/address";
 import type BannerFeedback from "@/models/bannerFeedback";
 import type CovidCardPatientResult from "@/models/covidCardPatientResult";
-import CovidTreatmentAssessmentDetails from "@/models/CovidTreatmentAssessmentDetails";
+import CovidTreatmentAssessmentDetails from "@/models/covidTreatmentAssessmentDetails";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
-import PreviousAssessmentDetailsList from "@/models/previousAssessmentDetailsList";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ICovidSupportService } from "@/services/interfaces";
@@ -390,6 +389,8 @@ export default class CovidCardView extends Vue {
         />
         <CovidTreatmentAssessmentComponent
             v-if="showCovidTreatmentAssessment"
+            :details="assessmentDetails"
+            :birthdate="searchResult.patient.birthdate"
             :default-address="address"
             @on-cancel="covidTreatmentAssessmentCancelled"
             @on-submit="covidTreatmentAssessmentSubmitted"
