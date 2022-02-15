@@ -53,7 +53,13 @@ extend("requiredPhoneNumber", {
 export default class CovidTreatmentAssessmentComponent extends Vue {
     @Prop({ required: true }) defaultAddress!: Address;
 
-    private address: Address | undefined = undefined;
+    private address: Address = {
+        streetLines: [],
+        city: "",
+        state: "",
+        postalCode: "",
+        country: "",
+    };
     private isEditingAddress = false;
     private showFeedback = false;
     private today = DateTime.local();
@@ -84,7 +90,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         changeAddressFlag: false,
     };
 
-    private created(): void {
+    private mounted(): void {
         this.address = { ...this.defaultAddress };
     }
 
