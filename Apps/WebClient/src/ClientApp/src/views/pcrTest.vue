@@ -120,9 +120,12 @@ export default class PcrTestView extends Vue {
         { value: 5, text: "Just now" },
         { value: 30, text: "Within 30 minutes" },
         { value: 120, text: "Within 2 hours" },
+        { value: 240, text: "Within 4 hours" },
         { value: 360, text: "Within 6 hours" },
+        { value: 480, text: "Within 8 hours" },
+        { value: 720, text: "Within 12 hours" },
+        { value: 1080, text: "Within 18 hours" },
         { value: 1440, text: "Within 24 hours" },
-        { value: 4320, text: "Within 36 hours" },
     ];
 
     private pcrTest: PcrTestData = {
