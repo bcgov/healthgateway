@@ -1,4 +1,4 @@
-import { CovidTreatmentAssessmentOption } from "@/constants/CovidTreatmentAssessmentOption";
+import { CovidTreatmentAssessmentOption } from "@/constants/covidTreatmentAssessmentOption";
 
 import { StringISODateTime } from "./dateWrapper";
 

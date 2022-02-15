@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 
-import { CovidTreatmentAssessmentOption } from "@/constants/CovidTreatmentAssessmentOption";
+import { CovidTreatmentAssessmentOption } from "@/constants/covidTreatmentAssessmentOption";
 
 @Component
 export default class OptionDetails extends Vue {

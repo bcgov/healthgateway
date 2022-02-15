@@ -3,8 +3,11 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class Card extends Vue {
-    @Prop() title!: string;
-    @Prop() additionalInfo!: string;
+    @Prop({ required: true }) title!: string;
+    @Prop({ required: false, default: false }) displayAdditionalInfo!: string;
+    @Prop({ required: false, default: undefined }) additionalInfo!:
+        | string
+        | undefined;
 }
 </script>
 
@@ -16,7 +19,7 @@ export default class Card extends Vue {
                     {{ title }}
                 </div>
                 <div
-                    v-if="additionalInfo"
+                    v-if="displayAdditionalInfo"
                     class="pl-4 mt-3 additional-info-color"
                 >
                     {{ additionalInfo }}

@@ -1,7 +1,6 @@
-import { StringISODate } from "@/models/dateWrapper";
+import { StringISODateTime } from "@/models/dateWrapper";
 
 export default interface PreviousAssessmentDetailsList {
-    dateOfAssessment: StringISODate;
-    timeOfAssessment: string;
+    dateTimeOfAssessment: StringISODateTime;
     formId: string;
 }
