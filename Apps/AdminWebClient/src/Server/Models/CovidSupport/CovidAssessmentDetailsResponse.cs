@@ -21,7 +21,7 @@ using System.Text.Json.Serialization;
 /// <summary>
 /// Model object representing covid therapy assessment details.
 /// </summary>
-public class CovidTherapyAssessmentDetails
+public class CovidAssessmentDetailsResponse
 {
     /// <summary>
     /// Gets or sets a value indicating whether there has been known positive covid 19 in past 70 days.
