@@ -55,10 +55,11 @@ export default class OptionDetails extends Vue {
                 @change="optionChange(option)"
             />
         </v-radio-group>
-        <div v-if="showMessageWhenNoIsSelected && hasSelectedNo">
-            <span class="option-message-color">
-                Citizen would likely not benefit from COVID-19 treatment.
-            </span>
+        <div
+            v-if="showMessageWhenNoIsSelected && hasSelectedNo"
+            class="option-message-color"
+        >
+            Citizen would likely not benefit from COVID-19 treatment.
         </div>
     </div>
 </template>
