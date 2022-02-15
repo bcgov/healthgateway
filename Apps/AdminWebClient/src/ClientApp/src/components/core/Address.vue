@@ -103,8 +103,7 @@ export default class AddressComponent extends Vue {
     }
 
     private set streetLinesModel(model: string) {
-        this.streetLines = model.split("\n");
-        this.$emit("update:streetLines", this.streetLines);
+        this.$emit("update:streetLines", model.split("\n"));
     }
 
     private mounted(): void {
