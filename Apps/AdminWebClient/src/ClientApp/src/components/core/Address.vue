@@ -1,4 +1,5 @@
 <script lang="ts">
+import { ValidationObserver, ValidationProvider } from "vee-validate";
 import Vue from "vue";
 import { Component, Prop, PropSync, Watch } from "vue-property-decorator";
 
@@ -12,7 +13,12 @@ import {
     zipCodeMaskTemplate,
 } from "@/utility/masks";
 
-@Component
+@Component({
+    components: {
+        ValidationProvider,
+        ValidationObserver,
+    },
+})
 export default class AddressComponent extends Vue {
     @Prop({ default: "" }) streetLines!: string[];
     @PropSync("city", { default: "" }) cityModel!: string;
@@ -113,71 +119,105 @@ export default class AddressComponent extends Vue {
 </script>
 
 <template>
-    <div>
-        <v-row align="center" dense>
-            <v-col>
-                <v-textarea
-                    v-model="streetLinesModel"
-                    label="Address"
-                    :disabled="isDisabled"
-                    auto-grow
-                    rows="1"
-                    autocomplete="chrome-off"
-                />
-            </v-col>
-        </v-row>
-        <v-row align="center" dense>
-            <v-col cols sm="6" md="4">
-                <v-text-field
-                    v-model="cityModel"
-                    label="City"
-                    :disabled="isDisabled"
-                    autocomplete="chrome-off"
-                />
-            </v-col>
-            <v-col v-if="provinceStateList.length > 0" cols sm="6" md="4">
-                <v-select
-                    v-model="stateModel"
-                    :items="provinceStateList"
-                    label="Province/State"
-                    :disabled="isDisabled"
-                    autocomplete="chrome-off"
-                />
-            </v-col>
-            <v-col v-else cols sm="6" md="4">
-                <v-text-field
-                    v-model="stateModel"
-                    label="Province/State"
-                    :disabled="isDisabled"
-                    autocomplete="chrome-off"
-                />
-            </v-col>
-            <v-col cols md="4">
-                <v-text-field
-                    v-if="postalCodeMask !== undefined"
-                    v-model="postalCodeModel"
-                    v-mask="postalCodeMask"
-                    label="Postal Code"
-                    :disabled="isDisabled"
-                    autocomplete="chrome-off"
-                />
-                <v-text-field
-                    v-else
-                    v-model="postalCodeModel"
-                    label="Postal Code"
-                    :disabled="isDisabled"
-                    autocomplete="chrome-off"
-                />
-            </v-col>
-            <v-col cols md="8" xl="4">
-                <v-select
-                    v-model="selectedDestination"
-                    :items="internationalDestinations"
-                    label="Country"
-                    :disabled="isDisabled"
-                    autocomplete="chrome-off"
-                />
-            </v-col>
-        </v-row>
-    </div>
+    <ValidationObserver ref="observer">
+        <div>
+            <v-row align="center" dense>
+                <v-col>
+                    <ValidationProvider
+                        v-slot="{ errors }"
+                        :rules="{ requiredAddress: true }"
+                        v-bind="$attrs"
+                    >
+                        <v-textarea
+                            v-model="streetLinesModel"
+                            label="Address"
+                            :disabled="isDisabled"
+                            auto-grow
+                            rows="1"
+                            autocomplete="chrome-off"
+                        />
+                        <span class="error-message">
+                            {{ errors[0] }}
+                        </span>
+                    </ValidationProvider>
+                </v-col>
+            </v-row>
+            <v-row align="center" dense>
+                <v-col cols sm="6" md="4">
+                    <ValidationProvider
+                        v-slot="{ errors }"
+                        :rules="{ requiredAddress: true }"
+                        v-bind="$attrs"
+                    >
+                        <v-text-field
+                            v-model="cityModel"
+                            label="City"
+                            :disabled="isDisabled"
+                            autocomplete="chrome-off"
+                        />
+                        <span class="error-message">
+                            {{ errors[0] }}
+                        </span>
+                    </ValidationProvider>
+                </v-col>
+                <v-col v-if="provinceStateList.length > 0" cols sm="6" md="4">
+                    <v-select
+                        v-model="stateModel"
+                        :items="provinceStateList"
+                        label="Province/State"
+                        :disabled="isDisabled"
+                        autocomplete="chrome-off"
+                    />
+                </v-col>
+                <v-col v-else cols sm="6" md="4">
+                    <v-text-field
+                        v-model="stateModel"
+                        label="Province/State"
+                        :disabled="isDisabled"
+                        autocomplete="chrome-off"
+                    />
+                </v-col>
+                <v-col cols md="4">
+                    <v-text-field
+                        v-if="postalCodeMask !== undefined"
+                        v-model="postalCodeModel"
+                        v-mask="postalCodeMask"
+                        label="Postal Code"
+                        :disabled="isDisabled"
+                        autocomplete="chrome-off"
+                    />
+                    <ValidationProvider
+                        v-else
+                        v-slot="{ errors }"
+                        :rules="{ requiredAddress: true }"
+                    >
+                        <v-text-field
+                            v-model="postalCodeModel"
+                            label="Postal Code"
+                            :disabled="isDisabled"
+                            autocomplete="chrome-off"
+                        />
+                        <span class="error-message">
+                            {{ errors[0] }}
+                        </span>
+                    </ValidationProvider>
+                </v-col>
+                <v-col cols md="8" xl="4">
+                    <v-select
+                        v-model="selectedDestination"
+                        :items="internationalDestinations"
+                        label="Country"
+                        :disabled="isDisabled"
+                        autocomplete="chrome-off"
+                    />
+                </v-col>
+            </v-row>
+        </div>
+    </ValidationObserver>
 </template>
+
+<style scoped lang="scss">
+.error-message {
+    color: #ff5252 !important;
+}
+</style>
