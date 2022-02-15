@@ -8,14 +8,11 @@ import Vue from "vue";
 import { Component, Emit, Prop } from "vue-property-decorator";
 
 import AddressComponent from "@/components/core/Address.vue";
-import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import Card from "@/components/covidTreatmentAssessment/Card.vue";
 import OptionDetails from "@/components/covidTreatmentAssessment/OptionDetails.vue";
 import { CovidTreatmentAssessmentOption } from "@/constants/CovidTreatmentAssessmentOption";
-import { ResultType } from "@/constants/resulttype";
 import { SnackbarPosition } from "@/constants/snackbarPosition";
 import type Address from "@/models/address";
-import BannerFeedback from "@/models/bannerFeedback";
 import CovidTreatmentAssessmentRequest from "@/models/CovidTreatmentAssessmentRequest";
 import { Mask, phoneNumberMaskTemplate } from "@/utility/masks";
 
@@ -46,7 +43,6 @@ extend("requiredPhoneNumber", {
         OptionDetails,
         ValidationProvider,
         ValidationObserver,
-        BannerFeedbackComponent,
         AddressComponent,
     },
 })
@@ -61,7 +57,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         country: "",
     };
     private isEditingAddress = false;
-    private showFeedback = false;
     private today = DateTime.local();
     private dailyDataDatesModal = false;
 
@@ -135,12 +130,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         return phoneNumberMaskTemplate;
     }
 
-    private bannerFeedback: BannerFeedback = {
-        type: ResultType.NONE,
-        title: "",
-        message: "",
-    };
-
     private onEditAddressChange(): void {
         if (!this.isEditingAddress) {
             this.address = { ...this.defaultAddress };
@@ -160,16 +149,9 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
             const isValid = await (
                 this.$refs.observer as Vue & { validate: () => boolean }
             ).validate();
-
+            debugger;
             if (isValid) {
-                this.showFeedback = true;
-                this.bannerFeedback = {
-                    type: ResultType.Success,
-                    title: "Success",
-                    message:
-                        "COVID-19 Treatment Assessment Form is Successfully Submitted.",
-                };
-                this.$emit("on-submit");
+                this.$emit("on-submit-success");
             } else {
                 console.log("Error validation");
             }
@@ -184,11 +166,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
 </script>
 <template>
     <v-container>
-        <BannerFeedbackComponent
-            :show-feedback.sync="showFeedback"
-            :feedback="bannerFeedback"
-            :position="snackbarPosition"
-        />
         <v-row no-gutters>
             <v-col cols="12" sm="12" md="10" offset-md="1">
                 <ValidationObserver ref="observer">
@@ -227,7 +204,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                         <v-row dense>
                             <v-col cols="auto">
                                 <ValidationProvider
-                                    ref="phoneNumber"
                                     v-slot="{ errors }"
                                     :rules="{
                                         requiredPhoneNumber: true,
@@ -252,7 +228,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                         </v-row>
                         <Card title="Do you identify as Indigenous?">
                             <OptionDetails
-                                :has-additional-response="false"
                                 :value.sync="
                                     covidTreatmentAssessmentRequest.identifiesIndigenous
                                 "
@@ -262,7 +237,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             title="Do you have a family doctor or nurse practitioner?"
                         >
                             <ValidationProvider
-                                ref="hasAFamilyDoctorOrNp"
                                 v-slot="{ errors }"
                                 rules="oneOf:Yes,No"
                             >
@@ -281,7 +255,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             additional-info="This citizen is 71 years old."
                         >
                             <ValidationProvider
-                                ref="confirmsOver12"
                                 v-slot="{ errors }"
                                 rules="oneOf:Yes,No"
                                 v-bind="$attrs"
@@ -292,7 +265,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                         covidTreatmentAssessmentRequest.confirmsOver12
                                     "
                                     :has-not-sure-option="false"
-                                    :has-additional-response="true"
+                                    :show-message-when-no-is-selected="true"
                                 />
                                 <span class="error-message">
                                     {{ errors[0] }}
@@ -303,7 +276,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             title="2. Have you recently tested positive for COVID-19 in the last 7 days?"
                         >
                             <ValidationProvider
-                                ref="testedPositiveInPast7Days"
                                 v-slot="{ errors }"
                                 rules="oneOf:Yes,No,NotSure"
                                 v-bind="$attrs"
@@ -312,7 +284,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     :value.sync="
                                         covidTreatmentAssessmentRequest.testedPositiveInPast7Days
                                     "
-                                    :has-additional-response="true"
+                                    :show-message-when-no-is-selected="true"
                                 />
                                 <span class="error-message">
                                     {{ errors[0] }}
@@ -323,7 +295,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             title="3. Do you have any severe symptoms of COVID-19?"
                         >
                             <ValidationProvider
-                                ref="hasSevereCovid19Symptoms"
                                 v-slot="{ errors }"
                                 rules="oneOf:Yes,No,NotSure"
                                 v-bind="$attrs"
@@ -346,7 +317,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     covidTreatmentAssessmentRequest.hasMildOrModerateCovid19Symptoms
                                 "
                                 :has-not-sure-option="true"
-                                :has-additional-response="true"
+                                :show-message-when-no-is-selected="true"
                             />
                         </Card>
                         <Card title="5. When did your symptoms first start?">
@@ -412,7 +383,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             additional-info="Citizen is considered immunocompromised."
                         >
                             <ValidationProvider
-                                ref="hasMedicalCondition"
                                 v-slot="{ errors }"
                                 rules="oneOf:Yes,No,NotSure"
                                 v-bind="$attrs"
@@ -422,7 +392,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                         covidTreatmentAssessmentRequest.hasImmunityCompromisingMedicalConditionAntiViralTri
                                     "
                                     :has-not-sure-option="true"
-                                    :has-additional-response="true"
+                                    :show-message-when-no-is-selected="true"
                                 />
                                 <span class="error-message">
                                     {{ errors[0] }}
@@ -434,7 +404,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             additional-info="Citizen has had 3 doses of vaccine for more than 14 days."
                         >
                             <ValidationProvider
-                                ref="reports3DosesC19Vaccine"
                                 v-slot="{ errors }"
                                 rules="oneOf:Yes,No,NotSure"
                                 v-bind="$attrs"
@@ -444,7 +413,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                         covidTreatmentAssessmentRequest.reports3DosesC19Vaccine
                                     "
                                     :has-not-sure-option="true"
-                                    :has-additional-response="true"
+                                    :show-message-when-no-is-selected="true"
                                 />
                                 <span class="error-message">
                                     {{ errors[0] }}
@@ -460,7 +429,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     covidTreatmentAssessmentRequest.hasChronicConditionDiagnoses
                                 "
                                 :has-not-sure-option="true"
-                                :has-additional-response="true"
+                                :show-message-when-no-is-selected="true"
                             />
                         </Card>
                         <Card title="Notes">

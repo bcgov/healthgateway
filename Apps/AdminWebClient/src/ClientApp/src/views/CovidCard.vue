@@ -166,12 +166,11 @@ export default class CovidCardView extends Vue {
 
         const phnDigits = this.phn.replace(/[^0-9]/g, "");
         if (!PHNValidator.IsValid(phnDigits)) {
-            this.showFeedback = true;
-            this.bannerFeedback = {
+            this.showBannerFeedback({
                 type: ResultType.Error,
                 title: "Validation error",
                 message: "Invalid PHN",
-            };
+            });
             return;
         }
         this.activePhn = phnDigits;
@@ -186,13 +185,12 @@ export default class CovidCardView extends Vue {
             .then((result) => {
                 if (result.blocked) {
                     this.searchResult = null;
-                    this.showFeedback = true;
-                    this.bannerFeedback = {
+                    this.showBannerFeedback({
                         type: ResultType.Error,
                         title: "Search Error",
                         message:
                             "Unable to retrieve record for this individual",
-                    };
+                    });
                 } else {
                     this.phn = "";
                     this.searchResult = result;
@@ -224,12 +222,11 @@ export default class CovidCardView extends Vue {
             })
             .catch(() => {
                 this.searchResult = null;
-                this.showFeedback = true;
-                this.bannerFeedback = {
+                this.showBannerFeedback({
                     type: ResultType.Error,
                     title: "Search Error",
                     message: "Unknown error searching patient data",
-                };
+                });
             })
             .finally(() => {
                 this.isLoading = false;
@@ -281,29 +278,26 @@ export default class CovidCardView extends Vue {
             .then((mailResult) => {
                 if (mailResult) {
                     this.searchResult = null;
-                    this.showFeedback = true;
-                    this.bannerFeedback = {
+                    this.showBannerFeedback({
                         type: ResultType.Success,
                         title: "Success",
                         message: "BC Vaccine Card mailed successfully.",
-                    };
+                    });
                 } else {
-                    this.showFeedback = true;
-                    this.bannerFeedback = {
+                    this.showBannerFeedback({
                         type: ResultType.Error,
                         title: "Error",
                         message:
                             "Something went wrong when mailing the card, please try again later.",
-                    };
+                    });
                 }
             })
             .catch(() => {
-                this.showFeedback = true;
-                this.bannerFeedback = {
+                this.showBannerFeedback({
                     type: ResultType.Error,
                     title: "Mail Error",
                     message: "Unknown error mailing report",
-                };
+                });
             })
             .finally(() => {
                 this.isLoading = false;
@@ -331,12 +325,11 @@ export default class CovidCardView extends Vue {
                 }
             })
             .catch(() => {
-                this.showFeedback = true;
-                this.bannerFeedback = {
+                this.showBannerFeedback({
                     type: ResultType.Error,
                     title: "Download Error",
                     message: "Unknown error downloading report",
-                };
+                });
             })
             .finally(() => {
                 this.isLoading = false;
@@ -368,8 +361,30 @@ export default class CovidCardView extends Vue {
         this.showCovidTreatmentAssessment = false;
     }
 
-    private covidTreatmentAssessmentSubmitted(): void {
+    private covidTreatmentAssessmentSubmissionSucceeded(): void {
+        debugger;
+        this.showBannerFeedback({
+            type: ResultType.Success,
+            title: "Success",
+            message:
+                "COVID-19 Treatment Assessment Form is Successfully Submitted.",
+        });
         this.showCovidTreatmentAssessment = false;
+    }
+
+    private covidTreatmentAssessmentSubmissionFailed(
+        errorMessage: string
+    ): void {
+        this.showBannerFeedback({
+            type: ResultType.Error,
+            title: "Error",
+            message: errorMessage,
+        });
+    }
+
+    private showBannerFeedback(bannerFeedback: BannerFeedback): void {
+        this.showFeedback = true;
+        this.bannerFeedback = bannerFeedback;
     }
 
     private previousAssessmentDetailsList: PreviousAssessmentDetailsList[] = [
@@ -402,7 +417,8 @@ export default class CovidCardView extends Vue {
             v-if="showCovidTreatmentAssessment"
             :default-address="address"
             @on-cancel="covidTreatmentAssessmentCancelled"
-            @on-submit="covidTreatmentAssessmentSubmitted"
+            @on-submit-success="covidTreatmentAssessmentSubmissionSucceeded"
+            @on-submit-failure="covidTreatmentAssessmentSubmissionFailed"
         />
         <v-row v-else no-gutters>
             <v-col cols="12" sm="12" md="10" offset-md="1">
