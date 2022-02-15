@@ -361,6 +361,7 @@ export default class CovidCardView extends Vue {
 
     private startCovidTreatmentAssessment(): void {
         this.showCovidTreatmentAssessment = true;
+        window.scrollTo(0, 0);
     }
 
     private covidTreatmentAssessmentCancelled(): void {
