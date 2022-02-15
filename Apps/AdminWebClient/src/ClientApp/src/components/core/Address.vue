@@ -6,7 +6,11 @@ import { Countries, InternationalDestinations } from "@/constants/countries";
 import { Provinces } from "@/constants/provinces";
 import { States } from "@/constants/states";
 import type SelectItem from "@/models/selectItem";
-import { Mask, postalCodeMask, zipCodeMask } from "@/utility/masks";
+import {
+    Mask,
+    postalCodeMaskTemplate,
+    zipCodeMaskTemplate,
+} from "@/utility/masks";
 
 @Component
 export default class AddressComponent extends Vue {
@@ -37,7 +41,7 @@ export default class AddressComponent extends Vue {
     }
 
     @Watch("selectedDestination")
-    private onSelectedDestinationChanged() {
+    private onSelectedDestinationChanged(): void {
         this.$emit("update:country", this.selectedCountryCode);
     }
 
@@ -87,20 +91,28 @@ export default class AddressComponent extends Vue {
 
     private get postalCodeMask(): Mask | undefined {
         if (this.isCanadaSelected) {
-            return postalCodeMask;
+            return postalCodeMaskTemplate;
         } else if (this.isUnitedStatesSelected) {
-            return zipCodeMask;
+            return zipCodeMaskTemplate;
         }
         return undefined;
     }
 
-    private get streetLinesString(): string {
+    private get streetLinesModel(): string {
         return this.streetLines.join("\n");
     }
 
-    private set streetLinesString(streetLines: string) {
-        this.streetLines = streetLines.split("\n");
+    private set streetLinesModel(model: string) {
+        this.streetLines = model.split("\n");
         this.$emit("update:streetLines", this.streetLines);
+    }
+
+    private get postalCodeModel(): string {
+        return this.postalCode;
+    }
+
+    private set postalCodeModel(model: string) {
+        this.$emit("update:postalCode", model);
     }
 
     private mounted(): void {
@@ -114,7 +126,7 @@ export default class AddressComponent extends Vue {
         <v-row align="center" dense>
             <v-col>
                 <v-textarea
-                    v-model="streetLinesString"
+                    v-model="streetLinesModel"
                     label="Address"
                     :disabled="isDisabled"
                     auto-grow
@@ -155,20 +167,18 @@ export default class AddressComponent extends Vue {
             <v-col cols md="4">
                 <v-text-field
                     v-if="postalCodeMask !== undefined"
+                    v-model="postalCodeModel"
                     v-mask="postalCodeMask"
-                    :value="postalCode"
                     label="Postal Code"
                     :disabled="isDisabled"
                     autocomplete="chrome-off"
-                    @change="$emit('update:postalCode', $event)"
                 />
                 <v-text-field
                     v-else
-                    :value="postalCode"
+                    v-model="postalCodeModel"
                     label="Postal Code"
                     :disabled="isDisabled"
                     autocomplete="chrome-off"
-                    @change="$emit('update:postalCode', $event)"
                 />
             </v-col>
             <v-col cols md="8" xl="4">

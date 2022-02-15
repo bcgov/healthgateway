@@ -225,7 +225,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     v-slot="{ errors }"
                                     :rules="{
                                         requiredPhoneNumber: true,
-                                        regex: /^[2-9]\d{2}[2-9]\d{2}\d{4}$/,
+                                        regex: /^[2-9]\d{2}[2-9]\d{2}\d{4}$|^\([2-9]\d{2}\) [2-9]\d{2}-\d{4}$/,
                                     }"
                                     v-bind="$attrs"
                                     name="Phone Number"
@@ -234,6 +234,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                         v-model="
                                             covidTreatmentAssessmentRequest.phoneNumber
                                         "
+                                        v-mask="phoneNumberMask"
                                         dense
                                         label="Phone Number"
                                     />
