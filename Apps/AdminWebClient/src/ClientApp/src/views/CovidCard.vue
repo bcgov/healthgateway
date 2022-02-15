@@ -343,7 +343,7 @@ export default class CovidCardView extends Vue {
             });
     }
 
-    private onEditModeChange() {
+    private onEditModeChange(): void {
         if (!this.isEditMode) {
             this.setAddress(
                 this.searchResult?.patient?.postalAddress ?? null,
@@ -399,6 +399,7 @@ export default class CovidCardView extends Vue {
         />
         <CovidTreatmentAssessmentComponent
             v-if="showCovidTreatmentAssessment"
+            :default-address="address"
             @on-cancel="covidTreatmentAssessmentCancelled"
             @on-submit="covidTreatmentAssessmentSubmitted"
         />

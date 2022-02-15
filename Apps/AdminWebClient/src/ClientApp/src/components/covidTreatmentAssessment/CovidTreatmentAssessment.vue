@@ -5,14 +5,16 @@ import { DateTime } from "luxon";
 import { extend, ValidationObserver, ValidationProvider } from "vee-validate";
 import { oneOf, regex, required } from "vee-validate/dist/rules";
 import Vue from "vue";
-import { Component, Emit } from "vue-property-decorator";
+import { Component, Emit, Prop } from "vue-property-decorator";
 
+import AddressComponent from "@/components/core/Address.vue";
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import Card from "@/components/covidTreatmentAssessment/Card.vue";
 import OptionDetails from "@/components/covidTreatmentAssessment/OptionDetails.vue";
 import { CovidTreatmentAssessmentOption } from "@/constants/CovidTreatmentAssessmentOption";
 import { ResultType } from "@/constants/resulttype";
 import { SnackbarPosition } from "@/constants/snackbarPosition";
+import type Address from "@/models/address";
 import BannerFeedback from "@/models/bannerFeedback";
 import CovidTreatmentAssessmentRequest from "@/models/CovidTreatmentAssessmentRequest";
 import { Mask, phoneNumberMaskTemplate } from "@/utility/masks";
@@ -45,9 +47,14 @@ extend("requiredPhoneNumber", {
         ValidationProvider,
         ValidationObserver,
         BannerFeedbackComponent,
+        AddressComponent,
     },
 })
 export default class CovidTreatmentAssessmentComponent extends Vue {
+    @Prop({ required: true }) defaultAddress!: Address;
+
+    private address: Address | undefined = undefined;
+    private isEditingAddress = false;
     private showFeedback = false;
     private today = DateTime.local();
     private dailyDataDatesModal = false;
@@ -76,6 +83,10 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         country: "Canada",
         changeAddressFlag: false,
     };
+
+    private created(): void {
+        this.address = { ...this.defaultAddress };
+    }
 
     private resetCovidTreatmentAssessmentRequest(): CovidTreatmentAssessmentRequest {
         return {
@@ -123,6 +134,12 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         title: "",
         message: "",
     };
+
+    private onEditAddressChange(): void {
+        if (!this.isEditingAddress) {
+            this.address = { ...this.defaultAddress };
+        }
+    }
 
     private resetForm() {
         if (this.$refs.observer !== undefined) {
@@ -453,6 +470,29 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                 />
                             </div>
                         </Card>
+                        <AddressComponent
+                            v-bind.sync="address"
+                            :is-disabled="!isEditingAddress"
+                            class="mt-6"
+                        />
+                        <v-row class="pt-3">
+                            <v-col cols="12" sm="6" lg="4">
+                                <v-checkbox
+                                    v-model="isEditingAddress"
+                                    label="Mail to a different address"
+                                    @change="onEditAddressChange"
+                                />
+                            </v-col>
+                            <v-col cols="12" sm="6" lg="4">
+                                <v-text-field
+                                    :value="
+                                        covidTreatmentAssessmentRequest.phoneNumber
+                                    "
+                                    label="Confirm Phone Number"
+                                    disabled
+                                />
+                            </v-col>
+                        </v-row>
                     </v-form>
                 </ValidationObserver>
                 <v-row class="py-3">
