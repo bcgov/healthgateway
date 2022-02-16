@@ -604,16 +604,16 @@ export default class PcrTestView extends Vue {
                     </h1>
                 </b-col>
             </b-row>
-            <b-row id="processError">
+            <b-row v-if="!!errorMessage" id="processError" class="pt-3">
                 <b-col>
                     <b-alert
                         data-testid="alreadyProcessedBanner"
                         variant="warning"
                         dismissible
                         class="no-print"
-                        :show="!!errorMessage"
+                        :show="true"
                     >
-                        <p data-testid="processedErrorText">
+                        <p data-testid="alreadyProcessedText">
                             {{ errorMessage }}
                         </p>
                     </b-alert>
