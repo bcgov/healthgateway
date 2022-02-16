@@ -514,14 +514,14 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                         <Card title="Notes">
                             <div class="pt-2">
                                 <v-textarea
+                                    v-model="
+                                        covidTreatmentAssessmentRequest.agentComments
+                                    "
                                     maxlength="2000"
                                     counter="2000"
                                     filled
                                     auto-grow
                                     rows="4"
-                                    :value="
-                                        covidTreatmentAssessmentRequest.agentComments
-                                    "
                                 />
                             </div>
                         </Card>
