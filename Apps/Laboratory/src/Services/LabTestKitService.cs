@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Services
 {
+    using System.Globalization;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -55,6 +56,8 @@ namespace HealthGateway.Laboratory.Services
         public async Task<RequestResult<PublicLabTestKit>> RegisterLabTestKitAsync(PublicLabTestKit testKit)
         {
             RequestResult<PublicLabTestKit> requestResult = InitializeResult<PublicLabTestKit>(testKit);
+            testKit.ShortCodeFirst = testKit.ShortCodeFirst?.ToUpper(CultureInfo.InvariantCulture);
+            testKit.ShortCodeSecond = testKit.ShortCodeSecond?.ToUpper(CultureInfo.InvariantCulture);
             bool validated;
             if (!string.IsNullOrEmpty(testKit.Phn))
             {
