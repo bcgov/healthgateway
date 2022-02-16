@@ -12,23 +12,9 @@ parameters:
     default: true
 
 steps:
-  - task: DotNetCoreCLI@2
-    displayName: "Compiling code for $(App.Name)"
-    condition: eq(variables['WASMBuild'], false)
-    inputs:
-      projects: "$(App.Home)/src"
-      arguments: "--no-incremental /warnaserror"
-
-  - task: DotNetCoreCLI@2
-    displayName: "Compiling code for Blazor Solution $(App.Name)"
-    condition: eq(variables['WASMBuild'], true)
-    inputs:
-      projects: "$(App.Home)"
-      arguments: "--no-incremental /warnaserror"
-
   - task: Cache@2
     displayName: 'Fetch NPM Cache'
-    condition: and(succeeded(), eq(variables['NPMInstall'], true))
+    condition: eq(variables['NPMInstall'], true)
     inputs:
       key: 'npm | "$(Agent.OS)" | $(App.Home)/src/ClientApp/package-lock.json'
       path: '$(App.Home)/src/ClientApp/node_modules'
@@ -49,6 +35,20 @@ steps:
       command: "custom"
       customCommand: "test"
       workingDir: "$(App.Home)/src/ClientApp"
+
+  - task: DotNetCoreCLI@2
+    displayName: "Compiling code for $(App.Name)"
+    condition: and(succeeded(), eq(variables['WASMBuild'], false))
+    inputs:
+      projects: "$(App.Home)/src"
+      arguments: "--no-incremental /warnaserror"
+
+  - task: DotNetCoreCLI@2
+    displayName: "Compiling code for Blazor Solution $(App.Name)"
+    condition: and(succeeded(), eq(variables['WASMBuild'], true))
+    inputs:
+      projects: "$(App.Home)"
+      arguments: "--no-incremental /warnaserror"
 
   - task: DotNetCoreCLI@2
     displayName: "Runing Unit Tests for $(App.Name)"
