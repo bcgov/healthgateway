@@ -145,14 +145,10 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
     }
 
     private get patientFullName(): string {
-        this.covidTreatmentAssessmentRequest.firstName = this.patient.firstname;
-        this.covidTreatmentAssessmentRequest.lastName = this.patient.lastname;
         return `${this.patient.firstname} ${this.patient.lastname} `;
     }
 
     private get patientPersonalHealthNumber(): string {
-        this.covidTreatmentAssessmentRequest.phn =
-            this.patient.personalhealthnumber;
         return this.patient.personalhealthnumber;
     }
 
@@ -188,7 +184,11 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         }
     }
 
-    private setAddressRequest(): void {
+    private populateRequest(): void {
+        this.covidTreatmentAssessmentRequest.phn =
+            this.patient.personalhealthnumber;
+        this.covidTreatmentAssessmentRequest.firstName = this.patient.firstname;
+        this.covidTreatmentAssessmentRequest.lastName = this.patient.lastname;
         this.covidTreatmentAssessmentRequest.country = this.address.country;
         this.covidTreatmentAssessmentRequest.postalCode =
             this.address.postalCode;
@@ -198,7 +198,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
     }
 
     private submitCovidTreatmentAssessment(): void {
-        this.setAddressRequest();
+        this.populateRequest();
         this.covidSupportService
             .submitCovidTreatmentAssessment(
                 this.covidTreatmentAssessmentRequest
@@ -222,7 +222,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                 this.$refs.observer as Vue & { validate: () => boolean }
             ).validate();
             if (isValid) {
-                console.log("test");
                 this.submitCovidTreatmentAssessment();
             } else {
                 this.$emit("on-submit-failure");
@@ -329,7 +328,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     :value.sync="
                                         covidTreatmentAssessmentRequest.confirmsOver12
                                     "
-                                    :show-message-when-no-is-selected="true"
+                                    :response-of-no-indicates-no-benefit="true"
                                 />
                                 <span class="error-message">
                                     {{ errors[0] }}
@@ -352,7 +351,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     :value.sync="
                                         covidTreatmentAssessmentRequest.testedPositiveInPast7Days
                                     "
-                                    :show-message-when-no-is-selected="true"
+                                    :response-of-no-indicates-no-benefit="true"
                                 />
                                 <span class="error-message">
                                     {{ errors[0] }}
@@ -390,7 +389,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                         covidTreatmentAssessmentRequest.hasMildOrModerateCovid19Symptoms
                                     "
                                     :has-not-sure-option="true"
-                                    :show-message-when-no-is-selected="true"
+                                    :response-of-no-indicates-no-benefit="true"
                                 />
                                 <span class="error-message">
                                     {{ errors[0] }}
@@ -475,7 +474,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                         covidTreatmentAssessmentRequest.hasImmunityCompromisingMedicalConditionAntiViralTri
                                     "
                                     :has-not-sure-option="true"
-                                    :show-message-when-yes-is-selected="true"
+                                    :response-of-yes-indicates-benefit="true"
                                 />
                                 <span class="error-message">
                                     {{ errors[0] }}
@@ -494,7 +493,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     covidTreatmentAssessmentRequest.reports3DosesC19Vaccine
                                 "
                                 :has-not-sure-option="true"
-                                :has-selected-yes-with-no-benifit="true"
+                                :response-of-yes-indicates-no-benefit="true"
                             />
                         </Card>
                         <Card
@@ -509,7 +508,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     covidTreatmentAssessmentRequest.hasChronicConditionDiagnoses
                                 "
                                 :has-not-sure-option="true"
-                                :show-message-when-yes-is-selected="true"
+                                :response-of-yes-indicates-benefit="true"
                             />
                         </Card>
                         <Card title="Notes">

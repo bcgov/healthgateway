@@ -8,11 +8,11 @@ export default class OptionDetails extends Vue {
     @Prop({ required: true }) value!: CovidTreatmentAssessmentOption;
     @Prop({ required: false, default: false }) hasNotSureOption!: boolean;
     @Prop({ required: false, default: false })
-    showMessageWhenNoIsSelected!: boolean;
+    responseOfNoIndicatesNoBenefit!: boolean;
     @Prop({ required: false, default: false })
-    showMessageWhenYesIsSelected!: boolean;
+    responseOfYesIndicatesBenefit!: boolean;
     @Prop({ required: false, default: false })
-    hasSelectedYesWithNoBenifit!: boolean;
+    responseOfYesIndicatesNoBenefit!: boolean;
 
     private get options(): CovidTreatmentAssessmentOption[] {
         let options = [
@@ -47,13 +47,13 @@ export default class OptionDetails extends Vue {
     }
 
     private get showMessageWithBenefit(): boolean {
-        return this.showMessageWhenYesIsSelected && this.hasSelectedYes;
+        return this.responseOfYesIndicatesBenefit && this.hasSelectedYes;
     }
 
     private get showMessageWithNoBenefit(): boolean {
         return (
-            (this.showMessageWhenNoIsSelected && this.hasSelectedNo) ||
-            (this.hasSelectedYesWithNoBenifit && this.hasSelectedYes)
+            (this.responseOfNoIndicatesNoBenefit && this.hasSelectedNo) ||
+            (this.responseOfYesIndicatesNoBenefit && this.hasSelectedYes)
         );
     }
 
