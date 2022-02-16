@@ -83,8 +83,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         confirmsOver12: false,
         testedPositiveInPast7Days: CovidTreatmentAssessmentOption.Unspecified,
         hasSevereCovid19Symptoms: CovidTreatmentAssessmentOption.Unspecified,
-        hasMildOrModerateCovid19Symptoms: false,
-        hasMildOrModerateCovid19SymptomsString:
+        hasMildOrModerateCovid19Symptoms:
             CovidTreatmentAssessmentOption.Unspecified,
         symptomOnSetDate: "",
         hasImmunityCompromisingMedicalConditionAntiViralTri:
@@ -124,8 +123,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                 CovidTreatmentAssessmentOption.Unspecified,
             hasSevereCovid19Symptoms:
                 CovidTreatmentAssessmentOption.Unspecified,
-            hasMildOrModerateCovid19Symptoms: false,
-            hasMildOrModerateCovid19SymptomsString:
+            hasMildOrModerateCovid19Symptoms:
                 CovidTreatmentAssessmentOption.Unspecified,
             symptomOnSetDate: "",
             hasImmunityCompromisingMedicalConditionAntiViralTri:
@@ -209,20 +207,8 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
             this.address.streetLines;
     }
 
-    private setHasMildOrModerateCovid19SymptomsValue(): void {
-        if (
-            this.covidTreatmentAssessmentRequest
-                .hasMildOrModerateCovid19SymptomsString === "Yes"
-        ) {
-            this.covidTreatmentAssessmentRequest.hasMildOrModerateCovid19Symptoms =
-                true;
-        }
-        this.covidTreatmentAssessmentRequest.hasMildOrModerateCovid19Symptoms =
-            false;
-    }
     private submitCovidTreatmentAssessment(): void {
         this.setAddressRequest();
-        this.setHasMildOrModerateCovid19SymptomsValue();
         this.covidSupportService
             .submitCovidTreatmentAssessment(
                 this.covidTreatmentAssessmentRequest
@@ -411,7 +397,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             >
                                 <OptionDetails
                                     :value.sync="
-                                        covidTreatmentAssessmentRequest.hasMildOrModerateCovid19SymptomsString
+                                        covidTreatmentAssessmentRequest.hasMildOrModerateCovid19Symptoms
                                     "
                                     :has-not-sure-option="true"
                                     :show-message-when-no-is-selected="true"
