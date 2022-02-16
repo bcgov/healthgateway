@@ -527,7 +527,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     covidTreatmentAssessmentRequest.reports3DosesC19Vaccine
                                 "
                                 :has-not-sure-option="true"
-                                :show-message-when-yes-is-selected="true"
+                                :has-selected-yes-with-no-benifit="true"
                             />
                         </Card>
                         <Card

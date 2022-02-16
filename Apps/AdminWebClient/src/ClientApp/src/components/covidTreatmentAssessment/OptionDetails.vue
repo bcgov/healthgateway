@@ -11,6 +11,8 @@ export default class OptionDetails extends Vue {
     showMessageWhenNoIsSelected!: boolean;
     @Prop({ required: false, default: false })
     showMessageWhenYesIsSelected!: boolean;
+    @Prop({ required: false, default: false })
+    hasSelectedYesWithNoBenifit!: boolean;
 
     private get options(): CovidTreatmentAssessmentOption[] {
         let options = [
@@ -44,6 +46,17 @@ export default class OptionDetails extends Vue {
         return this.value === CovidTreatmentAssessmentOption.Yes;
     }
 
+    private get showMessageWithBenefit(): boolean {
+        return this.showMessageWhenYesIsSelected && this.hasSelectedYes;
+    }
+
+    private get showMessageWithNoBenefit(): boolean {
+        return (
+            (this.showMessageWhenNoIsSelected && this.hasSelectedNo) ||
+            (this.hasSelectedYesWithNoBenifit && this.hasSelectedYes)
+        );
+    }
+
     private optionChange(value: CovidTreatmentAssessmentOption) {
         this.$emit("update:value", value);
     }
@@ -61,16 +74,10 @@ export default class OptionDetails extends Vue {
                 @change="optionChange(option)"
             />
         </v-radio-group>
-        <div
-            v-if="showMessageWhenNoIsSelected && hasSelectedNo"
-            class="option-message-color"
-        >
+        <div v-if="showMessageWithNoBenefit" class="option-message-color">
             Citizen would likely not benefit from COVID-19 treatment.
         </div>
-        <div
-            v-if="showMessageWhenYesIsSelected && hasSelectedYes"
-            class="option-message-color"
-        >
+        <div v-if="showMessageWithBenefit" class="option-message-color">
             Citizen may benefit from COVID-19 treatment.
         </div>
     </div>
