@@ -39,6 +39,9 @@ export default class BannerFeedbackComponent extends Vue {
             case ResultType.Error: {
                 return "error";
             }
+            case ResultType.Warning: {
+                return "warning";
+            }
             default: {
                 return "NONE";
             }
