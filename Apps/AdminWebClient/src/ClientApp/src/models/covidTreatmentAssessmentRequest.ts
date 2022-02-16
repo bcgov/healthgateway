@@ -18,7 +18,7 @@ export default interface CovidTreatmentAssessmentRequest {
     reports3DosesC19Vaccine: CovidTreatmentAssessmentOption;
     hasChronicConditionDiagnoses: CovidTreatmentAssessmentOption;
     agentComments?: string;
-    streetAddress?: string;
+    streetAddress?: string[];
     provOrState?: string;
     postalCode?: string;
     country?: string;
