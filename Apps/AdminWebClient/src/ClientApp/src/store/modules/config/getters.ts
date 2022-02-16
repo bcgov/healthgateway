@@ -21,4 +21,10 @@ export const getters: GetterTree<ConfigState, RootState> = {
         const { admin } = config;
         return admin;
     },
+    features(state: ConfigState): { [id: string]: boolean } {
+        const { config } = state;
+        const { admin } = config;
+        const { features } = admin;
+        return features ?? {};
+    },
 };
