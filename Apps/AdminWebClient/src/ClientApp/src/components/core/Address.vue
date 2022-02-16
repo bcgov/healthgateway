@@ -125,7 +125,7 @@ export default class AddressComponent extends Vue {
                 <v-col>
                     <ValidationProvider
                         v-slot="{ errors }"
-                        :rules="{ requiredField: true }"
+                        :rules="{ required: true }"
                         v-bind="$attrs"
                     >
                         <v-textarea
@@ -146,7 +146,7 @@ export default class AddressComponent extends Vue {
                 <v-col cols sm="6" md="4">
                     <ValidationProvider
                         v-slot="{ errors }"
-                        :rules="{ requiredField: true }"
+                        :rules="{ required: true }"
                         v-bind="$attrs"
                     >
                         <v-text-field
@@ -189,7 +189,7 @@ export default class AddressComponent extends Vue {
                     <ValidationProvider
                         v-else
                         v-slot="{ errors }"
-                        :rules="{ requiredField: true }"
+                        :rules="{ required: true }"
                     >
                         <v-text-field
                             v-model="postalCodeModel"

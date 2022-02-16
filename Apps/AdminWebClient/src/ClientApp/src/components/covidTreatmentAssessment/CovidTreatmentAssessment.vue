@@ -23,7 +23,7 @@ import { Mask, phoneNumberMaskTemplate } from "@/utility/masks";
 
 library.add(faEye, faEyeSlash);
 
-const errorMessage = "This is a required field. Please select an answer.";
+const errorMessage = "This is a required field";
 
 extend("regex", regex);
 
@@ -35,16 +35,6 @@ extend("oneOf", {
 extend("required", {
     ...required,
     message: errorMessage,
-});
-
-extend("requiredField", {
-    ...required,
-    message: "This is a required field",
-});
-
-extend("requiredPhoneNumber", {
-    ...required,
-    message: "This is a required field. Please enter a phone number.",
 });
 
 @Component({
@@ -85,7 +75,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         hasSevereCovid19Symptoms: CovidTreatmentAssessmentOption.Unspecified,
         hasMildOrModerateCovid19Symptoms:
             CovidTreatmentAssessmentOption.Unspecified,
-        symptomOnSetDate: "",
+        symptomOnSetDate: null,
         hasImmunityCompromisingMedicalConditionAntiViralTri:
             CovidTreatmentAssessmentOption.Unspecified,
         reports3DosesC19Vaccine: CovidTreatmentAssessmentOption.Unspecified,
@@ -125,7 +115,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                 CovidTreatmentAssessmentOption.Unspecified,
             hasMildOrModerateCovid19Symptoms:
                 CovidTreatmentAssessmentOption.Unspecified,
-            symptomOnSetDate: "",
+            symptomOnSetDate: null,
             hasImmunityCompromisingMedicalConditionAntiViralTri:
                 CovidTreatmentAssessmentOption.Unspecified,
             reports3DosesC19Vaccine: CovidTreatmentAssessmentOption.Unspecified,
@@ -288,7 +278,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                 <ValidationProvider
                                     v-slot="{ errors }"
                                     :rules="{
-                                        requiredPhoneNumber: true,
+                                        required: true,
                                         regex: /^[2-9]\d{2}[2-9]\d{2}\d{4}$|^\([2-9]\d{2}\) [2-9]\d{2}-\d{4}$/,
                                     }"
                                     v-bind="$attrs"

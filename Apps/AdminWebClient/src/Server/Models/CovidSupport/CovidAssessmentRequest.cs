@@ -101,7 +101,7 @@ public class CovidAssessmentRequest
     /// Gets or sets the symptom on set date.
     /// </summary>
     [JsonPropertyName("symptomOnSetDate")]
-    public DateTime SymptomOnSetDate { get; set; }
+    public DateTime? SymptomOnSetDate { get; set; }
 
     /// <summary>
     /// Gets or sets the has immunity compromising medical condition antiviral tri option.
