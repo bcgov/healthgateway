@@ -282,7 +282,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             </ValidationProvider>
                         </Card>
                         <Card
-                            title="1. Please confirm that you are over 12 years or older."
+                            title="1. Please confirm that you are over 12 years or older.*"
                             :additional-info="`This citizen is ${age} years old.`"
                             display-additional-info="true"
                         >
@@ -304,7 +304,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             </ValidationProvider>
                         </Card>
                         <Card
-                            title="2. Have you recently tested positive for COVID-19 in the last 7 days?"
+                            title="2. Have you recently tested positive for COVID-19 in the last 7 days?*"
                             additional-info="This citizen has tested positive for COVID-19 within the last 7 days."
                             :display-additional-info="
                                 details.hasKnownPositiveC19Past7Days
@@ -327,7 +327,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             </ValidationProvider>
                         </Card>
                         <Card
-                            title="3. Do you have any severe symptoms of COVID-19?"
+                            title="3. Do you have any severe symptoms of COVID-19?*"
                         >
                             <ValidationProvider
                                 v-slot="{ errors }"
@@ -345,7 +345,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             </ValidationProvider>
                         </Card>
                         <Card
-                            title="4. COVID-19 symptoms can range from mild to moderate. Mild and moderate symptoms are symptoms that can be managed at home. Do you have any symptoms of COVID-19?"
+                            title="4. COVID-19 symptoms can range from mild to moderate. Mild and moderate symptoms are symptoms that can be managed at home. Do you have any symptoms of COVID-19?*"
                         >
                             <OptionDetails
                                 :value.sync="
@@ -428,7 +428,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             </div>
                         </Card>
                         <Card
-                            title="6. Do you have a medical condition or are you taking medications that suppress or weaken your immune system?"
+                            title="6. Do you have a medical condition or are you taking medications that suppress or weaken your immune system?*"
                             additional-info="Citizen is considered immunocompromised."
                             :display-additional-info="
                                 details.citizenIsConsideredImmunoCompromised
