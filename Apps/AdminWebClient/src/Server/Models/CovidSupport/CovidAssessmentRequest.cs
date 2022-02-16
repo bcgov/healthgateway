@@ -167,23 +167,23 @@ public class CovidAssessmentRequest
     /// Gets or sets a value indicating whether address flag has changed.
     /// </summary>
     [JsonPropertyName("positiveCovidLabData")]
-    public string PositiveCovidLabData { get; set; }
+    public string? PositiveCovidLabData { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating the covid vaccination history.
     /// </summary>
     [JsonPropertyName("covidVaccinationHistory")]
-    public string CovidVaccinationHistory { get; set; }
+    public string? CovidVaccinationHistory { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating the CEV group details.
     /// </summary>
     [JsonPropertyName("cevGroupDetails")]
-    public string CevGroupDetails { get; set; }
+    public string? CevGroupDetails { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating the submission date.
     /// </summary>
     [JsonPropertyName("submitted")]
-    public DateTime Submitted { get; set; }
+    public DateTime? Submitted { get; set; }
 }
