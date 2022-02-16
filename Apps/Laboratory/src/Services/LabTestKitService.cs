@@ -160,7 +160,7 @@ namespace HealthGateway.Laboratory.Services
                     requestResult.ResultStatus = ResultType.Success;
                     break;
                 case HttpStatusCode.Conflict:
-                    requestResult.ResultError = ErrorTranslator.ActionRequired("The identified lab test has already been registered", ActionType.Processed);
+                    requestResult.ResultError = ErrorTranslator.ActionRequired("This test kit has already been registered", ActionType.Processed);
                     requestResult.ResultStatus = ResultType.ActionRequired;
                     break;
                 case HttpStatusCode.UnprocessableEntity:

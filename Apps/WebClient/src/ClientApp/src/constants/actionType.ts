@@ -4,4 +4,6 @@ export const enum ActionType {
     DataMismatch = "MISMATCH",
     Invalid = "INVALID",
     Refresh = "REFRESH",
+    Validation = "VALIDATION",
+    Processed = "PROCESSED",
 }

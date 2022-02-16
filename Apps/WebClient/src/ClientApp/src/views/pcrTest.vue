@@ -18,6 +18,7 @@ import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
 import HgTimeDropdownComponent from "@/components/shared/hgTimeDropdown.vue";
+import { ActionType } from "@/constants/actionType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { PcrDataSource } from "@/constants/pcrTestDataSource";
 import { IdentityProviderConfiguration } from "@/models/configData";
@@ -115,6 +116,8 @@ export default class PcrTestView extends Vue {
     private loading = false;
 
     private bcsclogo: string = Image06;
+
+    private errorMessage = "";
 
     private testTakenMinutesAgoValues = [
         { value: 5, text: "Just now" },
@@ -372,6 +375,7 @@ export default class PcrTestView extends Vue {
     // ### Form Actions ###
     private handleSubmit() {
         this.$v.$touch();
+        this.errorMessage = "";
         if (this.$v.$invalid) {
             return;
         }
@@ -413,13 +417,7 @@ export default class PcrTestView extends Vue {
                         this.registrationComplete = true;
                     })
                     .catch((err: ResultError) => {
-                        this.logger.error(`registerTestKit Error: ${err}`);
-                        this.addCustomError({
-                            title: "Unable to register test kit",
-                            source: ErrorSourceType.TestKit,
-                            traceId: err.traceId,
-                        });
-                        this.loading = false;
+                        this.handleError(err, "registerTestKit");
                     });
                 break;
             // ### Submitted through manual input
@@ -458,20 +456,26 @@ export default class PcrTestView extends Vue {
                         this.registrationComplete = true;
                     })
                     .catch((err: ResultError) => {
-                        this.logger.error(
-                            `registerTestKitPublic Error: ${err}`
-                        );
-                        this.addCustomError({
-                            title: "Unable to register test kit",
-                            source: ErrorSourceType.TestKit,
-                            traceId: err.traceId,
-                        });
-                        this.loading = false;
+                        this.handleError(err, "registerTestKitPublic");
                     });
                 break;
             default:
                 break;
         }
+    }
+
+    private handleError(err: ResultError, domain: string) {
+        this.logger.error(`${domain} Error: ${err}`);
+        if (err.actionCode == ActionType.Processed) {
+            this.errorMessage = err.resultMessage;
+        } else {
+            this.addCustomError({
+                title: "Unable to register test kit",
+                source: ErrorSourceType.TestKit,
+                traceId: err.traceId,
+            });
+        }
+        this.loading = false;
     }
 
     private resetForm() {
@@ -598,6 +602,21 @@ export default class PcrTestView extends Vue {
                     <h1 class="h4 mb-2 font-weight-normal">
                         <strong>Register a Test Kit</strong>
                     </h1>
+                </b-col>
+            </b-row>
+            <b-row v-if="!!errorMessage" id="processError" class="pt-3">
+                <b-col>
+                    <b-alert
+                        data-testid="alreadyProcessedBanner"
+                        variant="warning"
+                        dismissible
+                        class="no-print"
+                        :show="true"
+                    >
+                        <p data-testid="alreadyProcessedText">
+                            {{ errorMessage }}
+                        </p>
+                    </b-alert>
                 </b-col>
             </b-row>
             <b-row>
