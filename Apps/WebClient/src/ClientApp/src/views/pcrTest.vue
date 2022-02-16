@@ -1141,15 +1141,15 @@ export default class PcrTestView extends Vue {
                             Your kit has been registered to your profile.
                         </span>
                         <div class="pt-2">
-                            <router-link to="/">
+                            <router-link to="/logout">
                                 <hg-button
-                                    id="btn-continue"
-                                    aria-label="Continue"
-                                    data-testid="btn-continue"
+                                    id="logoutBtn"
+                                    aria-label="Logout"
+                                    data-testid="logoutBtn"
                                     variant="link"
                                     class="continue-button"
                                 >
-                                    <span>Back to home</span>
+                                    <span>Logout</span>
                                 </hg-button>
                             </router-link>
                         </div>
