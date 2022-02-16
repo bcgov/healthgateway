@@ -522,7 +522,7 @@ export default class PcrTestView extends Vue {
     <div>
         <!-- LANDING -->
         <b-container v-if="isLoading">
-            <LoadingComponent :is-loading="isLoading" :is-custom="true" />
+            <LoadingComponent :is-loading="isLoading" />
         </b-container>
         <b-container
             v-if="
