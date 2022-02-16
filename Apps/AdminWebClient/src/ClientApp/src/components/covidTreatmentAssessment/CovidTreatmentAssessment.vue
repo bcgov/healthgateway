@@ -419,25 +419,16 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     width="290px"
                                 >
                                     <template #activator="{ on, attrs }">
-                                        <ValidationProvider
-                                            v-slot="{ errors }"
-                                            rules="requiredField"
-                                            v-bind="$attrs"
-                                        >
-                                            <v-text-field
-                                                v-model="
-                                                    covidTreatmentAssessmentRequest.symptomOnSetDate
-                                                "
-                                                label="Date"
-                                                prepend-icon="mdi-calendar"
-                                                readonly
-                                                v-bind="attrs"
-                                                v-on="on"
-                                            />
-                                            <div class="error-message">
-                                                {{ errors[0] }}
-                                            </div>
-                                        </ValidationProvider>
+                                        <v-text-field
+                                            v-model="
+                                                covidTreatmentAssessmentRequest.symptomOnSetDate
+                                            "
+                                            label="Date"
+                                            prepend-icon="mdi-calendar"
+                                            readonly
+                                            v-bind="attrs"
+                                            v-on="on"
+                                        />
                                     </template>
                                     <v-date-picker
                                         v-model="

@@ -385,20 +385,17 @@ export default class CovidCardView extends Vue {
         this.showBannerFeedback({
             type: ResultType.Success,
             title: "Success",
-            message:
-                "COVID-19 Treatment Assessment Form is Successfully Submitted.",
+            message: "COVID treatment assessment submitted successfully.",
         });
         this.showCovidTreatmentAssessment = false;
         this.search(this.activePhn, true);
     }
 
-    private covidTreatmentAssessmentSubmissionFailed(
-        errorMessage: string
-    ): void {
+    private covidTreatmentAssessmentSubmissionFailed(): void {
         this.showBannerFeedback({
             type: ResultType.Error,
             title: "Error",
-            message: errorMessage,
+            message: "Unable to submit COVID treatment assessment",
         });
     }
 
