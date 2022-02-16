@@ -401,22 +401,42 @@ export default class CovidCardView extends Vue {
         this.showCovidTreatmentAssessment = false;
     }
 
+    private covidTreatmentAssessmentSubmitted(): void {
+        this.isLoading = true;
+    }
+
     private covidTreatmentAssessmentSubmissionSucceeded(): void {
-        this.showBannerFeedback({
-            type: ResultType.Success,
-            title: "Success",
-            message: "COVID-19 treatment assessment submitted successfully.",
-        });
         this.showCovidTreatmentAssessment = false;
-        this.search(true);
+
+        this.getCovidTreatmentAssessmentDetails()
+            .then(() => {
+                this.showBannerFeedback({
+                    type: ResultType.Success,
+                    title: "Success",
+                    message:
+                        "COVID-19 treatment assessment submitted successfully.",
+                });
+            })
+            .catch(() => {
+                this.showBannerFeedback({
+                    type: ResultType.Warning,
+                    title: "Warning",
+                    message:
+                        "COVID-19 treatment assessment submitted successfully, but updated assessment history could not be retrieved.",
+                });
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
     }
 
     private covidTreatmentAssessmentSubmissionFailed(): void {
         this.showBannerFeedback({
             type: ResultType.Error,
             title: "Error",
-            message: "Unable to submit COVID-19 treatment assessment",
+            message: "Unable to submit COVID-19 treatment assessment.",
         });
+        this.isLoading = false;
     }
 
     private showBannerFeedback(bannerFeedback: BannerFeedback): void {
@@ -443,6 +463,7 @@ export default class CovidCardView extends Vue {
             :patient="searchResult.patient"
             :default-address="address"
             @on-cancel="covidTreatmentAssessmentCancelled"
+            @on-submit="covidTreatmentAssessmentSubmitted"
             @on-submit-success="covidTreatmentAssessmentSubmissionSucceeded"
             @on-submit-failure="covidTreatmentAssessmentSubmissionFailed"
         />
