@@ -285,7 +285,7 @@ export default class HeaderComponent extends Vue {
                             class="mr-2"
                             fixed-width
                         />
-                        <span>Logout</span>
+                        <span>Log out</span>
                     </b-dropdown-item-button>
                 </b-nav-item-dropdown>
 
