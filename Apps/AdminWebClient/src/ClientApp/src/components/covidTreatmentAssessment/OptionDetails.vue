@@ -9,6 +9,8 @@ export default class OptionDetails extends Vue {
     @Prop({ required: false, default: false }) hasNotSureOption!: boolean;
     @Prop({ required: false, default: false })
     showMessageWhenNoIsSelected!: boolean;
+    @Prop({ required: false, default: false })
+    showMessageWhenYesIsSelected!: boolean;
 
     private get options(): CovidTreatmentAssessmentOption[] {
         let options = [
@@ -38,6 +40,10 @@ export default class OptionDetails extends Vue {
         return this.value === CovidTreatmentAssessmentOption.No;
     }
 
+    private get hasSelectedYes(): boolean {
+        return this.value === CovidTreatmentAssessmentOption.Yes;
+    }
+
     private optionChange(value: CovidTreatmentAssessmentOption) {
         this.$emit("update:value", value);
     }
@@ -60,6 +66,12 @@ export default class OptionDetails extends Vue {
             class="option-message-color"
         >
             Citizen would likely not benefit from COVID-19 treatment.
+        </div>
+        <div
+            v-if="showMessageWhenYesIsSelected && hasSelectedYes"
+            class="option-message-color"
+        >
+            Citizen may benefit from COVID-19 treatment.
         </div>
     </div>
 </template>

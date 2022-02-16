@@ -13,6 +13,7 @@ export default interface CovidTreatmentAssessmentRequest {
     testedPositiveInPast7Days: CovidTreatmentAssessmentOption;
     hasSevereCovid19Symptoms: CovidTreatmentAssessmentOption;
     hasMildOrModerateCovid19Symptoms: boolean;
+    hasMildOrModerateCovid19SymptomsString: string;
     symptomOnSetDate: StringISODateTime;
     hasImmunityCompromisingMedicalConditionAntiViralTri: CovidTreatmentAssessmentOption;
     reports3DosesC19Vaccine: CovidTreatmentAssessmentOption;
