@@ -279,7 +279,7 @@ export default class CovidCardView extends Vue {
         this.address = address;
     }
 
-    private async handleSubmit() {
+    private async handleMail() {
         if (this.$refs.observer !== undefined) {
             const isValid = await (
                 this.$refs.observer as Vue & { validate: () => boolean }
@@ -508,183 +508,183 @@ export default class CovidCardView extends Vue {
                         <h2>No records found.</h2>
                     </v-col>
                 </v-row>
-                <ValidationObserver ref="observer">
-                    <v-form
-                        v-if="
-                            searchResult != null && searchResult.patient != null
-                        "
-                        ref="form"
-                        lazy-validation
-                        autocomplete="false"
-                        @submit.prevent="handleSubmit()"
-                    >
-                        <v-row>
-                            <v-col>
-                                <h2>Patient Information</h2>
-                            </v-col>
-                        </v-row>
-                        <v-row align="center" dense>
-                            <v-col>
-                                <v-text-field
-                                    v-model="patientName"
-                                    readonly
-                                    label="Name"
-                                />
-                            </v-col>
-                            <v-col>
-                                <v-text-field
-                                    v-model="birthDate"
-                                    readonly
-                                    label="Birthdate"
-                                />
-                            </v-col>
-                            <v-col>
-                                <v-text-field
-                                    v-model="
-                                        searchResult.patient
-                                            .personalhealthnumber
-                                    "
-                                    readonly
-                                    label="PHN"
-                                />
-                            </v-col>
-                        </v-row>
-                        <v-row align="center" dense>
-                            <v-col>
-                                <v-text-field
-                                    v-if="patientHdid.length > 0"
-                                    :value="maskHdid ? '        ' : patientHdid"
-                                    :type="maskHdid ? 'password' : 'text'"
-                                    :append-outer-icon="
-                                        maskHdid ? 'fa-eye-slash' : 'fa-eye'
-                                    "
-                                    readonly
-                                    dense
-                                    label="HDID"
-                                    @click:append-outer="maskHdid = !maskHdid"
-                                />
-                                <v-text-field
-                                    v-else
-                                    disabled
-                                    dense
-                                    label="No HDID"
-                                />
-                            </v-col>
-                        </v-row>
-                        <v-row align="center" dense>
-                            <v-col cols="auto">
-                                <h2>COVID-19 Immunizations</h2>
-                            </v-col>
-                            <v-col class="text-right">
-                                <v-btn
-                                    type="button"
-                                    class="mt-2 secondary"
-                                    @click="handleRefresh()"
+                <div
+                    v-else-if="
+                        searchResult != null && searchResult.patient != null
+                    "
+                >
+                    <v-row>
+                        <v-col>
+                            <h2>Patient Information</h2>
+                        </v-col>
+                    </v-row>
+                    <v-row align="center" dense>
+                        <v-col>
+                            <v-text-field
+                                v-model="patientName"
+                                readonly
+                                label="Name"
+                            />
+                        </v-col>
+                        <v-col>
+                            <v-text-field
+                                v-model="birthDate"
+                                readonly
+                                label="Birthdate"
+                            />
+                        </v-col>
+                        <v-col>
+                            <v-text-field
+                                v-model="
+                                    searchResult.patient.personalhealthnumber
+                                "
+                                readonly
+                                label="PHN"
+                            />
+                        </v-col>
+                    </v-row>
+                    <v-row align="center" dense>
+                        <v-col>
+                            <v-text-field
+                                v-if="patientHdid.length > 0"
+                                :value="maskHdid ? '        ' : patientHdid"
+                                :type="maskHdid ? 'password' : 'text'"
+                                :append-outer-icon="
+                                    maskHdid ? 'fa-eye-slash' : 'fa-eye'
+                                "
+                                readonly
+                                dense
+                                label="HDID"
+                                @click:append-outer="maskHdid = !maskHdid"
+                            />
+                            <v-text-field
+                                v-else
+                                disabled
+                                dense
+                                label="No HDID"
+                            />
+                        </v-col>
+                    </v-row>
+                    <v-row align="center" dense>
+                        <v-col cols="auto">
+                            <h2>COVID-19 Immunizations</h2>
+                        </v-col>
+                        <v-col class="text-right">
+                            <v-btn
+                                type="button"
+                                class="mt-2 secondary"
+                                @click="handleRefresh()"
+                            >
+                                <span>Refresh</span>
+                                <v-icon class="ml-2" size="sm"
+                                    >fas fa-sync</v-icon
                                 >
-                                    <span>Refresh</span>
-                                    <v-icon class="ml-2" size="sm"
-                                        >fas fa-sync</v-icon
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                    <v-row dense>
+                        <v-col no-gutters>
+                            <v-data-table
+                                :headers="tableHeaders"
+                                :items="immunizations"
+                                :items-per-page="5"
+                                :hide-default-footer="true"
+                            >
+                                <template #[`item.date`]="{ item }">
+                                    <span>{{ formatDate(item.date) }}</span>
+                                </template>
+                            </v-data-table>
+                            <v-alert
+                                v-if="containsInvalidDoses"
+                                dense
+                                color="orange"
+                                type="warning"
+                                class="mt-4"
+                            >
+                                This record has invalid doses.
+                            </v-alert>
+                        </v-col>
+                    </v-row>
+                    <v-row justify="end">
+                        <v-col class="text-right">
+                            <v-btn
+                                type="button"
+                                class="primary"
+                                :disabled="immunizations.length === 0"
+                                @click="handlePrint()"
+                            >
+                                <span>Print</span>
+                                <v-icon class="ml-2" size="sm"
+                                    >fas fa-print</v-icon
+                                >
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                    <ValidationObserver ref="observer">
+                        <v-form
+                            ref="form"
+                            lazy-validation
+                            autocomplete="off"
+                            @submit.prevent="handleMail()"
+                        >
+                            <v-row>
+                                <v-col>
+                                    <h2>Mailing Address</h2>
+                                </v-col>
+                            </v-row>
+                            <AddressComponent
+                                v-bind.sync="address"
+                                :is-disabled="!isEditMode"
+                            />
+                            <v-row align="center" dense>
+                                <v-col cols="auto">
+                                    <v-checkbox
+                                        v-model="isEditMode"
+                                        label="Mail to a different address"
+                                        @change="onEditModeChange"
+                                    />
+                                </v-col>
+                                <v-col class="text-right">
+                                    <v-btn
+                                        type="submit"
+                                        class="mx-2 primary"
+                                        :disabled="immunizations.length === 0"
                                     >
-                                </v-btn>
-                            </v-col>
-                        </v-row>
-                        <v-row dense>
-                            <v-col no-gutters>
-                                <v-data-table
-                                    :headers="tableHeaders"
-                                    :items="immunizations"
-                                    :items-per-page="5"
-                                    :hide-default-footer="true"
-                                >
-                                    <template #[`item.date`]="{ item }">
-                                        <span>{{ formatDate(item.date) }}</span>
-                                    </template>
-                                </v-data-table>
-                                <v-alert
-                                    v-if="containsInvalidDoses"
-                                    dense
-                                    color="orange"
-                                    type="warning"
-                                    class="mt-4"
-                                >
-                                    This record has invalid doses.
-                                </v-alert>
-                            </v-col>
-                        </v-row>
-                        <v-row justify="end">
-                            <v-col class="text-right">
-                                <v-btn
-                                    type="button"
-                                    class="primary"
-                                    :disabled="immunizations.length === 0"
-                                    @click="handlePrint()"
-                                >
-                                    <span>Print</span>
-                                    <v-icon class="ml-2" size="sm"
-                                        >fas fa-print</v-icon
-                                    >
-                                </v-btn>
-                            </v-col>
-                        </v-row>
-                        <v-row>
-                            <v-col>
-                                <h2>Mailing Address</h2>
-                            </v-col>
-                        </v-row>
-                        <AddressComponent
-                            v-bind.sync="address"
-                            :is-disabled="!isEditMode"
-                        />
-                        <v-row align="center" dense>
-                            <v-col cols="auto">
-                                <v-checkbox
-                                    v-model="isEditMode"
-                                    label="Mail to a different address"
-                                    @change="onEditModeChange"
-                                />
-                            </v-col>
-                            <v-col class="text-right">
-                                <v-btn
-                                    type="submit"
-                                    class="mx-2 primary"
-                                    :disabled="immunizations.length === 0"
-                                >
-                                    <span>Mail</span>
-                                    <v-icon class="ml-2" size="sm">
-                                        fas fa-paper-plane
-                                    </v-icon>
-                                </v-btn>
-                            </v-col>
-                        </v-row>
-                        <v-row v-if="covid19TreatmentAssessmentEnabled" dense>
-                            <v-col cols="12" class="text-right">
-                                <v-btn
-                                    type="submit"
-                                    class="mx-2 success"
-                                    @click="startCovidTreatmentAssessment"
-                                >
-                                    <span>
-                                        Start COVID-19 Treatment Assessment
-                                    </span>
-                                    <v-icon class="ml-2" size="sm">
-                                        fas fa-clipboard-list
-                                    </v-icon>
-                                </v-btn>
-                            </v-col>
-                            <v-col cols="12">
-                                <h2>Assessment History</h2>
-                            </v-col>
-                            <v-col cols="12" no-gutters>
-                                <v-data-table
-                                    :headers="assessmentHistoryTableHeaders"
-                                    :items="assessmentHistory"
-                                    :items-per-page="5"
-                                    :hide-default-footer="false"
-                                />
-                            </v-col>
-                        </v-row>
-                    </v-form>
-                </ValidationObserver>
+                                        <span>Mail</span>
+                                        <v-icon class="ml-2" size="sm">
+                                            fas fa-paper-plane
+                                        </v-icon>
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-form>
+                    </ValidationObserver>
+                    <v-row v-if="covid19TreatmentAssessmentEnabled" dense>
+                        <v-col cols="12" class="text-right">
+                            <v-btn
+                                type="submit"
+                                class="mx-2 success"
+                                @click="startCovidTreatmentAssessment"
+                            >
+                                <span>Start COVID-19 Treatment Assessment</span>
+                                <v-icon class="ml-2" size="sm">
+                                    fas fa-clipboard-list
+                                </v-icon>
+                            </v-btn>
+                        </v-col>
+                        <v-col cols="12">
+                            <h2>Assessment History</h2>
+                        </v-col>
+                        <v-col cols="12" no-gutters>
+                            <v-data-table
+                                :headers="assessmentHistoryTableHeaders"
+                                :items="assessmentHistory"
+                                :items-per-page="5"
+                                :hide-default-footer="false"
+                            />
+                        </v-col>
+                    </v-row>
+                </div>
             </v-col>
         </v-row>
     </v-container>

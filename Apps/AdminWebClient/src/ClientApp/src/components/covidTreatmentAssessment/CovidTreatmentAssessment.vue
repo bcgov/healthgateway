@@ -239,7 +239,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         <v-row no-gutters>
             <v-col cols="12" sm="12" md="10" offset-md="1">
                 <ValidationObserver ref="observer">
-                    <v-form ref="form" lazy-validation>
+                    <v-form ref="form" lazy-validation autocomplete="off">
                         <v-row>
                             <v-col>
                                 <h2>Patient Information</h2>
@@ -278,7 +278,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                         required: true,
                                         regex: /^[2-9]\d{2}[2-9]\d{2}\d{4}$|^\([2-9]\d{2}\) [2-9]\d{2}-\d{4}$/,
                                     }"
-                                    v-bind="$attrs"
                                     name="Phone Number"
                                 >
                                     <v-text-field
@@ -289,9 +288,9 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                         dense
                                         label="Phone Number*"
                                     />
-                                    <span class="error-message">
+                                    <div class="error-message">
                                         {{ errors[0] }}
-                                    </span>
+                                    </div>
                                 </ValidationProvider>
                             </v-col>
                         </v-row>
@@ -319,7 +318,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             <ValidationProvider
                                 v-slot="{ errors }"
                                 rules="oneOf:Yes,No"
-                                v-bind="$attrs"
                                 name="Confirms Over 12"
                             >
                                 <OptionDetails
@@ -328,9 +326,9 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     "
                                     :response-of-no-indicates-no-benefit="true"
                                 />
-                                <span class="error-message">
+                                <div class="error-message">
                                     {{ errors[0] }}
-                                </span>
+                                </div>
                             </ValidationProvider>
                         </Card>
                         <Card
@@ -343,7 +341,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             <ValidationProvider
                                 v-slot="{ errors }"
                                 rules="oneOf:Yes,No"
-                                v-bind="$attrs"
                             >
                                 <OptionDetails
                                     :value.sync="
@@ -351,9 +348,9 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     "
                                     :response-of-no-indicates-no-benefit="true"
                                 />
-                                <span class="error-message">
+                                <div class="error-message">
                                     {{ errors[0] }}
-                                </span>
+                                </div>
                             </ValidationProvider>
                         </Card>
                         <Card
@@ -362,16 +359,15 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             <ValidationProvider
                                 v-slot="{ errors }"
                                 rules="oneOf:Yes,No"
-                                v-bind="$attrs"
                             >
                                 <OptionDetails
                                     :value.sync="
                                         covidTreatmentAssessmentRequest.hasSevereCovid19Symptoms
                                     "
                                 />
-                                <span class="error-message">
+                                <div class="error-message">
                                     {{ errors[0] }}
-                                </span>
+                                </div>
                             </ValidationProvider>
                         </Card>
                         <Card
@@ -380,7 +376,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             <ValidationProvider
                                 v-slot="{ errors }"
                                 rules="oneOf:Yes,No,NotSure"
-                                v-bind="$attrs"
                             >
                                 <OptionDetails
                                     :value.sync="
@@ -389,9 +384,9 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     :has-not-sure-option="true"
                                     :response-of-no-indicates-no-benefit="true"
                                 />
-                                <span class="error-message">
+                                <div class="error-message">
                                     {{ errors[0] }}
-                                </span>
+                                </div>
                             </ValidationProvider>
                         </Card>
                         <Card title="5. When did your symptoms first start?">
@@ -465,7 +460,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             <ValidationProvider
                                 v-slot="{ errors }"
                                 rules="oneOf:Yes,No,NotSure"
-                                v-bind="$attrs"
                             >
                                 <OptionDetails
                                     :value.sync="
@@ -474,9 +468,9 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     :has-not-sure-option="true"
                                     :response-of-yes-indicates-benefit="true"
                                 />
-                                <span class="error-message">
+                                <div class="error-message">
                                     {{ errors[0] }}
-                                </span>
+                                </div>
                             </ValidationProvider>
                         </Card>
                         <Card
