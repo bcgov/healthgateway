@@ -3,8 +3,8 @@ import "tiptap-vuetify/dist/main.css";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { TiptapVuetifyPlugin } from "tiptap-vuetify";
-import { VueMaskDirective } from "v-mask";
 import Vue from "vue";
+import VueTheMask from "vue-the-mask";
 import DatetimePicker from "vuetify-datetime-picker";
 
 import App from "@/App.vue";
@@ -34,7 +34,7 @@ Vue.use(TiptapVuetifyPlugin, {
     vuetify,
     iconsGroup: "md",
 });
-Vue.directive("mask", VueMaskDirective);
+Vue.use(VueTheMask);
 Vue.filter("date", dateFilter);
 Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 
