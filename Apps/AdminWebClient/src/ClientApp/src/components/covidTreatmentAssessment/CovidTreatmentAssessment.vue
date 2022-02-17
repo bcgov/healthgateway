@@ -156,18 +156,20 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         return phoneNumberMaskTemplate;
     }
 
-    private get symptomsOnsetGreaterThanTenDays(): boolean {
+    private get symptomOnsetTooLongAgo(): boolean {
         const symptomOnsetDate =
             this.covidTreatmentAssessmentRequest.symptomOnSetDate;
 
         if (!symptomOnsetDate) {
             return false;
         }
-        const symptomOnsetDateWrapper = new DateWrapper(symptomOnsetDate, {
-            isUtc: true,
-        });
-        const lastWeek = new DateWrapper().subtract({ days: 10 });
-        return symptomOnsetDateWrapper.isBefore(lastWeek);
+
+        const symptomOnsetDateWrapper = new DateWrapper(symptomOnsetDate);
+        const cutoffDateWrapper = new DateWrapper()
+            .startOf("day")
+            .subtract({ days: 10 });
+
+        return symptomOnsetDateWrapper.isBefore(cutoffDateWrapper);
     }
 
     private onEditAddressChange(): void {
@@ -443,7 +445,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                 </v-dialog>
                             </div>
                             <div
-                                v-if="symptomsOnsetGreaterThanTenDays"
+                                v-if="symptomOnsetTooLongAgo"
                                 class="option-message-color"
                             >
                                 Citizen would likely not benefit from COVID-19
