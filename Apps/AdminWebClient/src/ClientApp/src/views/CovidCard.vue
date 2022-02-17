@@ -41,8 +41,7 @@ interface ImmunizationRow {
 }
 
 interface AssessmentHistoryRow {
-    dateOfAssessment: string;
-    timeOfAssessment: string;
+    dateTimeOfAssessment: string;
     formId: string;
 }
 
@@ -96,9 +95,8 @@ export default class CovidCardView extends Vue {
     ];
 
     private assessmentHistoryTableHeaders = [
-        { text: "Date", value: "dateOfAssessment" },
-        { text: "Time", value: "timeOfAssessment" },
-        { text: "ID", value: "formId" },
+        { text: "Date", value: "dateTimeOfAssessment" },
+        { text: "ID", value: "formId", sortable: false },
     ];
 
     private get covid19TreatmentAssessmentEnabled(): boolean {
@@ -252,8 +250,9 @@ export default class CovidCardView extends Vue {
                         isUtc: true,
                     });
                     return {
-                        dateOfAssessment: date.format(),
-                        timeOfAssessment: date.format("h:mm a"),
+                        dateTimeOfAssessment: date.format(
+                            DateWrapper.defaultDateTimeFormat
+                        ),
                         formId: entry.formId,
                     };
                 }
@@ -681,6 +680,9 @@ export default class CovidCardView extends Vue {
                                 :items="assessmentHistory"
                                 :items-per-page="5"
                                 :hide-default-footer="false"
+                                sort-by="dateTimeOfAssessment"
+                                sort-desc
+                                must-sort
                             />
                         </v-col>
                     </v-row>
