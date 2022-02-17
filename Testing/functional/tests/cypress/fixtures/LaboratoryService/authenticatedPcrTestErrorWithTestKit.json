@@ -8,11 +8,10 @@
     "totalResultCount": 0,
     "pageIndex": null,
     "pageSize": null,
-    "resultStatus": 2,
+    "resultStatus": 0,
     "resultError": {
-        "resultMessage": "The identified lab test has already been registered",
-        "errorCode": "LaboratoryServer-I",
-        "traceId": "6d9b87f80f5ba7c3c292ee6dc6359dfc",
-        "actionCode": "PROCESSED"
+        "resultMessage": "Error",
+        "errorCode": "errorCode",
+        "traceId": "traceid"
     }
 }

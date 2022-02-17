@@ -15,8 +15,9 @@ const cancelBtn = "[data-testid=btn-cancel]";
 const registerKitBtn = "[data-testid=btn-register-kit]";
 const pcrPrivacyStatement = "[data-testid=pcr-privacy-statement]";
 const registrationSuccessBanner = "[data-testid=registration-success-banner]";
-const backToHomeBtn = "[data-testid=btn-continue]";
+const logoutBtn = "[data-testid=logoutBtn]";
 const errorBanner = "[data-testid=errorBanner]";
+const processedBanner = "[data-testid=alreadyProcessedBanner]";
 
 // data test id for input required validations
 const feedbackTestKitCodeIsRequiredSelector =
@@ -88,8 +89,8 @@ describe("Authenticated Pcr Test Registration", () => {
         );
         clickRegisterKitButton();
         selectorShouldBeVisible(registrationSuccessBanner);
-        selectorShouldBeVisible(backToHomeBtn);
-        cy.get(backToHomeBtn).click();
+        selectorShouldBeVisible(logoutBtn);
+        cy.get(logoutBtn).click();
         cy.url().should("include", Cypress.config("baseUrl"));
     });
 });
@@ -128,5 +129,42 @@ describe("Authenticated Pcr Test Registration with Error", () => {
         );
         clickRegisterKitButton();
         selectorShouldBeVisible(errorBanner);
+    });
+});
+
+describe("Authenticated Pcr Test Registration Previously Processed", () => {
+    beforeEach(() => {
+        cy.enableModules("PcrTest");
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/home"
+        );
+        cy.visit(pcrTestUrl);
+        cy.intercept("POST", `**/v1/api/Laboratory/${HDID}/LabTestKit`, {
+            fixture: "LaboratoryService/authenticatedPcrTestDuplicate.json",
+        });
+    });
+
+    it("Duplicate Test Kit Registration", () => {
+        // get the data in the fixture.
+        cy.fixture("LaboratoryService/authenticatedPcrTestDuplicate.json").then(
+            function (data) {
+                cy.get(testKitCodeInput).type(
+                    data.resourcePayload.shortCodeFirst +
+                        "-" +
+                        data.resourcePayload.shortCodeSecond
+                );
+                selectOption(
+                    testTakenMinutesAgo,
+                    getPcrTestTakenTime(
+                        data.resourcePayload.testTakenMinutesAgo
+                    )
+                );
+            }
+        );
+        clickRegisterKitButton();
+        selectorShouldBeVisible(processedBanner);
     });
 });
