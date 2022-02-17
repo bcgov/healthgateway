@@ -1,107 +1,3 @@
-<template>
-    <v-dialog v-model="dialog" persistent max-width="1000px">
-        <template #activator="{ on, attrs }">
-            <v-btn color="primary" dark v-bind="attrs" v-on="on">{{
-                isInApp
-                    ? "New In-App Communication"
-                    : "New Banner Communication"
-            }}</v-btn>
-        </template>
-        <v-card dark>
-            <v-card-title>
-                <span class="headline">{{ formTitle }}</span>
-            </v-card-title>
-            <v-card-text>
-                <v-form ref="form" lazy-validation>
-                    <v-row>
-                        <v-col>
-                            <ValidationProvider
-                                v-slot="{ errors }"
-                                :rules="
-                                    dateTimeRules(
-                                        editedItem.effectiveDateTime,
-                                        editedItem.expiryDateTime
-                                    )
-                                "
-                            >
-                                <v-datetime-picker
-                                    v-model="effectiveDateTime"
-                                    label="Effective On"
-                                ></v-datetime-picker>
-                                <span class="error-message">{{
-                                    errors[0]
-                                }}</span>
-                            </ValidationProvider>
-                        </v-col>
-                        <v-col>
-                            <ValidationProvider
-                                v-slot="{ errors }"
-                                :rules="
-                                    dateTimeRules(
-                                        editedItem.effectiveDateTime,
-                                        editedItem.expiryDateTime
-                                    )
-                                "
-                            >
-                                <v-datetime-picker
-                                    v-model="expiryDateTime"
-                                    label="Expires On"
-                                ></v-datetime-picker>
-                                <span class="error-message">{{
-                                    errors[0]
-                                }}</span>
-                            </ValidationProvider>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col>
-                            <v-text-field
-                                v-model="editedItem.subject"
-                                label="Subject"
-                                maxlength="100"
-                                :rules="[(v) => !!v || 'Subject is required']"
-                                validate-on-blur
-                                required
-                            ></v-text-field>
-                        </v-col>
-                        <v-col>
-                            <v-text-field
-                                v-model="editedItem.communicationStatusCode"
-                                label="Status"
-                                disabled
-                            ></v-text-field>
-                        </v-col>
-                        <v-col>
-                            <v-btn
-                                color="blue darken-1"
-                                text
-                                @click="togglePublish()"
-                                >{{ publishingStatus }}</v-btn
-                            >
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col>
-                            <TiptapVuetify
-                                v-model="editedItem.text"
-                                :toolbar-attributes="{ color: 'gray' }"
-                                placeholder="Write the post content here..."
-                                :extensions="extensions"
-                            />
-                        </v-col>
-                    </v-row>
-                </v-form>
-            </v-card-text>
-            <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close()"
-                    >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="save()">Save</v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
-</template>
 <script lang="ts">
 import {
     Blockquote,
@@ -310,3 +206,117 @@ export default class BannerModal extends Vue {
     }
 }
 </script>
+
+<template>
+    <v-dialog v-model="dialog" persistent max-width="1000px">
+        <template #activator="{ on, attrs }">
+            <v-btn color="primary" dark v-bind="attrs" v-on="on">
+                {{
+                    isInApp
+                        ? "New In-App Communication"
+                        : "New Banner Communication"
+                }}
+            </v-btn>
+        </template>
+        <v-card dark>
+            <v-card-title>
+                <span class="headline">{{ formTitle }}</span>
+            </v-card-title>
+            <v-card-text>
+                <v-form ref="form" lazy-validation>
+                    <v-row>
+                        <v-col>
+                            <ValidationProvider
+                                v-slot="{ errors }"
+                                :rules="
+                                    dateTimeRules(
+                                        editedItem.effectiveDateTime,
+                                        editedItem.expiryDateTime
+                                    )
+                                "
+                            >
+                                <v-datetime-picker
+                                    v-model="effectiveDateTime"
+                                    label="Effective On"
+                                />
+                                <div class="error-message">
+                                    {{ errors[0] }}
+                                </div>
+                            </ValidationProvider>
+                        </v-col>
+                        <v-col>
+                            <ValidationProvider
+                                v-slot="{ errors }"
+                                :rules="
+                                    dateTimeRules(
+                                        editedItem.effectiveDateTime,
+                                        editedItem.expiryDateTime
+                                    )
+                                "
+                            >
+                                <v-datetime-picker
+                                    v-model="expiryDateTime"
+                                    label="Expires On"
+                                />
+                                <div class="error-message">
+                                    {{ errors[0] }}
+                                </div>
+                            </ValidationProvider>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col>
+                            <v-text-field
+                                v-model="editedItem.subject"
+                                label="Subject"
+                                maxlength="100"
+                                :rules="[(v) => !!v || 'Subject is required']"
+                                validate-on-blur
+                                required
+                            />
+                        </v-col>
+                        <v-col>
+                            <v-text-field
+                                v-model="editedItem.communicationStatusCode"
+                                label="Status"
+                                disabled
+                            />
+                        </v-col>
+                        <v-col>
+                            <v-btn
+                                color="blue darken-1"
+                                text
+                                @click="togglePublish()"
+                            >
+                                {{ publishingStatus }}
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col>
+                            <TiptapVuetify
+                                v-model="editedItem.text"
+                                :toolbar-attributes="{ color: 'gray' }"
+                                placeholder="Write the post content here..."
+                                :extensions="extensions"
+                            />
+                        </v-col>
+                    </v-row>
+                </v-form>
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer />
+                <v-btn color="blue darken-1" text @click="close()">
+                    Cancel
+                </v-btn>
+                <v-btn color="blue darken-1" text @click="save()"> Save </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+</template>
+
+<style scoped lang="scss">
+.error-message {
+    color: #ff5252 !important;
+}
+</style>
