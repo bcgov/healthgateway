@@ -62,6 +62,12 @@ public class CovidAssessmentRequest
     public string? LastName { get; set; }
 
     /// <summary>
+    /// Gets or sets the patients date of birth.
+    /// </summary>
+    [JsonPropertyName("dob")]
+    public DateTime? Birthdate { get; set; }
+
+    /// <summary>
     /// Gets or sets the phone number used.
     /// </summary>
     [JsonPropertyName("phoneNumber")]
