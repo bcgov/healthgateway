@@ -67,6 +67,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         phn: "",
         firstName: "",
         lastName: "",
+        dob: "",
         phoneNumber: "",
         identifiesIndigenous: CovidTreatmentAssessmentOption.Unspecified,
         hasAFamilyDoctorOrNp: CovidTreatmentAssessmentOption.Unspecified,
@@ -106,6 +107,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
             phn: "",
             firstName: "",
             lastName: "",
+            dob: "",
             phoneNumber: "",
             identifiesIndigenous: CovidTreatmentAssessmentOption.Unspecified,
             hasAFamilyDoctorOrNp: CovidTreatmentAssessmentOption.Unspecified,
@@ -192,6 +194,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         this.covidTreatmentAssessmentRequest.phn =
             this.patient.personalhealthnumber;
         this.covidTreatmentAssessmentRequest.firstName = this.patient.firstname;
+        this.covidTreatmentAssessmentRequest.dob = this.patient.birthdate;
         this.covidTreatmentAssessmentRequest.lastName = this.patient.lastname;
         this.covidTreatmentAssessmentRequest.country = this.address.country;
         this.covidTreatmentAssessmentRequest.postalCode =

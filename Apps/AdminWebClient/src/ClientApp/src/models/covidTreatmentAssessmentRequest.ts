@@ -6,6 +6,7 @@ export default interface CovidTreatmentAssessmentRequest {
     phn?: string;
     firstName?: string;
     lastName?: string;
+    dob?: string;
     phoneNumber?: string;
     identifiesIndigenous: CovidTreatmentAssessmentOption;
     hasAFamilyDoctorOrNp: CovidTreatmentAssessmentOption;
