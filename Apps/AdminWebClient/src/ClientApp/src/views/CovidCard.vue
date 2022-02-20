@@ -250,9 +250,7 @@ export default class CovidCardView extends Vue {
                         isUtc: true,
                     });
                     return {
-                        dateTimeOfAssessment: date.format(
-                            DateWrapper.defaultDateTimeFormat
-                        ),
+                        dateTimeOfAssessment: date.format("yyyy-MMM-dd h:mm a"),
                         formId: entry.formId,
                     };
                 }
