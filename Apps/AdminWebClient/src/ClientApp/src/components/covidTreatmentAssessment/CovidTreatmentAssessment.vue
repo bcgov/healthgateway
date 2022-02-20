@@ -82,10 +82,11 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         hasChronicConditionDiagnoses:
             CovidTreatmentAssessmentOption.Unspecified,
         agentComments: "",
-        streetAddress: [],
+        streetAddresses: [],
         provOrState: "",
         postalCode: "",
         country: "",
+        city: "",
         changeAddressFlag: false,
         positiveCovidLabData: "",
         covidVaccinationHistory: "",
@@ -122,10 +123,11 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
             hasChronicConditionDiagnoses:
                 CovidTreatmentAssessmentOption.Unspecified,
             agentComments: "",
-            streetAddress: [],
+            streetAddresses: [],
             provOrState: "",
             postalCode: "",
             country: "",
+            city: "",
             changeAddressFlag: false,
             positiveCovidLabData: "",
             covidVaccinationHistory: "",
@@ -194,8 +196,9 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         this.covidTreatmentAssessmentRequest.country = this.address.country;
         this.covidTreatmentAssessmentRequest.postalCode =
             this.address.postalCode;
+        this.covidTreatmentAssessmentRequest.city = this.address.city;
         this.covidTreatmentAssessmentRequest.provOrState = this.address.state;
-        this.covidTreatmentAssessmentRequest.streetAddress =
+        this.covidTreatmentAssessmentRequest.streetAddresses =
             this.address.streetLines;
     }
 
