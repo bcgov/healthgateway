@@ -216,7 +216,7 @@ export default class CovidCardView extends Vue {
                             (entry) => {
                                 const date = new DateWrapper(
                                     entry.dateTimeOfAssessment,
-                                    { hasTime: true, isUtc: true }
+                                    { hasTime: true }
                                 );
                                 return {
                                     dateOfAssessment: date.format(),
@@ -385,17 +385,20 @@ export default class CovidCardView extends Vue {
         this.showBannerFeedback({
             type: ResultType.Success,
             title: "Success",
-            message: "COVID-19 treatment assessment submitted successfully.",
+            message:
+                "COVID-19 Treatment Assessment Form is Successfully Submitted.",
         });
         this.showCovidTreatmentAssessment = false;
         this.search(this.activePhn, true);
     }
 
-    private covidTreatmentAssessmentSubmissionFailed(): void {
+    private covidTreatmentAssessmentSubmissionFailed(
+        errorMessage: string
+    ): void {
         this.showBannerFeedback({
             type: ResultType.Error,
             title: "Error",
-            message: "Unable to submit COVID-19 treatment assessment",
+            message: errorMessage,
         });
     }
 
@@ -641,7 +644,7 @@ export default class CovidCardView extends Vue {
                                     :headers="assessmentHistoryTableHeaders"
                                     :items="assessmentHistory"
                                     :items-per-page="5"
-                                    :hide-default-footer="false"
+                                    :hide-default-footer="true"
                                 >
                                 </v-data-table>
                             </v-col>

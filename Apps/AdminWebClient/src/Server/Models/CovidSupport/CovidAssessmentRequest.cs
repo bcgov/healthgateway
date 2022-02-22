@@ -95,13 +95,13 @@ public class CovidAssessmentRequest
     /// Gets or sets a value indicating whether there has been mild or moderate covid 19 symptoms.
     /// </summary>
     [JsonPropertyName("hasMildOrModerateCovid19Symptoms")]
-    public CovidTherapyAssessmentOption HasMildOrModerateCovid19Symptoms { get; set; }
+    public bool HasMildOrModerateCovid19Symptoms { get; set; }
 
     /// <summary>
     /// Gets or sets the symptom on set date.
     /// </summary>
     [JsonPropertyName("symptomOnSetDate")]
-    public DateTime? SymptomOnSetDate { get; set; }
+    public DateTime SymptomOnSetDate { get; set; }
 
     /// <summary>
     /// Gets or sets the has immunity compromising medical condition antiviral tri option.

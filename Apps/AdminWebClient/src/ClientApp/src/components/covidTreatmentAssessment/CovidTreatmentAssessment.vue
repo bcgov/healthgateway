@@ -23,7 +23,7 @@ import { Mask, phoneNumberMaskTemplate } from "@/utility/masks";
 
 library.add(faEye, faEyeSlash);
 
-const errorMessage = "This is a required field";
+const errorMessage = "This is a required field. Please select an answer.";
 
 extend("regex", regex);
 
@@ -35,6 +35,16 @@ extend("oneOf", {
 extend("required", {
     ...required,
     message: errorMessage,
+});
+
+extend("requiredAddress", {
+    ...required,
+    message: "This is a required field",
+});
+
+extend("requiredPhoneNumber", {
+    ...required,
+    message: "This is a required field. Please enter a phone number.",
 });
 
 @Component({
@@ -62,6 +72,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
     private isEditingAddress = false;
     private today = DateTime.local();
     private dailyDataDatesModal = false;
+    private hasMildOrModerateCovid19SymptomsValue = "";
 
     private covidTreatmentAssessmentRequest: CovidTreatmentAssessmentRequest = {
         phn: "",
@@ -73,9 +84,8 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         confirmsOver12: false,
         testedPositiveInPast7Days: CovidTreatmentAssessmentOption.Unspecified,
         hasSevereCovid19Symptoms: CovidTreatmentAssessmentOption.Unspecified,
-        hasMildOrModerateCovid19Symptoms:
-            CovidTreatmentAssessmentOption.Unspecified,
-        symptomOnSetDate: null,
+        hasMildOrModerateCovid19Symptoms: false,
+        symptomOnSetDate: "",
         hasImmunityCompromisingMedicalConditionAntiViralTri:
             CovidTreatmentAssessmentOption.Unspecified,
         reports3DosesC19Vaccine: CovidTreatmentAssessmentOption.Unspecified,
@@ -90,7 +100,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         positiveCovidLabData: "",
         covidVaccinationHistory: "",
         cevGroupDetails: "",
-        submitted: new DateWrapper().toISO(true),
+        submitted: new DateWrapper().toISODate(),
     };
 
     private mounted(): void {
@@ -113,9 +123,8 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                 CovidTreatmentAssessmentOption.Unspecified,
             hasSevereCovid19Symptoms:
                 CovidTreatmentAssessmentOption.Unspecified,
-            hasMildOrModerateCovid19Symptoms:
-                CovidTreatmentAssessmentOption.Unspecified,
-            symptomOnSetDate: null,
+            hasMildOrModerateCovid19Symptoms: false,
+            symptomOnSetDate: "",
             hasImmunityCompromisingMedicalConditionAntiViralTri:
                 CovidTreatmentAssessmentOption.Unspecified,
             reports3DosesC19Vaccine: CovidTreatmentAssessmentOption.Unspecified,
@@ -127,10 +136,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
             postalCode: "",
             country: "",
             changeAddressFlag: false,
-            positiveCovidLabData: "",
-            covidVaccinationHistory: "",
-            cevGroupDetails: "",
-            submitted: new DateWrapper().toISODate(),
         };
     }
 
@@ -145,10 +150,14 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
     }
 
     private get patientFullName(): string {
+        this.covidTreatmentAssessmentRequest.firstName = this.patient.firstname;
+        this.covidTreatmentAssessmentRequest.lastName = this.patient.lastname;
         return `${this.patient.firstname} ${this.patient.lastname} `;
     }
 
     private get patientPersonalHealthNumber(): string {
+        this.covidTreatmentAssessmentRequest.phn =
+            this.patient.personalhealthnumber;
         return this.patient.personalhealthnumber;
     }
 
@@ -156,7 +165,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         return phoneNumberMaskTemplate;
     }
 
-    private get symptomsOnsetGreaterThanTenDays(): boolean {
+    private get symptomsOnsetGreaterThanSevenDays(): boolean {
         const symptomOnsetDate =
             this.covidTreatmentAssessmentRequest.symptomOnSetDate;
 
@@ -166,7 +175,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         const symptomOnsetDateWrapper = new DateWrapper(symptomOnsetDate, {
             isUtc: true,
         });
-        const lastWeek = new DateWrapper().subtract({ days: 10 });
+        const lastWeek = new DateWrapper().subtract({ days: 7 });
         return symptomOnsetDateWrapper.isBefore(lastWeek);
     }
 
@@ -184,11 +193,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         }
     }
 
-    private populateRequest(): void {
-        this.covidTreatmentAssessmentRequest.phn =
-            this.patient.personalhealthnumber;
-        this.covidTreatmentAssessmentRequest.firstName = this.patient.firstname;
-        this.covidTreatmentAssessmentRequest.lastName = this.patient.lastname;
+    private setAddressRequest(): void {
         this.covidTreatmentAssessmentRequest.country = this.address.country;
         this.covidTreatmentAssessmentRequest.postalCode =
             this.address.postalCode;
@@ -197,8 +202,17 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
             this.address.streetLines;
     }
 
+    private setHasMildOrModerateCovid19SymptomsValue(): void {
+        if (this.hasMildOrModerateCovid19SymptomsValue === "Yes") {
+            this.covidTreatmentAssessmentRequest.hasMildOrModerateCovid19Symptoms =
+                true;
+        }
+        this.covidTreatmentAssessmentRequest.hasMildOrModerateCovid19Symptoms =
+            false;
+    }
     private submitCovidTreatmentAssessment(): void {
-        this.populateRequest();
+        this.setAddressRequest();
+        this.setHasMildOrModerateCovid19SymptomsValue();
         this.covidSupportService
             .submitCovidTreatmentAssessment(
                 this.covidTreatmentAssessmentRequest
@@ -222,6 +236,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                 this.$refs.observer as Vue & { validate: () => boolean }
             ).validate();
             if (isValid) {
+                console.log("test");
                 this.submitCovidTreatmentAssessment();
             } else {
                 this.$emit("on-submit-failure");
@@ -277,7 +292,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                 <ValidationProvider
                                     v-slot="{ errors }"
                                     :rules="{
-                                        required: true,
+                                        requiredPhoneNumber: true,
                                         regex: /^[2-9]\d{2}[2-9]\d{2}\d{4}$|^\([2-9]\d{2}\) [2-9]\d{2}-\d{4}$/,
                                     }"
                                     v-bind="$attrs"
@@ -307,11 +322,19 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                         <Card
                             title="Do you have a family doctor or nurse practitioner?"
                         >
-                            <OptionDetails
-                                :value.sync="
-                                    covidTreatmentAssessmentRequest.hasAFamilyDoctorOrNp
-                                "
-                            />
+                            <ValidationProvider
+                                v-slot="{ errors }"
+                                rules="oneOf:Yes,No"
+                            >
+                                <OptionDetails
+                                    :value.sync="
+                                        covidTreatmentAssessmentRequest.hasAFamilyDoctorOrNp
+                                    "
+                                />
+                                <span class="error-message">
+                                    {{ errors[0] }}
+                                </span>
+                            </ValidationProvider>
                         </Card>
                         <Card
                             title="1. Please confirm that you are over 12 years or older.*"
@@ -328,7 +351,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     :value.sync="
                                         covidTreatmentAssessmentRequest.confirmsOver12
                                     "
-                                    :response-of-no-indicates-no-benefit="true"
+                                    :show-message-when-no-is-selected="true"
                                 />
                                 <span class="error-message">
                                     {{ errors[0] }}
@@ -351,7 +374,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     :value.sync="
                                         covidTreatmentAssessmentRequest.testedPositiveInPast7Days
                                     "
-                                    :response-of-no-indicates-no-benefit="true"
+                                    :show-message-when-no-is-selected="true"
                                 />
                                 <span class="error-message">
                                     {{ errors[0] }}
@@ -379,78 +402,80 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                         <Card
                             title="4. COVID-19 symptoms can range from mild to moderate. Mild and moderate symptoms are symptoms that can be managed at home. Do you have any symptoms of COVID-19?*"
                         >
-                            <ValidationProvider
-                                v-slot="{ errors }"
-                                rules="oneOf:Yes,No,NotSure"
-                                v-bind="$attrs"
-                            >
-                                <OptionDetails
-                                    :value.sync="
-                                        covidTreatmentAssessmentRequest.hasMildOrModerateCovid19Symptoms
-                                    "
-                                    :has-not-sure-option="true"
-                                    :response-of-no-indicates-no-benefit="true"
-                                />
-                                <span class="error-message">
-                                    {{ errors[0] }}
-                                </span>
-                            </ValidationProvider>
+                            <OptionDetails
+                                :value.sync="
+                                    hasMildOrModerateCovid19SymptomsValue
+                                "
+                                :has-not-sure-option="true"
+                                :show-message-when-no-is-selected="true"
+                            />
                         </Card>
                         <Card title="5. When did your symptoms first start?">
-                            <div style="max-width: 250px" class="pt-2">
-                                <v-dialog
-                                    ref="dailyDialog"
-                                    v-model="dailyDataDatesModal"
-                                    :return-value.sync="
-                                        covidTreatmentAssessmentRequest.symptomOnSetDate
-                                    "
-                                    persistent
-                                    width="290px"
-                                >
-                                    <template #activator="{ on, attrs }">
-                                        <v-text-field
+                            <ValidationProvider
+                                v-slot="{ errors }"
+                                rules="required"
+                                v-bind="$attrs"
+                            >
+                                <div style="max-width: 250px" class="pt-2">
+                                    <v-dialog
+                                        ref="dailyDialog"
+                                        v-model="dailyDataDatesModal"
+                                        :return-value.sync="
+                                            covidTreatmentAssessmentRequest.symptomOnSetDate
+                                        "
+                                        persistent
+                                        width="290px"
+                                    >
+                                        <template #activator="{ on, attrs }">
+                                            <v-text-field
+                                                v-model="
+                                                    covidTreatmentAssessmentRequest.symptomOnSetDate
+                                                "
+                                                label="Date"
+                                                prepend-icon="mdi-calendar"
+                                                readonly
+                                                v-bind="attrs"
+                                                v-on="on"
+                                            />
+                                        </template>
+                                        <v-date-picker
                                             v-model="
                                                 covidTreatmentAssessmentRequest.symptomOnSetDate
                                             "
-                                            label="Date"
-                                            prepend-icon="mdi-calendar"
-                                            readonly
-                                            v-bind="attrs"
-                                            v-on="on"
-                                        />
-                                    </template>
-                                    <v-date-picker
-                                        v-model="
-                                            covidTreatmentAssessmentRequest.symptomOnSetDate
-                                        "
-                                        :max="today.toISO()"
-                                        scrollable
-                                        no-title
-                                    >
-                                        <v-spacer></v-spacer>
-                                        <v-btn
-                                            text
-                                            color="primary"
-                                            @click="dailyDataDatesModal = false"
+                                            :max="today.toISO()"
+                                            scrollable
+                                            no-title
                                         >
-                                            Cancel
-                                        </v-btn>
-                                        <v-btn
-                                            text
-                                            color="primary"
-                                            @click="
-                                                $refs.dailyDialog.save(
-                                                    covidTreatmentAssessmentRequest.symptomOnSetDate
-                                                )
-                                            "
-                                        >
-                                            OK
-                                        </v-btn>
-                                    </v-date-picker>
-                                </v-dialog>
-                            </div>
+                                            <v-spacer></v-spacer>
+                                            <v-btn
+                                                text
+                                                color="primary"
+                                                @click="
+                                                    dailyDataDatesModal = false
+                                                "
+                                            >
+                                                Cancel
+                                            </v-btn>
+                                            <v-btn
+                                                text
+                                                color="primary"
+                                                @click="
+                                                    $refs.dailyDialog.save(
+                                                        covidTreatmentAssessmentRequest.symptomOnSetDate
+                                                    )
+                                                "
+                                            >
+                                                OK
+                                            </v-btn>
+                                        </v-date-picker>
+                                    </v-dialog>
+                                </div>
+                                <div class="error-message">
+                                    {{ errors[0] }}
+                                </div>
+                            </ValidationProvider>
                             <div
-                                v-if="symptomsOnsetGreaterThanTenDays"
+                                v-if="symptomsOnsetGreaterThanSevenDays"
                                 class="option-message-color"
                             >
                                 Citizen would likely not benefit from COVID-19
@@ -474,7 +499,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                         covidTreatmentAssessmentRequest.hasImmunityCompromisingMedicalConditionAntiViralTri
                                     "
                                     :has-not-sure-option="true"
-                                    :response-of-yes-indicates-benefit="true"
+                                    :show-message-when-no-is-selected="true"
                                 />
                                 <span class="error-message">
                                     {{ errors[0] }}
@@ -488,13 +513,22 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                 details.has3DoseMoreThan14Days
                             "
                         >
-                            <OptionDetails
-                                :value.sync="
-                                    covidTreatmentAssessmentRequest.reports3DosesC19Vaccine
-                                "
-                                :has-not-sure-option="true"
-                                :response-of-yes-indicates-no-benefit="true"
-                            />
+                            <ValidationProvider
+                                v-slot="{ errors }"
+                                rules="oneOf:Yes,No,NotSure"
+                                v-bind="$attrs"
+                            >
+                                <OptionDetails
+                                    :value.sync="
+                                        covidTreatmentAssessmentRequest.reports3DosesC19Vaccine
+                                    "
+                                    :has-not-sure-option="true"
+                                    :show-message-when-no-is-selected="true"
+                                />
+                                <span class="error-message">
+                                    {{ errors[0] }}
+                                </span>
+                            </ValidationProvider>
                         </Card>
                         <Card
                             title="8. Have you been diagnosed by a health care provider with a chronic condition?"
@@ -508,20 +542,20 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     covidTreatmentAssessmentRequest.hasChronicConditionDiagnoses
                                 "
                                 :has-not-sure-option="true"
-                                :response-of-yes-indicates-benefit="true"
+                                :show-message-when-no-is-selected="true"
                             />
                         </Card>
                         <Card title="Notes">
                             <div class="pt-2">
                                 <v-textarea
-                                    v-model="
-                                        covidTreatmentAssessmentRequest.agentComments
-                                    "
                                     maxlength="2000"
                                     counter="2000"
                                     filled
                                     auto-grow
                                     rows="4"
+                                    :value="
+                                        covidTreatmentAssessmentRequest.agentComments
+                                    "
                                 />
                             </div>
                         </Card>

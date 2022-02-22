@@ -12,8 +12,8 @@ export default interface CovidTreatmentAssessmentRequest {
     confirmsOver12: boolean;
     testedPositiveInPast7Days: CovidTreatmentAssessmentOption;
     hasSevereCovid19Symptoms: CovidTreatmentAssessmentOption;
-    hasMildOrModerateCovid19Symptoms: CovidTreatmentAssessmentOption;
-    symptomOnSetDate?: StringISODateTime | null;
+    hasMildOrModerateCovid19Symptoms: boolean;
+    symptomOnSetDate: StringISODateTime;
     hasImmunityCompromisingMedicalConditionAntiViralTri: CovidTreatmentAssessmentOption;
     reports3DosesC19Vaccine: CovidTreatmentAssessmentOption;
     hasChronicConditionDiagnoses: CovidTreatmentAssessmentOption;
