@@ -19,6 +19,9 @@ trigger:
     include:
       - Apps/AdminWebClient
 
+pool:
+  name: "HealthGateway"
+
 extends:
   template: /Build/hg.yaml
   parameters:
