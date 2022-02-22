@@ -144,7 +144,6 @@ function getAvailableModules() {
     return availableModules;
 }
 
-const HOME_PATH = "/home";
 const IDIR_LOGGED_IN_PATH = "/idirLoggedIn";
 const LOGIN_PATH = "/login";
 const PROFILE_PATH = "/profile";
@@ -444,7 +443,7 @@ function getDefaultPath(
         case UserState.pendingDeletion:
             return PROFILE_PATH;
         case UserState.registered:
-            return hasRequiredModules ? HOME_PATH : UNAUTHORIZED_PATH;
+            return hasRequiredModules ? TIMELINE_PATH : UNAUTHORIZED_PATH;
         case UserState.notRegistered:
             return REGISTRATION_PATH;
         case UserState.invalidLogin:

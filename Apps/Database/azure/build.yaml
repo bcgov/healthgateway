@@ -11,6 +11,9 @@ trigger:
     include:
       - Apps/Database
 
+pool:
+  name: "HealthGateway"
+
 extends:
   template: /Build/hg.yaml
   parameters:

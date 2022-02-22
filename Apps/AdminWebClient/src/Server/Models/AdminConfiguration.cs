@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,12 +22,6 @@ namespace HealthGateway.Admin.Models
     /// </summary>
     public class AdminConfiguration
     {
-        /// <summary>
-        /// Gets or sets the enabled states of each toggleable feature.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public Dictionary<string, bool> Features { get; set; } = new Dictionary<string, bool>();
-
         /// <summary>
         /// Gets or sets the logging level used by the Admin.
         /// </summary>

@@ -1,29 +1,33 @@
 parameters:
-  - name: "licenseplate" # defaults for any parameters that aren't specified
+  - name: "toolsNamespace" # defaults for any parameters that aren't specified
     type: string
     default: 0bd5ad
     values:
-      - c8055e  #Gold Cluster Namespace
-      - 0bd5ad  #Silver Cluster Namespace
-      - azure   #Azure
+      - q6qfzk #OCP3 Namespace
+      - 0bd5ad #Silver Cluster Namespace
 
   - name: publish
     type: boolean
     default: true
 
 steps:
-  - task: Cache@2
-    displayName: 'Fetch NPM Cache'
-    condition: eq(variables['NPMInstall'], true)
+  - task: DotNetCoreCLI@2
+    displayName: "Compiling code for $(App.Name)"
+    condition: eq(variables['WASMBuild'], false)
     inputs:
-      key: 'npm | "$(Agent.OS)" | $(App.Home)/src/ClientApp/package-lock.json'
-      path: '$(App.Home)/src/ClientApp/node_modules'
-      cacheHitVar: 'CACHE_RESTORED'
-      restoreKeys: 'npm | "$(Agent.OS)"'
+      projects: "$(App.Home)/src"
+      arguments: "--no-incremental /warnaserror"
+
+  - task: DotNetCoreCLI@2
+    displayName: "Compiling code for Blazor Solution $(App.Name)"
+    condition: eq(variables['WASMBuild'], true)
+    inputs:
+      projects: "$(App.Home)"
+      arguments: "--no-incremental /warnaserror"
 
   - task: Npm@1
     displayName: "Installing NPM Packages"
-    condition: and(succeeded(), and(ne(variables.CACHE_RESTORED, 'true'), eq(variables['NPMInstall'], true)))
+    condition: and(succeeded(), eq(variables['NPMInstall'], true))
     inputs:
       command: "install"
       workingDir: "$(App.Home)/src/ClientApp"
@@ -35,20 +39,6 @@ steps:
       command: "custom"
       customCommand: "test"
       workingDir: "$(App.Home)/src/ClientApp"
-
-  - task: DotNetCoreCLI@2
-    displayName: "Compiling code for $(App.Name)"
-    condition: and(succeeded(), eq(variables['WASMBuild'], false))
-    inputs:
-      projects: "$(App.Home)/src"
-      arguments: "--no-incremental /warnaserror"
-
-  - task: DotNetCoreCLI@2
-    displayName: "Compiling code for Blazor Solution $(App.Name)"
-    condition: and(succeeded(), eq(variables['WASMBuild'], true))
-    inputs:
-      projects: "$(App.Home)"
-      arguments: "--no-incremental /warnaserror"
 
   - task: DotNetCoreCLI@2
     displayName: "Runing Unit Tests for $(App.Name)"
@@ -70,24 +60,12 @@ steps:
 
   - script: |
       set -e
-      if [ "$(EnableAzure)" = True ] ; then
-          echo Running in Azure, Installing dotnet-reportgenerator
-          dotnet tool install -g dotnet-reportgenerator-globaltool
-      else
-          echo Running in OpenShift, skipping dotnet-reportgenerator tool install
-      fi
       reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
     displayName: "Creating Code Coverage Report for $(App.Name)"
     condition: and(succeeded(), and(eq(variables['WASMBuild'], false),eq(variables['UnitTests'], true)))
 
   - script: |
       set -e
-      if [ "$(EnableAzure)" = True ] ; then
-          echo Running in Azure, Installing dotnet-reportgenerator
-          dotnet tool install -g dotnet-reportgenerator-globaltool
-      else
-          echo Running in OpenShift, skipping dotnet-reportgenerator tool install
-      fi
       reportgenerator -reports:$(App.Home)/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
     displayName: "Creating Code Coverage Report for Blazor Solution $(App.Name)"
     condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
@@ -123,29 +101,13 @@ steps:
       arguments: "-o $(Build.BinariesDirectory)"
       zipAfterPublish: false
 
-  - task: Docker@2
-    displayName: 'Building Image for $(App.Name) and pushing to Docker Hub'
-    inputs:
-      containerRegistry: 'docker-health'
-      repository: $(DockerRepo)/$(Image.Name)
-      Dockerfile: '$(App.Home)/Dockerfile'
-      buildContext: '$(Build.BinariesDirectory)'
-      tags: '$(Build.BuildNumber)'
-    condition: and(succeeded(), and(eq(variables['CreateImage'], true),ne(variables['EnableOpenShift'], true)))
-
   - script: |
       set -e
-      if [ "$(EnableAzure)" = True ] ; then
-          echo Running in Azure, authenticating with OpenShift
-          oc login --token=$(OpenShiftToken) --server=$(OpenShiftUri)
-      else
-          echo Running in OpenShift, skipping auth
-      fi
       oc projects
-      oc project ${{ parameters.licenseplate }}-tools
+      oc project ${{ parameters.toolsNamespace }}-tools
       cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
-      oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(Image.Name) | oc apply -f -
-      oc start-build $(Image.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
-      oc tag $(Image.Name):latest $(Image.Name):$(Build.BuildNumber)
-    displayName: "Building Image for $(App.Name) and pushing to OpenShift Image Stream"
-    condition: and(succeeded(), and(eq(variables['CreateImage'], true),eq(variables['EnableOpenShift'], true)))
+      oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(OpenShift.Name) | oc apply -f -
+      oc start-build $(OpenShift.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
+      oc tag $(OpenShift.Name):latest $(OpenShift.Name):$(Build.BuildNumber)
+    displayName: "Building OpenShift Image for $(App.Name) and pushing to Image Stream"
+    condition: and(succeeded(), eq(variables['RunOpenShift'], true))

@@ -16,7 +16,6 @@
 namespace HealthGateway.AdminWebClient
 {
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Admin.Services;
@@ -26,7 +25,6 @@ namespace HealthGateway.AdminWebClient
     using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
-    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Authentication.Cookies;
@@ -41,7 +39,6 @@ namespace HealthGateway.AdminWebClient
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
-    using Refit;
     using VueCliMiddleware;
 
     /// <summary>
@@ -49,7 +46,6 @@ namespace HealthGateway.AdminWebClient
     /// </summary>
     public class Startup
     {
-        private const string PhsaConfigSectionKey = "PHSA";
         private readonly StartupConfiguration startupConfig;
         private readonly IWebHostEnvironment environment;
         private readonly IConfiguration configuration;
@@ -127,12 +123,6 @@ namespace HealthGateway.AdminWebClient
             {
                 configuration.RootPath = "ClientApp/dist";
             });
-
-            // Add API Clients
-            PHSAConfig phsaConfig = new();
-            this.startupConfig.Configuration.Bind(PhsaConfigSectionKey, phsaConfig);
-            services.AddRefitClient<IImmunizationAdminClient>()
-                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
         }
 
         /// <summary>

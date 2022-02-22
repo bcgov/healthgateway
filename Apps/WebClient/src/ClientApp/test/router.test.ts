@@ -221,7 +221,7 @@ describe("Router", () => {
         expect(next).toHaveBeenCalledWith({ path: "/profile" });
     });
 
-    it("Registered Default Path", async () => {
+    it("Timeline Default Path", async () => {
         // Config store
         const options = new StoreOptionsStub();
         setOidcCheckUser(options, true);
@@ -241,7 +241,7 @@ describe("Router", () => {
         await flushPromises();
 
         // Assert
-        expect(next).toHaveBeenCalledWith({ path: "/home" });
+        expect(next).toHaveBeenCalledWith({ path: "/timeline" });
     });
 
     it("Unregistered Default Path", async () => {

@@ -15,7 +15,7 @@ extends:
   template: /Build/hg.yaml
   parameters:
     Application: JobScheduler
-    ImageName: hangfire
+    OpenShiftName: hangfire
     DotNetTests: false
     NPMInstall: false
     NPMTests: false

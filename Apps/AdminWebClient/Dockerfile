@@ -1,4 +1,4 @@
-FROM healthopenshift/hg-base:latest
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
 COPY . .
 EXPOSE 8080
 ENTRYPOINT ["dotnet","AdminWebClient.dll"]

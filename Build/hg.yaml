@@ -19,7 +19,7 @@ parameters:
       - CommonData
       - NotSpecified
 
-  - name: ImageName
+  - name: OpenShiftName
     type: string
     default: ""
 
@@ -39,73 +39,59 @@ parameters:
     type: boolean
     default: false
 
-  - name: EnableOpenShift
+  - name: EnableGoldCluster
     type: boolean
     default: false
 
-  - name: EnableAzure
+  - name: EnableSilverCluster
     type: boolean
     default: true
-    
+
   - name: WASMBuild
     type: boolean
     default: false
 
 #Build variables
 variables:
-  - group: Secrets
-  - name: App.Name
-    value: ${{ parameters.Application }}
-  - name: WASMBuild
-    value: ${{ parameters.WASMBuild }}
-  - name: NPMInstall
-    value: ${{ parameters.NPMInstall }}
-  - name: NPMTests
-    value: ${{ parameters.NPMTests }}
-  - name: UnitTests
-    value: ${{ parameters.DotNetTests }}
-  - name: Library
-    value: ${{ parameters.Library }}
-  - name: EnableOpenShift
-    value: ${{ parameters.EnableOpenShift }}
-  - name: EnableAzure 
-    value: ${{ parameters.EnableAzure }}   
-  - name: App.Home 
-    value: $(Build.SourcesDirectory)/Apps/$(App.Name)
-  - name: Image.Name 
-    ${{ if parameters.ImageName }}:
-      value: $[lower('${{ parameters.ImageName }}')]
-    ${{ if not(parameters.ImageName) }}: 
-      value: $[lower(variables['App.Name'])]
-  - name: App.UnitTests
-    value: $(App.Home)/test/unit
-  - name: PullRequest 
-    value: $[eq(variables['Build.Reason'], 'PullRequest')]
-  - name: CreateImage 
-    value: $[and(eq(variables['Library'],false), eq(variables['PullRequest'],false))]
-  - name: BuildPrefix
-    ${{ if eq(variables['PullRequest'], true) }}:
-      value: "PR-$(SourceBranchName)"
-    ${{ if eq(variables['PullRequest'], false) }}:
-      value: "$(SourceBranchName)"
+  App.Name: ${{ parameters.Application }}
+  WASMBuild: ${{ parameters.WASMBuild }}
+  NPMInstall: ${{ parameters.NPMInstall }}
+  NPMTests: ${{ parameters.NPMTests }}
+  UnitTests: ${{ parameters.DotNetTests }}
+  Library: ${{ parameters.Library }}
+  EnableGold: ${{ parameters.EnableGoldCluster }}
+  EnableSilver: ${{ parameters.EnableSilverCluster }}
+  App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
+  ${{ if parameters.OpenShiftName }}:
+    OpenShift.Name: $[lower('${{ parameters.OpenShiftName }}')]
+  ${{ if not(parameters.OpenShiftName) }}:
+    OpenShift.Name: $[lower(variables['App.Name'])]
+  App.UnitTests: $(App.Home)/test/unit
+  PullRequest: $[eq(variables['Build.Reason'], 'PullRequest')]
+  RunOpenShift: $[and(eq(variables['Library'],false), eq(variables['PullRequest'],false))]
+  ${{ if eq(variables['PullRequest'], true) }}:
+    BuildPrefix: "PR-$(SourceBranchName)"
+  ${{ if eq(variables['PullRequest'], false) }}:
+    BuildPrefix: "$(SourceBranchName)"
 
 jobs:
-  - job: "Azure_OpenShiftSilver"
-    pool:
-      vmImage: "ubuntu-20.04"
-    displayName: "Build ${{ parameters.Application }} in Azure Cloud"
-    condition: eq(variables['EnableAzure'], true)
-    steps:
-      - template: /Build/hg-steps-template.yaml
-        parameters:
-          licenseplate: "0bd5ad"
-
-  - job: "OpenShiftSilver"
+  - job: "GoldCluster"
     pool:
       name: "HealthGateway"
-    displayName: "Build ${{ parameters.Application }} in Openshift"
-    condition: eq(variables['EnableOpenShift'], true)
+    displayName: "Build ${{ parameters.Application }} in Gold Cluster"
+    condition: eq(variables['EnableGold'], true)
     steps:
       - template: /Build/hg-steps-template.yaml
         parameters:
-          licenseplate: "0bd5ad"
+          toolsNamespace: "q6qfzk"
+
+  - job: "SilverCluster"
+    pool:
+      name: "HealthGateway"
+    displayName: "Build ${{ parameters.Application }} in Silver Cluster"
+    condition: eq(variables['EnableSilver'], true)
+    steps:
+      - template: /Build/hg-steps-template.yaml
+        parameters:
+          toolsNamespace: "0bd5ad"
+          publish: false

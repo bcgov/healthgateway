@@ -19,6 +19,9 @@ trigger:
     include:
       - Apps/Mock
 
+pool:
+  name: "HealthGateway"
+
 extends:
   template: /Build/hg.yaml
   parameters:
