@@ -34,6 +34,7 @@ namespace HealthGateway.AdminWebClient
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Rewrite;
     using Microsoft.AspNetCore.SpaServices;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -190,6 +191,10 @@ namespace HealthGateway.AdminWebClient
 #pragma warning restore S1075
                 }
             });
+
+            RewriteOptions rewriteOption = new RewriteOptions()
+                .AddRedirect("(.*[^/])$", "$1/");
+            app.UseRewriter(rewriteOption);
         }
 
         /// <summary>
