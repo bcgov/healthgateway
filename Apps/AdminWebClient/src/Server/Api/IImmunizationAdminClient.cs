@@ -30,7 +30,7 @@ public interface IImmunizationAdminClient
     /// <param name="request">The covid assessment request to use for submission.</param>
     /// <param name="token">The bearer token to authorize the call.</param>
     /// <returns>The response to the submitted covid anti viral therapeutic assessment form.</returns>
-    [Post("/api/v1/Support/Immunizations/AntiViralScreenerSubmission")]
+    [Post("/api/v1/Support/Immunizations/AntiViralSupportDetails")]
     Task<IApiResponse<CovidAssessmentResponse>> SubmitCovidAssessment([Body] CovidAssessmentRequest request, [Authorize("Bearer")] string token);
 
     /// <summary>
