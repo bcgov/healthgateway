@@ -864,7 +864,7 @@ export default class PcrTestView extends Vue {
                                 <b-row class="mt-2">
                                     <b-col>
                                         <label for="pcrZip"
-                                            >Postal Code</label
+                                            >Postal Code / ZIP</label
                                         >
                                         <b-form-input
                                             id="pcrZip"
