@@ -75,19 +75,7 @@ export default class PcrTestView extends Vue {
         redirectPath: string;
     }) => Promise<void>;
 
-    @Action("setHeaderButtonState", { namespace: "navbar" })
-    setHeaderButtonState!: (visible: boolean) => void;
-
-    @Action("setSidebarButtonState", { namespace: "navbar" })
-    setSidebarButtonState!: (visible: boolean) => void;
-
-    @Action("toggleSidebar", { namespace: "navbar" })
-    toggleSidebar!: () => void;
-
     @Getter("user", { namespace: "user" }) user!: User;
-
-    @Getter("isSidebarShown", { namespace: "navbar" })
-    isSidebarShown!: boolean;
 
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated!: boolean;
@@ -160,13 +148,6 @@ export default class PcrTestView extends Vue {
         this.pcrTestService = container.get<IPcrTestService>(
             SERVICE_IDENTIFIER.PcrTestService
         );
-        this.setSidebarButtonState(false);
-        this.setHeaderButtonState(false);
-    }
-
-    private destroyed() {
-        this.setSidebarButtonState(true);
-        this.setHeaderButtonState(true);
     }
 
     private mounted() {
@@ -1153,7 +1134,7 @@ export default class PcrTestView extends Vue {
                                     variant="link"
                                     class="continue-button"
                                 >
-                                    <span>Log out</span>
+                                    <span>Log Out</span>
                                 </hg-button>
                             </router-link>
                         </div>

@@ -59,8 +59,8 @@ export default class LandingView extends Vue {
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated!: boolean;
 
-    @Getter("isSidebarShown", { namespace: "navbar" })
-    isSidebarShown!: boolean;
+    @Getter("isSidebarAvailable", { namespace: "navbar" })
+    isSidebarAvailable!: boolean;
 
     @Getter("userIsRegistered", { namespace: "user" })
     userIsRegistered!: boolean;
@@ -184,7 +184,7 @@ export default class LandingView extends Vue {
             v-if="isVaccinationStatusEnabled"
             no-gutters
             class="vaccine-card-banner small-banner d-flex mx-n2 justify-content-center"
-            :class="{ 'd-lg-none': !isSidebarShown }"
+            :class="{ 'd-lg-none': !isSidebarAvailable }"
         >
             <b-col cols="auto">
                 <img
@@ -209,7 +209,7 @@ export default class LandingView extends Vue {
         <b-row
             v-if="isVaccinationStatusEnabled"
             class="vaccine-card-banner large-banner d-none justify-content-end mx-n2"
-            :class="{ 'd-lg-flex': !isSidebarShown }"
+            :class="{ 'd-lg-flex': !isSidebarAvailable }"
         >
             <b-col cols="auto">
                 <img
