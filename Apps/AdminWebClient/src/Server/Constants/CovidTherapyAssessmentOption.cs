@@ -16,12 +16,10 @@
 namespace HealthGateway.Admin.Server.Constants;
 
 using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
 
 /// <summary>
 /// Represents the options that can be selected from yes/no radio button options.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum CovidTherapyAssessmentOption
 {
     /// <summary>
