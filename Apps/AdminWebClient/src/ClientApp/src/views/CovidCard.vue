@@ -6,26 +6,27 @@ import {
     faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 
-import AddressComponent from "@/components/core/Address.vue";
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import LoadingComponent from "@/components/core/Loading.vue";
 import CovidTreatmentAssessmentComponent from "@/components/covidTreatmentAssessment/CovidTreatmentAssessment.vue";
-import { Countries } from "@/constants/countries";
+import { Countries, InternationalDestinations } from "@/constants/countries";
 import { Provinces } from "@/constants/provinces";
 import { ResultType } from "@/constants/resulttype";
 import { SnackbarPosition } from "@/constants/snackbarPosition";
-import type Address from "@/models/address";
-import type BannerFeedback from "@/models/bannerFeedback";
-import type CovidCardPatientResult from "@/models/covidCardPatientResult";
+import { States } from "@/constants/states";
+import Address from "@/models/address";
+import BannerFeedback from "@/models/bannerFeedback";
+import CovidCardPatientResult from "@/models/covidCardPatientResult";
 import CovidTreatmentAssessmentDetails from "@/models/CovidTreatmentAssessmentDetails";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import PreviousAssessmentDetailsList from "@/models/previousAssessmentDetailsList";
+import SelectItem from "@/models/selectItem";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ICovidSupportService } from "@/services/interfaces";
-import { Mask, phnMask } from "@/utility/masks";
+import { Mask, phnMask, postalCodeMask, zipCodeMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
 import SnowPlow from "@/utility/snowPlow";
 
@@ -51,7 +52,6 @@ const emptyAddress: Address = {
         LoadingComponent,
         BannerFeedbackComponent,
         CovidTreatmentAssessmentComponent,
-        AddressComponent,
     },
 })
 export default class CovidCardView extends Vue {
@@ -67,6 +67,7 @@ export default class CovidCardView extends Vue {
     private searchResult: CovidCardPatientResult | null = null;
     private maskHdid = true;
     private covidSupportService!: ICovidSupportService;
+    private selectedDestination = "";
 
     private bannerFeedback: BannerFeedback = {
         type: ResultType.NONE,
@@ -109,6 +110,32 @@ export default class CovidCardView extends Vue {
         },
     ];
 
+    private get internationalDestinations(): SelectItem[] {
+        // sort destinations alphabetically except place Canada and US at the top
+        const destinations = Object.keys(InternationalDestinations)
+            .filter(
+                (destination) =>
+                    destination !== Countries.CA[0] &&
+                    destination !== Countries.US[0]
+            )
+            .sort();
+        destinations.unshift(Countries.CA[0], Countries.US[0]);
+
+        return destinations.map((destination) => ({
+            text: destination,
+            value: destination,
+        }));
+    }
+
+    @Watch("selectedDestination")
+    private onSelectedDestinationChanged() {
+        const countryCode = InternationalDestinations[this.selectedDestination];
+        const countryName = Countries[countryCode][0] ?? "";
+        this.address.country = this.isCanadaSelected
+            ? ""
+            : countryName.toLocaleUpperCase();
+    }
+
     private get patientName(): string {
         return `${this.searchResult?.patient?.firstname} ${this.searchResult?.patient?.lastname}`;
     }
@@ -121,8 +148,44 @@ export default class CovidCardView extends Vue {
         return this.searchResult?.vaccineDetails?.containsInvalidDoses === true;
     }
 
+    private get provinceStateList(): SelectItem[] {
+        if (this.isCanadaSelected) {
+            return Object.keys(Provinces).map((provinceCode) => {
+                return {
+                    text: Provinces[provinceCode],
+                    value: provinceCode,
+                };
+            });
+        } else if (this.isUnitedStatesSelected) {
+            return Object.keys(States).map((stateCode) => {
+                return {
+                    text: States[stateCode],
+                    value: stateCode,
+                };
+            });
+        } else {
+            return [];
+        }
+    }
+
+    private get isCanadaSelected(): boolean {
+        return this.selectedDestination === Countries.CA[0];
+    }
+
+    private get isUnitedStatesSelected(): boolean {
+        return this.selectedDestination === Countries.US[0];
+    }
+
     private get snackbarPosition(): string {
         return SnackbarPosition.Bottom;
+    }
+
+    private get streetLines(): string {
+        return this.address.streetLines.join("\n");
+    }
+
+    private set streetLines(streetLines: string) {
+        this.address.streetLines = streetLines.split("\n");
     }
 
     private get birthDate(): string {
@@ -134,6 +197,15 @@ export default class CovidCardView extends Vue {
 
     private get phnMask(): Mask {
         return phnMask;
+    }
+
+    private get postalCodeMask(): Mask | undefined {
+        if (this.isCanadaSelected) {
+            return postalCodeMask;
+        } else if (this.isUnitedStatesSelected) {
+            return zipCodeMask;
+        }
+        return undefined;
     }
 
     private mounted() {
@@ -240,19 +312,23 @@ export default class CovidCardView extends Vue {
         defaultAddress: Address | null,
         backupAddress: Address | null
     ) {
-        let address = { ...emptyAddress };
         if (defaultAddress) {
-            address = { ...defaultAddress };
+            this.address = { ...defaultAddress };
         } else if (backupAddress) {
-            address = { ...backupAddress };
+            this.address = { ...backupAddress };
+        } else {
+            this.address = { ...emptyAddress };
         }
+
+        // convert country code to country name
+        this.selectedDestination = Countries[this.address.country]
+            ? Countries[this.address.country][0]
+            : "";
 
         // select Canada if the address has a province but no country
-        if (address.country === "" && Provinces[address.state]) {
-            address.country = "CA";
+        if (this.address.country === "" && Provinces[this.address.state]) {
+            this.selectedDestination = Countries.CA[0];
         }
-
-        this.address = address;
     }
 
     private handleSubmit() {
@@ -261,22 +337,12 @@ export default class CovidCardView extends Vue {
             text: "mail proof",
         });
 
-        // retrieve the country name for the given country code
-        // unless the country is Canada, in which case it should not be displayed
-        let displayedCountryName = "";
-        if (this.address.country !== "CA" && Countries[this.address.country]) {
-            displayedCountryName = Countries[this.address.country][0];
-        }
-
         this.isLoading = true;
         this.covidSupportService
             .mailDocument({
                 personalHealthNumber:
                     this.searchResult?.patient.personalhealthnumber ?? "",
-                mailAddress: {
-                    ...this.address,
-                    country: displayedCountryName,
-                },
+                mailAddress: this.address,
             })
             .then((mailResult) => {
                 if (mailResult) {
@@ -343,7 +409,7 @@ export default class CovidCardView extends Vue {
             });
     }
 
-    private onEditModeChange(): void {
+    private onEditModeChange() {
         if (!this.isEditMode) {
             this.setAddress(
                 this.searchResult?.patient?.postalAddress ?? null,
@@ -399,7 +465,6 @@ export default class CovidCardView extends Vue {
         />
         <CovidTreatmentAssessmentComponent
             v-if="showCovidTreatmentAssessment"
-            :default-address="address"
             @on-cancel="covidTreatmentAssessmentCancelled"
             @on-submit="covidTreatmentAssessmentSubmitted"
         />
@@ -561,10 +626,76 @@ export default class CovidCardView extends Vue {
                             <h2>Mailing Address</h2>
                         </v-col>
                     </v-row>
-                    <AddressComponent
-                        v-bind.sync="address"
-                        :is-disabled="!isEditMode"
-                    />
+                    <v-row align="center" dense>
+                        <v-col>
+                            <v-textarea
+                                v-model="streetLines"
+                                label="Address"
+                                :disabled="!isEditMode"
+                                auto-grow
+                                rows="1"
+                                autocomplete="chrome-off"
+                            />
+                        </v-col>
+                    </v-row>
+                    <v-row align="center" dense>
+                        <v-col cols sm="6" md="4">
+                            <v-text-field
+                                v-model="address.city"
+                                label="City"
+                                :disabled="!isEditMode"
+                                autocomplete="chrome-off"
+                            />
+                        </v-col>
+                        <v-col
+                            v-if="provinceStateList.length > 0"
+                            cols
+                            sm="6"
+                            md="4"
+                        >
+                            <v-select
+                                v-model="address.state"
+                                :items="provinceStateList"
+                                label="Province/State"
+                                :disabled="!isEditMode"
+                                autocomplete="chrome-off"
+                            />
+                        </v-col>
+                        <v-col v-else cols sm="6" md="4">
+                            <v-text-field
+                                v-model="address.state"
+                                label="Province/State"
+                                :disabled="!isEditMode"
+                                autocomplete="chrome-off"
+                            />
+                        </v-col>
+                        <v-col cols md="4">
+                            <v-text-field
+                                v-if="postalCodeMask !== undefined"
+                                v-model="address.postalCode"
+                                v-mask="postalCodeMask"
+                                label="Postal Code"
+                                :disabled="!isEditMode"
+                                autocomplete="chrome-off"
+                            />
+                            <v-text-field
+                                v-else
+                                v-model="address.postalCode"
+                                label="Postal Code"
+                                :disabled="!isEditMode"
+                                autocomplete="chrome-off"
+                            />
+                        </v-col>
+                        <v-col cols md="8" xl="4">
+                            <v-select
+                                v-model="selectedDestination"
+                                :items="internationalDestinations"
+                                label="Country"
+                                :disabled="!isEditMode"
+                                autocomplete="chrome-off"
+                            />
+                        </v-col>
+                    </v-row>
                     <v-row align="center" dense>
                         <v-col cols="auto">
                             <v-checkbox
