@@ -5,7 +5,6 @@ import AuthenticationData from "@/models/authenticationData";
 import CovidCardDocumentResult from "@/models/covidCardDocumentResult";
 import CovidCardMailRequest from "@/models/covidCardMailRequest";
 import CovidCardPatientResult from "@/models/covidCardPatientResult";
-import CovidTherapyAssessmentDetails from "@/models/covidTherapyAssessmentDetails";
 import Email from "@/models/email";
 import ExternalConfiguration from "@/models/externalConfiguration";
 import MessageVerification from "@/models/messageVerification";
@@ -78,9 +77,6 @@ export interface ICovidSupportService {
     getPatient(phn: string, refresh: boolean): Promise<CovidCardPatientResult>;
     retrieveDocument(phn: string): Promise<CovidCardDocumentResult>;
     mailDocument(request: CovidCardMailRequest): Promise<boolean>;
-    getCovidTherapyAssessmentDetails(
-        phn: string
-    ): Promise<CovidTherapyAssessmentDetails>;
 }
 
 export interface IHttpDelegate {
