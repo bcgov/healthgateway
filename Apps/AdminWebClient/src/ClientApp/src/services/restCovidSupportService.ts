@@ -1,11 +1,10 @@
 import { injectable } from "inversify";
-import { Dictionary } from "vue-router/types/router";
 
 import CovidCardDocumentResult from "@/models/covidCardDocumentResult";
 import CovidCardMailRequest from "@/models/covidCardMailRequest";
 import CovidCardPatientResult from "@/models/covidCardPatientResult";
-import CovidTreatmentAssessmentDetails from "@/models/CovidTreatmentAssessmentDetails";
-import CovidTreatmentAssessmentRequest from "@/models/CovidTreatmentAssessmentRequest";
+import CovidTherapyAssessmentDetails from "@/models/covidTherapyAssessmentDetails";
+import CovidTherapyAssessmentRequest from "@/models/CovidTherapyAssessmentRequest";
 import RequestResult from "@/models/requestResult";
 import { ICovidSupportService, IHttpDelegate } from "@/services/interfaces";
 import RequestResultUtil from "@/utility/requestResultUtil";
@@ -85,16 +84,16 @@ export class RestCovidSupportService implements ICovidSupportService {
         });
     }
 
-    public getCovidTreatmentAssessmentDetails(
+    public getCovidTherapyAssessmentDetails(
         phn: string
-    ): Promise<CovidTreatmentAssessmentDetails> {
-        const headers: Dictionary<string> = {};
-        headers["phn"] = phn;
+    ): Promise<CovidTherapyAssessmentDetails> {
         return new Promise((resolve, reject) => {
             this.http
-                .get<RequestResult<CovidTreatmentAssessmentDetails>>(
-                    `${this.BASE_URI}/CovidAssessmentDetails`,
-                    headers
+                .post<RequestResult<CovidTherapyAssessmentDetails>>(
+                    `${this.BASE_URI}/history`,
+                    {
+                        phn: phn,
+                    }
                 )
                 .then((historyResult) => {
                     return RequestResultUtil.handleResult(
@@ -110,21 +109,18 @@ export class RestCovidSupportService implements ICovidSupportService {
         });
     }
 
-    public submitCovidTreatmentAssessment(
-        covidTreatmentAssessmentRequest: CovidTreatmentAssessmentRequest
+    public submitCovidTherapyAssessment(
+        covidTherapyAssessmentRequest: CovidTherapyAssessmentRequest
     ): Promise<string> {
         return new Promise((resolve, reject) => {
             this.http
-                .post<RequestResult<string>>(
-                    `${this.BASE_URI}/CovidAssessment`,
-                    {
-                        covidTreatmentAssessmentRequest:
-                            covidTreatmentAssessmentRequest,
-                    }
-                )
-                .then((covidTreatmentResult) => {
+                .post<RequestResult<string>>(`${this.BASE_URI}/submit`, {
+                    covidTherapyAssessmentRequest:
+                        covidTherapyAssessmentRequest,
+                })
+                .then((covidTherapyResult) => {
                     return RequestResultUtil.handleResult(
-                        covidTreatmentResult,
+                        covidTherapyResult,
                         resolve,
                         reject
                     );

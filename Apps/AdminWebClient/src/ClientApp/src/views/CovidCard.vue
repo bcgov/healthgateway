@@ -10,7 +10,6 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import LoadingComponent from "@/components/core/Loading.vue";
-import CovidTreatmentAssessmentComponent from "@/components/covidTreatmentAssessment/CovidTreatmentAssessment.vue";
 import { Countries, InternationalDestinations } from "@/constants/countries";
 import { Provinces } from "@/constants/provinces";
 import { ResultType } from "@/constants/resulttype";
@@ -19,9 +18,7 @@ import { States } from "@/constants/states";
 import Address from "@/models/address";
 import BannerFeedback from "@/models/bannerFeedback";
 import CovidCardPatientResult from "@/models/covidCardPatientResult";
-import CovidTreatmentAssessmentDetails from "@/models/CovidTreatmentAssessmentDetails";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
-import PreviousAssessmentDetailsList from "@/models/previousAssessmentDetailsList";
 import SelectItem from "@/models/selectItem";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -51,14 +48,12 @@ const emptyAddress: Address = {
     components: {
         LoadingComponent,
         BannerFeedbackComponent,
-        CovidTreatmentAssessmentComponent,
     },
 })
 export default class CovidCardView extends Vue {
     private isEditMode = false;
     private isLoading = false;
     private showFeedback = false;
-    private showCovidTreatmentAssessment = false;
 
     private phn = "";
     private activePhn = "";
@@ -98,18 +93,17 @@ export default class CovidCardView extends Vue {
     private assessmentHistoryTableHeaders = [
         {
             text: "Date",
-            value: "dateOfAssessment",
+            value: "date",
         },
         {
             text: "Time",
-            value: "timeOfAssessment",
+            value: "time",
         },
         {
             text: "ID",
-            value: "formId",
+            value: "id",
         },
     ];
-
     private get internationalDestinations(): SelectItem[] {
         // sort destinations alphabetically except place Canada and US at the top
         const destinations = Object.keys(InternationalDestinations)
@@ -424,34 +418,6 @@ export default class CovidCardView extends Vue {
         }
         return new DateWrapper(date).format(DateWrapper.defaultFormat);
     }
-
-    private startCovidTreatmentAssessment(): void {
-        this.showCovidTreatmentAssessment = true;
-    }
-
-    private covidTreatmentAssessmentCancelled(): void {
-        this.showCovidTreatmentAssessment = false;
-    }
-
-    private covidTreatmentAssessmentSubmitted(): void {
-        this.showCovidTreatmentAssessment = false;
-    }
-
-    private previousAssessmentDetailsList: PreviousAssessmentDetailsList[] = [
-        {
-            dateOfAssessment: "2021-01-01",
-            timeOfAssessment: "10:00 AM",
-            formId: "123456",
-        },
-    ];
-
-    private covidTreatmentAssessmentDetails: CovidTreatmentAssessmentDetails = {
-        hasKnownPositiveC19Past7Days: false,
-        citizenIsConsideredImmunoCompromised: false,
-        has3DoseMoreThan14Days: false,
-        hasDocumentedChronicCondition: false,
-        previousAssessmentDetailsList: this.previousAssessmentDetailsList,
-    };
 }
 </script>
 
@@ -463,12 +429,7 @@ export default class CovidCardView extends Vue {
             :feedback="bannerFeedback"
             :position="snackbarPosition"
         />
-        <CovidTreatmentAssessmentComponent
-            v-if="showCovidTreatmentAssessment"
-            @on-cancel="covidTreatmentAssessmentCancelled"
-            @on-submit="covidTreatmentAssessmentSubmitted"
-        />
-        <v-row v-else no-gutters>
+        <v-row no-gutters>
             <v-col cols="12" sm="12" md="10" offset-md="1">
                 <form @submit.prevent="handleSearch()">
                     <v-row align="center" dense>
@@ -711,23 +672,19 @@ export default class CovidCardView extends Vue {
                                 :disabled="immunizations.length === 0"
                             >
                                 <span>Mail</span>
-                                <v-icon class="ml-2" size="sm">
-                                    fas fa-paper-plane
-                                </v-icon>
+                                <v-icon class="ml-2" size="sm"
+                                    >fas fa-paper-plane</v-icon
+                                >
                             </v-btn>
                         </v-col>
                     </v-row>
                     <v-row dense>
                         <v-col class="text-right">
-                            <v-btn
-                                type="submit"
-                                class="mx-2 success"
-                                @click="startCovidTreatmentAssessment"
-                            >
-                                <span>Start COVID-19 Treatment Assessment</span>
-                                <v-icon class="ml-2" size="sm">
-                                    fas fa-clipboard-list
-                                </v-icon>
+                            <v-btn type="submit" class="mx-2 success">
+                                <span>Start COVID-19 Therapy Assessment</span>
+                                <v-icon class="ml-2" size="sm"
+                                    >fas fa-clipboard-list</v-icon
+                                >
                             </v-btn>
                         </v-col>
                     </v-row>
@@ -740,10 +697,11 @@ export default class CovidCardView extends Vue {
                         <v-col no-gutters>
                             <v-data-table
                                 :headers="assessmentHistoryTableHeaders"
-                                :items="previousAssessmentDetailsList"
+                                :items="[]"
                                 :items-per-page="5"
                                 :hide-default-footer="true"
                             >
+                                <span>{{}}</span>
                             </v-data-table>
                         </v-col>
                     </v-row>
