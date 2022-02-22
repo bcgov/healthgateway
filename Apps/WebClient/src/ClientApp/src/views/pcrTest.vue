@@ -497,6 +497,7 @@ export default class PcrTestView extends Vue {
             testKitCid: this.noSerialNumber ? "" : this.serialNumber,
             testKitCode: "",
         };
+        this.noPhn = false;
         this.$v.$reset();
     }
 
