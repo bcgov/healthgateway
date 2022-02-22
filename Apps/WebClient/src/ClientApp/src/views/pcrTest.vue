@@ -412,9 +412,7 @@ export default class PcrTestView extends Vue {
                                 response
                             )}`
                         );
-                        this.resetForm();
-                        this.loading = false;
-                        this.registrationComplete = true;
+                        this.displaySuccess();
                     })
                     .catch((err: ResultError) => {
                         this.handleError(err, "registerTestKit");
@@ -451,9 +449,7 @@ export default class PcrTestView extends Vue {
                                 response
                             )}`
                         );
-                        this.resetForm();
-                        this.loading = false;
-                        this.registrationComplete = true;
+                        this.displaySuccess();
                     })
                     .catch((err: ResultError) => {
                         this.handleError(err, "registerTestKitPublic");
@@ -462,6 +458,13 @@ export default class PcrTestView extends Vue {
             default:
                 break;
         }
+    }
+
+    private displaySuccess(): void {
+        this.resetForm();
+        this.loading = false;
+        this.registrationComplete = true;
+        window.scrollTo(0, 0);
     }
 
     private handleError(err: ResultError, domain: string) {
@@ -476,6 +479,7 @@ export default class PcrTestView extends Vue {
             });
         }
         this.loading = false;
+        window.scrollTo(0, 0);
     }
 
     private resetForm() {
