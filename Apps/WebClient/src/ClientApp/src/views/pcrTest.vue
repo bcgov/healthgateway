@@ -307,7 +307,7 @@ export default class PcrTestView extends Vue {
     }
 
     private testKitCodeValidator(value: string): boolean {
-        const pattern = /^([a-zA-Z\d]{7})-([a-zA-Z\d]{5})$|^$/;
+        const pattern = /^([A-Z\d]{7})-([A-Z\d]{5})$|^$/;
         return pattern.test(value);
     }
 
