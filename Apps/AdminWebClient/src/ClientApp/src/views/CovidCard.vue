@@ -25,7 +25,7 @@ import PreviousAssessmentDetailsList from "@/models/previousAssessmentDetailsLis
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ICovidSupportService } from "@/services/interfaces";
-import { Mask, phnMaskTemplate } from "@/utility/masks";
+import { Mask, phnMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
 import SnowPlow from "@/utility/snowPlow";
 
@@ -133,7 +133,7 @@ export default class CovidCardView extends Vue {
     }
 
     private get phnMask(): Mask {
-        return phnMaskTemplate;
+        return phnMask;
     }
 
     private mounted() {
@@ -361,7 +361,6 @@ export default class CovidCardView extends Vue {
 
     private startCovidTreatmentAssessment(): void {
         this.showCovidTreatmentAssessment = true;
-        window.scrollTo(0, 0);
     }
 
     private covidTreatmentAssessmentCancelled(): void {

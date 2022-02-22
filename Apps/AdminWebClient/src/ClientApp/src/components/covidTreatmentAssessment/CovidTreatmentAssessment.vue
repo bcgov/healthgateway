@@ -53,13 +53,7 @@ extend("requiredPhoneNumber", {
 export default class CovidTreatmentAssessmentComponent extends Vue {
     @Prop({ required: true }) defaultAddress!: Address;
 
-    private address: Address = {
-        streetLines: [],
-        city: "",
-        state: "",
-        postalCode: "",
-        country: "",
-    };
+    private address: Address | undefined = undefined;
     private isEditingAddress = false;
     private showFeedback = false;
     private today = DateTime.local();
@@ -90,7 +84,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         changeAddressFlag: false,
     };
 
-    private mounted(): void {
+    private created(): void {
         this.address = { ...this.defaultAddress };
     }
 
@@ -231,7 +225,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     v-slot="{ errors }"
                                     :rules="{
                                         requiredPhoneNumber: true,
-                                        regex: /^[2-9]\d{2}[2-9]\d{2}\d{4}$|^\([2-9]\d{2}\) [2-9]\d{2}-\d{4}$/,
+                                        regex: /^[2-9]\d{2}[2-9]\d{2}\d{4}$/,
                                     }"
                                     v-bind="$attrs"
                                     name="Phone Number"
@@ -240,7 +234,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                         v-model="
                                             covidTreatmentAssessmentRequest.phoneNumber
                                         "
-                                        v-mask="phoneNumberMask"
                                         dense
                                         label="Phone Number"
                                     />

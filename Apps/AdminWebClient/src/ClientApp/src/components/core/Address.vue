@@ -1,24 +1,20 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, PropSync, Watch } from "vue-property-decorator";
+import { Component, Prop, Watch } from "vue-property-decorator";
 
 import { Countries, InternationalDestinations } from "@/constants/countries";
 import { Provinces } from "@/constants/provinces";
 import { States } from "@/constants/states";
 import type SelectItem from "@/models/selectItem";
-import {
-    Mask,
-    postalCodeMaskTemplate,
-    zipCodeMaskTemplate,
-} from "@/utility/masks";
+import { Mask, postalCodeMask, zipCodeMask } from "@/utility/masks";
 
 @Component
 export default class AddressComponent extends Vue {
     @Prop({ default: "" }) streetLines!: string[];
-    @PropSync("city", { default: "" }) cityModel!: string;
-    @PropSync("state", { default: "" }) stateModel!: string;
-    @PropSync("postalCode", { default: "" }) postalCodeModel!: string;
-    @PropSync("country", { default: "" }) countryModel!: string;
+    @Prop({ default: "" }) city!: string;
+    @Prop({ default: "" }) state!: string;
+    @Prop({ default: "" }) postalCode!: string;
+    @Prop({ default: "" }) country!: string;
     @Prop() isDisabled!: boolean;
 
     private selectedDestination = "";
@@ -41,19 +37,19 @@ export default class AddressComponent extends Vue {
     }
 
     @Watch("selectedDestination")
-    private onSelectedDestinationChanged(): void {
+    private onSelectedDestinationChanged() {
         this.$emit("update:country", this.selectedCountryCode);
     }
 
     @Watch("country")
     private onCountryChanged(): void {
-        if (this.selectedCountryCode === this.countryModel) {
+        if (this.selectedCountryCode === this.country) {
             return;
         }
 
         // select destination matching first name associated with country code
-        this.selectedDestination = Countries[this.countryModel]
-            ? Countries[this.countryModel][0]
+        this.selectedDestination = Countries[this.country]
+            ? Countries[this.country][0]
             : "";
     }
 
@@ -91,19 +87,20 @@ export default class AddressComponent extends Vue {
 
     private get postalCodeMask(): Mask | undefined {
         if (this.isCanadaSelected) {
-            return postalCodeMaskTemplate;
+            return postalCodeMask;
         } else if (this.isUnitedStatesSelected) {
-            return zipCodeMaskTemplate;
+            return zipCodeMask;
         }
         return undefined;
     }
 
-    private get streetLinesModel(): string {
+    private get streetLinesString(): string {
         return this.streetLines.join("\n");
     }
 
-    private set streetLinesModel(model: string) {
-        this.$emit("update:streetLines", model.split("\n"));
+    private set streetLinesString(streetLines: string) {
+        this.streetLines = streetLines.split("\n");
+        this.$emit("update:streetLines", this.streetLines);
     }
 
     private mounted(): void {
@@ -117,7 +114,7 @@ export default class AddressComponent extends Vue {
         <v-row align="center" dense>
             <v-col>
                 <v-textarea
-                    v-model="streetLinesModel"
+                    v-model="streetLinesString"
                     label="Address"
                     :disabled="isDisabled"
                     auto-grow
@@ -129,44 +126,49 @@ export default class AddressComponent extends Vue {
         <v-row align="center" dense>
             <v-col cols sm="6" md="4">
                 <v-text-field
-                    v-model="cityModel"
+                    :value="city"
                     label="City"
                     :disabled="isDisabled"
                     autocomplete="chrome-off"
+                    @change="$emit('update:city', $event)"
                 />
             </v-col>
             <v-col v-if="provinceStateList.length > 0" cols sm="6" md="4">
                 <v-select
-                    v-model="stateModel"
+                    :value="state"
                     :items="provinceStateList"
                     label="Province/State"
                     :disabled="isDisabled"
                     autocomplete="chrome-off"
+                    @change="$emit('update:state', $event)"
                 />
             </v-col>
             <v-col v-else cols sm="6" md="4">
                 <v-text-field
-                    v-model="stateModel"
+                    :value="state"
                     label="Province/State"
                     :disabled="isDisabled"
                     autocomplete="chrome-off"
+                    @change="$emit('update:state', $event)"
                 />
             </v-col>
             <v-col cols md="4">
                 <v-text-field
                     v-if="postalCodeMask !== undefined"
-                    v-model="postalCodeModel"
                     v-mask="postalCodeMask"
+                    :value="postalCode"
                     label="Postal Code"
                     :disabled="isDisabled"
                     autocomplete="chrome-off"
+                    @change="$emit('update:postalCode', $event)"
                 />
                 <v-text-field
                     v-else
-                    v-model="postalCodeModel"
+                    :value="postalCode"
                     label="Postal Code"
                     :disabled="isDisabled"
                     autocomplete="chrome-off"
+                    @change="$emit('update:postalCode', $event)"
                 />
             </v-col>
             <v-col cols md="8" xl="4">
