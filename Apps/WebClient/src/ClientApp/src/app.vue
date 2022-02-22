@@ -152,8 +152,8 @@ export default class App extends Vue {
     private get isPublicDestinationPath(): boolean {
         const routePath = this.$route.path.toLowerCase();
         return (
-            routePath !== this.vaccineCardPath &&
-            routePath !== this.covidTestPath
+            routePath === this.vaccineCardPath ||
+            routePath === this.covidTestPath
         );
     }
 
@@ -166,16 +166,16 @@ export default class App extends Vue {
     }
 
     private get isHeaderVisible(): boolean {
-        return this.isPublicDestinationPath && !this.isLoginCallbackPath;
+        return !this.isPublicDestinationPath && !this.isLoginCallbackPath;
     }
 
     private get isFooterVisible(): boolean {
-        return this.isPublicDestinationPath && !this.isLoginCallbackPath;
+        return !this.isPublicDestinationPath && !this.isLoginCallbackPath;
     }
 
     private get isCommunicationVisible(): boolean {
         return (
-            this.isPublicDestinationPath &&
+            !this.isPublicDestinationPath &&
             !this.isLoginCallbackPath &&
             !this.isPcrTestPath
         );
