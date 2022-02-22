@@ -133,6 +133,14 @@ steps:
       tags: '$(Build.BuildNumber)'
     condition: and(succeeded(), and(eq(variables['CreateImage'], true),ne(variables['EnableOpenShift'], true)))
 
+  - bash: |
+      set -e
+      oc login --token=$(OpenShiftToken) --server=$(OpenShiftUri)
+      oc project $(SilverLicense)-tools
+      oc import-image $(DockerRepo)/$(Image.Name):$(Build.BuildNumber) --from=$(DockerRepo)/$(Image.Name):$(Build.BuildNumber) --confirm
+    displayName: Pull Image to OpenShift
+    condition: and(succeeded(), and(eq(variables['CreateImage'], true),ne(variables['EnableOpenShift'], true)))
+
   - script: |
       set -e
       if [ "$(EnableAzure)" = True ] ; then

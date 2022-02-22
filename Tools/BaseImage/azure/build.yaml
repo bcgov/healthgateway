@@ -46,6 +46,6 @@ steps:
     set -e
     oc login --token=$(OpenShiftToken) --server=$(OpenShiftUri)
     oc project $(SilverLicense)-tools
-    oc tag $(App.Name):latest $(App.Name):previous
-    oc import-image $(App.Name):latest --from=$(DockerRepo)/$(App.Name):$(Build.BuildNumber) --confirm
+    oc import-image $(DockerRepo)/$(App.Name):$(Build.BuildNumber) --from=$(DockerRepo)/$(App.Name):$(Build.BuildNumber) --confirm
+    oc tag $(App.Name):$(Build.BuildNumber) $(App.Name):latest
   displayName: Pull Image to OpenShift
