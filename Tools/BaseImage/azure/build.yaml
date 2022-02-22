@@ -50,4 +50,4 @@ steps:
     docker tag $(DockerRepo)/$(App.Name):$(Build.BuildNumber) $(ImageRegistry)/$(SilverLicense)-tools/$(App.Name):latest
     docker login $(ImageRegistry) --username=azure --password=$(OpenShiftToken)
     docker push $(ImageRegistry)/$(SilverLicense)-tools/$(App.Name):latest
-  displayName: Push Image to OpenShift
+  displayName: Pull Image to OpenShift
