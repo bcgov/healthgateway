@@ -23,21 +23,21 @@ using HealthGateway.Admin.Server.Constants;
 /// <summary>
 /// Model object representing covid therapy assessment submission request.
 /// </summary>
-public class CovidAssessmentRequest
+public class CovidTherapyAssessmentRequest
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="CovidAssessmentRequest"/> class.
+    /// Initializes a new instance of the <see cref="CovidTherapyAssessmentRequest"/> class.
     /// </summary>
-    public CovidAssessmentRequest()
+    public CovidTherapyAssessmentRequest()
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CovidAssessmentRequest"/> class.
+    /// Initializes a new instance of the <see cref="CovidTherapyAssessmentRequest"/> class.
     /// </summary>
     /// <param name="streetAddresses">The list of address street lines.</param>
     [JsonConstructor]
-    public CovidAssessmentRequest(
+    public CovidTherapyAssessmentRequest(
         IList<string> streetAddresses)
     {
         this.StreetAddresses = streetAddresses;
