@@ -11,14 +11,12 @@ import AddressComponent from "@/components/core/Address.vue";
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import Card from "@/components/covidTreatmentAssessment/Card.vue";
 import OptionDetails from "@/components/covidTreatmentAssessment/OptionDetails.vue";
-import { CovidTreatmentAssessmentOption } from "@/constants/covidTreatmentAssessmentOption";
+import { CovidTreatmentAssessmentOption } from "@/constants/CovidTreatmentAssessmentOption";
 import { ResultType } from "@/constants/resulttype";
 import { SnackbarPosition } from "@/constants/snackbarPosition";
 import type Address from "@/models/address";
 import BannerFeedback from "@/models/bannerFeedback";
-import type CovidTreatmentAssessmentDetails from "@/models/covidTreatmentAssessmentDetails";
-import type CovidTreatmentAssessmentRequest from "@/models/covidTreatmentAssessmentRequest";
-import { DateWrapper } from "@/models/dateWrapper";
+import CovidTreatmentAssessmentRequest from "@/models/CovidTreatmentAssessmentRequest";
 import { Mask, phoneNumberMaskTemplate } from "@/utility/masks";
 
 library.add(faEye, faEyeSlash);
@@ -53,8 +51,6 @@ extend("requiredPhoneNumber", {
     },
 })
 export default class CovidTreatmentAssessmentComponent extends Vue {
-    @Prop({ required: true }) details!: CovidTreatmentAssessmentDetails;
-    @Prop({ required: true }) birthdate!: string;
     @Prop({ required: true }) defaultAddress!: Address;
 
     private address: Address = {
@@ -129,12 +125,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
 
     private get patientFullName() {
         return `${this.covidTreatmentAssessmentRequest.firstName} ${this.covidTreatmentAssessmentRequest.lastName} `;
-    }
-
-    private get age(): number {
-        const today = new DateWrapper();
-        const birthdate = new DateWrapper(this.birthdate);
-        return Math.floor(today.diff(birthdate, "years").years);
     }
 
     private get snackbarPosition(): string {
@@ -288,8 +278,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                         </Card>
                         <Card
                             title="1. Please confirm that you are over 12 years or older."
-                            :additional-info="`This citizen is ${age} years old.`"
-                            display-additional-info="true"
+                            additional-info="This citizen is 71 years old."
                         >
                             <ValidationProvider
                                 ref="confirmsOver12"
@@ -312,10 +301,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                         </Card>
                         <Card
                             title="2. Have you recently tested positive for COVID-19 in the last 7 days?"
-                            additional-info="This citizen has tested positive for COVID-19 within the last 7 days."
-                            :display-additional-info="
-                                details.hasKnownPositiveC19Past7Days
-                            "
                         >
                             <ValidationProvider
                                 ref="testedPositiveInPast7Days"
@@ -425,9 +410,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                         <Card
                             title="6. Do you have a medical condition or are you taking medications that suppress or weaken your immune system?"
                             additional-info="Citizen is considered immunocompromised."
-                            :display-additional-info="
-                                details.citizenIsConsideredImmunoCompromised
-                            "
                         >
                             <ValidationProvider
                                 ref="hasMedicalCondition"
@@ -450,9 +432,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                         <Card
                             title="7. Have you had 3 doses of the vaccine?"
                             additional-info="Citizen has had 3 doses of vaccine for more than 14 days."
-                            :display-additional-info="
-                                details.has3DoseMoreThan14Days
-                            "
                         >
                             <ValidationProvider
                                 ref="reports3DosesC19Vaccine"
@@ -475,9 +454,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                         <Card
                             title="8. Have you been diagnosed by a health care provider with a chronic condition?"
                             additional-info="Citizen has a chronic condition."
-                            :display-additional-info="
-                                details.hasDocumentedChronicCondition
-                            "
                         >
                             <OptionDetails
                                 :value.sync="

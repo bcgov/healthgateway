@@ -1,17 +1,18 @@
 import { injectable } from "inversify";
+import { Dictionary } from "vue-router/types/router";
 
 import CovidCardDocumentResult from "@/models/covidCardDocumentResult";
 import CovidCardMailRequest from "@/models/covidCardMailRequest";
 import CovidCardPatientResult from "@/models/covidCardPatientResult";
-import CovidTreatmentAssessmentDetails from "@/models/covidTreatmentAssessmentDetails";
-import CovidTreatmentAssessmentRequest from "@/models/covidTreatmentAssessmentRequest";
+import CovidTreatmentAssessmentDetails from "@/models/CovidTreatmentAssessmentDetails";
+import CovidTreatmentAssessmentRequest from "@/models/CovidTreatmentAssessmentRequest";
 import RequestResult from "@/models/requestResult";
 import { ICovidSupportService, IHttpDelegate } from "@/services/interfaces";
 import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestCovidSupportService implements ICovidSupportService {
-    private readonly BASE_URI: string = "v1/api/CovidSupport";
+    private readonly BASE_URI: string = "v1/api/CovidSupport/Patient";
     private http!: IHttpDelegate;
 
     public initialize(http: IHttpDelegate): void {
@@ -25,7 +26,7 @@ export class RestCovidSupportService implements ICovidSupportService {
         return new Promise((resolve, reject) => {
             this.http
                 .get<RequestResult<CovidCardPatientResult>>(
-                    `${this.BASE_URI}/Patient`,
+                    `${this.BASE_URI}`,
                     { phn: phn, refresh: String(refresh) }
                 )
                 .then((requestResult) => {
@@ -46,7 +47,7 @@ export class RestCovidSupportService implements ICovidSupportService {
         return new Promise((resolve, reject) => {
             this.http
                 .get<RequestResult<CovidCardDocumentResult>>(
-                    `${this.BASE_URI}/Patient/Document`,
+                    `${this.BASE_URI}/Document`,
                     { phn: phn }
                 )
                 .then((docResult) => {
@@ -67,7 +68,7 @@ export class RestCovidSupportService implements ICovidSupportService {
         return new Promise((resolve, reject) => {
             this.http
                 .post<RequestResult<boolean>>(
-                    `${this.BASE_URI}/Patient/Document`,
+                    `${this.BASE_URI}/Document`,
                     request
                 )
                 .then((submitResult) => {
@@ -87,11 +88,13 @@ export class RestCovidSupportService implements ICovidSupportService {
     public getCovidTreatmentAssessmentDetails(
         phn: string
     ): Promise<CovidTreatmentAssessmentDetails> {
+        const headers: Dictionary<string> = {};
+        headers["phn"] = phn;
         return new Promise((resolve, reject) => {
             this.http
                 .get<RequestResult<CovidTreatmentAssessmentDetails>>(
                     `${this.BASE_URI}/CovidAssessmentDetails`,
-                    { phn: phn }
+                    headers
                 )
                 .then((historyResult) => {
                     return RequestResultUtil.handleResult(
@@ -114,7 +117,10 @@ export class RestCovidSupportService implements ICovidSupportService {
             this.http
                 .post<RequestResult<string>>(
                     `${this.BASE_URI}/CovidAssessment`,
-                    covidTreatmentAssessmentRequest
+                    {
+                        covidTreatmentAssessmentRequest:
+                            covidTreatmentAssessmentRequest,
+                    }
                 )
                 .then((covidTreatmentResult) => {
                     return RequestResultUtil.handleResult(

@@ -19,8 +19,9 @@ import { SnackbarPosition } from "@/constants/snackbarPosition";
 import type Address from "@/models/address";
 import type BannerFeedback from "@/models/bannerFeedback";
 import type CovidCardPatientResult from "@/models/covidCardPatientResult";
-import CovidTreatmentAssessmentDetails from "@/models/covidTreatmentAssessmentDetails";
+import CovidTreatmentAssessmentDetails from "@/models/CovidTreatmentAssessmentDetails";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import PreviousAssessmentDetailsList from "@/models/previousAssessmentDetailsList";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ICovidSupportService } from "@/services/interfaces";
@@ -35,12 +36,6 @@ interface ImmunizationRow {
     product: string;
     lotNumber: string;
     clinic: string;
-}
-
-interface AssessmentHistoryRow {
-    dateOfAssessment: string;
-    timeOfAssessment: string;
-    formId: string;
 }
 
 const emptyAddress: Address = {
@@ -70,8 +65,6 @@ export default class CovidCardView extends Vue {
     private address: Address = { ...emptyAddress };
     private immunizations: ImmunizationRow[] = [];
     private searchResult: CovidCardPatientResult | null = null;
-    private assessmentDetails: CovidTreatmentAssessmentDetails | null = null;
-    private assessmentHistory: AssessmentHistoryRow[] = [];
     private maskHdid = true;
     private covidSupportService!: ICovidSupportService;
 
@@ -82,16 +75,38 @@ export default class CovidCardView extends Vue {
     };
 
     private tableHeaders = [
-        { text: "Date", value: "date", width: "10em" },
-        { text: "Product", value: "product" },
-        { text: "Lot Number", value: "lotNumber" },
-        { text: "Clinic", value: "clinic" },
+        {
+            text: "Date",
+            value: "date",
+            width: "10em",
+        },
+        {
+            text: "Product",
+            value: "product",
+        },
+        {
+            text: "Lot Number",
+            value: "lotNumber",
+        },
+        {
+            text: "Clinic",
+            value: "clinic",
+        },
     ];
 
     private assessmentHistoryTableHeaders = [
-        { text: "Date", value: "dateOfAssessment" },
-        { text: "Time", value: "timeOfAssessment" },
-        { text: "ID", value: "formId" },
+        {
+            text: "Date",
+            value: "dateOfAssessment",
+        },
+        {
+            text: "Time",
+            value: "timeOfAssessment",
+        },
+        {
+            text: "ID",
+            value: "formId",
+        },
     ];
 
     private get patientName(): string {
@@ -166,14 +181,10 @@ export default class CovidCardView extends Vue {
     private search(personalHealthNumber: string, refresh: boolean) {
         this.isLoading = true;
 
-        Promise.all([
-            this.covidSupportService.getPatient(personalHealthNumber, refresh),
-            this.covidSupportService.getCovidTreatmentAssessmentDetails(
-                personalHealthNumber
-            ),
-        ])
-            .then(([searchResult, assessmentDetails]) => {
-                if (searchResult.blocked) {
+        this.covidSupportService
+            .getPatient(personalHealthNumber, refresh)
+            .then((result) => {
+                if (result.blocked) {
                     this.searchResult = null;
                     this.showFeedback = true;
                     this.bannerFeedback = {
@@ -184,7 +195,7 @@ export default class CovidCardView extends Vue {
                     };
                 } else {
                     this.phn = "";
-                    this.searchResult = searchResult;
+                    this.searchResult = result;
                     this.maskHdid = true;
                     this.setAddress(
                         this.searchResult?.patient?.postalAddress,
@@ -209,22 +220,6 @@ export default class CovidCardView extends Vue {
                         }
                         return firstDate.isAfter(secondDate) ? -1 : 0;
                     });
-
-                    this.assessmentDetails = assessmentDetails;
-                    this.assessmentHistory =
-                        this.assessmentDetails.previousAssessmentDetailsList?.map(
-                            (entry) => {
-                                const date = new DateWrapper(
-                                    entry.dateTimeOfAssessment,
-                                    { hasTime: true }
-                                );
-                                return {
-                                    dateOfAssessment: date.format(),
-                                    timeOfAssessment: date.format("h:mm a"),
-                                    formId: entry.formId,
-                                };
-                            }
-                        ) ?? [];
                 }
             })
             .catch(() => {
@@ -376,6 +371,22 @@ export default class CovidCardView extends Vue {
     private covidTreatmentAssessmentSubmitted(): void {
         this.showCovidTreatmentAssessment = false;
     }
+
+    private previousAssessmentDetailsList: PreviousAssessmentDetailsList[] = [
+        {
+            dateOfAssessment: "2021-01-01",
+            timeOfAssessment: "10:00 AM",
+            formId: "123456",
+        },
+    ];
+
+    private covidTreatmentAssessmentDetails: CovidTreatmentAssessmentDetails = {
+        hasKnownPositiveC19Past7Days: false,
+        citizenIsConsideredImmunoCompromised: false,
+        has3DoseMoreThan14Days: false,
+        hasDocumentedChronicCondition: false,
+        previousAssessmentDetailsList: this.previousAssessmentDetailsList,
+    };
 }
 </script>
 
@@ -389,8 +400,6 @@ export default class CovidCardView extends Vue {
         />
         <CovidTreatmentAssessmentComponent
             v-if="showCovidTreatmentAssessment"
-            :details="assessmentDetails"
-            :birthdate="searchResult.patient.birthdate"
             :default-address="address"
             @on-cancel="covidTreatmentAssessmentCancelled"
             @on-submit="covidTreatmentAssessmentSubmitted"
@@ -601,7 +610,7 @@ export default class CovidCardView extends Vue {
                         <v-col no-gutters>
                             <v-data-table
                                 :headers="assessmentHistoryTableHeaders"
-                                :items="assessmentHistory"
+                                :items="previousAssessmentDetailsList"
                                 :items-per-page="5"
                                 :hide-default-footer="true"
                             >

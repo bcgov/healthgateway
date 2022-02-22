@@ -19,30 +19,30 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 /// <summary>
-/// Model object representing citizen details for the COVID-19 therapy assessment.
+/// Model object representing covid therapy assessment details.
 /// </summary>
 public class CovidAssessmentDetailsResponse
 {
     /// <summary>
-    /// Gets or sets a value indicating whether the citizen has tested positive for COVID-19 in the past 7 days.
+    /// Gets or sets a value indicating whether there has been known positive covid 19 in past 70 days.
     /// </summary>
     [JsonPropertyName("hasKnownPositiveC19Past7Days")]
     public bool HasKnownPositiveC19Past7Days { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the citizen is considered immunocompromised.
+    /// Gets or sets a value indicating whether citizen is considered immuno compromised.
     /// </summary>
     [JsonPropertyName("citizenIsConsideredImmunoCompromised")]
     public bool CitizenIsConsideredImmunoCompromised { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the citizen has had 3 vaccine doses for more than 14 days.
+    /// Gets or sets a value indicating whether there has been 3 doses in more than 14 days.
     /// </summary>
     [JsonPropertyName("has3DoseMoreThan14Days")]
     public bool Has3DoseMoreThan14Days { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the citizen has a documented chronic condition.
+    /// Gets or sets a value indicating whether there has been a documented chronic condition.
     /// </summary>
     [JsonPropertyName("hasDocumentedChronicCondition")]
     public bool HasDocumentedChronicCondition { get; set; }
