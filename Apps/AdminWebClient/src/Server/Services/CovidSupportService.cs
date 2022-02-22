@@ -406,7 +406,6 @@ namespace HealthGateway.Admin.Services
                 case HttpStatusCode.OK:
                     requestResult.ResultStatus = ResultType.Success;
                     requestResult.ResourcePayload = response.Content;
-                    requestResult.TotalResultCount = 1;
                     break;
 
                 // Only GetCovidAssessmentDetailsAsync can return HttpStatusCode.NoContent
