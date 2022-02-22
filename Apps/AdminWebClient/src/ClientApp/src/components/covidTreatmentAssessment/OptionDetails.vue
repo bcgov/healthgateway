@@ -7,8 +7,7 @@ import { CovidTreatmentAssessmentOption } from "@/constants/covidTreatmentAssess
 export default class OptionDetails extends Vue {
     @Prop({ required: true }) value!: CovidTreatmentAssessmentOption;
     @Prop({ required: false, default: false }) hasNotSureOption!: boolean;
-    @Prop({ required: false, default: false })
-    showMessageWhenNoIsSelected!: boolean;
+    @Prop({ required: false, default: false }) hasAdditionalResponse!: boolean;
 
     private get options(): CovidTreatmentAssessmentOption[] {
         let options = [
@@ -34,7 +33,11 @@ export default class OptionDetails extends Vue {
         }
     }
 
-    private get hasSelectedNo(): boolean {
+    private get hasOptionBenefit(): boolean {
+        return this.value === CovidTreatmentAssessmentOption.Yes;
+    }
+
+    private get hasOptionNoBenefit(): boolean {
         return this.value === CovidTreatmentAssessmentOption.No;
     }
 
@@ -55,11 +58,17 @@ export default class OptionDetails extends Vue {
                 @change="optionChange(option)"
             />
         </v-radio-group>
-        <div
-            v-if="showMessageWhenNoIsSelected && hasSelectedNo"
-            class="option-message-color"
-        >
-            Citizen would likely not benefit from COVID-19 treatment.
+        <div v-if="hasAdditionalResponse">
+            <div v-if="hasOptionBenefit">
+                <span class="option-message-color">
+                    Citizen may benefit from COVID-19 treatment.
+                </span>
+            </div>
+            <div v-if="hasOptionNoBenefit">
+                <span class="option-message-color">
+                    Citizen would likely not benefit from COVID-19 treatment.
+                </span>
+            </div>
         </div>
     </div>
 </template>
