@@ -28,8 +28,6 @@ export class OpenIdConnectConfiguration {
 
 // Configuration data to be used by the Health Gateway Admin client.
 export class AdminClientConfiguration {
-    // Gets or sets the the enabled states of each toggleable feature.
-    public features?: { [id: string]: boolean };
     // Gets or sets the logging level used by the Admin.
     public logLevel?: string;
     // Gets or sets the Admin timeout values.

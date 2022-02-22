@@ -8,14 +8,12 @@ import {
 import { saveAs } from "file-saver";
 import { ValidationObserver } from "vee-validate";
 import { Component, Vue } from "vue-property-decorator";
-import { Getter } from "vuex-class";
 
 import AddressComponent from "@/components/core/Address.vue";
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import LoadingComponent from "@/components/core/Loading.vue";
 import CovidTreatmentAssessmentComponent from "@/components/covidTreatmentAssessment/CovidTreatmentAssessment.vue";
 import { Countries } from "@/constants/countries";
-import { Feature } from "@/constants/feature";
 import { Provinces } from "@/constants/provinces";
 import { ResultType } from "@/constants/resulttype";
 import { SnackbarPosition } from "@/constants/snackbarPosition";
@@ -64,9 +62,6 @@ const emptyAddress: Address = {
     },
 })
 export default class CovidCardView extends Vue {
-    @Getter("features", { namespace: "config" })
-    private features!: { [id: string]: boolean };
-
     private isEditMode = false;
     private isLoading = false;
     private showFeedback = false;
@@ -100,10 +95,6 @@ export default class CovidCardView extends Vue {
         { text: "Time", value: "timeOfAssessment" },
         { text: "ID", value: "formId" },
     ];
-
-    private get covid19TreatmentAssessmentEnabled(): boolean {
-        return this.features[Feature.Covid19TreatmentAssessment] === true;
-    }
 
     private get patientName(): string {
         return `${this.searchResult?.patient?.firstname} ${this.searchResult?.patient?.lastname}`;
@@ -153,7 +144,7 @@ export default class CovidCardView extends Vue {
     private handleRefresh() {
         if (this.activePhn) {
             this.clear(false);
-            this.search(true);
+            this.search(this.activePhn, true);
         }
     }
 
@@ -170,23 +161,19 @@ export default class CovidCardView extends Vue {
             return;
         }
         this.activePhn = phnDigits;
-        this.search(false);
+        this.search(phnDigits, false);
     }
 
-    private search(refresh: boolean) {
+    private search(personalHealthNumber: string, refresh: boolean) {
         this.isLoading = true;
 
-        let assessmentDetailsPromise = Promise.resolve();
-        if (this.covid19TreatmentAssessmentEnabled) {
-            assessmentDetailsPromise =
-                this.getCovidTreatmentAssessmentDetails();
-        }
-
         Promise.all([
-            this.covidSupportService.getPatient(this.activePhn, refresh),
-            assessmentDetailsPromise,
+            this.covidSupportService.getPatient(personalHealthNumber, refresh),
+            this.covidSupportService.getCovidTreatmentAssessmentDetails(
+                personalHealthNumber
+            ),
         ])
-            .then(([searchResult]) => {
+            .then(([searchResult, assessmentDetails]) => {
                 if (searchResult.blocked) {
                     this.searchResult = null;
                     this.showBannerFeedback({
@@ -222,6 +209,22 @@ export default class CovidCardView extends Vue {
                         }
                         return firstDate.isAfter(secondDate) ? -1 : 0;
                     });
+
+                    this.assessmentDetails = assessmentDetails;
+                    this.assessmentHistory =
+                        this.assessmentDetails.previousAssessmentDetailsList?.map(
+                            (entry) => {
+                                const date = new DateWrapper(
+                                    entry.dateTimeOfAssessment,
+                                    { hasTime: true, isUtc: true }
+                                );
+                                return {
+                                    dateOfAssessment: date.format(),
+                                    timeOfAssessment: date.format("h:mm a"),
+                                    formId: entry.formId,
+                                };
+                            }
+                        ) ?? [];
                 }
             })
             .catch(() => {
@@ -235,29 +238,6 @@ export default class CovidCardView extends Vue {
             .finally(() => {
                 this.isLoading = false;
             });
-    }
-
-    private async getCovidTreatmentAssessmentDetails(): Promise<void> {
-        const assessmentDetails =
-            await this.covidSupportService.getCovidTreatmentAssessmentDetails(
-                this.activePhn
-            );
-
-        this.assessmentDetails = assessmentDetails;
-        this.assessmentHistory =
-            this.assessmentDetails.previousAssessmentDetailsList?.map(
-                (entry) => {
-                    const date = new DateWrapper(entry.dateTimeOfAssessment, {
-                        hasTime: true,
-                        isUtc: true,
-                    });
-                    return {
-                        dateOfAssessment: date.format(),
-                        timeOfAssessment: date.format("h:mm a"),
-                        formId: entry.formId,
-                    };
-                }
-            ) ?? [];
     }
 
     private setAddress(
@@ -401,42 +381,22 @@ export default class CovidCardView extends Vue {
         this.showCovidTreatmentAssessment = false;
     }
 
-    private covidTreatmentAssessmentSubmitted(): void {
-        this.isLoading = true;
-    }
-
     private covidTreatmentAssessmentSubmissionSucceeded(): void {
+        this.showBannerFeedback({
+            type: ResultType.Success,
+            title: "Success",
+            message: "COVID-19 treatment assessment submitted successfully.",
+        });
         this.showCovidTreatmentAssessment = false;
-
-        this.getCovidTreatmentAssessmentDetails()
-            .then(() => {
-                this.showBannerFeedback({
-                    type: ResultType.Success,
-                    title: "Success",
-                    message:
-                        "COVID-19 treatment assessment submitted successfully.",
-                });
-            })
-            .catch(() => {
-                this.showBannerFeedback({
-                    type: ResultType.Warning,
-                    title: "Warning",
-                    message:
-                        "COVID-19 treatment assessment submitted successfully, but updated assessment history could not be retrieved.",
-                });
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
+        this.search(this.activePhn, true);
     }
 
     private covidTreatmentAssessmentSubmissionFailed(): void {
         this.showBannerFeedback({
             type: ResultType.Error,
             title: "Error",
-            message: "Unable to submit COVID-19 treatment assessment.",
+            message: "Unable to submit COVID-19 treatment assessment",
         });
-        this.isLoading = false;
     }
 
     private showBannerFeedback(bannerFeedback: BannerFeedback): void {
@@ -455,18 +415,15 @@ export default class CovidCardView extends Vue {
             :position="snackbarPosition"
         />
         <CovidTreatmentAssessmentComponent
-            v-if="
-                covid19TreatmentAssessmentEnabled &&
-                showCovidTreatmentAssessment
-            "
+            v-if="showCovidTreatmentAssessment"
             :details="assessmentDetails"
             :patient="searchResult.patient"
             :default-address="address"
             @on-cancel="covidTreatmentAssessmentCancelled"
-            @on-submit="covidTreatmentAssessmentSubmitted"
             @on-submit-success="covidTreatmentAssessmentSubmissionSucceeded"
             @on-submit-failure="covidTreatmentAssessmentSubmissionFailed"
         />
+
         <v-row v-else no-gutters>
             <v-col cols="12" sm="12" md="10" offset-md="1">
                 <form @submit.prevent="handleSearch()">
@@ -656,31 +613,37 @@ export default class CovidCardView extends Vue {
                                 </v-btn>
                             </v-col>
                         </v-row>
-                        <v-row v-if="covid19TreatmentAssessmentEnabled" dense>
-                            <v-col cols="12" class="text-right">
+                        <v-row dense>
+                            <v-col class="text-right">
                                 <v-btn
                                     type="submit"
                                     class="mx-2 success"
                                     @click="startCovidTreatmentAssessment"
                                 >
-                                    <span>
-                                        Start COVID-19 Treatment Assessment
-                                    </span>
+                                    <span
+                                        >Start COVID-19 Treatment
+                                        Assessment</span
+                                    >
                                     <v-icon class="ml-2" size="sm">
                                         fas fa-clipboard-list
                                     </v-icon>
                                 </v-btn>
                             </v-col>
-                            <v-col cols="12">
+                        </v-row>
+                        <v-row dense>
+                            <v-col cols="auto">
                                 <h2>Assessment History</h2>
                             </v-col>
-                            <v-col cols="12" no-gutters>
+                        </v-row>
+                        <v-row dense>
+                            <v-col no-gutters>
                                 <v-data-table
                                     :headers="assessmentHistoryTableHeaders"
                                     :items="assessmentHistory"
                                     :items-per-page="5"
                                     :hide-default-footer="false"
-                                />
+                                >
+                                </v-data-table>
                             </v-col>
                         </v-row>
                     </v-form>

@@ -199,7 +199,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
 
     private submitCovidTreatmentAssessment(): void {
         this.populateRequest();
-        this.$emit("on-submit");
         this.covidSupportService
             .submitCovidTreatmentAssessment(
                 this.covidTreatmentAssessmentRequest
@@ -211,6 +210,9 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
             .catch((err) => {
                 this.$emit("on-submit-failure");
                 console.log(err);
+            })
+            .finally(() => {
+                console.log("finally");
             });
     }
 
