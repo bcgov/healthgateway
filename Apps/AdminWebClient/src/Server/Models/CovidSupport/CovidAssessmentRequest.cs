@@ -92,6 +92,12 @@ public class CovidAssessmentRequest
     public CovidTherapyAssessmentOption ConfirmsOver12 { get; set; }
 
     /// <summary>
+    /// Gets or sets the tested positive in past 7 days.
+    /// </summary>
+    [JsonPropertyName("testedPositiveInPast7Days")]
+    public CovidTherapyAssessmentOption TestedPositiveInPast7Days { get; set; }
+
+    /// <summary>
     /// Gets or sets the has severe covid 19 symptoms option.
     /// </summary>
     [JsonPropertyName("hasSevereCovid19Symptoms")]
