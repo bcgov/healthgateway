@@ -1,10 +1,6 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-    faClipboardList,
-    faEye,
-    faEyeSlash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import { Component, Vue, Watch } from "vue-property-decorator";
 
@@ -27,7 +23,7 @@ import { Mask, phnMask, postalCodeMask, zipCodeMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
 import SnowPlow from "@/utility/snowPlow";
 
-library.add(faEye, faEyeSlash, faClipboardList);
+library.add(faEye, faEyeSlash);
 
 interface ImmunizationRow {
     date: string;
@@ -90,20 +86,6 @@ export default class CovidCardView extends Vue {
         },
     ];
 
-    private assessmentHistoryTableHeaders = [
-        {
-            text: "Date",
-            value: "date",
-        },
-        {
-            text: "Time",
-            value: "time",
-        },
-        {
-            text: "ID",
-            value: "id",
-        },
-    ];
     private get internationalDestinations(): SelectItem[] {
         // sort destinations alphabetically except place Canada and US at the top
         const destinations = Object.keys(InternationalDestinations)
@@ -676,33 +658,6 @@ export default class CovidCardView extends Vue {
                                     >fas fa-paper-plane</v-icon
                                 >
                             </v-btn>
-                        </v-col>
-                    </v-row>
-                    <v-row dense>
-                        <v-col class="text-right">
-                            <v-btn type="submit" class="mx-2 success">
-                                <span>Start COVID-19 Therapy Assessment</span>
-                                <v-icon class="ml-2" size="sm"
-                                    >fas fa-clipboard-list</v-icon
-                                >
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-                    <v-row dense>
-                        <v-col cols="auto">
-                            <h2>Assessment History</h2>
-                        </v-col>
-                    </v-row>
-                    <v-row dense>
-                        <v-col no-gutters>
-                            <v-data-table
-                                :headers="assessmentHistoryTableHeaders"
-                                :items="[]"
-                                :items-per-page="5"
-                                :hide-default-footer="true"
-                            >
-                                <span>{{}}</span>
-                            </v-data-table>
                         </v-col>
                     </v-row>
                 </v-form>
