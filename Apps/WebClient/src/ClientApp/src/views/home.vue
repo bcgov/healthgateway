@@ -124,10 +124,6 @@ export default class HomeView extends Vue {
         return this.config.modules["FederalCardButton"];
     }
 
-    private get showVaccineCardButton(): boolean {
-        return this.config.modules["VaccinationStatus"];
-    }
-
     private get cardColumnSize(): number {
         return this.showFederalCardButton ? 4 : 6;
     }
@@ -247,12 +243,7 @@ export default class HomeView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-            <b-col
-                v-if="showVaccineCardButton"
-                cols="12"
-                :lg="cardColumnSize"
-                class="p-3"
-            >
+            <b-col cols="12" :lg="cardColumnSize" class="p-3">
                 <hg-card-button
                     title="BC Vaccine Card"
                     to="/covid19"

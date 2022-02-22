@@ -74,7 +74,7 @@ describe("Login view", () => {
     test("sets default route if no redirect", () => {
         $route.query.redirect = "";
         const wrapper = createWrapper();
-        expect(wrapper.vm.$data.redirectPath).toBe("/home");
+        expect(wrapper.vm.$data.redirectPath).toBe("/timeline");
     });
 
     test("if authenticated but not registered sets router path to registration", () => {
