@@ -249,7 +249,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                         "
                                         v-mask="phoneNumberMask"
                                         dense
-                                        label="Phone Number*"
+                                        label="Phone Number"
                                     />
                                     <span class="error-message">
                                         {{ errors[0] }}
