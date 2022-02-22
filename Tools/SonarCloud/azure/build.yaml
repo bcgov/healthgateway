@@ -44,7 +44,7 @@ jobs:
             /o:bcgov-sonarcloud \
             /k:bcgov_healthgateway \
             /n:"HealthGateway" \
-            /d:sonar.login="$(SonarToken)" \
+            /d:sonar.login="$(SonerToken)" \
             /s:$(Build.SourcesDirectory)/Apps/sonar-config.xml
         displayName: "Begin Static Code Analysis"
         continueOnError: true
@@ -60,7 +60,7 @@ jobs:
 
       - script: |
           export DOTNET_ROLL_FORWARD=Major
-          dotnet sonarscanner end /d:sonar.login="$(SonarToken)"
+          dotnet sonarscanner end /d:sonar.login="$(SonerToken)"
           echo "$@" >&2
         displayName: "End Static Code Analysis"
         continueOnError: true
