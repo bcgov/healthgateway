@@ -18,6 +18,7 @@ import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
 import HgTimeDropdownComponent from "@/components/shared/hgTimeDropdown.vue";
+import { ActionType } from "@/constants/actionType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { PcrDataSource } from "@/constants/pcrTestDataSource";
 import { IdentityProviderConfiguration } from "@/models/configData";
@@ -116,13 +117,18 @@ export default class PcrTestView extends Vue {
 
     private bcsclogo: string = Image06;
 
+    private errorMessage = "";
+
     private testTakenMinutesAgoValues = [
         { value: 5, text: "Just now" },
         { value: 30, text: "Within 30 minutes" },
         { value: 120, text: "Within 2 hours" },
+        { value: 240, text: "Within 4 hours" },
         { value: 360, text: "Within 6 hours" },
+        { value: 480, text: "Within 8 hours" },
+        { value: 720, text: "Within 12 hours" },
+        { value: 1080, text: "Within 18 hours" },
         { value: 1440, text: "Within 24 hours" },
-        { value: 4320, text: "Within 36 hours" },
     ];
 
     private pcrTest: PcrTestData = {
@@ -304,7 +310,7 @@ export default class PcrTestView extends Vue {
     }
 
     private testKitCodeValidator(value: string): boolean {
-        const pattern = /^([A-Z\d]{7})-([A-Z\d]{5})$|^$/;
+        const pattern = /^([a-zA-Z\d]{7})-([a-zA-Z\d]{5})$|^$/;
         return pattern.test(value);
     }
 
@@ -369,6 +375,7 @@ export default class PcrTestView extends Vue {
     // ### Form Actions ###
     private handleSubmit() {
         this.$v.$touch();
+        this.errorMessage = "";
         if (this.$v.$invalid) {
             return;
         }
@@ -410,13 +417,7 @@ export default class PcrTestView extends Vue {
                         this.registrationComplete = true;
                     })
                     .catch((err: ResultError) => {
-                        this.logger.error(`registerTestKit Error: ${err}`);
-                        this.addCustomError({
-                            title: "Unable to register test kit",
-                            source: ErrorSourceType.TestKit,
-                            traceId: err.traceId,
-                        });
-                        this.loading = false;
+                        this.handleError(err, "registerTestKit");
                     });
                 break;
             // ### Submitted through manual input
@@ -455,20 +456,26 @@ export default class PcrTestView extends Vue {
                         this.registrationComplete = true;
                     })
                     .catch((err: ResultError) => {
-                        this.logger.error(
-                            `registerTestKitPublic Error: ${err}`
-                        );
-                        this.addCustomError({
-                            title: "Unable to register test kit",
-                            source: ErrorSourceType.TestKit,
-                            traceId: err.traceId,
-                        });
-                        this.loading = false;
+                        this.handleError(err, "registerTestKitPublic");
                     });
                 break;
             default:
                 break;
         }
+    }
+
+    private handleError(err: ResultError, domain: string) {
+        this.logger.error(`${domain} Error: ${err}`);
+        if (err.actionCode == ActionType.Processed) {
+            this.errorMessage = err.resultMessage;
+        } else {
+            this.addCustomError({
+                title: "Unable to register test kit",
+                source: ErrorSourceType.TestKit,
+                traceId: err.traceId,
+            });
+        }
+        this.loading = false;
     }
 
     private resetForm() {
@@ -515,7 +522,7 @@ export default class PcrTestView extends Vue {
     <div>
         <!-- LANDING -->
         <b-container v-if="isLoading">
-            <LoadingComponent :is-loading="isLoading" :is-custom="true" />
+            <LoadingComponent :is-loading="isLoading" />
         </b-container>
         <b-container
             v-if="
@@ -597,6 +604,21 @@ export default class PcrTestView extends Vue {
                     </h1>
                 </b-col>
             </b-row>
+            <b-row v-if="!!errorMessage" id="processError" class="pt-3">
+                <b-col>
+                    <b-alert
+                        data-testid="alreadyProcessedBanner"
+                        variant="warning"
+                        dismissible
+                        class="no-print"
+                        :show="true"
+                    >
+                        <p data-testid="alreadyProcessedText">
+                            {{ errorMessage }}
+                        </p>
+                    </b-alert>
+                </b-col>
+            </b-row>
             <b-row>
                 <b-col>
                     <form @submit.prevent="handleSubmit">
@@ -629,7 +651,7 @@ export default class PcrTestView extends Vue {
                                         !$v.pcrTest.testKitCode.required
                                     "
                                     aria-label="PCR Test Kit Code is required"
-                                    data-testid="test-kit-code-is-required"
+                                    data-testid="feedback-testkitcode-is-required"
                                 >
                                     PCR Test Kit Code is required.
                                 </b-form-invalid-feedback>
@@ -639,7 +661,7 @@ export default class PcrTestView extends Vue {
                                         !$v.pcrTest.testKitCode.formatted
                                     "
                                     aria-label="PCR Test Kit Code is invalid"
-                                    data-testid="test-kit-code-is-invalid"
+                                    data-testid="feedback-testkitcode-is-invalid"
                                 >
                                     PCR Test Kit Code is invalid.
                                 </b-form-invalid-feedback>
@@ -675,6 +697,7 @@ export default class PcrTestView extends Vue {
                                             "
                                             aria-label="First name is required"
                                             force-show
+                                            data-testid="feedback-firstname-is-required"
                                         >
                                             First name is required.
                                         </b-form-invalid-feedback>
@@ -705,6 +728,7 @@ export default class PcrTestView extends Vue {
                                             "
                                             aria-label="Last name is required"
                                             force-show
+                                            data-testid="feedback-lastname-is-required"
                                         >
                                             Last name is required.
                                         </b-form-invalid-feedback>
@@ -740,6 +764,7 @@ export default class PcrTestView extends Vue {
                                             <b-form-invalid-feedback
                                                 aria-label="Valid PHN is required"
                                                 :state="isValid($v.pcrTest.phn)"
+                                                data-testid="feedback-phn-is-required"
                                             >
                                                 Valid PHN is required.
                                             </b-form-invalid-feedback>
@@ -822,6 +847,7 @@ export default class PcrTestView extends Vue {
                                             "
                                             aria-label="Street address is required"
                                             force-show
+                                            data-testid="feedback-streetaddress-is-required"
                                         >
                                             Street address is required.
                                         </b-form-invalid-feedback>
@@ -848,6 +874,7 @@ export default class PcrTestView extends Vue {
                                             "
                                             aria-label="City is required"
                                             force-show
+                                            data-testid="feedback-city-is-required"
                                         >
                                             City is required.
                                         </b-form-invalid-feedback>
@@ -855,14 +882,12 @@ export default class PcrTestView extends Vue {
                                 </b-row>
                                 <b-row class="mt-2">
                                     <b-col>
-                                        <label for="pcrZip"
-                                            >Postal Code / ZIP</label
-                                        >
+                                        <label for="pcrZip">Postal Code</label>
                                         <b-form-input
                                             id="pcrZip"
                                             v-model="pcrTest.postalOrZip"
                                             v-mask="'A#A #A#'"
-                                            data-testid="pcr-zip--input"
+                                            data-testid="pcr-zip-input"
                                             type="text"
                                             placeholder="Postal Code"
                                             :state="
@@ -879,6 +904,7 @@ export default class PcrTestView extends Vue {
                                             "
                                             aria-label="Postal code is required"
                                             force-show
+                                            data-testid="feedback-postal-is-required"
                                         >
                                             Postal code is required.
                                         </b-form-invalid-feedback>
@@ -932,6 +958,7 @@ export default class PcrTestView extends Vue {
                                         "
                                         aria-label="Invalid Date of Birth"
                                         force-show
+                                        data-testid="feedback-dob-is-invalid"
                                     >
                                         Date of birth must be in the past.
                                     </b-form-invalid-feedback>
@@ -947,7 +974,9 @@ export default class PcrTestView extends Vue {
                                 <b-row class="mt-2">
                                     <b-col>
                                         <label for="pcrMobileNumber"
-                                            >Mobile Number (optional)
+                                            >Mobile Number (To receive a
+                                            notification once your COVID-19 test
+                                            result is available)
                                         </label>
                                         <b-form-input
                                             id="pcrMobileNumber"
@@ -978,6 +1007,7 @@ export default class PcrTestView extends Vue {
                                             "
                                             aria-label="Phone number must be valid."
                                             force-show
+                                            data-testid="feedback-phonenumber-valid"
                                         >
                                             Phone number must be valid.
                                         </b-form-invalid-feedback>
@@ -1013,8 +1043,9 @@ export default class PcrTestView extends Vue {
                                             !$v.pcrTest.testTakenMinutesAgo
                                                 .minValue)
                                     "
-                                    aria-label="Postal code is required"
+                                    aria-label=" Time since test taken is required"
                                     force-show
+                                    data-testid="feedback-testtaken-is-required"
                                 >
                                     Time since test taken is required.
                                 </b-form-invalid-feedback>
@@ -1109,7 +1140,20 @@ export default class PcrTestView extends Vue {
                         <span>
                             Your kit has been registered to your profile.
                         </span>
-                        <div class="pt-2">
+                        <div v-if="oidcIsAuthenticated" class="pt-2">
+                            <router-link to="/logout">
+                                <hg-button
+                                    id="logoutBtn"
+                                    aria-label="Logout"
+                                    data-testid="logoutBtn"
+                                    variant="link"
+                                    class="continue-button"
+                                >
+                                    <span>Log out</span>
+                                </hg-button>
+                            </router-link>
+                        </div>
+                        <div v-else class="pt-2">
                             <router-link to="/">
                                 <hg-button
                                     id="btn-continue"

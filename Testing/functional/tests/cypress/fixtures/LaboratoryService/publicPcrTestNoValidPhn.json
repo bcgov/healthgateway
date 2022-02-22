@@ -1,0 +1,21 @@
+{
+    "resourcePayload": {
+        "phn": "",
+        "dob": "1928-07-08T00:00:00",
+        "firstName": "ZELDA",
+        "lastName": "BCYPCST",
+        "testTakenMinutesAgo": 360,
+        "testKitCid": "",
+        "shortCodeFirst": "45YFKE7",
+        "shortCodeSecond": "LEKT3",
+        "contactPhoneNumber": "7782223693",
+        "streetAddress": "4082 East 2nd Avenue",
+        "city": "Vancouver",
+        "postalOrZip": "V5M 1E7"
+    },
+    "totalResultCount": 0,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 1,
+    "resultError": null
+}

@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Services
 {
+    using System.Globalization;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -55,6 +56,8 @@ namespace HealthGateway.Laboratory.Services
         public async Task<RequestResult<PublicLabTestKit>> RegisterLabTestKitAsync(PublicLabTestKit testKit)
         {
             RequestResult<PublicLabTestKit> requestResult = InitializeResult<PublicLabTestKit>(testKit);
+            testKit.ShortCodeFirst = testKit.ShortCodeFirst?.ToUpper(CultureInfo.InvariantCulture);
+            testKit.ShortCodeSecond = testKit.ShortCodeSecond?.ToUpper(CultureInfo.InvariantCulture);
             bool validated;
             if (!string.IsNullOrEmpty(testKit.Phn))
             {
@@ -157,7 +160,7 @@ namespace HealthGateway.Laboratory.Services
                     requestResult.ResultStatus = ResultType.Success;
                     break;
                 case HttpStatusCode.Conflict:
-                    requestResult.ResultError = ErrorTranslator.ActionRequired("The identified lab test has already been registered", ActionType.Processed);
+                    requestResult.ResultError = ErrorTranslator.ActionRequired("This test kit has already been registered", ActionType.Processed);
                     requestResult.ResultStatus = ResultType.ActionRequired;
                     break;
                 case HttpStatusCode.UnprocessableEntity:

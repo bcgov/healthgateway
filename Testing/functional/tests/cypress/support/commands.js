@@ -105,7 +105,7 @@ Cypress.Commands.add(
                         let callBackQS = response.headers["location"];
                         const callbackURL = `${callBackQS}`;
                         cy.log(`Visiting Callback ${callBackQS}`, response);
-                        cy.visit(callbackURL);
+                        cy.visit(callbackURL, { timeout: 60000 });
                         // Wait for cookies are set before store them in cypress.
                         cy.get("[data-testid=headerDropdownBtn]").should(
                             "be.visible"
@@ -234,7 +234,7 @@ Cypress.Commands.add("readConfig", () => {
 });
 
 Cypress.Commands.add("checkTimelineHasLoaded", () => {
-    cy.get("#subject").should("have.text", "Timeline");
+    cy.get("#subject").should("be.visible").and("have.text", "Timeline");
     cy.get("[data-testid=loading-in-progress]").should("not.exist");
 });
 

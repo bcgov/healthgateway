@@ -11,9 +11,6 @@ trigger:
     include:
       - Apps/CommonData
 
-pool:
-  name: "HealthGateway"
-
 extends:
   template: /Build/hg.yaml
   parameters:

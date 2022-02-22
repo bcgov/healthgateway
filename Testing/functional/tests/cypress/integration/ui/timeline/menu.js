@@ -50,7 +50,7 @@ describe("Menu System", () => {
         );
         cy.get("[data-testid=logoutBtn]")
             .should("be.visible")
-            .should("have.text", "Logout");
+            .should("have.text", "Log out");
         cy.get("[data-testid=logoutDropDownIcon]").should("be.visible");
     });
 
@@ -74,7 +74,7 @@ describe("Menu System", () => {
         );
         cy.get("[data-testid=logoutBtn]")
             .should("be.visible")
-            .should("have.text", "Logout");
+            .should("have.text", "Log out");
         cy.get("[data-testid=logoutDropDownIcon]").should("be.visible");
     });
 

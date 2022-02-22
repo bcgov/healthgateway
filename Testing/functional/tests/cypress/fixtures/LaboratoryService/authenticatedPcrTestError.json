@@ -1,0 +1,17 @@
+{
+    "resourcePayload": {
+        "testTakenMinutesAgo": 5,
+        "testKitCid": null,
+        "shortCodeFirst": "45YFKE7",
+        "shortCodeSecond": "XWRQN"
+    },
+    "totalResultCount": 0,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 0,
+    "resultError": {
+        "resultMessage": "Error - bad things",
+        "errorCode": "ErrorCode",
+        "traceId": "traceId"
+    }
+}

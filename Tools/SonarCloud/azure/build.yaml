@@ -7,8 +7,12 @@ schedules:
       include:
         - dev
 pool:
-  name: "HealthGateway"
+  vmImage: "ubuntu-20.04"
 
+variables:
+  - group: Secrets
+  - name: SONARSCANNER_VERSION
+    value: 5.3.2
 jobs:
   - job: AnalyzeProjects
     timeoutInMinutes: 120
@@ -22,6 +26,7 @@ jobs:
         enabled: true
 
       - script: |
+          dotnet tool install --global dotnet-sonarscanner --version $(SONARSCANNER_VERSION)
           dotnet test \
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
@@ -39,7 +44,7 @@ jobs:
             /o:bcgov-sonarcloud \
             /k:bcgov_healthgateway \
             /n:"HealthGateway" \
-            /d:sonar.login="$(common.login)" \
+            /d:sonar.login="$(SonarToken)" \
             /s:$(Build.SourcesDirectory)/Apps/sonar-config.xml
         displayName: "Begin Static Code Analysis"
         continueOnError: true
@@ -55,14 +60,9 @@ jobs:
 
       - script: |
           export DOTNET_ROLL_FORWARD=Major
-          dotnet sonarscanner end /d:sonar.login="$(common.login)"
+          dotnet sonarscanner end /d:sonar.login="$(SonarToken)"
           echo "$@" >&2
         displayName: "End Static Code Analysis"
         continueOnError: true
         workingDirectory: $(Build.SourcesDirectory)/Apps/
         enabled: "true"
-
-      - script: |
-          curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"SonarCloud Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
-        displayName: "On Fail"
-        condition: failed()

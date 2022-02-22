@@ -12,9 +12,6 @@ pr:
 
 trigger: none
 
-pool:
-  name: "HealthGateway"
-
 extends:
   template: /Build/hg.yaml
   parameters:
