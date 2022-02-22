@@ -44,7 +44,7 @@ jobs:
             /o:bcgov-sonarcloud \
             /k:bcgov_healthgateway \
             /n:"HealthGateway" \
-            /d:sonar.login="$(SonerToken)" \
+            /d:sonar.login="$(common.login)" \
             /s:$(Build.SourcesDirectory)/Apps/sonar-config.xml
         displayName: "Begin Static Code Analysis"
         continueOnError: true
