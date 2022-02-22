@@ -39,7 +39,6 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Refit;
@@ -339,7 +338,7 @@ namespace HealthGateway.Admin.Services
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
             try
             {
-                IApiResponse<CovidAssessmentResponse> response =
+                ApiResponse<CovidAssessmentResponse> response =
                     await this.immunizationAdminClient.SubmitCovidAssessment(request, accessToken).ConfigureAwait(true);
                 ProcessResponse(requestResult, response);
             }
@@ -376,7 +375,7 @@ namespace HealthGateway.Admin.Services
                 string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
                 try
                 {
-                    IApiResponse<CovidAssessmentDetailsResponse> response =
+                    ApiResponse<CovidAssessmentDetailsResponse> response =
                         await this.immunizationAdminClient.GetCovidAssessmentDetails(new CovidAssessmentDetailsRequest() { Phn = phn, }, accessToken).ConfigureAwait(true);
                     ProcessResponse(requestResult, response);
                 }
@@ -399,7 +398,7 @@ namespace HealthGateway.Admin.Services
             return requestResult;
         }
 
-        private static void ProcessResponse<T>(RequestResult<T> requestResult, IApiResponse<T> response)
+        private static void ProcessResponse<T>(RequestResult<T> requestResult, ApiResponse<T> response)
             where T : class
         {
             switch (response.StatusCode)
