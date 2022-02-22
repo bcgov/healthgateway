@@ -16,9 +16,6 @@ import type CovidTreatmentAssessmentDetails from "@/models/covidTreatmentAssessm
 import type CovidTreatmentAssessmentRequest from "@/models/covidTreatmentAssessmentRequest";
 import { DateWrapper } from "@/models/dateWrapper";
 import type PatientData from "@/models/patientData";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { ICovidSupportService } from "@/services/interfaces";
 import { Mask, phoneNumberMaskTemplate } from "@/utility/masks";
 
 library.add(faEye, faEyeSlash);
@@ -60,7 +57,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
     @Prop({ required: true }) details!: CovidTreatmentAssessmentDetails;
     @Prop({ required: true }) defaultAddress!: Address;
     @Prop({ required: true }) patient!: PatientData;
-    private covidSupportService!: ICovidSupportService;
 
     private address: Address = {
         streetLines: [],
@@ -72,7 +68,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
     private isEditingAddress = false;
     private today = DateTime.local();
     private dailyDataDatesModal = false;
-    private hasMildOrModerateCovid19SymptomsValue = "";
 
     private covidTreatmentAssessmentRequest: CovidTreatmentAssessmentRequest = {
         phn: "",
@@ -92,22 +87,15 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         hasChronicConditionDiagnoses:
             CovidTreatmentAssessmentOption.Unspecified,
         agentComments: "",
-        streetAddress: [],
+        streetAddress: "",
         provOrState: "",
         postalCode: "",
         country: "",
         changeAddressFlag: false,
-        positiveCovidLabData: "",
-        covidVaccinationHistory: "",
-        cevGroupDetails: "",
-        submitted: new DateWrapper().toISODate(),
     };
 
     private mounted(): void {
         this.address = { ...this.defaultAddress };
-        this.covidSupportService = container.get(
-            SERVICE_IDENTIFIER.CovidSupportService
-        );
     }
 
     private resetCovidTreatmentAssessmentRequest(): CovidTreatmentAssessmentRequest {
@@ -131,7 +119,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
             hasChronicConditionDiagnoses:
                 CovidTreatmentAssessmentOption.Unspecified,
             agentComments: "",
-            streetAddress: [],
+            streetAddress: "",
             provOrState: "",
             postalCode: "",
             country: "",
@@ -150,14 +138,10 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
     }
 
     private get patientFullName(): string {
-        this.covidTreatmentAssessmentRequest.firstName = this.patient.firstname;
-        this.covidTreatmentAssessmentRequest.lastName = this.patient.lastname;
         return `${this.patient.firstname} ${this.patient.lastname} `;
     }
 
     private get patientPersonalHealthNumber(): string {
-        this.covidTreatmentAssessmentRequest.phn =
-            this.patient.personalhealthnumber;
         return this.patient.personalhealthnumber;
     }
 
@@ -193,53 +177,14 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         }
     }
 
-    private setAddressRequest(): void {
-        this.covidTreatmentAssessmentRequest.country = this.address.country;
-        this.covidTreatmentAssessmentRequest.postalCode =
-            this.address.postalCode;
-        this.covidTreatmentAssessmentRequest.provOrState = this.address.state;
-        this.covidTreatmentAssessmentRequest.streetAddress =
-            this.address.streetLines;
-    }
-
-    private setHasMildOrModerateCovid19SymptomsValue(): void {
-        if (this.hasMildOrModerateCovid19SymptomsValue === "Yes") {
-            this.covidTreatmentAssessmentRequest.hasMildOrModerateCovid19Symptoms =
-                true;
-        }
-        this.covidTreatmentAssessmentRequest.hasMildOrModerateCovid19Symptoms =
-            false;
-    }
-    private submitCovidTreatmentAssessment(): void {
-        this.setAddressRequest();
-        this.setHasMildOrModerateCovid19SymptomsValue();
-        this.covidSupportService
-            .submitCovidTreatmentAssessment(
-                this.covidTreatmentAssessmentRequest
-            )
-            .then((string) => {
-                this.$emit("on-submit-success");
-                console.log(string);
-            })
-            .catch((err) => {
-                this.$emit("on-submit-failure");
-                console.log(err);
-            })
-            .finally(() => {
-                console.log("finally");
-            });
-    }
-
     private async onSubmit() {
         if (this.$refs.observer !== undefined) {
             const isValid = await (
                 this.$refs.observer as Vue & { validate: () => boolean }
             ).validate();
             if (isValid) {
-                console.log("test");
-                this.submitCovidTreatmentAssessment();
+                this.$emit("on-submit-success");
             } else {
-                this.$emit("on-submit-failure");
                 console.log("Error validation");
             }
         }
@@ -404,7 +349,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                         >
                             <OptionDetails
                                 :value.sync="
-                                    hasMildOrModerateCovid19SymptomsValue
+                                    covidTreatmentAssessmentRequest.hasMildOrModerateCovid19Symptoms
                                 "
                                 :has-not-sure-option="true"
                                 :show-message-when-no-is-selected="true"
