@@ -629,7 +629,7 @@ export default class PcrTestView extends Vue {
                                         !$v.pcrTest.testKitCode.required
                                     "
                                     aria-label="PCR Test Kit Code is required"
-                                    data-testid="feedback-testkitcode-is-required"
+                                    data-testid="test-kit-code-is-required"
                                 >
                                     PCR Test Kit Code is required.
                                 </b-form-invalid-feedback>
@@ -639,7 +639,7 @@ export default class PcrTestView extends Vue {
                                         !$v.pcrTest.testKitCode.formatted
                                     "
                                     aria-label="PCR Test Kit Code is invalid"
-                                    data-testid="feedback-testkitcode-is-invalid"
+                                    data-testid="test-kit-code-is-invalid"
                                 >
                                     PCR Test Kit Code is invalid.
                                 </b-form-invalid-feedback>
@@ -675,7 +675,6 @@ export default class PcrTestView extends Vue {
                                             "
                                             aria-label="First name is required"
                                             force-show
-                                            data-testid="feedback-firstname-is-required"
                                         >
                                             First name is required.
                                         </b-form-invalid-feedback>
@@ -706,7 +705,6 @@ export default class PcrTestView extends Vue {
                                             "
                                             aria-label="Last name is required"
                                             force-show
-                                            data-testid="feedback-lastname-is-required"
                                         >
                                             Last name is required.
                                         </b-form-invalid-feedback>
@@ -742,7 +740,6 @@ export default class PcrTestView extends Vue {
                                             <b-form-invalid-feedback
                                                 aria-label="Valid PHN is required"
                                                 :state="isValid($v.pcrTest.phn)"
-                                                data-testid="feedback-phn-is-required"
                                             >
                                                 Valid PHN is required.
                                             </b-form-invalid-feedback>
@@ -825,7 +822,6 @@ export default class PcrTestView extends Vue {
                                             "
                                             aria-label="Street address is required"
                                             force-show
-                                            data-testid="feedback-streetaddress-is-required"
                                         >
                                             Street address is required.
                                         </b-form-invalid-feedback>
@@ -852,7 +848,6 @@ export default class PcrTestView extends Vue {
                                             "
                                             aria-label="City is required"
                                             force-show
-                                            data-testid="feedback-city-is-required"
                                         >
                                             City is required.
                                         </b-form-invalid-feedback>
@@ -867,7 +862,7 @@ export default class PcrTestView extends Vue {
                                             id="pcrZip"
                                             v-model="pcrTest.postalOrZip"
                                             v-mask="'A#A #A#'"
-                                            data-testid="pcr-zip-input"
+                                            data-testid="pcr-zip--input"
                                             type="text"
                                             placeholder="Postal Code"
                                             :state="
@@ -884,7 +879,6 @@ export default class PcrTestView extends Vue {
                                             "
                                             aria-label="Postal code is required"
                                             force-show
-                                            data-testid="feedback-postal-is-required"
                                         >
                                             Postal code is required.
                                         </b-form-invalid-feedback>
@@ -938,7 +932,6 @@ export default class PcrTestView extends Vue {
                                         "
                                         aria-label="Invalid Date of Birth"
                                         force-show
-                                        data-testid="feedback-dob-is-invalid"
                                     >
                                         Date of birth must be in the past.
                                     </b-form-invalid-feedback>
@@ -985,7 +978,6 @@ export default class PcrTestView extends Vue {
                                             "
                                             aria-label="Phone number must be valid."
                                             force-show
-                                            data-testid="feedback-phonenumber-valid"
                                         >
                                             Phone number must be valid.
                                         </b-form-invalid-feedback>
@@ -1021,9 +1013,8 @@ export default class PcrTestView extends Vue {
                                             !$v.pcrTest.testTakenMinutesAgo
                                                 .minValue)
                                     "
-                                    aria-label=" Time since test taken is required"
+                                    aria-label="Postal code is required"
                                     force-show
-                                    data-testid="feedback-testtaken-is-required"
                                 >
                                     Time since test taken is required.
                                 </b-form-invalid-feedback>
