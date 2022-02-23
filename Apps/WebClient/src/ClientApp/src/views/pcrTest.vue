@@ -422,7 +422,6 @@ export default class PcrTestView extends Vue {
             case this.DSMANUAL:
                 const phnDigits = this.pcrTest.phn;
                 const phoneDigits = this.pcrTest.contactPhoneNumber;
-                const zipDigits = this.pcrTest.postalOrZip;
                 var testKitPublicRequest: RegisterTestKitPublicRequest = {
                     firstName: this.pcrTest.firstName,
                     lastName: this.pcrTest.lastName,
@@ -433,7 +432,7 @@ export default class PcrTestView extends Vue {
                         : "",
                     streetAddress: this.pcrTest.streetAddress,
                     city: this.pcrTest.city,
-                    postalOrZip: zipDigits ? zipDigits.replace(/\D/g, "") : "",
+                    postalOrZip: this.pcrTest.postalOrZip ?? "",
                     testTakenMinutesAgo: this.pcrTest.testTakenMinutesAgo,
                     testKitCid: this.pcrTest.testKitCid,
                     shortCodeFirst,
