@@ -568,7 +568,7 @@ export default class PcrTestView extends Vue {
                                 class="manual-enter-button"
                                 @click="setDataSource(DSMANUAL)"
                             >
-                                <span>Manually enter your information</span>
+                                Manually Enter Your Information
                             </hg-button>
                         </b-col>
                     </b-row>
@@ -769,7 +769,7 @@ export default class PcrTestView extends Vue {
                                     data-testid="phn-checkbox"
                                     @change="setHasNoPhn($event)"
                                 >
-                                    I don't have a PHN
+                                    <span>I Don't Have a PHN</span>
                                     <hg-button
                                         :id="'pcr-no-phn-info-button'"
                                         aria-label="Result Description"
@@ -958,8 +958,8 @@ export default class PcrTestView extends Vue {
                             <b-col>
                                 <b-row class="mt-2">
                                     <b-col>
-                                        <label for="pcrMobileNumber"
-                                            >Mobile Number (To receive a
+                                        <label for="pcrMobileNumber">
+                                            Mobile Number (to receive a
                                             notification once your COVID-19 test
                                             result is available)
                                         </label>
@@ -1003,10 +1003,9 @@ export default class PcrTestView extends Vue {
                         <!-- TIME SINCE TEST TAKEN -->
                         <b-row class="mt-2">
                             <b-col>
-                                <!-- Time since test taken -->
-                                <label for="testTakenMinutesAgo"
-                                    >Time since test taken</label
-                                >
+                                <label for="testTakenMinutesAgo">
+                                    Time Since Test Taken
+                                </label>
                                 <b-form-select
                                     id="testTakenMinutesAgo"
                                     v-model="pcrTest.testTakenMinutesAgo"
@@ -1028,7 +1027,7 @@ export default class PcrTestView extends Vue {
                                             !$v.pcrTest.testTakenMinutesAgo
                                                 .minValue)
                                     "
-                                    aria-label=" Time since test taken is required"
+                                    aria-label="Time since test taken is required"
                                     force-show
                                     data-testid="feedback-testtaken-is-required"
                                 >
@@ -1147,7 +1146,7 @@ export default class PcrTestView extends Vue {
                                     variant="link"
                                     class="continue-button"
                                 >
-                                    <span>Back to home</span>
+                                    Back to Home
                                 </hg-button>
                             </router-link>
                         </div>
