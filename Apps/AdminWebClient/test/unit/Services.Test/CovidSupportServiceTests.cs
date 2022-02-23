@@ -129,12 +129,6 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         [Fact]
         public void ConfirmErrorHandling()
         {
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent("Bad Payload"),
-            };
-
             MockHttpMessageHandler mockHttp = new();
             string baseEndpoint = "https://localhost";
             mockHttp.When($"{baseEndpoint}/api/v1/Support/Immunizations/AntiViralSupportDetails")
