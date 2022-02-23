@@ -24,7 +24,7 @@ export const getters: NavbarGetters = {
     isSidebarOpen(state: NavbarState): boolean {
         return state.isSidebarOpen;
     },
-    isSidebarShown: (
+    isSidebarAvailable: (
         _state: NavbarState,
         // eslint-disable-next-line
         _getters: any,
@@ -41,11 +41,5 @@ export const getters: NavbarGetters = {
         return (
             !isOffline && isAuthenticated && isValid && isRegistered && isActive
         );
-    },
-    isHeaderButtonShown(state: NavbarState): boolean {
-        return state.isHeaderButtonShown;
-    },
-    isSidebarButtonShown(state: NavbarState): boolean {
-        return state.isSidebarButtonShown;
     },
 };

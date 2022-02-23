@@ -104,6 +104,8 @@ export default class App extends Vue {
     private windowWidth = 0;
     private vaccineCardPath = "/vaccinecard";
     private covidTestPath = "/covidtest";
+    private loginCallbackPath = "/logincallback";
+    private pcrTestPath = "/pcrtest";
 
     constructor() {
         super();
@@ -150,21 +152,33 @@ export default class App extends Vue {
     private get isPublicDestinationPath(): boolean {
         const routePath = this.$route.path.toLowerCase();
         return (
-            routePath !== this.vaccineCardPath &&
-            routePath !== this.covidTestPath
+            routePath === this.vaccineCardPath ||
+            routePath === this.covidTestPath
         );
     }
 
+    private get isLoginCallbackPath(): boolean {
+        return this.$route.path.toLowerCase() === this.loginCallbackPath;
+    }
+
+    private get isPcrTestPath(): boolean {
+        return this.$route.path.toLowerCase().startsWith(this.pcrTestPath);
+    }
+
     private get isHeaderVisible(): boolean {
-        return this.isPublicDestinationPath;
+        return !this.isPublicDestinationPath && !this.isLoginCallbackPath;
     }
 
     private get isFooterVisible(): boolean {
-        return this.isPublicDestinationPath;
+        return !this.isPublicDestinationPath && !this.isLoginCallbackPath;
     }
 
     private get isCommunicationVisible(): boolean {
-        return this.isPublicDestinationPath;
+        return (
+            !this.isPublicDestinationPath &&
+            !this.isLoginCallbackPath &&
+            !this.isPcrTestPath
+        );
     }
 }
 </script>

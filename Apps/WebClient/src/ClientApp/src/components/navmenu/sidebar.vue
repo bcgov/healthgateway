@@ -61,8 +61,8 @@ export default class SidebarComponent extends Vue {
     @Getter("isSidebarOpen", { namespace: "navbar" })
     isOpen!: boolean;
 
-    @Getter("isSidebarShown", { namespace: "navbar" })
-    isSidebarShown!: boolean;
+    @Getter("isSidebarAvailable", { namespace: "navbar" })
+    isSidebarAvailable!: boolean;
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -218,11 +218,15 @@ export default class SidebarComponent extends Vue {
     private get isPcrTest(): boolean {
         return this.$route.path.toLowerCase().startsWith("/pcrtest");
     }
+
+    private get isSidebarShown(): boolean {
+        return this.isSidebarAvailable && !this.isPcrTest;
+    }
 }
 </script>
 
 <template>
-    <div v-show="isSidebarShown && !isPcrTest" class="wrapper">
+    <div v-if="isSidebarShown" class="wrapper">
         <!-- Sidebar -->
         <nav id="sidebar" data-testid="sidebar" :class="{ collapsed: !isOpen }">
             <b-row class="row-container">
@@ -444,11 +448,7 @@ export default class SidebarComponent extends Vue {
         </nav>
 
         <!-- Dark Overlay element -->
-        <div
-            v-show="isOverlayVisible"
-            class="overlay"
-            @click="toggleOpen"
-        ></div>
+        <div v-show="isOverlayVisible" class="overlay" @click="toggleOpen" />
     </div>
 </template>
 

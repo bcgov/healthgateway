@@ -75,19 +75,7 @@ export default class PcrTestView extends Vue {
         redirectPath: string;
     }) => Promise<void>;
 
-    @Action("setHeaderButtonState", { namespace: "navbar" })
-    setHeaderButtonState!: (visible: boolean) => void;
-
-    @Action("setSidebarButtonState", { namespace: "navbar" })
-    setSidebarButtonState!: (visible: boolean) => void;
-
-    @Action("toggleSidebar", { namespace: "navbar" })
-    toggleSidebar!: () => void;
-
     @Getter("user", { namespace: "user" }) user!: User;
-
-    @Getter("isSidebarShown", { namespace: "navbar" })
-    isSidebarShown!: boolean;
 
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated!: boolean;
@@ -160,13 +148,6 @@ export default class PcrTestView extends Vue {
         this.pcrTestService = container.get<IPcrTestService>(
             SERVICE_IDENTIFIER.PcrTestService
         );
-        this.setSidebarButtonState(false);
-        this.setHeaderButtonState(false);
-    }
-
-    private destroyed() {
-        this.setSidebarButtonState(true);
-        this.setHeaderButtonState(true);
     }
 
     private mounted() {
@@ -481,6 +462,12 @@ export default class PcrTestView extends Vue {
         window.scrollTo(0, 0);
     }
 
+    private handleCancel() {
+        this.resetForm();
+        this.dataSource = PcrDataSource.None;
+        window.scrollTo(0, 0);
+    }
+
     private resetForm() {
         this.pcrTest = {
             firstName: "",
@@ -498,11 +485,6 @@ export default class PcrTestView extends Vue {
         };
         this.noPhn = false;
         this.$v.$reset();
-    }
-
-    private handleCancel() {
-        this.resetForm();
-        this.dataSource = PcrDataSource.None;
     }
 
     // Auth
@@ -535,21 +517,17 @@ export default class PcrTestView extends Vue {
         >
             <b-row class="pt-4">
                 <b-col>
-                    <b-row>
-                        <b-col
-                            ><strong
-                                >Register your COVID-19 test kit using one of
-                                the following methods:
-                            </strong></b-col
-                        >
-                    </b-row>
+                    <strong>
+                        Register your COVID-19 test kit using one of the
+                        following methods:
+                    </strong>
                 </b-col>
             </b-row>
             <b-row>
                 <b-col>
                     <!-- add whitespace above buttons -->
-                    <b-row class="pt-3"></b-row>
-                    <b-row class="pt-5"></b-row>
+                    <b-row class="pt-3" />
+                    <b-row class="pt-5" />
                     <b-row class="pt-5" align="center">
                         <b-col>
                             <hg-button
@@ -587,7 +565,7 @@ export default class PcrTestView extends Vue {
                                 class="manual-enter-button"
                                 @click="setDataSource(DSMANUAL)"
                             >
-                                <span>Manually enter your information</span>
+                                Manually Enter Your Information
                             </hg-button>
                         </b-col>
                     </b-row>
@@ -637,7 +615,7 @@ export default class PcrTestView extends Vue {
                         </b-row>
                         <b-row v-if="noTestKitCode" class="mt-2">
                             <b-col>
-                                <label for="testKitCode"> Test Kit Code </label>
+                                <label for="testKitCode">Test Kit Code</label>
                                 <b-form-input
                                     id="testKitCode"
                                     v-model="pcrTest.testKitCode"
@@ -678,9 +656,9 @@ export default class PcrTestView extends Vue {
                             <b-col>
                                 <b-row class="mt-2">
                                     <b-col>
-                                        <label for="pcrFirstName"
-                                            >First Name</label
-                                        >
+                                        <label for="pcrFirstName">
+                                            First Name
+                                        </label>
                                         <b-form-input
                                             id="pcrFirstName"
                                             v-model="pcrTest.firstName"
@@ -788,7 +766,7 @@ export default class PcrTestView extends Vue {
                                     data-testid="phn-checkbox"
                                     @change="setHasNoPhn($event)"
                                 >
-                                    I don't have a PHN
+                                    <span>I Don't Have a PHN</span>
                                     <hg-button
                                         :id="'pcr-no-phn-info-button'"
                                         aria-label="Result Description"
@@ -824,9 +802,9 @@ export default class PcrTestView extends Vue {
                             <b-col>
                                 <b-row class="mt-2">
                                     <b-col>
-                                        <label for="pcrStreetAddress"
-                                            >Street Address</label
-                                        >
+                                        <label for="pcrStreetAddress">
+                                            Street Address
+                                        </label>
                                         <b-form-input
                                             id="pcrStreetAddress"
                                             v-model="pcrTest.streetAddress"
@@ -977,8 +955,8 @@ export default class PcrTestView extends Vue {
                             <b-col>
                                 <b-row class="mt-2">
                                     <b-col>
-                                        <label for="pcrMobileNumber"
-                                            >Mobile Number (To receive a
+                                        <label for="pcrMobileNumber">
+                                            Mobile Number (to receive a
                                             notification once your COVID-19 test
                                             result is available)
                                         </label>
@@ -1022,10 +1000,9 @@ export default class PcrTestView extends Vue {
                         <!-- TIME SINCE TEST TAKEN -->
                         <b-row class="mt-2">
                             <b-col>
-                                <!-- Time since test taken -->
-                                <label for="testTakenMinutesAgo"
-                                    >Time since test taken</label
-                                >
+                                <label for="testTakenMinutesAgo">
+                                    Time Since Test Taken
+                                </label>
                                 <b-form-select
                                     id="testTakenMinutesAgo"
                                     v-model="pcrTest.testTakenMinutesAgo"
@@ -1047,7 +1024,7 @@ export default class PcrTestView extends Vue {
                                             !$v.pcrTest.testTakenMinutesAgo
                                                 .minValue)
                                     "
-                                    aria-label=" Time since test taken is required"
+                                    aria-label="Time since test taken is required"
                                     force-show
                                     data-testid="feedback-testtaken-is-required"
                                 >
@@ -1057,8 +1034,8 @@ export default class PcrTestView extends Vue {
                         </b-row>
                         <!-- PRIVACY STATEMENT -->
                         <b-row data-testid="pcr-privacy-statement" class="pt-2">
-                            <b-col
-                                ><hg-button
+                            <b-col>
+                                <hg-button
                                     id="privacy-statement"
                                     aria-label="Privacy Statement"
                                     href="#"
@@ -1092,8 +1069,8 @@ export default class PcrTestView extends Vue {
                                     >
                                     if you have any questions about this
                                     collection.
-                                </b-popover></b-col
-                            >
+                                </b-popover>
+                            </b-col>
                         </b-row>
                         <!-- FORM ACTIONS -->
                         <b-row class="my-3">
@@ -1153,7 +1130,7 @@ export default class PcrTestView extends Vue {
                                     variant="link"
                                     class="continue-button"
                                 >
-                                    <span>Log out</span>
+                                    <span>Log Out</span>
                                 </hg-button>
                             </router-link>
                         </div>
@@ -1166,7 +1143,7 @@ export default class PcrTestView extends Vue {
                                     variant="link"
                                     class="continue-button"
                                 >
-                                    <span>Back to home</span>
+                                    Back to Home
                                 </hg-button>
                             </router-link>
                         </div>

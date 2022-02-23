@@ -16,6 +16,7 @@ const registerKitBtn = "[data-testid=btn-register-kit]";
 const pcrPrivacyStatement = "[data-testid=pcr-privacy-statement]";
 const registrationSuccessBanner = "[data-testid=registration-success-banner]";
 const logoutBtn = "[data-testid=logoutBtn]";
+const headerLogOutBtn = "[data-testid=header-log-out-button]";
 const errorBanner = "[data-testid=errorBanner]";
 const processedBanner = "[data-testid=alreadyProcessedBanner]";
 
@@ -91,7 +92,13 @@ describe("Authenticated Pcr Test Registration", () => {
         selectorShouldBeVisible(registrationSuccessBanner);
         selectorShouldBeVisible(logoutBtn);
         cy.get(logoutBtn).click();
-        cy.url().should("include", Cypress.config("baseUrl"));
+        cy.url().should("include", "/logout");
+    });
+
+    it("Log Out Using Header", () => {
+        selectorShouldBeVisible(headerLogOutBtn);
+        cy.get(headerLogOutBtn).click();
+        cy.url().should("include", "/logout");
     });
 });
 

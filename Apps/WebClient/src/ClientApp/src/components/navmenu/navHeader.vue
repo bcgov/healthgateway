@@ -49,14 +49,8 @@ export default class HeaderComponent extends Vue {
     @Getter("isSidebarOpen", { namespace: "navbar" })
     isSidebarOpen!: boolean;
 
-    @Getter("isSidebarShown", { namespace: "navbar" })
-    isSidebarShown!: boolean;
-
-    @Getter("isHeaderButtonShown", { namespace: "navbar" })
-    isHeaderButtonShown!: boolean;
-
-    @Getter("isSidebarButtonShown", { namespace: "navbar" })
-    isSidebarButtonShown!: boolean;
+    @Getter("isSidebarAvailable", { namespace: "navbar" })
+    isSidebarAvailable!: boolean;
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -113,6 +107,26 @@ export default class HeaderComponent extends Vue {
 
     private destroyed() {
         window.removeEventListener("scroll", this.onScroll);
+    }
+
+    private get isPcrTest(): boolean {
+        return this.$route.path.toLowerCase().startsWith("/pcrtest");
+    }
+
+    private get isSidebarButtonShown(): boolean {
+        return this.isSidebarAvailable && !this.isPcrTest && this.isMobileWidth;
+    }
+
+    private get isLoggedInMenuShown(): boolean {
+        return this.oidcIsAuthenticated && !this.isPcrTest;
+    }
+
+    private get isLogOutButtonShown(): boolean {
+        return this.oidcIsAuthenticated && this.isPcrTest;
+    }
+
+    private get isLogInButtonShown(): boolean {
+        return !this.oidcIsAuthenticated && !this.isOffline && !this.isPcrTest;
     }
 
     private onScroll() {
@@ -178,7 +192,7 @@ export default class HeaderComponent extends Vue {
         <b-navbar toggleable="md" type="dark">
             <!-- Hamburger toggle -->
             <hg-button
-                v-if="isSidebarShown && isMobileWidth && isSidebarButtonShown"
+                v-if="isSidebarButtonShown"
                 class="mr-2"
                 variant="icon"
                 @click="handleToggleClick"
@@ -224,7 +238,7 @@ export default class HeaderComponent extends Vue {
             <!-- Navbar links -->
             <b-navbar-nav class="ml-auto">
                 <b-nav-item-dropdown
-                    v-if="oidcIsAuthenticated && isHeaderButtonShown"
+                    v-if="isLoggedInMenuShown"
                     id="menuBtnLogout"
                     menu-class="drop-menu-position"
                     data-testid="headerDropdownBtn"
@@ -244,13 +258,12 @@ export default class HeaderComponent extends Vue {
                                 />
                             </b-col>
                             <b-col v-if="!isMobileWidth" class="p-0 m-0 ml-2">
-                                <span data-testid="profileButtonUserName">{{
-                                    userName
-                                }}</span>
+                                <span data-testid="profileButtonUserName">
+                                    {{ userName }}
+                                </span>
                             </b-col>
                         </b-row>
                     </template>
-
                     <span v-if="isMobileWidth">
                         <b-dropdown-item class="text-center">
                             <span data-testid="profileUserNameMobileOnly">
@@ -270,9 +283,10 @@ export default class HeaderComponent extends Vue {
                             data-testid="profileDropDownIcon"
                             class="mr-2"
                             fixed-width
-                        /><span data-testid="profileDropDownLabel"
-                            >Profile</span
-                        >
+                        />
+                        <span data-testid="profileDropDownLabel">
+                            Profile
+                        </span>
                     </b-dropdown-item>
                     <b-dropdown-item-button
                         data-testid="logoutBtn"
@@ -285,12 +299,11 @@ export default class HeaderComponent extends Vue {
                             class="mr-2"
                             fixed-width
                         />
-                        <span>Log out</span>
+                        <span>Log Out</span>
                     </b-dropdown-item-button>
                 </b-nav-item-dropdown>
-
                 <router-link
-                    v-else-if="!isOffline && isHeaderButtonShown"
+                    v-else-if="isLogInButtonShown"
                     id="menuBtnLogin"
                     data-testid="loginBtn"
                     class="nav-link d-flex align-items-center"
@@ -299,7 +312,18 @@ export default class HeaderComponent extends Vue {
                     <hg-icon icon="sign-in-alt" size="large" class="mr-2" />
                     <span>Log In</span>
                 </router-link>
+                <router-link
+                    v-else-if="isLogOutButtonShown"
+                    id="header-log-out-button"
+                    data-testid="header-log-out-button"
+                    class="nav-link d-flex align-items-center"
+                    to="/logout"
+                >
+                    <hg-icon icon="sign-out-alt" size="large" class="mr-2" />
+                    <span>Log Out</span>
+                </router-link>
             </b-navbar-nav>
+
             <RatingComponent
                 ref="ratingComponent"
                 @on-close="processLogout()"
