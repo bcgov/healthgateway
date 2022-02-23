@@ -433,7 +433,7 @@ export default class PcrTestView extends Vue {
                         : "",
                     streetAddress: this.pcrTest.streetAddress,
                     city: this.pcrTest.city,
-                    postalOrZip: zipDigits ? zipDigits.replace(/\D/g, "") : "",
+                    postalOrZip: zipDigits ?? "",
                     testTakenMinutesAgo: this.pcrTest.testTakenMinutesAgo,
                     testKitCid: this.pcrTest.testKitCid,
                     shortCodeFirst,
