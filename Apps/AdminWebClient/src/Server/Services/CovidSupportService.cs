@@ -402,47 +402,58 @@ namespace HealthGateway.Admin.Services
         private static void ProcessResponse<T>(RequestResult<T> requestResult, IApiResponse<T> response)
             where T : class
         {
-            switch (response.StatusCode)
+            if (response.Error is null)
             {
-                case HttpStatusCode.OK:
-                    requestResult.ResultStatus = ResultType.Success;
-                    requestResult.ResourcePayload = response.Content;
-                    requestResult.TotalResultCount = 1;
-                    break;
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                        requestResult.ResultStatus = ResultType.Success;
+                        requestResult.ResourcePayload = response.Content;
+                        requestResult.TotalResultCount = 1;
+                        break;
 
-                // Only GetCovidAssessmentDetailsAsync can return HttpStatusCode.NoContent
-                case HttpStatusCode.NoContent:
-                    requestResult.ResultError = new RequestResultError()
-                    {
-                        ResultMessage = $"No Details found",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                    };
-                    break;
+                    // Only GetCovidAssessmentDetailsAsync can return HttpStatusCode.NoContent
+                    case HttpStatusCode.NoContent:
+                        requestResult.ResultError = new RequestResultError()
+                        {
+                            ResultMessage = $"No Details found",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
+                        break;
 
-                // SubmitCovidAssessmentAsync and GetCovidAssessmentDetailsAsync can return HttpStatusCode.Unauthorized
-                case HttpStatusCode.Unauthorized:
-                    requestResult.ResultError = new RequestResultError()
-                    {
-                        ResultMessage = $"Request was not authorized",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                    };
-                    break;
+                    // SubmitCovidAssessmentAsync and GetCovidAssessmentDetailsAsync can return HttpStatusCode.Unauthorized
+                    case HttpStatusCode.Unauthorized:
+                        requestResult.ResultError = new RequestResultError()
+                        {
+                            ResultMessage = $"Request was not authorized",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
+                        break;
 
-                // SubmitCovidAssessmentAsync and GetCovidAssessmentDetailsAsync can return HttpStatusCode.Forbidden
-                case HttpStatusCode.Forbidden:
-                    requestResult.ResultError = new RequestResultError()
-                    {
-                        ResultMessage = $"Missing Required Data Element, HTTP Error {response.StatusCode}",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                    };
-                    break;
-                default:
-                    requestResult.ResultError = new RequestResultError()
-                    {
-                        ResultMessage = $"An unexpected error occurred, HTTP Error {response.StatusCode}",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                    };
-                    break;
+                    // SubmitCovidAssessmentAsync and GetCovidAssessmentDetailsAsync can return HttpStatusCode.Forbidden
+                    case HttpStatusCode.Forbidden:
+                        requestResult.ResultError = new RequestResultError()
+                        {
+                            ResultMessage = $"Missing Required Data Element, HTTP Error {response.StatusCode}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
+                        break;
+                    default:
+                        requestResult.ResultError = new RequestResultError()
+                        {
+                            ResultMessage = $"An unexpected error occurred, HTTP Error {response.StatusCode}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
+                        break;
+                }
+            }
+            else
+            {
+                requestResult.ResultError = new RequestResultError()
+                {
+                    ResultMessage = $"An unexpected error occurred while processing external call",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                };
             }
         }
 
