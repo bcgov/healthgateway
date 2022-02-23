@@ -173,6 +173,10 @@ export default class App extends Vue {
         return !this.isPublicDestinationPath && !this.isLoginCallbackPath;
     }
 
+    private get isSidebarVisible(): boolean {
+        return !this.isLoginCallbackPath;
+    }
+
     private get isCommunicationVisible(): boolean {
         return (
             !this.isPublicDestinationPath &&
@@ -194,7 +198,10 @@ export default class App extends Vue {
 
         <NavHeader v-show="isHeaderVisible" class="d-print-none" />
         <b-row>
-            <NavSidebar class="d-print-none sticky-top vh-100" />
+            <NavSidebar
+                v-show="isSidebarVisible"
+                class="d-print-none sticky-top vh-100"
+            />
             <main class="col fill-height d-flex flex-column">
                 <CommunicationComponent v-show="isCommunicationVisible" />
                 <ErrorCard />
