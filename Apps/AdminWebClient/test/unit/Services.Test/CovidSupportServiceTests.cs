@@ -15,9 +15,11 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.AdminWebClientTests.Services.Test
 {
+    using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
+    using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Server.Models.CovidSupport;
@@ -30,10 +32,12 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc.Versioning.Conventions;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Refit;
+    using RichardSzalay.MockHttp;
     using Xunit;
 
     /// <summary>
@@ -119,6 +123,29 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
+        /// <summary>
+        /// Confirms Error handling when bad data is returned.
+        /// </summary>
+        [Fact]
+        public void ConfirmErrorHandling()
+        {
+            using HttpResponseMessage httpResponseMessage = new()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent("Bad Payload"),
+            };
+
+            MockHttpMessageHandler mockHttp = new();
+            string baseEndpoint = "https://localhost";
+            mockHttp.When($"{baseEndpoint}/api/v1/Support/Immunizations/AntiViralSupportDetails")
+                .Respond("application/json", "Bad Payload"); // Respond with bad JSON
+            HttpClient httpClient = mockHttp.ToHttpClient();
+            httpClient.BaseAddress = new Uri(baseEndpoint);
+
+            RequestResult<CovidAssessmentDetailsResponse> actualResult = GetCovidSupportService(httpClient).GetCovidAssessmentDetailsAsync(Phn).Result;
+            Assert.True(actualResult.ResultStatus == ResultType.Error);
+        }
+
         private static IConfigurationRoot GetIConfigurationRoot()
         {
             Dictionary<string, string> myConfiguration = new()
@@ -132,6 +159,25 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 .AddJsonFile("appsettings.local.json", optional: true)
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
+        }
+
+        private static ICovidSupportService GetCovidSupportService(HttpClient httpClient)
+        {
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(AccessToken);
+            IImmunizationAdminClient immunizationAdminClient = RestService.For<IImmunizationAdminClient>(httpClient);
+            ICovidSupportService mockCovidSupportService = new CovidSupportService(
+                new Mock<ILogger<CovidSupportService>>().Object,
+                new Mock<IPatientService>().Object,
+                new Mock<IImmunizationAdminDelegate>().Object,
+                new Mock<IVaccineStatusDelegate>().Object,
+                new Mock<IHttpContextAccessor>().Object,
+                GetIConfigurationRoot(),
+                new Mock<IVaccineProofDelegate>().Object,
+                immunizationAdminClient,
+                mockAuthDelegate.Object);
+
+            return mockCovidSupportService;
         }
 
         private static ICovidSupportService GetCovidSupportService(CovidAssessmentResponse response, HttpStatusCode statusCode, bool throwException)
