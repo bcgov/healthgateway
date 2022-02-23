@@ -73,7 +73,7 @@ describe("Authenticated Pcr Test Registration", () => {
         selectorShouldBeVisible(registrationSuccessBanner);
         selectorShouldBeVisible(logoutBtn);
         cy.get(logoutBtn).click();
-        cy.url().should("include", Cypress.config("baseUrl"));
+        cy.url().should("include", "/logout");
     });
 });
 

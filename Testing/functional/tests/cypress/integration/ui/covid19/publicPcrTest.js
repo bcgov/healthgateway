@@ -8,6 +8,7 @@ import {
     selectOption,
 } from "../../../support/utils";
 
+const landingPagePath = "/";
 const pcrTestUrl = "/pcrtest";
 
 // data test id for all input fields in the form
@@ -25,6 +26,7 @@ const cancelBtn = "[data-testid=btn-cancel]";
 const registerKitBtn = "[data-testid=btn-register-kit]";
 const pcrPrivacyStatement = "[data-testid=pcr-privacy-statement]";
 const registrationSuccessBanner = "[data-testid=registration-success-banner]";
+const continueBtn = "[data-testid=btn-continue]";
 const stressAddressInput = "[data-testid=pcr-street-address-input]";
 const cityInput = "[data-testid=pcr-city-input]";
 const zipInput = "[data-testid=pcr-zip-input]";
@@ -102,6 +104,10 @@ describe("Public PcrTest Registration Form", () => {
     it("Register options buttons are available", () => {
         selectorShouldBeVisible("[data-testid=btn-login]");
         selectorShouldBeVisible("[data-testid=btn-manual]");
+    });
+
+    it("Log in button should not be present in header", () => {
+        selectorShouldNotExists("[data-testid=loginBtn]");
     });
 
     it("Inputs in the form are visible with valid PHN", () => {
@@ -209,6 +215,9 @@ describe("Public PcrTest Registration Submission with Valid PHN", () => {
         clickRegisterKitButton();
 
         selectorShouldBeVisible(registrationSuccessBanner);
+        selectorShouldBeVisible(continueBtn);
+        cy.get(continueBtn).click();
+        cy.location("pathname").should("eq", landingPagePath);
     });
 });
 
