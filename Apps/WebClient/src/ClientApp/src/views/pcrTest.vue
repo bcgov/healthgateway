@@ -516,21 +516,17 @@ export default class PcrTestView extends Vue {
         >
             <b-row class="pt-4">
                 <b-col>
-                    <b-row>
-                        <b-col
-                            ><strong
-                                >Register your COVID-19 test kit using one of
-                                the following methods:
-                            </strong></b-col
-                        >
-                    </b-row>
+                    <strong>
+                        Register your COVID-19 test kit using one of the
+                        following methods:
+                    </strong>
                 </b-col>
             </b-row>
             <b-row>
                 <b-col>
                     <!-- add whitespace above buttons -->
-                    <b-row class="pt-3"></b-row>
-                    <b-row class="pt-5"></b-row>
+                    <b-row class="pt-3" />
+                    <b-row class="pt-5" />
                     <b-row class="pt-5" align="center">
                         <b-col>
                             <hg-button
@@ -618,7 +614,7 @@ export default class PcrTestView extends Vue {
                         </b-row>
                         <b-row v-if="noTestKitCode" class="mt-2">
                             <b-col>
-                                <label for="testKitCode"> Test Kit Code </label>
+                                <label for="testKitCode">Test Kit Code</label>
                                 <b-form-input
                                     id="testKitCode"
                                     v-model="pcrTest.testKitCode"
@@ -659,9 +655,9 @@ export default class PcrTestView extends Vue {
                             <b-col>
                                 <b-row class="mt-2">
                                     <b-col>
-                                        <label for="pcrFirstName"
-                                            >First Name</label
-                                        >
+                                        <label for="pcrFirstName">
+                                            First Name
+                                        </label>
                                         <b-form-input
                                             id="pcrFirstName"
                                             v-model="pcrTest.firstName"
@@ -805,9 +801,9 @@ export default class PcrTestView extends Vue {
                             <b-col>
                                 <b-row class="mt-2">
                                     <b-col>
-                                        <label for="pcrStreetAddress"
-                                            >Street Address</label
-                                        >
+                                        <label for="pcrStreetAddress">
+                                            Street Address
+                                        </label>
                                         <b-form-input
                                             id="pcrStreetAddress"
                                             v-model="pcrTest.streetAddress"
@@ -1037,8 +1033,8 @@ export default class PcrTestView extends Vue {
                         </b-row>
                         <!-- PRIVACY STATEMENT -->
                         <b-row data-testid="pcr-privacy-statement" class="pt-2">
-                            <b-col
-                                ><hg-button
+                            <b-col>
+                                <hg-button
                                     id="privacy-statement"
                                     aria-label="Privacy Statement"
                                     href="#"
@@ -1072,8 +1068,8 @@ export default class PcrTestView extends Vue {
                                     >
                                     if you have any questions about this
                                     collection.
-                                </b-popover></b-col
-                            >
+                                </b-popover>
+                            </b-col>
                         </b-row>
                         <!-- FORM ACTIONS -->
                         <b-row class="my-3">
