@@ -463,6 +463,12 @@ export default class PcrTestView extends Vue {
         window.scrollTo(0, 0);
     }
 
+    private handleCancel() {
+        this.resetForm();
+        this.dataSource = PcrDataSource.None;
+        window.scrollTo(0, 0);
+    }
+
     private resetForm() {
         this.pcrTest = {
             firstName: "",
@@ -479,11 +485,6 @@ export default class PcrTestView extends Vue {
             testKitCode: "",
         };
         this.$v.$reset();
-    }
-
-    private handleCancel() {
-        this.resetForm();
-        this.dataSource = PcrDataSource.None;
     }
 
     // Auth
