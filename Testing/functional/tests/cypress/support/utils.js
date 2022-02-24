@@ -8,7 +8,8 @@ export function convertStringToDate(stringDate) {
 }
 
 export function getMonth(date) {
-    return convertStringToDate(date).getMonth();
+    // add 1 to the returned month since they're indexed starting at 0
+    return convertStringToDate(date).getMonth() + 1;
 }
 
 export function getYear(date) {
