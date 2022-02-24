@@ -363,7 +363,7 @@ export default class PcrTestView extends Vue {
         if (this.$v.$invalid) {
             return;
         }
-
+        this.clearError();
         const shortCodeFirst =
             this.pcrTest.testKitCode.length > 0
                 ? this.pcrTest.testKitCode.split("-")[0]
@@ -399,7 +399,6 @@ export default class PcrTestView extends Vue {
                         this.displaySuccess();
                     })
                     .catch((err: ResultError) => {
-                        this.clearError();
                         this.handleError(err, "registerTestKit");
                     });
                 break;
@@ -436,7 +435,6 @@ export default class PcrTestView extends Vue {
                         this.displaySuccess();
                     })
                     .catch((err: ResultError) => {
-                        this.clearError();
                         this.handleError(err, "registerTestKitPublic");
                     });
                 break;
