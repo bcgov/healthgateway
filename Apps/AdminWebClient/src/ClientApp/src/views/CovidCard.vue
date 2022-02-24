@@ -70,6 +70,7 @@ export default class CovidCardView extends Vue {
     private isLoading = false;
     private showFeedback = false;
     private showCovidTreatmentAssessment = false;
+    private isSearchIsBlocked = false;
 
     private phn = "";
     private activePhn = "";
@@ -185,22 +186,17 @@ export default class CovidCardView extends Vue {
             assessmentDetailsPromise,
         ])
             .then(([searchResult]) => {
+                this.searchResult = searchResult;
+                this.setAddress(
+                    this.searchResult?.patient?.postalAddress,
+                    this.searchResult?.patient?.physicalAddress
+                );
                 if (searchResult.blocked) {
-                    this.searchResult = null;
-                    this.showBannerFeedback({
-                        type: ResultType.Error,
-                        title: "Search Error",
-                        message:
-                            "Unable to retrieve record for this individual",
-                    });
+                    this.isSearchIsBlocked = true;
                 } else {
+                    this.isSearchIsBlocked = false;
                     this.phn = "";
-                    this.searchResult = searchResult;
                     this.maskHdid = true;
-                    this.setAddress(
-                        this.searchResult?.patient?.postalAddress,
-                        this.searchResult?.patient?.physicalAddress
-                    );
                     this.immunizations =
                         this.searchResult.vaccineDetails?.doses?.map((dose) => {
                             return {
@@ -579,7 +575,25 @@ export default class CovidCardView extends Vue {
                             </v-btn>
                         </v-col>
                     </v-row>
-                    <v-row dense>
+                    <v-row
+                        v-if="isSearchIsBlocked"
+                        class="mt-2"
+                        align="center"
+                        dense
+                    >
+                        <v-col lg="6" offset-lg="3" xl="4" offset-xl="4">
+                            <v-alert
+                                dense
+                                outlined
+                                type="error"
+                                class="alert-background-color"
+                            >
+                                Unable to retrieve vaccine records for this
+                                individual.
+                            </v-alert>
+                        </v-col>
+                    </v-row>
+                    <v-row v-if="!isSearchIsBlocked" dense>
                         <v-col no-gutters>
                             <v-data-table
                                 :headers="tableHeaders"
@@ -602,7 +616,7 @@ export default class CovidCardView extends Vue {
                             </v-alert>
                         </v-col>
                     </v-row>
-                    <v-row justify="end">
+                    <v-row v-if="!isSearchIsBlocked" justify="end">
                         <v-col class="text-right">
                             <v-btn
                                 type="button"
@@ -619,6 +633,7 @@ export default class CovidCardView extends Vue {
                     </v-row>
                     <ValidationObserver ref="observer">
                         <v-form
+                            v-if="!isSearchIsBlocked"
                             ref="form"
                             lazy-validation
                             autocomplete="off"
@@ -630,6 +645,7 @@ export default class CovidCardView extends Vue {
                                 </v-col>
                             </v-row>
                             <AddressComponent
+                                v-if="!isSearchIsBlocked"
                                 v-bind.sync="address"
                                 :is-disabled="!isEditMode"
                             />
@@ -689,3 +705,10 @@ export default class CovidCardView extends Vue {
         </v-row>
     </v-container>
 </template>
+
+<style lang="scss">
+.alert-background-color {
+    background-color: white !important;
+    align-content: center !important;
+}
+</style>
