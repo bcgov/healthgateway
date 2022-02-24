@@ -69,6 +69,9 @@ export default class PcrTestView extends Vue {
         traceId: string | undefined;
     }) => void;
 
+    @Action("clearError", { namespace: "errorBanner" })
+    clearError!: () => void;
+
     @Action("authenticateOidc", { namespace: "auth" })
     authenticateOidc!: (params: {
         idpHint: string;
@@ -360,7 +363,7 @@ export default class PcrTestView extends Vue {
         if (this.$v.$invalid) {
             return;
         }
-
+        this.clearError();
         const shortCodeFirst =
             this.pcrTest.testKitCode.length > 0
                 ? this.pcrTest.testKitCode.split("-")[0]

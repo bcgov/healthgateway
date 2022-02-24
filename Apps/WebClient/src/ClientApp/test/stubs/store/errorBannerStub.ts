@@ -28,12 +28,14 @@ const errorBannerActions: ErrorBannerActions = {
     show: voidMethod,
     addError: voidMethod,
     addCustomError: voidMethod,
+    clearError: voidMethod,
 };
 
 const errorBannerMutations: ErrorBannerMutations = {
     dismiss: voidMethod,
     show: voidMethod,
     addError: voidMethod,
+    clearError: voidMethod,
 };
 
 const errorBannerStub: ErrorBannerModule = {

@@ -14,4 +14,7 @@ export const mutations: ErrorBannerMutations = {
         state.isShowing = true;
         state.errors.push(bannerError);
     },
+    clearError(state: ErrorBannerState) {
+        state.errors = [];
+    },
 };
