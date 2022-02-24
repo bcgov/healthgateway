@@ -69,6 +69,9 @@ export default class PcrTestView extends Vue {
         traceId: string | undefined;
     }) => void;
 
+    @Action("clearError", { namespace: "errorBanner" })
+    clearError!: () => void;
+
     @Action("authenticateOidc", { namespace: "auth" })
     authenticateOidc!: (params: {
         idpHint: string;
@@ -396,6 +399,7 @@ export default class PcrTestView extends Vue {
                         this.displaySuccess();
                     })
                     .catch((err: ResultError) => {
+                        this.clearError();
                         this.handleError(err, "registerTestKit");
                     });
                 break;
@@ -432,6 +436,7 @@ export default class PcrTestView extends Vue {
                         this.displaySuccess();
                     })
                     .catch((err: ResultError) => {
+                        this.clearError();
                         this.handleError(err, "registerTestKitPublic");
                     });
                 break;

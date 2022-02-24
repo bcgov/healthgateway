@@ -40,4 +40,7 @@ export const actions: ErrorBannerActions = {
         );
         context.commit("addError", bannerError);
     },
+    clearError(context) {
+        context.commit("clearError");
+    },
 };
