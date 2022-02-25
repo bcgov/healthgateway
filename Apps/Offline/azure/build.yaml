@@ -19,16 +19,16 @@ variables:
   - name: App.Name
     value: Offline
   - name: Image.Name
-      value: $[lower(variables['App.Name'])]
+    value: $[lower(variables['App.Name'])]
   - name: App.Home
-    value: $(Build.SourcesDirectory)/Apps/$(App.Name)
-    
+    value: $(Build.SourcesDirectory)/Apps/$(App.Name)    
+
 steps:
     - task: Docker@2
-    displayName: 'Building Image for $(App.Name) and pushing to Docker Hub'
-    inputs:
-      containerRegistry: 'docker-health'
-      repository: $(DockerRepo)/$(Image.Name)
-      Dockerfile: '$(App.Home)/Dockerfile'
-      buildContext: '$(Build.BinariesDirectory)'
-      tags: '$(Build.BuildNumber)'
+      displayName: 'Building Image for $(App.Name) and pushing to Docker Hub'
+      inputs:
+        containerRegistry: 'docker-health'
+        repository: $(DockerRepo)/$(Image.Name)
+        Dockerfile: '$(App.Home)/Dockerfile'
+        buildContext: '$(App.Home)'
+        tags: '$(Build.BuildNumber)'
