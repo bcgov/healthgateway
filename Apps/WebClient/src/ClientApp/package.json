@@ -39,7 +39,7 @@
         "eslint-config-prettier": "^6.15.0",
         "eslint-plugin-prettier": "^3.4.0",
         "eslint-plugin-simple-import-sort": "^7.0.0",
-        "eslint-plugin-sonarjs": "^0.7.0",
+        "eslint-plugin-sonarjs": "^0.12.0",
         "eslint-plugin-vue": "^7.9.0",
         "file-loader": "^6.2.0",
         "isomorphic-fetch": "^3.0.0",
