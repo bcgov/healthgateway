@@ -48,7 +48,7 @@
         "jest-fetch-mock": "^3.0.3",
         "jest-sonar-reporter": "^2.0.0",
         "jest-transform-stub": "^2.0.0",
-        "mini-css-extract-plugin": "^1.6.1",
+        "mini-css-extract-plugin": "^2.5.3",
         "popper.js": "^1.16.1",
         "prettier": "^2.5.1",
         "sass": "^1.49.9",
