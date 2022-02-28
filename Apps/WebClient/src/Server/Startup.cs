@@ -221,6 +221,8 @@ namespace HealthGateway.WebClient
                         headers.Add("Content-Encoding", "gzip");
                         headers["Content-Type"] = mimeType;
                     }
+
+                    headers.Add("X-Content-Type-Options", "nosniff");
                 },
             });
         }
