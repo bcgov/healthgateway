@@ -207,6 +207,8 @@ namespace HealthGateway.WebClient
             {
                 OnPrepareResponse = (content) =>
                 {
+                    content.Context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                    content.Context.Response.Headers.Add("X-Frame-Options", "deny");
                     var headers = content.Context.Response.Headers;
                     var contentType = headers["Content-Type"];
                     if (contentType != "application/x-gzip" && !content.File.Name.EndsWith(".gz", StringComparison.CurrentCultureIgnoreCase))
