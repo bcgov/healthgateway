@@ -118,8 +118,8 @@ public class CovidAssessmentRequest
     /// <summary>
     /// Gets or sets the has immunity compromising medical condition antiviral tri option.
     /// </summary>
-    [JsonPropertyName("hasImmunityCompromisingMedicalConditionAntiViralTri")]
-    public CovidTherapyAssessmentOption HasImmunityCompromisingMedicalConditionAntiViralTri { get; set; }
+    [JsonPropertyName("hasImmunityCompromisingMedicalCondition")]
+    public CovidTherapyAssessmentOption HasImmunityCompromisingMedicalCondition { get; set; }
 
     /// <summary>
     /// Gets or sets the reports 3 doses of covid 19 vaccine option.
