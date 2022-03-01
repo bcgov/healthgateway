@@ -74,7 +74,7 @@ export default class SidebarComponent extends Vue {
 
     private logger!: ILogger;
 
-    private isExportTutorialEnabled = false;
+    private isExportTutorialEnabled = true;
 
     @Watch("$route")
     private onRouteChanged() {
@@ -84,44 +84,41 @@ export default class SidebarComponent extends Vue {
     @Watch("isOpen")
     private onIsOpen(val: boolean) {
         console.log("isOpen", val);
+
+        // disable popover when transition starts
         this.isExportTutorialEnabled = false;
     }
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.$nextTick(() => {
-            if (!this.isMobileWidth) {
-                this.setSidebarState(true);
-            }
-        });
     }
 
-    private mounted() {
-        this.$nextTick().then(() => {
-            // Setup the transition listener to avoid text wrapping
-            var transition = document.querySelector("#sidebar");
-            transition?.addEventListener("transitionend", (event: Event) => {
-                let transitionEvent = event as TransitionEvent;
-                if (
-                    transition !== transitionEvent.target ||
-                    transitionEvent.propertyName !== "max-width"
-                ) {
-                    return;
+    private async mounted() {
+        await this.$nextTick();
+
+        // set up listener to monitor sidebar collapsing and expanding
+        var sidebar = document.querySelector("#sidebar");
+        sidebar?.addEventListener("transitionend", (event: Event) => {
+            let transitionEvent = event as TransitionEvent;
+            if (
+                sidebar !== transitionEvent.target ||
+                transitionEvent.propertyName !== "max-width"
+            ) {
+                return;
+            }
+
+            // re-enable popover when transition ends
+            this.isExportTutorialEnabled = true;
+
+            // toggle text display for nav links only after the transition ends
+            sidebar?.querySelectorAll(".button-text")?.forEach((button) => {
+                if (sidebar?.classList?.contains("collapsed")) {
+                    button.classList.add("d-none");
+                } else {
+                    button.classList.remove("d-none");
                 }
-
-                this.isExportTutorialEnabled = true;
-
-                document.querySelectorAll(".button-text").forEach((button) => {
-                    if (transition?.classList.contains("collapsed")) {
-                        button?.classList.add("d-none");
-                    } else {
-                        button?.classList.remove("d-none");
-                    }
-                });
             });
         });
-
-        this.isExportTutorialEnabled = true;
     }
 
     private toggleOpen() {

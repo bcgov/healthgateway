@@ -9,7 +9,7 @@ import {
 import { RootState } from "@/store/types";
 
 export interface NavbarState {
-    isSidebarOpen: boolean;
+    isSidebarOpen: boolean | null;
     isHeaderShown: boolean;
 }
 
@@ -23,7 +23,14 @@ export interface NavbarGetters extends GetterTree<NavbarState, RootState> {
         // eslint-disable-next-line
         rootGetters: any
     ): boolean;
-    isSidebarOpen(state: NavbarState): boolean;
+    isSidebarOpen(
+        _state: NavbarState,
+        // eslint-disable-next-line
+        _getters: any,
+        _rootState: RootState,
+        // eslint-disable-next-line
+        rootGetters: any
+    ): boolean;
     isSidebarAvailable(
         _state: NavbarState,
         // eslint-disable-next-line

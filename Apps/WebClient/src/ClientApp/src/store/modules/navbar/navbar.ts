@@ -4,7 +4,7 @@ import { mutations } from "./mutations";
 import { NavbarModule, NavbarState } from "./types";
 
 const state: NavbarState = {
-    isSidebarOpen: false,
+    isSidebarOpen: null,
     isHeaderShown: true,
 };
 

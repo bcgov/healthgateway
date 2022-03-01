@@ -21,8 +21,20 @@ export const getters: NavbarGetters = {
         const isRegistered: boolean = rootGetters["user/userIsRegistered"];
         return !isOffline && (!isAuthenticated || (isValid && isRegistered));
     },
-    isSidebarOpen(state: NavbarState): boolean {
-        return state.isSidebarOpen;
+    isSidebarOpen(
+        _state: NavbarState,
+        // eslint-disable-next-line
+        _getters: any,
+        _rootState: RootState,
+        // eslint-disable-next-line
+        rootGetters: any
+    ): boolean {
+        // initial sidebar state depends on viewport width
+        if (_state.isSidebarOpen === null) {
+            const isMobile = rootGetters["isMobile"];
+            return isMobile ? false : true;
+        }
+        return _state.isSidebarOpen;
     },
     isSidebarAvailable: (
         _state: NavbarState,
