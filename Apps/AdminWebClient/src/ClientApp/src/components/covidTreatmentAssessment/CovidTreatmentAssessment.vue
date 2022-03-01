@@ -77,7 +77,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         hasMildOrModerateCovid19Symptoms:
             CovidTreatmentAssessmentOption.Unspecified,
         symptomOnSetDate: null,
-        hasImmunityCompromisingMedicalConditionAntiViralTri:
+        hasImmunityCompromisingMedicalCondition:
             CovidTreatmentAssessmentOption.Unspecified,
         reports3DosesC19Vaccine: CovidTreatmentAssessmentOption.Unspecified,
         hasChronicConditionDiagnoses:
