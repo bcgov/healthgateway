@@ -31,6 +31,7 @@ window.snowplow("newTracker", "rt", collector, {
         webPage: true,
         performanceTiming: true,
     },
+    SameSite=Lax,
 });
 window.snowplow("enableActivityTracking", 30, 30); // Ping every 30 seconds after 30 seconds
 window.snowplow("enableLinkClickTracking");
