@@ -243,6 +243,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                     {
                         NoCache = true,
                         NoStore = true,
+                        MustRevalidate = true,
                     };
                 context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Pragma] =
                     new string[] { "no-cache" };
