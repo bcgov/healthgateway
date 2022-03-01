@@ -101,6 +101,7 @@ export default class App extends Vue {
         (this.host.startsWith("HEALTHGATEWAY") ||
             this.host.startsWith("WWW.HEALTHGATEWAY"));
 
+    private initialized = false;
     private windowWidth = 0;
     private vaccineCardPath = "/vaccinecard";
     private covidTestPath = "/covidtest";
@@ -128,6 +129,7 @@ export default class App extends Vue {
         this.$nextTick(() => {
             window.addEventListener("resize", this.onResize);
             this.onResize();
+            this.initialized = true;
         });
     }
 
@@ -188,7 +190,11 @@ export default class App extends Vue {
 </script>
 
 <template>
-    <div id="app-root" class="container-fluid-fill d-flex h-100 flex-column">
+    <div
+        v-if="initialized"
+        id="app-root"
+        class="container-fluid-fill d-flex h-100 flex-column"
+    >
         <div v-if="!isProduction" class="devBanner d-print-none">
             <div class="text-center bg-warning small">
                 Non-production environment:
@@ -196,10 +202,10 @@ export default class App extends Vue {
             </div>
         </div>
 
-        <NavHeader v-show="isHeaderVisible" class="d-print-none" />
+        <NavHeader v-if="isHeaderVisible" class="d-print-none" />
         <b-row>
             <NavSidebar
-                v-show="isSidebarVisible"
+                v-if="isSidebarVisible"
                 class="d-print-none sticky-top vh-100"
             />
             <main class="col fill-height d-flex flex-column">
@@ -210,7 +216,7 @@ export default class App extends Vue {
             </main>
         </b-row>
 
-        <footer v-show="isFooterVisible" class="footer d-print-none">
+        <footer v-if="isFooterVisible" class="footer d-print-none">
             <NavFooter />
         </footer>
     </div>
