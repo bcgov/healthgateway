@@ -108,7 +108,7 @@ Cypress.Commands.add(
                         cy.visit(callbackURL, { timeout: 60000 });
                         // Wait for cookies are set before store them in cypress.
                         cy.get("[data-testid=headerDropdownBtn]").should(
-                            "be.visible"
+                            "exist"
                         );
                         storeAuthCookies();
                     });

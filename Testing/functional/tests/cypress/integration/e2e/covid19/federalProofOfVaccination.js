@@ -15,10 +15,7 @@ describe("Federal Proof of Vaccination", () => {
             homeUrl
         );
 
-        cy.intercept(
-            "GET",
-            "**/v1/api/AuthenticatedVaccineStatus/pdf?hdid=*"
-        ).as("getVaccineProof");
+        cy.intercept("GET", "**/v1/api/AuthenticatedVaccineStatus/pdf?hdid=*");
 
         cy.get("[data-testid=proof-vaccination-card-btn]")
             .should("be.visible", "be.enabled")
@@ -27,8 +24,10 @@ describe("Federal Proof of Vaccination", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.wait("@getVaccineProof").then(() => {
-            cy.verifyDownload("VaccineProof.pdf");
+        cy.get("[data-testid=loadingSpinner]").should("be.visible");
+        cy.verifyDownload("VaccineProof.pdf", {
+            timeout: 60000,
+            interval: 5000,
         });
     });
 });

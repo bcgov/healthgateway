@@ -42,29 +42,11 @@ describe("Resource Centre", () => {
             AuthMethod.KeyCloak
         );
         cy.checkTimelineHasLoaded();
+
         cy.get("[data-testid=hg-resource-centre]").should("be.visible").click();
 
         cy.get("[data-testid=hg-resource-centre-covid-card]")
             .should("be.visible")
-            .click();
-
-        // Vaccine Card
-        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
-
-        // Navigate Left
-        cy.get("[data-testid=vc-chevron-left-btn]")
-            .should("be.enabled", "be.visible")
-            .click();
-
-        cy.get("[data-testid=patientBirthdate]").should(
-            "be.visible",
-            "not.be.empty"
-        );
-        cy.get("[data-testid=doseDate]")
-            .first()
-            .should("be.visible", "not.be.empty");
-        cy.get("[data-testid=doseDate]")
-            .last()
-            .should("be.visible", "not.be.empty");
+            .should("have.attr", "href", "/covid19");
     });
 });

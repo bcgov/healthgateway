@@ -32,7 +32,7 @@ describe("Menu System", () => {
         cy.get("[data-testid=sidebarUserName]").should("not.exist");
         cy.get("[data-testid=profileButtonUserName]")
             .should("be.visible")
-            .should("have.text", "Dr Gateway");
+            .should("include.text", "Dr Gateway");
         cy.get("[data-testid=profileBtn]").should("not.be.visible");
         cy.get("[data-testid=profileDropDownIcon]").should("not.be.visible");
         cy.get("[data-testid=logoutBtn]").should("not.be.visible");
@@ -50,7 +50,7 @@ describe("Menu System", () => {
         );
         cy.get("[data-testid=logoutBtn]")
             .should("be.visible")
-            .should("have.text", "Log out");
+            .should("include.text", "Log Out");
         cy.get("[data-testid=logoutDropDownIcon]").should("be.visible");
     });
 
@@ -74,7 +74,7 @@ describe("Menu System", () => {
         );
         cy.get("[data-testid=logoutBtn]")
             .should("be.visible")
-            .should("have.text", "Log out");
+            .should("include.text", "Log Out");
         cy.get("[data-testid=logoutDropDownIcon]").should("be.visible");
     });
 
