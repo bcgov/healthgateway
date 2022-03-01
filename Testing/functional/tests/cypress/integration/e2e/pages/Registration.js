@@ -1,6 +1,6 @@
 const { AuthMethod } = require("../../../support/constants");
-const registrationPage = "/registration";
-const profilePage = "/profile";
+const registrationPath = "/registration";
+const profilePath = "/profile";
 
 describe("Registration Page", () => {
     beforeEach(() => {});
@@ -12,8 +12,8 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.url().should("include", registrationPage);
-        cy.get('[data-testid="minimumAgeErrorText"]').should("be.visible");
+        cy.location("pathname").should("eq", registrationPath);
+        cy.get("[data-testid=minimumAgeErrorText]").should("be.visible");
     });
 
     it("Client Registration error", () => {
@@ -23,8 +23,8 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.url().should("include", registrationPage);
-        cy.get('[data-testid="clientRegistryErrorText"]').should("be.visible");
+        cy.location("pathname").should("eq", registrationPath);
+        cy.get("[data-testid=clientRegistryErrorText]").should("be.visible");
     });
 
     it("No sidebar or footer", () => {
@@ -34,9 +34,9 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.url().should("include", registrationPage);
-        cy.contains("footer").should("not.exist");
-        cy.get('[data-testid="sidebar"]').should("not.be.visible");
+        cy.location("pathname").should("eq", registrationPath);
+        cy.get("[data-testid=sidebar]").should("not.exist");
+        cy.get("[data-testid=footer]").should("not.exist");
     });
 
     it("Registration goes to Verify Phone and Email", () => {
@@ -46,28 +46,28 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.url().should("include", registrationPage);
-        cy.get('[data-testid="emailCheckbox"]')
+        cy.location("pathname").should("eq", registrationPath);
+        cy.get("[data-testid=emailCheckbox]")
             .should("be.enabled")
             .check({ force: true });
-        cy.get('[data-testid="emailInput"]')
+        cy.get("[data-testid=emailInput]")
             .should("be.visible", "be.enabled")
             .type(Cypress.env("emailAddress"));
-        cy.get('[data-testid="emailConfirmationInput"]')
+        cy.get("[data-testid=emailConfirmationInput]")
             .should("be.visible", "be.enabled")
             .type(Cypress.env("emailAddress"));
-        cy.get('[data-testid="smsNumberInput"]')
+        cy.get("[data-testid=smsNumberInput]")
             .should("be.visible", "be.enabled")
             .type(Cypress.env("phoneNumber"));
-        cy.get('[data-testid="acceptCheckbox"]')
+        cy.get("[data-testid=acceptCheckbox]")
             .should("be.enabled")
             .check({ force: true });
-        cy.get('[data-testid="registerButton"]')
+        cy.get("[data-testid=registerButton]")
             .should("be.visible", "be.enabled")
             .click();
-        cy.url().should("include", profilePage);
-        cy.get('[data-testid="verifySMSModalText"]').should("be.visible");
-        cy.get('[data-testid="verifyEmailTxt"]').should("be.visible");
+        cy.location("pathname").should("eq", profilePath);
+        cy.get("[data-testid=verifySMSModalText]").should("be.visible");
+        cy.get("[data-testid=verifyEmailTxt]").should("be.visible");
     });
 
     it("Validate Closed Profile Registration", () => {

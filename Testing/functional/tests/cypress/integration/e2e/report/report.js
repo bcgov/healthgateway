@@ -119,7 +119,7 @@ describe("Reports", () => {
             .select("COVID-19 Test Results");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
-        cy.get("[data-testid=covid19DateItem]")
+        cy.get("[data-testid=covid19DateItem]", { timeout: 60000 })
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
@@ -151,7 +151,7 @@ describe("Reports", () => {
             .select("Immunizations");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
-        cy.get("[data-testid=immunizationDateItem]")
+        cy.get("[data-testid=immunizationDateItem]", { timeout: 60000 })
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
@@ -241,7 +241,7 @@ describe("Reports", () => {
             .select("Laboratory Tests");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
-        cy.get("[data-testid=labResultDateItem]")
+        cy.get("[data-testid=labResultDateItem]", { timeout: 60000 })
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 

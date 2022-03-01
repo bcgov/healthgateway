@@ -8,7 +8,8 @@ describe("Validate Modals Popup", () => {
         cy.intercept("GET", "**/v1/api/UserProfile/*", (req) => {
             req.reply((res) => {
                 if (interceptPreference) {
-                    res.body.resourcePayload.preferences.actionedCovidModalAt.value = actionedCovidModalAt;
+                    res.body.resourcePayload.preferences.actionedCovidModalAt.value =
+                        actionedCovidModalAt;
                 }
             });
         });

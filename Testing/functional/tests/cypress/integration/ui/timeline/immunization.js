@@ -1,5 +1,4 @@
-import { deleteDownloadsFolder } from "../../../support/utils";
-const { AuthMethod, localDevUri } = require("../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 
 describe("Immunization - With Refresh", () => {
     beforeEach(() => {
@@ -122,13 +121,12 @@ describe("Immunization - No Records", () => {
 
 describe("Immunization", () => {
     beforeEach(() => {
-        deleteDownloadsFolder();
         cy.intercept("GET", "**/v1/api/Immunization?*", {
             fixture: "ImmunizationService/immunization.json",
         });
     });
 
-    it("Validate Provincial VaccineProof Download", () => {
+    it("Validate Provincial VaccineProof Buttons", () => {
         cy.enableModules([
             "Immunization",
             "VaccinationStatus",
@@ -142,15 +140,6 @@ describe("Immunization", () => {
         );
         cy.checkTimelineHasLoaded();
 
-        cy.get("[data-testid=cardBtn]").first().click({ force: true });
-        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
-
-        cy.get("[data-testid=save-card-btn]")
-            .should("be.visible", "be.enabled")
-            .click();
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
-        cy.get("[data-testid=loadingSpinner]").should("be.visible");
-        cy.verifyDownload("ProvincialVaccineProof.png");
+        cy.get("[data-testid=cardBtn]").should("have.attr", "href", "/covid19");
     });
 });
