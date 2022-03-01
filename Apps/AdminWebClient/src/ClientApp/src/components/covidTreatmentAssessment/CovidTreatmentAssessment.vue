@@ -77,7 +77,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         hasMildOrModerateCovid19Symptoms:
             CovidTreatmentAssessmentOption.Unspecified,
         symptomOnSetDate: null,
-        hasImmunityCompromisingMedicalConditionAntiViralTri:
+        hasImmunityCompromisingMedicalCondition:
             CovidTreatmentAssessmentOption.Unspecified,
         reports3DosesC19Vaccine: CovidTreatmentAssessmentOption.Unspecified,
         hasChronicConditionDiagnoses:
@@ -119,7 +119,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
             hasMildOrModerateCovid19Symptoms:
                 CovidTreatmentAssessmentOption.Unspecified,
             symptomOnSetDate: null,
-            hasImmunityCompromisingMedicalConditionAntiViralTri:
+            hasImmunityCompromisingMedicalCondition:
                 CovidTreatmentAssessmentOption.Unspecified,
             reports3DosesC19Vaccine: CovidTreatmentAssessmentOption.Unspecified,
             hasChronicConditionDiagnoses:
@@ -471,7 +471,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             >
                                 <OptionDetails
                                     :value.sync="
-                                        covidTreatmentAssessmentRequest.hasImmunityCompromisingMedicalConditionAntiViralTri
+                                        covidTreatmentAssessmentRequest.hasImmunityCompromisingMedicalCondition
                                     "
                                     :has-not-sure-option="true"
                                     :response-of-yes-indicates-benefit="true"

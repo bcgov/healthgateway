@@ -215,6 +215,7 @@ describe("Public PcrTest Registration Submission with Valid PHN", () => {
         clickRegisterKitButton();
 
         selectorShouldBeVisible(registrationSuccessBanner);
+
         selectorShouldBeVisible(continueBtn);
         cy.get(continueBtn).click();
         cy.location("pathname").should("eq", landingPagePath);
@@ -277,6 +278,10 @@ describe("Public PcrTest Registration Submission with no valid PHN", () => {
         clickRegisterKitButton();
 
         selectorShouldBeVisible(registrationSuccessBanner);
+
+        selectorShouldBeVisible(continueBtn);
+        cy.get(continueBtn).click();
+        cy.location("pathname").should("eq", landingPagePath);
     });
 });
 

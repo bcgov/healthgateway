@@ -9,7 +9,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis" Version="4.1.0" />
-        <PackageReference Include="SonarAnalyzer.CSharp" Version="8.35.0.42613">
+        <PackageReference Include="SonarAnalyzer.CSharp" Version="8.36.0.43782">
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
