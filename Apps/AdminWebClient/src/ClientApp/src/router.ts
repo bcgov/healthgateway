@@ -53,12 +53,6 @@ const routes = [
         },
     },
     {
-        path: "/admin-email",
-        name: "Resend Emails",
-        component: ResendEmailView,
-        meta: { requiresAuth: true, validRoles: [UserRoles.Admin] },
-    },
-    {
         path: "/user-feedback",
         name: "User Feedback list",
         component: FeedbackView,

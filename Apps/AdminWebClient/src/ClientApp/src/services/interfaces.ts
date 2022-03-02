@@ -7,7 +7,6 @@ import CovidCardMailRequest from "@/models/covidCardMailRequest";
 import CovidCardPatientResult from "@/models/covidCardPatientResult";
 import CovidTreatmentAssessmentDetails from "@/models/covidTreatmentAssessmentDetails";
 import CovidTreatmentAssessmentRequest from "@/models/covidTreatmentAssessmentRequest";
-import Email from "@/models/email";
 import ExternalConfiguration from "@/models/externalConfiguration";
 import MessageVerification from "@/models/messageVerification";
 import UserFeedback, { AdminTag, UserFeedbackTag } from "@/models/userFeedback";
@@ -24,12 +23,6 @@ export interface IAuthenticationService {
     getAuthentication(): Promise<AuthenticationData>;
     refreshToken(): Promise<AuthenticationData>;
     destroyToken(): Promise<void>;
-}
-
-export interface IEmailAdminService {
-    initialize(http: IHttpDelegate): void;
-    getEmails(): Promise<Email[]>;
-    resendEmails(emailIds: string[]): Promise<string[]>;
 }
 
 export interface IUserFeedbackService {

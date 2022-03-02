@@ -399,7 +399,7 @@ namespace HealthGateway.Admin.Services
             return requestResult;
         }
 
-        private static void ProcessResponse<T>(RequestResult<T> requestResult, IApiResponse<T> response)
+        private void ProcessResponse<T>(RequestResult<T> requestResult, IApiResponse<T> response)
             where T : class
         {
             if (response.Error is null)
@@ -449,6 +449,8 @@ namespace HealthGateway.Admin.Services
             }
             else
             {
+                this.logger.LogError($"Exception: {response.Error}");
+                this.logger.LogError($"Http Payload: {response.Error.Content}");
                 requestResult.ResultError = new RequestResultError()
                 {
                     ResultMessage = $"An unexpected error occurred while processing external call",
