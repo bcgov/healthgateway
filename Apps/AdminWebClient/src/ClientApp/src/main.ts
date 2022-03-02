@@ -20,7 +20,6 @@ import {
     IConfigService,
     ICovidSupportService,
     IDashboardService,
-    IEmailAdminService,
     IHttpDelegate,
     ISupportService,
     IUserFeedbackService,
@@ -46,9 +45,6 @@ const configService: IConfigService = container.get(
 );
 const authenticationService: IAuthenticationService = container.get(
     SERVICE_IDENTIFIER.AuthenticationService
-);
-const emailAdminService: IEmailAdminService = container.get(
-    SERVICE_IDENTIFIER.EmailAdminService
 );
 
 const supportService: ISupportService = container.get(
@@ -77,7 +73,6 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     authenticationService.initialize(httpDelegate, config);
     userFeedbackService.initialize(httpDelegate);
     dashboardService.initialize(httpDelegate);
-    emailAdminService.initialize(httpDelegate);
     communicationService.initialize(httpDelegate);
     supportService.initialize(httpDelegate);
     covidSupportService.initialize(httpDelegate);

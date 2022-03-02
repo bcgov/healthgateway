@@ -65,12 +65,6 @@ export default class MainNavbar extends Vue {
                 visible: this.isUserAdmin,
             },
             {
-                title: "Resend Emails",
-                icon: "email",
-                to: "/admin-email",
-                visible: this.isUserAdmin,
-            },
-            {
                 title: "Support",
                 icon: "support",
                 to: "/support",
