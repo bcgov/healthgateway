@@ -340,7 +340,7 @@ namespace HealthGateway.Admin.Services
             {
                 IApiResponse<CovidAssessmentResponse> response =
                     await this.immunizationAdminClient.SubmitCovidAssessment(request, accessToken).ConfigureAwait(true);
-                ProcessResponse(requestResult, response);
+                this.ProcessResponse(requestResult, response);
             }
             catch (HttpRequestException e)
             {
@@ -377,7 +377,7 @@ namespace HealthGateway.Admin.Services
                 {
                     IApiResponse<CovidAssessmentDetailsResponse> response =
                         await this.immunizationAdminClient.GetCovidAssessmentDetails(new CovidAssessmentDetailsRequest() { Phn = phn, }, accessToken).ConfigureAwait(true);
-                    ProcessResponse(requestResult, response);
+                    this.ProcessResponse(requestResult, response);
                 }
                 catch (HttpRequestException e)
                 {
