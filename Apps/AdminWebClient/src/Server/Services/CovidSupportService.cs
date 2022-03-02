@@ -39,7 +39,6 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Refit;
@@ -124,11 +123,11 @@ namespace HealthGateway.Admin.Services
                     CovidInformation covidInformation = new()
                     {
                         Blocked = vaccineDetailsResult.ResourcePayload.Blocked,
+                        Patient = patientResult.ResourcePayload,
                     };
 
                     if (!vaccineDetailsResult.ResourcePayload.Blocked)
                     {
-                        covidInformation.Patient = patientResult.ResourcePayload;
                         covidInformation.VaccineDetails = vaccineDetailsResult.ResourcePayload;
                     }
 
