@@ -147,6 +147,8 @@ namespace HealthGateway.WebClient
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseAuth(app);
 
+            DisableTraceMethod(app);
+
             app.UseSpaStaticFiles();
 
             if (env.IsDevelopment())
@@ -222,6 +224,20 @@ namespace HealthGateway.WebClient
                         headers["Content-Type"] = mimeType;
                     }
                 },
+            });
+        }
+
+        private static void DisableTraceMethod(IApplicationBuilder app)
+        {
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Method == "TRACE" || context.Request.Method == "OPTIONS")
+                {
+                    context.Response.StatusCode = 405;
+                    return;
+                }
+
+                await next.Invoke().ConfigureAwait(true);
             });
         }
     }
