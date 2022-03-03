@@ -13,16 +13,16 @@ declare namespace Cypress {
         setupDownloads(): void;
         deleteDownloadsFolder(): void;
         restoreAuthCookies(): void;
-        // /**
-        //  * Select an `<option>` with specific text, value, or index within a `<select>`.
-        //  * This overwrite ensures the `<select>` element is visible and enabled.
-        //  *
-        //  * @see https://on.cypress.io/select
-        //  */
-        // select(
-        //     valueOrTextOrIndex: string | number | Array<string | number>,
-        //     options?: Partial<SelectOptions>
-        // ): Chainable<any>;
+        /**
+         * Select an `<option>` with specific text, value, or index within a `<select>`.
+         * This overwrite ensures the `<select>` element is visible and enabled.
+         *
+         * @see https://on.cypress.io/select
+         */
+        select(
+            valueOrTextOrIndex: string | number | Array<string | number>,
+            options?: Partial<SelectOptions>
+        ): Chainable<any>;
         /**
          * Asserts that a `<select>` element contains an `<option>` with a particular value.
          */
