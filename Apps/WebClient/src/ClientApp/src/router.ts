@@ -364,11 +364,13 @@ const routes = [
         meta: { stateless: true },
     },
     {
-        path: "/*",
+        path: "/not-found",
         component: NotFoundView,
-        meta: {
-            stateless: true,
-        },
+        meta: { stateless: true },
+    },
+    {
+        path: "/*",
+        redirect: "/not-found",
     }, // Not found; Will catch all other paths not covered previously
 ];
 

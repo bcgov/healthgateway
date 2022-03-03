@@ -148,6 +148,8 @@ namespace HealthGateway.AdminWebClient
             this.startupConfig.UseContentSecurityPolicy(app);
             this.startupConfig.UseAuth(app);
 
+            DisableTraceMethod(app);
+
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
@@ -194,6 +196,20 @@ namespace HealthGateway.AdminWebClient
             RewriteOptions rewriteOption = new RewriteOptions()
                 .AddRedirect("(.*[^/])$", "$1/");
             app.UseRewriter(rewriteOption);
+        }
+
+        private static void DisableTraceMethod(IApplicationBuilder app)
+        {
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Method == "TRACE" && !context.Request.Headers.MaxForwards.IsNullOrEmpty())
+                {
+                    context.Response.StatusCode = 405;
+                    return;
+                }
+
+                await next.Invoke().ConfigureAwait(true);
+            });
         }
 
         /// <summary>
