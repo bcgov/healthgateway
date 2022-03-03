@@ -44,10 +44,6 @@ const multipleCollectionDateYear = "2021";
 const multipleCollectionDateMonth = "November";
 const multipleCollectionDateDay = "24";
 
-function selectOption(selector, option) {
-    return cy.get(selector).should("be.visible", "be.enabled").select(option);
-}
-
 function enterCovidTestPHN(phn) {
     cy.get("[data-testid=phnInput]")
         .should("be.visible", "be.enabled")
@@ -65,12 +61,12 @@ function enterFormInputs(
     collectionDateDay
 ) {
     enterCovidTestPHN(phn);
-    selectOption(dobYearSelector, dobYear);
-    selectOption(dobMonthSelector, dobMonth);
-    selectOption(dobDaySelector, dobDay);
-    selectOption(collectionDateYearSelector, collectionDateYear);
-    selectOption(collectionDateMonthSelector, collectionDateMonth);
-    selectOption(collectionDateDaySelector, collectionDateDay);
+    cy.get(dobYearSelector).select(dobYear);
+    cy.get(dobMonthSelector).select(dobMonth);
+    cy.get(dobDaySelector).select(dobDay);
+    cy.get(collectionDateYearSelector).select(collectionDateYear);
+    cy.get(collectionDateMonthSelector).select(collectionDateMonth);
+    cy.get(collectionDateDaySelector).select(collectionDateDay);
 
     clickCovidTestEnterButton();
 }

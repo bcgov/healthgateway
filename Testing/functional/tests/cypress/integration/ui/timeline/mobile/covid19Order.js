@@ -18,26 +18,17 @@ describe("COVID-19 Orders", () => {
 
     it("Validate Card", () => {
         cy.log("Verifying card data");
-        cy.get("[data-testid=timelineCard]")
-            .first()
-            .click()
-            .then(() => {
-                cy.get("[data-testid=backBtn]").should("be.visible");
-                cy.get("[data-testid=entryCardDetailsTitle]").should(
-                    "be.visible"
-                );
-                cy.get("[data-testid=laboratoryHeaderDescription]").should(
-                    "be.visible"
-                );
-                cy.get("[data-testid=laboratoryReport]").should("be.visible");
-                cy.get("[data-testid=laboratoryReportingLab]").should(
-                    "be.visible"
-                );
-                cy.get("[data-testid=laboratoryTestType]").should("be.visible");
-                cy.get("[data-testid=laboratoryTestStatus]").should(
-                    "be.visible"
-                );
-            });
+        cy.get("[data-testid=timelineCard]").first().click();
+
+        cy.get("[data-testid=backBtn]").should("be.visible");
+        cy.get("[data-testid=entryCardDetailsTitle]").should("be.visible");
+        cy.get("[data-testid=laboratoryHeaderDescription]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=laboratoryReport]").should("be.visible");
+        cy.get("[data-testid=laboratoryReportingLab]").should("be.visible");
+        cy.get("[data-testid=laboratoryTestType]").should("be.visible");
+        cy.get("[data-testid=laboratoryTestStatus]").should("be.visible");
 
         cy.get("[data-testid=backBtn]").click();
         cy.get("[data-testid=filterTextInput]").should("be.visible");

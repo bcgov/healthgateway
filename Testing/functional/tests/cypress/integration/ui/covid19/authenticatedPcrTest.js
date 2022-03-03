@@ -1,9 +1,8 @@
-import {
-    selectorShouldBeVisible,
-    getPcrTestTakenTime,
-    selectOption,
-} from "../../../support/utils";
 const { AuthMethod } = require("../../../support/constants");
+import {
+    clickRegisterKitButton,
+    getPcrTestTakenTime,
+} from "../../../support/functions/pcrTestKit";
 
 const pcrTestUrl = "/pcrtest";
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
@@ -30,12 +29,6 @@ const feedbackTestTakenIsRequiredSelector =
 const feedbackTestKitCodeValidSelector =
     "[data-testid=feedback-testkitcode-is-invalid]";
 
-function clickRegisterKitButton() {
-    cy.get("[data-testid=btn-register-kit]")
-        .should("be.enabled", "be.visible")
-        .click();
-}
-
 describe("Authenticated Pcr Test Registration", () => {
     beforeEach(() => {
         cy.enableModules("PcrTest");
@@ -52,36 +45,35 @@ describe("Authenticated Pcr Test Registration", () => {
     });
 
     it("Authenticated PcrTest Registration Form", () => {
-        selectorShouldBeVisible(testKitCodeInput);
-        selectorShouldBeVisible(testTakenMinutesAgo);
-        selectorShouldBeVisible(cancelBtn);
-        selectorShouldBeVisible(registerKitBtn);
-        selectorShouldBeVisible(pcrPrivacyStatement);
+        cy.get(testKitCodeInput).should("be.visible");
+        cy.get(testTakenMinutesAgo).should("be.visible");
+        cy.get(cancelBtn).should("be.visible");
+        cy.get(registerKitBtn).should("be.visible");
+        cy.get(pcrPrivacyStatement).should("be.visible");
     });
 
     it("Required Validations", () => {
         clickRegisterKitButton();
-        selectorShouldBeVisible(feedbackTestKitCodeIsRequiredSelector);
-        selectorShouldBeVisible(feedbackTestTakenIsRequiredSelector);
+        cy.get(feedbackTestKitCodeIsRequiredSelector).should("be.visible");
+        cy.get(feedbackTestTakenIsRequiredSelector).should("be.visible");
     });
 
     it("Test Kit Code Invalid Validations", () => {
         cy.get(testKitCodeInput).type("111");
         clickRegisterKitButton();
-        selectorShouldBeVisible(feedbackTestKitCodeValidSelector);
+        cy.get(feedbackTestKitCodeValidSelector).should("be.visible");
     });
 
     it("Successful Test Kit", () => {
         // get the data in the fixture.
         cy.fixture("LaboratoryService/authenticatedPcrTest.json").then(
-            function (data) {
+            (data) => {
                 cy.get(testKitCodeInput).type(
                     data.resourcePayload.shortCodeFirst +
                         "-" +
                         data.resourcePayload.shortCodeSecond
                 );
-                selectOption(
-                    testTakenMinutesAgo,
+                cy.get(testTakenMinutesAgo).select(
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -89,15 +81,13 @@ describe("Authenticated Pcr Test Registration", () => {
             }
         );
         clickRegisterKitButton();
-        selectorShouldBeVisible(registrationSuccessBanner);
-        selectorShouldBeVisible(logoutBtn);
-        cy.get(logoutBtn).click();
+        cy.get(registrationSuccessBanner).should("be.visible");
+        cy.get(logoutBtn).should("be.visible").click();
         cy.url().should("include", "/logout");
     });
 
     it("Log Out Using Header", () => {
-        selectorShouldBeVisible(headerLogOutBtn);
-        cy.get(headerLogOutBtn).click();
+        cy.get(headerLogOutBtn).should("be.visible").click();
         cy.url().should("include", "/logout");
     });
 });
@@ -120,14 +110,13 @@ describe("Authenticated Pcr Test Registration with Error", () => {
     it("Error Registration Test Kit", () => {
         // get the data in the fixture.
         cy.fixture("LaboratoryService/authenticatedPcrTestError.json").then(
-            function (data) {
+            (data) => {
                 cy.get(testKitCodeInput).type(
                     data.resourcePayload.shortCodeFirst +
                         "-" +
                         data.resourcePayload.shortCodeSecond
                 );
-                selectOption(
-                    testTakenMinutesAgo,
+                cy.get(testTakenMinutesAgo).select(
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -135,7 +124,7 @@ describe("Authenticated Pcr Test Registration with Error", () => {
             }
         );
         clickRegisterKitButton();
-        selectorShouldBeVisible(errorBanner);
+        cy.get(errorBanner).should("be.visible");
     });
 });
 
@@ -157,14 +146,13 @@ describe("Authenticated Pcr Test Registration Previously Processed", () => {
     it("Duplicate Test Kit Registration", () => {
         // get the data in the fixture.
         cy.fixture("LaboratoryService/authenticatedPcrTestDuplicate.json").then(
-            function (data) {
+            (data) => {
                 cy.get(testKitCodeInput).type(
                     data.resourcePayload.shortCodeFirst +
                         "-" +
                         data.resourcePayload.shortCodeSecond
                 );
-                selectOption(
-                    testTakenMinutesAgo,
+                cy.get(testTakenMinutesAgo).select(
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -172,6 +160,6 @@ describe("Authenticated Pcr Test Registration Previously Processed", () => {
             }
         );
         clickRegisterKitButton();
-        selectorShouldBeVisible(processedBanner);
+        cy.get(processedBanner).should("be.visible");
     });
 });

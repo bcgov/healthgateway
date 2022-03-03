@@ -77,9 +77,7 @@ describe("Report Filtering", () => {
     });
 
     it("Validate Medication Exclusions", () => {
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("Medications");
+        cy.get("[data-testid=reportType]").select("Medications");
 
         cy.get("[data-testid=advancedPanel]").should("not.be.visible");
 
@@ -96,7 +94,6 @@ describe("Report Filtering", () => {
                 const brandText = $brandName.text().trim();
 
                 cy.get("[data-testid=medicationExclusionFilter] select")
-                    .should("be.visible")
                     .focus()
                     .select(brandText);
 

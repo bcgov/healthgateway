@@ -16,9 +16,7 @@ describe("Export Reports - Immunizations - Invalid Doses", () => {
             "/reports"
         );
 
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("Immunizations");
+        cy.get("[data-testid=reportType]").select("Immunizations");
 
         cy.get("[data-testid=timelineLoading]").should("be.visible");
 
