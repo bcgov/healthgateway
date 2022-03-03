@@ -114,8 +114,7 @@ $
 #### Initialize a broken cluster node
 
 ```console
-patronictl reinit patroni-postgres patroni-postgres-[node#]
-$ patronictl reinit patroni-postgres patroni-postgres-#
+$ patronictl reinit patroni-postgres patroni-postgres-[node#]
 + Cluster: patroni-postgres (6891020645577564276) -------+----+-----------+
 | Member             | Host          | Role    | State   | TL | Lag in MB |
 +--------------------+---------------+---------+---------+----+-----------+
