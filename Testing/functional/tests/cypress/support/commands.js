@@ -296,6 +296,7 @@ Cypress.Commands.add(
         cy.wrap(subject)
             .children("[value=" + value + "]")
             .should("exist");
+        cy.wrap(subject);
     }
 );
 
@@ -306,6 +307,7 @@ Cypress.Commands.add(
         cy.wrap(subject)
             .children("[value=" + value + "]")
             .should("not.exist");
+        cy.wrap(subject);
     }
 );
 
