@@ -285,7 +285,7 @@ Cypress.Commands.overwrite(
     "select",
     (originalFn, subject, valueOrTextOrIndex, options) => {
         cy.wrap(subject).should("be.visible", "be.enabled");
-        originalFn(subject, valueOrTextOrIndex, options);
+        cy.wrap(originalFn(subject, valueOrTextOrIndex, options));
     }
 );
 
