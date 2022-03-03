@@ -121,8 +121,8 @@ describe("Public Vaccine Card Form", () => {
 
         // Test Future Year does not exist
         cy.log("Testing Future Year does not exist.");
-        cy.get(dobYearSelector).shouldNotContain(nextYear.toString());
-        cy.get(dovYearSelector).shouldNotContain(nextYear.toString());
+        cy.get(dobYearSelector).shouldNotContainValue(nextYear.toString());
+        cy.get(dovYearSelector).shouldNotContainValue(nextYear.toString());
 
         // Test Current Year
         cy.get(dobYearSelector).select(year.toString());
@@ -134,8 +134,12 @@ describe("Public Vaccine Card Form", () => {
             cy.log(
                 "Current year has been set in dropdown, so if next month is 1 - January, it means current month is December. Test Future Month does not exist. Month can only be current or past month for current year."
             );
-            cy.get(dobMonthSelector).shouldNotContain(nextMonth);
-            cy.get(dovMonthSelector).shouldNotContain(nextMonth);
+            cy.get(dobMonthSelector).shouldNotContainValue(
+                nextMonth.toString()
+            );
+            cy.get(dovMonthSelector).shouldNotContainValue(
+                nextMonth.toString()
+            );
         }
 
         cy.log("Test and set Current Month");
@@ -147,13 +151,13 @@ describe("Public Vaccine Card Form", () => {
             cy.log(
                 "Current Year and Month have been set. If next day is 1, it means previous day was last day of current month. Next Day is associated with the current month. Test Future Day in current month does not exist."
             );
-            cy.get(dobDaySelector).shouldNotContain(nextDay);
-            cy.get(dovDaySelector).shouldNotContain(nextDay);
+            cy.get(dobDaySelector).shouldNotContainValue(nextDay.toString());
+            cy.get(dovDaySelector).shouldNotContainValue(nextDay.toString());
         }
         //Test Current Day exists
         cy.log("Test Current Day exists.");
-        cy.get(dobDaySelector).shouldContain(day);
-        cy.get(dovDaySelector).shouldContain(day);
+        cy.get(dobDaySelector).shouldContainValue(day.toString());
+        cy.get(dovDaySelector).shouldContainValue(day.toString());
     });
 
     it("Validate DOB Year Required", () => {

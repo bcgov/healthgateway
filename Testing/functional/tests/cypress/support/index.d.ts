@@ -26,11 +26,11 @@ declare namespace Cypress {
         /**
          * Asserts that a `<select>` element contains an `<option>` with a particular value.
          */
-        shouldContain(value: string): Chainable<any>;
+        shouldContainValue(value: string): Chainable<any>;
         /**
          * Asserts that a `<select>` element does not contain an `<option>` with a particular value.
          */
-        shouldNotContain(value: string): Chainable<any>;
+        shouldNotContainValue(value: string): Chainable<any>;
         /**
          * Populates the values in an hg-date-dropdown component from a given date string.
          *

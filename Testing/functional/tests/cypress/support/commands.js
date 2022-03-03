@@ -290,7 +290,7 @@ Cypress.Commands.overwrite(
 );
 
 Cypress.Commands.add(
-    "shouldContain",
+    "shouldContainValue",
     { prevSubject: "element" },
     (subject, value) => {
         cy.wrap(subject)
@@ -300,7 +300,7 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add(
-    "shouldNotContain",
+    "shouldNotContainValue",
     { prevSubject: "element" },
     (subject, value) => {
         cy.wrap(subject)
