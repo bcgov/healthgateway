@@ -11,17 +11,6 @@ const { AuthMethod } = require("./constants");
 const { globalStorage } = require("./globalStorage");
 require("cy-verify-downloads").addCustomCommand();
 
-function storeAuthCookies() {
-    cy.getCookies().then((cookies) => {
-        globalStorage.authCookies = cookies;
-    });
-}
-
-function generateCodeVerifier() {
-    var code_verifier = generateRandomString(96);
-    return code_verifier;
-}
-
 function generateRandomString(length) {
     var text = "";
     var possible =
@@ -110,7 +99,10 @@ Cypress.Commands.add(
                         cy.get("[data-testid=headerDropdownBtn]").should(
                             "exist"
                         );
-                        storeAuthCookies();
+                        // store auth cookies
+                        cy.getCookies().then((cookies) => {
+                            globalStorage.authCookies = cookies;
+                        });
                     });
             });
         } else if (authMethod == AuthMethod.BCSC) {
@@ -238,14 +230,6 @@ Cypress.Commands.add("checkTimelineHasLoaded", () => {
     cy.get("[data-testid=loading-in-progress]").should("not.exist");
 });
 
-Cypress.Commands.add("checkVaccineRecordHasLoaded", () => {
-    cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
-});
-
-Cypress.Commands.add("checkFederalCardButtonLoaded", () => {
-    cy.get("[data-testid=proof-vaccination-card-btn]").should("not.be.visible");
-});
-
 Cypress.Commands.add("enableModules", (modules) => {
     const isArrayOfModules = Array.isArray(modules);
     return cy
@@ -283,6 +267,11 @@ Cypress.Commands.add("setupDownloads", () => {
     }
 });
 
+Cypress.Commands.add("deleteDownloadsFolder", () => {
+    const downloadsFolder = Cypress.config("downloadsFolder");
+    cy.task("deleteFolder", downloadsFolder);
+});
+
 Cypress.Commands.add("restoreAuthCookies", () => {
     globalStorage.authCookies.forEach((cookie) => {
         cy.setCookie(cookie.name, cookie.value);
@@ -291,3 +280,44 @@ Cypress.Commands.add("restoreAuthCookies", () => {
 
     Cypress.Cookies.preserveOnce(...names);
 });
+
+Cypress.Commands.overwrite(
+    "select",
+    (originalFn, valueOrTextOrIndex, options) => {
+        subject.should("be.visible", "be.enabled");
+        return originalFn(valueOrTextOrIndex, options);
+    }
+);
+
+Cypress.Commands.add(
+    "shouldContain",
+    { prevSubject: "element" },
+    (subject, value) => {
+        subject.children("[value=" + value + "]").should("exist");
+        return subject;
+    }
+);
+
+Cypress.Commands.add(
+    "shouldNotContain",
+    { prevSubject: "element" },
+    (subject, value) => {
+        subject.children("[value=" + value + "]").should("not.exist");
+        return subject;
+    }
+);
+
+Cypress.Commands.add(
+    "populateDateDropdowns",
+    (yearSelector, monthSelector, daySelector, dateString) => {
+        const date = new Date(dateString);
+
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1; // add 1 to the returned month since they're indexed starting at 0
+        const day = date.getDate();
+
+        cy.get(yearSelector).select(year.toString());
+        cy.get(monthSelector).select(month.toString());
+        cy.get(daySelector).select(day.toString());
+    }
+);

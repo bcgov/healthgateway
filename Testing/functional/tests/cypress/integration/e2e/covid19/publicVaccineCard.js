@@ -1,5 +1,3 @@
-import { deleteDownloadsFolder } from "../../../support/utils";
-
 const dobYearSelector =
     "[data-testid=dateOfBirthInput] [data-testid=formSelectYear]";
 const dobMonthSelector =
@@ -30,10 +28,6 @@ function enterVaccineCardPHN(phn) {
         .type(phn);
 }
 
-function selectOption(selector, option) {
-    return cy.get(selector).should("be.visible", "be.enabled").select(option);
-}
-
 function clickVaccineCardEnterButton() {
     cy.get("[data-testid=btnEnter]").should("be.enabled", "be.visible").click();
 }
@@ -57,12 +51,12 @@ describe("Public Vaccine Card Result", () => {
 
         enterVaccineCardPHN(phn);
 
-        selectOption(dobYearSelector, dobYear);
-        selectOption(dobMonthSelector, dobMonth);
-        selectOption(dobDaySelector, dobDay);
-        selectOption(dovYearSelector, dovYear);
-        selectOption(dovMonthSelector, dovMonth);
-        selectOption(dovDaySelector, dovDay);
+        cy.get(dobYearSelector).select(dobYear);
+        cy.get(dobMonthSelector).select(dobMonth);
+        cy.get(dobDaySelector).select(dobDay);
+        cy.get(dovYearSelector).select(dovYear);
+        cy.get(dovMonthSelector).select(dovMonth);
+        cy.get(dovDaySelector).select(dovDay);
 
         clickVaccineCardEnterButton();
 
@@ -79,12 +73,12 @@ describe("Public Vaccine Card Result", () => {
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(fullyVaccinatedPhn);
-        selectOption(dobYearSelector, fullyVaccinatedDobYear);
-        selectOption(dobMonthSelector, fullyVaccinatedDobMonth);
-        selectOption(dobDaySelector, fullyVaccinatedDobDay);
-        selectOption(dovYearSelector, fullyVaccinatedDovYear);
-        selectOption(dovMonthSelector, fullyVaccinatedDovMonth);
-        selectOption(dovDaySelector, fullyVaccinatedDovDay);
+        cy.get(dobYearSelector).select(fullyVaccinatedDobYear);
+        cy.get(dobMonthSelector).select(fullyVaccinatedDobMonth);
+        cy.get(dobDaySelector).select(fullyVaccinatedDobDay);
+        cy.get(dovYearSelector).select(fullyVaccinatedDovYear);
+        cy.get(dovMonthSelector).select(fullyVaccinatedDovMonth);
+        cy.get(dovDaySelector).select(fullyVaccinatedDovDay);
 
         clickVaccineCardEnterButton();
 
@@ -95,7 +89,7 @@ describe("Public Vaccine Card Result", () => {
 
 describe("Public Vaccine Card Downloads", () => {
     beforeEach(() => {
-        deleteDownloadsFolder();
+        cy.deleteDownloadsFolder();
 
         cy.enableModules([
             "Immunization",
@@ -106,12 +100,12 @@ describe("Public Vaccine Card Downloads", () => {
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(fullyVaccinatedPhn);
-        selectOption(dobYearSelector, fullyVaccinatedDobYear);
-        selectOption(dobMonthSelector, fullyVaccinatedDobMonth);
-        selectOption(dobDaySelector, fullyVaccinatedDobDay);
-        selectOption(dovYearSelector, fullyVaccinatedDovYear);
-        selectOption(dovMonthSelector, fullyVaccinatedDovMonth);
-        selectOption(dovDaySelector, fullyVaccinatedDovDay);
+        cy.get(dobYearSelector).select(fullyVaccinatedDobYear);
+        cy.get(dobMonthSelector).select(fullyVaccinatedDobMonth);
+        cy.get(dobDaySelector).select(fullyVaccinatedDobDay);
+        cy.get(dovYearSelector).select(fullyVaccinatedDovYear);
+        cy.get(dovMonthSelector).select(fullyVaccinatedDovMonth);
+        cy.get(dovDaySelector).select(fullyVaccinatedDovDay);
 
         clickVaccineCardEnterButton();
     });

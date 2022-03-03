@@ -1,12 +1,9 @@
-import {
-    getYear,
-    getMonth,
-    getDay,
-    selectorShouldBeVisible,
-    getPcrTestTakenTime,
-    selectOption,
-} from "../../../support/utils";
 const { AuthMethod } = require("../../../support/constants");
+import {
+    clickManualRegistrationButton,
+    clickRegisterKitButton,
+    getPcrTestTakenTime,
+} from "../../../support/functions/pcrTestKit";
 
 const landingPagePath = "/";
 
@@ -32,18 +29,6 @@ const logoutBtn = "[data-testid=logoutBtn]";
 const errorBanner = "[data-testid=errorBanner]";
 const processedBanner = "[data-testid=alreadyProcessedBanner]";
 
-function clickManualRegistrationButton() {
-    cy.get("[data-testid=btn-manual]")
-        .should("be.enabled", "be.visible")
-        .click();
-}
-
-function clickRegisterKitButton() {
-    cy.get("[data-testid=btn-register-kit]")
-        .should("be.enabled", "be.visible")
-        .click();
-}
-
 describe("Authenticated PCR Test Kit Registration", () => {
     beforeEach(() => {
         cy.enableModules("PcrTest");
@@ -61,19 +46,17 @@ describe("Authenticated PCR Test Kit Registration", () => {
         // populate the form with values from the fixture
         cy.fixture(
             "LaboratoryService/authenticatedPcrTestWithTestKit.json"
-        ).then(function (data) {
-            selectOption(
-                testTakenMinutesAgo,
+        ).then((data) => {
+            cy.get(testTakenMinutesAgo).select(
                 getPcrTestTakenTime(data.resourcePayload.testTakenMinutesAgo)
             );
         });
 
         clickRegisterKitButton();
 
-        selectorShouldBeVisible(registrationSuccessBanner);
+        cy.get(registrationSuccessBanner).should("be.visible");
 
-        selectorShouldBeVisible(logoutBtn);
-        cy.get(logoutBtn).click();
+        cy.get(logoutBtn).should("be.visible").click();
         cy.url().should("include", "/logout");
     });
 
@@ -83,16 +66,15 @@ describe("Authenticated PCR Test Kit Registration", () => {
         // populate the form with values from the fixture
         cy.fixture(
             "LaboratoryService/authenticatedPcrTestDuplicateWithTestKit.json"
-        ).then(function (data) {
-            selectOption(
-                testTakenMinutesAgo,
+        ).then((data) => {
+            cy.get(testTakenMinutesAgo).select(
                 getPcrTestTakenTime(data.resourcePayload.testTakenMinutesAgo)
             );
         });
 
         clickRegisterKitButton();
 
-        selectorShouldBeVisible(processedBanner);
+        cy.get(processedBanner).should("be.visible");
     });
 
     it("Error with Test Kit CID", () => {
@@ -100,9 +82,8 @@ describe("Authenticated PCR Test Kit Registration", () => {
 
         // populate the form with values from the fixture
         cy.fixture("LaboratoryService/authenticatedPcrTestError.json").then(
-            function (data) {
-                selectOption(
-                    testTakenMinutesAgo,
+            (data) => {
+                cy.get(testTakenMinutesAgo).select(
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -112,7 +93,7 @@ describe("Authenticated PCR Test Kit Registration", () => {
 
         clickRegisterKitButton();
 
-        selectorShouldBeVisible(errorBanner);
+        cy.get(errorBanner).should("be.visible");
     });
 
     it("Error with Test Kit Code", () => {
@@ -120,14 +101,13 @@ describe("Authenticated PCR Test Kit Registration", () => {
 
         // populate the form with values from the fixture
         cy.fixture("LaboratoryService/authenticatedPcrTestError.json").then(
-            function (data) {
+            (data) => {
                 cy.get(testKitCodeInput).type(
                     data.resourcePayload.shortCodeFirst +
                         "-" +
                         data.resourcePayload.shortCodeSecond
                 );
-                selectOption(
-                    testTakenMinutesAgo,
+                cy.get(testTakenMinutesAgo).select(
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -137,7 +117,7 @@ describe("Authenticated PCR Test Kit Registration", () => {
 
         clickRegisterKitButton();
 
-        selectorShouldBeVisible(errorBanner);
+        cy.get(errorBanner).should("be.visible");
     });
 });
 
@@ -152,25 +132,18 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
 
         // populate the form with values from the fixture
         cy.fixture("LaboratoryService/publicPcrTestValidPhn.json").then(
-            function (data) {
+            (data) => {
                 cy.get(firstNameInput).type(data.resourcePayload.firstName);
                 cy.get(lastNameInput).type(data.resourcePayload.lastName);
                 cy.get(phnInput).type(data.resourcePayload.phn);
 
-                selectOption(
+                cy.populateDateDropdowns(
                     formSelectYear,
-                    getYear(data.resourcePayload.dob).toString()
-                );
-                selectOption(
                     formSelectMonth,
-                    getMonth(data.resourcePayload.dob).toString()
-                );
-                selectOption(
                     formSelectDay,
-                    getDay(data.resourcePayload.dob).toString()
+                    data.resourcePayload.dob
                 );
-                selectOption(
-                    testTakenMinutesAgo,
+                cy.get(testTakenMinutesAgo).select(
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -180,9 +153,9 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
 
         clickRegisterKitButton();
 
-        selectorShouldBeVisible(registrationSuccessBanner);
+        cy.get(registrationSuccessBanner).should("be.visible");
 
-        selectorShouldBeVisible(continueBtn);
+        cy.get(continueBtn).should("be.visible");
         cy.get(continueBtn).click();
         cy.location("pathname").should("eq", landingPagePath);
     });
@@ -193,7 +166,7 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
 
         // populate the form with values from the fixture
         cy.fixture("LaboratoryService/publicPcrTestNoValidPhn.json").then(
-            function (data) {
+            (data) => {
                 cy.get(firstNameInput).type(data.resourcePayload.firstName);
                 cy.get(lastNameInput).type(data.resourcePayload.lastName);
 
@@ -207,20 +180,13 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
                 cy.get(cityInput).type(data.resourcePayload.city);
                 cy.get(zipInput).type(data.resourcePayload.postalOrZip);
 
-                selectOption(
+                cy.populateDateDropdowns(
                     formSelectYear,
-                    getYear(data.resourcePayload.dob).toString()
-                );
-                selectOption(
                     formSelectMonth,
-                    getMonth(data.resourcePayload.dob).toString()
-                );
-                selectOption(
                     formSelectDay,
-                    getDay(data.resourcePayload.dob).toString()
+                    data.resourcePayload.dob
                 );
-                selectOption(
-                    testTakenMinutesAgo,
+                cy.get(testTakenMinutesAgo).select(
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -230,9 +196,9 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
 
         clickRegisterKitButton();
 
-        selectorShouldBeVisible(registrationSuccessBanner);
+        cy.get(registrationSuccessBanner).should("be.visible");
 
-        selectorShouldBeVisible(continueBtn);
+        cy.get(continueBtn).should("be.visible");
         cy.get(continueBtn).click();
         cy.location("pathname").should("eq", landingPagePath);
     });
@@ -243,25 +209,18 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
 
         // populate the form with values from the fixture
         cy.fixture("LaboratoryService/publicPcrTestValidPhn.json").then(
-            function (data) {
+            (data) => {
                 cy.get(firstNameInput).type(data.resourcePayload.firstName);
                 cy.get(lastNameInput).type(data.resourcePayload.lastName);
                 cy.get(phnInput).type(data.resourcePayload.phn);
 
-                selectOption(
+                cy.populateDateDropdowns(
                     formSelectYear,
-                    getYear(data.resourcePayload.dob).toString()
-                );
-                selectOption(
                     formSelectMonth,
-                    getMonth(data.resourcePayload.dob).toString()
-                );
-                selectOption(
                     formSelectDay,
-                    getDay(data.resourcePayload.dob).toString()
+                    data.resourcePayload.dob
                 );
-                selectOption(
-                    testTakenMinutesAgo,
+                cy.get(testTakenMinutesAgo).select(
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -271,7 +230,7 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
 
         clickRegisterKitButton();
 
-        selectorShouldBeVisible(processedBanner);
+        cy.get(processedBanner).should("be.visible");
     });
 
     it("Error with Test Kit CID", () => {
@@ -280,25 +239,18 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
 
         // populate the form with values from the fixture
         cy.fixture("LaboratoryService/publicPcrTestValidPhn.json").then(
-            function (data) {
+            (data) => {
                 cy.get(firstNameInput).type(data.resourcePayload.firstName);
                 cy.get(lastNameInput).type(data.resourcePayload.lastName);
                 cy.get(phnInput).type(data.resourcePayload.phn);
 
-                selectOption(
+                cy.populateDateDropdowns(
                     formSelectYear,
-                    getYear(data.resourcePayload.dob).toString()
-                );
-                selectOption(
                     formSelectMonth,
-                    getMonth(data.resourcePayload.dob).toString()
-                );
-                selectOption(
                     formSelectDay,
-                    getDay(data.resourcePayload.dob).toString()
+                    data.resourcePayload.dob
                 );
-                selectOption(
-                    testTakenMinutesAgo,
+                cy.get(testTakenMinutesAgo).select(
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -308,7 +260,7 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
 
         clickRegisterKitButton();
 
-        selectorShouldBeVisible(errorBanner);
+        cy.get(errorBanner).should("be.visible");
     });
 
     it("Error with Test Kit Code", () => {
@@ -317,14 +269,13 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
 
         // populate the form with values from the fixture
         cy.fixture("LaboratoryService/authenticatedPcrTestError.json").then(
-            function (data) {
+            (data) => {
                 cy.get(testKitCodeInput).type(
                     data.resourcePayload.shortCodeFirst +
                         "-" +
                         data.resourcePayload.shortCodeSecond
                 );
-                selectOption(
-                    testTakenMinutesAgo,
+                cy.get(testTakenMinutesAgo).select(
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -332,28 +283,22 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
             }
         );
         cy.fixture("LaboratoryService/publicPcrTestValidPhn.json").then(
-            function (data) {
+            (data) => {
                 cy.get(firstNameInput).type(data.resourcePayload.firstName);
                 cy.get(lastNameInput).type(data.resourcePayload.lastName);
                 cy.get(phnInput).type(data.resourcePayload.phn);
 
-                selectOption(
+                cy.populateDateDropdowns(
                     formSelectYear,
-                    getYear(data.resourcePayload.dob).toString()
-                );
-                selectOption(
                     formSelectMonth,
-                    getMonth(data.resourcePayload.dob).toString()
-                );
-                selectOption(
                     formSelectDay,
-                    getDay(data.resourcePayload.dob).toString()
+                    data.resourcePayload.dob
                 );
             }
         );
 
         clickRegisterKitButton();
 
-        selectorShouldBeVisible(errorBanner);
+        cy.get(errorBanner).should("be.visible");
     });
 });

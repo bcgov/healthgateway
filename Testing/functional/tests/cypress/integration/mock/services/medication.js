@@ -1,19 +1,7 @@
-const { AuthMethod } = require("../../../support/constants");
-
-function verifyProvincialDrug(drug) {
-    expect(drug).to.not.be.null;
-    expect(drug.din).to.equal("66999990");
-    expect(drug.provincialData.pharmaCareDrug).to.not.be.null;
-    expect(drug.provincialData.pharmaCareDrug.dinpin).to.equal("66999990");
-}
-
-function verifyFedDrug(drug) {
-    expect(drug).to.not.be.null;
-    expect(drug.din).to.equal("02391724");
-    expect(drug.federalData.drugProduct.drugIdentificationNumber).to.equal(
-        "02391724"
-    );
-}
+import {
+    verifyProvincialDrug,
+    verifyFedDrug,
+} from "../../../support/medication";
 
 describe("Medication Service", () => {
     beforeEach(() => {

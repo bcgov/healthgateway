@@ -1,9 +1,5 @@
 const { AuthMethod } = require("../../../../support/constants");
 
-function selectorShouldBeVisible(selector) {
-    cy.get(selector).should("be.visible");
-}
-
 describe("Laboratory Orders", () => {
     beforeEach(() => {
         cy.viewport("iphone-6");
@@ -19,37 +15,30 @@ describe("Laboratory Orders", () => {
 
     it("Validate Card", () => {
         cy.log("Verifying card data");
-        cy.get("[data-testid=timelineCard]")
-            .first()
-            .click()
-            .then(() => {
-                selectorShouldBeVisible("[data-testid=backBtn]");
-                selectorShouldBeVisible("[data-testid=entryCardDetailsTitle]");
-                selectorShouldBeVisible(
-                    "[data-testid=laboratoryHeaderResultCount]"
-                );
-                selectorShouldBeVisible(
-                    "[data-testid=laboratoryCollectionDate]"
-                );
-                selectorShouldBeVisible(
-                    "[data-testid=laboratoryOrderingProvider]"
-                );
-                selectorShouldBeVisible("[data-testid=laboratoryReportingLab]");
-            });
+        cy.get("[data-testid=timelineCard]").first().click();
+
+        cy.get("[data-testid=backBtn]").should("be.visible");
+        cy.get("[data-testid=entryCardDetailsTitle]").should("be.visible");
+        cy.get("[data-testid=laboratoryHeaderResultCount]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=laboratoryCollectionDate]").should("be.visible");
+        cy.get("[data-testid=laboratoryOrderingProvider]").should("be.visible");
+        cy.get("[data-testid=laboratoryReportingLab]").should("be.visible");
 
         cy.get("[data-testid=laboratoryResultTable]")
             .first()
-            .then(() => {
+            .within(() => {
                 cy.get("td:nth-child(3)")
                     .eq(1)
                     .then(($status) => {
                         cy.get("td:nth-child(2)")
                             .eq(1)
                             .then(($result) => {
-                                cy.log($result.text().trim());
-                                cy.log($status.text().trim());
-                                let result = $result.text().trim();
-                                let status = $status.text().trim();
+                                const result = $result.text().trim();
+                                const status = $status.text().trim();
+                                cy.log(result);
+                                cy.log(status);
 
                                 if (status === "Partial") {
                                     expect(result).equal("Pending");
@@ -61,6 +50,7 @@ describe("Laboratory Orders", () => {
                             });
                     });
             });
+
         cy.get("[data-testid=backBtn]").click();
         cy.get("[data-testid=filterTextInput]").should("be.visible");
     });

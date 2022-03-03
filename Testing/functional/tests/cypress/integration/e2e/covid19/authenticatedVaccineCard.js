@@ -1,4 +1,3 @@
-import { deleteDownloadsFolder } from "../../../support/utils";
 const { AuthMethod } = require("../../../support/constants");
 const covid19Url = "/covid19";
 
@@ -91,7 +90,7 @@ describe("Authenticated Vaccine Card", () => {
     });
 
     it("Save As PDF", () => {
-        deleteDownloadsFolder();
+        cy.deleteDownloadsFolder();
 
         cy.intercept("GET", "**/v1/api/AuthenticatedVaccineStatus?hdid=*").as(
             "getVaccinationStatus"

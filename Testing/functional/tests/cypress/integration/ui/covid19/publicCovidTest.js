@@ -27,22 +27,6 @@ const dummyYear = "2021";
 const dummyMonth = "June";
 const dummyDay = "15";
 
-function selectOption(selector, option) {
-    return cy.get(selector).should("be.visible", "be.enabled").select(option);
-}
-
-function selectShouldContain(selector, value) {
-    cy.get(selector)
-        .children("[value=" + value + "]")
-        .should("exist");
-}
-
-function selectShouldNotContain(selector, value) {
-    cy.get(selector)
-        .children("[value=" + value + "]")
-        .should("not.exist");
-}
-
 function enterCovidTestPHN(phn) {
     cy.get("[data-testid=phnInput]")
         .should("be.visible", "be.enabled")
@@ -85,7 +69,7 @@ describe("Public COVID-19 Test Form", () => {
         cy.log("Validate valid PHN passes validation.");
         enterCovidTestPHN(Cypress.env("phn"));
 
-        selectOption(dobYearSelector, "Year");
+        cy.get(dobYearSelector).select("Year");
 
         cy.get("[data-testid=phnInput]")
             .should("be.visible", "be.enabled")
@@ -130,12 +114,14 @@ describe("Public COVID-19 Test Form", () => {
 
         // Test Future Year does not exist
         cy.log("Testing Future Year does not exist.");
-        selectShouldNotContain(dobYearSelector, nextYear.toString());
-        selectShouldNotContain(collectionDateYearSelector, nextYear.toString());
+        cy.get(dobYearSelector).shouldNotContain(nextYear.toString());
+        cy.get(collectionDateYearSelector).shouldNotContain(
+            nextYear.toString()
+        );
 
         // Test Current Year
-        selectOption(dobYearSelector, year.toString());
-        selectOption(collectionDateYearSelector, year.toString());
+        cy.get(dobYearSelector).select(year.toString());
+        cy.get(collectionDateYearSelector).select(year.toString());
         cy.log("Testing Current Year.");
 
         if (nextMonth > 1) {
@@ -143,31 +129,31 @@ describe("Public COVID-19 Test Form", () => {
             cy.log(
                 "Current year has been set in dropdown, so if next month is 1 - January, it means current month is December. Test Future Month does not exist. Month can only be current or past month for current year."
             );
-            selectShouldNotContain(dobMonthSelector, nextMonth);
-            selectShouldNotContain(collectionDateMonthSelector, nextMonth);
+            cy.get(dobMonthSelector).shouldNotContain(nextMonth);
+            cy.get(collectionDateMonthSelector).shouldNotContain(nextMonth);
         }
 
         cy.log("Test and set Current Month");
-        selectOption(dobMonthSelector, monthNames[monthNumber]);
-        selectOption(collectionDateMonthSelector, monthNames[monthNumber]);
+        cy.get(dobMonthSelector).select(monthNames[monthNumber]);
+        cy.get(collectionDateMonthSelector).select(monthNames[monthNumber]);
 
         if (nextDay > 1) {
             cy.log("Next Day: " + nextDay);
             cy.log(
                 "Current Year and Month have been set. If next day is 1, it means previous day was last day of current month. Next Day is associated with the current month. Test Future Day in current month does not exist."
             );
-            selectShouldNotContain(dobDaySelector, nextDay);
-            selectShouldNotContain(collectionDateDaySelector, nextDay);
+            cy.get(dobDaySelector).shouldNotContain(nextDay);
+            cy.get(collectionDateDaySelector).shouldNotContain(nextDay);
         }
         //Test Current Day exists
         cy.log("Test Current Day exists.");
-        selectShouldContain(dobDaySelector, day);
-        selectShouldContain(collectionDateDaySelector, day);
+        cy.get(dobDaySelector).shouldContain(day);
+        cy.get(collectionDateDaySelector).shouldContain(day);
     });
 
     it("Validate DOB Year Required", () => {
-        selectOption(dobMonthSelector, dummyMonth);
-        selectOption(dobDaySelector, dummyDay);
+        cy.get(dobMonthSelector).select(dummyMonth);
+        cy.get(dobDaySelector).select(dummyDay);
 
         clickCovidTestEnterButton();
 
@@ -175,8 +161,8 @@ describe("Public COVID-19 Test Form", () => {
     });
 
     it("Validate DOB Month Required", () => {
-        selectOption(dobYearSelector, dummyYear);
-        selectOption(dobDaySelector, dummyDay);
+        cy.get(dobYearSelector).select(dummyYear);
+        cy.get(dobDaySelector).select(dummyDay);
 
         clickCovidTestEnterButton();
 
@@ -184,8 +170,8 @@ describe("Public COVID-19 Test Form", () => {
     });
 
     it("Validate DOB Day Required", () => {
-        selectOption(dobYearSelector, dummyYear);
-        selectOption(dobMonthSelector, dummyMonth);
+        cy.get(dobYearSelector).select(dummyYear);
+        cy.get(dobMonthSelector).select(dummyMonth);
 
         clickCovidTestEnterButton();
 
@@ -193,8 +179,8 @@ describe("Public COVID-19 Test Form", () => {
     });
 
     it("Validate Collection Date Year Required", () => {
-        selectOption(collectionDateMonthSelector, dummyMonth);
-        selectOption(collectionDateDaySelector, dummyDay);
+        cy.get(collectionDateMonthSelector).select(dummyMonth);
+        cy.get(collectionDateDaySelector).select(dummyDay);
 
         clickCovidTestEnterButton();
 
@@ -202,8 +188,8 @@ describe("Public COVID-19 Test Form", () => {
     });
 
     it("Validate Collection Date Month Required", () => {
-        selectOption(collectionDateYearSelector, dummyYear);
-        selectOption(collectionDateDaySelector, dummyDay);
+        cy.get(collectionDateYearSelector).select(dummyYear);
+        cy.get(collectionDateDaySelector).select(dummyDay);
 
         clickCovidTestEnterButton();
 
@@ -211,8 +197,8 @@ describe("Public COVID-19 Test Form", () => {
     });
 
     it("Validate Collection Date Day Required", () => {
-        selectOption(collectionDateYearSelector, dummyYear);
-        selectOption(collectionDateMonthSelector, dummyMonth);
+        cy.get(collectionDateYearSelector).select(dummyYear);
+        cy.get(collectionDateMonthSelector).select(dummyMonth);
 
         clickCovidTestEnterButton();
 
@@ -242,12 +228,12 @@ describe("Public COVID-19 Test Results", () => {
         });
 
         enterCovidTestPHN(phn);
-        selectOption(dobYearSelector, dobYear);
-        selectOption(dobMonthSelector, dobMonth);
-        selectOption(dobDaySelector, dobDay);
-        selectOption(collectionDateYearSelector, collectionDateYear);
-        selectOption(collectionDateMonthSelector, collectionDateMonth);
-        selectOption(collectionDateDaySelector, collectionDateDay);
+        cy.get(dobYearSelector).select(dobYear);
+        cy.get(dobMonthSelector).select(dobMonth);
+        cy.get(dobDaySelector).select(dobDay);
+        cy.get(collectionDateYearSelector).select(collectionDateYear);
+        cy.get(collectionDateMonthSelector).select(collectionDateMonth);
+        cy.get(collectionDateDaySelector).select(collectionDateDay);
 
         clickCovidTestEnterButton();
         cy.get("[data-testid=public-covid-test-result-form-title]").should(
@@ -294,12 +280,12 @@ describe("Public COVID-19 Test Results", () => {
 
         enterCovidTestPHN(phn);
 
-        selectOption(dobYearSelector, dobYear);
-        selectOption(dobMonthSelector, dobMonth);
-        selectOption(dobDaySelector, dobDay);
-        selectOption(collectionDateYearSelector, collectionDateYear);
-        selectOption(collectionDateMonthSelector, collectionDateMonth);
-        selectOption(collectionDateDaySelector, collectionDateDay);
+        cy.get(dobYearSelector).select(dobYear);
+        cy.get(dobMonthSelector).select(dobMonth);
+        cy.get(dobDaySelector).select(dobDay);
+        cy.get(collectionDateYearSelector).select(collectionDateYear);
+        cy.get(collectionDateMonthSelector).select(collectionDateMonth);
+        cy.get(collectionDateDaySelector).select(collectionDateDay);
         clickCovidTestEnterButton();
         cy.get("[data-testid=public-covid-test-result-form-title]").should(
             "be.visible"
@@ -324,12 +310,12 @@ describe("Public COVID-19 Test Results", () => {
         });
 
         enterCovidTestPHN(phn);
-        selectOption(dobYearSelector, dobYear);
-        selectOption(dobMonthSelector, dobMonth);
-        selectOption(dobDaySelector, dobDay);
-        selectOption(collectionDateYearSelector, collectionDateYear);
-        selectOption(collectionDateMonthSelector, collectionDateMonth);
-        selectOption(collectionDateDaySelector, collectionDateDay);
+        cy.get(dobYearSelector).select(dobYear);
+        cy.get(dobMonthSelector).select(dobMonth);
+        cy.get(dobDaySelector).select(dobDay);
+        cy.get(collectionDateYearSelector).select(collectionDateYear);
+        cy.get(collectionDateMonthSelector).select(collectionDateMonth);
+        cy.get(collectionDateDaySelector).select(collectionDateDay);
         clickCovidTestEnterButton();
         cy.get("[data-testid=error-text-description]").should("be.visible");
     });
@@ -350,12 +336,12 @@ describe("Public COVID-19 Test Results", () => {
         });
 
         enterCovidTestPHN(phn);
-        selectOption(dobYearSelector, dobYear);
-        selectOption(dobMonthSelector, dobMonth);
-        selectOption(dobDaySelector, dobDay);
-        selectOption(collectionDateYearSelector, collectionDateYear);
-        selectOption(collectionDateMonthSelector, collectionDateMonth);
-        selectOption(collectionDateDaySelector, collectionDateDay);
+        cy.get(dobYearSelector).select(dobYear);
+        cy.get(dobMonthSelector).select(dobMonth);
+        cy.get(dobDaySelector).select(dobDay);
+        cy.get(collectionDateYearSelector).select(collectionDateYear);
+        cy.get(collectionDateMonthSelector).select(collectionDateMonth);
+        cy.get(collectionDateDaySelector).select(collectionDateDay);
         clickCovidTestEnterButton();
         cy.get("[data-testid=error-text-description]").should("be.visible");
     });
@@ -377,12 +363,12 @@ describe("Public COVID-19 Test Results", () => {
 
         enterCovidTestPHN(phn);
 
-        selectOption(dobYearSelector, dobYear);
-        selectOption(dobMonthSelector, dobMonth);
-        selectOption(dobDaySelector, dobDay);
-        selectOption(collectionDateYearSelector, collectionDateYear);
-        selectOption(collectionDateMonthSelector, collectionDateMonth);
-        selectOption(collectionDateDaySelector, collectionDateDay);
+        cy.get(dobYearSelector).select(dobYear);
+        cy.get(dobMonthSelector).select(dobMonth);
+        cy.get(dobDaySelector).select(dobDay);
+        cy.get(collectionDateYearSelector).select(collectionDateYear);
+        cy.get(collectionDateMonthSelector).select(collectionDateMonth);
+        cy.get(collectionDateDaySelector).select(collectionDateDay);
 
         clickCovidTestEnterButton();
         cy.get("[data-testid=public-covid-test-result-form-title]").should(

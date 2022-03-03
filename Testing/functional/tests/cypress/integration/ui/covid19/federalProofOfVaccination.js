@@ -1,10 +1,9 @@
-import { deleteDownloadsFolder } from "../../../support/utils";
 const { AuthMethod } = require("../../../support/constants");
 const homeUrl = "/home";
 
 describe("Federal Proof of Vaccination", () => {
     it("Save Federal Proof of Vaccination with Retry", () => {
-        deleteDownloadsFolder();
+        cy.deleteDownloadsFolder();
         let isLoading = false;
         cy.intercept(
             "GET",

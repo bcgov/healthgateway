@@ -24,9 +24,7 @@ describe("Reports - Medication", () => {
                 fixture: "Report/medicationStatementUnSorted.json",
             });
         });
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("Medications");
+        cy.get("[data-testid=reportType]").select("Medications");
         cy.get("[data-testid=reportSample]").should("be.visible");
 
         cy.get("[data-testid=medicationDateItem]")
@@ -61,9 +59,7 @@ describe("Reports - Medication", () => {
                 fixture: "Report/medicationRequestUnSorted.json",
             });
         });
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("Special Authority Requests");
+        cy.get("[data-testid=reportType]").select("Special Authority Requests");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
 
@@ -122,9 +118,7 @@ describe("Reports - Covid19", () => {
                 });
             }
         );
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("COVID-19 Test Results");
+        cy.get("[data-testid=reportType]").select("COVID-19 Test Results");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
 
@@ -178,9 +172,7 @@ describe("Reports - Immunization", () => {
                 fixture: "Report/immunizationUnSorted.json",
             });
         });
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("Immunizations");
+        cy.get("[data-testid=reportType]").select("Immunizations");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
 
@@ -259,9 +251,7 @@ describe("Reports - MSP Visit", () => {
                 fixture: "Report/mspVisitUnSorted.json",
             });
         });
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("Health Visits");
+        cy.get("[data-testid=reportType]").select("Health Visits");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
 
@@ -316,9 +306,7 @@ describe("Reports - Notes (User-Entered)", () => {
                 fixture: "Report/noteUnSorted.json",
             });
         });
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("My Notes");
+        cy.get("[data-testid=reportType]").select("My Notes");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
 
@@ -378,9 +366,7 @@ describe("Reports - Laboratory Tests", () => {
                 });
             }
         );
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("Laboratory Tests");
+        cy.get("[data-testid=reportType]").select("Laboratory Tests");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
 
