@@ -283,9 +283,9 @@ Cypress.Commands.add("restoreAuthCookies", () => {
 
 Cypress.Commands.overwrite(
     "select",
-    (originalFn, valueOrTextOrIndex, options) => {
-        subject.should("be.visible", "be.enabled");
-        return originalFn(valueOrTextOrIndex, options);
+    (originalFn, subject, valueOrTextOrIndex, options) => {
+        cy.wrap(subject).should("be.visible", "be.enabled");
+        originalFn(subject, valueOrTextOrIndex, options);
     }
 );
 
@@ -293,8 +293,9 @@ Cypress.Commands.add(
     "shouldContain",
     { prevSubject: "element" },
     (subject, value) => {
-        subject.children("[value=" + value + "]").should("exist");
-        return subject;
+        cy.wrap(subject)
+            .children("[value=" + value + "]")
+            .should("exist");
     }
 );
 
@@ -302,8 +303,9 @@ Cypress.Commands.add(
     "shouldNotContain",
     { prevSubject: "element" },
     (subject, value) => {
-        subject.children("[value=" + value + "]").should("not.exist");
-        return subject;
+        cy.wrap(subject)
+            .children("[value=" + value + "]")
+            .should("not.exist");
     }
 );
 

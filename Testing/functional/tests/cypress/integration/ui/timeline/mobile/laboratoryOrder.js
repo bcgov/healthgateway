@@ -35,21 +35,17 @@ describe("Laboratory Orders", () => {
                 .parent("tr")
                 .within(() => {
                     // Check the Result Column
-                    cy.get("td:nth-child(2)")
-                        .eq(1)
-                        .then(($result) => {
-                            const result = $result.text().trim();
-                            cy.log(result);
-                            expect(result).equal("Pending");
-                        });
+                    cy.get("td:nth-child(2)").then(($result) => {
+                        const result = $result.text().trim();
+                        cy.log(result);
+                        expect(result).equal("Pending");
+                    });
                     // Check the Status Column
-                    cy.get("td:nth-child(3)")
-                        .eq(1)
-                        .then(($status) => {
-                            const status = $status.text().trim();
-                            cy.log(status);
-                            expect(status).equal("Partial");
-                        });
+                    cy.get("td:nth-child(3)").then(($status) => {
+                        const status = $status.text().trim();
+                        cy.log(status);
+                        expect(status).equal("Partial");
+                    });
                 });
         });
 
