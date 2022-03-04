@@ -4,6 +4,7 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
+import { QuickLink } from "@/models/quickLink";
 import { ResultError } from "@/models/requestResult";
 import { UserPreference } from "@/models/userPreference";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -13,6 +14,7 @@ import {
     IPatientService,
     IUserProfileService,
 } from "@/services/interfaces";
+import { QuickLinkUtil } from "@/utility/quickLinkUtil";
 
 import { UserActions } from "./types";
 
@@ -168,6 +170,32 @@ export const actions: UserActions = {
                     reject(error);
                 });
         });
+    },
+    updateQuickLinks(
+        context,
+        params: { hdid: string; quickLinks: QuickLink[] }
+    ): Promise<void> {
+        const jsonString = QuickLinkUtil.toString(params.quickLinks);
+
+        let userPreference: UserPreference = context.getters.getPreference(
+            UserPreferenceType.QuickLinks
+        );
+
+        if (userPreference === undefined) {
+            userPreference = {
+                hdId: params.hdid,
+                preference: UserPreferenceType.QuickLinks,
+                value: jsonString,
+                version: 0,
+                createdDateTime: new DateWrapper().toISO(),
+            };
+
+            return context.dispatch("createUserPreference", { userPreference });
+        }
+
+        userPreference.value = jsonString;
+
+        return context.dispatch("updateUserPreference", { userPreference });
     },
     closeUserAccount(context): Promise<void> {
         const userProfileService: IUserProfileService =
