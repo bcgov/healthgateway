@@ -202,7 +202,7 @@ namespace HealthGateway.AdminWebClient
         {
             app.Use(async (context, next) =>
             {
-                if (context.Request.Method == "TRACE" && !context.Request.Headers.MaxForwards.IsNullOrEmpty())
+                if (context.Request.Method == "TRACE")
                 {
                     context.Response.StatusCode = 405;
                     return;
