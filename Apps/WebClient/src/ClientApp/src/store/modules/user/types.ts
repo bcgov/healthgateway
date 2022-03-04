@@ -10,6 +10,7 @@ import {
 import { ErrorType } from "@/constants/errorType";
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
+import { QuickLink } from "@/models/quickLink";
 import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
@@ -34,6 +35,8 @@ export interface UserGetters extends GetterTree<UserState, RootState> {
     getPreference: (
         state: UserState
     ) => (preferenceName: string) => UserPreference | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    quickLinks(state: UserState, getters: any): QuickLink[] | undefined;
     patientData(state: UserState): PatientData;
     isLoading(state: UserState): boolean;
 }
@@ -56,6 +59,10 @@ export interface UserActions extends ActionTree<UserState, RootState> {
     createUserPreference(
         context: StoreContext,
         params: { userPreference: UserPreference }
+    ): Promise<void>;
+    updateQuickLinks(
+        context: StoreContext,
+        params: { hdid: string; quickLinks: QuickLink[] }
     ): Promise<void>;
     closeUserAccount(context: StoreContext): Promise<void>;
     recoverUserAccount(context: StoreContext): Promise<void>;
