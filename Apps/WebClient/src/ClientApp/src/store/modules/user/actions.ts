@@ -124,10 +124,7 @@ export const actions: UserActions = {
                         `updateUserPreference: ${JSON.stringify(result)}`
                     );
                     if (result) {
-                        context.commit(
-                            "setUserPreference",
-                            params.userPreference
-                        );
+                        context.commit("setUserPreference", result);
                     }
                     resolve();
                 })
@@ -158,10 +155,7 @@ export const actions: UserActions = {
                         `createUserPreference: ${JSON.stringify(result)}`
                     );
                     if (result) {
-                        context.commit(
-                            "setUserPreference",
-                            params.userPreference
-                        );
+                        context.commit("setUserPreference", result);
                     }
                     resolve();
                 })
