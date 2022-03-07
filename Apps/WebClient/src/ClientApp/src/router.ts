@@ -125,6 +125,7 @@ export enum ClientModule {
     PublicLaboratoryResult = "PublicLaboratoryResult",
     AllLaboratory = "AllLaboratory",
     PcrTest = "PcrTest",
+    MedicationRequest = "MedicationRequest",
 }
 
 function getAvailableModules() {

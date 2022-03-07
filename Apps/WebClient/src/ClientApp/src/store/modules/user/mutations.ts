@@ -78,7 +78,11 @@ export const mutations: UserMutation = {
                 userPreference.preference
             )}, preference.value: ${JSON.stringify(userPreference.value)}`
         );
-        state.user.preferences[userPreference.preference] = userPreference;
+        Vue.set(
+            state.user.preferences,
+            userPreference.preference,
+            userPreference
+        );
         state.error = false;
         state.statusMessage = "success";
         state.status = LoadStatus.LOADED;
