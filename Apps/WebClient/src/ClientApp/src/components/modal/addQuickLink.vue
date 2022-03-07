@@ -57,6 +57,12 @@ export default class AddQuickLinkComponent extends Vue {
                 isEnabled: this.webClientConfig.modules[EntryType.Medication],
             },
             {
+                name: "Lab Results",
+                module: ClientModule.AllLaboratory,
+                isEnabled:
+                    this.webClientConfig.modules[EntryType.LaboratoryOrder],
+            },
+            {
                 name: "COVID-19 Tests",
                 module: ClientModule.Laboratory,
                 isEnabled:

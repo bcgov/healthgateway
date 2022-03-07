@@ -14,15 +14,20 @@ export default class HgCardButtonComponent extends Vue {
 
 <template>
     <b-button
-        class="hg-card-button h-100 p-4 d-flex flex-column align-content-start text-left rounded shadow"
+        class="hg-card-button h-100 w-100 p-4 d-flex flex-column align-content-start text-left rounded shadow"
         v-bind="$attrs"
         v-on="$listeners"
     >
-        <b-row no-gutters class="mb-4">
-            <b-col v-if="hasIconSlot" cols="auto" class="pr-3">
+        <b-row no-gutters class="mb-4 mt-n3">
+            <b-col
+                v-if="hasIconSlot"
+                cols="auto"
+                align-self="center"
+                class="pr-3 mt-3 d-flex"
+            >
                 <slot name="icon" />
             </b-col>
-            <b-col class="hg-card-button-title">
+            <b-col class="hg-card-button-title mt-3">
                 {{ title }}
             </b-col>
         </b-row>
