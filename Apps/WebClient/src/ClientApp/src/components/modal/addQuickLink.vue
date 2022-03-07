@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Emit } from "vue-property-decorator";
+import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import type { WebClientConfiguration } from "@/models/configData";
@@ -31,7 +31,7 @@ export default class AddQuickLinkComponent extends Vue {
     updateQuickLinks!: (params: {
         hdid: string;
         quickLinks: QuickLink[];
-    }) => void;
+    }) => Promise<void>;
 
     @Getter("quickLinks", { namespace: "user" }) quickLinks!:
         | QuickLink[]
@@ -47,9 +47,14 @@ export default class AddQuickLinkComponent extends Vue {
     private get quickLinkFilter(): QuickLinkFilter[] {
         return [
             {
-                name: "Health Visits",
-                module: ClientModule.Encounter,
-                isEnabled: this.webClientConfig.modules[EntryType.Encounter],
+                name: "Immunizations",
+                module: ClientModule.Immunization,
+                isEnabled: this.webClientConfig.modules[EntryType.Immunization],
+            },
+            {
+                name: "Medications",
+                module: ClientModule.Medication,
+                isEnabled: this.webClientConfig.modules[EntryType.Medication],
             },
             {
                 name: "COVID-19 Tests",
@@ -58,6 +63,11 @@ export default class AddQuickLinkComponent extends Vue {
                     this.webClientConfig.modules[
                         EntryType.Covid19LaboratoryOrder
                     ],
+            },
+            {
+                name: "Health Visits",
+                module: ClientModule.Encounter,
+                isEnabled: this.webClientConfig.modules[EntryType.Encounter],
             },
             {
                 name: "My Notes",
@@ -75,25 +85,28 @@ export default class AddQuickLinkComponent extends Vue {
 
     private get enabledQuickLinkFilter(): QuickLinkFilter[] {
         this.logger.debug(
-            `Enabled Quick Links - checkbox component key:  ${this.checkboxComponentKey}`
+            `Enabled Quick Link Filter - quick links:  ${JSON.stringify(
+                this.quickLinks
+            )}`
         );
-        if (this.checkboxComponentKey != 0) {
-            return this.enabledQuickLinks;
-        } else {
-            this.logger.debug(
-                `Enabled Quick Links - quick links:  ${this.quickLinks}`
-            );
-            if (this.quickLinks != undefined) {
-                this.populateEnabledQuickLinks();
-                const existingQuickLinks = this.quickLinks;
-                return this.getAvailabeQuickLinks(
-                    existingQuickLinks,
-                    this.enabledQuickLinks
-                );
-            }
-            this.populateEnabledQuickLinks();
-            return this.enabledQuickLinks;
+
+        // Only display quick links in filter that are enabled
+        this.enabledQuickLinks = this.quickLinkFilter.filter(
+            (filter: QuickLinkFilter) => filter.isEnabled
+        );
+
+        this.logger.debug(
+            `Enabled Quick Link Filter - enabled quick links  ${JSON.stringify(
+                this.enabledQuickLinks
+            )}`
+        );
+
+        // if quickLinks is undefined, means there are no quick links in user preferences
+        if (this.quickLinks != undefined) {
+            return this.getAvailabeQuickLinks();
         }
+
+        return this.enabledQuickLinks;
     }
 
     private get isAddButtonDisabled(): boolean {
@@ -102,10 +115,6 @@ export default class AddQuickLinkComponent extends Vue {
             (this.enabledQuickLinkFilter.length > 0 &&
                 this.selectedQuickLinks.length == 0)
         );
-    }
-
-    private get isCheckBoxChecked(): boolean {
-        return this.enabledQuickLinkFilter.length == 0;
     }
 
     private addQuickLink(submittedQuickLinks: QuickLink[]): Promise<void> {
@@ -122,46 +131,31 @@ export default class AddQuickLinkComponent extends Vue {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
-    private getAvailabeQuickLinks(
-        existingQuickLinks: QuickLink[],
-        enabledQuickLinks: QuickLinkFilter[]
-    ): QuickLinkFilter[] {
-        existingQuickLinks.forEach((element) =>
-            this.logger.debug(
-                `Available Quick Links - Existing store quick links:  ${element}`
-            )
-        );
-
-        enabledQuickLinks.forEach((element) =>
-            this.logger.debug(
-                `Available Quick Links - Enabled quick links:  ${element}`
-            )
-        );
-
+    private getAvailabeQuickLinks(): QuickLinkFilter[] {
         let result: QuickLinkFilter[] = [];
-        result = enabledQuickLinks.filter((enabledQL) => {
-            return !existingQuickLinks.find((existingQL) => {
-                return existingQL.name === enabledQL.name;
+
+        if (this.quickLinks != undefined) {
+            this.quickLinks.forEach((element) =>
+                this.logger.debug(
+                    `Available Quick Links - Existing store quick links:  ${element}`
+                )
+            );
+
+            this.enabledQuickLinks.forEach((element) =>
+                this.logger.debug(
+                    `Available Quick Links - Enabled quick links:  ${element}`
+                )
+            );
+
+            result = this.enabledQuickLinks.filter((enabledQL) => {
+                return !this.quickLinks?.find((existingQL) => {
+                    return existingQL.name === enabledQL.name;
+                });
             });
-        });
+        }
+
+        this.logger.debug(`Available Quick Links :  ${JSON.stringify(result)}`);
         return result;
-    }
-
-    private getCheckedValue(quickLink: QuickLinkFilter): string {
-        return (
-            '{ "name": "' +
-            quickLink.name +
-            '", "filter": { "modules": [ "' +
-            quickLink.module +
-            '"] }}'
-        );
-    }
-
-    private populateEnabledQuickLinks(): void {
-        this.enabledQuickLinks = this.quickLinkFilter.filter(
-            (filter: QuickLinkFilter) => filter.isEnabled
-        );
-        this.logger.debug(`Enabled quick links:  ${this.enabledQuickLinks}`);
     }
 
     private forceCheckboxComponentRerender(): void {
@@ -174,23 +168,6 @@ export default class AddQuickLinkComponent extends Vue {
         );
     }
 
-    private removeSelectedQuickLink(quickLinkName: string) {
-        this.logger.debug(`Removing quick link: ${quickLinkName}`);
-        const index = this.enabledQuickLinks.findIndex((element) => {
-            return element.name === quickLinkName;
-        });
-        this.logger.debug(
-            `Removing quick link: ${quickLinkName} at index: ${index}`
-        );
-
-        if (index >= 0) {
-            this.enabledQuickLinks.splice(index, 1);
-            this.logger.debug(
-                `Removed quick link: ${quickLinkName} at index: ${index}`
-            );
-        }
-    }
-
     private handleCancel(modalEvt: Event) {
         // Prevent modal from closing
         modalEvt.preventDefault();
@@ -200,9 +177,6 @@ export default class AddQuickLinkComponent extends Vue {
 
         // Force checkbox conponent to re-render
         this.forceCheckboxComponentRerender();
-
-        // Trigger cancel handler
-        this.cancel();
 
         // Hide the modal manually
         this.$nextTick(() => {
@@ -219,24 +193,26 @@ export default class AddQuickLinkComponent extends Vue {
         );
 
         // Update quick link preferences in store
-        const quickLinks: QuickLink[] = this.selectedQuickLinks.map((element) =>
-            JSON.parse(element)
-        );
-        this.addQuickLink(quickLinks);
+        const quickLinks: QuickLink[] = [];
+        this.selectedQuickLinks.forEach((module) => {
+            const filter = this.quickLinkFilter.find(
+                (f) => f.module === module
+            );
+            if (filter) {
+                quickLinks.push({
+                    name: filter.name,
+                    filter: { modules: [module] },
+                });
+            }
+        });
 
-        // Remove selected quick link from display list
-        quickLinks.forEach((element) =>
-            this.removeSelectedQuickLink(element.name)
-        );
+        this.addQuickLink(quickLinks);
 
         // Force checkbox conponent to re-render
         this.forceCheckboxComponentRerender();
 
         // Clear selected quick links
         this.selectedQuickLinks = [];
-
-        // Trigger submit handler
-        this.submit();
 
         // Hide the modal manually
         this.$nextTick(() => {
@@ -250,16 +226,6 @@ export default class AddQuickLinkComponent extends Vue {
 
     public hideModal(): void {
         this.isVisible = false;
-    }
-
-    @Emit()
-    private submit() {
-        return;
-    }
-
-    @Emit()
-    private cancel() {
-        return;
     }
 }
 </script>
@@ -289,7 +255,7 @@ export default class AddQuickLinkComponent extends Vue {
                         v-model="selectedQuickLinks"
                         :data-testid="`${quickLink.module}-filter`"
                         :name="quickLink.module + '-filter'"
-                        :value="getCheckedValue(quickLink)"
+                        :value="quickLink.module"
                     >
                         {{ quickLink.name }}
                     </b-form-checkbox>
