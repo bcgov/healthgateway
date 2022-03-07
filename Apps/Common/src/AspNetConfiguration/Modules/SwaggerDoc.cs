@@ -41,7 +41,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         {
             services.Configure<SwaggerSettings>(configuration.GetSection(nameof(SwaggerSettings)));
             string xmlPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
-            Assembly callingAssembly = Assembly.GetCallingAssembly();
+            Assembly callingAssembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
             Assembly executingAssembly = Assembly.GetExecutingAssembly();
 
             // Calling Assembly (Core App) + References + Executing Assembly (Common) References
@@ -74,6 +74,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             app.UseSwaggerDocuments();
+       
         }
     }
 }
