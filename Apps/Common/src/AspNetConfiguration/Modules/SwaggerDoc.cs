@@ -74,7 +74,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             app.UseSwaggerDocuments();
-       
         }
     }
 }
