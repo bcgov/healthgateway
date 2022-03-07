@@ -10,7 +10,6 @@ export enum EntryType {
     LaboratoryOrder = "AllLaboratory",
     Encounter = "Encounter",
     Note = "Note",
-    NONE = "NONE",
 }
 
 export class DateGroup {
