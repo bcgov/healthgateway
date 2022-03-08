@@ -4,6 +4,7 @@ import {
     faCheckCircle,
     faClipboard,
     faEdit,
+    faEllipsisV,
     faFlask,
     faPills,
     faPlus,
@@ -33,6 +34,7 @@ library.add(
     faCheckCircle,
     faClipboard,
     faEdit,
+    faEllipsisV,
     faFlask,
     faPills,
     faPlus,
@@ -69,6 +71,12 @@ export default class HomeView extends Vue {
 
     @Action("clearFilter", { namespace: "timeline" })
     clearFilter!: () => void;
+
+    @Action("updateQuickLinks", { namespace: "user" })
+    updateQuickLinks!: (params: {
+        hdid: string;
+        quickLinks: QuickLink[];
+    }) => Promise<void>;
 
     @Getter("authenticatedVaccineRecordIsLoading", {
         namespace: "vaccinationStatus",
@@ -197,9 +205,26 @@ export default class HomeView extends Vue {
         });
     }
 
+    private removeQuickLink(targetQuickLink: QuickLink): Promise<void> {
+        const updatedLinks =
+            this.quickLinks?.filter(
+                (quickLink) => quickLink !== targetQuickLink
+            ) ?? [];
+
+        return this.updateQuickLinks({
+            hdid: this.user.hdid,
+            quickLinks: updatedLinks,
+        });
+    }
+
     private handleClickHealthRecords(): void {
         this.clearFilter();
         this.$router.push({ path: "/timeline" });
+    }
+
+    private handleClickRemoveQuickLink(index: number): void {
+        const quickLink = this.enabledQuickLinks[index];
+        this.removeQuickLink(quickLink);
     }
 
     private handleClickQuickLink(index: number): void {
@@ -325,7 +350,7 @@ export default class HomeView extends Vue {
             </hg-button>
         </page-title>
         <h2>What do you want to focus on today?</h2>
-        <b-row cols="1" cols-lg="3">
+        <b-row cols="1" cols-lg="2" cols-xl="3">
             <b-col class="p-3">
                 <hg-card-button
                     title="Health Records"
@@ -400,6 +425,33 @@ export default class HomeView extends Vue {
                             square
                         />
                     </template>
+                    <template #menu>
+                        <b-nav align="right">
+                            <b-nav-item-dropdown
+                                right
+                                text=""
+                                :no-caret="true"
+                                menu-class="quick-link-menu"
+                                toggle-class="quick-link-menu-button"
+                            >
+                                <template slot="button-content">
+                                    <hg-icon
+                                        icon="ellipsis-v"
+                                        size="medium"
+                                        data-testid="quick-link-menu-button"
+                                    />
+                                </template>
+                                <b-dropdown-item
+                                    data-testid="remove-quick-link-button"
+                                    @click.stop="
+                                        handleClickRemoveQuickLink(card.index)
+                                    "
+                                >
+                                    Remove
+                                </b-dropdown-item>
+                            </b-nav-item-dropdown>
+                        </b-nav>
+                    </template>
                     <div>{{ card.description }}</div>
                 </hg-card-button>
             </b-col>
@@ -454,6 +506,38 @@ export default class HomeView extends Vue {
 
     .vld-icon {
         text-align: center;
+    }
+}
+
+.quick-link-menu {
+    a {
+        &:focus:not([disabled]):not(:active),
+        &:hover:not([disabled]):not(:active) {
+            color: $hg-text-primary;
+        }
+        &:active:not([disabled]) {
+            color: white;
+        }
+    }
+}
+
+.quick-link-menu-button {
+    color: $soft_text;
+    border: 1px solid rgba(0, 0, 0, 0);
+    border-radius: 0.25rem;
+
+    &:focus:not([disabled]),
+    &:hover:not([disabled]) {
+        color: $soft_text;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+    }
+}
+
+.nav-link.active,
+.nav-item.show .nav-link {
+    &.quick-link-menu-button {
+        background-color: white;
+        border: 1px solid rgba(0, 0, 0, 0.15);
     }
 }
 </style>

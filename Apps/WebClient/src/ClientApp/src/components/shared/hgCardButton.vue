@@ -9,6 +9,10 @@ export default class HgCardButtonComponent extends Vue {
     private get hasIconSlot() {
         return this.$slots.icon !== undefined;
     }
+
+    private get hasMenuSlot() {
+        return this.$slots.menu !== undefined;
+    }
 }
 </script>
 
@@ -18,7 +22,7 @@ export default class HgCardButtonComponent extends Vue {
         v-bind="$attrs"
         v-on="$listeners"
     >
-        <b-row no-gutters class="mb-4 mt-n3">
+        <b-row no-gutters align-h="end" class="mb-4 mt-n3 w-100">
             <b-col
                 v-if="hasIconSlot"
                 cols="auto"
@@ -29,6 +33,9 @@ export default class HgCardButtonComponent extends Vue {
             </b-col>
             <b-col class="hg-card-button-title mt-3">
                 {{ title }}
+            </b-col>
+            <b-col v-if="hasMenuSlot" cols="auto" class="mt-2">
+                <slot name="menu" />
             </b-col>
         </b-row>
         <slot />
