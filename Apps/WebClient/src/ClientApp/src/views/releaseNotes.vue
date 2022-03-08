@@ -28,6 +28,30 @@ export default class ReleaseNotesView extends Vue {
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
+                <release-note
+            date="March 9, 2022"
+            version="v1.5.5"
+            title="Home Page Quick Links"
+        >
+            <ul>
+                <li>
+                    We added the ability to add quick links to specific data sets
+                    to the home page, which will open the Timeline to a pre-filtered
+                    view.                    
+                </li>
+            </ul>
+        </release-note>        <release-note
+            date="February 9, 2022"
+            version="v1.5.3"
+            title="Error Messages"
+        >
+            <ul>
+                <li>
+                    We updated the error messages to provide more details about
+                    the issue you might be experiencing and how to get help.                   
+                </li>
+            </ul>
+        </release-note>
         <release-note
             date="February 2, 2022"
             version="v1.5.2"
