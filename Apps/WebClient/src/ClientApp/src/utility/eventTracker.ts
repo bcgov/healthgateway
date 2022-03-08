@@ -1,4 +1,4 @@
-import { EntryType } from "@/models/timelineEntry";
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
@@ -11,27 +11,7 @@ export default abstract class EventTracker {
             return;
         }
 
-        let loadType = "";
-        switch (loadEntryType) {
-            case EntryType.Medication:
-                loadType = "medications";
-                break;
-            case EntryType.MedicationRequest:
-                loadType = "special_authority";
-                break;
-            case EntryType.Immunization:
-                loadType = "immunizations";
-                break;
-            case EntryType.Covid19LaboratoryOrder:
-                loadType = "covid_test";
-                break;
-            case EntryType.LaboratoryOrder:
-                loadType = "all_laboratory";
-                break;
-            case EntryType.Encounter:
-                loadType = "health_visits";
-                break;
-        }
+        const loadType = entryTypeMap.get(loadEntryType)?.eventName ?? "";
 
         if (loadType !== "") {
             const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);

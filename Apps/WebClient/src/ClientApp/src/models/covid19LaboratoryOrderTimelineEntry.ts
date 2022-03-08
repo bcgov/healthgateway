@@ -1,10 +1,11 @@
+import { EntryType } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
 import {
     Covid19LaboratoryOrder,
     Covid19LaboratoryTest,
     LaboratoryUtil,
 } from "@/models/laboratory";
-import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import TimelineEntry from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
 // The COVID-19 laboratory order timeline entry model

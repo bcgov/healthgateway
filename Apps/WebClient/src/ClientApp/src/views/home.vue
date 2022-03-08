@@ -20,14 +20,13 @@ import { Action, Getter } from "vuex-class";
 import LoadingComponent from "@/components/loading.vue";
 import AddQuickLinkComponent from "@/components/modal/addQuickLink.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
-import { QuickLink, QuickLinkInformation } from "@/models/quickLink";
-import { EntryType } from "@/models/timelineEntry";
+import { QuickLink } from "@/models/quickLink";
 import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
-import { QuickLinkUtil } from "@/utility/quickLinkUtil";
 import SnowPlow from "@/utility/snowPlow";
 
 library.add(
@@ -42,6 +41,13 @@ library.add(
     faUserMd,
     faVial
 );
+
+interface QuickLinkCard {
+    index: number;
+    title: string;
+    description: string;
+    icon: string;
+}
 
 @Component({
     components: {
@@ -149,21 +155,37 @@ export default class HomeView extends Vue {
         );
     }
 
-    private get quickLinkInformation(): QuickLinkInformation[] {
-        return this.enabledQuickLinks.map((quickLink, index) =>
-            QuickLinkUtil.getInformation(quickLink, index)
-        );
+    private get quickLinkCards(): QuickLinkCard[] {
+        return this.enabledQuickLinks.map((quickLink, index) => {
+            let card: QuickLinkCard = {
+                index,
+                title: quickLink.name,
+                description: "View your filtered health records.",
+                icon: "search",
+            };
+
+            const modules = quickLink.filter.modules;
+            if (quickLink.filter.modules.length === 1) {
+                const details = entryTypeMap.get(modules[0] as EntryType);
+                if (details) {
+                    card.description = details.description;
+                    card.icon = details.icon;
+                }
+            }
+
+            return card;
+        });
     }
 
     private get isAddQuickLinkButtonDisabled(): boolean {
         return (
-            Object.values(EntryType).filter(
-                (entryType) =>
-                    this.config.modules[entryType] &&
-                    this.quickLinks?.find(
+            [...entryTypeMap.values()].filter(
+                (details) =>
+                    this.config.modules[details.type] &&
+                    this.enabledQuickLinks.find(
                         (existingLink) =>
                             existingLink.filter.modules.length === 1 &&
-                            existingLink.filter.modules[0] === entryType
+                            existingLink.filter.modules[0] === details.type
                     ) === undefined
             ).length === 0
         );
@@ -364,25 +386,21 @@ export default class HomeView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-            <b-col
-                v-for="info in quickLinkInformation"
-                :key="info.title"
-                class="p-3"
-            >
+            <b-col v-for="card in quickLinkCards" :key="card.title" class="p-3">
                 <hg-card-button
-                    :title="info.title"
+                    :title="card.title"
                     data-testid="quick-link-card"
-                    @click="handleClickQuickLink(info.index)"
+                    @click="handleClickQuickLink(card.index)"
                 >
                     <template #icon>
                         <hg-icon
-                            :icon="info.icon"
+                            :icon="card.icon"
                             class="quick-link-card-icon align-self-center"
                             size="large"
                             square
                         />
                     </template>
-                    <div v-if="info.description">{{ info.description }}</div>
+                    <div>{{ card.description }}</div>
                 </hg-card-button>
             </b-col>
         </b-row>

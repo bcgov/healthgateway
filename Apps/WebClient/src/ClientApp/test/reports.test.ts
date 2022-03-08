@@ -13,6 +13,7 @@ import VueContentPlaceholders from "vue-content-placeholders";
 import VueRouter from "vue-router";
 import Vuex from "vuex";
 
+import { ClientModule } from "@/constants/clientModule";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import { ResultType } from "@/constants/resulttype";
 import { WebClientConfiguration } from "@/models/configData";
@@ -22,7 +23,6 @@ import Report from "@/models/report";
 import RequestResult from "@/models/requestResult";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
-import { ClientModule } from "@/router";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions } from "@/store/types";
 import ReportsView from "@/views/reports.vue";
