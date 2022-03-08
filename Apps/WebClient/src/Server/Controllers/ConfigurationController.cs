@@ -41,12 +41,24 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// Returns the external Health Gateway configuration.
         /// </summary>
-        /// <returns>The Health Gatway Configuration.</returns>
+        /// <returns>The Health Gateway Configuration.</returns>
         [HttpGet]
         public Models.ExternalConfiguration Index()
         {
             Models.ExternalConfiguration config = this.configservice.GetConfiguration();
             config.WebClient.ClientIP = this.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+            return config;
+        }
+
+        /// <summary>
+        /// Returns the Mobile Health Gateway configuration.
+        /// </summary>
+        /// <returns>The Health Gatway Configuration.</returns>
+        [HttpGet]
+        [Route("Mobile")]
+        public Models.MobileConfiguration MobileConfiguration()
+        {
+            Models.MobileConfiguration config = this.configservice.GetMobileConfiguration();
             return config;
         }
     }

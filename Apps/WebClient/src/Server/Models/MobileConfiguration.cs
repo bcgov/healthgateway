@@ -13,24 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-
-namespace HealthGateway.WebClient.Services
+namespace HealthGateway.WebClient.Models
 {
+    using System;
+    using System.Collections.Generic;
+
     /// <summary>
-    /// Webclient configuration.
+    /// A collection of configuration items for use by Health Gateway and
+    /// approved applications.
     /// </summary>
-    public interface IConfigurationService
+    public class MobileConfiguration
     {
         /// <summary>
-        /// Creates and returns Configuration data for clients.
+        /// Gets or sets a value indicating whether the mobile application should be considered online or not.
         /// </summary>
-        /// <returns>The Config object containing configuration elements useful for client consumption.</returns>
-        Models.ExternalConfiguration GetConfiguration();
-
-        /// <summary>
-        /// Creates and returns mobile Configuration.
-        /// </summary>
-        /// <returns>The Mobile Configuration.</returns>
-        Models.MobileConfiguration GetMobileConfiguration();
+        public bool Online { get; set; }
     }
 }

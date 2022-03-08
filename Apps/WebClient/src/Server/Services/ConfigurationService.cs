@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -25,6 +26,7 @@ namespace HealthGateway.WebClient.Services
     {
         private readonly ILogger logger;
         private readonly Models.ExternalConfiguration config;
+        private readonly Models.MobileConfiguration mobileConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationService"/> class.
@@ -38,16 +40,22 @@ namespace HealthGateway.WebClient.Services
             this.logger = logger;
             this.config = new Models.ExternalConfiguration();
             this.config = configuration.Get<Models.ExternalConfiguration>();
+            this.mobileConfig = new Models.MobileConfiguration();
+            configuration.Bind("MobileConfiguration", this.mobileConfig);
         }
 
-        /// <summary>
-        /// Reads the external configuration and returns it to the caller.
-        /// </summary>
-        /// <returns>The external configuration data.</returns>
+        /// <inheritdoc />
         public Models.ExternalConfiguration GetConfiguration()
         {
             this.logger.LogTrace($"Getting configuration data...");
             return this.config;
+        }
+
+        /// <inheritdoc />
+        public Models.MobileConfiguration GetMobileConfiguration()
+        {
+            this.logger.LogTrace($"Getting mobile configuration data...");
+            return this.mobileConfig;
         }
     }
 }
