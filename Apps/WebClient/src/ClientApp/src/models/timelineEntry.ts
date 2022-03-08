@@ -1,16 +1,7 @@
+import { EntryType } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineFilter from "@/models/timelineFilter";
 import { UserComment } from "@/models/userComment";
-
-export enum EntryType {
-    MedicationRequest = "MedicationRequest",
-    Medication = "Medication",
-    Immunization = "Immunization",
-    Covid19LaboratoryOrder = "Laboratory",
-    LaboratoryOrder = "AllLaboratory",
-    Encounter = "Encounter",
-    Note = "Note",
-}
 
 export class DateGroup {
     key: string;

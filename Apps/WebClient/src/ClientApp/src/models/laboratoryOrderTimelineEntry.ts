@@ -1,6 +1,7 @@
+import { EntryType } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryOrder, LaboratoryTest } from "@/models/laboratory";
-import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import TimelineEntry from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
 const resultOutOfRange = "Out of Range";

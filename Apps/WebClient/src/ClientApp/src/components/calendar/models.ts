@@ -1,5 +1,6 @@
+import { EntryType } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
-import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import TimelineEntry from "@/models/timelineEntry";
 
 // A calendar month includes weeks that are being displayed that could be outside the regular month
 export interface CalendarMonth {

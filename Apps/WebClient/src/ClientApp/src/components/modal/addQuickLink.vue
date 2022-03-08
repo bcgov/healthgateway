@@ -3,19 +3,17 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import type { WebClientConfiguration } from "@/models/configData";
 import { QuickLink } from "@/models/quickLink";
-import { EntryType } from "@/models/timelineEntry";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
-import { ClientModule } from "@/router";
 import { ILogger } from "@/services/interfaces";
 
 interface QuickLinkFilter {
     name: string;
-    module: string;
-    isEnabled: boolean;
+    module: EntryType;
 }
 
 @Component({
@@ -42,84 +40,29 @@ export default class AddQuickLinkComponent extends Vue {
     private isVisible = false;
 
     private selectedQuickLinks: string[] = [];
-    private enabledQuickLinks: QuickLinkFilter[] = [];
-
-    private get quickLinkFilter(): QuickLinkFilter[] {
-        return [
-            {
-                name: "Immunizations",
-                module: ClientModule.Immunization,
-                isEnabled: this.webClientConfig.modules[EntryType.Immunization],
-            },
-            {
-                name: "Medications",
-                module: ClientModule.Medication,
-                isEnabled: this.webClientConfig.modules[EntryType.Medication],
-            },
-            {
-                name: "Lab Results",
-                module: ClientModule.AllLaboratory,
-                isEnabled:
-                    this.webClientConfig.modules[EntryType.LaboratoryOrder],
-            },
-            {
-                name: "COVID-19 Tests",
-                module: ClientModule.Laboratory,
-                isEnabled:
-                    this.webClientConfig.modules[
-                        EntryType.Covid19LaboratoryOrder
-                    ],
-            },
-            {
-                name: "Health Visits",
-                module: ClientModule.Encounter,
-                isEnabled: this.webClientConfig.modules[EntryType.Encounter],
-            },
-            {
-                name: "My Notes",
-                module: ClientModule.Note,
-                isEnabled: this.webClientConfig.modules[EntryType.Note],
-            },
-            {
-                name: "Special Authority",
-                module: ClientModule.MedicationRequest,
-                isEnabled:
-                    this.webClientConfig.modules[EntryType.MedicationRequest],
-            },
-        ];
-    }
+    private quickLinkFilter: QuickLinkFilter[] = [...entryTypeMap.values()].map(
+        (details) => ({
+            name: details.name,
+            module: details.type,
+        })
+    );
 
     private get enabledQuickLinkFilter(): QuickLinkFilter[] {
-        this.logger.debug(
-            `Enabled Quick Link Filter - quick links:  ${JSON.stringify(
-                this.quickLinks
-            )}`
+        return this.quickLinkFilter.filter(
+            (filter) =>
+                this.webClientConfig.modules[filter.module] &&
+                this.quickLinks?.find(
+                    (existingLink) =>
+                        existingLink.filter.modules.length === 1 &&
+                        existingLink.filter.modules[0] === filter.module
+                ) === undefined
         );
-
-        // Only display quick links in filter that are enabled
-        this.enabledQuickLinks = this.quickLinkFilter.filter(
-            (filter: QuickLinkFilter) => filter.isEnabled
-        );
-
-        this.logger.debug(
-            `Enabled Quick Link Filter - enabled quick links  ${JSON.stringify(
-                this.enabledQuickLinks
-            )}`
-        );
-
-        // if quickLinks is undefined, means there are no quick links in user preferences
-        if (this.quickLinks != undefined) {
-            return this.getAvailabeQuickLinks();
-        }
-
-        return this.enabledQuickLinks;
     }
 
-    private get isAddButtonDisabled(): boolean {
+    private get isAddButtonEnabled(): boolean {
         return (
-            this.enabledQuickLinkFilter.length == 0 ||
-            (this.enabledQuickLinkFilter.length > 0 &&
-                this.selectedQuickLinks.length == 0)
+            this.enabledQuickLinkFilter.length > 0 &&
+            this.selectedQuickLinks.length > 0
         );
     }
 
@@ -135,33 +78,6 @@ export default class AddQuickLinkComponent extends Vue {
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
-
-    private getAvailabeQuickLinks(): QuickLinkFilter[] {
-        let result: QuickLinkFilter[] = [];
-
-        if (this.quickLinks != undefined) {
-            this.quickLinks.forEach((element) =>
-                this.logger.debug(
-                    `Available Quick Links - Existing store quick links:  ${element}`
-                )
-            );
-
-            this.enabledQuickLinks.forEach((element) =>
-                this.logger.debug(
-                    `Available Quick Links - Enabled quick links:  ${element}`
-                )
-            );
-
-            result = this.enabledQuickLinks.filter((enabledQL) => {
-                return !this.quickLinks?.find((existingQL) => {
-                    return existingQL.name === enabledQL.name;
-                });
-            });
-        }
-
-        this.logger.debug(`Available Quick Links :  ${JSON.stringify(result)}`);
-        return result;
     }
 
     private forceCheckboxComponentRerender(): void {
@@ -201,12 +117,10 @@ export default class AddQuickLinkComponent extends Vue {
         // Update quick link preferences in store
         const quickLinks: QuickLink[] = [];
         this.selectedQuickLinks.forEach((module) => {
-            const filter = this.quickLinkFilter.find(
-                (f) => f.module === module
-            );
-            if (filter) {
+            const details = entryTypeMap.get(module as EntryType);
+            if (details) {
                 quickLinks.push({
-                    name: filter.name,
+                    name: details.name,
                     filter: { modules: [module] },
                 });
             }
@@ -282,7 +196,7 @@ export default class AddQuickLinkComponent extends Vue {
                     <hg-button
                         data-testid="add-quick-link-btn"
                         variant="primary"
-                        :disabled="isAddButtonDisabled"
+                        :disabled="!isAddButtonEnabled"
                         @click="handleSubmit"
                         >Add to Home</hg-button
                     >

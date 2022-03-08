@@ -3,8 +3,9 @@ import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
-import TimelineEntry, { DateGroup, EntryType } from "@/models/timelineEntry";
+import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
 
 import Covid19LaboratoryOrderTimelineComponent from "./entryCard/covid19LaboratoryOrder.vue";
@@ -160,30 +161,7 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     private getComponentForEntry(entryType: EntryType): string {
-        switch (entryType) {
-            case EntryType.MedicationRequest:
-                return "MedicationRequestComponent";
-
-            case EntryType.Medication:
-                return "MedicationComponent";
-
-            case EntryType.Immunization:
-                return "ImmunizationComponent";
-
-            case EntryType.Covid19LaboratoryOrder:
-                return "Covid19LaboratoryOrderComponent";
-
-            case EntryType.LaboratoryOrder:
-                return "LaboratoryOrderComponent";
-
-            case EntryType.Encounter:
-                return "EncounterComponent";
-
-            case EntryType.Note:
-                return "NoteComponent";
-            default:
-                return "";
-        }
+        return entryTypeMap.get(entryType)?.component ?? "";
     }
 }
 </script>
