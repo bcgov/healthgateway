@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
