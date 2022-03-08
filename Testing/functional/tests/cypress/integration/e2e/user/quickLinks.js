@@ -1,6 +1,14 @@
 const { AuthMethod } = require("../../../support/constants");
 
+const homeUrl = "/home";
+
+const encounterModule = "Encounter";
+const immunizationModule = "Immunization";
 const laboratoryModule = "Laboratory";
+const alllaboratoryModule = "AllLaboratory";
+const medicationModule = "Medication";
+const medicationRequestModule = "MedicationRequest";
+const noteModule = "Note";
 const laboratoryTitle = "COVID‑19 Tests";
 
 const addQuickLinkButtonSelector = "[data-testid=add-quick-link-button]";
@@ -9,6 +17,7 @@ const addQuickLinkCheckboxSelector =
 const addQuickLinkCancelButtonSelector =
     "[data-testid=cancel-add-quick-link-btn]";
 const addQuickLinkSubmitButtonSelector = "[data-testid=add-quick-link-btn]";
+const addQuickLinkModalTextSelector = "[data-testid=quick-link-modal-text]";
 const quickLinkCardSelector = "[data-testid=quick-link-card]";
 const cardButtonTitleSelector = "[data-testid=card-button-title]";
 const quickLinkMenuButtonSelector = "[data-testid=quick-link-menu-button]";
@@ -88,5 +97,125 @@ describe("Quick Links", () => {
         cy.get(addQuickLinkButtonSelector)
             .should("be.visible")
             .should("be.enabled");
+    });
+});
+
+describe("Add Quick Link", () => {
+    beforeEach(() => {
+        cy.enableModules([
+            laboratoryModule,
+            encounterModule,
+            immunizationModule,
+            laboratoryModule,
+            alllaboratoryModule,
+            medicationModule,
+            medicationRequestModule,
+            noteModule,
+        ]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+    });
+
+    it("Add Quick Link  - Cancel when all selected", () => {
+        cy.get(addQuickLinkButtonSelector).click();
+        cy.get(addQuickLinkModalTextSelector).should("exist");
+
+        // Check off
+        getQuickLinkCheckbox(encounterModule)
+            .should("exist")
+            .check({ force: true });
+
+        getQuickLinkCheckbox(immunizationModule)
+            .should("exist")
+            .check({ force: true });
+
+        getQuickLinkCheckbox(laboratoryModule)
+            .should("exist")
+            .check({ force: true });
+
+        getQuickLinkCheckbox(alllaboratoryModule)
+            .should("exist")
+            .check({ force: true });
+
+        getQuickLinkCheckbox(medicationModule)
+            .should("exist")
+            .check({ force: true });
+
+        getQuickLinkCheckbox(medicationRequestModule)
+            .should("exist")
+            .check({ force: true });
+
+        getQuickLinkCheckbox(noteModule).should("exist").check({ force: true });
+
+        // Cancel
+        cy.get(addQuickLinkCancelButtonSelector).click();
+        cy.get(addQuickLinkButtonSelector).click();
+        cy.get(addQuickLinkModalTextSelector).should("exist");
+
+        // Verify
+        getQuickLinkCheckbox(encounterModule)
+            .should("exist")
+            .should("not.be.checked");
+        getQuickLinkCheckbox(immunizationModule)
+            .should("exist")
+            .should("not.be.checked");
+        getQuickLinkCheckbox(laboratoryModule)
+            .should("exist")
+            .should("not.be.checked");
+        getQuickLinkCheckbox(alllaboratoryModule)
+            .should("exist")
+            .should("not.be.checked");
+        getQuickLinkCheckbox(medicationModule)
+            .should("exist")
+            .should("not.be.checked");
+        getQuickLinkCheckbox(medicationRequestModule)
+            .should("exist")
+            .should("not.be.checked");
+        getQuickLinkCheckbox(noteModule)
+            .should("exist")
+            .should("not.be.checked");
+    });
+
+    it("Add Quick Link - 2 selected and 1 un-selected", () => {
+        cy.get(addQuickLinkButtonSelector).click();
+        cy.get(addQuickLinkModalTextSelector).should("exist");
+
+        // Check off
+        getQuickLinkCheckbox(immunizationModule)
+            .should("exist")
+            .check({ force: true });
+
+        getQuickLinkCheckbox(laboratoryModule)
+            .should("exist")
+            .check({ force: true });
+
+        getQuickLinkCheckbox(immunizationModule)
+            .should("exist")
+            .uncheck({ force: true });
+
+        // Verify
+        getQuickLinkCheckbox(encounterModule)
+            .should("exist")
+            .and("not.be.checked");
+        getQuickLinkCheckbox(immunizationModule)
+            .should("exist")
+            .and("not.be.checked");
+        getQuickLinkCheckbox(laboratoryModule)
+            .should("exist")
+            .and("be.checked");
+        getQuickLinkCheckbox(alllaboratoryModule)
+            .should("exist")
+            .and("not.be.checked");
+        getQuickLinkCheckbox(medicationModule)
+            .should("exist")
+            .and("not.be.checked");
+        getQuickLinkCheckbox(medicationRequestModule)
+            .should("exist")
+            .and("not.be.checked");
+        getQuickLinkCheckbox(noteModule).should("exist").and("not.be.checked");
     });
 });
