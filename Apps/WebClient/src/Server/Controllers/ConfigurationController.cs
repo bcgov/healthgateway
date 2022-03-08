@@ -41,7 +41,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// Returns the external Health Gateway configuration.
         /// </summary>
-        /// <returns>The Health Gateway Configuration.</returns>
+        /// <returns>The Health Gateway WebClient Configuration.</returns>
         [HttpGet]
         public Models.ExternalConfiguration Index()
         {
@@ -53,7 +53,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// Returns the Mobile Health Gateway configuration.
         /// </summary>
-        /// <returns>The Health Gatway Configuration.</returns>
+        /// <returns>The Health Gateway Mobile Configuration.</returns>
         [HttpGet]
         [Route("Mobile")]
         public Models.MobileConfiguration MobileConfiguration()
