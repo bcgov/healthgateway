@@ -57,7 +57,6 @@ namespace HealthGateway.DrugMaintainer.Apps
             this.DrugDbContext.PharmaceuticalStd.AddRange(this.Parser.ParsePharmaceuticalStdFile(sourceFolder, drugProducts));
             this.DrugDbContext.Route.AddRange(this.Parser.ParseRouteFile(sourceFolder, drugProducts));
             this.DrugDbContext.Schedule.AddRange(this.Parser.ParseScheduleFile(sourceFolder, drugProducts));
-            this.DrugDbContext.TherapeuticClass.AddRange(this.Parser.ParseTherapeuticFile(sourceFolder, drugProducts));
             this.DrugDbContext.VeterinarySpecies.AddRange(this.Parser.ParseVeterinarySpeciesFile(sourceFolder, drugProducts));
             this.AddFileToDB(downloadedFile);
             this.Logger.LogInformation("Removing old Drug File from DB");
