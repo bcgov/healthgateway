@@ -19,8 +19,7 @@ namespace HealthGateway.WebClient.Models
     using System.Collections.Generic;
 
     /// <summary>
-    /// A collection of configuration items for use by Health Gateway and
-    /// approved applications.
+    /// A collection of configuration items for use by Health Gateway Mobile.
     /// </summary>
     public class MobileConfiguration
     {
