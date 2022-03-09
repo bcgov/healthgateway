@@ -120,7 +120,7 @@ export default class DependentsView extends Vue {
                         @click="showModal()"
                     >
                         <hg-icon icon="user-plus" size="medium" class="mr-2" />
-                        <span>Add a New Dependent</span>
+                        <span>Add New</span>
                     </hg-button>
                 </page-title>
                 <h5 class="my-3">
