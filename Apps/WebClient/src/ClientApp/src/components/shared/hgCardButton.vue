@@ -31,7 +31,10 @@ export default class HgCardButtonComponent extends Vue {
             >
                 <slot name="icon" />
             </b-col>
-            <b-col class="hg-card-button-title mt-3">
+            <b-col
+                data-testid="card-button-title"
+                class="hg-card-button-title mt-3"
+            >
                 {{ title }}
             </b-col>
             <b-col v-if="hasMenuSlot" cols="auto" class="mt-2">
