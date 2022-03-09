@@ -64,9 +64,6 @@ export const mutations: CommentMutations = {
         ].findIndex((x) => x.id === userComment.id);
 
         if (commentIndex > -1) {
-            delete state.profileComments[userComment.parentEntryId][
-                commentIndex
-            ];
             state.profileComments[userComment.parentEntryId].splice(
                 commentIndex,
                 1
