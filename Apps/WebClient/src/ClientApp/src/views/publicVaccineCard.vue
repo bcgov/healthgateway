@@ -141,11 +141,15 @@ export default class PublicVaccineCardView extends Vue {
     private downloadError: BannerError | null = null;
 
     private get loadingStatusMessage(): string {
-        return this.isDownloading
-            ? "Downloading...."
-            : this.vaccineRecordIsLoading
-            ? this.vaccineRecordStatusMessage
-            : this.statusMessage;
+        if (this.isDownloading) {
+            return "Downloading....";
+        }
+
+        if (this.vaccineRecordIsLoading) {
+            return this.vaccineRecordStatusMessage;
+        }
+
+        return this.statusMessage;
     }
 
     private get downloadButtonShown(): boolean {

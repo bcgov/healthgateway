@@ -117,8 +117,7 @@ export default class NewDependentComponent extends Vue {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
         this.$v.$touch();
-        if (this.$v.$invalid) {
-        } else {
+        if (!this.$v.$invalid) {
             this.$v.$reset();
             this.addDependent();
         }

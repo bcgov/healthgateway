@@ -32,7 +32,6 @@ export const mutations: NoteMutations = {
     deleteNote(state: NoteState, note: UserNote) {
         const noteIndex = state.notes.findIndex((x) => x.id === note.id);
         if (noteIndex > -1) {
-            delete state.notes[noteIndex];
             state.lastOperation = new Operation(
                 note.id as string,
                 OperationType.DELETE

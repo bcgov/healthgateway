@@ -33,8 +33,6 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -258,21 +256,21 @@ namespace HealthGateway.Laboratory.Services
             {
                 LabIndicatorType labIndicatorType = Enum.Parse<LabIndicatorType>(payload.Select(x => x.StatusIndicator).First());
 
-                if (labIndicatorType == LabIndicatorType.Found)
+                switch (labIndicatorType)
                 {
-                    retVal.ResourcePayload = new PublicCovidTestResponse(payload.Select(PublicCovidTestRecord.FromModel).ToList());
-                }
-
-                if (labIndicatorType == LabIndicatorType.DataMismatch || labIndicatorType == LabIndicatorType.NotFound)
-                {
-                    retVal.ResultStatus = ResultType.ActionRequired;
-                    retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
-                }
-
-                if (labIndicatorType == LabIndicatorType.Threshold || labIndicatorType == LabIndicatorType.Blocked)
-                {
-                    retVal.ResultStatus = ResultType.ActionRequired;
-                    retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.RecordsNotAvailable, ActionType.Invalid);
+                    case LabIndicatorType.Found:
+                        retVal.ResourcePayload = new PublicCovidTestResponse(payload.Select(PublicCovidTestRecord.FromModel).ToList());
+                        break;
+                    case LabIndicatorType.DataMismatch:
+                    case LabIndicatorType.NotFound:
+                        retVal.ResultStatus = ResultType.ActionRequired;
+                        retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
+                        break;
+                    case LabIndicatorType.Threshold:
+                    case LabIndicatorType.Blocked:
+                        retVal.ResultStatus = ResultType.ActionRequired;
+                        retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.RecordsNotAvailable, ActionType.Invalid);
+                        break;
                 }
             }
 

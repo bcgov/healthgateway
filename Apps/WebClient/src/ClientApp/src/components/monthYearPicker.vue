@@ -52,7 +52,7 @@ export default class MonthYearPickerComponent extends Vue {
             this.years.push(currentYear);
         }
         // Sort years by descending
-        this.years = this.years.sort((a, b) => b - a);
+        this.years.sort((a, b) => b - a);
     }
 
     private get monthsToDisplay(): MonthToDisplay[] {
