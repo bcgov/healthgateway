@@ -1,4 +1,4 @@
-const { AuthMethod, localDevUri } = require("../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 
 describe("Export Reports - Immunizations - Invalid Doses", () => {
     before(() => {
@@ -15,12 +15,12 @@ describe("Export Reports - Immunizations - Invalid Doses", () => {
             AuthMethod.KeyCloak,
             "/reports"
         );
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("Immunizations");
+
+        cy.get("[data-testid=reportType]").select("Immunizations");
+
         cy.get("[data-testid=timelineLoading]").should("be.visible");
-        cy.get("[data-testid=timelineLoading]").should("not.be.visible");
-        cy.get("[data-testid=immunizationDateItem]")
+
+        cy.get("[data-testid=immunizationDateItem]", { timeout: 60000 })
             .contains(validDoseDate1)
             .should("be.visible");
         cy.get("[data-testid=immunizationDateItem]")

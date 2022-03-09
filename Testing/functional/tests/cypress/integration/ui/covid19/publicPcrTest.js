@@ -1,13 +1,10 @@
 import {
-    getYear,
-    getMonth,
-    getDay,
-    selectorShouldBeVisible,
-    selectorShouldNotExists,
+    clickManualRegistrationButton,
+    clickRegisterKitButton,
     getPcrTestTakenTime,
-    selectOption,
-} from "../../../support/utils";
+} from "../../../support/functions/pcrTestKit";
 
+const landingPagePath = "/";
 const pcrTestUrl = "/pcrtest";
 
 // data test id for all input fields in the form
@@ -25,6 +22,7 @@ const cancelBtn = "[data-testid=btn-cancel]";
 const registerKitBtn = "[data-testid=btn-register-kit]";
 const pcrPrivacyStatement = "[data-testid=pcr-privacy-statement]";
 const registrationSuccessBanner = "[data-testid=registration-success-banner]";
+const continueBtn = "[data-testid=btn-continue]";
 const stressAddressInput = "[data-testid=pcr-street-address-input]";
 const cityInput = "[data-testid=pcr-city-input]";
 const zipInput = "[data-testid=pcr-zip-input]";
@@ -53,44 +51,32 @@ const feedbackTestKitCodeValidSelector =
 const feedbackPhoneNumberValidSelector =
     "[data-testid=feedback-phonenumber-valid]";
 
-function clickManualRegistrationButton() {
-    cy.get("[data-testid=btn-manual]")
-        .should("be.enabled", "be.visible")
-        .click();
-}
-
-function clickRegisterKitButton() {
-    cy.get("[data-testid=btn-register-kit]")
-        .should("be.enabled", "be.visible")
-        .click();
-}
-
 function inputFieldsShouldBeVisible() {
-    selectorShouldBeVisible(testKitCodeInput);
-    selectorShouldBeVisible(firstNameInput);
-    selectorShouldBeVisible(lastNameInput);
-    selectorShouldBeVisible(phnInput);
-    selectorShouldBeVisible(pcrNoPhnInforBtn);
-    selectorShouldBeVisible(formSelectYear);
-    selectorShouldBeVisible(formSelectMonth);
-    selectorShouldBeVisible(formSelectDay);
-    selectorShouldBeVisible(contactPhoneNumberInput);
-    selectorShouldBeVisible(testTakenMinutesAgo);
-    selectorShouldBeVisible(cancelBtn);
-    selectorShouldBeVisible(registerKitBtn);
-    selectorShouldBeVisible(pcrPrivacyStatement);
+    cy.get(testKitCodeInput).should("be.visible");
+    cy.get(firstNameInput).should("be.visible");
+    cy.get(lastNameInput).should("be.visible");
+    cy.get(phnInput).should("be.visible");
+    cy.get(pcrNoPhnInforBtn).should("be.visible");
+    cy.get(formSelectYear).should("be.visible");
+    cy.get(formSelectMonth).should("be.visible");
+    cy.get(formSelectDay).should("be.visible");
+    cy.get(contactPhoneNumberInput).should("be.visible");
+    cy.get(testTakenMinutesAgo).should("be.visible");
+    cy.get(cancelBtn).should("be.visible");
+    cy.get(registerKitBtn).should("be.visible");
+    cy.get(pcrPrivacyStatement).should("be.visible");
 }
 
 function inputAddressFieldsNotExists() {
-    selectorShouldNotExists(stressAddressInput);
-    selectorShouldNotExists(cityInput);
-    selectorShouldNotExists(zipInput);
+    cy.get(stressAddressInput).should("not.exist");
+    cy.get(cityInput).should("not.exist");
+    cy.get(zipInput).should("not.exist");
 }
 
 function inputAddressFieldsShouldBeVisible() {
-    selectorShouldBeVisible(stressAddressInput);
-    selectorShouldBeVisible(cityInput);
-    selectorShouldBeVisible(zipInput);
+    cy.get(stressAddressInput).should("be.visible");
+    cy.get(cityInput).should("be.visible");
+    cy.get(zipInput).should("be.visible");
 }
 
 describe("Public PcrTest Registration Form", () => {
@@ -100,8 +86,12 @@ describe("Public PcrTest Registration Form", () => {
     });
 
     it("Register options buttons are available", () => {
-        selectorShouldBeVisible("[data-testid=btn-login]");
-        selectorShouldBeVisible("[data-testid=btn-manual]");
+        cy.get("[data-testid=btn-login]").should("be.visible");
+        cy.get("[data-testid=btn-manual]").should("be.visible");
+    });
+
+    it("Log in button should not be present in header", () => {
+        cy.get("[data-testid=loginBtn]").should("not.exist");
     });
 
     it("Inputs in the form are visible with valid PHN", () => {
@@ -122,15 +112,15 @@ describe("Public PcrTest Registration Form", () => {
     it("Required Validations are visible with valid PHN", () => {
         clickManualRegistrationButton();
         clickRegisterKitButton();
-        selectorShouldBeVisible(feedbackTestKitCodeIsRequiredSelector);
-        selectorShouldBeVisible(feedbackFirstNameIsRequiredSelector);
-        selectorShouldBeVisible(feedbackLastNameIsRequiredSelector);
-        selectorShouldBeVisible(feedbackPhnIsRequiredSelector);
-        selectorShouldBeVisible(feedbackDoBIsRequiredSelector);
-        selectorShouldBeVisible(feedbackTestTakenIsRequiredSelector);
-        selectorShouldNotExists(feedbackStreetAddressIsRequiredSelector);
-        selectorShouldNotExists(feedbackCityIsRequiredSelector);
-        selectorShouldNotExists(feedbackPostalIsRequiredSelector);
+        cy.get(feedbackTestKitCodeIsRequiredSelector).should("be.visible");
+        cy.get(feedbackFirstNameIsRequiredSelector).should("be.visible");
+        cy.get(feedbackLastNameIsRequiredSelector).should("be.visible");
+        cy.get(feedbackPhnIsRequiredSelector).should("be.visible");
+        cy.get(feedbackDoBIsRequiredSelector).should("be.visible");
+        cy.get(feedbackTestTakenIsRequiredSelector).should("be.visible");
+        cy.get(feedbackStreetAddressIsRequiredSelector).should("not.exist");
+        cy.get(feedbackCityIsRequiredSelector).should("not.exist");
+        cy.get(feedbackPostalIsRequiredSelector).should("not.exist");
     });
 
     it("No PHN available required validations", () => {
@@ -142,23 +132,23 @@ describe("Public PcrTest Registration Form", () => {
         clickRegisterKitButton();
 
         // Address information should be visible.
-        selectorShouldBeVisible(feedbackStreetAddressIsRequiredSelector);
-        selectorShouldBeVisible(feedbackCityIsRequiredSelector);
-        selectorShouldBeVisible(feedbackPostalIsRequiredSelector);
+        cy.get(feedbackStreetAddressIsRequiredSelector).should("be.visible");
+        cy.get(feedbackCityIsRequiredSelector).should("be.visible");
+        cy.get(feedbackPostalIsRequiredSelector).should("be.visible");
     });
 
     it("Test Kit Code Invalid Validations", () => {
         clickManualRegistrationButton();
         cy.get(testKitCodeInput).type("111");
         cy.get(firstNameInput).type("Princess");
-        selectorShouldBeVisible(feedbackTestKitCodeValidSelector);
+        cy.get(feedbackTestKitCodeValidSelector).should("be.visible");
     });
 
     it("Phone number Invalid Validations", () => {
         clickManualRegistrationButton();
         cy.get(contactPhoneNumberInput).type(" ");
-        selectOption(testTakenMinutesAgo, getPcrTestTakenTime(5));
-        selectorShouldBeVisible(feedbackPhoneNumberValidSelector);
+        cy.get(testTakenMinutesAgo).select(getPcrTestTakenTime(5));
+        cy.get(feedbackPhoneNumberValidSelector).should("be.visible");
     });
 });
 
@@ -175,7 +165,7 @@ describe("Public PcrTest Registration Submission with Valid PHN", () => {
         clickManualRegistrationButton();
         // get the data in the fixture.
         cy.fixture("LaboratoryService/publicPcrTestValidPhn.json").then(
-            function (data) {
+            (data) => {
                 cy.get(testKitCodeInput).type(
                     data.resourcePayload.shortCodeFirst +
                         "-" +
@@ -185,20 +175,13 @@ describe("Public PcrTest Registration Submission with Valid PHN", () => {
                 cy.get(lastNameInput).type(data.resourcePayload.lastName);
                 cy.get(phnInput).type(data.resourcePayload.phn);
 
-                selectOption(
+                cy.populateDateDropdowns(
                     formSelectYear,
-                    getYear(data.resourcePayload.dob).toString()
-                );
-                selectOption(
                     formSelectMonth,
-                    getMonth(data.resourcePayload.dob).toString()
-                );
-                selectOption(
                     formSelectDay,
-                    getDay(data.resourcePayload.dob).toString()
+                    data.resourcePayload.dob
                 );
-                selectOption(
-                    testTakenMinutesAgo,
+                cy.get(testTakenMinutesAgo).select(
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -208,7 +191,10 @@ describe("Public PcrTest Registration Submission with Valid PHN", () => {
 
         clickRegisterKitButton();
 
-        selectorShouldBeVisible(registrationSuccessBanner);
+        cy.get(registrationSuccessBanner).should("be.visible");
+
+        cy.get(continueBtn).should("be.visible").click();
+        cy.location("pathname").should("eq", landingPagePath);
     });
 });
 
@@ -225,7 +211,7 @@ describe("Public PcrTest Registration Submission with no valid PHN", () => {
         clickManualRegistrationButton();
         // get the data in the fixture.
         cy.fixture("LaboratoryService/publicPcrTestNoValidPhn.json").then(
-            function (data) {
+            (data) => {
                 cy.get(testKitCodeInput).type(
                     data.resourcePayload.shortCodeFirst +
                         "-" +
@@ -244,20 +230,13 @@ describe("Public PcrTest Registration Submission with no valid PHN", () => {
                 cy.get(cityInput).type(data.resourcePayload.city);
                 cy.get(zipInput).type(data.resourcePayload.postalOrZip);
 
-                selectOption(
+                cy.populateDateDropdowns(
                     formSelectYear,
-                    getYear(data.resourcePayload.dob).toString()
-                );
-                selectOption(
                     formSelectMonth,
-                    getMonth(data.resourcePayload.dob).toString()
-                );
-                selectOption(
                     formSelectDay,
-                    getDay(data.resourcePayload.dob).toString()
+                    data.resourcePayload.dob
                 );
-                selectOption(
-                    testTakenMinutesAgo,
+                cy.get(testTakenMinutesAgo).select(
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -267,7 +246,10 @@ describe("Public PcrTest Registration Submission with no valid PHN", () => {
 
         clickRegisterKitButton();
 
-        selectorShouldBeVisible(registrationSuccessBanner);
+        cy.get(registrationSuccessBanner).should("be.visible");
+
+        cy.get(continueBtn).should("be.visible").click();
+        cy.location("pathname").should("eq", landingPagePath);
     });
 });
 
@@ -290,8 +272,8 @@ describe("Public PcrTest Registration with Test Kit Id", () => {
     });
 
     it("Register options buttons are available", () => {
-        selectorShouldBeVisible("[data-testid=btn-login]");
-        selectorShouldBeVisible("[data-testid=btn-manual]");
+        cy.get("[data-testid=btn-login]").should("be.visible");
+        cy.get("[data-testid=btn-manual]").should("be.visible");
     });
 });
 

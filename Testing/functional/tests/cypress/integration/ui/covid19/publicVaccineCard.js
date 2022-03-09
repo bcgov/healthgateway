@@ -1,5 +1,3 @@
-import { deleteDownloadsFolder } from "../../../support/utils";
-
 const { monthNames } = require("../../../support/constants");
 
 const dobYearSelector =
@@ -34,22 +32,6 @@ const fullyVaccinatedDobDay = "9";
 const fullyVaccinatedDovYear = "2021";
 const fullyVaccinatedDovMonth = "January";
 const fullyVaccinatedDovDay = "20";
-
-function selectOption(selector, option) {
-    return cy.get(selector).should("be.visible", "be.enabled").select(option);
-}
-
-function selectShouldContain(selector, value) {
-    cy.get(selector)
-        .children("[value=" + value + "]")
-        .should("exist");
-}
-
-function selectShouldNotContain(selector, value) {
-    cy.get(selector)
-        .children("[value=" + value + "]")
-        .should("not.exist");
-}
 
 function enterVaccineCardPHN(phn) {
     cy.get("[data-testid=phnInput]")
@@ -94,7 +76,7 @@ describe("Public Vaccine Card Form", () => {
         cy.log("Validate valid PHN passes validation.");
         enterVaccineCardPHN(Cypress.env("phn"));
 
-        selectOption(dobYearSelector, "Year");
+        cy.get(dobYearSelector).select("Year");
 
         cy.get("[data-testid=phnInput]")
             .should("be.visible", "be.enabled")
@@ -139,12 +121,12 @@ describe("Public Vaccine Card Form", () => {
 
         // Test Future Year does not exist
         cy.log("Testing Future Year does not exist.");
-        selectShouldNotContain(dobYearSelector, nextYear.toString());
-        selectShouldNotContain(dovYearSelector, nextYear.toString());
+        cy.get(dobYearSelector).shouldNotContainValue(nextYear.toString());
+        cy.get(dovYearSelector).shouldNotContainValue(nextYear.toString());
 
         // Test Current Year
-        selectOption(dobYearSelector, year.toString());
-        selectOption(dovYearSelector, year.toString());
+        cy.get(dobYearSelector).select(year.toString());
+        cy.get(dovYearSelector).select(year.toString());
         cy.log("Testing Current Year.");
 
         if (nextMonth > 1) {
@@ -152,31 +134,35 @@ describe("Public Vaccine Card Form", () => {
             cy.log(
                 "Current year has been set in dropdown, so if next month is 1 - January, it means current month is December. Test Future Month does not exist. Month can only be current or past month for current year."
             );
-            selectShouldNotContain(dobMonthSelector, nextMonth);
-            selectShouldNotContain(dovMonthSelector, nextMonth);
+            cy.get(dobMonthSelector).shouldNotContainValue(
+                nextMonth.toString()
+            );
+            cy.get(dovMonthSelector).shouldNotContainValue(
+                nextMonth.toString()
+            );
         }
 
         cy.log("Test and set Current Month");
-        selectOption(dobMonthSelector, monthNames[monthNumber]);
-        selectOption(dovMonthSelector, monthNames[monthNumber]);
+        cy.get(dobMonthSelector).select(monthNames[monthNumber]);
+        cy.get(dovMonthSelector).select(monthNames[monthNumber]);
 
         if (nextDay > 1) {
             cy.log("Next Day: " + nextDay);
             cy.log(
                 "Current Year and Month have been set. If next day is 1, it means previous day was last day of current month. Next Day is associated with the current month. Test Future Day in current month does not exist."
             );
-            selectShouldNotContain(dobDaySelector, nextDay);
-            selectShouldNotContain(dovDaySelector, nextDay);
+            cy.get(dobDaySelector).shouldNotContainValue(nextDay.toString());
+            cy.get(dovDaySelector).shouldNotContainValue(nextDay.toString());
         }
         //Test Current Day exists
         cy.log("Test Current Day exists.");
-        selectShouldContain(dobDaySelector, day);
-        selectShouldContain(dovDaySelector, day);
+        cy.get(dobDaySelector).shouldContainValue(day.toString());
+        cy.get(dovDaySelector).shouldContainValue(day.toString());
     });
 
     it("Validate DOB Year Required", () => {
-        selectOption(dobMonthSelector, dummyMonth);
-        selectOption(dobDaySelector, dummyDay);
+        cy.get(dobMonthSelector).select(dummyMonth);
+        cy.get(dobDaySelector).select(dummyDay);
 
         clickVaccineCardEnterButton();
 
@@ -184,8 +170,8 @@ describe("Public Vaccine Card Form", () => {
     });
 
     it("Validate DOB Month Required", () => {
-        selectOption(dobYearSelector, dummyYear);
-        selectOption(dobDaySelector, dummyDay);
+        cy.get(dobYearSelector).select(dummyYear);
+        cy.get(dobDaySelector).select(dummyDay);
 
         clickVaccineCardEnterButton();
 
@@ -193,8 +179,8 @@ describe("Public Vaccine Card Form", () => {
     });
 
     it("Validate DOB Day Required", () => {
-        selectOption(dobYearSelector, dummyYear);
-        selectOption(dobMonthSelector, dummyMonth);
+        cy.get(dobYearSelector).select(dummyYear);
+        cy.get(dobMonthSelector).select(dummyMonth);
 
         clickVaccineCardEnterButton();
 
@@ -202,8 +188,8 @@ describe("Public Vaccine Card Form", () => {
     });
 
     it("Validate DOV Year Required", () => {
-        selectOption(dovMonthSelector, dummyMonth);
-        selectOption(dovDaySelector, dummyDay);
+        cy.get(dovMonthSelector).select(dummyMonth);
+        cy.get(dovDaySelector).select(dummyDay);
 
         clickVaccineCardEnterButton();
 
@@ -211,8 +197,8 @@ describe("Public Vaccine Card Form", () => {
     });
 
     it("Validate DOV Month Required", () => {
-        selectOption(dovYearSelector, dummyYear);
-        selectOption(dovDaySelector, dummyDay);
+        cy.get(dovYearSelector).select(dummyYear);
+        cy.get(dovDaySelector).select(dummyDay);
 
         clickVaccineCardEnterButton();
 
@@ -220,8 +206,8 @@ describe("Public Vaccine Card Form", () => {
     });
 
     it("Validate DOV Day Required", () => {
-        selectOption(dovYearSelector, dummyYear);
-        selectOption(dovMonthSelector, dummyMonth);
+        cy.get(dovYearSelector).select(dummyYear);
+        cy.get(dovMonthSelector).select(dummyMonth);
 
         clickVaccineCardEnterButton();
 
@@ -231,7 +217,7 @@ describe("Public Vaccine Card Form", () => {
 
 describe("Public Vaccine Card Downloads", () => {
     beforeEach(() => {
-        deleteDownloadsFolder();
+        cy.deleteDownloadsFolder();
         cy.enableModules([
             "Immunization",
             "VaccinationStatus",
@@ -244,12 +230,12 @@ describe("Public Vaccine Card Downloads", () => {
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(fullyVaccinatedPhn);
-        selectOption(dobYearSelector, fullyVaccinatedDobYear);
-        selectOption(dobMonthSelector, fullyVaccinatedDobMonth);
-        selectOption(dobDaySelector, fullyVaccinatedDobDay);
-        selectOption(dovYearSelector, fullyVaccinatedDovYear);
-        selectOption(dovMonthSelector, fullyVaccinatedDovMonth);
-        selectOption(dovDaySelector, fullyVaccinatedDovDay);
+        cy.get(dobYearSelector).select(fullyVaccinatedDobYear);
+        cy.get(dobMonthSelector).select(fullyVaccinatedDobMonth);
+        cy.get(dobDaySelector).select(fullyVaccinatedDobDay);
+        cy.get(dovYearSelector).select(fullyVaccinatedDovYear);
+        cy.get(dovMonthSelector).select(fullyVaccinatedDovMonth);
+        cy.get(dovDaySelector).select(fullyVaccinatedDovDay);
 
         clickVaccineCardEnterButton();
     });
@@ -322,7 +308,7 @@ describe("Public Vaccine Card Downloads", () => {
 
 describe("Public Vaccine Card Downloads When PublicVaccineDownloadPdf Disabled", () => {
     it("Save Image When PublicVaccineDownloadPdf Disabled", () => {
-        deleteDownloadsFolder();
+        cy.deleteDownloadsFolder();
         cy.enableModules([
             "Immunization",
             "VaccinationStatus",
@@ -334,12 +320,12 @@ describe("Public Vaccine Card Downloads When PublicVaccineDownloadPdf Disabled",
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(fullyVaccinatedPhn);
-        selectOption(dobYearSelector, fullyVaccinatedDobYear);
-        selectOption(dobMonthSelector, fullyVaccinatedDobMonth);
-        selectOption(dobDaySelector, fullyVaccinatedDobDay);
-        selectOption(dovYearSelector, fullyVaccinatedDovYear);
-        selectOption(dovMonthSelector, fullyVaccinatedDovMonth);
-        selectOption(dovDaySelector, fullyVaccinatedDovDay);
+        cy.get(dobYearSelector).select(fullyVaccinatedDobYear);
+        cy.get(dobMonthSelector).select(fullyVaccinatedDobMonth);
+        cy.get(dobDaySelector).select(fullyVaccinatedDobDay);
+        cy.get(dovYearSelector).select(fullyVaccinatedDovYear);
+        cy.get(dovMonthSelector).select(fullyVaccinatedDovMonth);
+        cy.get(dovDaySelector).select(fullyVaccinatedDovDay);
 
         clickVaccineCardEnterButton();
 

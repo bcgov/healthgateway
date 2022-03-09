@@ -1,7 +1,7 @@
 {
     "resourcePayload": {
         "phn": "9879454009",
-        "dob": "1928-07-15",
+        "dob": "1928-07-15T00:00:00",
         "firstName": "ZELDA",
         "lastName": "BCYPCST",
         "testTakenMinutesAgo": 360,

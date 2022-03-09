@@ -1,11 +1,12 @@
 import DateTimeFormat from "@/constants/dateTimeFormat";
+import { EntryType } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
 import {
     Forecast,
     ImmunizationAgent,
     ImmunizationEvent,
 } from "@/models/immunizationModel";
-import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import TimelineEntry from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
 // The immunization timeline entry model

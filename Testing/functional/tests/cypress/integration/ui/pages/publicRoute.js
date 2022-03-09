@@ -1,5 +1,5 @@
-const vaccineCardUrl = "/vaccineCard";
-const covidTestUrl = "/covidTest";
+const vaccineCardPath = "/vaccineCard";
+const covidTestPath = "/covidTest";
 
 describe("Public Route", () => {
     it("Redirect to Public Vaccine Card", () => {
@@ -8,15 +8,15 @@ describe("Public Route", () => {
             "VaccinationStatus",
             "VaccinationStatusPdf",
         ]);
-        cy.visit(vaccineCardUrl);
-        cy.get("[data-testid=loginBtn]").should("not.be.visible");
-        cy.url().should("include", vaccineCardUrl);
+        cy.visit(vaccineCardPath);
+        cy.get("[data-testid=loginBtn]").should("not.exist");
+        cy.location("pathname").should("eq", vaccineCardPath);
     });
 
     it("Redirect to Covid Test", () => {
         cy.enableModules(["Laboratory", "PublicLaboratoryResult"]);
-        cy.visit(covidTestUrl);
-        cy.get("[data-testid=loginBtn]").should("not.be.visible");
-        cy.url().should("include", covidTestUrl);
+        cy.visit(covidTestPath);
+        cy.get("[data-testid=loginBtn]").should("not.exist");
+        cy.location("pathname").should("eq", covidTestPath);
     });
 });

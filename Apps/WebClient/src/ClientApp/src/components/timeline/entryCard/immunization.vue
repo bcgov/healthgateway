@@ -77,12 +77,8 @@ export default class ImmunizationTimelineComponent extends Vue {
                         cols="auto"
                         class="text-center pr-0"
                     >
-                        <router-link to="/covid19">
-                            <b-btn
-                                data-testid="cardBtn"
-                                class="detailsButton"
-                                variant="link"
-                            >
+                        <router-link data-testid="cardBtn" to="/covid19">
+                            <b-btn class="detailsButton" variant="link">
                                 <hg-icon
                                     icon="id-card"
                                     size="large"

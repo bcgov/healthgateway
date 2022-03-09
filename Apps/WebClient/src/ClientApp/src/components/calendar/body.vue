@@ -13,6 +13,7 @@ import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action } from "vuex-class";
 
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
@@ -21,7 +22,7 @@ import LaboratoryOrderTimelineEntry from "@/models/laboratoryOrderTimelineEntry"
 import MedicationRequestTimelineEntry from "@/models/medicationRequestTimelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
-import TimelineEntry, { DateGroup, EntryType } from "@/models/timelineEntry";
+import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 
 import { CalendarEntry, CalendarWeek } from "./models";
 
@@ -149,28 +150,7 @@ export default class CalendarBodyComponent extends Vue {
     }
 
     private getIcon(event: CalendarEntry) {
-        if (event.type == EntryType.Medication) {
-            return "pills";
-        }
-        if (event.type == EntryType.Immunization) {
-            return "syringe";
-        }
-        if (event.type == EntryType.Covid19LaboratoryOrder) {
-            return "flask";
-        }
-        if (event.type == EntryType.LaboratoryOrder) {
-            return "vial";
-        }
-        if (event.type == EntryType.Note) {
-            return "edit";
-        }
-        if (event.type == EntryType.Encounter) {
-            return "user-md";
-        }
-        if (event.type == EntryType.MedicationRequest) {
-            return "clipboard-list";
-        }
-        return "";
+        return entryTypeMap.get(event.type)?.icon ?? "";
     }
 
     private getBackground(event: CalendarEntry) {
@@ -188,23 +168,25 @@ export default class CalendarBodyComponent extends Vue {
     }
 
     private getEntryText(entry: TimelineEntry, type: EntryType): string {
-        if (type == EntryType.Medication) {
-            return (entry as MedicationTimelineEntry).medication.brandName;
-        } else if (type == EntryType.Immunization) {
-            return (entry as ImmunizationTimelineEntry).immunization.name;
-        } else if (type == EntryType.Covid19LaboratoryOrder) {
-            return (entry as Covid19LaboratoryOrderTimelineEntry).summaryTitle;
-        } else if (type == EntryType.LaboratoryOrder) {
-            return (entry as LaboratoryOrderTimelineEntry).commonName;
-        } else if (type == EntryType.Note) {
-            return (entry as NoteTimelineEntry).title;
-        } else if (type == EntryType.Encounter) {
-            return (entry as EncounterTimelineEntry).practitionerName;
-        } else if (type == EntryType.MedicationRequest) {
-            return (entry as MedicationRequestTimelineEntry).drugName || "";
+        switch (type) {
+            case EntryType.Medication:
+                return (entry as MedicationTimelineEntry).medication.brandName;
+            case EntryType.Immunization:
+                return (entry as ImmunizationTimelineEntry).immunization.name;
+            case EntryType.Covid19LaboratoryOrder:
+                return (entry as Covid19LaboratoryOrderTimelineEntry)
+                    .summaryTitle;
+            case EntryType.LaboratoryOrder:
+                return (entry as LaboratoryOrderTimelineEntry).commonName;
+            case EntryType.Note:
+                return (entry as NoteTimelineEntry).title;
+            case EntryType.Encounter:
+                return (entry as EncounterTimelineEntry).practitionerName;
+            case EntryType.MedicationRequest:
+                return (entry as MedicationRequestTimelineEntry).drugName || "";
+            default:
+                return "N/A";
         }
-
-        return "N/A";
     }
 }
 </script>

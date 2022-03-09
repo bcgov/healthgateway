@@ -11,8 +11,6 @@ import {
 const navbarState: NavbarState = {
     isHeaderShown: false,
     isSidebarOpen: false,
-    isSidebarButtonShown: false,
-    isHeaderButtonShown: false,
 };
 
 const navbarGetters: NavbarGetters = {
@@ -25,13 +23,7 @@ const navbarGetters: NavbarGetters = {
     isSidebarOpen(): boolean {
         return false;
     },
-    isSidebarShown(): boolean {
-        return false;
-    },
-    isHeaderButtonShown(): boolean {
-        return false;
-    },
-    isSidebarButtonShown(): boolean {
+    isSidebarAvailable(): boolean {
         return false;
     },
 };
@@ -39,19 +31,13 @@ const navbarGetters: NavbarGetters = {
 const navbarActions: NavbarActions = {
     toggleSidebar: voidMethod,
     setSidebarState: voidMethod,
-    toggleHeader: voidMethod,
     setHeaderState: voidMethod,
-    setSidebarButtonState: voidMethod,
-    setHeaderButtonState: voidMethod,
 };
 
 const navbarMutations: NavbarMutations = {
     toggleSidebar: voidMethod,
     setSidebarState: voidMethod,
-    toggleHeader: voidMethod,
     setHeaderState: voidMethod,
-    setSidebarButtonState: voidMethod,
-    setHeaderButtonState: voidMethod,
 };
 
 const navbarStub: NavbarModule = {

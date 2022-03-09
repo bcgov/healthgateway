@@ -1,4 +1,3 @@
-import { deleteDownloadsFolder } from "../../../support/utils";
 const { AuthMethod } = require("../../../support/constants");
 const covid19Url = "/covid19";
 
@@ -23,7 +22,7 @@ describe("Authenticated Vaccine Card", () => {
             AuthMethod.KeyCloak,
             "/covid19"
         );
-        cy.checkVaccineRecordHasLoaded();
+        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
 
         cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle")
             .should("be.enabled", "be.visible")
@@ -45,7 +44,7 @@ describe("Authenticated Vaccine Card", () => {
             AuthMethod.KeyCloak,
             "/covid19"
         );
-        cy.checkVaccineRecordHasLoaded();
+        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
 
         cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle").should(
             "not.exist"
@@ -69,7 +68,7 @@ describe("Authenticated Vaccine Card", () => {
             AuthMethod.KeyCloak,
             "/covid19"
         );
-        cy.checkVaccineRecordHasLoaded();
+        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
 
         cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle")
             .should("be.enabled", "be.visible")
@@ -83,7 +82,7 @@ describe("Authenticated Vaccine Card", () => {
 
 describe("Authenticated Vaccine Card Downloads", () => {
     beforeEach(() => {
-        deleteDownloadsFolder();
+        cy.deleteDownloadsFolder();
         cy.intercept("GET", "**/v1/api/AuthenticatedVaccineStatus?hdid=*", {
             fixture:
                 "ImmunizationService/authenticatedVaccinationStatusLoaded.json",
@@ -103,7 +102,7 @@ describe("Authenticated Vaccine Card Downloads", () => {
             AuthMethod.KeyCloak,
             "/covid19"
         );
-        cy.checkVaccineRecordHasLoaded();
+        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
 
         cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle")
             .should("be.enabled", "be.visible")
@@ -129,7 +128,7 @@ describe("Authenticated Vaccine Card Downloads", () => {
             AuthMethod.KeyCloak,
             "/covid19"
         );
-        cy.checkVaccineRecordHasLoaded();
+        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
 
         cy.get("[data-testid=save-card-btn]")
             .should("be.visible", "be.enabled")
@@ -171,7 +170,7 @@ describe("Authenticated Vaccine Card Downloads", () => {
             AuthMethod.KeyCloak,
             covid19Url
         );
-        cy.checkVaccineRecordHasLoaded();
+        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
 
         cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle")
             .should("be.enabled", "be.visible")

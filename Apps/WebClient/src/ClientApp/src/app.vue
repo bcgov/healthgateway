@@ -101,9 +101,13 @@ export default class App extends Vue {
         (this.host.startsWith("HEALTHGATEWAY") ||
             this.host.startsWith("WWW.HEALTHGATEWAY"));
 
+    private initialized = false;
     private windowWidth = 0;
     private vaccineCardPath = "/vaccinecard";
     private covidTestPath = "/covidtest";
+    private loginCallbackPath = "/logincallback";
+    private registrationPath = "/registration";
+    private pcrTestPath = "/pcrtest";
 
     constructor() {
         super();
@@ -126,6 +130,7 @@ export default class App extends Vue {
         this.$nextTick(() => {
             window.addEventListener("resize", this.onResize);
             this.onResize();
+            this.initialized = true;
         });
     }
 
@@ -150,27 +155,59 @@ export default class App extends Vue {
     private get isPublicDestinationPath(): boolean {
         const routePath = this.$route.path.toLowerCase();
         return (
-            routePath !== this.vaccineCardPath &&
-            routePath !== this.covidTestPath
+            routePath === this.vaccineCardPath ||
+            routePath === this.covidTestPath
         );
     }
 
+    private get isLoginCallbackPath(): boolean {
+        return this.$route.path.toLowerCase() === this.loginCallbackPath;
+    }
+
+    private get isRegistrationPath(): boolean {
+        return this.$route.path.toLowerCase() === this.registrationPath;
+    }
+
+    private get isPcrTestPath(): boolean {
+        return this.$route.path.toLowerCase().startsWith(this.pcrTestPath);
+    }
+
     private get isHeaderVisible(): boolean {
-        return this.isPublicDestinationPath;
+        return !this.isPublicDestinationPath && !this.isLoginCallbackPath;
     }
 
     private get isFooterVisible(): boolean {
-        return this.isPublicDestinationPath;
+        return (
+            !this.isPublicDestinationPath &&
+            !this.isLoginCallbackPath &&
+            !this.isRegistrationPath
+        );
+    }
+
+    private get isSidebarVisible(): boolean {
+        return (
+            !this.isLoginCallbackPath &&
+            !this.isRegistrationPath &&
+            !this.isPcrTestPath
+        );
     }
 
     private get isCommunicationVisible(): boolean {
-        return this.isPublicDestinationPath;
+        return (
+            !this.isPublicDestinationPath &&
+            !this.isLoginCallbackPath &&
+            !this.isPcrTestPath
+        );
     }
 }
 </script>
 
 <template>
-    <div id="app-root" class="container-fluid-fill d-flex h-100 flex-column">
+    <div
+        v-if="initialized"
+        id="app-root"
+        class="container-fluid-fill d-flex h-100 flex-column"
+    >
         <div v-if="!isProduction" class="devBanner d-print-none">
             <div class="text-center bg-warning small">
                 Non-production environment:
@@ -178,9 +215,12 @@ export default class App extends Vue {
             </div>
         </div>
 
-        <NavHeader v-show="isHeaderVisible" class="d-print-none" />
+        <NavHeader v-if="isHeaderVisible" class="d-print-none" />
         <b-row>
-            <NavSidebar class="d-print-none sticky-top vh-100" />
+            <NavSidebar
+                v-if="isSidebarVisible"
+                class="d-print-none sticky-top vh-100"
+            />
             <main class="col fill-height d-flex flex-column">
                 <CommunicationComponent v-show="isCommunicationVisible" />
                 <ErrorCard />
@@ -189,7 +229,7 @@ export default class App extends Vue {
             </main>
         </b-row>
 
-        <footer v-show="isFooterVisible" class="footer d-print-none">
+        <footer v-if="isFooterVisible" class="footer d-print-none">
             <NavFooter />
         </footer>
     </div>

@@ -204,7 +204,7 @@ objects:
                   value: 0.0.0.0:5432
                 - name: PATRONI_RESTAPI_LISTEN
                   value: 0.0.0.0:8008
-              image: ${IMAGE_REGISTRY}/${IMAGE_STREAM_NAMESPACE}/${IMAGE_STREAM_TAG}
+              image: ${IMAGE_REGISTRY}/${IMAGE_STREAM_NAMESPACE}/patroni:${IMAGE_STREAM_TAG}
               # Because we are using image reference to a tag, we need to always pull the image otherwise
               #   we end up with outdated/out-of-sync image depending on the node where it is running
               imagePullPolicy: Always
@@ -300,8 +300,9 @@ parameters:
     name: IMAGE_STREAM_NAMESPACE
     value: "0bd5ad-tools"
   - name: IMAGE_STREAM_TAG
-    description: Patroni ImageTag
-    value: patroni:v11-latest
+    displayName: Patroni ImageTag to use
+    description: The environment tag to use mock, dev, test, production
+    required: true
   - description: The size of the persistent volume to create.
     displayName: Persistent Volume Size
     name: PVC_SIZE

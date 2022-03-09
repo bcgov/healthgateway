@@ -19,8 +19,7 @@ describe("dependents", () => {
         phn: "9879187222",
     };
 
-    before(() => {
-        cy.setupDownloads();
+    beforeEach(() => {
         cy.enableModules(["CovidLabResults", "Laboratory", "Dependent"]);
         cy.login(
             Cypress.env("keycloak.username"),
@@ -30,7 +29,7 @@ describe("dependents", () => {
         );
     });
 
-    it("Validate Add, Fields and Cancel", () => {
+    it("Validate Text Fields on Add Dependent Modal", () => {
         //Validate Main Add Button
         cy.get("[data-testid=addNewDependentBtn]")
             .should("be.enabled", "be.visible")
@@ -168,9 +167,10 @@ describe("dependents", () => {
         cy.get("[data-testid=cancelRegistrationBtn]").click();
     });
 
-    it("Validate Add", () => {
-        cy.get("[data-testid=addNewDependentBtn]").click();
+    it("Validate Adding, Viewing, and Removing Dependents", () => {
+        cy.log("Adding dependent");
 
+        cy.get("[data-testid=addNewDependentBtn]").click();
         cy.get("[data-testid=newDependentModalText]").should(
             "exist",
             "be.visible"
@@ -195,9 +195,9 @@ describe("dependents", () => {
 
         // Validate the modal is done
         cy.get("[data-testid=newDependentModal]").should("not.exist");
-    });
 
-    it("Validate Dependent Tab", () => {
+        cy.log("Validating dependent tab");
+
         cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
         // Validate the newly added dependent tab and elements are present
         cy.get("[data-testid=dependentName]")
@@ -216,9 +216,10 @@ describe("dependents", () => {
             .then((dateOfBirth) =>
                 expect(dateOfBirth).to.equal(validDependent.doB)
             );
-    });
 
-    it("Validate Covid Tab with Results", () => {
+        cy.log("Validating COVID-19 tab");
+
+        cy.setupDownloads();
         let sensitiveDocMessage =
             " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
         // Validate the tab and elements are present
@@ -251,9 +252,9 @@ describe("dependents", () => {
         );
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.get("[data-testid=genericMessageModal]").should("not.exist");
-    });
 
-    it("Validate Add for another user", () => {
+        cy.log("Adding same dependent as another user");
+
         cy.login(
             Cypress.env("keycloak.protected.username"),
             Cypress.env("keycloak.password"),
@@ -287,13 +288,15 @@ describe("dependents", () => {
         // Validate the modal is done
         cy.get("[data-testid=newDependentModal]").should("not.exist");
 
-        // Now click the "Yes, I'm sure" to confirm deletion
+        cy.log("Removing dependent from other user");
+
         cy.get("[data-testid=dependentMenuBtn]").last().click();
         cy.get("[data-testid=deleteDependentMenuBtn]").last().click();
+        // Now click the "Yes, I'm sure" to confirm deletion
         cy.get("[data-testid=confirmDeleteBtn]").click();
-    });
 
-    it("Validate Remove Dependent", () => {
+        cy.log("Removing dependent from original user");
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

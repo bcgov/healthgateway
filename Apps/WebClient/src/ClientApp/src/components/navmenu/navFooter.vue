@@ -11,7 +11,12 @@ export default class FooterComponent extends Vue {
 </script>
 
 <template>
-    <b-navbar v-show="isFooterShown" toggleable="lg" type="dark">
+    <b-navbar
+        v-show="isFooterShown"
+        data-testid="footer"
+        toggleable="lg"
+        type="dark"
+    >
         <!-- Navbar content -->
         <b-navbar-nav>
             <b-nav-item class="nav-link" to="/termsOfService">

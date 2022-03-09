@@ -42,12 +42,14 @@ export interface ErrorBannerActions
             traceId: string | undefined;
         }
     ): void;
+    clearError(context: StoreContext): void;
 }
 
 export interface ErrorBannerMutations extends MutationTree<ErrorBannerState> {
     dismiss(state: ErrorBannerState): void;
     show(state: ErrorBannerState): void;
     addError(state: ErrorBannerState, bannerError: BannerError): void;
+    clearError(state: ErrorBannerState): void;
 }
 
 export interface ErrorBannerModule extends Module<ErrorBannerState, RootState> {

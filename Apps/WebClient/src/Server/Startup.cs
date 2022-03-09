@@ -37,6 +37,7 @@ namespace HealthGateway.WebClient
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.IdentityModel.Tokens;
     using VueCliMiddleware;
 
     /// <summary>
@@ -147,6 +148,8 @@ namespace HealthGateway.WebClient
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseAuth(app);
 
+            DisableTraceMethod(app);
+
             app.UseSpaStaticFiles();
 
             if (env.IsDevelopment())
@@ -222,6 +225,20 @@ namespace HealthGateway.WebClient
                         headers["Content-Type"] = mimeType;
                     }
                 },
+            });
+        }
+
+        private static void DisableTraceMethod(IApplicationBuilder app)
+        {
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Method == "TRACE")
+                {
+                    context.Response.StatusCode = 405;
+                    return;
+                }
+
+                await next.Invoke().ConfigureAwait(true);
             });
         }
     }

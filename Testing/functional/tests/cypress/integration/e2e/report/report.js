@@ -39,18 +39,14 @@ describe("Reports", () => {
         cy.get("[data-testid=infoImage]").should("be.visible");
         cy.viewport(1440, 600);
 
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("Medications");
+        cy.get("[data-testid=reportType]").select("Medications");
 
         cy.get("[data-testid=exportRecordBtn] button").should(
             "be.enabled",
             "be.visible"
         );
 
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("");
+        cy.get("[data-testid=reportType]").select("");
 
         cy.get("[data-testid=exportRecordBtn] button").should(
             "be.disabled",
@@ -59,9 +55,7 @@ describe("Reports", () => {
     });
 
     it("Validate Medication Report", () => {
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("Medications");
+        cy.get("[data-testid=reportType]").select("Medications");
         cy.get("[data-testid=reportSample]").should("be.visible");
 
         cy.viewport("iphone-6");
@@ -85,9 +79,7 @@ describe("Reports", () => {
     });
 
     it("Validate MSP Visits Report", () => {
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("Health Visits");
+        cy.get("[data-testid=reportType]").select("Health Visits");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
 
@@ -114,12 +106,10 @@ describe("Reports", () => {
     });
 
     it("Validate COVID-19 Report", () => {
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("COVID-19 Test Results");
+        cy.get("[data-testid=reportType]").select("COVID-19 Test Results");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
-        cy.get("[data-testid=covid19DateItem]")
+        cy.get("[data-testid=covid19DateItem]", { timeout: 60000 })
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
@@ -146,12 +136,10 @@ describe("Reports", () => {
     });
 
     it("Validate Immunization Report", () => {
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("Immunizations");
+        cy.get("[data-testid=reportType]").select("Immunizations");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
-        cy.get("[data-testid=immunizationDateItem]")
+        cy.get("[data-testid=immunizationDateItem]", { timeout: 60000 })
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
@@ -178,9 +166,7 @@ describe("Reports", () => {
     });
 
     it("Validate Special Authority Report", () => {
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("Special Authority Requests");
+        cy.get("[data-testid=reportType]").select("Special Authority Requests");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
 
@@ -207,9 +193,7 @@ describe("Reports", () => {
     });
 
     it("Validate Notes Report", () => {
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("My Notes");
+        cy.get("[data-testid=reportType]").select("My Notes");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
 
@@ -236,12 +220,10 @@ describe("Reports", () => {
     });
 
     it("Validate Laboratory Report", () => {
-        cy.get("[data-testid=reportType]")
-            .should("be.enabled", "be.visible")
-            .select("Laboratory Tests");
+        cy.get("[data-testid=reportType]").select("Laboratory Tests");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
-        cy.get("[data-testid=labResultDateItem]")
+        cy.get("[data-testid=labResultDateItem]", { timeout: 60000 })
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 

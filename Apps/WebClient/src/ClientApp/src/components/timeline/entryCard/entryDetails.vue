@@ -5,9 +5,10 @@ import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import { entryTypeMap } from "@/constants/entryType";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { Operation } from "@/models/storeOperations";
-import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
 
 import Covid19LaboratoryOrderTimelineComponent from "./covid19LaboratoryOrder.vue";
@@ -93,30 +94,7 @@ export default class EntryDetailsComponent extends Vue {
     }
 
     private getComponentForEntry(): string {
-        switch (this.entry?.type) {
-            case EntryType.MedicationRequest:
-                return "MedicationRequestComponent";
-
-            case EntryType.Medication:
-                return "MedicationComponent";
-
-            case EntryType.Immunization:
-                return "ImmunizationComponent";
-
-            case EntryType.Covid19LaboratoryOrder:
-                return "Covid19LaboratoryOrderComponent";
-
-            case EntryType.LaboratoryOrder:
-                return "LaboratoryOrderComponent";
-
-            case EntryType.Encounter:
-                return "EncounterComponent";
-
-            case EntryType.Note:
-                return "NoteComponent";
-            default:
-                return "";
-        }
+        return entryTypeMap.get(this.entry?.type)?.component ?? "";
     }
 
     public handleClose(): void {

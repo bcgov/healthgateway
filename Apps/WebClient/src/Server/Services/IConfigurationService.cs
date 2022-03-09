@@ -26,5 +26,11 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <returns>The Config object containing configuration elements useful for client consumption.</returns>
         Models.ExternalConfiguration GetConfiguration();
+
+        /// <summary>
+        /// Creates and returns mobile Configuration.
+        /// </summary>
+        /// <returns>The Mobile Configuration.</returns>
+        Models.MobileConfiguration GetMobileConfiguration();
     }
 }

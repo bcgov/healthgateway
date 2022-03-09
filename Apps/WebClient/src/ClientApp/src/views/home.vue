@@ -1,25 +1,61 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faCheckCircle, faSearch } from "@fortawesome/free-solid-svg-icons";
+import {
+    faCheckCircle,
+    faClipboard,
+    faEdit,
+    faEllipsisV,
+    faFlask,
+    faPills,
+    faPlus,
+    faSearch,
+    faSyringe,
+    faUserMd,
+    faVial,
+} from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
+import AddQuickLinkComponent from "@/components/modal/addQuickLink.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
+import { QuickLink } from "@/models/quickLink";
+import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
 import SnowPlow from "@/utility/snowPlow";
 
-library.add(faSearch, faCheckCircle);
+library.add(
+    faCheckCircle,
+    faClipboard,
+    faEdit,
+    faEllipsisV,
+    faFlask,
+    faPills,
+    faPlus,
+    faSearch,
+    faSyringe,
+    faUserMd,
+    faVial
+);
+
+interface QuickLinkCard {
+    index: number;
+    title: string;
+    description: string;
+    icon: string;
+}
 
 @Component({
     components: {
         LoadingComponent,
         MessageModalComponent,
+        AddQuickLinkComponent,
     },
 })
 export default class HomeView extends Vue {
@@ -29,6 +65,18 @@ export default class HomeView extends Vue {
     retrieveAuthenticatedVaccineRecord!: (params: {
         hdid: string;
     }) => Promise<CovidVaccineRecord>;
+
+    @Action("setFilter", { namespace: "timeline" })
+    setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
+
+    @Action("clearFilter", { namespace: "timeline" })
+    clearFilter!: () => void;
+
+    @Action("updateQuickLinks", { namespace: "user" })
+    updateQuickLinks!: (params: {
+        hdid: string;
+        quickLinks: QuickLink[];
+    }) => Promise<void>;
 
     @Getter("authenticatedVaccineRecordIsLoading", {
         namespace: "vaccinationStatus",
@@ -45,6 +93,10 @@ export default class HomeView extends Vue {
 
     @Getter("user", { namespace: "user" }) user!: User;
 
+    @Getter("quickLinks", { namespace: "user" }) quickLinks!:
+        | QuickLink[]
+        | undefined;
+
     @Getter("authenticatedVaccineRecord", { namespace: "vaccinationStatus" })
     vaccineRecord!: CovidVaccineRecord | undefined;
 
@@ -59,8 +111,15 @@ export default class HomeView extends Vue {
     @Ref("vaccineRecordResultModal")
     readonly vaccineRecordResultModal!: MessageModalComponent;
 
+    @Ref("addQuickLinkModal")
+    readonly addQuickLinkModal!: AddQuickLinkComponent;
+
     private get isLoading(): boolean {
         return this.isLoadingVaccineRecord;
+    }
+
+    private get loadingStatusMessage(): string {
+        return this.vaccineRecordStatusMessage;
     }
 
     private get unverifiedEmail(): boolean {
@@ -86,10 +145,100 @@ export default class HomeView extends Vue {
         return new Date().getTimezoneOffset() / 60 === timeZoneHourOffset;
     }
 
+    private get showFederalCardButton(): boolean {
+        return this.config.modules["FederalCardButton"];
+    }
+
+    private get showVaccineCardButton(): boolean {
+        return this.config.modules["VaccinationStatus"];
+    }
+
+    private get enabledQuickLinks(): QuickLink[] {
+        return (
+            this.quickLinks?.filter((quickLink) =>
+                quickLink.filter.modules.every(
+                    (module) => this.config.modules[module]
+                )
+            ) ?? []
+        );
+    }
+
+    private get quickLinkCards(): QuickLinkCard[] {
+        return this.enabledQuickLinks.map((quickLink, index) => {
+            let card: QuickLinkCard = {
+                index,
+                title: quickLink.name,
+                description: "View your filtered health records.",
+                icon: "search",
+            };
+
+            const modules = quickLink.filter.modules;
+            if (quickLink.filter.modules.length === 1) {
+                const details = entryTypeMap.get(modules[0] as EntryType);
+                if (details) {
+                    card.description = details.description;
+                    card.icon = details.icon;
+                }
+            }
+
+            return card;
+        });
+    }
+
+    private get isAddQuickLinkButtonDisabled(): boolean {
+        return (
+            [...entryTypeMap.values()].filter(
+                (details) =>
+                    this.config.modules[details.type] &&
+                    this.enabledQuickLinks.find(
+                        (existingLink) =>
+                            existingLink.filter.modules.length === 1 &&
+                            existingLink.filter.modules[0] === details.type
+                    ) === undefined
+            ).length === 0
+        );
+    }
+
     private retrieveVaccinePdf() {
         this.retrieveAuthenticatedVaccineRecord({
             hdid: this.user.hdid,
         });
+    }
+
+    private removeQuickLink(targetQuickLink: QuickLink): Promise<void> {
+        const updatedLinks =
+            this.quickLinks?.filter(
+                (quickLink) => quickLink !== targetQuickLink
+            ) ?? [];
+
+        return this.updateQuickLinks({
+            hdid: this.user.hdid,
+            quickLinks: updatedLinks,
+        });
+    }
+
+    private handleClickHealthRecords(): void {
+        this.clearFilter();
+        this.$router.push({ path: "/timeline" });
+    }
+
+    private handleClickRemoveQuickLink(index: number): void {
+        const quickLink = this.enabledQuickLinks[index];
+        this.removeQuickLink(quickLink);
+    }
+
+    private handleClickQuickLink(index: number): void {
+        const quickLink = this.enabledQuickLinks[index];
+
+        const entryTypes = quickLink.filter.modules
+            .map((module) => module as EntryType)
+            .filter((entryType) => entryType !== undefined);
+
+        const builder =
+            TimelineFilterBuilder.create().withEntryTypes(entryTypes);
+
+        this.setFilter(builder);
+        this.$router.push({ path: "/timeline" });
     }
 
     @Watch("vaccineRecordResultMessage")
@@ -120,20 +269,8 @@ export default class HomeView extends Vue {
         this.sensitivedocumentDownloadModal.showModal();
     }
 
-    private get showFederalCardButton(): boolean {
-        return this.config.modules["FederalCardButton"];
-    }
-
-    private get showVaccineCardButton(): boolean {
-        return this.config.modules["VaccinationStatus"];
-    }
-
-    private get cardColumnSize(): number {
-        return this.showFederalCardButton ? 4 : 6;
-    }
-
-    private get loadingStatusMessage(): string {
-        return this.vaccineRecordStatusMessage;
+    private showAddQuickLinkModal(): void {
+        this.addQuickLinkModal.showModal();
     }
 }
 </script>
@@ -200,18 +337,29 @@ export default class HomeView extends Vue {
                 Pacific Time.
             </span>
         </b-alert>
-        <page-title title="Home" />
+        <page-title title="Home">
+            <hg-button
+                :disabled="isAddQuickLinkButtonDisabled"
+                data-testid="add-quick-link-button"
+                class="float-right"
+                variant="secondary"
+                @click="showAddQuickLinkModal"
+            >
+                <hg-icon icon="plus" size="medium" class="mr-2" />
+                <span>Add Quick Link</span>
+            </hg-button>
+        </page-title>
         <h2>What do you want to focus on today?</h2>
-        <b-row>
-            <b-col cols="12" :lg="cardColumnSize" class="p-3">
+        <b-row cols="1" cols-lg="2" cols-xl="3">
+            <b-col class="p-3">
                 <hg-card-button
                     title="Health Records"
-                    to="/timeline"
                     data-testid="health-records-card-btn"
+                    @click="handleClickHealthRecords"
                 >
                     <template #icon>
                         <img
-                            class="health-gateway-logo"
+                            class="health-gateway-logo align-self-center"
                             src="@/assets/images/gov/health-gateway-logo.svg"
                             alt="Health Gateway Logo"
                         />
@@ -223,12 +371,7 @@ export default class HomeView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-            <b-col
-                v-if="showFederalCardButton"
-                cols="12"
-                :lg="cardColumnSize"
-                class="p-3"
-            >
+            <b-col v-if="showFederalCardButton" class="p-3">
                 <hg-card-button
                     title="Proof of Vaccination"
                     data-testid="proof-vaccination-card-btn"
@@ -236,7 +379,7 @@ export default class HomeView extends Vue {
                 >
                     <template #icon>
                         <img
-                            class="canada-government-logo"
+                            class="canada-government-logo align-self-center"
                             src="@/assets/images/gov/canada-gov-logo.svg"
                             alt="Canada Government Logo"
                         />
@@ -247,12 +390,7 @@ export default class HomeView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-            <b-col
-                v-if="showVaccineCardButton"
-                cols="12"
-                :lg="cardColumnSize"
-                class="p-3"
-            >
+            <b-col v-if="showVaccineCardButton" class="p-3">
                 <hg-card-button
                     title="BC Vaccine Card"
                     to="/covid19"
@@ -260,9 +398,9 @@ export default class HomeView extends Vue {
                 >
                     <template #icon>
                         <hg-icon
-                            class="checkmark"
+                            class="checkmark align-self-center"
                             icon="check-circle"
-                            size="extra-large"
+                            size="large"
                             square
                         />
                     </template>
@@ -271,6 +409,50 @@ export default class HomeView extends Vue {
                         this card as proof of vaccination at some BC businesses,
                         services and events.
                     </div>
+                </hg-card-button>
+            </b-col>
+            <b-col v-for="card in quickLinkCards" :key="card.title" class="p-3">
+                <hg-card-button
+                    :title="card.title"
+                    data-testid="quick-link-card"
+                    @click="handleClickQuickLink(card.index)"
+                >
+                    <template #icon>
+                        <hg-icon
+                            :icon="card.icon"
+                            class="quick-link-card-icon align-self-center"
+                            size="large"
+                            square
+                        />
+                    </template>
+                    <template #menu>
+                        <b-nav align="right">
+                            <b-nav-item-dropdown
+                                right
+                                text=""
+                                :no-caret="true"
+                                menu-class="quick-link-menu"
+                                toggle-class="quick-link-menu-button"
+                            >
+                                <template slot="button-content">
+                                    <hg-icon
+                                        icon="ellipsis-v"
+                                        size="medium"
+                                        data-testid="quick-link-menu-button"
+                                    />
+                                </template>
+                                <b-dropdown-item
+                                    data-testid="remove-quick-link-button"
+                                    @click.stop="
+                                        handleClickRemoveQuickLink(card.index)
+                                    "
+                                >
+                                    Remove
+                                </b-dropdown-item>
+                            </b-nav-item-dropdown>
+                        </b-nav>
+                    </template>
+                    <div>{{ card.description }}</div>
                 </hg-card-button>
             </b-col>
         </b-row>
@@ -286,6 +468,10 @@ export default class HomeView extends Vue {
             title="Alert"
             :message="vaccineRecordResultMessage"
         />
+        <AddQuickLinkComponent
+            ref="addQuickLinkModal"
+            @show="showAddQuickLinkModal"
+        />
     </div>
 </template>
 
@@ -293,8 +479,8 @@ export default class HomeView extends Vue {
 @import "@/assets/scss/_variables.scss";
 
 .health-gateway-logo {
-    height: 2em;
-    width: 2em;
+    height: 1.5em;
+    width: 1.5em;
 }
 
 .canada-government-logo {
@@ -303,6 +489,10 @@ export default class HomeView extends Vue {
 
 .checkmark {
     color: $hg-state-success;
+}
+
+.quick-link-card-icon {
+    color: $primary;
 }
 </style>
 
@@ -316,6 +506,38 @@ export default class HomeView extends Vue {
 
     .vld-icon {
         text-align: center;
+    }
+}
+
+.quick-link-menu {
+    a {
+        &:focus:not([disabled]):not(:active),
+        &:hover:not([disabled]):not(:active) {
+            color: $hg-text-primary;
+        }
+        &:active:not([disabled]) {
+            color: white;
+        }
+    }
+}
+
+.quick-link-menu-button {
+    color: $soft_text;
+    border: 1px solid rgba(0, 0, 0, 0);
+    border-radius: 0.25rem;
+
+    &:focus:not([disabled]),
+    &:hover:not([disabled]) {
+        color: $soft_text;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+    }
+}
+
+.nav-link.active,
+.nav-item.show .nav-link {
+    &.quick-link-menu-button {
+        background-color: white;
+        border: 1px solid rgba(0, 0, 0, 0.15);
     }
 }
 </style>

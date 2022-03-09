@@ -12,9 +12,9 @@ import { Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/datePicker.vue";
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import type { WebClientConfiguration } from "@/models/configData";
 import { StringISODate } from "@/models/dateWrapper";
-import { EntryType } from "@/models/timelineEntry";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
@@ -26,8 +26,6 @@ library.add(faBars, faCalendarDay, faChevronDown, faSlidersH);
 interface EntryTypeFilter {
     type: EntryType;
     display: string;
-    isEnabled: boolean;
-    numEntries: number;
 }
 
 @Component({
@@ -82,58 +80,13 @@ export default class FilterComponent extends Vue {
     private endDate: StringISODate = "";
     private selectedEntryTypes: EntryType[] = [];
 
-    private get entryTypes(): EntryTypeFilter[] {
-        return [
-            {
-                type: EntryType.Immunization,
-                display: "Immunizations",
-                isEnabled: this.config.modules[EntryType.Immunization],
-                numEntries: this.immunizationCount,
-            },
-            {
-                type: EntryType.Medication,
-                display: "Medications",
-                isEnabled: this.config.modules[EntryType.Medication],
-                numEntries: this.medicationStatementCount,
-            },
-            {
-                type: EntryType.LaboratoryOrder,
-                display: "Lab Results",
-                isEnabled: this.config.modules[EntryType.LaboratoryOrder],
-                numEntries: this.laboratoryOrdersCount,
-            },
-            {
-                type: EntryType.Covid19LaboratoryOrder,
-                display: "COVID-19 Tests",
-                isEnabled:
-                    this.config.modules[EntryType.Covid19LaboratoryOrder],
-                numEntries: this.covid19LaboratoryOrdersCount,
-            },
-            {
-                type: EntryType.Encounter,
-                display: "Health Visits",
-                isEnabled: this.config.modules[EntryType.Encounter],
-                numEntries: this.encounterCount,
-            },
-            {
-                type: EntryType.Note,
-                display: "My Notes",
-                isEnabled: this.config.modules[EntryType.Note],
-                numEntries: this.noteCount,
-            },
-            {
-                type: EntryType.MedicationRequest,
-                display: "Special Authority",
-                isEnabled: this.config.modules[EntryType.MedicationRequest],
-                numEntries: this.medicationRequestCount,
-            },
-        ];
-    }
-
     private get enabledEntryTypes(): EntryTypeFilter[] {
-        return this.entryTypes.filter(
-            (filter: EntryTypeFilter) => filter.isEnabled
-        );
+        return [...entryTypeMap.values()]
+            .filter((details) => this.config.modules[details.type])
+            .map((details) => ({
+                type: details.type,
+                display: details.name,
+            }));
     }
 
     private get activeFilterCount(): number {
@@ -213,7 +166,34 @@ export default class FilterComponent extends Vue {
         this.isModalVisible = false;
     }
 
-    private formatFilterCount(num: number): string {
+    private getFilterCount(entryType: EntryType): number | undefined {
+        switch (entryType) {
+            case EntryType.Immunization:
+                return this.immunizationCount;
+            case EntryType.Medication:
+                return this.medicationStatementCount;
+            case EntryType.LaboratoryOrder:
+                return this.laboratoryOrdersCount;
+            case EntryType.Covid19LaboratoryOrder:
+                return this.covid19LaboratoryOrdersCount;
+            case EntryType.Encounter:
+                return this.encounterCount;
+            case EntryType.Note:
+                return this.noteCount;
+            case EntryType.MedicationRequest:
+                return this.medicationRequestCount;
+            default:
+                return undefined;
+        }
+    }
+
+    private formatFilterCount(entryType: EntryType): string {
+        const num = this.getFilterCount(entryType);
+
+        if (num === undefined) {
+            return "";
+        }
+
         return Math.abs(num) > 999
             ? parseFloat(
                   ((Math.round(num / 100) * 100) / 1000).toFixed(1)
@@ -301,7 +281,7 @@ export default class FilterComponent extends Vue {
                             class="text-right"
                             :data-testid="`${entryType.type}Count`"
                         >
-                            ({{ formatFilterCount(entryType.numEntries) }})
+                            ({{ formatFilterCount(entryType.type) }})
                         </b-col>
                     </b-row>
                     <b-row class="mt-2">
@@ -442,7 +422,7 @@ export default class FilterComponent extends Vue {
                         </b-form-checkbox>
                     </b-col>
                     <b-col cols="4" align-self="end" class="text-right">
-                        ({{ formatFilterCount(filter.numEntries) }})
+                        ({{ formatFilterCount(filter.type) }})
                     </b-col>
                 </b-row>
             </div>

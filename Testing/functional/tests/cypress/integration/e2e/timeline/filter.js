@@ -1,4 +1,4 @@
-const { AuthMethod, localDevUri } = require("../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 
 function verifyActiveFilter(activeFilterCount) {
     cy.get("[data-testid=filterDropdown]").should(
@@ -11,14 +11,12 @@ function verifyActiveFilter(activeFilterCount) {
 
 describe("Filters", () => {
     beforeEach(() => {
-        cy.restoreAuthCookies();
-    });
-    before(() => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        cy.checkTimelineHasLoaded();
     });
 
     it("Validate Filter Counts", () => {
@@ -296,6 +294,31 @@ describe("Filters", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        cy.get("[data-testid=filterContainer]").should("not.exist");
+        cy.get("[data-testid=filterDropdown]").click();
+        cy.get("[data-testid=MedicationCount]").should("be.visible");
+        cy.get("[data-testid=ImmunizationCount]").should("not.exist");
+        cy.get("[data-testid=EncounterCount]").should("not.exist");
+        cy.get("[data-testid=NoteCount]").should("not.exist");
+        cy.get("[data-testid=LaboratoryCount]").should("not.exist");
+        cy.get("[data-testid=AllLaboratoryCount]").should("not.exist");
+        cy.get("[data-testid=MedicationRequestCount]").should("not.exist");
+        cy.get("[data-testid=btnFilterCancel]").click();
+    });
+});
+
+describe("Disabled Filters", () => {
+    beforeEach(() => {
+        cy.enableModules("Medication");
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+    });
+
+    it("Validate disabled filters", () => {
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=MedicationCount]").should("be.visible");

@@ -5,10 +5,11 @@ import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
 import "setimmediate";
 import { Route } from "vue-router";
 
+import { ClientModule } from "@/constants/clientModule";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import { WebClientConfiguration } from "@/models/configData";
 import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
-import router, { beforeEachGuard, ClientModule, UserState } from "@/router";
+import router, { beforeEachGuard, UserState } from "@/router";
 import { ILogger, IStoreProvider } from "@/services/interfaces";
 import { WinstonLogger } from "@/services/winstonLogger";
 import StoreProvider from "@/store/provider";

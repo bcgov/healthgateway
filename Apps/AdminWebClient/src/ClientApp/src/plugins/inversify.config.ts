@@ -11,7 +11,6 @@ import {
     IConfigService,
     ICovidSupportService,
     IDashboardService,
-    IEmailAdminService,
     IHttpDelegate,
     ISupportService,
     IUserFeedbackService,
@@ -20,7 +19,6 @@ import { RestAuthenticationService } from "@/services/restAuthenticationService"
 import { RestCommunicationService } from "@/services/restCommunicationService";
 import { RestConfigService } from "@/services/restConfigService";
 import { RestCovidSupportService } from "@/services/restCovidSupportService";
-import { RestEmailAdminService } from "@/services/restEmailAdminService";
 import { RestSupportService } from "@/services/restSupportService";
 import { RestUserFeedbackService } from "@/services/restUserFeedbackService";
 
@@ -40,10 +38,6 @@ container
 container
     .bind<IDashboardService>(SERVICE_IDENTIFIER.DashboardService)
     .to(DashboardService)
-    .inSingletonScope();
-container
-    .bind<IEmailAdminService>(SERVICE_IDENTIFIER.EmailAdminService)
-    .to(RestEmailAdminService)
     .inSingletonScope();
 container
     .bind<ICommunicationService>(SERVICE_IDENTIFIER.CommunicationService)

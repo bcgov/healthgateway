@@ -34,6 +34,7 @@ namespace HealthGateway.AdminWebClient
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Rewrite;
     using Microsoft.AspNetCore.SpaServices;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -94,7 +95,6 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<IEmailQueueService, EmailQueueService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
             services.AddTransient<IDashboardService, DashboardService>();
-            services.AddTransient<IEmailAdminService, EmailAdminService>();
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<ICsvExportService, CsvExportService>();
             services.AddTransient<ICovidSupportService, CovidSupportService>();
@@ -148,6 +148,8 @@ namespace HealthGateway.AdminWebClient
             this.startupConfig.UseContentSecurityPolicy(app);
             this.startupConfig.UseAuth(app);
 
+            DisableTraceMethod(app);
+
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
@@ -189,6 +191,24 @@ namespace HealthGateway.AdminWebClient
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:8080");
 #pragma warning restore S1075
                 }
+            });
+
+            RewriteOptions rewriteOption = new RewriteOptions()
+                .AddRedirect("(.*[^/])$", "$1/");
+            app.UseRewriter(rewriteOption);
+        }
+
+        private static void DisableTraceMethod(IApplicationBuilder app)
+        {
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Method == "TRACE")
+                {
+                    context.Response.StatusCode = 405;
+                    return;
+                }
+
+                await next.Invoke().ConfigureAwait(true);
             });
         }
 
