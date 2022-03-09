@@ -32,12 +32,13 @@ export class DateGroup {
             {}
         );
         return Object.keys(groups).map<DateGroup>((dateKey) => {
+            groups[dateKey].sort((a: TimelineEntry, b: TimelineEntry) =>
+                a.type.localeCompare(b.type)
+            );
             return new DateGroup(
                 dateKey,
                 groups[dateKey][0].date,
-                groups[dateKey].sort((a: TimelineEntry, b: TimelineEntry) =>
-                    a.type.localeCompare(b.type)
-                )
+                groups[dateKey]
             );
         });
     }

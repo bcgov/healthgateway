@@ -137,21 +137,20 @@ export default class CalendarBodyComponent extends Vue {
         let index = 0;
         return Object.keys(groups).map<CalendarEntry>((type: string) => {
             index++;
+            groups[type].sort((a: TimelineEntry, b: TimelineEntry) => {
+                if (a.type > b.type) {
+                    return 1;
+                }
+                if (a.type < b.type) {
+                    return -1;
+                }
+                return 0;
+            });
             return {
                 id: date.fromEpoch() + "-type-" + type,
                 cellIndex: index,
                 type: type as EntryType,
-                entries: groups[type].sort(
-                    (a: TimelineEntry, b: TimelineEntry) => {
-                        if (a.type > b.type) {
-                            return 1;
-                        }
-                        if (a.type < b.type) {
-                            return -1;
-                        }
-                        return 0;
-                    }
-                ),
+                entries: groups[type],
             };
         });
     }
