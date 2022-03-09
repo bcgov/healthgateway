@@ -55,7 +55,7 @@ namespace HealthGateway.WebClient.Controllers
         /// </summary>
         /// <returns>The Health Gateway Mobile Configuration.</returns>
         [HttpGet]
-        [Route("Mobile")]
+        [Route("~/v{version:apiVersion}/api/MobileConfiguration")]
         public Models.MobileConfiguration MobileConfiguration()
         {
             Models.MobileConfiguration config = this.configservice.GetMobileConfiguration();
