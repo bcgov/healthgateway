@@ -129,7 +129,7 @@ export default class HealthInsightsView extends Vue {
         endDate: DateWrapper
     ): string[] {
         if (endDate.isBefore(startDate)) {
-            throw "End date must be greater than start date.";
+            throw Error("End date must be greater than start date.");
         }
 
         var currentMonth = startDate.startOf("month");
