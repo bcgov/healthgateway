@@ -1,5 +1,6 @@
+import { EntryType } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
-import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import TimelineEntry from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";
 import UserNote from "@/models/userNote";
 

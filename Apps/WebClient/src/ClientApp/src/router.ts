@@ -5,6 +5,7 @@ import VueRouter, {
 } from "vue-router";
 import { Position, PositionResult } from "vue-router/types/router";
 
+import { ClientModule } from "@/constants/clientModule";
 import { Dictionary } from "@/models/baseTypes";
 import { SnowplowWindow } from "@/plugins/extensions";
 import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
@@ -107,24 +108,6 @@ function calculateUserState() {
     } else {
         return UserState.registered;
     }
-}
-
-export enum ClientModule {
-    Immunization = "Immunization",
-    Medication = "Medication",
-    Laboratory = "Laboratory",
-    Encounter = "Encounter",
-    Comment = "Comment",
-    CovidLabResults = "CovidLabResults",
-    Dependent = "Dependent",
-    Note = "Note",
-    VaccinationStatus = "VaccinationStatus",
-    VaccinationStatusPdf = "VaccinationStatusPdf",
-    VaccinationExportPdf = "VaccinationExportPdf",
-    FederalCardButton = "FederalCardButton",
-    PublicLaboratoryResult = "PublicLaboratoryResult",
-    AllLaboratory = "AllLaboratory",
-    PcrTest = "PcrTest",
 }
 
 function getAvailableModules() {

@@ -5,14 +5,12 @@ import { Action, Getter } from "vuex-class";
 
 import AddCommentComponent from "@/components/timeline/entryCard/addComment.vue";
 import CommentComponent from "@/components/timeline/entryCard/comment.vue";
+import { CommentEntryType } from "@/constants/commentEntryType";
+import { entryTypeMap } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
-import {
-    CommentEntryType,
-    EntryTypeMapper,
-    UserComment,
-} from "@/models/userComment";
+import { UserComment } from "@/models/userComment";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
@@ -43,9 +41,9 @@ export default class CommentSectionComponent extends Vue {
         id: "",
         text: "",
         parentEntryId: this.parentEntry.id,
-        entryTypeCode: EntryTypeMapper.toCommentEntryType(
-            this.parentEntry.type
-        ),
+        entryTypeCode:
+            entryTypeMap.get(this.parentEntry.type)?.commentType ??
+            CommentEntryType.None,
         userProfileId: "",
         createdDateTime: new DateWrapper().toISODate(),
         version: 0,
@@ -61,9 +59,9 @@ export default class CommentSectionComponent extends Vue {
         if (this.parentEntry.comments !== null) {
             this.parentEntry.comments.forEach((x) => {
                 if (x.entryTypeCode === CommentEntryType.None) {
-                    x.entryTypeCode = EntryTypeMapper.toCommentEntryType(
-                        this.parentEntry.type
-                    );
+                    x.entryTypeCode =
+                        entryTypeMap.get(this.parentEntry.type)?.commentType ??
+                        CommentEntryType.None;
                     x.updatedBy = "System_Backfill";
                     commentsToUpdate.push(x);
                 }

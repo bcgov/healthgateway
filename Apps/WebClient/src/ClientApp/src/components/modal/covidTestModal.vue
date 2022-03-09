@@ -3,10 +3,10 @@ import Vue from "vue";
 import { Component, Emit, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import { EntryType } from "@/constants/entryType";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { Covid19LaboratoryOrder } from "@/models/laboratory";
-import { EntryType } from "@/models/timelineEntry";
 import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
 import type { UserPreference } from "@/models/userPreference";

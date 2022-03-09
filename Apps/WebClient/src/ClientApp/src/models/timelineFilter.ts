@@ -1,5 +1,5 @@
+import { EntryType } from "@/constants/entryType";
 import { StringISODate } from "@/models/dateWrapper";
-import { EntryType } from "@/models/timelineEntry";
 
 // Timeline filter model
 export default class TimelineFilter {

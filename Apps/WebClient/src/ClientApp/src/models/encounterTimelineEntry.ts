@@ -1,7 +1,8 @@
+import { EntryType } from "@/constants/entryType";
 import Clinic from "@/models/clinic";
 import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
-import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import TimelineEntry from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
 // The encounter timeline entry model
