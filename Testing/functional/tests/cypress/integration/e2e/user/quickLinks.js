@@ -1,14 +1,17 @@
 const { AuthMethod } = require("../../../support/constants");
 
-const homeUrl = "/home";
+const homePath = "/home";
 
 const encounterModule = "Encounter";
 const immunizationModule = "Immunization";
 const laboratoryModule = "Laboratory";
-const alllaboratoryModule = "AllLaboratory";
+const allLaboratoryModule = "AllLaboratory";
 const medicationModule = "Medication";
 const medicationRequestModule = "MedicationRequest";
 const noteModule = "Note";
+
+const encounterTitle = "Health Visits";
+const immunizationTitle = "Immunizations";
 const laboratoryTitle = "COVID‑19 Tests";
 
 const addQuickLinkButtonSelector = "[data-testid=add-quick-link-button]";
@@ -40,7 +43,7 @@ describe("Quick Links", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/home"
+            homePath
         );
 
         cy.log("Adding a quick link");
@@ -76,7 +79,7 @@ describe("Quick Links", () => {
         cy.get("[data-testid=laboratoryTitle]").should("be.visible");
 
         cy.log("Returning to home page");
-        cy.visit("/home");
+        cy.get("[data-testid=menu-btn-home-link]").should("be.visible").click();
 
         cy.log("Removing quick link");
         getQuickLinkCard(laboratoryTitle).within(() => {
@@ -98,16 +101,110 @@ describe("Quick Links", () => {
             .should("be.visible")
             .should("be.enabled");
     });
+
+    it("Add and Remove Multiple Quick Links", () => {
+        cy.enableModules([
+            encounterModule,
+            immunizationModule,
+            laboratoryModule,
+        ]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homePath
+        );
+
+        cy.log("Opening add quick link modal");
+        cy.get(addQuickLinkButtonSelector)
+            .should("be.visible")
+            .should("be.enabled")
+            .click();
+
+        cy.log("Verifying 3 checkboxes exist");
+        cy.get(addQuickLinkCheckboxSelector).should("have.length", 3);
+
+        cy.log("Selecting encounters and immunization checkboxes");
+        getQuickLinkCheckbox(encounterModule)
+            .should("exist")
+            .check({ force: true });
+        getQuickLinkCheckbox(immunizationModule)
+            .should("exist")
+            .check({ force: true });
+
+        cy.log("Adding quick links");
+        cy.get(addQuickLinkSubmitButtonSelector)
+            .should("be.visible")
+            .should("be.enabled")
+            .click();
+
+        cy.log("Verifying quick link cards are present");
+        getQuickLinkCard(encounterTitle).should("be.visible", "be.enabled");
+        getQuickLinkCard(immunizationTitle).should("be.visible", "be.enabled");
+
+        cy.log("Opening add quick link modal");
+        cy.get(addQuickLinkButtonSelector)
+            .should("be.visible")
+            .should("be.enabled")
+            .click();
+
+        cy.log("Verifying 1 checkbox remains");
+        cy.get(addQuickLinkCheckboxSelector).should("have.length", 1);
+        getQuickLinkCheckbox(laboratoryModule)
+            .should("exist")
+            .should("not.be.checked");
+
+        cy.log("Cancelling add quick link modal");
+        cy.get(addQuickLinkCancelButtonSelector)
+            .should("be.visible")
+            .should("be.enabled")
+            .click();
+
+        cy.log("Removing quick links");
+        getQuickLinkCard(encounterTitle).within(() => {
+            cy.get(quickLinkMenuButtonSelector)
+                .should("be.visible")
+                .parent("a")
+                .should("be.visible", "be.enabled")
+                .click();
+            cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
+        });
+        getQuickLinkCard(immunizationTitle).within(() => {
+            cy.get(quickLinkMenuButtonSelector)
+                .should("be.visible")
+                .parent("a")
+                .should("be.visible", "be.enabled")
+                .click();
+            cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
+        });
+
+        cy.log("Verifying quick link cards no longer exists");
+        cy.contains(cardButtonTitleSelector, encounterTitle).should(
+            "not.exist"
+        );
+        cy.contains(cardButtonTitleSelector, immunizationTitle).should(
+            "not.exist"
+        );
+
+        cy.log("Opening add quick link modal");
+        cy.get(addQuickLinkButtonSelector)
+            .should("be.visible")
+            .should("be.enabled")
+            .click();
+
+        cy.log("Verifying 3 checkboxes exist");
+        cy.get(addQuickLinkCheckboxSelector).should("have.length", 3);
+    });
 });
 
-describe("Add Quick Link", () => {
+describe("Add Quick Link Modal", () => {
     beforeEach(() => {
         cy.enableModules([
             laboratoryModule,
             encounterModule,
             immunizationModule,
             laboratoryModule,
-            alllaboratoryModule,
+            allLaboratoryModule,
             medicationModule,
             medicationRequestModule,
             noteModule,
@@ -116,7 +213,7 @@ describe("Add Quick Link", () => {
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            homeUrl
+            homePath
         );
     });
 
@@ -137,7 +234,7 @@ describe("Add Quick Link", () => {
             .should("exist")
             .check({ force: true });
 
-        getQuickLinkCheckbox(alllaboratoryModule)
+        getQuickLinkCheckbox(allLaboratoryModule)
             .should("exist")
             .check({ force: true });
 
@@ -166,7 +263,7 @@ describe("Add Quick Link", () => {
         getQuickLinkCheckbox(laboratoryModule)
             .should("exist")
             .should("not.be.checked");
-        getQuickLinkCheckbox(alllaboratoryModule)
+        getQuickLinkCheckbox(allLaboratoryModule)
             .should("exist")
             .should("not.be.checked");
         getQuickLinkCheckbox(medicationModule)
@@ -207,7 +304,7 @@ describe("Add Quick Link", () => {
         getQuickLinkCheckbox(laboratoryModule)
             .should("exist")
             .and("be.checked");
-        getQuickLinkCheckbox(alllaboratoryModule)
+        getQuickLinkCheckbox(allLaboratoryModule)
             .should("exist")
             .and("not.be.checked");
         getQuickLinkCheckbox(medicationModule)
