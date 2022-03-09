@@ -38,11 +38,13 @@ export const mutations: CommentMutations = {
                     isUtc: true,
                 });
 
-                return secondDate.isAfter(firstDate)
-                    ? -1
-                    : firstDate.isAfter(secondDate)
-                    ? 1
-                    : 0;
+                if (firstDate.isAfter(secondDate)) {
+                    return 1;
+                }
+                if (firstDate.isBefore(secondDate)) {
+                    return -1;
+                }
+                return 0;
             });
     },
     updateComment(state: CommentState, userComment: UserComment) {

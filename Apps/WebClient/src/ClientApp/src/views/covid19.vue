@@ -154,11 +154,15 @@ export default class Covid19View extends Vue {
     }
 
     private get loadingStatusMessage(): string {
-        return this.isDownloading
-            ? "Downloading...."
-            : this.vaccineRecordIsLoading
-            ? this.vaccineRecordStatusMessage
-            : this.vaccinationStatusMessage;
+        if (this.isDownloading) {
+            return "Downloading....";
+        }
+
+        if (this.vaccineRecordIsLoading) {
+            return this.vaccineRecordStatusMessage;
+        }
+
+        return this.vaccinationStatusMessage;
     }
 
     private get downloadButtonShown(): boolean {
@@ -239,9 +243,15 @@ export default class Covid19View extends Vue {
     }
 
     private sortEntries(timelineEntries: TimelineEntry[]): TimelineEntry[] {
-        return timelineEntries.sort((a, b) =>
-            a.date.isAfter(b.date) ? -1 : a.date.isBefore(b.date) ? 1 : 0
-        );
+        return timelineEntries.sort((a, b) => {
+            if (a.date.isBefore(b.date)) {
+                return 1;
+            }
+            if (a.date.isAfter(b.date)) {
+                return -1;
+            }
+            return 0;
+        });
     }
 
     private fetchVaccineCardData() {

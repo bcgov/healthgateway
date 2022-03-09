@@ -62,7 +62,13 @@ export default class Dashboard extends Vue {
     private onIsLoading(newVal: boolean, oldVal: boolean) {
         if (oldVal && !newVal) {
             this.tableData.sort((a, b) => {
-                return a.date < b.date ? 1 : a.date > b.date ? -1 : 0;
+                if (a.date < b.date) {
+                    return 1;
+                }
+                if (a.date > b.date) {
+                    return -1;
+                }
+                return 0;
             });
         }
     }

@@ -91,7 +91,13 @@ export class FragmentedStorage implements Storage {
             const bIndex = b.lastIndexOf(this.keySeparator);
             const aNum = Number(a.substr(aIndex + 1, a.length));
             const bNum = Number(b.substr(bIndex + 1, b.length));
-            return aNum > bNum ? 1 : aNum < bNum ? -1 : 0;
+            if (aNum > bNum) {
+                return 1;
+            }
+            if (aNum < bNum) {
+                return -1;
+            }
+            return 0;
         });
     }
 

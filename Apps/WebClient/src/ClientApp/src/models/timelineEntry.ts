@@ -36,7 +36,7 @@ export class DateGroup {
                 dateKey,
                 groups[dateKey][0].date,
                 groups[dateKey].sort((a: TimelineEntry, b: TimelineEntry) =>
-                    a.type > b.type ? 1 : a.type < b.type ? -1 : 0
+                    a.type.localeCompare(b.type)
                 )
             );
         });
@@ -46,13 +46,17 @@ export class DateGroup {
         groupArrays: DateGroup[],
         ascending = true
     ): DateGroup[] {
-        groupArrays.sort((a, b) =>
-            a.date.isAfter(b.date)
-                ? -1 * (ascending ? 1 : -1)
-                : a.date.isBefore(b.date)
-                ? 1 * (ascending ? 1 : -1)
-                : 0
-        );
+        groupArrays.sort((a, b) => {
+            const reverseMultiplier = ascending ? 1 : -1;
+
+            if (a.date.isBefore(b.date)) {
+                return 1 * reverseMultiplier;
+            }
+            if (a.date.isAfter(b.date)) {
+                return -1 * reverseMultiplier;
+            }
+            return 0;
+        });
         return groupArrays;
     }
 }

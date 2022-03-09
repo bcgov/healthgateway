@@ -110,9 +110,15 @@ export default class HealthInsightsView extends Vue {
     }
 
     private sortEntries(timelineEntries: TimelineEntry[]): TimelineEntry[] {
-        return timelineEntries.sort((a, b) =>
-            a.date.isAfter(b.date) ? -1 : a.date.isBefore(b.date) ? 1 : 0
-        );
+        return timelineEntries.sort((a, b) => {
+            if (a.date.isBefore(b.date)) {
+                return 1;
+            }
+            if (a.date.isAfter(b.date)) {
+                return -1;
+            }
+            return 0;
+        });
     }
 
     /**
