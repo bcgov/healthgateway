@@ -51,7 +51,7 @@ namespace HealthGateway.Encounter.Test.Controllers
                     new EncounterModel()
                     {
                         Id = "1",
-                        EncounterDate = new DateTime(2020 - 05 - 27),
+                        EncounterDate = new DateTime(2020, 05, 27),
                         SpecialtyDescription = "LABORATORY MEDICINE",
                         PractitionerName = "PRACTITIONER NAME",
                         Clinic = new Clinic()
@@ -62,7 +62,7 @@ namespace HealthGateway.Encounter.Test.Controllers
                     new EncounterModel()
                     {
                         Id = "2",
-                        EncounterDate = new DateTime(2020 - 06 - 27),
+                        EncounterDate = new DateTime(2020, 06, 27),
                         SpecialtyDescription = "LABORATORY MEDICINE",
                         PractitionerName = "PRACTITIONER NAME",
                         Clinic = new Clinic()
