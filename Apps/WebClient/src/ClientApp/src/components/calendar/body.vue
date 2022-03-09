@@ -122,14 +122,14 @@ export default class CalendarBodyComponent extends Vue {
         let thisDayEvents: TimelineEntry[] = dateGroup.entries;
 
         let groups = thisDayEvents.reduce<Record<string, TimelineEntry[]>>(
-            (groups, entry: TimelineEntry) => {
+            (previousValue, entry: TimelineEntry) => {
                 const entryType = entry.type;
                 // Create a new group if it the type doesnt exist in the map
-                if (!groups[entryType]) {
-                    groups[entryType] = [];
+                if (!previousValue[entryType]) {
+                    previousValue[entryType] = [];
                 }
-                groups[entryType].push(entry);
-                return groups;
+                previousValue[entryType].push(entry);
+                return previousValue;
             },
             {}
         );

@@ -19,15 +19,15 @@ export class DateGroup {
             return [];
         }
         const groups = timelineEntries.reduce<Record<string, TimelineEntry[]>>(
-            (groups, entry) => {
+            (previousValue, entry) => {
                 const date = entry.date.fromEpoch();
 
                 // Create a new group if it the date doesnt exist in the map
-                if (!groups[date]) {
-                    groups[date] = [];
+                if (!previousValue[date]) {
+                    previousValue[date] = [];
                 }
-                groups[date].push(entry);
-                return groups;
+                previousValue[date].push(entry);
+                return previousValue;
             },
             {}
         );
