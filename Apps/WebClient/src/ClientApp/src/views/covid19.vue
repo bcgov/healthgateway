@@ -211,6 +211,10 @@ export default class Covid19View extends Vue {
         return `bcwallet://healthgateway.gov.bc.ca?data=${data}`;
     }
 
+    private displayBcWalletAppLink() {
+        window.open(this.bcWalletAppLink, "_self");
+    }
+
     private get patientName(): string | undefined {
         if (this.vaccinationStatus) {
             return `${this.vaccinationStatus.firstname} ${this.vaccinationStatus.lastname}`;
@@ -395,7 +399,7 @@ export default class Covid19View extends Vue {
                         <b-dropdown-item
                             v-if="saveWalletShown"
                             data-testid="save-to-wallet-dropdown-item"
-                            :href="bcWalletAppLink"
+                            @click="displayBcWalletAppLink"
                             >Save to BC Wallet App</b-dropdown-item
                         >
                     </hg-dropdown>
@@ -564,6 +568,12 @@ export default class Covid19View extends Vue {
 }
 .primary {
     color: $primary;
+}
+
+a {
+    color: blue !important;
+    text-decoration: underline !important;
+    cursor: pointer !important;
 }
 </style>
 <style lang="scss">

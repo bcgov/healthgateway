@@ -30,6 +30,10 @@ export default class BreadcrumbComponent extends Vue {
     private get allBreadcrumbItems(): BreadcrumbItem[] {
         return [this.baseBreadcrumbItem, ...this.items];
     }
+
+    private displayLink(link: string) {
+        window.open(link, "_self");
+    }
 }
 </script>
 
@@ -39,9 +43,9 @@ export default class BreadcrumbComponent extends Vue {
             v-for="item in allBreadcrumbItems"
             :key="item.text"
             :to="item.to"
-            :href="item.href"
             :active="item.active"
             :data-testid="item.dataTestId"
+            @click="displayLink(item.href)"
         >
             {{ item.text }}
         </b-breadcrumb-item>
@@ -53,5 +57,11 @@ export default class BreadcrumbComponent extends Vue {
     padding: 0.75rem 0rem;
     margin-bottom: 0rem;
     background-color: transparent;
+}
+
+a {
+    color: blue !important;
+    text-decoration: underline !important;
+    cursor: pointer !important;
 }
 </style>
