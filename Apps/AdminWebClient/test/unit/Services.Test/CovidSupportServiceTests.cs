@@ -129,7 +129,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         [Fact]
         public void ConfirmErrorHandling()
         {
-            MockHttpMessageHandler mockHttp = new();
+            using MockHttpMessageHandler mockHttp = new();
             string baseEndpoint = "https://localhost";
             mockHttp.When($"{baseEndpoint}/api/v1/Support/Immunizations/AntiViralSupportDetails")
                 .Respond("application/json", "Bad Payload"); // Respond with bad JSON
