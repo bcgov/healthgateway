@@ -118,6 +118,15 @@ Deploy the service
 oc process -f ./hgcdogs.yaml -p ENV=[dev/test/production] | oc apply -f -
 ```
 
+### Pod Disruption Budget
+
+A pod disruption budget should be created for each of the deploy configs (excluding Hangfire)
+
+```console
+oc project 0bd5ad-[project]
+oc process -f pdb.yaml -p DC=webclient | oc apply -f -
+```
+
 ### Mock Environment
 
 Special instructions to deploy the mock controller
