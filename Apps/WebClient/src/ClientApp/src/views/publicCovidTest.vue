@@ -246,6 +246,10 @@ export default class PublicCovidTestView extends Vue {
         };
     }
 
+    private visitLink(link: string) {
+        window.open(link, "_blank");
+    }
+
     @Watch("publicCovidTestResponseResult")
     private onPublicCovidTestResponseResultChange() {
         if (this.publicCovidTestResponseResult?.loaded) {
@@ -379,12 +383,16 @@ export default class PublicCovidTestView extends Vue {
                                                 resultDescriptionIndex
                                             )
                                         "
-                                        :href="publicCovidTest.resultLink"
                                         :data-testid="
                                             'result-link-' +
                                             (resultDescriptionIndex + 1)
                                         "
                                         target="blank_"
+                                        @click="
+                                            visitLink(
+                                                publicCovidTest.resultLink
+                                            )
+                                        "
                                         >this page</a
                                     >
                                     <span>{{
@@ -725,6 +733,10 @@ export default class PublicCovidTestView extends Vue {
 
 .covid-test-result {
     background-color: $soft_background;
+}
+
+a {
+    cursor: pointer !important;
 }
 </style>
 
