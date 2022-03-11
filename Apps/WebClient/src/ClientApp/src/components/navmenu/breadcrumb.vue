@@ -31,7 +31,7 @@ export default class BreadcrumbComponent extends Vue {
         return [this.baseBreadcrumbItem, ...this.items];
     }
 
-    private displayLink(link: string) {
+    private visitLink(link: string) {
         window.open(link, "_self");
     }
 }
@@ -45,7 +45,7 @@ export default class BreadcrumbComponent extends Vue {
             :to="item.to"
             :active="item.active"
             :data-testid="item.dataTestId"
-            @click="displayLink(item.href)"
+            @click="visitLink(item.href)"
         >
             {{ item.text }}
         </b-breadcrumb-item>
@@ -60,8 +60,6 @@ export default class BreadcrumbComponent extends Vue {
 }
 
 a {
-    color: blue !important;
-    text-decoration: underline !important;
     cursor: pointer !important;
 }
 </style>

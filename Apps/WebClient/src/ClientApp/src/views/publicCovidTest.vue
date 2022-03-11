@@ -246,7 +246,7 @@ export default class PublicCovidTestView extends Vue {
         };
     }
 
-    private displayLink(link: string) {
+    private visitLink(link: string) {
         window.open(link, "_blank");
     }
 
@@ -389,7 +389,7 @@ export default class PublicCovidTestView extends Vue {
                                         "
                                         target="blank_"
                                         @click="
-                                            displayLink(
+                                            visitLink(
                                                 publicCovidTest.resultLink
                                             )
                                         "
@@ -736,8 +736,6 @@ export default class PublicCovidTestView extends Vue {
 }
 
 a {
-    color: blue !important;
-    text-decoration: underline !important;
     cursor: pointer !important;
 }
 </style>

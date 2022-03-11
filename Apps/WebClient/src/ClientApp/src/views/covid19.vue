@@ -571,8 +571,6 @@ export default class Covid19View extends Vue {
 }
 
 a {
-    color: blue !important;
-    text-decoration: underline !important;
     cursor: pointer !important;
 }
 </style>

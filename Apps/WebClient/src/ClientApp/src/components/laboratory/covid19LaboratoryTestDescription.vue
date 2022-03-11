@@ -15,7 +15,7 @@ export default class Covid19LaboratoryTestDescriptionComponent extends Vue {
         return this.isLastEntry(index) && this.link;
     }
 
-    private displayLink() {
+    private visitLink() {
         window.open(this.link, "_blank");
     }
 }
@@ -30,7 +30,9 @@ export default class Covid19LaboratoryTestDescriptionComponent extends Vue {
         >
             <span>{{ paragraph }}</span>
             <span v-if="shouldDisplayLink(index)">
-                <a data-testid="result-link" @click="displayLink">this page</a>.
+                <a data-testid="result-link" class="link" @click="visitLink"
+                    >this page</a
+                >.
             </span>
         </p>
     </div>
@@ -38,8 +40,6 @@ export default class Covid19LaboratoryTestDescriptionComponent extends Vue {
 
 <style scoped>
 a {
-    color: blue !important;
-    text-decoration: underline !important;
     cursor: pointer !important;
 }
 </style>
