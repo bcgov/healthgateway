@@ -14,11 +14,11 @@ export default class PageTitleComponent extends Vue {
 
 <template>
     <div id="pageTitle">
-        <b-row no-gutters class="justify-content-end">
-            <b-col cols="12" sm>
+        <b-row no-gutters class="justify-content-between">
+            <b-col cols="auto" sm>
                 <h1 id="subject">{{ title }}</h1>
             </b-col>
-            <b-col v-if="hasSlot" cols="auto" class="mb-2"><slot /></b-col>
+            <b-col v-if="hasSlot" class="mb-2 ml-2"><slot /></b-col>
         </b-row>
         <hr />
     </div>
