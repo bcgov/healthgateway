@@ -64,6 +64,23 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
+        /// Retrieves a list of inactive users created exclusive of the days inactive.
+        /// </summary>
+        /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
+        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        /// <returns>A CSV of inactive users.</returns>
+        /// <response code="200">Returns the list of beta requests.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("GetInactiveUsers")]
+        [Produces("text/csv")]
+        public async Task<IActionResult> GetInactiveAdminUser(int inactiveDays, int timeOffset)
+        {
+            return SendContentResponse("InactiveUsers", await this.dataExportService.GetInactiveUsers(inactiveDays, timeOffset).ConfigureAwait(true));
+        }
+
+        /// <summary>
         /// Retrieves a list of Comments inclusively between UTC dates if provided.
         /// </summary>
         /// <param name="startDate">The optional start date for the data.</param>

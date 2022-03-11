@@ -13,26 +13,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models
+namespace HealthGateway.Admin.Server.Models.CovidSupport;
+
+using System.Text.Json.Serialization;
+
+/// <summary>
+/// The Covid Assessment Details request object.
+/// </summary>
+public class CovidAssessmentDetailsRequest
 {
     /// <summary>
-    /// The User object representing the current Authenticated User.
+    /// Gets or sets the phn used.
     /// </summary>
-    public class UserProfile
-    {
-        /// <summary>
-        /// Gets or sets the ID of the user.
-        /// </summary>
-        public string Id { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the common name of the user.
-        /// </summary>
-        public string? Name { get; set; }
-
-        /// <summary>
-        /// Gets or sets the users email.
-        /// </summary>
-        public string? Email { get; set; }
-    }
+    [JsonPropertyName("phn")]
+    public string? Phn { get; set; }
 }

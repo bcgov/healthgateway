@@ -18,8 +18,6 @@ namespace HealthGateway.Admin.Server.Models.CovidSupport
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
     using HealthGateway.Admin.Server.Models.Immunization;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
 
     /// <summary>

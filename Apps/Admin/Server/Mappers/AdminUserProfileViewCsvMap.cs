@@ -13,23 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models
+namespace HealthGateway.Admin.Server.Mappers
 {
+    using System.Globalization;
+    using CsvHelper.Configuration;
+    using HealthGateway.Admin.Server.Models;
+
     /// <summary>
-    /// Various timeout values used by the VUE Admin application.
+    /// Maps the AdminUserProfileView model to a CSV.
     /// </summary>
-    public class TimeOutsConfiguration
+    public sealed class AdminUserProfileViewCsvMap : ClassMap<AdminUserProfileView>
     {
         /// <summary>
-        /// Gets or sets the idle time in seconds that the Admin will use
-        /// before it automatically logs the user out.
+        /// Initializes a new instance of the <see cref="AdminUserProfileViewCsvMap"/> class.
         /// </summary>
-        public int Idle { get; set; }
-
-        /// <summary>
-        /// Gets or sets the amount of time in seconds after which the user will be
-        /// redirected from the logout page back to the home.
-        /// </summary>
-        public string? LogoutRedirect { get; set; }
+        public AdminUserProfileViewCsvMap()
+        {
+            this.AutoMap(CultureInfo.InvariantCulture);
+            this.Map(m => m.AdminUserProfileId).Ignore();
+            this.Map(m => m.UserId).Ignore();
+        }
     }
 }
