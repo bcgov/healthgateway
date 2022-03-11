@@ -13,23 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models
+namespace HealthGateway.Admin.Server.Models.CovidSupport;
+
+using System;
+using System.Text.Json.Serialization;
+
+/// <summary>
+/// Model object representing previous assessment details.
+/// </summary>
+public class PreviousAssessmentDetails
 {
     /// <summary>
-    /// Various timeout values used by the VUE Admin application.
+    /// Gets or sets the date time of assessment.
     /// </summary>
-    public class TimeOutsConfiguration
-    {
-        /// <summary>
-        /// Gets or sets the idle time in seconds that the Admin will use
-        /// before it automatically logs the user out.
-        /// </summary>
-        public int Idle { get; set; }
+    [JsonPropertyName("dateTimeOfAssessment")]
+    public DateTime DateTimeOfAssessment { get; set; }
 
-        /// <summary>
-        /// Gets or sets the amount of time in seconds after which the user will be
-        /// redirected from the logout page back to the home.
-        /// </summary>
-        public string? LogoutRedirect { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the form id.
+    /// </summary>
+    [JsonPropertyName("formId")]
+    public string? FormId { get; set; }
 }

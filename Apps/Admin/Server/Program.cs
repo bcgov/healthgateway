@@ -17,14 +17,16 @@ namespace HealthGateway.Admin.Server
 {
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
-    using HealthGateway.Admin.Server.Models;
     using HealthGateway.Admin.Server.Services;
+    using HealthGateway.Common.AccessManagement.Administration;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
-    using HealthGateway.Common.Services;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -32,6 +34,7 @@ namespace HealthGateway.Admin.Server
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Refit;
 
     /// <summary>
     /// The entry point for the project.
@@ -39,6 +42,8 @@ namespace HealthGateway.Admin.Server
     [ExcludeFromCodeCoverage]
     public static class Program
     {
+        private const string PhsaConfigSectionKey = "PHSA";
+
         /// <summary>.
         /// The entry point for the class.
         /// </summary>
@@ -63,21 +68,22 @@ namespace HealthGateway.Admin.Server
             JobScheduler.ConfigureHangfireQueue(services, configuration);
             Patient.ConfigurePatientAccess(services, configuration);
 
+            // Register Refit clients
+            RegisterRefitClients(services, configuration);
+
             // Add services to the container.
             services.AddControllersWithViews();
 
             // Add HG Services
             services.AddTransient<IConfigurationService, ConfigurationService>();
-            services.AddTransient<IEmailQueueService, EmailQueueService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
             services.AddTransient<IDashboardService, DashboardService>();
-            services.AddTransient<IEmailAdminService, EmailAdminService>();
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<ICsvExportService, CsvExportService>();
             services.AddTransient<ICovidSupportService, CovidSupportService>();
+            services.AddTransient<IInactiveUserService, InactiveUserService>();
 
             // Add HG Delegates
-            services.AddTransient<IEmailDelegate, DBEmailDelegate>();
             services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
             services.AddTransient<IRatingDelegate, DBRatingDelegate>();
@@ -91,6 +97,9 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IImmunizationAdminDelegate, RestImmunizationAdminDelegate>();
             services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
+            services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
+            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+            services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
 
             WebApplication app = builder.Build();
 
@@ -116,6 +125,14 @@ namespace HealthGateway.Admin.Server
             app.MapFallbackToFile("index.html");
 
             await app.RunAsync().ConfigureAwait(true);
+        }
+
+        private static void RegisterRefitClients(IServiceCollection services, IConfiguration configuration)
+        {
+            PHSAConfig phsaConfig = new();
+            configuration.Bind(PhsaConfigSectionKey, phsaConfig);
+            services.AddRefitClient<IImmunizationAdminClient>()
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
         }
     }
 }

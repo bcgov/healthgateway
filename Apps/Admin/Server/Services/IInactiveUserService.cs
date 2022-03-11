@@ -16,18 +16,21 @@
 namespace HealthGateway.Admin.Server.Services
 {
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
-    /// Service that provides admin functinoality to emails.
+    /// Service that provides functionality to extract inactive users.
     /// </summary>
-    public interface IEmailAdminService
+    public interface IInactiveUserService
     {
         /// <summary>
-        /// Gets all the emails in the system up to the pageSize.
+        /// Returns inactive users exclusive of the days inactive.
         /// </summary>
-        /// <returns>A List of notes wrapped in a RequestResult.</returns>
-        RequestResult<IEnumerable<AdminEmail>> GetEmails();
+        /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
+        /// <param name="timeOffset">The clients offset to get to UTC.</param>
+        /// <returns>returns a Request Result of List.</returns>
+        Task<RequestResult<List<AdminUserProfileView>>> GetInactiveUsers(int inactiveDays, int timeOffset);
     }
 }
