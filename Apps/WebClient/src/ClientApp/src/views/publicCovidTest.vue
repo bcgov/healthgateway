@@ -192,7 +192,7 @@ export default class PublicCovidTestView extends Vue {
     }
 
     private getPeriod(link: string, length: number, index: number): string {
-        if (this.isNotStringEmpty(link)) {
+        if (link) {
             if (this.isLastRow(length, index)) {
                 return ".";
             }
@@ -203,21 +203,11 @@ export default class PublicCovidTestView extends Vue {
 
     private isLastRow(length: number, index: number): boolean {
         const indexSize = length - 1;
-        if (indexSize == index) {
-            return true;
-        }
-        return false;
-    }
-
-    private isNotStringEmpty(param: string): boolean {
-        if (param) {
-            return true;
-        }
-        return false;
+        return indexSize == index;
     }
 
     private showLink(link: string, length: number, index: number): boolean {
-        if (this.isNotStringEmpty(link)) {
+        if (link) {
             return this.isLastRow(length, index);
         }
         return false;
