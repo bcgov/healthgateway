@@ -46,5 +46,11 @@ namespace HealthGateway.Common.Models.PHSA
         /// </summary>
         [JsonPropertyName("backOffMilliseconds")]
         public int BackOffMilliseconds { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the result is queued for retrieval in the backend.
+        /// </summary>
+        [JsonPropertyName("queued")]
+        public bool Queued { get; set; }
     }
 }
