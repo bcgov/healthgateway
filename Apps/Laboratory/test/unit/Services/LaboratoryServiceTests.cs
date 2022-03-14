@@ -129,7 +129,6 @@ namespace HealthGateway.LaboratoryTests
             // Arrange
             PhsaLaboratorySummary laboratorySummary = new PhsaLaboratorySummary()
             {
-                LastRefreshDate = DateTime.Now,
                 LabOrders = new List<PhsaLaboratoryOrder>()
                 {
                     new PhsaLaboratoryOrder()
@@ -219,7 +218,6 @@ namespace HealthGateway.LaboratoryTests
             // Arrange
             PhsaLaboratorySummary laboratorySummary = new PhsaLaboratorySummary()
             {
-                LastRefreshDate = DateTime.Now,
                 LabOrders = null,
                 LabOrderCount = 0,
             };
@@ -256,7 +254,6 @@ namespace HealthGateway.LaboratoryTests
             // Arrange
             PhsaLaboratorySummary laboratorySummary = new()
             {
-                LastRefreshDate = DateTime.Now,
                 LabOrders = new List<PhsaLaboratoryOrder>(),
                 LabOrderCount = 0,
             };

@@ -27,7 +27,7 @@ public class PhsaLaboratoryOrder
     /// <summary>
     /// Gets or sets the id for the pls lab order.
     /// </summary>
-    [JsonPropertyName("labPdfGuid")]
+    [JsonPropertyName("labPdfid")]
     public Guid LabPdfGuid { get; set; }
 
     /// <summary>
