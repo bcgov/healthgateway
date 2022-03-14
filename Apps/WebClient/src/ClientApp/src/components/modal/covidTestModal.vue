@@ -47,12 +47,7 @@ export default class CovidTestModalComponent extends Vue {
                 const mostRecentLabTime = new DateWrapper(
                     this.covid19LaboratoryOrders[0].messageDateTime
                 );
-
-                if (actionedCovidModalAt.isAfter(mostRecentLabTime)) {
-                    return false;
-                }
-
-                return true;
+                return !actionedCovidModalAt.isAfter(mostRecentLabTime);
             } else {
                 return true;
             }

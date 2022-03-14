@@ -38,10 +38,7 @@ export default class ErrorCardComponent extends Vue {
     readonly copyToClipBoardModal!: MessageModalComponent;
 
     public get haveError(): boolean {
-        if (this.errors !== undefined && this.errors.length > 0) {
-            return true;
-        }
-        return false;
+        return this.errors !== undefined && this.errors.length > 0;
     }
     private get haveMultipleErrors(): boolean {
         if (this.haveError) {
