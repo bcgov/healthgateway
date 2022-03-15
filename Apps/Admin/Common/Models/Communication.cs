@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models
+namespace HealthGateway.Admin.Common.Models
 {
     using System;
     using System.Collections.Generic;
@@ -137,7 +137,7 @@ namespace HealthGateway.Admin.Server.Models
         /// </summary>
         /// <param name="communications">The list of DB Communications to convert.</param>
         /// <returns>A converted list or null if inbound is null.</returns>
-        public static IEnumerable<Communication>? FromDbModelIEnumerable(IEnumerable<HealthGateway.Database.Models.Communication> communications)
+        public static IEnumerable<Communication>? FromDbModelIEnumerable(IEnumerable<Database.Models.Communication> communications)
         {
             List<Communication>? retList = null;
             if (communications != null)
