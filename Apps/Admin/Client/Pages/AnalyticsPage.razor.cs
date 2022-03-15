@@ -27,7 +27,7 @@ using Microsoft.JSInterop;
 /// <summary>
 /// Backing logic for the Analytics page.
 /// </summary>
-public partial class SystemAnalytics : FluxorComponent
+public partial class AnalyticsPage : FluxorComponent
 {
     [Inject]
     private IDispatcher Dispatcher { get; set; } = default!;
@@ -103,15 +103,15 @@ public partial class SystemAnalytics : FluxorComponent
         Task.Run(async () => await this.DownloadReport(this.AnalyticsStateData).ConfigureAwait(true));
     }
 
+    private void ResetAnalyticsState()
+    {
+        this.Dispatcher.Dispatch(new AnalyticsActions.ResetAnalyticsStateAction());
+    }
+
     private async Task DownloadReport(HttpContent content)
     {
         var fileBytes = await content.ReadAsByteArrayAsync().ConfigureAwait(true);
         var fileName = $"{this.ReportName}_export_{DateTime.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)}.csv";
         await this.JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes)).ConfigureAwait(true);
-    }
-
-    private void ResetAnalyticsState()
-    {
-        this.Dispatcher.Dispatch(new AnalyticsActions.ResetAnalyticsStateAction());
     }
 }
