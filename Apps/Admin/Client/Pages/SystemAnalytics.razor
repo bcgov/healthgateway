@@ -7,8 +7,8 @@
 <PageTitle>Analytics</PageTitle>
 <HgPageHeading>Analytics</HgPageHeading>
 
-<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasError()" TResetAction="AnalyticsActions.ResetInactiveUsersStateAction">
-    @InactiveUsersState.Value.InactiveUsersReport.RequestError?.Message
+<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasError" TResetAction="AnalyticsActions.ResetAnalyticsStateAction">
+    @AnalyticsState.Value.RequestError?.Message
 </HgBannerFeedback>
 
 <MudGrid>

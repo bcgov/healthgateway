@@ -42,43 +42,6 @@ public static class AnalyticsActions
     }
 
     /// <summary>
-    /// The action representing a successful user profiles action load.
-    /// </summary>
-    public class LoadSuccessUserProfilesAction : BaseLoadSuccessAction<HttpContent>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadSuccessUserProfilesAction"/> class.
-        /// </summary>
-        /// <param name="state">user profiles state.</param>
-        public LoadSuccessUserProfilesAction(HttpContent state)
-            : base(state)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing a failed user profiles action load.
-    /// </summary>
-    public class LoadFailUserProfileAction : BaseLoadFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailUserProfileAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public LoadFailUserProfileAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action that clears the user profiles state.
-    /// </summary>
-    public class ResetUserProfilesStateAction
-    {
-    }
-
-    /// <summary>
     /// The action representing the initiation of comments action load.
     /// </summary>
     public class LoadCommentsAction : AnalyticsBaseAction
@@ -92,43 +55,6 @@ public static class AnalyticsActions
             : base(startDate, endDate)
         {
         }
-    }
-
-    /// <summary>
-    /// The action representing a successful comments action load.
-    /// </summary>
-    public class LoadSuccessCommentsAction : BaseLoadSuccessAction<HttpContent>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadSuccessCommentsAction"/> class.
-        /// </summary>
-        /// <param name="state">comments state.</param>
-        public LoadSuccessCommentsAction(HttpContent state)
-            : base(state)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing a failed comments action load.
-    /// </summary>
-    public class LoadFailCommentsAction : BaseLoadFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailCommentsAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public LoadFailCommentsAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action that clears the comments state.
-    /// </summary>
-    public class ResetCommentsStateAction
-    {
     }
 
     /// <summary>
@@ -148,43 +74,6 @@ public static class AnalyticsActions
     }
 
     /// <summary>
-    /// The action representing a successful notes action load.
-    /// </summary>
-    public class LoadSuccessNotesAction : BaseLoadSuccessAction<HttpContent>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadSuccessNotesAction"/> class.
-        /// </summary>
-        /// <param name="state">notes state.</param>
-        public LoadSuccessNotesAction(HttpContent state)
-            : base(state)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing a failed notes action load.
-    /// </summary>
-    public class LoadFailNotesAction : BaseLoadFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailNotesAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public LoadFailNotesAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action that clears the notes state.
-    /// </summary>
-    public class ResetNotesStateAction
-    {
-    }
-
-    /// <summary>
     /// The action representing the initiation of ratings load.
     /// </summary>
     public class LoadRatingsAction : AnalyticsBaseAction
@@ -198,43 +87,6 @@ public static class AnalyticsActions
             : base(startDate, endDate)
         {
         }
-    }
-
-    /// <summary>
-    /// The action representing a successful rating action load.
-    /// </summary>
-    public class LoadSuccessRatingsAction : BaseLoadSuccessAction<HttpContent>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadSuccessRatingsAction"/> class.
-        /// </summary>
-        /// <param name="state">ratings state.</param>
-        public LoadSuccessRatingsAction(HttpContent state)
-            : base(state)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing a failed ratings action load.
-    /// </summary>
-    public class LoadFailRatingsAction : BaseLoadFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailRatingsAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public LoadFailRatingsAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action that clears the ratings state.
-    /// </summary>
-    public class ResetRatingsStateAction
-    {
     }
 
     /// <summary>
@@ -265,39 +117,39 @@ public static class AnalyticsActions
     }
 
     /// <summary>
-    /// The action representing a successful inactive users action load.
+    /// The action representing a successfull action load.
     /// </summary>
-    public class LoadSuccessInactiveUsersAction : BaseLoadSuccessAction<HttpContent>
+    public class LoadSuccessAnalyticsAction : BaseLoadSuccessAction<HttpContent>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadSuccessInactiveUsersAction"/> class.
+        /// Initializes a new instance of the <see cref="LoadSuccessAnalyticsAction"/> class.
         /// </summary>
-        /// <param name="state">inactive users state.</param>
-        public LoadSuccessInactiveUsersAction(HttpContent state)
+        /// <param name="state">analytics state.</param>
+        public LoadSuccessAnalyticsAction(HttpContent state)
             : base(state)
         {
         }
     }
 
     /// <summary>
-    /// The action representing a failed inactive users action load.
+    /// The action representing a failed action load.
     /// </summary>
-    public class LoadFailInactiveUsersAction : BaseLoadFailAction
+    public class LoadFailAnalyticsAction : BaseLoadFailAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailInactiveUsersAction"/> class.
+        /// Initializes a new instance of the <see cref="LoadFailAnalyticsAction"/> class.
         /// </summary>
         /// <param name="error">The request error.</param>
-        public LoadFailInactiveUsersAction(RequestError error)
+        public LoadFailAnalyticsAction(RequestError error)
             : base(error)
         {
         }
     }
 
     /// <summary>
-    /// The action that clears the inactive users state.
+    /// The action that clears the generic report state.
     /// </summary>
-    public class ResetInactiveUsersStateAction
+    public class ResetAnalyticsStateAction
     {
     }
 }

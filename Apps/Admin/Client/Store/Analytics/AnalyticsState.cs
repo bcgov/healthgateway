@@ -16,36 +16,22 @@
 namespace HealthGateway.Admin.Client.Store.Analytics;
 
 using Fluxor;
+using System.Net.Http;
 
 /// <summary>
 /// The state for the feature.
 /// State should be decorated with [FeatureState] for automatic discovery when services. AddFluxor is called.
 /// </summary>
 [FeatureState]
-public record AnalyticsState
+public record AnalyticsState : BaseState
 {
     /// <summary>
-    /// Gets the user profiles report.
+    /// Gets the report state data.
     /// </summary>
-    public ReportState UserProfilesReport { get; init; } = new ReportState();
+    public HttpContent? Data { get; init; }
 
     /// <summary>
-    /// Gets the comments report.
+    /// Gets a value indicating whether the report state data has been loaded.
     /// </summary>
-    public ReportState CommentsReport { get; init; } = new ReportState();
-
-    /// <summary>
-    /// Gets the notes report.
-    /// </summary>
-    public ReportState NotesReport { get; init; } = new ReportState();
-
-    /// <summary>
-    /// Gets the ratings report.
-    /// </summary>
-    public ReportState RatingsReport { get; init; } = new ReportState();
-
-    /// <summary>
-    /// Gets the inactive users report.
-    /// </summary>
-    public ReportState InactiveUsersReport { get; init; } = new ReportState();
+    public bool Loaded => this.Data != null;
 }
