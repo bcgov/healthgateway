@@ -30,7 +30,7 @@ public interface IAnalyticsApi
     /// </summary>
     /// <returns>HttpResponseMessage.</returns>
     /// <param name="startDate">The optional start date for the data.</param>
-    /// <param name="endDate">The optional end date for the data.</param>    
+    /// <param name="endDate">The optional end date for the data.</param>
     [Get("/GetUserProfiles")]
     Task<HttpResponseMessage> GetUserProfiles(DateTime? startDate = null, DateTime? endDate = null);
 

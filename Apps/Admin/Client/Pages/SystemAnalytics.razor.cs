@@ -100,7 +100,7 @@ public partial class SystemAnalytics : FluxorComponent
 
     private void DownloadAnalyticsReport(AnalyticsActions.LoadSuccessAnalyticsAction action)
     {
-        Task.Run(async () => await this.DownloadReport( this.AnalyticsStateData).ConfigureAwait(true));
+        Task.Run(async () => await this.DownloadReport(this.AnalyticsStateData).ConfigureAwait(true));
     }
 
     private async Task DownloadReport(HttpContent content)
