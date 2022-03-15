@@ -53,7 +53,7 @@ public partial class AnalyticsPage : FluxorComponent
     {
         base.OnInitialized();
         this.ResetAnalyticsState();
-        this.ActionSubscriber.SubscribeToAction<AnalyticsActions.LoadSuccessAnalyticsAction>(this, this.DownloadAnalyticsReport);
+        this.ActionSubscriber.SubscribeToAction<AnalyticsActions.LoadSuccessAction>(this, this.DownloadAnalyticsReport);
     }
 
     /// <inheritdoc/>
@@ -98,14 +98,14 @@ public partial class AnalyticsPage : FluxorComponent
         this.Dispatcher.Dispatch(new AnalyticsActions.LoadInactiveUsersAction(this.InactiveDays, this.TimeOffset));
     }
 
-    private void DownloadAnalyticsReport(AnalyticsActions.LoadSuccessAnalyticsAction action)
+    private void DownloadAnalyticsReport(AnalyticsActions.LoadSuccessAction action)
     {
         Task.Run(async () => await this.DownloadReport(this.AnalyticsStateData).ConfigureAwait(true));
     }
 
     private void ResetAnalyticsState()
     {
-        this.Dispatcher.Dispatch(new AnalyticsActions.ResetAnalyticsStateAction());
+        this.Dispatcher.Dispatch(new AnalyticsActions.ResetStateAction());
     }
 
     private async Task DownloadReport(HttpContent content)

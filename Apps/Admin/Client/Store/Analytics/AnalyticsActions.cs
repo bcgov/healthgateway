@@ -26,7 +26,7 @@ using System.Net.Http;
 public static class AnalyticsActions
 {
     /// <summary>
-    /// The action representing the initiation of user profiles action load.
+    /// The action representing the initiation of user profiles load action.
     /// </summary>
     public class LoadUserProfilesAction : AnalyticsBaseAction
     {
@@ -42,7 +42,7 @@ public static class AnalyticsActions
     }
 
     /// <summary>
-    /// The action representing the initiation of comments action load.
+    /// The action representing the initiation of comments load action.
     /// </summary>
     public class LoadCommentsAction : AnalyticsBaseAction
     {
@@ -58,7 +58,7 @@ public static class AnalyticsActions
     }
 
     /// <summary>
-    /// The action representing the initiation of notes action load.
+    /// The action representing the initiation of notes load action.
     /// </summary>
     public class LoadNotesAction : AnalyticsBaseAction
     {
@@ -74,7 +74,7 @@ public static class AnalyticsActions
     }
 
     /// <summary>
-    /// The action representing the initiation of ratings load.
+    /// The action representing the initiation of ratings load action.
     /// </summary>
     public class LoadRatingsAction : AnalyticsBaseAction
     {
@@ -90,7 +90,7 @@ public static class AnalyticsActions
     }
 
     /// <summary>
-    /// The action representing the initiation of inactive users load.
+    /// The action representing the initiation of inactive users load action.
     /// </summary>
     public class LoadInactiveUsersAction
     {
@@ -117,30 +117,30 @@ public static class AnalyticsActions
     }
 
     /// <summary>
-    /// The action representing a successfull action load.
+    /// The action representing a successful load action.
     /// </summary>
-    public class LoadSuccessAnalyticsAction : BaseLoadSuccessAction<HttpContent>
+    public class LoadSuccessAction : BaseLoadSuccessAction<HttpContent>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadSuccessAnalyticsAction"/> class.
+        /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
         /// </summary>
         /// <param name="state">analytics state.</param>
-        public LoadSuccessAnalyticsAction(HttpContent state)
+        public LoadSuccessAction(HttpContent state)
             : base(state)
         {
         }
     }
 
     /// <summary>
-    /// The action representing a failed action load.
+    /// The action representing a failed load action.
     /// </summary>
-    public class LoadFailAnalyticsAction : BaseLoadFailAction
+    public class LoadFailAction : BaseLoadFailAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailAnalyticsAction"/> class.
+        /// Initializes a new instance of the <see cref="LoadFailAction"/> class.
         /// </summary>
         /// <param name="error">The request error.</param>
-        public LoadFailAnalyticsAction(RequestError error)
+        public LoadFailAction(RequestError error)
             : base(error)
         {
         }
@@ -149,7 +149,7 @@ public static class AnalyticsActions
     /// <summary>
     /// The action that clears the generic report state.
     /// </summary>
-    public class ResetAnalyticsStateAction
+    public class ResetStateAction
     {
     }
 }

@@ -99,7 +99,7 @@ public static class AnalyticsReducers
     /// <param name="action">The load success action.</param>
     /// <returns>The new analytics state.</returns>
     [ReducerMethod]
-    public static AnalyticsState ReduceLoadSuccessAnalyticsAction(AnalyticsState state, AnalyticsActions.LoadSuccessAnalyticsAction action)
+    public static AnalyticsState ReduceLoadSuccessAction(AnalyticsState state, AnalyticsActions.LoadSuccessAction action)
     {
         return state with
         {
@@ -116,7 +116,7 @@ public static class AnalyticsReducers
     /// <param name="action">The load fail action.</param>
     /// <returns>The new analytics state.</returns>
     [ReducerMethod]
-    public static AnalyticsState ReduceLoadFailAnalyticsAction(AnalyticsState state, AnalyticsActions.LoadFailAnalyticsAction action)
+    public static AnalyticsState ReduceLoadFailAction(AnalyticsState state, AnalyticsActions.LoadFailAction action)
     {
         return state with
         {
@@ -131,8 +131,8 @@ public static class AnalyticsReducers
     /// </summary>
     /// <param name="state">The inactive users state.</param>
     /// <returns>The empty state.</returns>
-    [ReducerMethod(typeof(AnalyticsActions.ResetAnalyticsStateAction))]
-    public static AnalyticsState ReduceResetAnalyticsAction(AnalyticsState state)
+    [ReducerMethod(typeof(AnalyticsActions.ResetStateAction))]
+    public static AnalyticsState ReduceResetAction(AnalyticsState state)
     {
         return state with
         {

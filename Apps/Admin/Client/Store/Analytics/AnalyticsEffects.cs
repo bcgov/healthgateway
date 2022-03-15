@@ -60,7 +60,7 @@ public class AnalyticsEffects
         this.Logger.LogInformation("User profiles report exported successfully!");
         if (response.IsSuccessStatusCode && response.Content != null)
         {
-            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAnalyticsAction(response.Content));
+            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
             return;
         }
 
@@ -70,7 +70,7 @@ public class AnalyticsEffects
         };
 
         this.Logger.LogError(error.Message);
-        dispatcher.Dispatch(new AnalyticsActions.LoadFailAnalyticsAction(error));
+        dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ public class AnalyticsEffects
         this.Logger.LogInformation("Comments report exported successfully!");
         if (response.IsSuccessStatusCode && response.Content != null)
         {
-            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAnalyticsAction(response.Content));
+            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
             return;
         }
 
@@ -98,7 +98,7 @@ public class AnalyticsEffects
         };
 
         this.Logger.LogError(error.Message);
-        dispatcher.Dispatch(new AnalyticsActions.LoadFailAnalyticsAction(error));
+        dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
 
     /// <summary>
@@ -116,7 +116,7 @@ public class AnalyticsEffects
         this.Logger.LogInformation("Notes report exported successfully!");
         if (response.IsSuccessStatusCode && response.Content != null)
         {
-            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAnalyticsAction(response.Content));
+            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
             return;
         }
 
@@ -126,7 +126,7 @@ public class AnalyticsEffects
         };
 
         this.Logger.LogError(error.Message);
-        dispatcher.Dispatch(new AnalyticsActions.LoadFailAnalyticsAction(error));
+        dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
 
     /// <summary>
@@ -144,7 +144,7 @@ public class AnalyticsEffects
         this.Logger.LogInformation("Ratings report exported successfully!");
         if (response.IsSuccessStatusCode && response.Content != null)
         {
-            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAnalyticsAction(response.Content));
+            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
             return;
         }
 
@@ -154,7 +154,7 @@ public class AnalyticsEffects
         };
 
         this.Logger.LogError(error.Message);
-        dispatcher.Dispatch(new AnalyticsActions.LoadFailAnalyticsAction(error));
+        dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
 
     /// <summary>
@@ -172,7 +172,7 @@ public class AnalyticsEffects
         this.Logger.LogInformation("Inactive users report exported successfully!");
         if (response.IsSuccessStatusCode && response.Content != null)
         {
-            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAnalyticsAction(response.Content));
+            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
             return;
         }
 
@@ -182,6 +182,6 @@ public class AnalyticsEffects
         };
 
         this.Logger.LogError(error.Message);
-        dispatcher.Dispatch(new AnalyticsActions.LoadFailAnalyticsAction(error));
+        dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
 }

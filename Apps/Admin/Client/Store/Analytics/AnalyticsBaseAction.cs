@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Client.Store.Analytics;
 using System;
 
 /// <summary>
-/// The base class for a csv export load action.
+/// The base class for a analytics export load action.
 /// </summary>
 public abstract class AnalyticsBaseAction
 {
