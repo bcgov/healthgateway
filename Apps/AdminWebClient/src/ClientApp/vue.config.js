@@ -5,9 +5,10 @@ module.exports = {
     lintOnSave: true,
     integrity: true,
     devServer: {
-        overlay: {
-            warnings: true,
-            errors: true,
+        client: {
+            logging: "info",
+            overlay: true,
+            progress: true,
         },
     },
     chainWebpack: (config) => {
@@ -19,14 +20,5 @@ module.exports = {
          * https://cli.vuejs.org/guide/html-and-static-assets.html#prefetch
          */
         config.plugins.delete("prefetch");
-
-        /**
-         * Configure preload to load all chunks
-         * NOTE: use `allChunks` instead of `all` (deprecated)
-         */
-        config.plugin("preload").tap((options) => {
-            options[0].include = "allChunks";
-            return options;
-        });
     },
 };
