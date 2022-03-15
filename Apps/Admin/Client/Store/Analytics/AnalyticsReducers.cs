@@ -103,9 +103,9 @@ public static class AnalyticsReducers
     {
         return state with
         {
-            Data = action.State,
+            Result = action.Data,
             IsLoading = false,
-            RequestError = null,
+            Error = null,
         };
     }
 
@@ -120,9 +120,9 @@ public static class AnalyticsReducers
     {
         return state with
         {
-            Data = null,
+            Result = null,
             IsLoading = false,
-            RequestError = action.Error,
+            Error = action.Error,
         };
     }
 
@@ -136,9 +136,9 @@ public static class AnalyticsReducers
     {
         return state with
         {
-            Data = null,
+            Result = null,
             IsLoading = false,
-            RequestError = null,
+            Error = null,
         };
     }
 }

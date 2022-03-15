@@ -56,7 +56,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <summary>
         /// The action representing a failed load.
         /// </summary>
-        public class LoadFailAction : BaseLoadFailAction
+        public class LoadFailAction : BaseFailAction
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="LoadFailAction"/> class.
@@ -71,14 +71,14 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <summary>
         /// The action representing a successful load.
         /// </summary>
-        public class LoadSuccessAction : BaseLoadSuccessAction<RequestResult<IEnumerable<MessagingVerificationModel>>>
+        public class LoadSuccessAction : BaseSuccessAction<RequestResult<IEnumerable<MessagingVerificationModel>>>
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
             /// </summary>
-            /// <param name="requestResultModel">messaging verification state.</param>
-            public LoadSuccessAction(RequestResult<IEnumerable<MessagingVerificationModel>> requestResultModel)
-                : base(requestResultModel)
+            /// <param name="data">Result data.</param>
+            public LoadSuccessAction(RequestResult<IEnumerable<MessagingVerificationModel>> data)
+                : base(data)
             {
             }
         }

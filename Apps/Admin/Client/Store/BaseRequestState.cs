@@ -13,18 +13,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.Configuration
+
+namespace HealthGateway.Admin.Client.Store;
+
+/// <summary>
+/// A state holding information relating to an HTTP request.
+/// </summary>
+/// <typeparam name="TModel">The type of the model returned by the request.</typeparam>
+public abstract record BaseRequestState<TModel>
+     where TModel : class
 {
-    using Fluxor;
-    using HealthGateway.Admin.Client.Store;
-    using HealthGateway.Admin.Common.Models;
+    /// <summary>
+    /// Gets the result.
+    /// </summary>
+    public TModel? Result { get; init; }
 
     /// <summary>
-    /// The state for the feature.
-    /// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
+    /// Gets the request error if available.
     /// </summary>
-    [FeatureState]
-    public record ConfigurationState : BaseRequestState<ExternalConfiguration>
-    {
-    }
+    public RequestError? Error { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether the request is loading.
+    /// </summary>
+    public bool IsLoading { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether the request has been loaded.
+    /// </summary>
+    public bool Loaded => this.Result != null;
 }

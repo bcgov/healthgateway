@@ -23,5 +23,5 @@
 
     <p>@this.SurnameMessage</p>
 
-    <p>IP Address: @(ConfigurationState.Value.Configuration?.WebClient.ClientIP ?? ConfigurationState.Value.RequestError?.Message)</p>
+    <p>IP Address: @(ConfigurationState.Value.Result?.WebClient.ClientIP ?? ConfigurationState.Value.Error?.Message)</p>
 </MudContainer>
