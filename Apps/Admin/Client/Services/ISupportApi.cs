@@ -33,5 +33,5 @@ public interface ISupportApi
     /// <param name="queryString">queryString.</param>
     /// <returns>The MessagingVerification object.</returns>
     [Get("/Users?queryType={queryType}&queryString={queryString}")]
-    Task<ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>>> GetMedicationVerifications(UserQueryType queryType, string queryString);
+    Task<ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>>> GetMessagingVerifications(UserQueryType queryType, string queryString);
 }

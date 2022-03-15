@@ -60,7 +60,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         {
             this.Logger.LogInformation("Loading messaging verifications");
 
-            ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>> response = await this.SupportApi.GetMedicationVerifications(action.QueryType, action.QueryString).ConfigureAwait(true);
+            ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>> response = await this.SupportApi.GetMessagingVerifications(action.QueryType, action.QueryString).ConfigureAwait(true);
             if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
             {
                 this.Logger.LogInformation("Messaging verifications loaded successfully!");
