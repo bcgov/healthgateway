@@ -9,7 +9,6 @@ module.exports = {
         "prettier",
         "@vue/typescript/recommended",
         "@vue/prettier",
-        "@vue/prettier/@typescript-eslint",
         "plugin:sonarjs/recommended",
     ],
     rules: {
