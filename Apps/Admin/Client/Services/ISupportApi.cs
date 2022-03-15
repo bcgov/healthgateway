@@ -13,26 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Services
-{
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using HealthGateway.Admin.Common.Constants;
-    using HealthGateway.Common.Data.ViewModels;
-    using Refit;
+namespace HealthGateway.Admin.Client.Services;
 
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using HealthGateway.Admin.Common.Constants;
+using HealthGateway.Common.Data.ViewModels;
+using Refit;
+
+/// <summary>
+/// API to fetch the Messaging Verification from the server.
+/// </summary>
+public interface ISupportApi
+{
     /// <summary>
-    /// API to fetch the Messaging Verification from the server.
+    /// Gets the messaging verification from the server.
     /// </summary>
-    public interface ISupportApi
-    {
-        /// <summary>
-        /// Gets the messaging verification from the server.
-        /// </summary>
-        /// <param name="queryType">queryType.</param>
-        /// <param name="queryString">queryString.</param>
-        /// <returns>The MessagingVerification object.</returns>
-        [Get("/Users?queryType={queryType}&queryString={queryString}")]
-        Task<ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>>> GetMedicationVerifications(UserQueryType queryType, string queryString);
-    }
+    /// <param name="queryType">queryType.</param>
+    /// <param name="queryString">queryString.</param>
+    /// <returns>The MessagingVerification object.</returns>
+    [Get("/Users?queryType={queryType}&queryString={queryString}")]
+    Task<ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>>> GetMedicationVerifications(UserQueryType queryType, string queryString);
 }
