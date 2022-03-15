@@ -67,6 +67,6 @@ public interface IDashboardApi
     /// <param name="startPeriod">The period start to calculate the summary.</param>
     /// <param name="endPeriod">The period end to calculate the summary.</param>
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-    [Get("Ratings/Summary?startPeriod={startPeriod}&endPeriod={endPeriod}&timeOffset={timeOffset}")]
+    [Get("/Ratings/Summary?startPeriod={startPeriod}&endPeriod={endPeriod}&timeOffset={timeOffset}")]
     Task<HttpResponseMessage> GetRatingsSummary(string startPeriod, string endPeriod, int timeOffset);
 }
