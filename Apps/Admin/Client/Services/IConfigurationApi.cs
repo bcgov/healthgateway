@@ -29,5 +29,5 @@ public interface IConfigurationApi
     /// </summary>
     /// <returns>The ExternalConfiguration object.</returns>
     [Get("/")]
-    Task<ApiResponse<ExternalConfiguration>> GetConfiguration();
+    Task<ExternalConfiguration> GetConfiguration();
 }
