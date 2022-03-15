@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Configuration
 {
+    using System;
     using System.Threading.Tasks;
     using Fluxor;
     using HealthGateway.Admin.Client.Services;
@@ -56,17 +57,18 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         {
             this.Logger.LogInformation("Loading external configuration");
 
-            ApiResponse<ExternalConfiguration> response = await this.ConfigApi.GetConfiguration().ConfigureAwait(true);
-            if (response.IsSuccessStatusCode && response.Content != null)
+            try
             {
+                ExternalConfiguration response = await this.ConfigApi.GetConfiguration().ConfigureAwait(true);
                 this.Logger.LogInformation("External configuration loaded successfully!");
-                dispatcher.Dispatch(new ConfigurationActions.LoadSuccessAction(response.Content));
-                return;
+                dispatcher.Dispatch(new ConfigurationActions.LoadSuccessAction(response));
             }
-
-            RequestError error = StoreUtility.FormatRequestError(response.Error, null);
-            this.Logger.LogError($"Error loading external configuration, reason: {error.Message}");
-            dispatcher.Dispatch(new ConfigurationActions.LoadFailAction(error));
+            catch (ApiException ex)
+            {
+                RequestError error = StoreUtility.FormatRequestError(ex, null);
+                this.Logger.LogError($"Error loading external configuration, reason: {error.Message}");
+                dispatcher.Dispatch(new ConfigurationActions.LoadFailAction(error));
+            }
         }
     }
 }
