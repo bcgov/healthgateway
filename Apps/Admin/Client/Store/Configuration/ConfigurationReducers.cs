@@ -48,8 +48,8 @@ namespace HealthGateway.Admin.Client.Store.Configuration
             return state with
             {
                 IsLoading = false,
-                Configuration = action.State,
-                RequestError = null,
+                Result = action.Data,
+                Error = null,
             };
         }
 
@@ -65,7 +65,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
             return state with
             {
                 IsLoading = false,
-                RequestError = action.Error,
+                Error = action.Error,
             };
         }
     }

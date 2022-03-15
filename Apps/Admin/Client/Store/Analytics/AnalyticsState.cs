@@ -23,15 +23,6 @@ using System.Net.Http;
 /// State should be decorated with [FeatureState] for automatic discovery when services. AddFluxor is called.
 /// </summary>
 [FeatureState]
-public record AnalyticsState : BaseState
+public record AnalyticsState : BaseRequestState<HttpContent>
 {
-    /// <summary>
-    /// Gets the report state data.
-    /// </summary>
-    public HttpContent? Data { get; init; }
-
-    /// <summary>
-    /// Gets a value indicating whether the report state data has been loaded.
-    /// </summary>
-    public bool Loaded => this.Data != null;
 }

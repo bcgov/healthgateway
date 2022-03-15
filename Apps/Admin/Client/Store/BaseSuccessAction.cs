@@ -13,25 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
+
 namespace HealthGateway.Admin.Client.Store
 {
     /// <summary>
-    /// The base class for a failed load action.
+    /// The base class for a successful action.
     /// </summary>
-    public abstract class BaseLoadFailAction
+    /// <typeparam name="TCollection">The type of data associated with the action.</typeparam>
+    public abstract class BaseSuccessAction<TCollection>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseLoadFailAction"/> class.
+        /// Initializes a new instance of the <see cref="BaseSuccessAction{TCollection}"/> class.
         /// </summary>
-        /// <param name="error">The request error.</param>
-        protected BaseLoadFailAction(RequestError error)
+        /// <param name="data">The associated data.</param>
+        protected BaseSuccessAction(TCollection data)
         {
-            this.Error = error;
+            this.Data = data;
         }
 
         /// <summary>
-        /// Gets the error associated with the failed load action.
+        /// Gets the associated data.
         /// </summary>
-        public RequestError Error { get; }
+        public TCollection Data { get; }
     }
 }

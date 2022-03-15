@@ -119,14 +119,14 @@ public static class AnalyticsActions
     /// <summary>
     /// The action representing a successful load action.
     /// </summary>
-    public class LoadSuccessAction : BaseLoadSuccessAction<HttpContent>
+    public class LoadSuccessAction : BaseSuccessAction<HttpContent>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
         /// </summary>
-        /// <param name="state">analytics state.</param>
-        public LoadSuccessAction(HttpContent state)
-            : base(state)
+        /// <param name="data">Analytics data.</param>
+        public LoadSuccessAction(HttpContent data)
+            : base(data)
         {
         }
     }
@@ -134,7 +134,7 @@ public static class AnalyticsActions
     /// <summary>
     /// The action representing a failed load action.
     /// </summary>
-    public class LoadFailAction : BaseLoadFailAction
+    public class LoadFailAction : BaseFailAction
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadFailAction"/> class.

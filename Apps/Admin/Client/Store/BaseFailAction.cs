@@ -16,18 +16,22 @@
 namespace HealthGateway.Admin.Client.Store
 {
     /// <summary>
-    /// Base class for states.
+    /// The base class for a failed action.
     /// </summary>
-    public abstract record BaseState
+    public abstract class BaseFailAction
     {
         /// <summary>
-        /// Gets a value indicating whether the state is loading.
+        /// Initializes a new instance of the <see cref="BaseFailAction"/> class.
         /// </summary>
-        public bool IsLoading { get; init; }
+        /// <param name="error">The request error.</param>
+        protected BaseFailAction(RequestError error)
+        {
+            this.Error = error;
+        }
 
         /// <summary>
-        /// Gets the request error if available.
+        /// Gets the error associated with the failed action.
         /// </summary>
-        public RequestError? RequestError { get; init; }
+        public RequestError Error { get; }
     }
 }

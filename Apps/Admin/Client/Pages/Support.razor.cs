@@ -52,10 +52,10 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool MessagingVerificationsLoaded => this.MessageVerificationState.Value.Loaded;
 
-        private bool HasError => this.MessageVerificationState.Value.RequestError != null && this.MessageVerificationState.Value.RequestError.Message.Length > 0;
+        private bool HasError => this.MessageVerificationState.Value.Error != null && this.MessageVerificationState.Value.Error.Message.Length > 0;
 
         private IEnumerable<MessagingVerificationModel> MessagingVerifications =>
-            this.MessageVerificationState.Value.RequestResult?.ResourcePayload ?? Enumerable.Empty<MessagingVerificationModel>();
+            this.MessageVerificationState.Value.Result?.ResourcePayload ?? Enumerable.Empty<MessagingVerificationModel>();
 
         private IEnumerable<MessagingVerificationRow> MessagingVerificationRows => this.MessagingVerifications.Select(v => new MessagingVerificationRow(v));
 

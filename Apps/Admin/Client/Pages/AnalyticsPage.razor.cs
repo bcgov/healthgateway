@@ -42,9 +42,9 @@ public partial class AnalyticsPage : FluxorComponent
 
     private int TimeOffset { get; set; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMinutes * -1;
 
-    private HttpContent AnalyticsStateData => this.AnalyticsState.Value.Data ?? default!;
+    private HttpContent AnalyticsStateData => this.AnalyticsState.Value.Result ?? default!;
 
-    private bool HasError => this.AnalyticsState.Value.RequestError != null && this.AnalyticsState.Value.RequestError.Message.Length > 0;
+    private bool HasError => this.AnalyticsState.Value.Error != null && this.AnalyticsState.Value.Error.Message.Length > 0;
 
     private string? ReportName { get; set; }
 
@@ -110,8 +110,8 @@ public partial class AnalyticsPage : FluxorComponent
 
     private async Task DownloadReport(HttpContent content)
     {
-        var fileBytes = await content.ReadAsByteArrayAsync().ConfigureAwait(true);
-        var fileName = $"{this.ReportName}_export_{DateTime.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)}.csv";
+        byte[]? fileBytes = await content.ReadAsByteArrayAsync().ConfigureAwait(true);
+        string? fileName = $"{this.ReportName}_export_{DateTime.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)}.csv";
         await this.JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes)).ConfigureAwait(true);
     }
 }
