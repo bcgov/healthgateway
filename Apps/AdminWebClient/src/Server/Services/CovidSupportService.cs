@@ -208,7 +208,7 @@ namespace HealthGateway.Admin.Services
                 PersonalHealthNumber = request.PersonalHealthNumber,
                 DateOfBirth = birthdate,
             };
-            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult =
+            RequestResult<PhsaResult<VaccineStatusResult>> vaccineStatusResult =
                 await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(statusQuery, bearerToken, false).ConfigureAwait(true);
 
             PrimitiveRequestResult<bool> retVal = new();
@@ -467,7 +467,7 @@ namespace HealthGateway.Admin.Services
                 PersonalHealthNumber = phn,
                 DateOfBirth = birthdate,
             };
-            RequestResult<PHSAResult<VaccineStatusResult>> statusResult =
+            RequestResult<PhsaResult<VaccineStatusResult>> statusResult =
                 await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(statusQuery, bearerToken, false).ConfigureAwait(true);
 
             if (statusResult.ResultStatus != ResultType.Success)

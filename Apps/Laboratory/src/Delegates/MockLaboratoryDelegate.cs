@@ -32,9 +32,9 @@ namespace HealthGateway.Laboratory.Delegates
     public class MockLaboratoryDelegate : ILaboratoryDelegate
     {
         /// <inheritdoc/>
-        public async Task<RequestResult<PHSAResult<List<PhsaCovid19Order>>>> GetCovid19Orders(string bearerToken, string hdid, int pageIndex = 0)
+        public async Task<RequestResult<PhsaResult<List<PhsaCovid19Order>>>> GetCovid19Orders(string bearerToken, string hdid, int pageIndex = 0)
         {
-            RequestResult<PHSAResult<List<PhsaCovid19Order>>> retVal = new()
+            RequestResult<PhsaResult<List<PhsaCovid19Order>>> retVal = new()
             {
                 PageIndex = 0,
                 PageSize = 10000,
@@ -99,13 +99,13 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public Task<RequestResult<PHSAResult<PhsaLaboratorySummary>>> GetLaboratorySummary(string hdid, string bearerToken)
+        public Task<RequestResult<PhsaResult<PhsaLaboratorySummary>>> GetLaboratorySummary(string hdid, string bearerToken)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public Task<RequestResult<PHSAResult<IEnumerable<CovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate)
+        public Task<RequestResult<PhsaResult<IEnumerable<CovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate)
         {
             throw new NotImplementedException();
         }

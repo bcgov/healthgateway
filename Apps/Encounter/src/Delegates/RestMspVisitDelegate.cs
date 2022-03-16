@@ -37,29 +37,29 @@ namespace HealthGateway.Encounter.Delegates
     /// <summary>
     /// ODR Implementation for Rest Medication Statements.
     /// </summary>
-    public class RestMSPVisitDelegate : IMSPVisitDelegate
+    public class RestMspVisitDelegate : IMspVisitDelegate
     {
         private const string ODRConfigSectionKey = "ODR";
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly ODRConfig odrConfig;
+        private readonly OdrConfig odrConfig;
         private readonly Uri baseURL;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RestMSPVisitDelegate"/> class.
+        /// Initializes a new instance of the <see cref="RestMspVisitDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        public RestMSPVisitDelegate(
-            ILogger<RestMSPVisitDelegate> logger,
+        public RestMspVisitDelegate(
+            ILogger<RestMspVisitDelegate> logger,
             IHttpClientService httpClientService,
             IConfiguration configuration)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
-            this.odrConfig = new ODRConfig();
+            this.odrConfig = new OdrConfig();
             configuration.Bind(ODRConfigSectionKey, this.odrConfig);
             if (this.odrConfig.DynamicServiceLookup)
             {
@@ -80,21 +80,21 @@ namespace HealthGateway.Encounter.Delegates
             logger.LogInformation($"ODR Proxy URL resolved as {this.baseURL.ToString()}");
         }
 
-        private static ActivitySource Source { get; } = new ActivitySource(nameof(RestMSPVisitDelegate));
+        private static ActivitySource Source { get; } = new ActivitySource(nameof(RestMspVisitDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<MSPVisitHistoryResponse>> GetMSPVisitHistoryAsync(ODRHistoryQuery query, string hdid, string ipAddress)
+        public async Task<RequestResult<MspVisitHistoryResponse>> GetMSPVisitHistoryAsync(OdrHistoryQuery query, string hdid, string ipAddress)
         {
             using (Source.StartActivity("GetMSPVisitHistoryAsync"))
             {
-                RequestResult<MSPVisitHistoryResponse> retVal = new RequestResult<MSPVisitHistoryResponse>();
+                RequestResult<MspVisitHistoryResponse> retVal = new RequestResult<MspVisitHistoryResponse>();
                 this.logger.LogTrace($"Getting MSP visits... {query.PHN.Substring(0, 3)}");
 
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                MSPVisitHistory request = new MSPVisitHistory()
+                MspVisitHistory request = new MspVisitHistory()
                 {
                     Id = System.Guid.NewGuid(),
                     RequestorHDID = hdid,
@@ -110,7 +110,7 @@ namespace HealthGateway.Encounter.Delegates
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                     if (response.IsSuccessStatusCode)
                     {
-                        MSPVisitHistory? visitHistory = JsonSerializer.Deserialize<MSPVisitHistory>(payload);
+                        MspVisitHistory? visitHistory = JsonSerializer.Deserialize<MspVisitHistory>(payload);
                         retVal.ResultStatus = ResultType.Success;
                         retVal.ResourcePayload = visitHistory?.Response;
                         retVal.TotalResultCount = visitHistory?.Response?.TotalRecords;

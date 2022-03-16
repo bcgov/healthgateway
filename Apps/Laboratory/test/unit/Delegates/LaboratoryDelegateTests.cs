@@ -79,7 +79,7 @@ namespace HealthGateway.LaboratoryTests
             IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), httpClientService, CreateValidHttpContext().Object, this.configuration);
 
-            RequestResult<PHSAResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(string.Empty, string.Empty).ConfigureAwait(true);
+            RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(string.Empty, string.Empty).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Equal("9735352542", actualResult.ResourcePayload!.Result.First().PHN);
@@ -102,7 +102,7 @@ namespace HealthGateway.LaboratoryTests
             IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), httpClientService, CreateValidHttpContext().Object, this.configuration);
 
-            RequestResult<PHSAResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(string.Empty, string.Empty).ConfigureAwait(true);
+            RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(string.Empty, string.Empty).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Contains(ExpectedSubstring, actualResult!.ResultError!.ResultMessage, StringComparison.OrdinalIgnoreCase);
@@ -124,7 +124,7 @@ namespace HealthGateway.LaboratoryTests
             IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), httpClientService, CreateValidHttpContext().Object, this.configuration);
 
-            RequestResult<PHSAResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(string.Empty, string.Empty).ConfigureAwait(true);
+            RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(string.Empty, string.Empty).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Empty(actualResult.ResourcePayload!.Result);
@@ -146,7 +146,7 @@ namespace HealthGateway.LaboratoryTests
             IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), httpClientService, CreateValidHttpContext().Object, this.configuration);
 
-            RequestResult<PHSAResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(string.Empty, string.Empty).ConfigureAwait(true);
+            RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(string.Empty, string.Empty).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -246,7 +246,7 @@ namespace HealthGateway.LaboratoryTests
         [Fact]
         public async Task ValidateGetPublicTestResults200()
         {
-            PHSAResult<IEnumerable<CovidTestResult>> phsaResponse = new()
+            PhsaResult<IEnumerable<CovidTestResult>> phsaResponse = new()
             {
                 LoadState = new()
                 {
@@ -289,7 +289,7 @@ namespace HealthGateway.LaboratoryTests
             IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), httpClientService, CreateValidHttpContext().Object, this.configuration);
 
-            RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> actualResult = await labDelegate.GetPublicTestResults(this.accessToken, this.phn, this.dateOfBirth, this.collectionDate).ConfigureAwait(true);
+            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> actualResult = await labDelegate.GetPublicTestResults(this.accessToken, this.phn, this.dateOfBirth, this.collectionDate).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -311,7 +311,7 @@ namespace HealthGateway.LaboratoryTests
             IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), httpClientService, CreateValidHttpContext().Object, this.configuration);
 
-            RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> actualResult = await labDelegate.GetPublicTestResults(this.accessToken, this.phn, this.dateOfBirth, this.collectionDate).ConfigureAwait(true);
+            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> actualResult = await labDelegate.GetPublicTestResults(this.accessToken, this.phn, this.dateOfBirth, this.collectionDate).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.EndsWith("-CE-PHSA", actualResult.ResultError?.ErrorCode, StringComparison.InvariantCulture);
@@ -332,7 +332,7 @@ namespace HealthGateway.LaboratoryTests
             IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), httpClientService, CreateValidHttpContext().Object, this.configuration);
 
-            RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> actualResult = await labDelegate.GetPublicTestResults(this.accessToken, this.phn, this.dateOfBirth, this.collectionDate).ConfigureAwait(true);
+            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> actualResult = await labDelegate.GetPublicTestResults(this.accessToken, this.phn, this.dateOfBirth, this.collectionDate).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.EndsWith("-CE-PHSA", actualResult.ResultError?.ErrorCode, StringComparison.InvariantCulture);

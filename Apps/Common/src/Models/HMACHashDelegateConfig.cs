@@ -18,7 +18,7 @@ namespace HealthGateway.Common.Models
     using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
     /// <summary>
-    /// The configuration for the HMACHash delegate.
+    /// The configuration for the HmacHash delegate.
     /// </summary>
     public class HMACHashDelegateConfig
     {

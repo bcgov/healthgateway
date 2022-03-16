@@ -276,9 +276,9 @@ namespace HealthGateway.Immunization.Services
             };
 
             bool isPublicEndpoint = string.IsNullOrEmpty(query.HdId);
-            RequestResult<PHSAResult<VaccineStatusResult>> result = await this.vaccineStatusDelegate.GetVaccineStatus(query, accessToken, isPublicEndpoint).ConfigureAwait(true);
+            RequestResult<PhsaResult<VaccineStatusResult>> result = await this.vaccineStatusDelegate.GetVaccineStatus(query, accessToken, isPublicEndpoint).ConfigureAwait(true);
             VaccineStatusResult? payload = result.ResourcePayload?.Result;
-            PHSALoadState? loadState = result.ResourcePayload?.LoadState;
+            PhsaLoadState? loadState = result.ResourcePayload?.LoadState;
 
             retVal.ResultStatus = result.ResultStatus;
             retVal.ResultError = result.ResultError;

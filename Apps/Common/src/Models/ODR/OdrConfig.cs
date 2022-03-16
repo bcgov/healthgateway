@@ -18,7 +18,7 @@ namespace HealthGateway.Common.Models
     /// <summary>
     /// The configuration for the ODR portion of the ResetMedStatement delegate.
     /// </summary>
-    public class ODRConfig
+    public class OdrConfig
     {
         /// <summary>
         /// Gets or sets the OpenShift service name.

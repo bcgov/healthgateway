@@ -94,7 +94,7 @@ namespace HealthGateway.Medication.Services
                     if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                     {
                         PatientModel patient = patientResult.ResourcePayload;
-                        ODRHistoryQuery historyQuery = new ODRHistoryQuery()
+                        OdrHistoryQuery historyQuery = new OdrHistoryQuery()
                         {
                             StartDate = patient.Birthdate,
                             EndDate = System.DateTime.Now,

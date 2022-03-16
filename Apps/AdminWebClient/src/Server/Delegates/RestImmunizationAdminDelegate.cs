@@ -75,7 +75,7 @@ namespace HealthGateway.Admin.Server.Delegates
         {
             using Activity? activity = Source.StartActivity("GetVaccineDetailsWithRetries");
             RequestResult<VaccineDetails> retVal;
-            RequestResult<PHSAResult<VaccineDetailsResponse>> response;
+            RequestResult<PhsaResult<VaccineDetailsResponse>> response;
             int retryCount = 0;
             bool refreshInProgress;
             do
@@ -133,11 +133,11 @@ namespace HealthGateway.Admin.Server.Delegates
         /// <param name="patient">The patient to query for vaccine details.</param>
         /// <param name="refresh">Whether the call should force cached data to be refreshed.</param>
         /// <returns>The wrapped vaccine details response.</returns>
-        private async Task<RequestResult<PHSAResult<VaccineDetailsResponse>>> GetVaccineDetailsResponse(PatientModel patient, bool refresh)
+        private async Task<RequestResult<PhsaResult<VaccineDetailsResponse>>> GetVaccineDetailsResponse(PatientModel patient, bool refresh)
         {
             using Activity? activity = Source.StartActivity("GetVaccineDetails");
             this.logger.LogDebug($"Getting vaccine details...");
-            RequestResult<PHSAResult<VaccineDetailsResponse>> retVal;
+            RequestResult<PhsaResult<VaccineDetailsResponse>> retVal;
             if (!string.IsNullOrEmpty(patient.PersonalHealthNumber) && patient.Birthdate != DateTime.MinValue)
             {
                 CovidImmunizationsRequest requestContent = new CovidImmunizationsRequest()
@@ -167,7 +167,7 @@ namespace HealthGateway.Admin.Server.Delegates
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Team Decision>")]
-        private async Task<RequestResult<PHSAResult<T>>> CallEndpoint<T>(Uri endpoint, StringContent content)
+        private async Task<RequestResult<PhsaResult<T>>> CallEndpoint<T>(Uri endpoint, StringContent content)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
@@ -175,7 +175,7 @@ namespace HealthGateway.Admin.Server.Delegates
                 string? bearerToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
                 if (bearerToken != null)
                 {
-                    RequestResult<PHSAResult<T>> retVal = new()
+                    RequestResult<PhsaResult<T>> retVal = new()
                     {
                         ResultStatus = ResultType.Error,
                         PageIndex = 0,
@@ -197,7 +197,7 @@ namespace HealthGateway.Admin.Server.Delegates
                         {
                             case HttpStatusCode.OK:
                                 this.logger.LogTrace($"Response payload: {payload}");
-                                PHSAResult<T>? phsaResult = JsonSerializer.Deserialize<PHSAResult<T>>(payload);
+                                PhsaResult<T>? phsaResult = JsonSerializer.Deserialize<PhsaResult<T>>(payload);
                                 if (phsaResult != null && phsaResult.Result != null)
                                 {
                                     retVal.ResultStatus = ResultType.Success;
@@ -213,7 +213,7 @@ namespace HealthGateway.Admin.Server.Delegates
                                 break;
                             case HttpStatusCode.NoContent: // No Immunizations exits for this user
                                 retVal.ResultStatus = ResultType.Success;
-                                retVal.ResourcePayload = new PHSAResult<T>();
+                                retVal.ResourcePayload = new PhsaResult<T>();
                                 retVal.TotalResultCount = 0;
                                 retVal.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);
                                 break;
@@ -236,7 +236,7 @@ namespace HealthGateway.Admin.Server.Delegates
                 }
             }
 
-            return new RequestResult<PHSAResult<T>>()
+            return new RequestResult<PhsaResult<T>>()
             {
                 ResultStatus = ResultType.Error,
                 ResultError = new()

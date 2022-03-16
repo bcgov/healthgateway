@@ -73,7 +73,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 OccurrenceDateTime = DateTime.ParseExact("2020/09/10 17:16:10.809", "yyyy/MM/dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
             };
 
-            PHSAResult<ImmunizationViewResponse> phsaResponse = new()
+            PhsaResult<ImmunizationViewResponse> phsaResponse = new()
             {
                 Result = expectedViewResponse,
             };
@@ -94,7 +94,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
 
-            RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(0).Result;
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(0).Result;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -114,7 +114,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 OccurrenceDateTime = DateTime.ParseExact("2020/09/10 17:16:10.809", "yyyy/MM/dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
             };
 
-            PHSAResult<ImmunizationResponse> phsaResponse = new()
+            PhsaResult<ImmunizationResponse> phsaResponse = new()
             {
                 Result = new ImmunizationResponse(
                     new List<ImmunizationViewResponse>() { expectedViewResponse },
@@ -137,7 +137,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
 
-            RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(0).Result;
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(0).Result;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -177,7 +177,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
 
-            RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(0).Result;
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(0).Result;
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
@@ -202,7 +202,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
 
-            RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.Success && actualResult?.ResourcePayload?.Result == null);
             Assert.Null(actualResult?.ResourcePayload?.Result);
@@ -239,7 +239,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
 
-            RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
 
             actualResult.ShouldDeepEqual(expectedResult);
         }
@@ -275,7 +275,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
 
-            RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
 
             actualResult.ShouldDeepEqual(expectedResult);
         }
@@ -312,7 +312,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 this.configuration,
                 this.GetHttpContextAccessor().Object);
 
-            RequestResult<PHSAResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.Error);
             Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CE-PHSA", StringComparison.InvariantCulture));

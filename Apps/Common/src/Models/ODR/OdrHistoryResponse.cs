@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,27 +13,32 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Common.Models.ODR
 {
+    using System;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Representation of the result sent by PHSA.
+    /// The ODR Medication Response.
     /// </summary>
-    /// <typeparam name="T">The result object type.</typeparam>
-    public class PHSAResult<T>
+    public class OdrHistoryResponse
     {
         /// <summary>
-        /// Gets or sets the LoadState.
+        /// Gets or sets the Id of the request.
         /// </summary>
-        [JsonPropertyName("loadState")]
-        public PHSALoadState LoadState { get; set; } = new PHSALoadState();
+        [JsonPropertyName("uuid")]
+        public Guid Id { get; set; } = Guid.Empty;
 
         /// <summary>
-        /// Gets or sets the result section.
+        /// Gets or sets the total records available from the server for the query excluding page limits.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        [JsonPropertyName("result")]
-        public T? Result { get; set; } = default(T);
+        [JsonPropertyName("totalRecords")]
+        public int TotalRecords { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Total Pages available.
+        /// </summary>
+        [JsonPropertyName("totalPages")]
+        public int Pages { get; set; }
     }
 }

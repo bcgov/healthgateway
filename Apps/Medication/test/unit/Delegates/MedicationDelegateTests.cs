@@ -53,12 +53,12 @@ namespace HealthGateway.Medication.Delegates.Test
         private readonly string phn = "9735361219";
         private readonly string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
         private readonly string ip = "10.0.0.1";
-        private readonly ODRConfig odrConfig = new();
+        private readonly OdrConfig odrConfig = new();
         private readonly string odrConfigSectionKey = "ODR";
         private readonly Uri baseURI;
         private readonly Uri patientProfileEndpoint;
         private readonly Uri protectiveWordEndpoint;
-        private readonly ODRHistoryQuery query = new()
+        private readonly OdrHistoryQuery query = new()
         {
             StartDate = DateTime.Parse("1990/01/01", CultureInfo.CurrentCulture),
             EndDate = DateTime.Now,
@@ -245,7 +245,7 @@ namespace HealthGateway.Medication.Delegates.Test
             Mock<HttpMessageHandler> handlerMock = GetHttpMessageHandler(protectedHttpResponseMessage, this.protectiveWordEndpoint);
             Mock<IGenericCacheDelegate> mockCacheDelegate = new();
             Mock<IHashDelegate> mockHashDelegate = new();
-            IHash hash = new HMACHash()
+            IHash hash = new HmacHash()
             {
                 Hash = $"{protectiveWordjson}-HASH",
             };
@@ -293,7 +293,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
             Mock<IGenericCacheDelegate> mockCacheDelegate = new();
             Mock<IHashDelegate> mockHashDelegate = new();
-            IHash hash = new HMACHash()
+            IHash hash = new HmacHash()
             {
                 Hash = string.Empty,
             };
@@ -343,7 +343,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
             Mock<IGenericCacheDelegate> mockCacheDelegate = new();
             Mock<IHashDelegate> mockHashDelegate = new();
-            IHash hash = new HMACHash()
+            IHash hash = new HmacHash()
             {
                 Hash = string.Empty,
             };
@@ -382,7 +382,7 @@ namespace HealthGateway.Medication.Delegates.Test
             Mock<HttpMessageHandler> handlerMock = GetHttpMessageHandler(protectiveWordResponseMessage, this.protectiveWordEndpoint);
             Mock<IGenericCacheDelegate> mockCacheDelegate = new();
             Mock<IHashDelegate> mockHashDelegate = new();
-            IHash hash = new HMACHash()
+            IHash hash = new HmacHash()
             {
                 Hash = string.Empty,
             };
@@ -454,7 +454,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
             Mock<IGenericCacheDelegate> mockCacheDelegate = new();
             Mock<IHashDelegate> mockHashDelegate = new();
-            IHash hash = new HMACHash()
+            IHash hash = new HmacHash()
             {
                 Hash = string.Empty,
             };
@@ -562,7 +562,7 @@ namespace HealthGateway.Medication.Delegates.Test
         private static IHashDelegate GetHashDelegate(string hashString = "")
         {
             Mock<IHashDelegate> mockHashDelegate = new();
-            IHash hash = new HMACHash()
+            IHash hash = new HmacHash()
             {
                 Hash = hashString,
             };
