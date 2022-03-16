@@ -102,7 +102,7 @@ public class InactiveUserService : IInactiveUserService
             List<AdminUserProfile> activeUserProfiles = activeProfileResult.Payload.ToList();
 
             // Get admin and support users from keycloak
-            JWTModel jwtModel = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest);
+            JwtModel jwtModel = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest);
             RequestResult<IEnumerable<UserRepresentation>> adminUsersResult = await this.userAdminDelegate.GetUsers(IdentityAccessRole.AdminUser, jwtModel).ConfigureAwait(true);
             RequestResult<IEnumerable<UserRepresentation>> supportUsersResult = await this.userAdminDelegate.GetUsers(IdentityAccessRole.SupportUser, jwtModel).ConfigureAwait(true);
 
