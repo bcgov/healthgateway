@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,23 +13,27 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Encounter.Models.ODR
+namespace HealthGateway.Common.Models.PHSA
 {
-    using System;
-    using System.Collections.Generic;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models.ODR;
 
     /// <summary>
-    /// The ODR MSP Visit History Response.
+    /// Representation of the result sent by PHSA.
     /// </summary>
-    public class MSPVisitHistoryResponse : ODRHistoryResponse
+    /// <typeparam name="T">The result object type.</typeparam>
+    public class PhsaResult<T>
     {
         /// <summary>
-        /// Gets or sets the set of Claims.
-        /// The set is boud by the other class properties.
+        /// Gets or sets the LoadState.
         /// </summary>
-        [JsonPropertyName("claims")]
-        public IEnumerable<Claim>? Claims { get; set; }
+        [JsonPropertyName("loadState")]
+        public PhsaLoadState LoadState { get; set; } = new PhsaLoadState();
+
+        /// <summary>
+        /// Gets or sets the result section.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        [JsonPropertyName("result")]
+        public T? Result { get; set; } = default(T);
     }
 }

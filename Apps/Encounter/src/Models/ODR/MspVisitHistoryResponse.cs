@@ -13,33 +13,23 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Models.Cacheable
+namespace HealthGateway.Encounter.Models.ODR
 {
-    using HealthGateway.Database.Constants;
+    using System;
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
+    using HealthGateway.Common.Models.ODR;
 
     /// <summary>
-    /// A hash of something.
+    /// The ODR MSP Visit History Response.
     /// </summary>
-    public class HMACHash : IHash
+    public class MspVisitHistoryResponse : OdrHistoryResponse
     {
         /// <summary>
-        /// Gets or sets the pseudo random function that was used to generate this hash.
+        /// Gets or sets the set of Claims.
+        /// The set is boud by the other class properties.
         /// </summary>
-        public HashFunction PseudoRandomFunction { get; set; } = HashFunction.HMACSHA512;
-
-        /// <summary>
-        /// Gets or sets the iterations used to generate this hash.
-        /// </summary>
-        public int Iterations { get; set; }
-
-        /// <summary>
-        /// Gets or sets the base64 salt that was used in generating the hash.
-        /// </summary>
-        public string? Salt { get; set; }
-
-        /// <summary>
-        /// Gets or sets the base64 encoded hash.
-        /// </summary>
-        public string? Hash { get; set; }
+        [JsonPropertyName("claims")]
+        public IEnumerable<Claim>? Claims { get; set; }
     }
 }

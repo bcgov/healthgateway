@@ -74,7 +74,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
             // Setup Authentication
             string jwtJson = @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
-            JWTModel authorizationJWT = CreateJWTModel(jwtJson);
+            JwtModel authorizationJWT = CreateJWTModel(jwtJson);
 
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate
@@ -147,7 +147,7 @@ namespace HealthGateway.Medication.Delegates.Test
                     It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
                     It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
                     true))
-                .Returns(() => new JWTModel());
+                .Returns(() => new JwtModel());
 
             // Setup class to be tested
             IMedicationRequestDelegate medDelegate = new SalesforceDelegate(
@@ -199,7 +199,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
             // Setup Authentication
             string jwtJson = @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
-            JWTModel authorizationJWT = CreateJWTModel(jwtJson);
+            JwtModel authorizationJWT = CreateJWTModel(jwtJson);
 
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate
@@ -266,7 +266,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
             // Setup Authentication
             string jwtJson = @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
-            JWTModel authorizationJWT = CreateJWTModel(jwtJson);
+            JwtModel authorizationJWT = CreateJWTModel(jwtJson);
 
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate
@@ -316,9 +316,9 @@ namespace HealthGateway.Medication.Delegates.Test
             return loggerFactory.CreateLogger<SalesforceDelegate>();
         }
 
-        private static JWTModel CreateJWTModel(string json)
+        private static JwtModel CreateJWTModel(string json)
         {
-            JWTModel? jwt = JsonSerializer.Deserialize<JWTModel>(json);
+            JwtModel? jwt = JsonSerializer.Deserialize<JwtModel>(json);
 
             return jwt ?? new();
         }

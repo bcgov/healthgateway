@@ -68,12 +68,12 @@ namespace HealthGateway.Immunization.Test.Services
         [InlineData("AllDosesReceived", VaccineState.AllDosesReceived, false)]
         public void ShouldGetVaccineStatus(string statusIndicator, VaccineState state, bool isPublicEndpoint)
         {
-            RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new()
+            RequestResult<PhsaResult<VaccineStatusResult>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new PHSAResult<VaccineStatusResult>()
+                ResourcePayload = new PhsaResult<VaccineStatusResult>()
                 {
-                    LoadState = new PHSALoadState() { RefreshInProgress = false, BackOffMilliseconds = 500 },
+                    LoadState = new PhsaLoadState() { RefreshInProgress = false, BackOffMilliseconds = 500 },
                     Result = new VaccineStatusResult()
                     {
                         FirstName = "Bob",
@@ -84,7 +84,7 @@ namespace HealthGateway.Immunization.Test.Services
                     },
                 },
             };
-            JWTModel jwtModel = new()
+            JwtModel jwtModel = new()
             {
                 AccessToken = this.accessToken,
             };
@@ -143,12 +143,12 @@ namespace HealthGateway.Immunization.Test.Services
         [InlineData(false)]
         public void ShouldGetErrorDataMismatchVaccineStatus(bool isPublicEndpoint)
         {
-            RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new()
+            RequestResult<PhsaResult<VaccineStatusResult>> delegateResult = new()
             {
                 ResultStatus = ResultType.ActionRequired,
-                ResourcePayload = new PHSAResult<VaccineStatusResult>()
+                ResourcePayload = new PhsaResult<VaccineStatusResult>()
                 {
-                    LoadState = new PHSALoadState() { RefreshInProgress = false, BackOffMilliseconds = 500 },
+                    LoadState = new PhsaLoadState() { RefreshInProgress = false, BackOffMilliseconds = 500 },
                     Result = new VaccineStatusResult()
                     {
                         FirstName = "Bob",
@@ -158,7 +158,7 @@ namespace HealthGateway.Immunization.Test.Services
                     },
                 },
             };
-            JWTModel jwtModel = new()
+            JwtModel jwtModel = new()
             {
                 AccessToken = this.accessToken,
             };
@@ -223,12 +223,12 @@ namespace HealthGateway.Immunization.Test.Services
         [InlineData(true)]
         public void ShouldGetErrorRefreshInProgressVaccineStatus(bool isPublicEndpoint)
         {
-            RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new()
+            RequestResult<PhsaResult<VaccineStatusResult>> delegateResult = new()
             {
                 ResultStatus = ResultType.ActionRequired,
-                ResourcePayload = new PHSAResult<VaccineStatusResult>()
+                ResourcePayload = new PhsaResult<VaccineStatusResult>()
                 {
-                    LoadState = new PHSALoadState() { RefreshInProgress = true, BackOffMilliseconds = 500 },
+                    LoadState = new PhsaLoadState() { RefreshInProgress = true, BackOffMilliseconds = 500 },
                     Result = new VaccineStatusResult()
                     {
                         FirstName = "Bob",
@@ -242,7 +242,7 @@ namespace HealthGateway.Immunization.Test.Services
                     ActionCode = ActionType.Refresh,
                 },
             };
-            JWTModel jwtModel = new()
+            JwtModel jwtModel = new()
             {
                 AccessToken = this.accessToken,
             };
@@ -309,12 +309,12 @@ namespace HealthGateway.Immunization.Test.Services
         [InlineData(true)]
         public void ShouldGetErrorNotFoundVaccineStatus(bool isPublicEndpoint)
         {
-            RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new()
+            RequestResult<PhsaResult<VaccineStatusResult>> delegateResult = new()
             {
                 ResultStatus = ResultType.ActionRequired,
-                ResourcePayload = new PHSAResult<VaccineStatusResult>()
+                ResourcePayload = new PhsaResult<VaccineStatusResult>()
                 {
-                    LoadState = new PHSALoadState() { RefreshInProgress = false, BackOffMilliseconds = 500 },
+                    LoadState = new PhsaLoadState() { RefreshInProgress = false, BackOffMilliseconds = 500 },
                     Result = new VaccineStatusResult()
                     {
                         FirstName = "Bob",
@@ -328,7 +328,7 @@ namespace HealthGateway.Immunization.Test.Services
                     ActionCode = ActionType.Invalid,
                 },
             };
-            JWTModel jwtModel = new()
+            JwtModel jwtModel = new()
             {
                 AccessToken = this.accessToken,
             };
@@ -393,12 +393,12 @@ namespace HealthGateway.Immunization.Test.Services
         [InlineData(true)]
         public void ShouldGetVaccineProof(bool isPublicEndpoint)
         {
-            RequestResult<PHSAResult<VaccineStatusResult>> delegateResult = new()
+            RequestResult<PhsaResult<VaccineStatusResult>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new PHSAResult<VaccineStatusResult>()
+                ResourcePayload = new PhsaResult<VaccineStatusResult>()
                 {
-                    LoadState = new PHSALoadState() { RefreshInProgress = false, BackOffMilliseconds = 500 },
+                    LoadState = new PhsaLoadState() { RefreshInProgress = false, BackOffMilliseconds = 500 },
                     Result = new VaccineStatusResult()
                     {
                         FirstName = "Bob",
@@ -414,7 +414,7 @@ namespace HealthGateway.Immunization.Test.Services
                     },
                 },
             };
-            JWTModel jwtModel = new()
+            JwtModel jwtModel = new()
             {
                 AccessToken = this.accessToken,
             };
