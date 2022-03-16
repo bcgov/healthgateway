@@ -23,7 +23,7 @@ using Fluxor;
 public static class AnalyticsReducers
 {
     /// <summary>
-    /// The Reducer for the load success action.
+    /// The Reducer for the load user profiles action.
     /// </summary>
     /// <param name="state">The user profiles state.</param>
     /// <returns>The new user profiles state.</returns>
@@ -37,7 +37,7 @@ public static class AnalyticsReducers
     }
 
     /// <summary>
-    /// The Reducer for the load success action.
+    /// The Reducer for the load comments action.
     /// </summary>
     /// <param name="state">The comments state.</param>
     /// <returns>The new comments state.</returns>
@@ -51,7 +51,7 @@ public static class AnalyticsReducers
     }
 
     /// <summary>
-    /// The Reducer for the load success action.
+    /// The Reducer for the load notes action.
     /// </summary>
     /// <param name="state">The notes state.</param>
     /// <returns>The new notes state.</returns>
@@ -65,7 +65,7 @@ public static class AnalyticsReducers
     }
 
     /// <summary>
-    /// The Reducer for the load success action.
+    /// The Reducer for the load ratings action.
     /// </summary>
     /// <param name="state">The ratings state.</param>
     /// <returns>The new ratings state.</returns>
@@ -79,7 +79,7 @@ public static class AnalyticsReducers
     }
 
     /// <summary>
-    /// The Reducer for the load success action.
+    /// The Reducer for the load inactive users action.
     /// </summary>
     /// <param name="state">The inactive users state.</param>
     /// <returns>The new inactive users state.</returns>

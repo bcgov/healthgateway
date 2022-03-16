@@ -19,7 +19,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Fluxor;
 using HealthGateway.Admin.Client.Services;
-using HealthGateway.Admin.Client.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 
@@ -32,15 +31,15 @@ public class AnalyticsEffects
     /// Initializes a new instance of the <see cref="AnalyticsEffects"/> class.
     /// </summary>
     /// <param name="logger">The injected logger.</param>
-    /// <param name="analyticsApi">the injected api to query the csvExport service. </param>
-    public AnalyticsEffects(ILogger<HttpContent> logger, IAnalyticsApi analyticsApi)
+    /// <param name="analyticsApi">the injected api to query the analytics service. </param>
+    public AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi analyticsApi)
     {
         this.Logger = logger;
         this.AnalyticsApi = analyticsApi;
     }
 
     [Inject]
-    private ILogger<HttpContent> Logger { get; set; }
+    private ILogger<AnalyticsEffects> Logger { get; set; }
 
     [Inject]
     private IAnalyticsApi AnalyticsApi { get; set; }
