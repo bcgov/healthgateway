@@ -82,15 +82,15 @@ export class FragmentedStorage implements Storage {
     }
 
     private getFragmentSection(fragment: string): string {
-        return fragment.substr(this.fragmentIndicator.length, fragment?.length);
+        return fragment.substring(this.fragmentIndicator.length, fragment?.length);
     }
 
     private getFragmentNames(fragmentSection: string): string[] {
         return fragmentSection.split(this.fragmentSeparator).sort((a, b) => {
             const aIndex = a.lastIndexOf(this.keySeparator);
             const bIndex = b.lastIndexOf(this.keySeparator);
-            const aNum = Number(a.substr(aIndex + 1, a.length));
-            const bNum = Number(b.substr(bIndex + 1, b.length));
+            const aNum = Number(a.substring(aIndex + 1, a.length));
+            const bNum = Number(b.substring(bIndex + 1, b.length));
             if (aNum > bNum) {
                 return 1;
             }

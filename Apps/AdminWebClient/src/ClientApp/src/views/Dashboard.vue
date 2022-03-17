@@ -29,14 +29,14 @@ export default class Dashboard extends Vue {
     private uniqueDays = 3;
     private uniquePeriodDates: string[] = [
         DateTime.local().minus({ days: 30 }).toISO().substring(0, 10),
-        DateTime.local().toISO().substr(0, 10),
+        DateTime.local().toISO().substring(0, 10),
     ];
     private uniqueUsers = 0;
 
     private ratingPickerModal = false;
     private ratingPeriodDates: string[] = [
         DateTime.local().minus({ days: 30 }).toISO().substring(0, 10),
-        DateTime.local().toISO().substr(0, 10),
+        DateTime.local().toISO().substring(0, 10),
     ];
 
     private debounceTimer: NodeJS.Timeout | null = null;
