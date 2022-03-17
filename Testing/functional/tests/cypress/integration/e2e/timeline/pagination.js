@@ -35,7 +35,7 @@ describe("Pagination", () => {
                         const secondDate = new Date(
                             secondPageDateElement.text()
                         );
-                        expect(firstDate).to.be.greaterThan(secondDate);
+                        expect(secondDate).to.be.greaterThan(firstDate);
                     });
             });
 
@@ -51,7 +51,7 @@ describe("Pagination", () => {
                         const secondDate = new Date(
                             secondPageDateElement.text()
                         );
-                        expect(firstDate).to.be.greaterThan(secondDate);
+                        expect(secondDate).to.be.greaterThan(firstDate);
                     });
             });
     });
