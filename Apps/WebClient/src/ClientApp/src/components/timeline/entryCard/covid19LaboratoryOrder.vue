@@ -156,7 +156,11 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
                     {{ entry.reportingLab }}
                 </div>
             </div>
-            <div v-for="test in entry.tests" :key="test.id">
+            <div
+                v-for="(test, index) in entry.tests"
+                :key="test.id"
+                :data-testid="`laboratoryTestBlock-${index}`"
+            >
                 <hr />
                 <div data-testid="laboratoryTestType" class="my-2">
                     <strong
@@ -173,7 +177,10 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
                     <strong>Test Type:</strong>
                     {{ test.testType }}
                 </div>
-                <div data-testid="laboratoryTestStatus" class="my-2">
+                <div
+                    :data-testid="`laboratoryTestStatus-${index}`"
+                    class="my-2"
+                >
                     <strong>Test Status:</strong>
                     {{ test.testStatus }}
                 </div>
@@ -188,7 +195,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
                 <div
                     v-if="test.resultDescription.length > 0"
                     class="my-2"
-                    data-testid="laboratoryResultDescription"
+                    :data-testid="`laboratoryResultDescription-${index}`"
                 >
                     <strong>Result Description:</strong>
                     <Covid19LaboratoryTestDescriptionComponent
