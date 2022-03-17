@@ -63,7 +63,7 @@ namespace HealthGateway.Common.Delegates
             this.logger = logger;
             this.httpClientService = httpClientService;
 
-            BCMailPlusConfig bcMailPlusConfig = new();
+            BcMailPlusConfig bcMailPlusConfig = new();
             configuration.GetSection(BcMailPlusSectionKey).Bind(bcMailPlusConfig);
 
             this.bcMailPlusEndpoint = bcMailPlusConfig.ResolvedEndpoint();

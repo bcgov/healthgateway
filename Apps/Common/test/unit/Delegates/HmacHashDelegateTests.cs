@@ -37,7 +37,7 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyConfigurationBinding()
         {
-            HMACHashDelegateConfig expectedConfig = new()
+            HmacHashDelegateConfig expectedConfig = new()
             {
                 PseudoRandomFunction = KeyDerivationPrf.HMACSHA1,
                 Iterations = 100,
@@ -66,11 +66,11 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyDefaultConfigurationBinding()
         {
-            HMACHashDelegateConfig expectedConfig = new()
+            HmacHashDelegateConfig expectedConfig = new()
             {
-                PseudoRandomFunction = HMACHashDelegateConfig.DefaultPseudoRandomFunction,
-                Iterations = HMACHashDelegateConfig.DefaultIterations,
-                SaltLength = HMACHashDelegateConfig.DefaultSaltLength,
+                PseudoRandomFunction = HmacHashDelegateConfig.DefaultPseudoRandomFunction,
+                Iterations = HmacHashDelegateConfig.DefaultIterations,
+                SaltLength = HmacHashDelegateConfig.DefaultSaltLength,
             };
 
             // test empty configuration

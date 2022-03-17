@@ -20,7 +20,7 @@ namespace HealthGateway.Common.Models
     /// <summary>
     /// The response from the BCMailPlusVaccineProofDelegate.
     /// </summary>
-    public class BCMailPlusResponse
+    public class BcMailPlusResponse
     {
         /// <summary>
         /// Gets or sets the unique id for the request to BC Mail Plus.

@@ -36,16 +36,16 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyConfigurationBinding()
         {
-            AESCryptoDelegateConfig expectedConfig = new()
+            AesCryptoDelegateConfig expectedConfig = new()
             {
                 KeySize = 256,
-                IV = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF")),
+                Iv = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF")),
             };
 
             Dictionary<string, string> myConfiguration = new()
             {
                 { "AESCrypto:KeySize", expectedConfig.KeySize.ToString(CultureInfo.CurrentCulture) },
-                { "AESCrypto:IV", Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF")) },
+                { "AESCrypto:Iv", Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF")) },
             };
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
@@ -63,9 +63,9 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyDefaultConfigurationBinding()
         {
-            AESCryptoDelegateConfig expectedConfig = new()
+            AesCryptoDelegateConfig expectedConfig = new()
             {
-                KeySize = AESCryptoDelegateConfig.DefaultKeySize,
+                KeySize = AesCryptoDelegateConfig.DefaultKeySize,
             };
 
             // test empty configuration
@@ -214,7 +214,7 @@ namespace HealthGateway.CommonTests.Delegates
         }
 
         /// <summary>
-        /// Encrypt - Happy Path (With IV).
+        /// Encrypt - Happy Path (With Iv).
         /// </summary>
         [Fact]
         public void VerifyEncryptionWithIV()
@@ -245,7 +245,7 @@ namespace HealthGateway.CommonTests.Delegates
         }
 
         /// <summary>
-        /// Decrypt - Happy Path (With IV).
+        /// Decrypt - Happy Path (With Iv).
         /// </summary>
         [Fact]
         public void VerifyDecryptionWithIV()

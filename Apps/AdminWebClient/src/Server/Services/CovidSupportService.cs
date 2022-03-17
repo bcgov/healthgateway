@@ -56,7 +56,7 @@ namespace HealthGateway.Admin.Services
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IVaccineProofDelegate vaccineProofDelegate;
-        private readonly BCMailPlusConfig bcmpConfig;
+        private readonly BcMailPlusConfig bcmpConfig;
         private readonly VaccineCardConfig vaccineCardConfig;
         private readonly IImmunizationAdminClient immunizationAdminClient;
         private readonly IAuthenticationDelegate authenticationDelegate;

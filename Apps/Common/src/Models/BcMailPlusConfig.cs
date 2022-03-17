@@ -21,7 +21,7 @@ namespace HealthGateway.Common.Models
     /// <summary>
     /// Defines the BC Mail Plus Configuration model.
     /// </summary>
-    public class BCMailPlusConfig
+    public class BcMailPlusConfig
     {
         /// <summary>
         /// Gets or sets the endpoint for the BCMailPlus integration.
