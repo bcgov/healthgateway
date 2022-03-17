@@ -32,7 +32,7 @@ public static class DashboardReducers
     {
         return state with
         {
-            RegisteredUsers = state.RegisteredUsers with { IsLoading = true},
+            RegisteredUsers = state.RegisteredUsers with { IsLoading = true },
         };
     }
 
@@ -43,7 +43,7 @@ public static class DashboardReducers
     /// <param name="action">The load success action.</param>
     /// <returns>The new registered user state.</returns>
     [ReducerMethod]
-    public static DashboardState ReduceRegisteredUsersSuccessAction(DashboardState state, DashboardActions.RegisteredUserSuccessAction action)
+    public static DashboardState ReduceLoadRegisteredUsersSuccessAction(DashboardState state, DashboardActions.RegisteredUsersSuccessAction action)
     {
         return state with
         {
@@ -140,7 +140,11 @@ public static class DashboardReducers
     {
         return state with
         {
-            Dependents = state.Dependents with { IsLoading = true },
+            Dependents = state.Dependents with {
+                Result = null,
+                IsLoading = true,
+                Error = null
+            },
         };
     }
 
@@ -302,7 +306,12 @@ public static class DashboardReducers
     {
         return state with
         {
-           RegisteredUsers = new(),
+           RegisteredUsers = state.RegisteredUsers with
+           {
+               Result = null,
+               IsLoading = false,
+               Error = null,
+           },
            LoggedInUsers = new(),
            Dependents = new(),
            RecurringUsers = new(),

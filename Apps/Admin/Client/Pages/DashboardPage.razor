@@ -1,0 +1,96 @@
+@page "/dashboard"
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<PageTitle>Admin Dashboard</PageTitle>
+<HgPageHeading>Dashboard</HgPageHeading>
+  
+<MudGrid>
+    <MudItem xs="6" lg="6">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            <MudText Align="Align.Center" Typo="Typo.subtitle1"  Style="font-weight:bold">Registered Users</MudText>
+            <MudText Align="Align.Center" Typo="Typo.subtitle1"  Style="font-weight:bold">@TotalRegisteredUsers</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="6" lg="6">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            <MudText Align="Align.Center" Typo="Typo.subtitle1"  Style="font-weight:bold">Dependents</MudText>
+            <MudText Align="Align.Center" Typo="Typo.subtitle1"  Style="font-weight:bold">@TotalDependents</MudText>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<MudGrid Class="my-3">
+    <MudItem xs="6" lg="3">
+        <MudDateRangePicker Mindate="@MinimumDateTime" MaxDate="@MaximumDateTime" @ref="SelectedDateRangePicker" Label="Select Date Range" @bind-DateRange="SelectedDateRange" Color="Color.Success" Style="font-weight:bold">
+            <PickerActions>
+                <MudButton Class="mr-auto align-self-start" OnClick="@(() => SelectedDateRangePicker.Clear())">Clear</MudButton>
+                <MudButton OnClick="@(() => SelectedDateRangePicker.Close(false))">Cancel</MudButton>
+                <MudButton Color="Color.Primary" OnClick="@(() => SelectedDateRangePicker.Close())">Ok</MudButton>
+            </PickerActions>
+        </MudDateRangePicker>
+    </MudItem>
+</MudGrid>
+
+ <MudGrid Class="my-3">
+    <MudItem xs="6" lg="3">
+        <HgTextField T="int" Label="Unique Days" Required="@true"  Style="font-weight:bold" @bind-Value="UniqueDays"/>
+    </MudItem>   
+</MudGrid>
+
+<MudGrid>
+     <MudItem xs="6" lg="6">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            <MudText Align="Align.Center" Typo="Typo.subtitle1"  Style="font-weight:bold">User Count</MudText>
+            <MudText Align="Align.Center" Typo="Typo.subtitle1"  Style="font-weight:bold">@TotalUniqueUsers</MudText>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<MudGrid Class="my-3">
+    <MudItem xs="6" lg="6">
+        <MudText Typo="Typo.subtitle1" Style="font-weight:bold">Rating Summary : 5.10 </MudText>
+        <MudItem Class="my-3">
+            <MudRating Disabled="true" SelectedValue="5" Size="Size.Small" /><MudProgressLinear Color="Color.Warning" Rounded="true" Size="Size.Small" Value="5" />
+        </MudItem>
+        <MudItem>
+            <MudRating Disabled="true" SelectedValue="4" Size="Size.Small" />
+        </MudItem>
+        <MudItem>
+            <MudRating SelectedValue="3" Size="Size.Small" />
+        </MudItem>
+        <MudItem>
+            <MudRating SelectedValue="2" Size="Size.Small" />
+        </MudItem>
+        <MudItem>
+            <MudRating SelectedValue="1" Size="Size.Small" />
+        </MudItem>
+    </MudItem>
+</MudGrid>
+
+<MudGrid Class="my-3">
+    <MudItem xs="12" lg="12">
+        <MudText Class="mt-3" Typo="Typo.subtitle1"  Style="font-weight:bold">Daily Data</MudText>
+        <MudTable Class="mt-3" Items="@Elements" HorizontalScrollbar="true" Striped="true" Dense="true">
+            <HeaderContent>
+                <MudTh>Date</MudTh>
+                <MudTh>Registered</MudTh>
+                <MudTh>Logged In</MudTh>
+                <MudTh>Dependents</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Date"></MudTd>
+                <MudTd DataLabel="Registered"></MudTd>
+                <MudTd DataLabel="Logged In"></MudTd>
+                <MudTd DataLabel="Dependents"></MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private IEnumerable<string> Elements = new List<string>();
+}

@@ -49,13 +49,13 @@ public static class DashboardActions
     /// <summary>
     /// The action representing a successful registered user action.
     /// </summary>
-    public class RegisteredUserSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>
+    public class RegisteredUsersSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RegisteredUserSuccessAction"/> class.
+        /// Initializes a new instance of the <see cref="RegisteredUsersSuccessAction"/> class.
         /// </summary>
         /// <param name="data">user data.</param>
-        public RegisteredUserSuccessAction(IDictionary<DateTime, int> data)
+        public RegisteredUsersSuccessAction(IDictionary<DateTime, int> data)
             : base(data)
         {
         }

@@ -24,6 +24,7 @@ using Microsoft.Extensions.Logging;
 using Refit;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 /// <summary>
@@ -58,12 +59,11 @@ public class DashboardEffects
     public async Task HandleLoadAction(DashboardActions.RegisteredUsersAction action, IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Loading registered users.");
-
         try
         {
             IDictionary<DateTime, int> response = await this.DashboardApi.GetRegisteredUserCount(action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Registered users retrieved successfully!");
-            dispatcher.Dispatch(new DashboardActions.RegisteredUserSuccessAction(response));
+            dispatcher.Dispatch(new DashboardActions.RegisteredUsersSuccessAction(response));
         }
         catch (ApiException ex)
         {
