@@ -36,8 +36,6 @@ namespace HealthGateway.Admin.Client.Pages
         [Inject]
         private IConfiguration Configuration { get; set; } = default!;
 
-        private bool PrototypeFeaturesEnabled => this.Configuration.GetSection("PrototypeFeaturesEnabled").Get<bool>();
-
         /// <inheritdoc />
         protected override async Task OnInitializedAsync()
         {

@@ -42,7 +42,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         private const string PHSAConfigSectionKey = "PHSA";
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly PHSAConfig phsaConfig;
+        private readonly PhsaConfig phsaConfig;
 
         private readonly IHttpContextAccessor httpContextAccessor;
 
@@ -62,7 +62,7 @@ namespace HealthGateway.Common.Delegates.PHSA
             this.logger = logger;
             this.httpClientService = httpClientService;
             this.httpContextAccessor = httpContextAccessor;
-            this.phsaConfig = new PHSAConfig();
+            this.phsaConfig = new PhsaConfig();
             configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
         }
 

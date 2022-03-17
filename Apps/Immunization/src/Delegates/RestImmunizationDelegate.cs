@@ -45,7 +45,7 @@ namespace HealthGateway.Immunization.Delegates
         private const string PHSAConfigSectionKey = "PHSA";
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly PHSAConfig phsaConfig;
+        private readonly PhsaConfig phsaConfig;
 
         /// <summary>
         /// Gets or sets the http context accessor.

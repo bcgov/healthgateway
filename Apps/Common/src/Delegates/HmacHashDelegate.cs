@@ -37,14 +37,14 @@ namespace HealthGateway.Common.Delegates
         /// <param name="configuration">The injected configuration provider.</param>
         public HmacHashDelegate(IConfiguration configuration)
         {
-            this.HashConfig = new HMACHashDelegateConfig();
+            this.HashConfig = new HmacHashDelegateConfig();
             configuration.Bind(ConfigKey, this.HashConfig);
         }
 
         /// <summary>
         /// Gets or sets the instance configuration.
         /// </summary>
-        public HMACHashDelegateConfig HashConfig { get; set; }
+        public HmacHashDelegateConfig HashConfig { get; set; }
 
         /// <summary>
         /// Generates the HMAC Hash object.
@@ -57,8 +57,8 @@ namespace HealthGateway.Common.Delegates
         public static HmacHash HMACHash(
             string? key,
             byte[] salt,
-            KeyDerivationPrf prf = HMACHashDelegateConfig.DefaultPseudoRandomFunction,
-            int iterations = HMACHashDelegateConfig.DefaultIterations)
+            KeyDerivationPrf prf = HmacHashDelegateConfig.DefaultPseudoRandomFunction,
+            int iterations = HmacHashDelegateConfig.DefaultIterations)
         {
             HmacHash retHash = new HmacHash()
             {
@@ -128,7 +128,7 @@ namespace HealthGateway.Common.Delegates
         /// </summary>
         /// <param name="saltLength">The length of the salt in bytes, defaults to 16 bytes.</param>
         /// <returns>A byte array containing the salt.</returns>
-        public static byte[] GenerateSalt(int saltLength = HMACHashDelegateConfig.DefaultSaltLength)
+        public static byte[] GenerateSalt(int saltLength = HmacHashDelegateConfig.DefaultSaltLength)
         {
             byte[] salt = new byte[saltLength];
             using RandomNumberGenerator rng = RandomNumberGenerator.Create();

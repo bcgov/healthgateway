@@ -1,7 +1,7 @@
 function initializeInactivityTimer(dotnetHelper) {
     var timer;
     document.onmousemove = resetTimer;
-    document.onkeypress = resetTimer;
+    document.onkeydown = resetTimer;
 
     function resetTimer() {
         clearTimeout(timer);

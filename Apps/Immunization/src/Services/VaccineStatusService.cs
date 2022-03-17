@@ -49,7 +49,7 @@ namespace HealthGateway.Immunization.Services
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger<VaccineStatusService> logger;
         private readonly ClientCredentialsTokenRequest tokenRequest;
-        private readonly PHSAConfig phsaConfig;
+        private readonly PhsaConfig phsaConfig;
         private readonly Uri tokenUri;
 
         /// <summary>
