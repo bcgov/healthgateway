@@ -17,6 +17,7 @@
 namespace HealthGateway.Admin.Client.Store.Dashboard;
 
 using Fluxor;
+using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -24,6 +25,30 @@ using System.Collections.Generic;
 /// State should be decorated with [FeatureState] for automatic discovery when services. AddFluxor is called.
 /// </summary>
 [FeatureState]
-public record DashboardRatingSummaryState : BaseRequestState<IDictionary<string, int>>
+public record DashboardState
 {
+    /// <summary>
+    /// Gets the registered users.
+    /// </summary>
+    public BaseRequestState<IDictionary<DateTime, int>> RegisteredUsers { get; init; } = new();
+
+    /// <summary>
+    /// Gets the logged in users.
+    /// </summary>
+    public BaseRequestState<IDictionary<DateTime, int>> LoggedInUsers { get; init; } = new();
+
+    /// <summary>
+    /// Gets the dependents.
+    /// </summary>
+    public BaseRequestState<IDictionary<DateTime, int>> Dependents { get; init; } = new();
+
+    /// <summary>
+    /// Gets the recurring users.
+    /// </summary>
+    public BaseRequestState<RecurringUser> RecurringUsers { get; init; } = new();
+
+    /// <summary>
+    /// Gets the rating summary.
+    /// </summary>
+    public BaseRequestState<IDictionary<string, int>> RatingSummary { get; init; } = new();
 }

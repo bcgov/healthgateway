@@ -55,7 +55,7 @@ public class DashboardEffects
     /// <param name="dispatcher">Dispatch the actions.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
-    public async Task HandleLoadAction(DashboardActions.LoadRegisteredUsersAction action, IDispatcher dispatcher)
+    public async Task HandleLoadAction(DashboardActions.RegisteredUsersAction action, IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Loading registered users.");
 
@@ -63,13 +63,13 @@ public class DashboardEffects
         {
             IDictionary<DateTime, int> response = await this.DashboardApi.GetRegisteredUserCount(action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Registered users retrieved successfully!");
-            dispatcher.Dispatch(new DashboardActions.LoadSuccessUserAction(response));
+            dispatcher.Dispatch(new DashboardActions.RegisteredUserSuccessAction(response));
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
             this.Logger.LogError($"Error retrieving registered users, reason: {error.Message}");
-            dispatcher.Dispatch(new DashboardActions.LoadFailUserAction(error));
+            dispatcher.Dispatch(new DashboardActions.RegisteredUserFailAction(error));
         }
     }
 
@@ -80,7 +80,7 @@ public class DashboardEffects
     /// <param name="dispatcher">Dispatch the actions.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
-    public async Task HandleLoadAction(DashboardActions.LoadLoggedInUsersAction action, IDispatcher dispatcher)
+    public async Task HandleLoadAction(DashboardActions.LoggedInUsersAction action, IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Loading logged in users.");
 
@@ -88,13 +88,13 @@ public class DashboardEffects
         {
             IDictionary<DateTime, int> response = await this.DashboardApi.GetLoggedinUsersCount(action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Logged in users retrieved successfully!");
-            dispatcher.Dispatch(new DashboardActions.LoadSuccessUserAction(response));
+            dispatcher.Dispatch(new DashboardActions.LoggedInSuccessAction(response));
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
             this.Logger.LogError($"Error retrieving logged in users, reason: {error.Message}");
-            dispatcher.Dispatch(new DashboardActions.LoadFailUserAction(error));
+            dispatcher.Dispatch(new DashboardActions.LoggedInUserFailAction(error));
         }
     }
 
@@ -105,7 +105,7 @@ public class DashboardEffects
     /// <param name="dispatcher">Dispatch the actions.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
-    public async Task HandleLoadAction(DashboardActions.LoadDependentsAction action, IDispatcher dispatcher)
+    public async Task HandleLoadAction(DashboardActions.DependentsAction action, IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Loading dependents.");
 
@@ -113,13 +113,13 @@ public class DashboardEffects
         {
             IDictionary<DateTime, int> response = await this.DashboardApi.GetDependentCount(action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Dependents retrieved successfully!");
-            dispatcher.Dispatch(new DashboardActions.LoadSuccessUserAction(response));
+            dispatcher.Dispatch(new DashboardActions.DependentsSuccessAction(response));
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
             this.Logger.LogError($"Error retrieving dependents, reason: {error.Message}");
-            dispatcher.Dispatch(new DashboardActions.LoadFailUserAction(error));
+            dispatcher.Dispatch(new DashboardActions.DependentFailAction(error));
         }
     }
 
@@ -130,7 +130,7 @@ public class DashboardEffects
     /// <param name="dispatcher">Dispatch the actions.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
-    public async Task HandleLoadAction(DashboardActions.LoadRecurringUsersAction action, IDispatcher dispatcher)
+    public async Task HandleLoadAction(DashboardActions.RecurringUsersAction action, IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Loading recurring users.");
 
@@ -139,13 +139,13 @@ public class DashboardEffects
             int response = await this.DashboardApi.GetRecurringUsersCount(action.Days, action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Recurring users retrieved successfully!");
             RecurringUser recurringUser = new() { TotalRecurringUsers = response };
-            dispatcher.Dispatch(new DashboardActions.LoadSuccessRecurringUserAction(recurringUser));
+            dispatcher.Dispatch(new DashboardActions.RecurringUsersSuccessAction(recurringUser));
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
             this.Logger.LogError($"Error retrieving recurring users, reason: {error.Message}");
-            dispatcher.Dispatch(new DashboardActions.LoadFailRecurringUserAction(error));
+            dispatcher.Dispatch(new DashboardActions.RecurringUsersFailAction(error));
         }
     }
 
@@ -156,7 +156,7 @@ public class DashboardEffects
     /// <param name="dispatcher">Dispatch the actions.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
-    public async Task HandleLoadAction(DashboardActions.LoadRatingSummaryAction action, IDispatcher dispatcher)
+    public async Task HandleLoadAction(DashboardActions.RatingSummaryAction action, IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Loading rating summary.");
 
@@ -164,13 +164,13 @@ public class DashboardEffects
         {
             IDictionary<string, int> response = await this.DashboardApi.GetRatingsSummary(action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Rating summary retrieved successfully!");
-            dispatcher.Dispatch(new DashboardActions.LoadSuccessRatingSummaryAction(response));
+            dispatcher.Dispatch(new DashboardActions.RatingSummarySuccessAction(response));
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
             this.Logger.LogError($"Error retrieving rating summary, reason: {error.Message}");
-            dispatcher.Dispatch(new DashboardActions.LoadFailRatingSummaryAction(error));
+            dispatcher.Dispatch(new DashboardActions.RatingSummaryFailAction(error));
         }
     }
 }
