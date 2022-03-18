@@ -515,6 +515,24 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                 :has-not-sure-option="true"
                             />
                         </Card>
+                        <Card
+                            title="10. Do you agree to the information being added to your CareConnect electronic 
+                            health record as part of the process to obtain COVID-19 treatment?*"
+                        >
+                            <ValidationProvider
+                                v-slot="{ errors }"
+                                rules="oneOf:Yes,No"
+                            >
+                                <OptionDetails
+                                    :value.sync="
+                                        covidTreatmentAssessmentRequest.consentToSendCC
+                                    "
+                                />
+                                <div class="error-message">
+                                    {{ errors[0] }}
+                                </div>
+                            </ValidationProvider>
+                        </Card>
                         <Card title="Notes">
                             <div class="pt-2">
                                 <v-textarea
