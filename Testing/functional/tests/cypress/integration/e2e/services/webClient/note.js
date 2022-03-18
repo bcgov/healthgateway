@@ -1,10 +1,10 @@
 describe("WebClient Note Service", () => {
     const BASEURL = "/v1/api/Note/";
-    const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
+    const HDID = "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA";
     const BOGUSHDID = "BOGUSHDID";
     beforeEach(() => {
         cy.getTokens(
-            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.invaliddoses.username"),
             Cypress.env("keycloak.password")
         ).as("tokens");
     });
