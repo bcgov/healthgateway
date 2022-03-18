@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Communications;
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using HealthGateway.Admin.Common.Models;
@@ -224,5 +225,25 @@ public static class CommunicationsActions
     /// </summary>
     public class ResetStateAction
     {
+    }
+
+    /// <summary>
+    /// The action that toggles whether a particular communication is expanded.
+    /// </summary>
+    public class ToggleIsExpandedAction
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ToggleIsExpandedAction"/> class.
+        /// </summary>
+        /// <param name="id">Represents the ID of the communication.</param>
+        public ToggleIsExpandedAction(Guid id)
+        {
+            this.Id = id;
+        }
+
+        /// <summary>
+        /// Gets or sets the ID of the communication.
+        /// </summary>
+        public Guid Id { get; set; }
     }
 }

@@ -22,7 +22,7 @@ namespace HealthGateway.Admin.Common.Models
     using HealthGateway.Database.Constants;
 
     /// <summary>
-    /// A system Communication.
+    /// A system communication.
     /// </summary>
     public class Communication
     {

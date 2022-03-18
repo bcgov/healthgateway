@@ -32,7 +32,7 @@ namespace HealthGateway.Admin.Client.Services
         /// <param name="communication">The model to add.</param>
         /// <returns>The wrapped model.</returns>
         [Post("/")]
-        Task<ApiResponse<RequestResult<Communication>>> Add(Communication communication);
+        Task<ApiResponse<RequestResult<Communication>>> Add([Body] Communication communication);
 
         /// <summary>
         /// Gets all communications.
@@ -47,7 +47,7 @@ namespace HealthGateway.Admin.Client.Services
         /// <param name="communication">The model to update.</param>
         /// <returns>The wrapped model.</returns>
         [Put("/")]
-        Task<ApiResponse<RequestResult<Communication>>> Update(Communication communication);
+        Task<ApiResponse<RequestResult<Communication>>> Update([Body] Communication communication);
 
         /// <summary>
         /// Deletes a communication.
@@ -55,6 +55,6 @@ namespace HealthGateway.Admin.Client.Services
         /// <param name="communication">The model to delete.</param>
         /// <returns>The wrapped model.</returns>
         [Delete("/")]
-        Task<ApiResponse<RequestResult<Communication>>> Delete(Communication communication);
+        Task<ApiResponse<RequestResult<Communication>>> Delete([Body] Communication communication);
     }
 }

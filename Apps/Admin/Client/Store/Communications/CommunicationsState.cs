@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Client.Store.Communications;
 
 using System.Collections.Generic;
 using Fluxor;
+using HealthGateway.Admin.Client.Models;
 using HealthGateway.Admin.Client.Store;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.ViewModels;
@@ -48,4 +49,24 @@ public record CommunicationsState
     /// Gets the request state for deletions.
     /// </summary>
     public BaseRequestState<RequestResult<Communication>> Delete { get; init; } = new();
+
+    /// <summary>
+    /// Gets the collection of data.
+    /// </summary>
+    public IEnumerable<ExtendedCommunication>? Data { get; init; }
+
+    /// <summary>
+    /// Gets the request error if available.
+    /// </summary>
+    public RequestError? Error { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether a request is loading.
+    /// </summary>
+    public bool IsLoading { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether the data has been loaded.
+    /// </summary>
+    public bool Loaded => this.Data != null;
 }
