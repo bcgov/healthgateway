@@ -82,7 +82,10 @@ export class FragmentedStorage implements Storage {
     }
 
     private getFragmentSection(fragment: string): string {
-        return fragment.substring(this.fragmentIndicator.length, fragment?.length);
+        return fragment.substring(
+            this.fragmentIndicator.length,
+            fragment?.length
+        );
     }
 
     private getFragmentNames(fragmentSection: string): string[] {
