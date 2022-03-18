@@ -4,9 +4,9 @@
     "private": true,
     "scripts": {
         "serve": "vue-cli-service serve",
-        "build": "vue-cli-service build",
-        "lint": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\" --max-warnings 0",
-        "lintfix": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\" --fix"
+        "build": "vue-cli-service lint --max-warnings 0 --no-fix && vue-cli-service build",        
+        "lint": "vue-cli-service lint \"**/*.{ts,vue}\" --max-warnings 0",
+        "lintfix": "vue-cli-service lint \"**/*.{ts,vue}\" --fix"
     },
     "dependencies": {
         "@fortawesome/fontawesome-svg-core": "^6.1.0",
