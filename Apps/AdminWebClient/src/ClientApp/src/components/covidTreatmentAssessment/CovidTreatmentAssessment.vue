@@ -82,7 +82,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         reports3DosesC19Vaccine: CovidTreatmentAssessmentOption.Unspecified,
         hasChronicConditionDiagnoses:
             CovidTreatmentAssessmentOption.Unspecified,
-        consentToSendCC: false,
+        consentToSendCC: CovidTreatmentAssessmentOption.Unspecified,
         agentComments: "",
         streetAddresses: [],
         provOrState: "",
@@ -125,7 +125,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
             reports3DosesC19Vaccine: CovidTreatmentAssessmentOption.Unspecified,
             hasChronicConditionDiagnoses:
                 CovidTreatmentAssessmentOption.Unspecified,
-            consentToSendCC: false,
+            consentToSendCC: CovidTreatmentAssessmentOption.Unspecified,
             agentComments: "",
             streetAddresses: [],
             provOrState: "",
