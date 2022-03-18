@@ -138,7 +138,7 @@ public class CovidAssessmentRequest
     /// </summary>
     [JsonPropertyName("consentToSendCC")]
     public CovidTherapyAssessmentOption ConsentToSendCC { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the agent comments.
     /// </summary>
