@@ -134,6 +134,12 @@ public class CovidAssessmentRequest
     public CovidTherapyAssessmentOption HasChronicConditionDiagnoses { get; set; }
 
     /// <summary>
+    /// Gets or sets the has consented to share information option.
+    /// </summary>
+    [JsonPropertyName("consentToSendCC")]
+    public CovidTherapyAssessmentOption consentToSendCC { get; set; }
+
+    /// <summary>
     /// Gets or sets the agent comments.
     /// </summary>
     [JsonPropertyName("agentComments")]
