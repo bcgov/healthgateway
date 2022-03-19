@@ -143,7 +143,7 @@ public static class DashboardReducers
             Dependents = state.Dependents with {
                 Result = null,
                 IsLoading = true,
-                Error = null
+                Error = null,
             },
         };
     }
@@ -252,7 +252,7 @@ public static class DashboardReducers
     {
         return state with
         {
-            RatingSummary = state.RatingSummary with { IsLoading = true},
+            RatingSummary = state.RatingSummary with { IsLoading = true },
         };
     }
 

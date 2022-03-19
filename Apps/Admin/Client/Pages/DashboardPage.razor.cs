@@ -45,15 +45,27 @@ public partial class DashboardPage : FluxorComponent
 
     private DateRange SelectedDateRange { get; set; } = new DateRange(DateTime.Now.AddDays(-30).Date, DateTime.Now.Date);
 
-    private int UniqueDays { get; set; } = 3;
+    private int CurrentUniqueDays { get; set; } = 3;
 
-    private List<string> UniquePeriodDates { get; set; } = new()
+    private int UniqueDays
     {
-        DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-        DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-    };
+        get
+        {
+            return this.CurrentUniqueDays;
+        }
 
-    private int TimeOffset { get; set; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMinutes * -1;
+        set
+        {
+            this.Dispatcher.Dispatch(new DashboardActions.RecurringUsersAction(value, this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.TimeOffset));
+            this.CurrentUniqueDays = value;
+        }
+    }
+
+    private List<string> UniquePeriodDates { get; set; } = PeriodDatesList();
+
+    private List<string> RatingPeriodDates { get; set; } = PeriodDatesList();
+
+    private int TimeOffset { get; set; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalMinutes;
 
     private BaseRequestState<IDictionary<DateTime, int>> RegisteredUsersResult => this.DashboardState.Value.RegisteredUsers ?? default!;
 
@@ -89,11 +101,74 @@ public partial class DashboardPage : FluxorComponent
             {
                 var results = from result in this.DependentsResult?.Result
                               select result.Value;
-
                 return results.Sum();
             }
 
             return 0;
+        }
+    }
+
+    private IEnumerable<DashboardDailyData> TableData
+    {
+        get
+        {
+            DateTime startDate = DateTime.Now.AddDays(-10);
+            DateTime endDate = DateTime.Now;
+            List<DashboardDailyData> results = new();
+
+            if (this.RegisteredUsersResult?.Result != null)
+            {
+                var registeredUsers = from result in this.RegisteredUsersResult?.Result
+                                        select result;
+
+                foreach (var user in registeredUsers)
+                {
+                    DashboardDailyData dashboardDailyData = new()
+                    {
+                        DailyDateTime = user.Key,
+                        TotalRegisteredUsers = user.Value,
+                    };
+
+                    results.Add(dashboardDailyData);
+                }
+            }
+
+            if (this.LoggedInUsersResult?.Result != null)
+            {
+                var loggedInUsers = from result in this.LoggedInUsersResult?.Result
+                                 select result;
+                foreach (var loggedInUser in loggedInUsers)
+                {
+                    DashboardDailyData dashboardDailyData = new()
+                    {
+                        DailyDateTime = loggedInUser.Key,
+                        TotalLoggedInUsers = loggedInUser.Value,
+                    };
+
+                    results.Add(dashboardDailyData);
+                }
+            }
+
+            if (this.DependentsResult?.Result != null)
+            {
+                var dependents = from result in this.DependentsResult?.Result
+                                select result;
+                foreach (var dependent in dependents)
+                {
+                    DashboardDailyData dashboardDailyData = new()
+                    {
+                        DailyDateTime = dependent.Key,
+                        TotalDependents = dependent.Value,
+                    };
+
+                    results.Add(dashboardDailyData);
+                }
+            }
+
+            var filteredResults = from result in results
+                                  where startDate <= result.DailyDateTime && result.DailyDateTime <= endDate
+                                  select result;
+            return filteredResults;
         }
     }
 
@@ -110,6 +185,85 @@ public partial class DashboardPage : FluxorComponent
         }
     }
 
+    private int RatingCount
+    {
+        get
+        {
+            if (this.RatingSummaryResult?.Result != null)
+            {
+                return (from result in this.RatingSummaryResult?.Result
+                        select result.Value).Count();
+            }
+
+            return 0;
+        }
+    }
+
+    private IDictionary<string, int>? RatingSummaryResults
+    {
+        get
+        {
+            if (this.RatingSummaryResult?.Result != null)
+            {
+                return this.RatingSummaryResult?.Result;
+            }
+
+            return new Dictionary<string, int>();
+        }
+    }
+
+    // Tuple<index,ProgressBarvalue,RatingTotal>
+    private List<Tuple<string, int, int>>? RatingSummary
+    {
+        get
+        {
+            var ratingSummary = this.RatingSummaryResults;
+            var results = new List<Tuple<string, int, int>>();
+            if (ratingSummary != null)
+            {
+               for (int i = 5; i >= 1; i--)
+                {
+                    string index = i.ToString(CultureInfo.InvariantCulture);
+                    int ratingTotal = (from value in ratingSummary
+                                      where value.Key == index
+                                      select value).Count();
+
+                    int ratingValue = (from value in ratingSummary
+                                       where value.Key == index
+                                       select value.Value).Sum();
+
+                    int item = this.RatingCount > 0 ? (ratingValue / this.RatingCount) * 100 : 0;
+                    results.Add(Tuple.Create(index, item, ratingTotal));
+                }
+            }
+
+            return results;
+        }
+    }
+
+    private string RatingAverage
+    {
+        get
+        {
+            if (this.RatingSummaryResult?.Result != null)
+            {
+                var totalCount = this.RatingCount;
+
+                var ratingSummary = this.RatingSummaryResults;
+                decimal totalScore = 0M;
+                if (ratingSummary != null)
+                {
+                    totalScore = (from value in ratingSummary
+                                 select Convert.ToInt32(value.Key, CultureInfo.InvariantCulture) * value.Value).Sum();
+
+                    return totalCount != 0 ? (totalScore / totalCount).ToString("0.00", CultureInfo.InvariantCulture) : "N/A";
+                }
+            }
+
+            return "N/A";
+        }
+    }
+
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
@@ -118,12 +272,34 @@ public partial class DashboardPage : FluxorComponent
         this.LoadDispatchActions();
     }
 
+    private static List<string> PeriodDatesList()
+    {
+        return new()
+        {
+            DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+            DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+        };
+    }
+
     private void LoadDispatchActions()
     {
         this.Dispatcher.Dispatch(new DashboardActions.RegisteredUsersAction(this.TimeOffset));
         this.Dispatcher.Dispatch(new DashboardActions.LoggedInUsersAction(this.TimeOffset));
         this.Dispatcher.Dispatch(new DashboardActions.DependentsAction(this.TimeOffset));
         this.Dispatcher.Dispatch(new DashboardActions.RecurringUsersAction(this.UniqueDays, this.UniquePeriodDates.FirstOrDefault(), this.UniquePeriodDates.LastOrDefault(), this.TimeOffset));
+        this.DispatchRatingSummaryAction();
+    }
+
+    private void DispatchRecurringUserActionWithDateChanged()
+    {
+        this.Dispatcher.Dispatch(new DashboardActions.RecurringUsersAction(this.UniqueDays, this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.TimeOffset));
+        this.SelectedDateRangePicker.Close();
+    }
+
+    private void DispatchRatingSummaryAction()
+    {
+        string endDate = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        this.Dispatcher.Dispatch(new DashboardActions.RatingSummaryAction(this.RatingPeriodDates.FirstOrDefault(), endDate, this.TimeOffset));
     }
 
     private void ResetDashboardState()

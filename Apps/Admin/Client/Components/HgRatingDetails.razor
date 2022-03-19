@@ -1,0 +1,16 @@
+@inherits HgComponentBase
+
+<MudGrid Class="my-1">
+        <MudItem xs="6" lg="2" Class="d-flex justify-end">
+            @for (int x = 0; x < IconIndexCount ; x++)
+            {
+               <MudIcon Icon="@Icons.Material.Filled.StarRate" Color="Color.Warning" Size="Size.Small" />
+            }
+        </MudItem>
+        <MudItem xs="6" lg="3" Class="mt-3">
+            <MudProgressLinear Value="@ProgressLinearValue" Min="0" Max="5" />
+        </MudItem>
+        <MudItem xs="6" lg="1" Class="d-flex justify-center">
+            <MudText Typo="Typo.subtitle1" Style="font-weight:bold">@RatingTotal</MudText>
+        </MudItem>
+</MudGrid>
