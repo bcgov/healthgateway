@@ -25,6 +25,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
+/// <summary>
+/// Backing logic for the RatingSummary component.
+/// </summary>
 public partial class RatingSummary : FluxorComponent
 {
     [Inject]
