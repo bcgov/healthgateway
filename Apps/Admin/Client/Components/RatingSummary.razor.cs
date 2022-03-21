@@ -48,21 +48,22 @@ public partial class RatingSummary : FluxorComponent
         }
     }
 
-    private List<(int Count, int Percentage)> RatingDetails
+    private List<(int? Count, int Percentage)> RatingDetails
     {
         get
         {
-            List<(int Count, int Percentage)>? details = new();
+            List<(int? Count, int Percentage)>? details = new();
             for (int stars = 1; stars <= 5; stars++)
             {
-                //int percentage = 0;
-                //int count = 0;
+                int percentage = 0;
+                int? count = null;
                 if (this.Ratings?.ContainsKey(stars) == true)
                 {
-                    int percentage = this.TotalRatings > 0 ? (100 * this.Ratings[stars] / this.TotalRatings) : 0;
-                    int count = this.Ratings[stars];
-                    details.Add((count, percentage));
+                    percentage = this.TotalRatings > 0 ? (100 * this.Ratings[stars] / this.TotalRatings) : 0;
+                    count = this.Ratings[stars];
                 }
+
+                details.Add((count, percentage));
             }
 
             return details;

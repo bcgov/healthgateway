@@ -31,6 +31,10 @@ using System.Linq;
 /// </summary>
 public partial class DashboardPage : FluxorComponent
 {
+    private static string StartDate => DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+    private static string EndDate => DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
     [Inject]
     private IDispatcher Dispatcher { get; set; } = default!;
 
@@ -100,47 +104,16 @@ public partial class DashboardPage : FluxorComponent
 
         set
         {
-            this.Dispatcher.Dispatch(new DashboardActions.RecurringUsersAction(value, this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.TimeOffset));
+            this.Dispatcher.Dispatch(new DashboardActions.LoadRecurringUsersAction(value, this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.TimeOffset));
             this.CurrentUniqueDays = value;
         }
     }
 
-    private List<string> UniquePeriodDates { get; set; } = PeriodDatesList();
-
-    private List<string> RatingPeriodDates { get; set; } = PeriodDatesList();
-
     private int TimeOffset { get; set; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalMinutes;
 
-    private int TotalRegisteredUsers
-    {
-        get
-        {
-            if (this.RegisteredUsersResult?.Result != null)
-            {
-                var results = from result in this.RegisteredUsersResult?.Result
-                              select result.Value;
+    private int TotalRegisteredUsers => this.RegisteredUsersResult?.Result?.Sum(r => r.Value) ?? 0;
 
-                return results.Sum();
-            }
-
-            return 0;
-        }
-    }
-
-    private int TotalDependents
-    {
-        get
-        {
-            if (this.DependentsResult?.Result != null)
-            {
-                var results = from result in this.DependentsResult?.Result
-                              select result.Value;
-                return results.Sum();
-            }
-
-            return 0;
-        }
-    }
+    private int TotalDependents => this.DependentsResult?.Result?.Sum(r => r.Value) ?? 0;
 
     private IEnumerable<DailyDataRow> TableData
     {
@@ -199,25 +172,11 @@ public partial class DashboardPage : FluxorComponent
                 }
             }
 
-            var filteredResults = from result in results
-                                  where startDate <= result.DailyDateTime && result.DailyDateTime <= endDate
-                                  select result;
-            return filteredResults;
+            return results.Where(r => startDate <= r.DailyDateTime && r.DailyDateTime <= endDate);
         }
     }
 
-    private int TotalUniqueUsers
-    {
-        get
-        {
-            if (this.RecurringUsersResult?.Result != null)
-            {
-               return this.RecurringUsersResult?.Result.TotalRecurringUsers ?? 0;
-            }
-
-            return 0;
-        }
-    }
+    private int TotalUniqueUsers => this.RecurringUsersResult?.Result?.TotalRecurringUsers ?? 0;
 
     /// <inheritdoc/>
     protected override void OnInitialized()
@@ -227,34 +186,25 @@ public partial class DashboardPage : FluxorComponent
         this.LoadDispatchActions();
     }
 
-    private static List<string> PeriodDatesList()
-    {
-        return new()
-        {
-            DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-            DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-        };
-    }
-
     private void LoadDispatchActions()
     {
-        this.Dispatcher.Dispatch(new DashboardActions.RegisteredUsersAction(this.TimeOffset));
-        this.Dispatcher.Dispatch(new DashboardActions.LoggedInUsersAction(this.TimeOffset));
-        this.Dispatcher.Dispatch(new DashboardActions.DependentsAction(this.TimeOffset));
-        this.Dispatcher.Dispatch(new DashboardActions.RecurringUsersAction(this.UniqueDays, this.UniquePeriodDates.FirstOrDefault(), this.UniquePeriodDates.LastOrDefault(), this.TimeOffset));
+        this.Dispatcher.Dispatch(new DashboardActions.LoadRegisteredUsersAction(this.TimeOffset));
+        this.Dispatcher.Dispatch(new DashboardActions.LoadLoggedInUsersAction(this.TimeOffset));
+        this.Dispatcher.Dispatch(new DashboardActions.LoadDependentsAction(this.TimeOffset));
+        this.Dispatcher.Dispatch(new DashboardActions.LoadRecurringUsersAction(this.UniqueDays, StartDate, EndDate, this.TimeOffset));
         this.DispatchRatingSummaryAction();
     }
 
     private void DispatchRecurringUserActionWithDateChanged()
     {
-        this.Dispatcher.Dispatch(new DashboardActions.RecurringUsersAction(this.UniqueDays, this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.TimeOffset));
+        this.Dispatcher.Dispatch(new DashboardActions.LoadRecurringUsersAction(this.UniqueDays, this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.TimeOffset));
         this.SelectedDateRangePicker.Close();
     }
 
     private void DispatchRatingSummaryAction()
     {
         string endDate = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-        this.Dispatcher.Dispatch(new DashboardActions.RatingSummaryAction(this.RatingPeriodDates.FirstOrDefault(), endDate, this.TimeOffset));
+        this.Dispatcher.Dispatch(new DashboardActions.LoadRatingSummaryAction(StartDate, endDate, this.TimeOffset));
     }
 
     private void ResetDashboardState()

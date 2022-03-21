@@ -27,7 +27,7 @@ public static class DashboardReducers
     /// </summary>
     /// <param name="state">The users state.</param>
     /// <returns>The new users  state.</returns>
-    [ReducerMethod(typeof(DashboardActions.RegisteredUsersAction))]
+    [ReducerMethod(typeof(DashboardActions.LoadRegisteredUsersAction))]
     public static DashboardState ReduceRegisteredUsersAction(DashboardState state)
     {
         return state with
@@ -63,7 +63,7 @@ public static class DashboardReducers
     /// <param name="action">The load fail action.</param>
     /// <returns>The new registered user state.</returns>
     [ReducerMethod]
-    public static DashboardState ReduceRegisteredUserFailAction(DashboardState state, DashboardActions.RegisteredUserFailAction action)
+    public static DashboardState ReduceRegisteredUserFailAction(DashboardState state, DashboardActions.RegisteredUsersFailAction action)
     {
         return state with
         {
@@ -81,7 +81,7 @@ public static class DashboardReducers
     /// </summary>
     /// <param name="state">The users state.</param>
     /// <returns>The new users  state.</returns>
-    [ReducerMethod(typeof(DashboardActions.LoggedInUsersAction))]
+    [ReducerMethod(typeof(DashboardActions.LoadLoggedInUsersAction))]
     public static DashboardState ReduceLoggedInUsersAction(DashboardState state)
     {
         return state with
@@ -97,7 +97,7 @@ public static class DashboardReducers
     /// <param name="action">The load success action.</param>
     /// <returns>The new logged in user state.</returns>
     [ReducerMethod]
-    public static DashboardState ReduceLoggedInUsersSuccessAction(DashboardState state, DashboardActions.LoggedInSuccessAction action)
+    public static DashboardState ReduceLoggedInUsersSuccessAction(DashboardState state, DashboardActions.LoggedInUsersSuccessAction action)
     {
         return state with
         {
@@ -117,7 +117,7 @@ public static class DashboardReducers
     /// <param name="action">The load success action.</param>
     /// <returns>The new logged in user state.</returns>
     [ReducerMethod]
-    public static DashboardState ReduceLoggedInUserFailAction(DashboardState state, DashboardActions.LoggedInUserFailAction action)
+    public static DashboardState ReduceLoggedInUserFailAction(DashboardState state, DashboardActions.LoggedInUsersFailAction action)
     {
         return state with
         {
@@ -135,7 +135,7 @@ public static class DashboardReducers
     /// </summary>
     /// <param name="state">The dependents state.</param>
     /// <returns>The new dependents  state.</returns>
-    [ReducerMethod(typeof(DashboardActions.DependentsAction))]
+    [ReducerMethod(typeof(DashboardActions.LoadDependentsAction))]
     public static DashboardState ReduceDependentsAction(DashboardState state)
     {
         return state with
@@ -175,7 +175,7 @@ public static class DashboardReducers
     /// <param name="action">The load success action.</param>
     /// <returns>The new dependents state.</returns>
     [ReducerMethod]
-    public static DashboardState ReduceDependentsFailAction(DashboardState state, DashboardActions.DependentFailAction action)
+    public static DashboardState ReduceDependentsFailAction(DashboardState state, DashboardActions.DependentsFailAction action)
     {
         return state with
         {
@@ -193,7 +193,7 @@ public static class DashboardReducers
     /// </summary>
     /// <param name="state">The recurring users state.</param>
     /// <returns>The new recurring users  state.</returns>
-    [ReducerMethod(typeof(DashboardActions.RecurringUsersAction))]
+    [ReducerMethod(typeof(DashboardActions.LoadRecurringUsersAction))]
     public static DashboardState ReduceRecurringUsersAction(DashboardState state)
     {
         return state with
@@ -247,7 +247,7 @@ public static class DashboardReducers
     /// </summary>
     /// <param name="state">The rating summary state.</param>
     /// <returns>The new rating summary  state.</returns>
-    [ReducerMethod(typeof(DashboardActions.RatingSummaryAction))]
+    [ReducerMethod(typeof(DashboardActions.LoadRatingSummaryAction))]
     public static DashboardState ReduceRatingSummaryAction(DashboardState state)
     {
         return state with

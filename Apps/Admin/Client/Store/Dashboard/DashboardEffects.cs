@@ -56,7 +56,7 @@ public class DashboardEffects
     /// <param name="dispatcher">Dispatch the actions.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
-    public async Task HandleLoadAction(DashboardActions.RegisteredUsersAction action, IDispatcher dispatcher)
+    public async Task HandleLoadAction(DashboardActions.LoadRegisteredUsersAction action, IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Loading registered users.");
         try
@@ -69,7 +69,7 @@ public class DashboardEffects
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
             this.Logger.LogError($"Error retrieving registered users, reason: {error.Message}");
-            dispatcher.Dispatch(new DashboardActions.RegisteredUserFailAction(error));
+            dispatcher.Dispatch(new DashboardActions.RegisteredUsersFailAction(error));
         }
     }
 
@@ -80,7 +80,7 @@ public class DashboardEffects
     /// <param name="dispatcher">Dispatch the actions.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
-    public async Task HandleLoadAction(DashboardActions.LoggedInUsersAction action, IDispatcher dispatcher)
+    public async Task HandleLoadAction(DashboardActions.LoadLoggedInUsersAction action, IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Loading logged in users.");
 
@@ -88,13 +88,13 @@ public class DashboardEffects
         {
             IDictionary<DateTime, int> response = await this.DashboardApi.GetLoggedinUsersCount(action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Logged in users retrieved successfully!");
-            dispatcher.Dispatch(new DashboardActions.LoggedInSuccessAction(response));
+            dispatcher.Dispatch(new DashboardActions.LoggedInUsersSuccessAction(response));
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
             this.Logger.LogError($"Error retrieving logged in users, reason: {error.Message}");
-            dispatcher.Dispatch(new DashboardActions.LoggedInUserFailAction(error));
+            dispatcher.Dispatch(new DashboardActions.LoggedInUsersFailAction(error));
         }
     }
 
@@ -105,7 +105,7 @@ public class DashboardEffects
     /// <param name="dispatcher">Dispatch the actions.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
-    public async Task HandleLoadAction(DashboardActions.DependentsAction action, IDispatcher dispatcher)
+    public async Task HandleLoadAction(DashboardActions.LoadDependentsAction action, IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Loading dependents.");
 
@@ -119,7 +119,7 @@ public class DashboardEffects
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
             this.Logger.LogError($"Error retrieving dependents, reason: {error.Message}");
-            dispatcher.Dispatch(new DashboardActions.DependentFailAction(error));
+            dispatcher.Dispatch(new DashboardActions.DependentsFailAction(error));
         }
     }
 
@@ -130,7 +130,7 @@ public class DashboardEffects
     /// <param name="dispatcher">Dispatch the actions.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
-    public async Task HandleLoadAction(DashboardActions.RecurringUsersAction action, IDispatcher dispatcher)
+    public async Task HandleLoadAction(DashboardActions.LoadRecurringUsersAction action, IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Loading recurring users.");
 
@@ -156,7 +156,7 @@ public class DashboardEffects
     /// <param name="dispatcher">Dispatch the actions.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
-    public async Task HandleLoadAction(DashboardActions.RatingSummaryAction action, IDispatcher dispatcher)
+    public async Task HandleLoadAction(DashboardActions.LoadRatingSummaryAction action, IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Loading rating summary.");
 

@@ -29,13 +29,13 @@ public static class DashboardActions
     /// <summary>
     /// The action representing the initiation of registered users load action.
     /// </summary>
-    public class RegisteredUsersAction
+    public class LoadRegisteredUsersAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RegisteredUsersAction"/> class.
+        /// Initializes a new instance of the <see cref="LoadRegisteredUsersAction"/> class.
         /// </summary>
         /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-        public RegisteredUsersAction(int timeOffset)
+        public LoadRegisteredUsersAction(int timeOffset)
         {
             this.TimeOffset = timeOffset;
         }
@@ -64,13 +64,13 @@ public static class DashboardActions
     /// <summary>
     /// The action representing a failed registered user action.
     /// </summary>
-    public class RegisteredUserFailAction : BaseFailAction
+    public class RegisteredUsersFailAction : BaseFailAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RegisteredUserFailAction"/> class.
+        /// Initializes a new instance of the <see cref="RegisteredUsersFailAction"/> class.
         /// </summary>
         /// <param name="error">The request error.</param>
-        public RegisteredUserFailAction(RequestError error)
+        public RegisteredUsersFailAction(RequestError error)
             : base(error)
         {
         }
@@ -79,13 +79,13 @@ public static class DashboardActions
     /// <summary>
     /// The action representing the initiation of logged in users load action.
     /// </summary>
-    public class LoggedInUsersAction
+    public class LoadLoggedInUsersAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoggedInUsersAction"/> class.
+        /// Initializes a new instance of the <see cref="LoadLoggedInUsersAction"/> class.
         /// </summary>
         /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-        public LoggedInUsersAction(int timeOffset)
+        public LoadLoggedInUsersAction(int timeOffset)
         {
             this.TimeOffset = timeOffset;
         }
@@ -99,13 +99,13 @@ public static class DashboardActions
     /// <summary>
     /// The action representing a successful logged in user action.
     /// </summary>
-    public class LoggedInSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>
+    public class LoggedInUsersSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoggedInSuccessAction"/> class.
+        /// Initializes a new instance of the <see cref="LoggedInUsersSuccessAction"/> class.
         /// </summary>
         /// <param name="data">user data.</param>
-        public LoggedInSuccessAction(IDictionary<DateTime, int> data)
+        public LoggedInUsersSuccessAction(IDictionary<DateTime, int> data)
             : base(data)
         {
         }
@@ -114,13 +114,13 @@ public static class DashboardActions
     /// <summary>
     /// The action representing a failed logged in user action.
     /// </summary>
-    public class LoggedInUserFailAction : BaseFailAction
+    public class LoggedInUsersFailAction : BaseFailAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoggedInUserFailAction"/> class.
+        /// Initializes a new instance of the <see cref="LoggedInUsersFailAction"/> class.
         /// </summary>
         /// <param name="error">The request error.</param>
-        public LoggedInUserFailAction(RequestError error)
+        public LoggedInUsersFailAction(RequestError error)
             : base(error)
         {
         }
@@ -129,13 +129,13 @@ public static class DashboardActions
     /// <summary>
     /// The action representing the initiation of dependents load action.
     /// </summary>
-    public class DependentsAction
+    public class LoadDependentsAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DependentsAction"/> class.
+        /// Initializes a new instance of the <see cref="LoadDependentsAction"/> class.
         /// </summary>
         /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-        public DependentsAction(int timeOffset)
+        public LoadDependentsAction(int timeOffset)
         {
             this.TimeOffset = timeOffset;
         }
@@ -164,13 +164,13 @@ public static class DashboardActions
     /// <summary>
     /// The action representing a failed dependent action.
     /// </summary>
-    public class DependentFailAction : BaseFailAction
+    public class DependentsFailAction : BaseFailAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DependentFailAction"/> class.
+        /// Initializes a new instance of the <see cref="DependentsFailAction"/> class.
         /// </summary>
         /// <param name="error">The request error.</param>
-        public DependentFailAction(RequestError error)
+        public DependentsFailAction(RequestError error)
             : base(error)
         {
         }
@@ -179,16 +179,16 @@ public static class DashboardActions
     /// <summary>
     /// The action representing the initiation of recurring users load action.
     /// </summary>
-    public class RecurringUsersAction
+    public class LoadRecurringUsersAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RecurringUsersAction"/> class.
+        /// Initializes a new instance of the <see cref="LoadRecurringUsersAction"/> class.
         /// </summary>
         /// <param name="days">The number of unique days for evaluating a user.</param>
         /// <param name="startPeriod">The period start over which to evaluate the user.</param>
         /// <param name="endPeriod">The period end over which to evaluate the user.</param>
         /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-        public RecurringUsersAction(int days, string startPeriod, string endPeriod, int timeOffset)
+        public LoadRecurringUsersAction(int days, string startPeriod, string endPeriod, int timeOffset)
         {
             this.Days = days;
             this.StartPeriod = startPeriod;
@@ -250,15 +250,15 @@ public static class DashboardActions
     /// <summary>
     /// The action representing the initiation of rating summary load action.
     /// </summary>
-    public class RatingSummaryAction
+    public class LoadRatingSummaryAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RatingSummaryAction"/> class.
+        /// Initializes a new instance of the <see cref="LoadRatingSummaryAction"/> class.
         /// </summary>
         /// <param name="startPeriod">The period start over which to evaluate the user.</param>
         /// <param name="endPeriod">The period end over which to evaluate the user.</param>
         /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-        public RatingSummaryAction(string startPeriod, string endPeriod, int timeOffset)
+        public LoadRatingSummaryAction(string startPeriod, string endPeriod, int timeOffset)
         {
             this.StartPeriod = startPeriod;
             this.EndPeriod = endPeriod;
