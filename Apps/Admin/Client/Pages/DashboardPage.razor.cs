@@ -45,8 +45,6 @@ public partial class DashboardPage : FluxorComponent
 
     private BaseRequestState<RecurringUser> RecurringUsersResult => this.DashboardState.Value.RecurringUsers ?? default!;
 
-    private BaseRequestState<IDictionary<string, int>> RatingSummaryResult => this.DashboardState.Value.RatingSummary ?? default!;
-
     private MudDateRangePicker SelectedDateRangePicker { get; set; } = default!;
 
     private DateTime MinimumDateTime { get; set; } = new DateTime(2019, 06, 1);
@@ -144,13 +142,13 @@ public partial class DashboardPage : FluxorComponent
         }
     }
 
-    private IEnumerable<DashboardDailyData> TableData
+    private IEnumerable<DailyDataRow> TableData
     {
         get
         {
             DateTime startDate = DateTime.Now.AddDays(-10);
             DateTime endDate = DateTime.Now;
-            List<DashboardDailyData> results = new();
+            List<DailyDataRow> results = new();
 
             if (this.RegisteredUsersResult?.Result != null)
             {
@@ -159,7 +157,7 @@ public partial class DashboardPage : FluxorComponent
 
                 foreach (var user in registeredUsers)
                 {
-                    DashboardDailyData dashboardDailyData = new()
+                    DailyDataRow dashboardDailyData = new()
                     {
                         DailyDateTime = user.Key,
                         TotalRegisteredUsers = user.Value,
@@ -175,7 +173,7 @@ public partial class DashboardPage : FluxorComponent
                                  select result;
                 foreach (var loggedInUser in loggedInUsers)
                 {
-                    DashboardDailyData dashboardDailyData = new()
+                    DailyDataRow dashboardDailyData = new()
                     {
                         DailyDateTime = loggedInUser.Key,
                         TotalLoggedInUsers = loggedInUser.Value,
@@ -191,7 +189,7 @@ public partial class DashboardPage : FluxorComponent
                                 select result;
                 foreach (var dependent in dependents)
                 {
-                    DashboardDailyData dashboardDailyData = new()
+                    DailyDataRow dashboardDailyData = new()
                     {
                         DailyDateTime = dependent.Key,
                         TotalDependents = dependent.Value,
@@ -218,85 +216,6 @@ public partial class DashboardPage : FluxorComponent
             }
 
             return 0;
-        }
-    }
-
-    private int RatingCount
-    {
-        get
-        {
-            if (this.RatingSummaryResult?.Result != null)
-            {
-                return (from result in this.RatingSummaryResult?.Result
-                        select result.Value).Count();
-            }
-
-            return 0;
-        }
-    }
-
-    private IDictionary<string, int>? RatingSummaryResults
-    {
-        get
-        {
-            if (this.RatingSummaryResult?.Result != null)
-            {
-                return this.RatingSummaryResult?.Result;
-            }
-
-            return new Dictionary<string, int>();
-        }
-    }
-
-    // Tuple<index,ProgressBarvalue,RatingTotal>
-    private List<Tuple<string, int, int>>? RatingSummary
-    {
-        get
-        {
-            var ratingSummary = this.RatingSummaryResults;
-            var results = new List<Tuple<string, int, int>>();
-            if (ratingSummary != null)
-            {
-               for (int i = 5; i >= 1; i--)
-                {
-                    string index = i.ToString(CultureInfo.InvariantCulture);
-                    int ratingTotal = (from value in ratingSummary
-                                      where value.Key == index
-                                      select value).Count();
-
-                    int ratingValue = (from value in ratingSummary
-                                       where value.Key == index
-                                       select value.Value).Sum();
-
-                    int item = this.RatingCount > 0 ? (ratingValue / this.RatingCount) * 100 : 0;
-                    results.Add(Tuple.Create(index, item, ratingTotal));
-                }
-            }
-
-            return results;
-        }
-    }
-
-    private string RatingAverage
-    {
-        get
-        {
-            if (this.RatingSummaryResult?.Result != null)
-            {
-                var totalCount = this.RatingCount;
-
-                var ratingSummary = this.RatingSummaryResults;
-                decimal totalScore = 0M;
-                if (ratingSummary != null)
-                {
-                    totalScore = (from value in ratingSummary
-                                 select Convert.ToInt32(value.Key, CultureInfo.InvariantCulture) * value.Value).Sum();
-
-                    return totalCount != 0 ? (totalScore / totalCount).ToString("0.00", CultureInfo.InvariantCulture) : "N/A";
-                }
-            }
-
-            return "N/A";
         }
     }
 
@@ -341,5 +260,28 @@ public partial class DashboardPage : FluxorComponent
     private void ResetDashboardState()
     {
         this.Dispatcher.Dispatch(new DashboardActions.ResetStateAction());
+    }
+
+    private sealed record DailyDataRow
+    {
+        /// <summary>
+        /// Gets the dashboard daily datetime.
+        /// </summary>
+        public DateTime DailyDateTime { get; init; }
+
+        /// <summary>
+        /// Gets or sets the total registered users.
+        /// </summary>
+        public int TotalRegisteredUsers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the total logged in users.
+        /// </summary>
+        public int TotalLoggedInUsers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the total dependents.
+        /// </summary>
+        public int TotalDependents { get; set; }
     }
 }

@@ -53,23 +53,7 @@
 </MudGrid>
 
 <MudText Class="my-3" Typo="Typo.subtitle1" Style="font-weight:bold">Rating Summary</MudText>
-<MudGrid>
-    <MudItem xs="1" lg="1" Class="d-flex justify-center justify-center  align-center">
-         <MudText Class="my-3" Typo="Typo.h4" Style="font-weight:bold">@RatingAverage</MudText>
-    </MudItem>
-    <MudItem xs="6" lg="10">
-        <HgRatingDetails IconIndex="5"  RatingSummary="@RatingSummary"/>
-        <HgRatingDetails IconIndex="4"  RatingSummary="@RatingSummary"/>
-        <HgRatingDetails IconIndex="3"  RatingSummary="@RatingSummary"/>
-        <HgRatingDetails IconIndex="2"  RatingSummary="@RatingSummary"/>
-        <HgRatingDetails IconIndex="1"  RatingSummary="@RatingSummary"/>
-    </MudItem>
-</MudGrid>
-<MudGrid>
-    <MudItem  xs="6" lg="6">
-        <MudText Class="my-3 d-flex justify-end" Typo="Typo.subtitle2">@RatingCount Ratings</MudText>
-    </MudItem>
-</MudGrid>
+<RatingSummary />
 
 <MudGrid>
     <MudItem xs="12" lg="12">
