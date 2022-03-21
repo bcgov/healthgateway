@@ -37,6 +37,16 @@ public partial class DashboardPage : FluxorComponent
     [Inject]
     private IState<DashboardState> DashboardState { get; set; } = default!;
 
+    private BaseRequestState<IDictionary<DateTime, int>> RegisteredUsersResult => this.DashboardState.Value.RegisteredUsers ?? default!;
+
+    private BaseRequestState<IDictionary<DateTime, int>> LoggedInUsersResult => this.DashboardState.Value.LoggedInUsers ?? default!;
+
+    private BaseRequestState<IDictionary<DateTime, int>> DependentsResult => this.DashboardState.Value.Dependents ?? default!;
+
+    private BaseRequestState<RecurringUser> RecurringUsersResult => this.DashboardState.Value.RecurringUsers ?? default!;
+
+    private BaseRequestState<IDictionary<string, int>> RatingSummaryResult => this.DashboardState.Value.RatingSummary ?? default!;
+
     private MudDateRangePicker SelectedDateRangePicker { get; set; } = default!;
 
     private DateTime MinimumDateTime { get; set; } = new DateTime(2019, 06, 1);
@@ -46,6 +56,72 @@ public partial class DashboardPage : FluxorComponent
     private DateRange SelectedDateRange { get; set; } = new DateRange(DateTime.Now.AddDays(-30).Date, DateTime.Now.Date);
 
     private int CurrentUniqueDays { get; set; } = 3;
+
+    private bool RegisteredUsersHasError => this.DashboardState.Value.RegisteredUsers.Error != null && this.DashboardState.Value.RegisteredUsers.Error.Message.Length > 0;
+
+    private string? RegisteredUsersErrorMessage => this.RegisteredUsersHasError ? this.DashboardState?.Value.RegisteredUsers?.Error?.Message : string.Empty;
+
+    private bool LoggedInUsersHasError => this.DashboardState.Value.LoggedInUsers.Error != null && this.DashboardState.Value.LoggedInUsers.Error.Message.Length > 0;
+
+    private string? LoggedInUsersErrorMessage => this.LoggedInUsersHasError ? this.DashboardState?.Value.LoggedInUsers?.Error?.Message : string.Empty;
+
+    private bool DependentsHasError => this.DashboardState.Value.Dependents.Error != null && this.DashboardState.Value.Dependents.Error.Message.Length > 0;
+
+    private string? DependentsErrorMessage => this.DependentsHasError ? this.DashboardState?.Value.Dependents?.Error?.Message : string.Empty;
+
+    private bool RecurringUsersHasError => this.DashboardState.Value.RecurringUsers.Error != null && this.DashboardState.Value.RecurringUsers.Error.Message.Length > 0;
+
+    private string? RecurringUsersErrorMessage => this.RecurringUsersHasError ? this.DashboardState?.Value.RecurringUsers?.Error?.Message : string.Empty;
+
+    private bool RatingSummaryHasError => this.DashboardState.Value.RatingSummary.Error != null && this.DashboardState.Value.RatingSummary.Error.Message.Length > 0;
+
+    private string? RatingSummaryErrorMessage => this.RatingSummaryHasError ? this.DashboardState?.Value.RatingSummary?.Error?.Message : string.Empty;
+
+    private bool HasError
+    {
+        get
+        {
+            return this.RegisteredUsersHasError ||
+                this.LoggedInUsersHasError ||
+                this.DependentsHasError ||
+                this.RecurringUsersHasError ||
+                this.RatingSummaryHasError;
+        }
+    }
+
+    private string ErrorMessage
+    {
+        get
+        {
+            string? errorMessage = string.Empty;
+            if (this.RegisteredUsersHasError)
+            {
+                errorMessage += this.RegisteredUsersErrorMessage + ErrorMessageHasNewLine(errorMessage);
+            }
+
+            if (this.LoggedInUsersHasError)
+            {
+                errorMessage += this.LoggedInUsersErrorMessage + ErrorMessageHasNewLine(errorMessage);
+            }
+
+            if (this.DependentsHasError)
+            {
+                errorMessage += this.DependentsErrorMessage + ErrorMessageHasNewLine(errorMessage);
+            }
+
+            if (this.RecurringUsersHasError)
+            {
+                errorMessage += this.RecurringUsersErrorMessage + ErrorMessageHasNewLine(errorMessage);
+            }
+
+            if (this.RecurringUsersHasError)
+            {
+                errorMessage += this.RatingSummaryErrorMessage + ErrorMessageHasNewLine(errorMessage);
+            }
+
+            return errorMessage ?? string.Empty;
+        }
+    }
 
     private int UniqueDays
     {
@@ -66,16 +142,6 @@ public partial class DashboardPage : FluxorComponent
     private List<string> RatingPeriodDates { get; set; } = PeriodDatesList();
 
     private int TimeOffset { get; set; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalMinutes;
-
-    private BaseRequestState<IDictionary<DateTime, int>> RegisteredUsersResult => this.DashboardState.Value.RegisteredUsers ?? default!;
-
-    private BaseRequestState<IDictionary<DateTime, int>> LoggedInUsersResult => this.DashboardState.Value.LoggedInUsers ?? default!;
-
-    private BaseRequestState<IDictionary<DateTime, int>> DependentsResult => this.DashboardState.Value.Dependents ?? default!;
-
-    private BaseRequestState<RecurringUser> RecurringUsersResult => this.DashboardState.Value.RecurringUsers ?? default!;
-
-    private BaseRequestState<IDictionary<string, int>> RatingSummaryResult => this.DashboardState.Value.RatingSummary ?? default!;
 
     private int TotalRegisteredUsers
     {
@@ -279,6 +345,11 @@ public partial class DashboardPage : FluxorComponent
             DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
             DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
         };
+    }
+
+    private static bool ErrorMessageHasNewLine(string errorMessage)
+    {
+        return errorMessage != null && errorMessage.Length > 0;
     }
 
     private void LoadDispatchActions()

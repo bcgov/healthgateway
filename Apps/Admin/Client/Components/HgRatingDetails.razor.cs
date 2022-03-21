@@ -86,6 +86,8 @@ public partial class HgRatingDetails : HgComponentBase
     /// </summary>
     [Parameter]
 #pragma warning disable CA2227 // Collection properties should be read only
+#pragma warning disable CA1002 // Do not expose generic lists
     public List<Tuple<string, int, int>>? RatingSummary { get; set; }
+#pragma warning restore CA1002 // Do not expose generic lists
 #pragma warning restore CA2227 // Collection properties should be read only
 }

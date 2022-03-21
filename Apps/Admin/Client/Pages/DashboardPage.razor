@@ -1,9 +1,14 @@
 @page "/dashboard"
+@using HealthGateway.Admin.Client.Store.Dashboard
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Admin Dashboard</PageTitle>
 <HgPageHeading>Dashboard</HgPageHeading>
+
+<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasError" TResetAction="DashboardActions.ResetStateAction">
+  @ErrorMessage
+</HgBannerFeedback>
 
 <MudGrid>
     <MudItem xs="6" lg="6">
