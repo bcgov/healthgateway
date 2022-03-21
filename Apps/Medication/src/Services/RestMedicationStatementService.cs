@@ -15,9 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Services
 {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Globalization;
     using System.Linq;
     using System.Net;
     using System.Text.Json;
@@ -84,7 +84,7 @@ namespace HealthGateway.Medication.Services
                 this.logger.LogDebug("Getting history of medication statements");
                 this.logger.LogTrace($"User hdid: {hdid}");
 
-                protectiveWord = protectiveWord?.ToUpper();
+                protectiveWord = protectiveWord?.ToUpper(CultureInfo.InvariantCulture);
                 RequestResult<IList<MedicationStatementHistory>> result = new RequestResult<IList<MedicationStatementHistory>>();
                 (bool okProtectiveWord, string? protectiveWordValidationMessage) = ValidateProtectiveWord(protectiveWord);
                 if (okProtectiveWord)
