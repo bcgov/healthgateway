@@ -2,7 +2,7 @@ version: "3.5"
 services:
   gatewaydb:
     container_name: gatewaydb
-    image: postgres:latest
+    image: postgres:12
     command: postgres -c 'max_connections=500'
     ports:
       - "5432:5432"

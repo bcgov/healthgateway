@@ -139,7 +139,7 @@ namespace HealthGateway.Medication.Services
             }
         }
 
-        private static (bool, string?) ValidateProtectiveWord(string? protectiveWord)
+        private static (bool Valid, string? ValidationMessage) ValidateProtectiveWord(string? protectiveWord)
         {
             bool valid = true;
             string? errMsg = null;
