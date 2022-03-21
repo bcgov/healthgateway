@@ -15,9 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Services
 {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Globalization;
     using System.Linq;
     using System.Net;
     using System.Text.Json;
@@ -84,9 +84,9 @@ namespace HealthGateway.Medication.Services
                 this.logger.LogDebug("Getting history of medication statements");
                 this.logger.LogTrace($"User hdid: {hdid}");
 
+                protectiveWord = protectiveWord?.ToUpper(CultureInfo.InvariantCulture);
                 RequestResult<IList<MedicationStatementHistory>> result = new RequestResult<IList<MedicationStatementHistory>>();
-                var validationResult = ValidateProtectiveWord(protectiveWord);
-                bool okProtectiveWord = validationResult.Item1;
+                (bool okProtectiveWord, string? protectiveWordValidationMessage) = ValidateProtectiveWord(protectiveWord);
                 if (okProtectiveWord)
                 {
                     // Retrieve the phn
@@ -131,7 +131,7 @@ namespace HealthGateway.Medication.Services
                 {
                     this.logger.LogInformation($"Invalid protective word. {hdid}");
                     result.ResultStatus = ResultType.ActionRequired;
-                    result.ResultError = ErrorTranslator.ActionRequired(validationResult.Item2, ActionType.Protected);
+                    result.ResultError = ErrorTranslator.ActionRequired(protectiveWordValidationMessage, ActionType.Protected);
                 }
 
                 this.logger.LogDebug($"Finished getting history of medication statements");
@@ -139,7 +139,7 @@ namespace HealthGateway.Medication.Services
             }
         }
 
-        private static Tuple<bool, string?> ValidateProtectiveWord(string? protectiveWord)
+        private static (bool Valid, string? ValidationMessage) ValidateProtectiveWord(string? protectiveWord)
         {
             bool valid = true;
             string? errMsg = null;
@@ -169,7 +169,7 @@ namespace HealthGateway.Medication.Services
                 }
             }
 
-            return Tuple.Create(valid, errMsg);
+            return (valid, errMsg);
         }
 
         private void PopulateMedicationSummary(List<MedicationSummary> medSummaries)
