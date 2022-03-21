@@ -6,8 +6,8 @@
 <PageTitle>Admin Dashboard</PageTitle>
 <HgPageHeading>Dashboard</HgPageHeading>
 
-<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasError" TResetAction="DashboardActions.ResetStateAction">
-  @ErrorMessage
+<HgBannerFeedback Severity="Severity.Error" IsEnabled="@HasError" TResetAction="DashboardActions.ResetStateAction">
+  @ErrorMessage 
 </HgBannerFeedback>
 
 <MudGrid>

@@ -319,7 +319,6 @@ public partial class DashboardPage : FluxorComponent
 
     private void LoadDispatchActions()
     {
-        this.ResetDashboardState();
         this.Dispatcher.Dispatch(new DashboardActions.RegisteredUsersAction(this.TimeOffset));
         this.Dispatcher.Dispatch(new DashboardActions.LoggedInUsersAction(this.TimeOffset));
         this.Dispatcher.Dispatch(new DashboardActions.DependentsAction(this.TimeOffset));
