@@ -243,6 +243,24 @@ public static class DashboardReducers
     }
 
     /// <summary>
+    /// The reducer for the reset state action.
+    /// </summary>
+    /// <param name="state">The dashboard state.</param>
+    /// <returns>The default state.</returns>
+    [ReducerMethod(typeof(DashboardActions.ResetRecurringUsersStateAction))]
+    public static DashboardState ResetRecurringUsersStateAction(DashboardState state)
+    {
+        return state with
+        {
+            RecurringUsers = state.RecurringUsers with {
+                Result = null,
+                IsLoading = false,
+                Error = null,
+            },
+        };
+    }
+
+    /// <summary>
     /// The Reducer for the load rating users action.
     /// </summary>
     /// <param name="state">The rating summary state.</param>
@@ -277,26 +295,6 @@ public static class DashboardReducers
     }
 
     /// <summary>
-    /// The Reducer for the load fail action.
-    /// </summary>
-    /// <param name="state">The rating summary state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new rating summary state.</returns>
-    [ReducerMethod]
-    public static DashboardState ReduceRatingSummaryFailAction(DashboardState state, DashboardActions.RatingSummaryFailAction action)
-    {
-        return state with
-        {
-            RatingSummary = state.RatingSummary with
-            {
-                Result = null,
-                IsLoading = false,
-                Error = action.Error,
-            },
-        };
-    }
-
-    /// <summary>
     /// The reducer for the reset state action.
     /// </summary>
     /// <param name="state">The dashboard state.</param>
@@ -306,12 +304,7 @@ public static class DashboardReducers
     {
         return state with
         {
-           RegisteredUsers = state.RegisteredUsers with
-           {
-               Result = null,
-               IsLoading = false,
-               Error = null,
-           },
+           RegisteredUsers = new(),
            LoggedInUsers = new(),
            Dependents = new(),
            RecurringUsers = new(),

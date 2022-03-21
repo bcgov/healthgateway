@@ -248,6 +248,13 @@ public static class DashboardActions
     }
 
     /// <summary>
+    /// The action that clears the state.
+    /// </summary>
+    public class ResetRecurringUsersStateAction
+    {
+    }
+
+    /// <summary>
     /// The action representing the initiation of rating summary load action.
     /// </summary>
     public class RatingSummaryAction

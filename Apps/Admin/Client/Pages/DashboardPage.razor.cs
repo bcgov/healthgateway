@@ -59,33 +59,24 @@ public partial class DashboardPage : FluxorComponent
 
     private bool RegisteredUsersHasError => this.DashboardState.Value.RegisteredUsers.Error != null && this.DashboardState.Value.RegisteredUsers.Error.Message.Length > 0;
 
-    private string? RegisteredUsersErrorMessage => this.RegisteredUsersHasError ? this.DashboardState?.Value.RegisteredUsers?.Error?.Message : string.Empty;
-
     private bool LoggedInUsersHasError => this.DashboardState.Value.LoggedInUsers.Error != null && this.DashboardState.Value.LoggedInUsers.Error.Message.Length > 0;
-
-    private string? LoggedInUsersErrorMessage => this.LoggedInUsersHasError ? this.DashboardState?.Value.LoggedInUsers?.Error?.Message : string.Empty;
 
     private bool DependentsHasError => this.DashboardState.Value.Dependents.Error != null && this.DashboardState.Value.Dependents.Error.Message.Length > 0;
 
-    private string? DependentsErrorMessage => this.DependentsHasError ? this.DashboardState?.Value.Dependents?.Error?.Message : string.Empty;
-
     private bool RecurringUsersHasError => this.DashboardState.Value.RecurringUsers.Error != null && this.DashboardState.Value.RecurringUsers.Error.Message.Length > 0;
 
-    private string? RecurringUsersErrorMessage => this.RecurringUsersHasError ? this.DashboardState?.Value.RecurringUsers?.Error?.Message : string.Empty;
-
     private bool RatingSummaryHasError => this.DashboardState.Value.RatingSummary.Error != null && this.DashboardState.Value.RatingSummary.Error.Message.Length > 0;
-
-    private string? RatingSummaryErrorMessage => this.RatingSummaryHasError ? this.DashboardState?.Value.RatingSummary?.Error?.Message : string.Empty;
 
     private bool HasError
     {
         get
         {
-            return this.RegisteredUsersHasError ||
+            var test = this.RegisteredUsersHasError ||
                 this.LoggedInUsersHasError ||
                 this.DependentsHasError ||
                 this.RecurringUsersHasError ||
                 this.RatingSummaryHasError;
+            return test;
         }
     }
 
@@ -93,33 +84,12 @@ public partial class DashboardPage : FluxorComponent
     {
         get
         {
-            string? errorMessage = string.Empty;
-            if (this.RegisteredUsersHasError)
+            if (this.HasError)
             {
-                errorMessage += this.RegisteredUsersErrorMessage + ErrorMessageHasNewLine(errorMessage);
+                return "Error in Dashboard";
             }
 
-            if (this.LoggedInUsersHasError)
-            {
-                errorMessage += this.LoggedInUsersErrorMessage + ErrorMessageHasNewLine(errorMessage);
-            }
-
-            if (this.DependentsHasError)
-            {
-                errorMessage += this.DependentsErrorMessage + ErrorMessageHasNewLine(errorMessage);
-            }
-
-            if (this.RecurringUsersHasError)
-            {
-                errorMessage += this.RecurringUsersErrorMessage + ErrorMessageHasNewLine(errorMessage);
-            }
-
-            if (this.RecurringUsersHasError)
-            {
-                errorMessage += this.RatingSummaryErrorMessage + ErrorMessageHasNewLine(errorMessage);
-            }
-
-            return errorMessage ?? string.Empty;
+            return string.Empty;
         }
     }
 
@@ -347,13 +317,9 @@ public partial class DashboardPage : FluxorComponent
         };
     }
 
-    private static bool ErrorMessageHasNewLine(string errorMessage)
-    {
-        return errorMessage != null && errorMessage.Length > 0;
-    }
-
     private void LoadDispatchActions()
     {
+        this.ResetDashboardState();
         this.Dispatcher.Dispatch(new DashboardActions.RegisteredUsersAction(this.TimeOffset));
         this.Dispatcher.Dispatch(new DashboardActions.LoggedInUsersAction(this.TimeOffset));
         this.Dispatcher.Dispatch(new DashboardActions.DependentsAction(this.TimeOffset));
