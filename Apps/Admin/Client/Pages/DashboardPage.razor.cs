@@ -55,7 +55,7 @@ public partial class DashboardPage : FluxorComponent
 
     private DateTime MaximumDateTime { get; set; } = DateTime.Now;
 
-    private DateRange SelectedDateRange { get; set; } = new DateRange(DateTime.Now.AddDays(-30).Date, DateTime.Now.Date);
+    private DateRange DateRange { get; set; } = new DateRange(DateTime.Now.AddDays(-30).Date, DateTime.Now.Date);
 
     private int CurrentUniqueDays { get; set; } = 3;
 
@@ -78,6 +78,20 @@ public partial class DashboardPage : FluxorComponent
     private bool RatingSummaryHasError => this.DashboardState.Value.RatingSummary.Error != null && this.DashboardState.Value.RatingSummary.Error.Message.Length > 0;
 
     private string RatingSummaryErrorMessage => this.DashboardState.Value.RatingSummary.Error?.Message ?? string.Empty;
+
+    private DateRange SelectedDateRange
+    {
+        get
+        {
+            return this.DateRange;
+        }
+
+        set
+        {
+            this.LoadDispatchActions(this.UniqueDays, value.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), value.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.TimeOffset, false);
+            this.DateRange = value;
+        }
+    }
 
     private bool HasError
     {
@@ -141,7 +155,7 @@ public partial class DashboardPage : FluxorComponent
         }
     }
 
-    private int TimeOffset { get; set; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalMinutes;
+    private int TimeOffset { get; set; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalMinutes * -1;
 
     private int TotalRegisteredUsers => this.RegisteredUsersResult?.Result?.Sum(r => r.Value) ?? 0;
 
@@ -215,28 +229,22 @@ public partial class DashboardPage : FluxorComponent
     {
         base.OnInitialized();
         this.ResetDashboardState();
-        this.LoadDispatchActions();
+        this.LoadDispatchActions(this.UniqueDays, StartDate, EndDate, this.TimeOffset, true);
     }
 
-    private void LoadDispatchActions()
+    private void LoadDispatchActions(int days, string startPeriod, string endPeriod, int timeOffset, bool initialLoad)
     {
-        this.Dispatcher.Dispatch(new DashboardActions.LoadRegisteredUsersAction(this.TimeOffset));
-        this.Dispatcher.Dispatch(new DashboardActions.LoadLoggedInUsersAction(this.TimeOffset));
-        this.Dispatcher.Dispatch(new DashboardActions.LoadDependentsAction(this.TimeOffset));
-        this.Dispatcher.Dispatch(new DashboardActions.LoadRecurringUsersAction(this.UniqueDays, StartDate, EndDate, this.TimeOffset));
-        this.DispatchRatingSummaryAction();
+        string endDate = initialLoad ? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : endPeriod;
+        this.Dispatcher.Dispatch(new DashboardActions.LoadRegisteredUsersAction(timeOffset));
+        this.Dispatcher.Dispatch(new DashboardActions.LoadLoggedInUsersAction(timeOffset));
+        this.Dispatcher.Dispatch(new DashboardActions.LoadDependentsAction(timeOffset));
+        this.Dispatcher.Dispatch(new DashboardActions.LoadRecurringUsersAction(days, startPeriod, endPeriod, timeOffset));
+        this.DispatchRatingSummaryAction(startPeriod, endDate, timeOffset);
     }
 
-    private void DispatchRecurringUserActionWithDateChanged()
+    private void DispatchRatingSummaryAction(string startPeriod, string endPeriod, int timeOffset)
     {
-        this.Dispatcher.Dispatch(new DashboardActions.LoadRecurringUsersAction(this.UniqueDays, this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.TimeOffset));
-        this.SelectedDateRangePicker.Close();
-    }
-
-    private void DispatchRatingSummaryAction()
-    {
-        string endDate = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-        this.Dispatcher.Dispatch(new DashboardActions.LoadRatingSummaryAction(StartDate, endDate, this.TimeOffset));
+        this.Dispatcher.Dispatch(new DashboardActions.LoadRatingSummaryAction(startPeriod, endPeriod, timeOffset));
     }
 
     private void ResetDashboardState()

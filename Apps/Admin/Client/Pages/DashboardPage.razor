@@ -30,11 +30,11 @@
 
 <MudGrid Class="my-3">
     <MudItem xs="6" lg="3">
-        <MudDateRangePicker Mindate="@MinimumDateTime" MaxDate="@MaximumDateTime" @ref="SelectedDateRangePicker" Label="Select Date Range" @bind-DateRange="SelectedDateRange" Color="Color.Success" Style="font-weight:bold">
+        <MudDateRangePicker Mindate="@MinimumDateTime" MaxDate="@MaximumDateTime" @ref="SelectedDateRangePicker" Label="Select Date Range"  @bind-DateRange="SelectedDateRange" Color="Color.Success" Style="font-weight:bold">
             <PickerActions>
                 <MudButton Class="mr-auto align-self-start" OnClick="@(() => SelectedDateRangePicker.Clear())">Clear</MudButton>
                 <MudButton OnClick="@(() => SelectedDateRangePicker.Close(false))">Cancel</MudButton>
-                <MudButton Color="Color.Primary" OnClick="@(() => DispatchRecurringUserActionWithDateChanged())">Ok</MudButton>
+                <MudButton Color="Color.Primary" @onclick= "@(() => SelectedDateRangePicker.Close())">Ok</MudButton>
             </PickerActions>
         </MudDateRangePicker>
     </MudItem>
