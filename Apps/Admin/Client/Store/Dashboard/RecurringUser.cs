@@ -13,21 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Services;
-
-using System.Threading.Tasks;
-using HealthGateway.Admin.Common.Models;
-using Refit;
+namespace HealthGateway.Admin.Client.Store.Dashboard;
 
 /// <summary>
-/// API to fetch the External Configuration from the server.
+/// Record containing the total recurring users.
 /// </summary>
-public interface IConfigurationApi
+public record RecurringUser
 {
     /// <summary>
-    /// Gets the configuration from the server for local overrides.
+    /// Gets the count recurring users.
     /// </summary>
-    /// <returns>The ExternalConfiguration object.</returns>
-    [Get("/")]
-    Task<ExternalConfiguration> GetConfiguration();
+    public int TotalRecurringUsers { get; init; }
 }
