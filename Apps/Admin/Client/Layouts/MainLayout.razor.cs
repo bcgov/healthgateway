@@ -18,7 +18,9 @@ namespace HealthGateway.Admin.Client.Layouts
     using System;
     using System.Threading.Tasks;
     using Blazored.LocalStorage;
+    using Fluxor;
     using HealthGateway.Admin.Client.Components;
+    using HealthGateway.Admin.Client.Store.Configuration;
     using HealthGateway.Admin.Client.Theme;
     using HealthGateway.Common.Ui.Utils;
     using Microsoft.AspNetCore.Components;
@@ -46,6 +48,9 @@ namespace HealthGateway.Admin.Client.Layouts
 
         [Inject]
         private IDialogService Dialog { get; set; } = default!;
+
+        [Inject]
+        private IDispatcher Dispatcher { get; set; } = default!;
 
         [Inject]
         private IJSRuntime JsRuntime { get; set; } = default!;
@@ -127,6 +132,7 @@ namespace HealthGateway.Admin.Client.Layouts
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync().ConfigureAwait(true);
+            this.Dispatcher.Dispatch(new ConfigurationActions.LoadAction());
 
             if (await this.LocalStorage.ContainKeyAsync(DarkThemeKey).ConfigureAwait(true))
             {

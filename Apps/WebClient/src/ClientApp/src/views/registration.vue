@@ -351,10 +351,10 @@ export default class RegistrationView extends Vue {
                             </b-row>
                             <b-row class="d-flex">
                                 <b-col class="d-flex pr-0">
-                                    <i class="small">
+                                    <em class="small">
                                         Receive application and health record
                                         updates
-                                    </i>
+                                    </em>
                                 </b-col>
                             </b-row>
                             <b-form-input
@@ -405,9 +405,9 @@ export default class RegistrationView extends Vue {
                             </b-row>
                             <b-row class="d-flex">
                                 <b-col class="d-flex pr-0">
-                                    <i class="small">
+                                    <em class="small">
                                         Receive health record updates only
-                                    </i>
+                                    </em>
                                 </b-col>
                             </b-row>
                             <b-form-input

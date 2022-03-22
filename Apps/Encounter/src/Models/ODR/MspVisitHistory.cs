@@ -13,32 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.ODR
+namespace HealthGateway.Encounter.Models.ODR
 {
-    using System;
     using System.Text.Json.Serialization;
+    using HealthGateway.Common.Models.ODR;
 
     /// <summary>
-    /// The ODR Medication Response.
+    /// Object that defines the MSP Visit History Request/Response model.
     /// </summary>
-    public class ODRHistoryResponse
+    public class MspVisitHistory : OdrHistoryWrapper
     {
         /// <summary>
-        /// Gets or sets the Id of the request.
+        /// Gets or sets the OdrHistoryQuery for the MspVisitHistory integration.
         /// </summary>
-        [JsonPropertyName("uuid")]
-        public Guid Id { get; set; } = Guid.Empty;
+        [JsonPropertyName("getMspVisitHistoryRequest")]
+        public OdrHistoryQuery? Query { get; set; }
 
         /// <summary>
-        /// Gets or sets the total records available from the server for the query excluding page limits.
+        /// Gets or sets the MspVisitHistoryResponse for the MspVisitHistory integration.
         /// </summary>
-        [JsonPropertyName("totalRecords")]
-        public int TotalRecords { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Total Pages available.
-        /// </summary>
-        [JsonPropertyName("totalPages")]
-        public int Pages { get; set; }
+        [JsonPropertyName("getMspVisitHistoryResponse")]
+        public MspVisitHistoryResponse? Response { get; set; }
     }
 }

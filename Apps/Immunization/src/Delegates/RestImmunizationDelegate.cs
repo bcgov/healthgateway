@@ -45,7 +45,7 @@ namespace HealthGateway.Immunization.Delegates
         private const string PHSAConfigSectionKey = "PHSA";
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly PHSAConfig phsaConfig;
+        private readonly PhsaConfig phsaConfig;
 
         /// <summary>
         /// Gets or sets the http context accessor.
@@ -75,20 +75,20 @@ namespace HealthGateway.Immunization.Delegates
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestImmunizationDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PHSAResult<ImmunizationViewResponse>>> GetImmunization(string immunizationId)
+        public async Task<RequestResult<PhsaResult<ImmunizationViewResponse>>> GetImmunization(string immunizationId)
         {
             using Activity? activity = Source.StartActivity("GetImmunization");
             this.logger.LogDebug($"Getting immunization {immunizationId}...");
 
             string endpointString = $"{this.phsaConfig.BaseUrl}{this.phsaConfig.ImmunizationEndpoint}/{immunizationId}";
-            RequestResult<PHSAResult<ImmunizationViewResponse>> retVal = await this.ParsePHSAResult<ImmunizationViewResponse>(new Uri(endpointString)).ConfigureAwait(true);
+            RequestResult<PhsaResult<ImmunizationViewResponse>> retVal = await this.ParsePHSAResult<ImmunizationViewResponse>(new Uri(endpointString)).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting Immunization {immunizationId}");
 
             return retVal;
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PHSAResult<ImmunizationResponse>>> GetImmunizations(int pageIndex = 0)
+        public async Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizations(int pageIndex = 0)
         {
             using Activity? activity = Source.StartActivity("GetImmunizations");
             this.logger.LogDebug($"Getting immunizations...");
@@ -99,14 +99,14 @@ namespace HealthGateway.Immunization.Delegates
             };
             string endpointString = $"{this.phsaConfig.BaseUrl}{this.phsaConfig.ImmunizationEndpoint}";
             Uri endpoint = new Uri(QueryHelpers.AddQueryString(endpointString, query));
-            RequestResult<PHSAResult<ImmunizationResponse>> retVal = await this.ParsePHSAResult<ImmunizationResponse>(endpoint).ConfigureAwait(true);
+            RequestResult<PhsaResult<ImmunizationResponse>> retVal = await this.ParsePHSAResult<ImmunizationResponse>(endpoint).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting Immunizations");
 
             return retVal;
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PHSAResult<ImmunizationCard>>> GetVaccineHistory(string hdid, string immunizationDisease)
+        public async Task<RequestResult<PhsaResult<ImmunizationCard>>> GetVaccineHistory(string hdid, string immunizationDisease)
         {
             using Activity? activity = Source.StartActivity("GetVaccineHistory");
             this.logger.LogDebug($"Getting vaccine history...");
@@ -117,13 +117,13 @@ namespace HealthGateway.Immunization.Delegates
             };
             string endpointString = $"{this.phsaConfig.BaseUrl}{this.phsaConfig.ImmunizationEndpoint}/RecordCards/{immunizationDisease}";
             Uri endpoint = new Uri(QueryHelpers.AddQueryString(endpointString, query));
-            RequestResult<PHSAResult<ImmunizationCard>> retVal = await this.ParsePHSAResult<ImmunizationCard>(endpoint).ConfigureAwait(true);
+            RequestResult<PhsaResult<ImmunizationCard>> retVal = await this.ParsePHSAResult<ImmunizationCard>(endpoint).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting vaccine history.");
 
             return retVal;
         }
 
-        private async Task<RequestResult<PHSAResult<T>>> ParsePHSAResult<T>(Uri endpoint)
+        private async Task<RequestResult<PhsaResult<T>>> ParsePHSAResult<T>(Uri endpoint)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
@@ -131,7 +131,7 @@ namespace HealthGateway.Immunization.Delegates
                 string? bearerToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
                 if (bearerToken != null)
                 {
-                    RequestResult<PHSAResult<T>> retVal = new()
+                    RequestResult<PhsaResult<T>> retVal = new()
                     {
                         ResultStatus = ResultType.Error,
                         PageIndex = 0,
@@ -152,7 +152,7 @@ namespace HealthGateway.Immunization.Delegates
                         {
                             case HttpStatusCode.OK:
                                 this.logger.LogTrace($"Response payload: {payload}");
-                                PHSAResult<T>? phsaResult = JsonSerializer.Deserialize<PHSAResult<T>>(payload);
+                                PhsaResult<T>? phsaResult = JsonSerializer.Deserialize<PhsaResult<T>>(payload);
                                 if (phsaResult != null && phsaResult.Result != null)
                                 {
                                     retVal.ResultStatus = ResultType.Success;
@@ -168,7 +168,7 @@ namespace HealthGateway.Immunization.Delegates
                                 break;
                             case HttpStatusCode.NoContent: // No Immunizations exits for this user
                                 retVal.ResultStatus = ResultType.Success;
-                                retVal.ResourcePayload = new PHSAResult<T>();
+                                retVal.ResourcePayload = new PhsaResult<T>();
                                 retVal.TotalResultCount = 0;
                                 retVal.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);
                                 break;
@@ -193,7 +193,7 @@ namespace HealthGateway.Immunization.Delegates
                 }
             }
 
-            return new RequestResult<PHSAResult<T>>()
+            return new RequestResult<PhsaResult<T>>()
             {
                 ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError()

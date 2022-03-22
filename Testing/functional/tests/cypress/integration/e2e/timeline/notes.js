@@ -58,9 +58,6 @@ describe("Notes", () => {
 
         // Confirm deleted note
         cy.wait("@deleteNote");
-        cy.get("[data-testid=entryCardDetailsTitle]")
-            .last()
-            .contains("Note Title!")
-            .should("not.exist");
+        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
     });
 });

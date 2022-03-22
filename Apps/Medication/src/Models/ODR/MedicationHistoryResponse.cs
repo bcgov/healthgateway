@@ -22,7 +22,7 @@ namespace HealthGateway.Medication.Models.ODR
     /// <summary>
     /// The ODR Medication Response.
     /// </summary>
-    public class MedicationHistoryResponse : ODRHistoryResponse
+    public class MedicationHistoryResponse : OdrHistoryResponse
     {
         /// <summary>
         /// Gets or sets the set of MedicationResults.

@@ -27,24 +27,24 @@ namespace HealthGateway.Common.Delegates
     /// <summary>
     /// Delegate to create and validate HMAC hashes.
     /// </summary>
-    public class HMACHashDelegate : IHashDelegate
+    public class HmacHashDelegate : IHashDelegate
     {
-        private const string ConfigKey = "HMACHash";
+        private const string ConfigKey = "HmacHash";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HMACHashDelegate"/> class.
+        /// Initializes a new instance of the <see cref="HmacHashDelegate"/> class.
         /// </summary>
         /// <param name="configuration">The injected configuration provider.</param>
-        public HMACHashDelegate(IConfiguration configuration)
+        public HmacHashDelegate(IConfiguration configuration)
         {
-            this.HashConfig = new HMACHashDelegateConfig();
+            this.HashConfig = new HmacHashDelegateConfig();
             configuration.Bind(ConfigKey, this.HashConfig);
         }
 
         /// <summary>
         /// Gets or sets the instance configuration.
         /// </summary>
-        public HMACHashDelegateConfig HashConfig { get; set; }
+        public HmacHashDelegateConfig HashConfig { get; set; }
 
         /// <summary>
         /// Generates the HMAC Hash object.
@@ -54,13 +54,13 @@ namespace HealthGateway.Common.Delegates
         /// <param name="prf">The pseudorandom function to use for the hash.</param>
         /// <param name="iterations">The number of iterations to process over the hash.</param>
         /// <returns>The hash object.</returns>
-        public static HMACHash HMACHash(
+        public static HmacHash HMACHash(
             string? key,
             byte[] salt,
-            KeyDerivationPrf prf = HMACHashDelegateConfig.DefaultPseudoRandomFunction,
-            int iterations = HMACHashDelegateConfig.DefaultIterations)
+            KeyDerivationPrf prf = HmacHashDelegateConfig.DefaultPseudoRandomFunction,
+            int iterations = HmacHashDelegateConfig.DefaultIterations)
         {
-            HMACHash retHash = new HMACHash()
+            HmacHash retHash = new HmacHash()
             {
                 PseudoRandomFunction = HashFunction.HMACSHA512,
                 Iterations = iterations,
@@ -102,12 +102,12 @@ namespace HealthGateway.Common.Delegates
         /// <param name="key">The key to hash and compare.</param>
         /// <param name="compareHash">The hash object to compare.</param>
         /// <returns>true if the key generates the same hash.</returns>
-        public static bool Compare(string? key, HMACHash? compareHash)
+        public static bool Compare(string? key, HmacHash? compareHash)
         {
             bool result = false;
             if (key != null && compareHash != null && compareHash.Hash != null && compareHash.Salt != null)
             {
-                HMACHash keyHash = HMACHash(
+                HmacHash keyHash = HMACHash(
                     key,
                     Convert.FromBase64String(compareHash.Salt),
                     (KeyDerivationPrf)compareHash.PseudoRandomFunction,
@@ -128,7 +128,7 @@ namespace HealthGateway.Common.Delegates
         /// </summary>
         /// <param name="saltLength">The length of the salt in bytes, defaults to 16 bytes.</param>
         /// <returns>A byte array containing the salt.</returns>
-        public static byte[] GenerateSalt(int saltLength = HMACHashDelegateConfig.DefaultSaltLength)
+        public static byte[] GenerateSalt(int saltLength = HmacHashDelegateConfig.DefaultSaltLength)
         {
             byte[] salt = new byte[saltLength];
             using RandomNumberGenerator rng = RandomNumberGenerator.Create();
@@ -145,7 +145,7 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc />
         public bool Compare(string? key, IHash compareHash)
         {
-            return Compare(key, compareHash as HMACHash);
+            return Compare(key, compareHash as HmacHash);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace HealthGateway.Common.Delegates
         /// </summary>
         /// <param name="key">The string to hash.</param>
         /// <returns>The newly created HMAC Hash.</returns>
-        public HMACHash HMACHash(string? key)
+        public HmacHash HMACHash(string? key)
         {
             return HMACHash(
                 key,

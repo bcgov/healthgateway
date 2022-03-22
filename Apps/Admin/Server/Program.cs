@@ -129,7 +129,7 @@ namespace HealthGateway.Admin.Server
 
         private static void RegisterRefitClients(IServiceCollection services, IConfiguration configuration)
         {
-            PHSAConfig phsaConfig = new();
+            PhsaConfig phsaConfig = new();
             configuration.Bind(PhsaConfigSectionKey, phsaConfig);
             services.AddRefitClient<IImmunizationAdminClient>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);

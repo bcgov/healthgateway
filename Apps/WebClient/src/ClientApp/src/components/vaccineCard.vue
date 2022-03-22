@@ -182,10 +182,12 @@ export default class VaccineCardComponent extends Vue {
                                 v-b-modal.big-qr
                                 :src="qrCodeUrl"
                                 class="d-sm-none small-qr-code img-fluid m-2"
+                                alt="BC Vaccine Card QR"
                             />
                             <img
                                 :src="qrCodeUrl"
                                 class="d-none d-sm-block small-qr-code img-fluid m-2"
+                                alt="BC Vaccine Card QR"
                             />
                             <p
                                 v-b-modal.big-qr
@@ -205,6 +207,7 @@ export default class VaccineCardComponent extends Vue {
                                 <img
                                     :src="qrCodeUrl"
                                     class="big-qr-code img-fluid"
+                                    alt="BC Vaccine Card QR"
                                 />
                                 <template #modal-footer>
                                     <hg-button

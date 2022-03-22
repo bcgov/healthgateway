@@ -37,7 +37,7 @@ namespace HealthGateway.Encounter.Services
         private readonly ILogger logger;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IPatientService patientService;
-        private readonly IMSPVisitDelegate mspVisitDelegate;
+        private readonly IMspVisitDelegate mspVisitDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EncounterService"/> class.
@@ -50,7 +50,7 @@ namespace HealthGateway.Encounter.Services
             ILogger<EncounterService> logger,
             IHttpContextAccessor httpAccessor,
             IPatientService patientService,
-            IMSPVisitDelegate mspVisitDelegate)
+            IMspVisitDelegate mspVisitDelegate)
         {
             this.logger = logger;
             this.httpContextAccessor = httpAccessor;
@@ -75,7 +75,7 @@ namespace HealthGateway.Encounter.Services
                 if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                 {
                     PatientModel patient = patientResult.ResourcePayload;
-                    ODRHistoryQuery mspHistoryQuery = new ODRHistoryQuery()
+                    OdrHistoryQuery mspHistoryQuery = new OdrHistoryQuery()
                     {
                         StartDate = patient.Birthdate,
                         EndDate = System.DateTime.Now,
@@ -84,7 +84,7 @@ namespace HealthGateway.Encounter.Services
                     };
                     IPAddress address = this.httpContextAccessor.HttpContext!.Connection.RemoteIpAddress!;
                     string ipv4Address = address.MapToIPv4().ToString();
-                    RequestResult<MSPVisitHistoryResponse> response = await this.mspVisitDelegate.GetMSPVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address).ConfigureAwait(true);
+                    RequestResult<MspVisitHistoryResponse> response = await this.mspVisitDelegate.GetMSPVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address).ConfigureAwait(true);
                     result.ResultStatus = response.ResultStatus;
                     result.ResultError = response.ResultError;
                     if (response.ResultStatus == ResultType.Success)

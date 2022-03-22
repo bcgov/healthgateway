@@ -26,46 +26,46 @@ namespace HealthGateway.CommonTests.Delegates
     using Xunit;
 
     /// <summary>
-    /// AESCryptoDelegate's Unit Tests.
+    /// AesCryptoDelegate's Unit Tests.
     /// </summary>
-    public class AESCryptoDelegateTests
+    public class AesCryptoDelegateTests
     {
         /// <summary>
-        /// AESCryptoDelegateTests - Configuration Binding.
+        /// AesCryptoDelegateTests - Configuration Binding.
         /// </summary>
         [Fact]
         public void VerifyConfigurationBinding()
         {
-            AESCryptoDelegateConfig expectedConfig = new()
+            AesCryptoDelegateConfig expectedConfig = new()
             {
                 KeySize = 256,
-                IV = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF")),
+                Iv = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF")),
             };
 
             Dictionary<string, string> myConfiguration = new()
             {
                 { "AESCrypto:KeySize", expectedConfig.KeySize.ToString(CultureInfo.CurrentCulture) },
-                { "AESCrypto:IV", Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF")) },
+                { "AESCrypto:Iv", Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF")) },
             };
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new(configuration);
+            AesCryptoDelegate aesDelegate = new(configuration);
 
             expectedConfig.ShouldDeepEqual(aesDelegate.AESConfig);
         }
 
         /// <summary>
-        /// AESCryptoDelegateTests - Default Configuration Binding.
+        /// AesCryptoDelegateTests - Default Configuration Binding.
         /// </summary>
         [Fact]
         public void VerifyDefaultConfigurationBinding()
         {
-            AESCryptoDelegateConfig expectedConfig = new()
+            AesCryptoDelegateConfig expectedConfig = new()
             {
-                KeySize = AESCryptoDelegateConfig.DefaultKeySize,
+                KeySize = AesCryptoDelegateConfig.DefaultKeySize,
             };
 
             // test empty configuration
@@ -75,7 +75,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new(configuration);
+            AesCryptoDelegate aesDelegate = new(configuration);
 
             expectedConfig.ShouldDeepEqual(aesDelegate.AESConfig);
         }
@@ -95,7 +95,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new(configuration);
+            AesCryptoDelegate aesDelegate = new(configuration);
 
             string key = aesDelegate.GenerateKey();
             byte[] keyBytes = Convert.FromBase64String(key);
@@ -115,7 +115,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new(configuration);
+            AesCryptoDelegate aesDelegate = new(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
 
@@ -138,7 +138,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new(configuration);
+            AesCryptoDelegate aesDelegate = new(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
 
@@ -165,7 +165,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new(configuration);
+            AesCryptoDelegate aesDelegate = new(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
 
@@ -202,7 +202,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new(configuration);
+            AesCryptoDelegate aesDelegate = new(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
 
@@ -214,7 +214,7 @@ namespace HealthGateway.CommonTests.Delegates
         }
 
         /// <summary>
-        /// Encrypt - Happy Path (With IV).
+        /// Encrypt - Happy Path (With Iv).
         /// </summary>
         [Fact]
         public void VerifyEncryptionWithIV()
@@ -225,7 +225,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new(configuration);
+            AesCryptoDelegate aesDelegate = new(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
             string iv = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF"));
@@ -245,7 +245,7 @@ namespace HealthGateway.CommonTests.Delegates
         }
 
         /// <summary>
-        /// Decrypt - Happy Path (With IV).
+        /// Decrypt - Happy Path (With Iv).
         /// </summary>
         [Fact]
         public void VerifyDecryptionWithIV()
@@ -256,7 +256,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new(configuration);
+            AesCryptoDelegate aesDelegate = new(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
             string iv = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF"));

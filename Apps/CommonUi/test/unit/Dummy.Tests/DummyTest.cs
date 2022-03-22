@@ -13,32 +13,22 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Models.Immunization
+namespace HealthGateway.Common.Ui.Dummy.Test
 {
-    using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models.PHSA;
+    using Xunit;
 
     /// <summary>
-    /// The Load State record data model.
+    /// This is a placeholder until we create tests for Common Ui. q
     /// </summary>
-    public class LoadStateModel
+    public class DummyTest
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the Load State is in the RefreshInProgress status.
+        /// A dummy test.
         /// </summary>
-        [JsonPropertyName("refreshInProgress")]
-        public bool RefreshInProgress { get; set; }
-
-        /// <summary>
-        /// Creates a Load State Model object from a PHSA model.
-        /// </summary>
-        /// <param name="model">The Load State to convert.</param>
-        /// <returns>A LoadStateModel object.</returns>
-        public static LoadStateModel FromPHSAModel(PhsaLoadState model)
+        [Fact]
+        public void Test()
         {
-            LoadStateModel returnValue = new();
-            returnValue.RefreshInProgress = model.RefreshInProgress;
-            return returnValue;
+            Assert.True(true);
         }
     }
 }

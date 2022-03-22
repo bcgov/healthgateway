@@ -97,6 +97,7 @@ export default class FaqView extends Vue {
                                         <a
                                             href="https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/prescribers/special-authority/sa-drug-list"
                                             target="_blank"
+                                            rel="noopener"
                                             >Special Authority</a
                                         >
                                         drug coverage requests made since March
@@ -144,6 +145,7 @@ export default class FaqView extends Vue {
                                 <a
                                     href="https://immunizationrecord.gov.bc.ca"
                                     target="_blank"
+                                    rel="noopener"
                                     >immunizationrecord.gov.bc.ca</a
                                 >.
                             </p>
@@ -186,6 +188,7 @@ export default class FaqView extends Vue {
                                 <a
                                     href="https://www.gov.bc.ca/vaccinerecord"
                                     target="_blank"
+                                    rel="noopener"
                                     >immunizationrecord.gov.bc.ca</a
                                 >.
                             </p>
@@ -373,6 +376,7 @@ export default class FaqView extends Vue {
                                 <a
                                     href="https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/prescribers/special-authority "
                                     target="_blank"
+                                    rel="noopener"
                                     >Special Authority site</a
                                 >. for more information. If you have any
                                 questions, talk to your prescriber or
@@ -522,6 +526,7 @@ export default class FaqView extends Vue {
                                 <a
                                     href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/booster"
                                     target="_blank"
+                                    rel="noopener"
                                     >www.gov.bc.ca/booster</a
                                 >
                                 to learn about the priority groups currently
@@ -540,6 +545,7 @@ export default class FaqView extends Vue {
                                 <a
                                     href="https://www.getvaccinated.gov.bc.ca"
                                     target="_blank"
+                                    rel="noopener"
                                     >www.getvaccinated.gov.bc.ca</a
                                 >
                                 and submit your out-of-province immunization
@@ -547,6 +553,7 @@ export default class FaqView extends Vue {
                                 <a
                                     href="https://immunizationrecord.gov.bc.ca/"
                                     target="_blank"
+                                    rel="noopener"
                                     >www.immunizationrecord.gov.bc.ca</a
                                 >.
                             </p>

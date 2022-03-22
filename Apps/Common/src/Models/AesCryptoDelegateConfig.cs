@@ -13,33 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Models.Cacheable
+namespace HealthGateway.Common.Models
 {
-    using HealthGateway.Database.Constants;
-
     /// <summary>
-    /// A hash of something.
+    /// The configuration for the AESCrypto delegate.
     /// </summary>
-    public class HMACHash : IHash
+    public class AesCryptoDelegateConfig
     {
         /// <summary>
-        /// Gets or sets the pseudo random function that was used to generate this hash.
+        /// The default key size used for key AES crypto functions.
         /// </summary>
-        public HashFunction PseudoRandomFunction { get; set; } = HashFunction.HMACSHA512;
+        public const int DefaultKeySize = 256;
 
         /// <summary>
-        /// Gets or sets the iterations used to generate this hash.
+        /// Gets or sets the key size for AES crypto functions.
         /// </summary>
-        public int Iterations { get; set; }
+        public int KeySize { get; set; } = DefaultKeySize;
 
         /// <summary>
-        /// Gets or sets the base64 salt that was used in generating the hash.
+        /// Gets or sets the Initialization Vector.
         /// </summary>
-        public string? Salt { get; set; }
-
-        /// <summary>
-        /// Gets or sets the base64 encoded hash.
-        /// </summary>
-        public string? Hash { get; set; }
+        public string? Iv { get; set; }
     }
 }

@@ -25,30 +25,30 @@ namespace HealthGateway.Common.Delegates
     /// <summary>
     /// Delegate to encrypt/decrypt using AES.
     /// </summary>
-    public class AESCryptoDelegate : ICryptoDelegate
+    public class AesCryptoDelegate : ICryptoDelegate
     {
         private const string ConfigKey = "AESCrypto";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AESCryptoDelegate"/> class.
+        /// Initializes a new instance of the <see cref="AesCryptoDelegate"/> class.
         /// </summary>
         /// <param name="configuration">The injected configuration provider.</param>
-        public AESCryptoDelegate(
+        public AesCryptoDelegate(
             IConfiguration configuration)
         {
-            this.AESConfig = new AESCryptoDelegateConfig();
+            this.AESConfig = new AesCryptoDelegateConfig();
             configuration.Bind(ConfigKey, this.AESConfig);
         }
 
         /// <summary>
         /// Gets or sets the instance configuration.
         /// </summary>
-        public AESCryptoDelegateConfig AESConfig { get; set; }
+        public AesCryptoDelegateConfig AESConfig { get; set; }
 
         /// <inheritdoc />
         public string Encrypt(string key, string plainText)
         {
-            return this.Encrypt(key, this.AESConfig.IV, plainText);
+            return this.Encrypt(key, this.AESConfig.Iv, plainText);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace HealthGateway.Common.Delegates
         /// <param name="iv">The base64 encoded initialization vector.</param>
         /// <param name="plainText">The text to encrypt.</param>
         /// <returns>The encrypted text.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5401:Do not use CreateEncryptor with non-default IV", Justification = "Team decision")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5401:Do not use CreateEncryptor with non-default Iv", Justification = "Team decision")]
         public string Encrypt(string key, string? iv, string plainText)
         {
             using Aes aes = Aes.Create();
@@ -78,7 +78,7 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc />
         public string Decrypt(string key, string encryptedText)
         {
-            return this.Decrypt(key, this.AESConfig.IV, encryptedText);
+            return this.Decrypt(key, this.AESConfig.Iv, encryptedText);
         }
 
         /// <summary>

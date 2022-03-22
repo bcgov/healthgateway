@@ -13,27 +13,33 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Medication.Models.ODR
+namespace HealthGateway.Database.Models.Cacheable
 {
-    using System;
-    using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models.ODR;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
-    /// The ODR Medication History Request/Response model.
+    /// A hash of something.
     /// </summary>
-    public class MedicationHistory : OdrHistoryWrapper
+    public class HmacHash : IHash
     {
         /// <summary>
-        /// Gets or sets the QueryRequest for the MedicationHistory integration.
+        /// Gets or sets the pseudo random function that was used to generate this hash.
         /// </summary>
-        [JsonPropertyName("getMedicationHistoryRequest")]
-        public OdrHistoryQuery? Query { get; set; }
+        public HashFunction PseudoRandomFunction { get; set; } = HashFunction.HMACSHA512;
 
         /// <summary>
-        /// Gets or sets the MedicationHistoryResponse for the MedicationHistory integration.
+        /// Gets or sets the iterations used to generate this hash.
         /// </summary>
-        [JsonPropertyName("getMedicationHistoryResponse")]
-        public MedicationHistoryResponse? Response { get; set; }
+        public int Iterations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the base64 salt that was used in generating the hash.
+        /// </summary>
+        public string? Salt { get; set; }
+
+        /// <summary>
+        /// Gets or sets the base64 encoded hash.
+        /// </summary>
+        public string? Hash { get; set; }
     }
 }

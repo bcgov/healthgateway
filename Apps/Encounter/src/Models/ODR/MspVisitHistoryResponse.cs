@@ -13,26 +13,23 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models
+namespace HealthGateway.Encounter.Models.ODR
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
+    using HealthGateway.Common.Models.ODR;
+
     /// <summary>
-    /// The configuration for the AESCrypto delegate.
+    /// The ODR MSP Visit History Response.
     /// </summary>
-    public class AESCryptoDelegateConfig
+    public class MspVisitHistoryResponse : OdrHistoryResponse
     {
         /// <summary>
-        /// The default key size used for key AES crypto functions.
+        /// Gets or sets the set of Claims.
+        /// The set is boud by the other class properties.
         /// </summary>
-        public const int DefaultKeySize = 256;
-
-        /// <summary>
-        /// Gets or sets the key size for AES crypto functions.
-        /// </summary>
-        public int KeySize { get; set; } = DefaultKeySize;
-
-        /// <summary>
-        /// Gets or sets the Initialization Vector.
-        /// </summary>
-        public string? IV { get; set; }
+        [JsonPropertyName("claims")]
+        public IEnumerable<Claim>? Claims { get; set; }
     }
 }

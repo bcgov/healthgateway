@@ -13,25 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Encounter.Delegates
+namespace HealthGateway.Common.Models
 {
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models.ODR;
-    using HealthGateway.Encounter.Models.ODR;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Interface to retrieve MSP Visit History.
+    /// The response from the BCMailPlusVaccineProofDelegate.
     /// </summary>
-    public interface IMSPVisitDelegate
+    public class BcMailPlusResponse
     {
         /// <summary>
-        /// Returns a set of MSP Visits.
+        /// Gets or sets the unique id for the request to BC Mail Plus.
         /// </summary>
-        /// <param name="query">The Encounter statement query execute against the ODR.</param>
-        /// <param name="hdid">The HDID of the user querying.</param>
-        /// <param name="ipAddress">The IP of the user querying.</param>
-        /// <returns>The Encounter Model response wrapped in an HNMessage.</returns>
-        Task<RequestResult<MSPVisitHistoryResponse>> GetMSPVisitHistoryAsync(ODRHistoryQuery query, string hdid, string ipAddress);
+        [JsonPropertyName("jobId")]
+        public string Id { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the status of the job at BC Mail Plus.
+        /// </summary>
+        [JsonPropertyName("jobStatus")]
+        public string Status { get; set; } = null!;
     }
 }

@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,26 +13,22 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Encounter.Models.ODR
+namespace HealthGateway.Admin.Dummy.Test
 {
-    using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models.ODR;
+    using Xunit;
 
     /// <summary>
-    /// Object that defines the MSP Visit History Request/Response model.
+    /// This is a placeholder until we bring over the AdminWebClient tests.
     /// </summary>
-    public class MSPVisitHistory : ODRHistoryWrapper
+    public class DummyTest
     {
         /// <summary>
-        /// Gets or sets the ODRHistoryQuery for the MSPVisitHistory integration.
+        /// A dummy test.
         /// </summary>
-        [JsonPropertyName("getMspVisitHistoryRequest")]
-        public ODRHistoryQuery? Query { get; set; }
-
-        /// <summary>
-        /// Gets or sets the MSPVisitHistoryResponse for the MSPVisitHistory integration.
-        /// </summary>
-        [JsonPropertyName("getMspVisitHistoryResponse")]
-        public MSPVisitHistoryResponse? Response { get; set; }
+        [Fact]
+        public void Test()
+        {
+            Assert.True(true);
+        }
     }
 }
