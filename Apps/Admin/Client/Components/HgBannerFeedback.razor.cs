@@ -48,7 +48,7 @@ namespace HealthGateway.Admin.Client.Components
         [Inject]
         private IActionSubscriber ActionSubscriber { get; set; } = default!;
 
-        private bool IsHidden { get; set; } = true;
+        private bool IsHidden { get; set; }
 
         /// <inheritdoc/>
         protected override void OnInitialized()

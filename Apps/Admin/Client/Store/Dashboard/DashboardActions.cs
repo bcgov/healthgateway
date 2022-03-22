@@ -47,6 +47,36 @@ public static class DashboardActions
     }
 
     /// <summary>
+    /// The action representing a successful registered user action.
+    /// </summary>
+    public class RegisteredUsersSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RegisteredUsersSuccessAction"/> class.
+        /// </summary>
+        /// <param name="data">user data.</param>
+        public RegisteredUsersSuccessAction(IDictionary<DateTime, int> data)
+            : base(data)
+        {
+        }
+    }
+
+    /// <summary>
+    /// The action representing a failed registered user action.
+    /// </summary>
+    public class RegisteredUsersFailAction : BaseFailAction
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RegisteredUsersFailAction"/> class.
+        /// </summary>
+        /// <param name="error">The request error.</param>
+        public RegisteredUsersFailAction(RequestError error)
+            : base(error)
+        {
+        }
+    }
+
+    /// <summary>
     /// The action representing the initiation of logged in users load action.
     /// </summary>
     public class LoadLoggedInUsersAction
@@ -67,6 +97,36 @@ public static class DashboardActions
     }
 
     /// <summary>
+    /// The action representing a successful logged in user action.
+    /// </summary>
+    public class LoggedInUsersSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggedInUsersSuccessAction"/> class.
+        /// </summary>
+        /// <param name="data">user data.</param>
+        public LoggedInUsersSuccessAction(IDictionary<DateTime, int> data)
+            : base(data)
+        {
+        }
+    }
+
+    /// <summary>
+    /// The action representing a failed logged in user action.
+    /// </summary>
+    public class LoggedInUsersFailAction : BaseFailAction
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggedInUsersFailAction"/> class.
+        /// </summary>
+        /// <param name="error">The request error.</param>
+        public LoggedInUsersFailAction(RequestError error)
+            : base(error)
+        {
+        }
+    }
+
+    /// <summary>
     /// The action representing the initiation of dependents load action.
     /// </summary>
     public class LoadDependentsAction
@@ -84,6 +144,36 @@ public static class DashboardActions
         /// Gets or sets time offset.
         /// </summary>
         public int TimeOffset { get; set; }
+    }
+
+    /// <summary>
+    /// The action representing a successful dependents action.
+    /// </summary>
+    public class DependentsSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DependentsSuccessAction"/> class.
+        /// </summary>
+        /// <param name="data">user data.</param>
+        public DependentsSuccessAction(IDictionary<DateTime, int> data)
+            : base(data)
+        {
+        }
+    }
+
+    /// <summary>
+    /// The action representing a failed dependent action.
+    /// </summary>
+    public class DependentsFailAction : BaseFailAction
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DependentsFailAction"/> class.
+        /// </summary>
+        /// <param name="error">The request error.</param>
+        public DependentsFailAction(RequestError error)
+            : base(error)
+        {
+        }
     }
 
     /// <summary>
@@ -128,6 +218,36 @@ public static class DashboardActions
     }
 
     /// <summary>
+    /// The action representing a successful recurring users action.
+    /// </summary>
+    public class RecurringUsersSuccessAction : BaseSuccessAction<RecurringUser>
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RecurringUsersSuccessAction"/> class.
+        /// </summary>
+        /// <param name="data">user data.</param>
+        public RecurringUsersSuccessAction(RecurringUser data)
+            : base(data)
+        {
+        }
+    }
+
+    /// <summary>
+    /// The action representing a failed recurring users action.
+    /// </summary>
+    public class RecurringUsersFailAction : BaseFailAction
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RecurringUsersFailAction"/> class.
+        /// </summary>
+        /// <param name="error">The request error.</param>
+        public RecurringUsersFailAction(RequestError error)
+            : base(error)
+        {
+        }
+    }
+
+    /// <summary>
     /// The action representing the initiation of rating summary load action.
     /// </summary>
     public class LoadRatingSummaryAction
@@ -162,89 +282,15 @@ public static class DashboardActions
     }
 
     /// <summary>
-    /// The action representing a successful load action.
+    /// The action representing a successful rating summary action.
     /// </summary>
-    public class LoadSuccessUserAction : BaseSuccessAction<IDictionary<DateTime, int>>
+    public class RatingSummarySuccessAction : BaseSuccessAction<IDictionary<string, int>>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadSuccessUserAction"/> class.
-        /// </summary>
-        /// <param name="data">user data.</param>
-        public LoadSuccessUserAction(IDictionary<DateTime, int> data)
-            : base(data)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing a failed load action.
-    /// </summary>
-    public class LoadFailUserAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailUserAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public LoadFailUserAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action that clears the user state.
-    /// </summary>
-    public class ResetUserStateAction
-    {
-    }
-
-    /// <summary>
-    /// The action representing a successful load action.
-    /// </summary>
-    public class LoadSuccessRecurringUserAction : BaseSuccessAction<RecurringUser>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadSuccessRecurringUserAction"/> class.
-        /// </summary>
-        /// <param name="data">recurring user data.</param>
-        public LoadSuccessRecurringUserAction(RecurringUser data)
-            : base(data)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing a failed load action.
-    /// </summary>
-    public class LoadFailRecurringUserAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailRecurringUserAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public LoadFailRecurringUserAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action that clears the recurring user state.
-    /// </summary>
-    public class ResetRecurringUserStateAction
-    {
-    }
-
-    /// <summary>
-    /// The action representing a successful load action.
-    /// </summary>
-    public class LoadSuccessRatingSummaryAction : BaseSuccessAction<IDictionary<string, int>>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadSuccessRatingSummaryAction"/> class.
+        /// Initializes a new instance of the <see cref="RatingSummarySuccessAction"/> class.
         /// </summary>
         /// <param name="data">rating summary data.</param>
-        public LoadSuccessRatingSummaryAction(IDictionary<string, int> data)
+        public RatingSummarySuccessAction(IDictionary<string, int> data)
             : base(data)
         {
         }
@@ -253,29 +299,22 @@ public static class DashboardActions
     /// <summary>
     /// The action representing a failed load action.
     /// </summary>
-    public class LoadFailRatingSummaryAction : BaseFailAction
+    public class RatingSummaryFailAction : BaseFailAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailRatingSummaryAction"/> class.
+        /// Initializes a new instance of the <see cref="RatingSummaryFailAction"/> class.
         /// </summary>
         /// <param name="error">The request error.</param>
-        public LoadFailRatingSummaryAction(RequestError error)
+        public RatingSummaryFailAction(RequestError error)
             : base(error)
         {
         }
     }
 
     /// <summary>
-    /// The action that clears the rating summary state.
+    /// The action that clears the state.
     /// </summary>
-    public class ResetRatingSummaryStateAction
-    {
-    }
-
-    /// <summary>
-    /// The action that clears the all dashboard current state.
-    /// </summary>
-    public class ResetDashboardStateAction
+    public class ResetStateAction
     {
     }
 }

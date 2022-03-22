@@ -20,7 +20,7 @@ namespace HealthGateway.Admin.Client.Store;
 /// A state holding information relating to an HTTP request.
 /// </summary>
 /// <typeparam name="TModel">The type of the model returned by the request.</typeparam>
-public abstract record BaseRequestState<TModel>
+public record BaseRequestState<TModel>
      where TModel : class
 {
     /// <summary>

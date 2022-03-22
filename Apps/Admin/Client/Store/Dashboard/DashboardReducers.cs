@@ -28,11 +28,51 @@ public static class DashboardReducers
     /// <param name="state">The users state.</param>
     /// <returns>The new users  state.</returns>
     [ReducerMethod(typeof(DashboardActions.LoadRegisteredUsersAction))]
-    public static DashboardUserState ReduceLoadRegisteredUsersAction(DashboardUserState state)
+    public static DashboardState ReduceRegisteredUsersAction(DashboardState state)
     {
         return state with
         {
-            IsLoading = true,
+            RegisteredUsers = state.RegisteredUsers with { IsLoading = true },
+        };
+    }
+
+    /// <summary>
+    /// The Reducer for the load success action.
+    /// </summary>
+    /// <param name="state">The registered user state.</param>
+    /// <param name="action">The load success action.</param>
+    /// <returns>The new registered user state.</returns>
+    [ReducerMethod]
+    public static DashboardState ReduceLoadRegisteredUsersSuccessAction(DashboardState state, DashboardActions.RegisteredUsersSuccessAction action)
+    {
+        return state with
+        {
+            RegisteredUsers = state.RegisteredUsers with
+            {
+                Result = action.Data,
+                IsLoading = false,
+                Error = null,
+            },
+        };
+    }
+
+    /// <summary>
+    /// The Reducer for the load fail action.
+    /// </summary>
+    /// <param name="state">The registered user state.</param>
+    /// <param name="action">The load fail action.</param>
+    /// <returns>The new registered user state.</returns>
+    [ReducerMethod]
+    public static DashboardState ReduceRegisteredUserFailAction(DashboardState state, DashboardActions.RegisteredUsersFailAction action)
+    {
+        return state with
+        {
+            RegisteredUsers = state.RegisteredUsers with
+            {
+                Result = null,
+                IsLoading = false,
+                Error = action.Error,
+            },
         };
     }
 
@@ -42,25 +82,109 @@ public static class DashboardReducers
     /// <param name="state">The users state.</param>
     /// <returns>The new users  state.</returns>
     [ReducerMethod(typeof(DashboardActions.LoadLoggedInUsersAction))]
-    public static DashboardUserState ReduceLoadLoggedInUsersAction(DashboardUserState state)
+    public static DashboardState ReduceLoggedInUsersAction(DashboardState state)
     {
         return state with
         {
-            IsLoading = true,
+            LoggedInUsers = state.LoggedInUsers with { IsLoading = true },
+        };
+    }
+
+    /// <summary>
+    /// The Reducer for the load success action.
+    /// </summary>
+    /// <param name="state">The logged in user state.</param>
+    /// <param name="action">The load success action.</param>
+    /// <returns>The new logged in user state.</returns>
+    [ReducerMethod]
+    public static DashboardState ReduceLoggedInUsersSuccessAction(DashboardState state, DashboardActions.LoggedInUsersSuccessAction action)
+    {
+        return state with
+        {
+            LoggedInUsers = state.LoggedInUsers with
+            {
+                Result = action.Data,
+                IsLoading = false,
+                Error = null,
+            },
+        };
+    }
+
+    /// <summary>
+    /// The Reducer for the load fail action.
+    /// </summary>
+    /// <param name="state">The logged in user state.</param>
+    /// <param name="action">The load success action.</param>
+    /// <returns>The new logged in user state.</returns>
+    [ReducerMethod]
+    public static DashboardState ReduceLoggedInUserFailAction(DashboardState state, DashboardActions.LoggedInUsersFailAction action)
+    {
+        return state with
+        {
+            LoggedInUsers = state.LoggedInUsers with
+            {
+                Result = null,
+                IsLoading = false,
+                Error = action.Error,
+            },
         };
     }
 
     /// <summary>
     /// The Reducer for the load dependents action.
     /// </summary>
-    /// <param name="state">The users state.</param>
-    /// <returns>The new users  state.</returns>
+    /// <param name="state">The dependents state.</param>
+    /// <returns>The new dependents  state.</returns>
     [ReducerMethod(typeof(DashboardActions.LoadDependentsAction))]
-    public static DashboardUserState ReduceLoadDependentsAction(DashboardUserState state)
+    public static DashboardState ReduceDependentsAction(DashboardState state)
     {
         return state with
         {
-            IsLoading = true,
+            Dependents = state.Dependents with {
+                Result = null,
+                IsLoading = true,
+                Error = null,
+            },
+        };
+    }
+
+    /// <summary>
+    /// The Reducer for the load success action.
+    /// </summary>
+    /// <param name="state">The logged in user state.</param>
+    /// <param name="action">The load success action.</param>
+    /// <returns>The new logged in user state.</returns>
+    [ReducerMethod]
+    public static DashboardState ReduceDependentsSuccessAction(DashboardState state, DashboardActions.DependentsSuccessAction action)
+    {
+        return state with
+        {
+            Dependents = state.Dependents with
+            {
+                Result = action.Data,
+                IsLoading = false,
+                Error = null,
+            },
+        };
+    }
+
+    /// <summary>
+    /// The Reducer for the load fail action.
+    /// </summary>
+    /// <param name="state">The logged in dependents state.</param>
+    /// <param name="action">The load success action.</param>
+    /// <returns>The new dependents state.</returns>
+    [ReducerMethod]
+    public static DashboardState ReduceDependentsFailAction(DashboardState state, DashboardActions.DependentsFailAction action)
+    {
+        return state with
+        {
+            Dependents = state.Dependents with
+            {
+                Result = null,
+                IsLoading = false,
+                Error = action.Error,
+            },
         };
     }
 
@@ -70,11 +194,51 @@ public static class DashboardReducers
     /// <param name="state">The recurring users state.</param>
     /// <returns>The new recurring users  state.</returns>
     [ReducerMethod(typeof(DashboardActions.LoadRecurringUsersAction))]
-    public static DashboardRecurringUserState ReduceLoadRecurringUsersAction(DashboardRecurringUserState state)
+    public static DashboardState ReduceRecurringUsersAction(DashboardState state)
     {
         return state with
         {
-            IsLoading = true,
+            RecurringUsers = state.RecurringUsers with { IsLoading = true },
+        };
+    }
+
+    /// <summary>
+    /// The Reducer for the load success action.
+    /// </summary>
+    /// <param name="state">The recurring users state.</param>
+    /// <param name="action">The load success action.</param>
+    /// <returns>The new recurring users state.</returns>
+    [ReducerMethod]
+    public static DashboardState ReduceRecurringUsersSuccessAction(DashboardState state, DashboardActions.RecurringUsersSuccessAction action)
+    {
+        return state with
+        {
+            RecurringUsers = state.RecurringUsers with
+            {
+                Result = action.Data,
+                IsLoading = false,
+                Error = null,
+            },
+        };
+    }
+
+    /// <summary>
+    /// The Reducer for the load fail action.
+    /// </summary>
+    /// <param name="state">The recurring users state.</param>
+    /// <param name="action">The load success action.</param>
+    /// <returns>The new recurring users state.</returns>
+    [ReducerMethod]
+    public static DashboardState ReduceRecurringUsersFailAction(DashboardState state, DashboardActions.RecurringUsersFailAction action)
+    {
+        return state with
+        {
+            RecurringUsers = state.RecurringUsers with
+            {
+                Result = null,
+                IsLoading = false,
+                Error = action.Error,
+            },
         };
     }
 
@@ -84,111 +248,11 @@ public static class DashboardReducers
     /// <param name="state">The rating summary state.</param>
     /// <returns>The new rating summary  state.</returns>
     [ReducerMethod(typeof(DashboardActions.LoadRatingSummaryAction))]
-    public static DashboardRatingSummaryState ReduceLoadRatingSummaryAction(DashboardRatingSummaryState state)
+    public static DashboardState ReduceRatingSummaryAction(DashboardState state)
     {
         return state with
         {
-            IsLoading = true,
-        };
-    }
-
-    /// <summary>
-    /// The Reducer for the load success action.
-    /// </summary>
-    /// <param name="state">The user state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new user state.</returns>
-    [ReducerMethod]
-    public static DashboardUserState ReduceLoadUserSuccessAction(DashboardUserState state, DashboardActions.LoadSuccessUserAction action)
-    {
-        return state with
-        {
-            Result = action.Data,
-            IsLoading = false,
-            Error = null,
-        };
-    }
-
-    /// <summary>
-    /// The Reducer for the load fail action.
-    /// </summary>
-    /// <param name="state">The user state.</param>
-    /// <param name="action">The load fail action.</param>
-    /// <returns>The new user state.</returns>
-    [ReducerMethod]
-    public static DashboardUserState ReduceLoadUserFailAction(DashboardUserState state, DashboardActions.LoadFailUserAction action)
-    {
-        return state with
-        {
-            Result = null,
-            IsLoading = false,
-            Error = action.Error,
-        };
-    }
-
-    /// <summary>
-    /// The Reducer for the load reset action.
-    /// </summary>
-    /// <param name="state">The user state.</param>
-    /// <returns>The new user state.</returns>
-    [ReducerMethod(typeof(DashboardActions.ResetUserStateAction))]
-    public static DashboardUserState ReduceLoadUserResetAction(DashboardUserState state)
-    {
-        return state with
-        {
-            Result = null,
-            IsLoading = false,
-            Error = null,
-        };
-    }
-
-    /// <summary>
-    /// The Reducer for the load success action.
-    /// </summary>
-    /// <param name="state">The recurring user state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new recurring user state.</returns>
-    [ReducerMethod]
-    public static DashboardRecurringUserState ReduceLoadRecurringUserSuccessAction(DashboardRecurringUserState state, DashboardActions.LoadSuccessRecurringUserAction action)
-    {
-        return state with
-        {
-            Result = action.Data,
-            IsLoading = false,
-            Error = null,
-        };
-    }
-
-    /// <summary>
-    /// The Reducer for the load fail action.
-    /// </summary>
-    /// <param name="state">The recurring user state.</param>
-    /// <param name="action">The load fail action.</param>
-    /// <returns>The new recurring user state.</returns>
-    [ReducerMethod]
-    public static DashboardRecurringUserState ReduceLoadRecurringUserFailAction(DashboardRecurringUserState state, DashboardActions.LoadFailRecurringUserAction action)
-    {
-        return state with
-        {
-            Result = null,
-            IsLoading = false,
-            Error = action.Error,
-        };
-    }
-
-    /// <summary>
-    /// The Reducer for the load reset action.
-    /// </summary>
-    /// <param name="state">The recurring user state.</param>
-    /// <returns>The new recurring user state.</returns>
-    [ReducerMethod(typeof(DashboardActions.ResetRecurringUserStateAction))]
-    public static DashboardRecurringUserState ReduceLoadRecurringUserResetAction(DashboardRecurringUserState state)
-    {
-        return state with
-        {
-            Result = null,
-            IsLoading = false,
-            Error = null,
+            RatingSummary = state.RatingSummary with { IsLoading = true },
         };
     }
 
@@ -199,60 +263,54 @@ public static class DashboardReducers
     /// <param name="action">The load success action.</param>
     /// <returns>The new rating summary state.</returns>
     [ReducerMethod]
-    public static DashboardRatingSummaryState ReduceLoadRatingSummarySuccessAction(DashboardRatingSummaryState state, DashboardActions.LoadSuccessRatingSummaryAction action)
+    public static DashboardState ReduceRatingSummarySuccessAction(DashboardState state, DashboardActions.RatingSummarySuccessAction action)
     {
         return state with
         {
-            Result = action.Data,
-            IsLoading = false,
-            Error = null,
+            RatingSummary = state.RatingSummary with
+            {
+                Result = action.Data,
+                IsLoading = false,
+                Error = null,
+            },
         };
     }
 
     /// <summary>
     /// The Reducer for the load fail action.
     /// </summary>
-    /// <param name="state">The rating summary state.</param>
-    /// <param name="action">The load fail action.</param>
-    /// <returns>The new rating summary state.</returns>
+    /// <param name="state">The logged in rating summary state.</param>
+    /// <param name="action">The load success action.</param>
+    /// <returns>The new ratings summary state.</returns>
     [ReducerMethod]
-    public static DashboardRatingSummaryState ReduceLoadRatingSummaryFailAction(DashboardRatingSummaryState state, DashboardActions.LoadFailRatingSummaryAction action)
+    public static DashboardState ReduceRatingSummaryFailAction(DashboardState state, DashboardActions.RatingSummaryFailAction action)
     {
         return state with
         {
-            Result = null,
-            IsLoading = false,
-            Error = action.Error,
+            RatingSummary = state.RatingSummary with
+            {
+                Result = null,
+                IsLoading = false,
+                Error = action.Error,
+            },
         };
     }
 
     /// <summary>
-    /// The Reducer for the load reset action.
+    /// The reducer for the reset state action.
     /// </summary>
-    /// <param name="state">The rating summary state.</param>
-    /// <returns>The new rating summary state.</returns>
-    [ReducerMethod(typeof(DashboardActions.ResetRatingSummaryStateAction))]
-    public static DashboardRatingSummaryState ReduceLoadRatingSummaryResetAction(DashboardRatingSummaryState state)
+    /// <param name="state">The dashboard state.</param>
+    /// <returns>The default state.</returns>
+    [ReducerMethod(typeof(DashboardActions.ResetStateAction))]
+    public static DashboardState ReduceResetStateAction(DashboardState state)
     {
         return state with
         {
-            Result = null,
-            IsLoading = false,
-            Error = null,
+           RegisteredUsers = new(),
+           LoggedInUsers = new(),
+           Dependents = new(),
+           RecurringUsers = new(),
+           RatingSummary = new(),
         };
-    }
-
-    /// <summary>
-    /// The Reducer for the dashboard state reset action.
-    /// </summary>
-    /// <param name="userState">The user state.</param>
-    /// <param name="recurringUserState">The recurring user state.</param>
-    /// <param name="ratingSummaryState">The rating summary state.</param>
-    [ReducerMethod(typeof(DashboardActions.ResetDashboardStateAction))]
-    public static void ReduceLoadDashboardResetAction(DashboardUserState userState, DashboardRecurringUserState recurringUserState, DashboardRatingSummaryState ratingSummaryState)
-    {
-        _ = userState with { Result = null, IsLoading = false, Error = null };
-        _ = recurringUserState with { Result = null, IsLoading = false, Error = null };
-        _ = ratingSummaryState with { Result = null, IsLoading = false, Error = null };
     }
 }

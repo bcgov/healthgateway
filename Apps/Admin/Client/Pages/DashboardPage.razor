@@ -1,0 +1,81 @@
+@page "/dashboard"
+@using HealthGateway.Admin.Client.Store.Dashboard
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<PageTitle>Admin Dashboard</PageTitle>
+<HgPageHeading>Dashboard</HgPageHeading>
+
+<HgBannerFeedback Severity="Severity.Error" IsEnabled="@HasError" TResetAction="DashboardActions.ResetStateAction">
+  @foreach(var error in ErrorList)
+    {
+        <li>@error</li>
+    }
+</HgBannerFeedback>
+
+<MudGrid>
+    <MudItem xs="6" lg="6">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            <MudText Align="Align.Center" Typo="Typo.subtitle1"><strong>Registered Users</strong></MudText>
+            <MudText Align="Align.Center" Typo="Typo.subtitle1"><strong>@TotalRegisteredUsers</strong></MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="6" lg="6">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            <MudText Align="Align.Center" Typo="Typo.subtitle1"><strong>Dependents</strong></MudText>
+            <MudText Align="Align.Center" Typo="Typo.subtitle1"><strong>@TotalDependents</strong></MudText>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<MudGrid Class="my-3">
+    <MudItem xs="6" lg="3">
+        <MudDateRangePicker Mindate="@MinimumDateTime" MaxDate="@MaximumDateTime" @ref="SelectedDateRangePicker" Label="Select Date Range" @bind-DateRange="SelectedDateRange" Color="Color.Success" Style="font-weight:bold">
+            <PickerActions>
+                <MudButton Class="mr-auto align-self-start" OnClick="@(() => SelectedDateRangePicker.Clear())">Clear</MudButton>
+                <MudButton OnClick="@(() => SelectedDateRangePicker.Close(false))">Cancel</MudButton>
+                <MudButton Color="Color.Primary" OnClick="@(() => DispatchRecurringUserActionWithDateChanged())">Ok</MudButton>
+            </PickerActions>
+        </MudDateRangePicker>
+    </MudItem>
+    <MudItem xs="6" lg="3">
+         <MudNumericField T="int" Label="Unique Days" @bind-Value="UniqueDays" Required="@true" />
+    </MudItem>
+</MudGrid>
+
+<MudText Class="my-3" Typo="Typo.subtitle1"><strong>Recurring Users</strong></MudText>
+<MudGrid>
+    <MudItem xs="6" lg="6">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            <MudText Align="Align.Center" Typo="Typo.subtitle1"><strong>User Count</strong></MudText>
+            <MudText Align="Align.Center" Typo="Typo.subtitle1"><strong>@TotalUniqueUsers</strong></MudText>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<MudText Class="my-3" Typo="Typo.subtitle1"><strong>Rating Summary</strong></MudText>
+<RatingSummary />
+
+<MudGrid>
+    <MudItem xs="12" lg="12">
+        <MudText Class="mt-3" Typo="Typo.subtitle1"><strong>Daily Data</strong></MudText>
+        <MudTable Class="mt-3" Items="@TableData" HorizontalScrollbar="true" Striped="true" Dense="true">
+            <HeaderContent>
+                <MudTh>Date</MudTh>
+                <MudTh>Registered</MudTh>
+                <MudTh>Logged In</MudTh>
+                <MudTh>Dependents</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Date">@context.DailyDateTime.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd DataLabel="Registered">@context.TotalRegisteredUsers</MudTd>
+                <MudTd DataLabel="Logged In">@context.TotalLoggedInUsers</MudTd>
+                <MudTd DataLabel="Dependents">@context.TotalDependents</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudItem>
+</MudGrid>
+

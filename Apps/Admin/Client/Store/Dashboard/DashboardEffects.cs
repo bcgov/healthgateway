@@ -58,18 +58,17 @@ public class DashboardEffects
     public async Task HandleLoadAction(DashboardActions.LoadRegisteredUsersAction action, IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Loading registered users.");
-
         try
         {
             IDictionary<DateTime, int> response = await this.DashboardApi.GetRegisteredUserCount(action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Registered users retrieved successfully!");
-            dispatcher.Dispatch(new DashboardActions.LoadSuccessUserAction(response));
+            dispatcher.Dispatch(new DashboardActions.RegisteredUsersSuccessAction(response));
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
-            this.Logger.LogError($"Error retrieving registered users, reason: {error.Message}");
-            dispatcher.Dispatch(new DashboardActions.LoadFailUserAction(error));
+            this.Logger.LogError($"Error retrieving registered users, reason: {error.Message}.");
+            dispatcher.Dispatch(new DashboardActions.RegisteredUsersFailAction(error));
         }
     }
 
@@ -88,13 +87,13 @@ public class DashboardEffects
         {
             IDictionary<DateTime, int> response = await this.DashboardApi.GetLoggedinUsersCount(action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Logged in users retrieved successfully!");
-            dispatcher.Dispatch(new DashboardActions.LoadSuccessUserAction(response));
+            dispatcher.Dispatch(new DashboardActions.LoggedInUsersSuccessAction(response));
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
-            this.Logger.LogError($"Error retrieving logged in users, reason: {error.Message}");
-            dispatcher.Dispatch(new DashboardActions.LoadFailUserAction(error));
+            this.Logger.LogError($"Error retrieving logged in users, reason: {error.Message}.");
+            dispatcher.Dispatch(new DashboardActions.LoggedInUsersFailAction(error));
         }
     }
 
@@ -113,13 +112,13 @@ public class DashboardEffects
         {
             IDictionary<DateTime, int> response = await this.DashboardApi.GetDependentCount(action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Dependents retrieved successfully!");
-            dispatcher.Dispatch(new DashboardActions.LoadSuccessUserAction(response));
+            dispatcher.Dispatch(new DashboardActions.DependentsSuccessAction(response));
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
-            this.Logger.LogError($"Error retrieving dependents, reason: {error.Message}");
-            dispatcher.Dispatch(new DashboardActions.LoadFailUserAction(error));
+            this.Logger.LogError($"Error retrieving dependents, reason: {error.Message}.");
+            dispatcher.Dispatch(new DashboardActions.DependentsFailAction(error));
         }
     }
 
@@ -139,13 +138,13 @@ public class DashboardEffects
             int response = await this.DashboardApi.GetRecurringUsersCount(action.Days, action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Recurring users retrieved successfully!");
             RecurringUser recurringUser = new() { TotalRecurringUsers = response };
-            dispatcher.Dispatch(new DashboardActions.LoadSuccessRecurringUserAction(recurringUser));
+            dispatcher.Dispatch(new DashboardActions.RecurringUsersSuccessAction(recurringUser));
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
-            this.Logger.LogError($"Error retrieving recurring users, reason: {error.Message}");
-            dispatcher.Dispatch(new DashboardActions.LoadFailRecurringUserAction(error));
+            this.Logger.LogError($"Error retrieving recurring users, reason: {error.Message}.");
+            dispatcher.Dispatch(new DashboardActions.RecurringUsersFailAction(error));
         }
     }
 
@@ -164,13 +163,13 @@ public class DashboardEffects
         {
             IDictionary<string, int> response = await this.DashboardApi.GetRatingsSummary(action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Rating summary retrieved successfully!");
-            dispatcher.Dispatch(new DashboardActions.LoadSuccessRatingSummaryAction(response));
+            dispatcher.Dispatch(new DashboardActions.RatingSummarySuccessAction(response));
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
-            this.Logger.LogError($"Error retrieving rating summary, reason: {error.Message}");
-            dispatcher.Dispatch(new DashboardActions.LoadFailRatingSummaryAction(error));
+            this.Logger.LogError($"Error retrieving rating summary, reason: {error.Message}.");
+            dispatcher.Dispatch(new DashboardActions.RatingSummaryFailAction(error));
         }
     }
 }
