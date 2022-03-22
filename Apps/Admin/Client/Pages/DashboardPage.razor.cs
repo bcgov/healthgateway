@@ -220,8 +220,8 @@ public partial class DashboardPage : FluxorComponent
             }
 
             return results
-                .Where(r => startDate <= r.DailyDateTime && r.DailyDateTime <= endDate && r.DailyDateTime != null)
-                .GroupBy(r => r.DailyDateTime!.Value)
+                .Where(r => startDate <= r.DailyDateTime && r.DailyDateTime <= endDate)
+                .GroupBy(r => r.DailyDateTime)
                 .Select(grp => new DailyDataRow
                 {
                     DailyDateTime = grp.First().DailyDateTime,
@@ -267,7 +267,7 @@ public partial class DashboardPage : FluxorComponent
         /// <summary>
         /// Gets the dashboard daily datetime.
         /// </summary>
-        public DateTime? DailyDateTime { get; init; }
+        public DateTime DailyDateTime { get; init; }
 
         /// <summary>
         /// Gets or sets the total registered users.
