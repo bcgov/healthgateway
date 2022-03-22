@@ -165,8 +165,9 @@ public partial class DashboardPage : FluxorComponent
     {
         get
         {
-            DateTime startDate = DateTime.Now.AddDays(-10);
-            DateTime endDate = DateTime.Now;
+            DateTime? startDate = this.SelectedDateRange?.Start;
+            DateTime? endDate = this.SelectedDateRange?.End;
+
             List<DailyDataRow> results = new();
 
             if (this.RegisteredUsersResult?.Result != null)
