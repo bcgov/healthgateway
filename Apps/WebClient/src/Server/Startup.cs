@@ -110,7 +110,6 @@ namespace HealthGateway.WebClient
             services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
             services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
             services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
-            services.AddTransient<IImmunizationDelegate, RestImmunizationDelegate>();
             services.AddTransient<ICDogsDelegate, CDogsDelegate>();
 
             // Add Background Services
