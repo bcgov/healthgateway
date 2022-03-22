@@ -67,7 +67,7 @@
                 <MudTh>Dependents</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Date">@context.DailyDateTime.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd DataLabel="Date">@context.DailyDateTime?.ToString("yyyy-MM-dd")</MudTd>
                 <MudTd DataLabel="Registered">@context.TotalRegisteredUsers</MudTd>
                 <MudTd DataLabel="Logged In">@context.TotalLoggedInUsers</MudTd>
                 <MudTd DataLabel="Dependents">@context.TotalDependents</MudTd>
