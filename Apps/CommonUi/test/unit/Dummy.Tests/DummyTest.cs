@@ -18,7 +18,7 @@ namespace HealthGateway.Common.Ui.Dummy.Test
     using Xunit;
 
     /// <summary>
-    /// This is a placeholder until we create tests for Common Ui. q
+    /// This is a placeholder until we create tests for Common UI.
     /// </summary>
     public class DummyTest
     {
