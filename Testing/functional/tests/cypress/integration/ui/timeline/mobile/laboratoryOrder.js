@@ -49,7 +49,7 @@ describe("Laboratory Orders", () => {
                 });
         });
 
-        cy.get("[data-testid=backBtn]").click();
+        cy.get("[data-testid=backBtn]").click({ force: true });
         cy.get("[data-testid=filterTextInput]").should("be.visible");
     });
 });
