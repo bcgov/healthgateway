@@ -220,14 +220,14 @@ public partial class DashboardPage : FluxorComponent
             }
 
             return results
-                .Where(r => startDate <= r.DailyDateTime && r.DailyDateTime <= endDate)
-                ?.GroupBy(r => r.DailyDateTime)
-                ?.Select(grp => new DailyDataRow
+                .Where(r => startDate <= r.DailyDateTime && r.DailyDateTime <= endDate && r.DailyDateTime != null)
+                .GroupBy(r => r.DailyDateTime!.Value)
+                .Select(grp => new DailyDataRow
                 {
-                    DailyDateTime = grp?.FirstOrDefault()?.DailyDateTime,
-                    TotalRegisteredUsers = grp?.Sum(s => s.TotalRegisteredUsers),
-                    TotalDependents = grp?.Sum(d => d.TotalDependents),
-                    TotalLoggedInUsers = grp?.Sum(l => l.TotalLoggedInUsers),
+                    DailyDateTime = grp.First().DailyDateTime,
+                    TotalRegisteredUsers = grp.Sum(s => s.TotalRegisteredUsers),
+                    TotalDependents = grp.Sum(d => d.TotalDependents),
+                    TotalLoggedInUsers = grp.Sum(l => l.TotalLoggedInUsers),
                 });
         }
     }
@@ -272,16 +272,16 @@ public partial class DashboardPage : FluxorComponent
         /// <summary>
         /// Gets or sets the total registered users.
         /// </summary>
-        public int? TotalRegisteredUsers { get; set; }
+        public int TotalRegisteredUsers { get; set; }
 
         /// <summary>
         /// Gets or sets the total logged in users.
         /// </summary>
-        public int? TotalLoggedInUsers { get; set; }
+        public int TotalLoggedInUsers { get; set; }
 
         /// <summary>
         /// Gets or sets the total dependents.
         /// </summary>
-        public int? TotalDependents { get; set; }
+        public int TotalDependents { get; set; }
     }
 }
