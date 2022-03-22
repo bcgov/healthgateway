@@ -61,13 +61,23 @@ public partial class DashboardPage : FluxorComponent
 
     private bool RegisteredUsersHasError => this.DashboardState.Value.RegisteredUsers.Error != null && this.DashboardState.Value.RegisteredUsers.Error.Message.Length > 0;
 
+    private string RegisteredUsersErrorMessage => this.DashboardState.Value.RegisteredUsers.Error?.Message ?? string.Empty;
+
     private bool LoggedInUsersHasError => this.DashboardState.Value.LoggedInUsers.Error != null && this.DashboardState.Value.LoggedInUsers.Error.Message.Length > 0;
+
+    private string LoggedInUsersErrorMessage => this.DashboardState.Value.LoggedInUsers.Error?.Message ?? string.Empty;
 
     private bool DependentsHasError => this.DashboardState.Value.Dependents.Error != null && this.DashboardState.Value.Dependents.Error.Message.Length > 0;
 
+    private string DependentsErrorMessage => this.DashboardState.Value.Dependents.Error?.Message ?? string.Empty;
+
     private bool RecurringUsersHasError => this.DashboardState.Value.RecurringUsers.Error != null && this.DashboardState.Value.RecurringUsers.Error.Message.Length > 0;
 
+    private string RecurringUsersErrorMessage => this.DashboardState.Value.RecurringUsers.Error?.Message ?? string.Empty;
+
     private bool RatingSummaryHasError => this.DashboardState.Value.RatingSummary.Error != null && this.DashboardState.Value.RatingSummary.Error.Message.Length > 0;
+
+    private string RatingSummaryErrorMessage => this.DashboardState.Value.RatingSummary.Error?.Message ?? string.Empty;
 
     private bool HasError
     {
@@ -82,16 +92,38 @@ public partial class DashboardPage : FluxorComponent
         }
     }
 
-    private string ErrorMessage
+    private List<string> ErrorList
     {
         get
         {
-            if (this.HasError)
+            List<string> errors = new();
+
+            if (this.RegisteredUsersHasError)
             {
-                return "Error in Dashboard";
+                errors.Add(this.RegisteredUsersErrorMessage);
             }
 
-            return string.Empty;
+            if (this.LoggedInUsersHasError)
+            {
+                errors.Add(this.LoggedInUsersErrorMessage);
+            }
+
+            if (this.DependentsHasError)
+            {
+                errors.Add(this.DependentsErrorMessage);
+            }
+
+            if (this.RecurringUsersHasError)
+            {
+                errors.Add(this.RecurringUsersErrorMessage);
+            }
+
+            if (this.RatingSummaryHasError)
+            {
+                errors.Add(this.RatingSummaryErrorMessage);
+            }
+
+            return errors;
         }
     }
 

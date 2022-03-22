@@ -7,7 +7,10 @@
 <HgPageHeading>Dashboard</HgPageHeading>
 
 <HgBannerFeedback Severity="Severity.Error" IsEnabled="@HasError" TResetAction="DashboardActions.ResetStateAction">
-  @ErrorMessage 
+  @foreach(var error in ErrorList)
+    {
+        <li>@error</li>
+    }
 </HgBannerFeedback>
 
 <MudGrid>
@@ -35,14 +38,12 @@
             </PickerActions>
         </MudDateRangePicker>
     </MudItem>
-</MudGrid>
-
-<MudGrid Class="my-3">
     <MudItem xs="6" lg="3">
-        <HgTextField T="int" Label="Unique Days" Required="@true" Style="font-weight:bold" @bind-Value="UniqueDays" />
+         <MudNumericField T="int" Label="Unique Days" @bind-Value="UniqueDays" Required="@true" />
     </MudItem>
 </MudGrid>
 
+<MudText Class="my-3" Typo="Typo.subtitle1"><strong>Recurring Users</strong></MudText>
 <MudGrid>
     <MudItem xs="6" lg="6">
         <MudPaper Class="my-2 pa-4" Outlined="true">
