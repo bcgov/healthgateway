@@ -288,7 +288,6 @@ export default class Dashboard extends Vue {
     private getRatings() {
         this.isLoadingRatings = true;
         var endDate = DateTime.fromISO(this.ratingPeriodDates[1])
-            .plus({ days: 1 })
             .toISO()
             .substring(0, 10);
         this.dashboardService
