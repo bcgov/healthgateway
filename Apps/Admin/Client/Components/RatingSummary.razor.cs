@@ -37,7 +37,7 @@ public partial class RatingSummary : FluxorComponent
 
     private IDictionary<int, int>? Ratings => this.RatingSummaryResult?.Result?.ToDictionary(r => Convert.ToInt32(r.Key, CultureInfo.InvariantCulture), r => r.Value);
 
-    private int TotalRatings => this.RatingSummaryResult?.Result?.Select(r => r.Value)?.Count() ?? 0;
+    private int TotalRatings => this.RatingSummaryResult?.Result?.Select(r => r.Value)?.Sum() ?? 0;
 
     private string AverageRating
     {
