@@ -131,7 +131,12 @@ export class RestUserProfileService implements IUserProfileService {
                     this.logger.error(
                         `recoverAccount ${this.FETCH_ERROR}: ${err}`
                     );
-                    reject(err);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -154,7 +159,12 @@ export class RestUserProfileService implements IUserProfileService {
                     this.logger.error(
                         `validateAge ${this.FETCH_ERROR}: ${err}`
                     );
-                    reject(err);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -177,7 +187,12 @@ export class RestUserProfileService implements IUserProfileService {
                     this.logger.error(
                         `getTermsOfService ${this.FETCH_ERROR}: ${err}`
                     );
-                    reject(err);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -196,7 +211,12 @@ export class RestUserProfileService implements IUserProfileService {
                 })
                 .catch((err) => {
                     this.logger.error(`validateEmail error: ${err}`);
-                    reject(err);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -216,13 +236,18 @@ export class RestUserProfileService implements IUserProfileService {
                 })
                 .catch((err) => {
                     this.logger.error(`validateSMS error: ${err}`);
-                    reject(err);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
 
     public updateEmail(hdid: string, email: string): Promise<boolean> {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const headers: Dictionary<string> = {};
             headers["Content-Type"] = "application/json; charset=utf-8";
 
@@ -236,14 +261,21 @@ export class RestUserProfileService implements IUserProfileService {
                     return resolve(true);
                 })
                 .catch((err) => {
-                    this.logger.error(`updateEmail error: ${err}`);
-                    return resolve(err);
+                    this.logger.error(
+                        `updateEmail ${this.FETCH_ERROR}: ${err}`
+                    );
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
 
     public updateSMSNumber(hdid: string, smsNumber: string): Promise<boolean> {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const headers: Dictionary<string> = {};
             headers["Content-Type"] = "application/json; charset=utf-8";
 
@@ -257,8 +289,15 @@ export class RestUserProfileService implements IUserProfileService {
                     return resolve(true);
                 })
                 .catch((err) => {
-                    this.logger.error(`updateSMSNumber error: ${err}`);
-                    return resolve(err);
+                    this.logger.error(
+                        `updateSMSNumber  ${this.FETCH_ERROR}: ${err}`
+                    );
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
