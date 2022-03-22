@@ -244,7 +244,7 @@ public partial class DashboardPage : FluxorComponent
 
     private void LoadDispatchActions(int days, string startPeriod, string endPeriod, int timeOffset, bool initialLoad)
     {
-        string endDate = initialLoad ? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : endPeriod;
+        string endDate = initialLoad ? DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : endPeriod;
         this.Dispatcher.Dispatch(new DashboardActions.LoadRegisteredUsersAction(timeOffset));
         this.Dispatcher.Dispatch(new DashboardActions.LoadLoggedInUsersAction(timeOffset));
         this.Dispatcher.Dispatch(new DashboardActions.LoadDependentsAction(timeOffset));
