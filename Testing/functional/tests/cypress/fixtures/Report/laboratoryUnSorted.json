@@ -4,7 +4,7 @@
         "retryin": 0,
         "orders": [
             {
-                "laboratoryReportId": "ccee5028-6d51-4474-ce18-08d91c31b95b",
+                "labPdfId": "ccee5028-6d51-4474-ce18-08d91c31b95b",
                 "reportingSource": "Vancouver Coastal Health",
                 "reportId": "341L56330T278085",
                 "collectionDateTime": "2021-10-11T11:57:00",
@@ -58,7 +58,7 @@
                 ]
             },
             {
-                "laboratoryReportId": "7452919b-7411-40e4-ce19-08d91c31b95b",
+                "labPdfId": "7452919b-7411-40e4-ce19-08d91c31b95b",
                 "reportingSource": "Vancouver Coastal Health",
                 "reportId": "341L52341T275612",
                 "collectionDateTime": "2021-05-11T06:00:00",
@@ -210,7 +210,7 @@
                 ]
             },
             {
-                "laboratoryReportId": "aec5015c-fcf0-4ab5-ce1a-08d91c31b95b",
+                "labPdfId": "aec5015c-fcf0-4ab5-ce1a-08d91c31b95b",
                 "reportingSource": "Vancouver Coastal Health",
                 "reportId": "341L47099T274701",
                 "collectionDateTime": "2021-07-11T06:00:00",
