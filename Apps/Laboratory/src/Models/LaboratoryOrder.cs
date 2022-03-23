@@ -48,7 +48,7 @@ public class LaboratoryOrder
     /// Gets or sets the id for the laboratory report.
     /// </summary>
     [JsonPropertyName("labPdfId")]
-    public Guid LabPdfId { get; set; }
+    public string? LabPdfId { get; set; }
 
     /// <summary>
     /// Gets or sets a value for reporting source.
@@ -110,7 +110,7 @@ public class LaboratoryOrder
 
         return new LaboratoryOrder(laboratoryTests)
         {
-            LabPdfId = model.LabPdfGuid,
+            LabPdfId = model.LabPdfId,
             ReportingSource = model.ReportingSource,
             ReportId = model.ReportId,
             CollectionDateTime = model.CollectionDateTime,
