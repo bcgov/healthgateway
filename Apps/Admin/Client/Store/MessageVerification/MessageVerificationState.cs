@@ -26,16 +26,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     /// State should be decorated with [FeatureState] for automatic discovery when services. AddFluxor is called.
     /// </summary>
     [FeatureState]
-    public record MessageVerificationState : BaseState
+    public record MessageVerificationState : BaseRequestState<RequestResult<IEnumerable<MessagingVerificationModel>>>
     {
-        /// <summary>
-        /// Gets the messaging verification request result.
-        /// </summary>
-        public RequestResult<IEnumerable<MessagingVerificationModel>>? RequestResult { get; init; }
-
-        /// <summary>
-        /// Gets a value indicating whether the messaging verification request result has been loaded.
-        /// </summary>
-        public bool Loaded => this.RequestResult != null;
     }
 }

@@ -154,11 +154,15 @@ export default class Covid19View extends Vue {
     }
 
     private get loadingStatusMessage(): string {
-        return this.isDownloading
-            ? "Downloading...."
-            : this.vaccineRecordIsLoading
-            ? this.vaccineRecordStatusMessage
-            : this.vaccinationStatusMessage;
+        if (this.isDownloading) {
+            return "Downloading....";
+        }
+
+        if (this.vaccineRecordIsLoading) {
+            return this.vaccineRecordStatusMessage;
+        }
+
+        return this.vaccinationStatusMessage;
     }
 
     private get downloadButtonShown(): boolean {
@@ -207,6 +211,10 @@ export default class Covid19View extends Vue {
         return `bcwallet://healthgateway.gov.bc.ca?data=${data}`;
     }
 
+    private displayBcWalletAppLink() {
+        window.open(this.bcWalletAppLink, "_self");
+    }
+
     private get patientName(): string | undefined {
         if (this.vaccinationStatus) {
             return `${this.vaccinationStatus.firstname} ${this.vaccinationStatus.lastname}`;
@@ -239,9 +247,15 @@ export default class Covid19View extends Vue {
     }
 
     private sortEntries(timelineEntries: TimelineEntry[]): TimelineEntry[] {
-        return timelineEntries.sort((a, b) =>
-            a.date.isAfter(b.date) ? -1 : a.date.isBefore(b.date) ? 1 : 0
-        );
+        return timelineEntries.sort((a, b) => {
+            if (a.date.isBefore(b.date)) {
+                return 1;
+            }
+            if (a.date.isAfter(b.date)) {
+                return -1;
+            }
+            return 0;
+        });
     }
 
     private fetchVaccineCardData() {
@@ -385,7 +399,7 @@ export default class Covid19View extends Vue {
                         <b-dropdown-item
                             v-if="saveWalletShown"
                             data-testid="save-to-wallet-dropdown-item"
-                            :href="bcWalletAppLink"
+                            @click="displayBcWalletAppLink"
                             >Save to BC Wallet App</b-dropdown-item
                         >
                     </hg-dropdown>
@@ -554,6 +568,10 @@ export default class Covid19View extends Vue {
 }
 .primary {
     color: $primary;
+}
+
+a {
+    cursor: pointer !important;
 }
 </style>
 <style lang="scss">

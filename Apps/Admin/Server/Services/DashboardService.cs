@@ -28,7 +28,6 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
     /// <inheritdoc />
@@ -93,7 +92,7 @@ namespace HealthGateway.Admin.Server.Services
             TimeSpan ts = new(0, timeOffset, 0);
             DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
             startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
-            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
+            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
             endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
             return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
         }
@@ -108,6 +107,7 @@ namespace HealthGateway.Admin.Server.Services
             };
 
             DBResult<IEnumerable<MessagingVerification>>? dbResult = null;
+            string phn = string.Empty;
             switch (queryType)
             {
                 case UserQueryType.PHN:
@@ -115,6 +115,7 @@ namespace HealthGateway.Admin.Server.Services
                     if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                     {
                         string hdid = patientResult.ResourcePayload.HdId;
+                        phn = patientResult.ResourcePayload.PersonalHealthNumber;
                         dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, hdid);
                     }
                     else
@@ -130,16 +131,36 @@ namespace HealthGateway.Admin.Server.Services
                     dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.SMS, queryString);
                     break;
                 case UserQueryType.HDID:
-                    dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, queryString);
+                    RequestResult<PatientModel> patientResultHdid = Task.Run(async () => await this.patientService.GetPatient(queryString).ConfigureAwait(true)).Result;
+                    if (patientResultHdid.ResultStatus == ResultType.Success && patientResultHdid.ResourcePayload != null)
+                    {
+                        phn = patientResultHdid.ResourcePayload.PersonalHealthNumber;
+                        dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, queryString);
+                    }
+                    else
+                    {
+                        retVal.ResultError = patientResultHdid.ResultError;
+                    }
+
                     break;
             }
 
             if (dbResult != null && dbResult.Status == Database.Constants.DBStatusCode.Read)
             {
                 retVal.ResultStatus = ResultType.Success;
+                List<MessagingVerificationModel> results = new();
                 if (dbResult.Payload != null)
                 {
-                    retVal.ResourcePayload = dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel);
+                    results.AddRange(dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel));
+                    if (queryType == UserQueryType.HDID || queryType == UserQueryType.PHN)
+                    {
+                        foreach (MessagingVerificationModel? item in results)
+                        {
+                            item.PersonalHealthNumber = phn;
+                        }
+                    }
+
+                    retVal.ResourcePayload = results;
                 }
             }
 
@@ -153,7 +174,7 @@ namespace HealthGateway.Admin.Server.Services
             TimeSpan ts = new(0, timeOffset, 0);
             DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
             startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
-            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
+            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
             endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
             return this.ratingDelegate.GetSummary(startDate, endDate);
         }

@@ -9,7 +9,6 @@ import DashboardView from "@/views/Dashboard.vue";
 import FeedbackView from "@/views/Feedback.vue";
 import LoginView from "@/views/Login.vue";
 import LogoutView from "@/views/Logout.vue";
-import ResendEmailView from "@/views/ResendEmail.vue";
 import StatsView from "@/views/Stats.vue";
 import SupportView from "@/views/Support.vue";
 import UnauthorizedView from "@/views/Unauthorized.vue";

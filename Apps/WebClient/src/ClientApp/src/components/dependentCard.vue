@@ -180,7 +180,13 @@ export default class DependentCardComponent extends Vue {
         this.testRows.sort((a, b) => {
             let dateA = new DateWrapper(a.test.collectedDateTime);
             let dateB = new DateWrapper(b.test.collectedDateTime);
-            return dateA.isAfter(dateB) ? -1 : dateA.isBefore(dateB) ? 1 : 0;
+            if (dateA.isBefore(dateB)) {
+                return 1;
+            }
+            if (dateA.isAfter(dateB)) {
+                return -1;
+            }
+            return 0;
         });
     }
 

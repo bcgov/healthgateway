@@ -77,15 +77,15 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public JWTModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
+        public JwtModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
             this.logger.LogDebug($"Authenticating Service... {tokenRequest.ClientId}");
-            JWTModel? jwtModel = this.ClientCredentialsGrant(tokenUri, tokenRequest);
+            JwtModel? jwtModel = this.ClientCredentialsGrant(tokenUri, tokenRequest);
             this.logger.LogDebug($"Finished authenticating Service. {tokenRequest.ClientId}");
             if (jwtModel == null)
             {
                 this.logger.LogCritical($"Unable to authenticate to as {tokenRequest.Username} to {tokenUri}");
-                throw new InvalidOperationException("Auth failure - JWTModel cannot be null");
+                throw new InvalidOperationException("Auth failure - JwtModel cannot be null");
             }
 
             return jwtModel;
@@ -121,19 +121,19 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public JWTModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = false)
+        public JwtModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = false)
         {
-            (JWTModel jwtModel, _) = this.AuthenticateUser(tokenUri, tokenRequest, cacheEnabled);
+            (JwtModel jwtModel, _) = this.AuthenticateUser(tokenUri, tokenRequest, cacheEnabled);
             return jwtModel;
         }
 
         /// <inheritdoc/>
-        public (JWTModel JwtModel, bool Cached) AuthenticateUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled)
+        public (JwtModel JwtModel, bool Cached) AuthenticateUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled)
         {
             string cacheKey = $"{tokenUri}:{tokenRequest.Audience}:{tokenRequest.ClientId}:{tokenRequest.Username}";
             bool cached = false;
             this.logger.LogDebug("Attempting to fetch token from cache");
-            JWTModel? jwtModel = null;
+            JwtModel? jwtModel = null;
             if (cacheEnabled && this.tokenCacheMinutes > 0)
             {
                 this.memoryCache.TryGetValue(cacheKey, out jwtModel);
@@ -165,7 +165,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 else
                 {
                     this.logger.LogCritical($"Unable to authenticate to as {tokenRequest.Username} to {tokenUri}");
-                    throw new InvalidOperationException("Auth failure - JWTModel cannot be null");
+                    throw new InvalidOperationException("Auth failure - JwtModel cannot be null");
                 }
 
                 this.logger.LogInformation($"Finished authenticating User: {tokenRequest.Username}");
@@ -191,9 +191,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             return (configUri, configTokenRequest);
         }
 
-        private JWTModel? ClientCredentialsGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
+        private JwtModel? ClientCredentialsGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
-            JWTModel? authModel = null;
+            JwtModel? authModel = null;
             try
             {
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -214,7 +214,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 string jwtTokenResponse = response.Content.ReadAsStringAsync().Result;
                 this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
                 response.EnsureSuccessStatusCode();
-                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse)!;
+                authModel = JsonSerializer.Deserialize<JwtModel>(jwtTokenResponse)!;
             }
             catch (HttpRequestException e)
             {
@@ -228,9 +228,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             return authModel;
         }
 
-        private JWTModel? ResourceOwnerPasswordGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
+        private JwtModel? ResourceOwnerPasswordGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
-            JWTModel? authModel = null;
+            JwtModel? authModel = null;
             try
             {
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -256,7 +256,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                     string jwtTokenResponse = response.Content.ReadAsStringAsync().Result;
                     this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
                     response.EnsureSuccessStatusCode();
-                    authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse);
+                    authModel = JsonSerializer.Deserialize<JwtModel>(jwtTokenResponse);
                 }
             }
             catch (HttpRequestException e)

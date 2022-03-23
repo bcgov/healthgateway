@@ -74,7 +74,7 @@ namespace HealthGateway.Medication.Services.Test
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new();
             requestResult.ResourcePayload = new MedicationHistoryResponse();
-            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<ODRHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
+            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
@@ -141,7 +141,7 @@ namespace HealthGateway.Medication.Services.Test
                 ResultStatus = ResultType.Success,
             };
             requestResult.ResourcePayload = new MedicationHistoryResponse();
-            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
+            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
@@ -223,7 +223,7 @@ namespace HealthGateway.Medication.Services.Test
                     },
                 },
             };
-            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<ODRHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
+            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
@@ -293,7 +293,7 @@ namespace HealthGateway.Medication.Services.Test
                     },
                 },
             };
-            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<ODRHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
+            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
@@ -364,7 +364,7 @@ namespace HealthGateway.Medication.Services.Test
                     },
                 },
             };
-            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<ODRHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
+            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
@@ -417,7 +417,7 @@ namespace HealthGateway.Medication.Services.Test
                 },
             };
             requestResult.ResourcePayload = new MedicationHistoryResponse();
-            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<ODRHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
+            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
@@ -461,7 +461,7 @@ namespace HealthGateway.Medication.Services.Test
                 },
             };
             requestResult.ResourcePayload = new MedicationHistoryResponse();
-            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<ODRHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
+            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,

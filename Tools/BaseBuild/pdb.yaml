@@ -1,0 +1,23 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: ${DC}-pdb
+metadata:
+  name: ${DC}-pdb
+objects:
+  - kind: PodDisruptionBudget
+    apiVersion: policy/v1
+    metadata:
+      name: ${DC}-pdb
+    spec:
+      minAvailable: 2  
+      selector:  
+        matchLabels:
+          deploymentconfig: ${DC}
+parameters:
+  - name: DC
+    displayName: DeployConfig
+    description: |
+      The deployment config to use as a selector for the pod disruption budget
+    required: true

@@ -77,13 +77,15 @@ export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
     }
 
     private sortResults() {
-        this.tests.sort((a, b) =>
-            a.collectedDateTime > b.collectedDateTime
-                ? -1
-                : a.collectedDateTime < b.collectedDateTime
-                ? 1
-                : 0
-        );
+        this.tests.sort((a, b) => {
+            if (a.collectedDateTime.isBefore(b.collectedDateTime)) {
+                return 1;
+            }
+            if (a.collectedDateTime.isAfter(b.collectedDateTime)) {
+                return -1;
+            }
+            return 0;
+        });
     }
 }
 

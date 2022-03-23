@@ -107,10 +107,10 @@ class ImmunizationViewModel {
 
         this.searchableAgentsText = this.immunizationAgents.reduce(
             (accumulator: string, current: ImmunizationAgentViewModel) =>
-                (accumulator +=
-                    (current.lotNumber || "") +
-                    (current.name || "") +
-                    (current.productName || "")),
+                accumulator +
+                (current.lotNumber || "") +
+                (current.name || "") +
+                (current.productName || ""),
             ""
         );
     }

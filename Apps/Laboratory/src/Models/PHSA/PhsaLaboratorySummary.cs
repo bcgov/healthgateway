@@ -25,32 +25,20 @@ using System.Text.Json.Serialization;
 public class PhsaLaboratorySummary
 {
     /// <summary>
-    /// Gets or sets the last refresh date of the Laboratory Summary.
-    /// </summary>
-    [JsonPropertyName("lastRefreshDate")]
-    public DateTime LastRefreshDate { get; set; }
-
-    /// <summary>
-    /// Gets or sets the hash of the Laboratory Summary.
-    /// </summary>
-    [JsonPropertyName("hash")]
-    public string Hash { get; set; } = string.Empty;
-
-    /// <summary>
     /// Gets or sets the laboratory battery count of the Laboratory Summary.
     /// </summary>
-    [JsonPropertyName("batteryCount")]
+    [JsonPropertyName("totalBatteryCount")]
     public int BatteryCount { get; set; }
 
     /// <summary>
     /// Gets or sets the laboratory order count of the Laboratory Summary.
     /// </summary>
-    [JsonPropertyName("labOrderCount")]
+    [JsonPropertyName("totalReportCount")]
     public int LabOrderCount { get; set; }
 
     /// <summary>
     /// Gets or sets the list of PHSA Laboratory Orders.
     /// </summary>
-    [JsonPropertyName("plisLabOrders")]
+    [JsonPropertyName("plisReports")]
     public IEnumerable<PhsaLaboratoryOrder>? LabOrders { get; set; }
 }

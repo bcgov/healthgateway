@@ -1,3 +1,4 @@
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 <MudNavMenu>
     <MudNavGroup Title="Showcase" Icon="@Icons.Material.Filled.WbSunny" Expanded="true">
         <MudNavLink Href="showcase/alerts" Icon="@Icons.Material.Filled.PriorityHigh">Alerts</MudNavLink>
@@ -19,7 +20,7 @@
         <MudNavLink Href="dashboard" Icon="@Icons.Material.Filled.ViewQuilt">Dashboard</MudNavLink>
     </AuthorizeView>
     <AuthorizeView Roles="@Roles.Admin">
-        <MudNavLink Href="job-scheduler" Icon="@Icons.Material.Filled.Schedule">Job Scheduler</MudNavLink>
+        <MudNavLink Href="@(ConfigurationState.Value.Result?.ServiceEndpoints["JobScheduler"].ToString())" Icon="@Icons.Material.Filled.Schedule">Job Scheduler</MudNavLink>
     </AuthorizeView>
     <AuthorizeView Roles="@Roles.Admin">
         <MudNavLink Href="communications" Icon="@Icons.Material.Filled.Announcement">Communications</MudNavLink>
@@ -29,9 +30,6 @@
     </AuthorizeView>
     <AuthorizeView Roles="@Roles.Admin">
         <MudNavLink Href="analytics" Icon="fas fa-download">System Analytics</MudNavLink>
-    </AuthorizeView>
-    <AuthorizeView Roles="@Roles.Admin">
-        <MudNavLink Href="emails" Icon="@Icons.Material.Filled.Send">Resend Emails</MudNavLink>
     </AuthorizeView>
     <AuthorizeView Roles="@Roles.Admin">
         <MudNavLink Href="support" Icon="@Icons.Material.Filled.PersonSearch">Support</MudNavLink>

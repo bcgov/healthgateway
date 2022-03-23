@@ -82,7 +82,7 @@ namespace HealthGateway.LaboratoryTests
                 },
             };
 
-            RequestResult<PHSAResult<List<PhsaCovid19Order>>> delegateResult = new()
+            RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult = new()
             {
                 ResultStatus = expectedResultType,
                 PageSize = 100,
@@ -129,7 +129,6 @@ namespace HealthGateway.LaboratoryTests
             // Arrange
             PhsaLaboratorySummary laboratorySummary = new PhsaLaboratorySummary()
             {
-                LastRefreshDate = DateTime.Now,
                 LabOrders = new List<PhsaLaboratoryOrder>()
                 {
                     new PhsaLaboratoryOrder()
@@ -176,7 +175,7 @@ namespace HealthGateway.LaboratoryTests
                 LabOrderCount = 2,
             };
 
-            RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult = new()
+            RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult = new()
             {
                 ResultStatus = expectedResultType,
                 PageSize = 100,
@@ -219,12 +218,11 @@ namespace HealthGateway.LaboratoryTests
             // Arrange
             PhsaLaboratorySummary laboratorySummary = new PhsaLaboratorySummary()
             {
-                LastRefreshDate = DateTime.Now,
                 LabOrders = null,
                 LabOrderCount = 0,
             };
 
-            RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult = new()
+            RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
                 PageSize = 100,
@@ -256,12 +254,11 @@ namespace HealthGateway.LaboratoryTests
             // Arrange
             PhsaLaboratorySummary laboratorySummary = new()
             {
-                LastRefreshDate = DateTime.Now,
                 LabOrders = new List<PhsaLaboratoryOrder>(),
                 LabOrderCount = 0,
             };
 
-            RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult = new()
+            RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
                 PageSize = 100,
@@ -326,7 +323,7 @@ namespace HealthGateway.LaboratoryTests
                 },
             };
 
-            RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> delegateResult = new()
+            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new()
@@ -359,7 +356,7 @@ namespace HealthGateway.LaboratoryTests
         [InlineData(nameof(LabIndicatorType.NotFound))]
         public void ShouldGetCovidTestsWithValidError(string statusIndicator)
         {
-            RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> delegateResult = new()
+            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new()
@@ -393,7 +390,7 @@ namespace HealthGateway.LaboratoryTests
         [InlineData(nameof(LabIndicatorType.Blocked))]
         public void ShouldGetCovidTestsWithInvalidError(string statusIndicator)
         {
-            RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> delegateResult = new()
+            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new()
@@ -426,7 +423,7 @@ namespace HealthGateway.LaboratoryTests
         {
             const int backOffMiliseconds = 500;
 
-            RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> delegateResult = new()
+            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new()

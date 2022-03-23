@@ -33,8 +33,6 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -88,7 +86,7 @@ namespace HealthGateway.Laboratory.Services
 
             if (accessToken != null)
             {
-                RequestResult<PHSAResult<List<PhsaCovid19Order>>> delegateResult = await this.laboratoryDelegate
+                RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult = await this.laboratoryDelegate
                     .GetCovid19Orders(accessToken, hdid, pageIndex).ConfigureAwait(true);
 
                 retVal.ResultStatus = delegateResult.ResultStatus;
@@ -104,7 +102,7 @@ namespace HealthGateway.Laboratory.Services
                     retVal.ResourcePayload.Covid19Orders = Covid19Order.FromPhsaModelCollection(payload);
                 }
 
-                PHSALoadState? loadState = delegateResult.ResourcePayload?.LoadState;
+                PhsaLoadState? loadState = delegateResult.ResourcePayload?.LoadState;
                 if (loadState != null)
                 {
                     retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
@@ -136,7 +134,7 @@ namespace HealthGateway.Laboratory.Services
 
             if (accessToken != null)
             {
-                RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult =
+                RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult =
                     await this.laboratoryDelegate.GetLaboratorySummary(hdid, accessToken).ConfigureAwait(true);
 
                 retVal.ResultStatus = delegateResult.ResultStatus;
@@ -152,7 +150,7 @@ namespace HealthGateway.Laboratory.Services
                         LaboratoryOrder.FromPhsaModelCollection(payload.LabOrders);
                 }
 
-                PHSALoadState? loadState = delegateResult.ResourcePayload?.LoadState;
+                PhsaLoadState? loadState = delegateResult.ResourcePayload?.LoadState;
                 if (loadState != null)
                 {
                     retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
@@ -247,9 +245,9 @@ namespace HealthGateway.Laboratory.Services
                 return retVal;
             }
 
-            RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> result = await this.laboratoryDelegate.GetPublicTestResults(accessToken, phn, dateOfBirth, collectionDate).ConfigureAwait(true);
+            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> result = await this.laboratoryDelegate.GetPublicTestResults(accessToken, phn, dateOfBirth, collectionDate).ConfigureAwait(true);
             IEnumerable<CovidTestResult> payload = result.ResourcePayload?.Result ?? Enumerable.Empty<CovidTestResult>();
-            PHSALoadState? loadState = result.ResourcePayload?.LoadState;
+            PhsaLoadState? loadState = result.ResourcePayload?.LoadState;
 
             retVal.ResultStatus = result.ResultStatus;
             retVal.ResultError = result.ResultError;
@@ -258,21 +256,21 @@ namespace HealthGateway.Laboratory.Services
             {
                 LabIndicatorType labIndicatorType = Enum.Parse<LabIndicatorType>(payload.Select(x => x.StatusIndicator).First());
 
-                if (labIndicatorType == LabIndicatorType.Found)
+                switch (labIndicatorType)
                 {
-                    retVal.ResourcePayload = new PublicCovidTestResponse(payload.Select(PublicCovidTestRecord.FromModel).ToList());
-                }
-
-                if (labIndicatorType == LabIndicatorType.DataMismatch || labIndicatorType == LabIndicatorType.NotFound)
-                {
-                    retVal.ResultStatus = ResultType.ActionRequired;
-                    retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
-                }
-
-                if (labIndicatorType == LabIndicatorType.Threshold || labIndicatorType == LabIndicatorType.Blocked)
-                {
-                    retVal.ResultStatus = ResultType.ActionRequired;
-                    retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.RecordsNotAvailable, ActionType.Invalid);
+                    case LabIndicatorType.Found:
+                        retVal.ResourcePayload = new PublicCovidTestResponse(payload.Select(PublicCovidTestRecord.FromModel).ToList());
+                        break;
+                    case LabIndicatorType.DataMismatch:
+                    case LabIndicatorType.NotFound:
+                        retVal.ResultStatus = ResultType.ActionRequired;
+                        retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
+                        break;
+                    case LabIndicatorType.Threshold:
+                    case LabIndicatorType.Blocked:
+                        retVal.ResultStatus = ResultType.ActionRequired;
+                        retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.RecordsNotAvailable, ActionType.Invalid);
+                        break;
                 }
             }
 

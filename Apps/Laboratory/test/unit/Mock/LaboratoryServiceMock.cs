@@ -56,7 +56,7 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// </summary>
         /// <param name="delegateResult">return object of the delegate service.</param>
         /// <param name="token">token needed for authentication.</param>
-        public LaboratoryServiceMock(RequestResult<PHSAResult<List<PhsaCovid19Order>>> delegateResult, string token)
+        public LaboratoryServiceMock(RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult, string token)
         {
             this.laboratoryService = new LaboratoryService(
                  this.configuration,
@@ -84,7 +84,7 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// </summary>
         /// <param name="delegateResult">list of COVID-19 Test Results.</param>
         /// <param name="token">token needed for authentication.</param>
-        public LaboratoryServiceMock(RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> delegateResult, string token)
+        public LaboratoryServiceMock(RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> delegateResult, string token)
         {
             this.laboratoryService = new LaboratoryService(
                  this.configuration,
@@ -98,7 +98,7 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// </summary>
         /// <param name="delegateResult">return object of the delegate service.</param>
         /// <param name="token">token needed for authentication.</param>
-        public LaboratoryServiceMock(RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult, string token)
+        public LaboratoryServiceMock(RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult, string token)
         {
             this.laboratoryService = new LaboratoryService(
                 this.configuration,

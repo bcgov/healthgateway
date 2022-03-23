@@ -192,7 +192,7 @@ export default class PublicCovidTestView extends Vue {
     }
 
     private getPeriod(link: string, length: number, index: number): string {
-        if (this.isNotStringEmpty(link)) {
+        if (link) {
             if (this.isLastRow(length, index)) {
                 return ".";
             }
@@ -203,21 +203,11 @@ export default class PublicCovidTestView extends Vue {
 
     private isLastRow(length: number, index: number): boolean {
         const indexSize = length - 1;
-        if (indexSize == index) {
-            return true;
-        }
-        return false;
-    }
-
-    private isNotStringEmpty(param: string): boolean {
-        if (param) {
-            return true;
-        }
-        return false;
+        return indexSize == index;
     }
 
     private showLink(link: string, length: number, index: number): boolean {
-        if (this.isNotStringEmpty(link)) {
+        if (link) {
             return this.isLastRow(length, index);
         }
         return false;
@@ -244,6 +234,10 @@ export default class PublicCovidTestView extends Vue {
                     new DateWrapper(value).isBefore(new DateWrapper()),
             },
         };
+    }
+
+    private visitLink(link: string) {
+        window.open(link, "_blank");
     }
 
     @Watch("publicCovidTestResponseResult")
@@ -379,12 +373,16 @@ export default class PublicCovidTestView extends Vue {
                                                 resultDescriptionIndex
                                             )
                                         "
-                                        :href="publicCovidTest.resultLink"
                                         :data-testid="
                                             'result-link-' +
                                             (resultDescriptionIndex + 1)
                                         "
                                         target="blank_"
+                                        @click="
+                                            visitLink(
+                                                publicCovidTest.resultLink
+                                            )
+                                        "
                                         >this page</a
                                     >
                                     <span>{{
@@ -725,6 +723,10 @@ export default class PublicCovidTestView extends Vue {
 
 .covid-test-result {
     background-color: $soft_background;
+}
+
+a {
+    cursor: pointer !important;
 }
 </style>
 

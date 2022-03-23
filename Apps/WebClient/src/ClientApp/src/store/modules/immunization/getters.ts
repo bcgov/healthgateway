@@ -20,11 +20,13 @@ export const getters: ImmunizationGetters = {
                 const firstDate = new DateWrapper(a.dateOfImmunization);
                 const secondDate = new DateWrapper(b.dateOfImmunization);
 
-                return firstDate.isAfter(secondDate)
-                    ? 1
-                    : firstDate.isBefore(secondDate)
-                    ? -1
-                    : 0;
+                if (firstDate.isAfter(secondDate)) {
+                    return 1;
+                }
+                if (firstDate.isBefore(secondDate)) {
+                    return -1;
+                }
+                return 0;
             });
     },
     recomendations(state: ImmunizationState): Recommendation[] {

@@ -31,7 +31,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// <param name="accessToken">The connection access token.</param>
         /// <param name="isPublicEndpoint">Indicates whether it should use the public endpoint.</param>
         /// <returns>The vaccine status result for the given patient.</returns>
-        Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint);
+        Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint);
 
         /// <summary>
         /// Returns the vaccine status for the given patient, retrying multiple times if there is a refresh in progress.
@@ -40,7 +40,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// <param name="accessToken">The connection access token.</param>
         /// <param name="isPublicEndpoint">Indicates whether it should use the public endpoint.</param>
         /// <returns>The vaccine status result for the given patient.</returns>
-        Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatusWithRetries(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint);
+        Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusWithRetries(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint);
 
         /// <summary>
         /// Returns the record card for the given patient.
@@ -48,7 +48,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// <param name="query">The record card query.</param>
         /// <param name="accessToken">The connection access token.</param>
         /// <returns>The record card result for the given patient.</returns>
-        Task<RequestResult<PHSAResult<RecordCard>>> GetRecordCard(RecordCardQuery query, string accessToken);
+        Task<RequestResult<PhsaResult<RecordCard>>> GetRecordCard(RecordCardQuery query, string accessToken);
 
         /// <summary>
         /// Returns the record card for the given patient, retrying multiple times if there is a refresh in progress.
@@ -56,6 +56,6 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// <param name="query">The record card query.</param>
         /// <param name="accessToken">The connection access token.</param>
         /// <returns>The record card result for the given patient.</returns>
-        Task<RequestResult<PHSAResult<RecordCard>>> GetRecordCardWithRetries(RecordCardQuery query, string accessToken);
+        Task<RequestResult<PhsaResult<RecordCard>>> GetRecordCardWithRetries(RecordCardQuery query, string accessToken);
     }
 }

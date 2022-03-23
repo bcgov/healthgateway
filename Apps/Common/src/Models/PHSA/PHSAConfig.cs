@@ -20,7 +20,7 @@ namespace HealthGateway.Common.Models.PHSA
     /// <summary>
     /// Provides configuration data for the Immunization Delegate.
     /// </summary>
-    public class PHSAConfig
+    public class PhsaConfig
     {
         /// <summary>
         /// Gets or sets the phsa base endpoint.

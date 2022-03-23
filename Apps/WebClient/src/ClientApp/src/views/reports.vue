@@ -315,9 +315,6 @@ export default class ReportsView extends Vue {
             case laboratoryReport:
                 reportName = "Laboratory Tests";
                 break;
-            default:
-                reportName = "";
-                break;
         }
         if (reportName !== "") {
             const formatTypeName = ReportFormatType[this.reportFormatType];

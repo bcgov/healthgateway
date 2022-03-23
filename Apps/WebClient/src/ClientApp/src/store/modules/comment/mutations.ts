@@ -29,21 +29,22 @@ export const mutations: CommentMutations = {
             ]);
         }
 
-        state.profileComments[userComment.parentEntryId] =
-            state.profileComments[userComment.parentEntryId].sort((a, b) => {
-                const firstDate = new DateWrapper(a.createdDateTime, {
-                    isUtc: true,
-                });
-                const secondDate = new DateWrapper(b.createdDateTime, {
-                    isUtc: true,
-                });
-
-                return secondDate.isAfter(firstDate)
-                    ? -1
-                    : firstDate.isAfter(secondDate)
-                    ? 1
-                    : 0;
+        state.profileComments[userComment.parentEntryId].sort((a, b) => {
+            const firstDate = new DateWrapper(a.createdDateTime, {
+                isUtc: true,
             });
+            const secondDate = new DateWrapper(b.createdDateTime, {
+                isUtc: true,
+            });
+
+            if (firstDate.isAfter(secondDate)) {
+                return 1;
+            }
+            if (firstDate.isBefore(secondDate)) {
+                return -1;
+            }
+            return 0;
+        });
     },
     updateComment(state: CommentState, userComment: UserComment) {
         const commentIndex = state.profileComments[
@@ -63,9 +64,6 @@ export const mutations: CommentMutations = {
         ].findIndex((x) => x.id === userComment.id);
 
         if (commentIndex > -1) {
-            delete state.profileComments[userComment.parentEntryId][
-                commentIndex
-            ];
             state.profileComments[userComment.parentEntryId].splice(
                 commentIndex,
                 1

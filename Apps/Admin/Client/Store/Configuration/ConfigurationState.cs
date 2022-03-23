@@ -24,16 +24,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
     /// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
     /// </summary>
     [FeatureState]
-    public record ConfigurationState : BaseState
+    public record ConfigurationState : BaseRequestState<ExternalConfiguration>
     {
-        /// <summary>
-        /// Gets the configuration object.
-        /// </summary>
-        public ExternalConfiguration? Configuration { get; init; }
-
-        /// <summary>
-        /// Gets a value indicating whether the configuration object has been loaded.
-        /// </summary>
-        public bool Loaded => this.Configuration != null;
     }
 }

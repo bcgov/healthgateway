@@ -42,7 +42,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         private const string PHSAConfigSectionKey = "PHSA";
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly PHSAConfig phsaConfig;
+        private readonly PhsaConfig phsaConfig;
 
         private readonly IHttpContextAccessor httpContextAccessor;
 
@@ -62,7 +62,7 @@ namespace HealthGateway.Common.Delegates.PHSA
             this.logger = logger;
             this.httpClientService = httpClientService;
             this.httpContextAccessor = httpContextAccessor;
-            this.phsaConfig = new PHSAConfig();
+            this.phsaConfig = new PhsaConfig();
             configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
         }
 
@@ -70,7 +70,7 @@ namespace HealthGateway.Common.Delegates.PHSA
 
         /// <inheritdoc/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
-        public async Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
+        public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
         {
             using Activity? activity = Source.StartActivity("GetVaccineStatus");
             this.logger.LogDebug($"Getting vaccine status {query.HdId} {query.PersonalHealthNumber} {query.DateOfBirth} {query.DateOfVaccine} {query.IncludeFederalVaccineProof}...");
@@ -81,7 +81,7 @@ namespace HealthGateway.Common.Delegates.PHSA
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
 
-            RequestResult<PHSAResult<VaccineStatusResult>> retVal = new()
+            RequestResult<PhsaResult<VaccineStatusResult>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
@@ -127,7 +127,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 {
                     case HttpStatusCode.OK:
                         this.logger.LogTrace($"Response payload: {payload}");
-                        PHSAResult<VaccineStatusResult>? phsaResult = JsonSerializer.Deserialize<PHSAResult<VaccineStatusResult>>(payload);
+                        PhsaResult<VaccineStatusResult>? phsaResult = JsonSerializer.Deserialize<PhsaResult<VaccineStatusResult>>(payload);
                         if (phsaResult != null && phsaResult.Result != null)
                         {
                             retVal.ResultStatus = ResultType.Success;
@@ -178,16 +178,16 @@ namespace HealthGateway.Common.Delegates.PHSA
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PHSAResult<VaccineStatusResult>>> GetVaccineStatusWithRetries(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
+        public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusWithRetries(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
         {
             using Activity? activity = Source.StartActivity("RetryGetVaccineStatus");
-            RequestResult<PHSAResult<VaccineStatusResult>> retVal = new()
+            RequestResult<PhsaResult<VaccineStatusResult>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
             };
 
-            RequestResult<PHSAResult<VaccineStatusResult>> response;
+            RequestResult<PhsaResult<VaccineStatusResult>> response;
             int attemptCount = 0;
             bool refreshInProgress;
             do
@@ -226,7 +226,7 @@ namespace HealthGateway.Common.Delegates.PHSA
 
         /// <inheritdoc/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
-        public async Task<RequestResult<PHSAResult<RecordCard>>> GetRecordCard(RecordCardQuery query, string accessToken)
+        public async Task<RequestResult<PhsaResult<RecordCard>>> GetRecordCard(RecordCardQuery query, string accessToken)
         {
             using Activity? activity = Source.StartActivity("GetRecordCard");
             this.logger.LogDebug($"Getting record card {query.PersonalHealthNumber.Substring(0, 5)} {query.DateOfBirth}...");
@@ -235,7 +235,7 @@ namespace HealthGateway.Common.Delegates.PHSA
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
 
-            RequestResult<PHSAResult<RecordCard>> retVal = new()
+            RequestResult<PhsaResult<RecordCard>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
@@ -260,7 +260,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 {
                     case HttpStatusCode.OK:
                         this.logger.LogTrace($"Response payload: {payload}");
-                        PHSAResult<RecordCard>? phsaResult = JsonSerializer.Deserialize<PHSAResult<RecordCard>>(payload);
+                        PhsaResult<RecordCard>? phsaResult = JsonSerializer.Deserialize<PhsaResult<RecordCard>>(payload);
                         if (phsaResult != null && phsaResult.Result != null)
                         {
                             retVal.ResultStatus = ResultType.Success;
@@ -279,7 +279,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                         break;
                     case HttpStatusCode.NoContent: // No vaccine status exists for this patient
                         retVal.ResultStatus = ResultType.Success;
-                        retVal.ResourcePayload = new PHSAResult<RecordCard>()
+                        retVal.ResourcePayload = new PhsaResult<RecordCard>()
                         {
                             Result = new RecordCard(),
                         };
@@ -315,16 +315,16 @@ namespace HealthGateway.Common.Delegates.PHSA
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PHSAResult<RecordCard>>> GetRecordCardWithRetries(RecordCardQuery query, string accessToken)
+        public async Task<RequestResult<PhsaResult<RecordCard>>> GetRecordCardWithRetries(RecordCardQuery query, string accessToken)
         {
             using Activity? activity = Source.StartActivity("RetryGetRecordCard");
-            RequestResult<PHSAResult<RecordCard>> retVal = new()
+            RequestResult<PhsaResult<RecordCard>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
             };
 
-            RequestResult<PHSAResult<RecordCard>> response;
+            RequestResult<PhsaResult<RecordCard>> response;
             int attemptCount = 0;
             bool refreshInProgress;
             do

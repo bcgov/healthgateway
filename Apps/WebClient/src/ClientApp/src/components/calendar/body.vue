@@ -122,14 +122,14 @@ export default class CalendarBodyComponent extends Vue {
         let thisDayEvents: TimelineEntry[] = dateGroup.entries;
 
         let groups = thisDayEvents.reduce<Record<string, TimelineEntry[]>>(
-            (groups, entry: TimelineEntry) => {
+            (previousValue, entry: TimelineEntry) => {
                 const entryType = entry.type;
                 // Create a new group if it the type doesnt exist in the map
-                if (!groups[entryType]) {
-                    groups[entryType] = [];
+                if (!previousValue[entryType]) {
+                    previousValue[entryType] = [];
                 }
-                groups[entryType].push(entry);
-                return groups;
+                previousValue[entryType].push(entry);
+                return previousValue;
             },
             {}
         );
@@ -137,14 +137,20 @@ export default class CalendarBodyComponent extends Vue {
         let index = 0;
         return Object.keys(groups).map<CalendarEntry>((type: string) => {
             index++;
+            groups[type].sort((a: TimelineEntry, b: TimelineEntry) => {
+                if (a.type > b.type) {
+                    return 1;
+                }
+                if (a.type < b.type) {
+                    return -1;
+                }
+                return 0;
+            });
             return {
                 id: date.fromEpoch() + "-type-" + type,
                 cellIndex: index,
                 type: type as EntryType,
-                entries: groups[type].sort(
-                    (a: TimelineEntry, b: TimelineEntry) =>
-                        a.type > b.type ? 1 : a.type < b.type ? -1 : 0
-                ),
+                entries: groups[type],
             };
         });
     }

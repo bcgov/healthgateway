@@ -13,61 +13,79 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.EncounterTests
+namespace HealthGateway.Encounter.Test.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Encounter.Controllers;
     using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Services;
+    using Microsoft.Extensions.Logging;
     using Moq;
+    using Xunit;
 
     /// <summary>
-    /// EncounterController's Unit Tests.
+    /// Unit Tests for EncounterController.
     /// </summary>
     public class EncounterControllerTests
     {
-        private readonly Mock<IEncounterService> encounterService;
+        private const string Hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EncounterControllerTests"/> class.
+        /// GetEncounters - Happy Path.
         /// </summary>
-        public EncounterControllerTests()
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetEncounters()
         {
-            this.encounterService = new Mock<IEncounterService>();
-            this.encounterService.Setup(x => x.GetEncounters(It.IsAny<string>())).ReturnsAsync(GetEncounters());
-        }
-
-        private static RequestResult<IEnumerable<EncounterModel>> GetEncounters()
-        {
-            RequestResult<IEnumerable<EncounterModel>> result = new();
-            List<EncounterModel> encounters = new()
+            RequestResult<IEnumerable<EncounterModel>> expectedRequestResult = new()
             {
-                new EncounterModel()
+                ResultStatus = ResultType.Success,
+                TotalResultCount = 2,
+                ResourcePayload = new List<EncounterModel>()
                 {
-                    Id = "1",
-                    EncounterDate = new DateTime(2020 - 05 - 27),
-                    SpecialtyDescription = "LABORATORY MEDICINE",
-                    PractitionerName = "PRACTITIONER NAME",
-                    Clinic = new Clinic()
+                    new EncounterModel()
                     {
-                        Name = "LOCATION NAME",
+                        Id = "1",
+                        EncounterDate = new DateTime(2020, 05, 27),
+                        SpecialtyDescription = "LABORATORY MEDICINE",
+                        PractitionerName = "PRACTITIONER NAME",
+                        Clinic = new Clinic()
+                        {
+                            Name = "LOCATION NAME",
+                        },
                     },
-                },
-                new EncounterModel()
-                {
-                    Id = "2",
-                    EncounterDate = new DateTime(2020 - 06 - 27),
-                    SpecialtyDescription = "LABORATORY MEDICINE",
-                    PractitionerName = "PRACTITIONER NAME",
-                    Clinic = new Clinic()
+                    new EncounterModel()
                     {
-                        Name = "LOCATION NAME",
+                        Id = "2",
+                        EncounterDate = new DateTime(2020, 06, 27),
+                        SpecialtyDescription = "LABORATORY MEDICINE",
+                        PractitionerName = "PRACTITIONER NAME",
+                        Clinic = new Clinic()
+                        {
+                            Name = "LOCATION NAME",
+                        },
                     },
                 },
             };
-            result.ResourcePayload = encounters;
-            return result;
+
+            Mock<IEncounterService> svcMock = new();
+            svcMock.Setup(s => s.GetEncounters(Hdid)).ReturnsAsync(expectedRequestResult);
+
+            EncounterController controller = new(new Mock<ILogger<EncounterController>>().Object, svcMock.Object);
+
+            // Act
+            RequestResult<IEnumerable<EncounterModel>> actual = await controller.GetEncounters(Hdid).ConfigureAwait(true);
+
+            // Verify
+            Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
+
+            Assert.Equal(2, actual?.ResourcePayload?.Count());
+            Assert.Equal(2, actual?.TotalResultCount);
         }
     }
 }

@@ -187,9 +187,9 @@ export default class FeedbackView extends Vue {
             });
     }
 
-    private createNewTag(feedbackItem: UserFeedback, newTag: string) {
+    private createNewTag(feedbackItem: UserFeedback, tagName: string) {
         this.userFeedbackService
-            .createTag(feedbackItem.id, newTag)
+            .createTag(feedbackItem.id, tagName)
             .then((newTag) => {
                 feedbackItem.tags.push(newTag);
                 this.adminTags.push(newTag.tag);
@@ -208,9 +208,9 @@ export default class FeedbackView extends Vue {
             });
     }
 
-    private associateTag(feedbackItem: UserFeedback, newTag: AdminTag) {
+    private associateTag(feedbackItem: UserFeedback, tag: AdminTag) {
         this.userFeedbackService
-            .associateTag(feedbackItem.id, newTag)
+            .associateTag(feedbackItem.id, tag)
             .then((newTag) => {
                 feedbackItem.tags.push(newTag);
             })

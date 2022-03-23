@@ -18,6 +18,7 @@ export default interface CovidTreatmentAssessmentRequest {
     hasImmunityCompromisingMedicalCondition: CovidTreatmentAssessmentOption;
     reports3DosesC19Vaccine: CovidTreatmentAssessmentOption;
     hasChronicConditionDiagnoses: CovidTreatmentAssessmentOption;
+    consentToSendCC: CovidTreatmentAssessmentOption;
     agentComments?: string;
     streetAddresses?: string[];
     provOrState?: string;

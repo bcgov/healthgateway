@@ -34,7 +34,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// <param name="userId">The unique userId (surrogate key) of the User account in Authorization Server.</param>
         /// <param name="jwtModel">Json Web Token model for authenticating the call.</param>
         /// <returns>A resulting UserRepresentation object.</returns>
-        UserRepresentation GetUser(Guid userId, JWTModel jwtModel);
+        UserRepresentation GetUser(Guid userId, JwtModel jwtModel);
 
         /// <summary>
         /// Returns users for the role passed in.
@@ -42,7 +42,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// <param name="role">The requested users role.</param>
         /// <param name="jwtModel">Json Web Token model for authenticating the call.</param>
         /// <returns>An Enumerable of UserRepresentation objects.</returns>
-        Task<RequestResult<IEnumerable<UserRepresentation>>> GetUsers(IdentityAccessRole role, JWTModel jwtModel);
+        Task<RequestResult<IEnumerable<UserRepresentation>>> GetUsers(IdentityAccessRole role, JwtModel jwtModel);
 
         /// <summary>
         /// Delete a User account from the Identity and Access Management system.
@@ -50,6 +50,6 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// <param name="userId">The unique userId (surrogate key) of the User account in Authorization Server.</param>
         /// <param name="jwtModel">Json Web Token model for authenticating the call.</param>
         /// <returns>Returns true when user deleted.</returns>
-        bool DeleteUser(Guid userId, JWTModel jwtModel);
+        bool DeleteUser(Guid userId, JwtModel jwtModel);
     }
 }

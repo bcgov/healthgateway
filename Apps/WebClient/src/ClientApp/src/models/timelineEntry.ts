@@ -19,25 +19,26 @@ export class DateGroup {
             return [];
         }
         const groups = timelineEntries.reduce<Record<string, TimelineEntry[]>>(
-            (groups, entry) => {
+            (previousValue, entry) => {
                 const date = entry.date.fromEpoch();
 
                 // Create a new group if it the date doesnt exist in the map
-                if (!groups[date]) {
-                    groups[date] = [];
+                if (!previousValue[date]) {
+                    previousValue[date] = [];
                 }
-                groups[date].push(entry);
-                return groups;
+                previousValue[date].push(entry);
+                return previousValue;
             },
             {}
         );
         return Object.keys(groups).map<DateGroup>((dateKey) => {
+            groups[dateKey].sort((a: TimelineEntry, b: TimelineEntry) =>
+                a.type.localeCompare(b.type)
+            );
             return new DateGroup(
                 dateKey,
                 groups[dateKey][0].date,
-                groups[dateKey].sort((a: TimelineEntry, b: TimelineEntry) =>
-                    a.type > b.type ? 1 : a.type < b.type ? -1 : 0
-                )
+                groups[dateKey]
             );
         });
     }
@@ -46,13 +47,17 @@ export class DateGroup {
         groupArrays: DateGroup[],
         ascending = true
     ): DateGroup[] {
-        groupArrays.sort((a, b) =>
-            a.date.isAfter(b.date)
-                ? -1 * (ascending ? 1 : -1)
-                : a.date.isBefore(b.date)
-                ? 1 * (ascending ? 1 : -1)
-                : 0
-        );
+        groupArrays.sort((a, b) => {
+            const reverseMultiplier = ascending ? 1 : -1;
+
+            if (a.date.isBefore(b.date)) {
+                return 1 * reverseMultiplier;
+            }
+            if (a.date.isAfter(b.date)) {
+                return -1 * reverseMultiplier;
+            }
+            return 0;
+        });
         return groupArrays;
     }
 }

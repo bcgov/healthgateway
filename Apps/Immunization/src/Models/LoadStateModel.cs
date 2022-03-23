@@ -34,7 +34,7 @@ namespace HealthGateway.Immunization.Models
         /// </summary>
         /// <param name="model">The Load State to convert.</param>
         /// <returns>A LoadStateModel object.</returns>
-        public static LoadStateModel FromPHSAModel(PHSALoadState model)
+        public static LoadStateModel FromPHSAModel(PhsaLoadState model)
         {
             LoadStateModel returnValue = new LoadStateModel();
             returnValue.RefreshInProgress = model.RefreshInProgress;

@@ -247,7 +247,7 @@ export default class HeaderComponent extends Vue {
                     right
                 >
                     <!-- Using 'button-content' slot -->
-                    <template #button-content class="align-middle">
+                    <template #button-content>
                         <b-row class="p-0 m-0 align-items-center">
                             <b-col class="p-0 m-0">
                                 <hg-icon

@@ -85,32 +85,40 @@ describe("Public PcrTest Registration Form", () => {
         cy.visit(pcrTestUrl);
     });
 
-    it("Register options buttons are available", () => {
+    it("Validate button options and form inputs", () => {
+        // Register option buttons are available
+        cy.log("Check all button visibility.");
         cy.get("[data-testid=btn-login]").should("be.visible");
         cy.get("[data-testid=btn-manual]").should("be.visible");
-    });
 
-    it("Log in button should not be present in header", () => {
+        // Log in button should not be present in header
         cy.get("[data-testid=loginBtn]").should("not.exist");
-    });
 
-    it("Inputs in the form are visible with valid PHN", () => {
-        cy.get("[data-testid=btn-manual]").should("be.visible").click();
+        // Inputs in the form not including address fields are visible when phn checkbox unchecked
+        cy.log("Click manual button.");
+        clickManualRegistrationButton();
+        //cy.get("[data-testid=btn-manual]").should("be.visible").click();
         inputFieldsShouldBeVisible();
         inputAddressFieldsNotExists();
-    });
 
-    it("Inputs in the form are visible with no valid PHN", () => {
-        cy.get("[data-testid=btn-manual]").should("be.visible").click();
-        inputFieldsShouldBeVisible();
+        // Inputs in the form including address fields are visible when phn checkbox checked
+        cy.log("Check off phn checkbox.");
         cy.get("[data-testid=phn-checkbox]")
             .should("be.enabled")
             .check({ force: true });
+        inputFieldsShouldBeVisible();
         inputAddressFieldsShouldBeVisible();
-    });
 
-    it("Required Validations are visible with valid PHN", () => {
-        clickManualRegistrationButton();
+        // Inputs in the form not including address fields are visible when phn checkbox unchecked
+        cy.log("Un-check phn checkbox.");
+        cy.get("[data-testid=phn-checkbox]")
+            .should("be.enabled")
+            .uncheck({ force: true });
+        inputFieldsShouldBeVisible();
+        inputAddressFieldsNotExists();
+
+        // Required Validations are visible when phn checkbox unchecked
+        cy.log("Click registration kit button.");
         clickRegisterKitButton();
         cy.get(feedbackTestKitCodeIsRequiredSelector).should("be.visible");
         cy.get(feedbackFirstNameIsRequiredSelector).should("be.visible");
@@ -121,34 +129,37 @@ describe("Public PcrTest Registration Form", () => {
         cy.get(feedbackStreetAddressIsRequiredSelector).should("not.exist");
         cy.get(feedbackCityIsRequiredSelector).should("not.exist");
         cy.get(feedbackPostalIsRequiredSelector).should("not.exist");
-    });
 
-    it("No PHN available required validations", () => {
-        clickManualRegistrationButton();
+        // Check off phn checkbox. Inputs in the form including address fields are visible when phn checkbox checked
         cy.get("[data-testid=phn-checkbox]")
             .should("be.enabled")
             .check({ force: true });
         inputAddressFieldsShouldBeVisible();
-        clickRegisterKitButton();
 
-        // Address information should be visible.
+        // Required Validations for Address information are visible when phn checkbox checked.
         cy.get(feedbackStreetAddressIsRequiredSelector).should("be.visible");
         cy.get(feedbackCityIsRequiredSelector).should("be.visible");
         cy.get(feedbackPostalIsRequiredSelector).should("be.visible");
-    });
 
-    it("Test Kit Code Invalid Validations", () => {
-        clickManualRegistrationButton();
+        // Uncheck phn checkbox. Inputs in the form not including address fields are visible when phn checkbox unchecked
+        cy.get("[data-testid=phn-checkbox]")
+            .should("be.enabled")
+            .uncheck({ force: true });
+        inputFieldsShouldBeVisible();
+        inputAddressFieldsNotExists();
+
+        // Test Kit Code Invalid Validations
         cy.get(testKitCodeInput).type("111");
         cy.get(firstNameInput).type("Princess");
         cy.get(feedbackTestKitCodeValidSelector).should("be.visible");
-    });
 
-    it("Phone number Invalid Validations", () => {
-        clickManualRegistrationButton();
+        // Phone number Invalid Validations
+        cy.get(testKitCodeInput).clear();
+        cy.get(testKitCodeInput).type("45YFKE7-EMQY1");
         cy.get(contactPhoneNumberInput).type(" ");
         cy.get(testTakenMinutesAgo).select(getPcrTestTakenTime(5));
         cy.get(feedbackPhoneNumberValidSelector).should("be.visible");
+        cy.get(feedbackTestKitCodeValidSelector).should("not.exist");
     });
 });
 

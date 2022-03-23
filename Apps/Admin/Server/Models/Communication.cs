@@ -37,7 +37,7 @@ namespace HealthGateway.Admin.Server.Models
         /// Initializes a new instance of the <see cref="Communication"/> class.
         /// </summary>
         /// <param name="communication">The DB Communication to copy into this object.</param>
-        public Communication(HealthGateway.Database.Models.Communication communication)
+        public Communication(Database.Models.Communication communication)
         {
             this.Id = communication.Id;
             this.Text = communication.Text;
@@ -143,7 +143,7 @@ namespace HealthGateway.Admin.Server.Models
             if (communications != null)
             {
                 retList = new List<Communication>();
-                foreach (HealthGateway.Database.Models.Communication communication in communications)
+                foreach (Database.Models.Communication communication in communications)
                 {
                     retList.Add(new Communication(communication));
                 }
@@ -156,7 +156,7 @@ namespace HealthGateway.Admin.Server.Models
         /// Converts this view model into a DB model object.
         /// </summary>
         /// <returns>The DB model object.</returns>
-        public HealthGateway.Database.Models.Communication ToDbModel()
+        public Database.Models.Communication ToDbModel()
         {
             return new Database.Models.Communication()
             {

@@ -28,15 +28,15 @@ export default class Dashboard extends Vue {
 
     private uniqueDays = 3;
     private uniquePeriodDates: string[] = [
-        DateTime.local().minus({ days: 30 }).toISO().substr(0, 10),
-        DateTime.local().toISO().substr(0, 10),
+        DateTime.local().minus({ days: 30 }).toISO().substring(0, 10),
+        DateTime.local().toISO().substring(0, 10),
     ];
     private uniqueUsers = 0;
 
     private ratingPickerModal = false;
     private ratingPeriodDates: string[] = [
-        DateTime.local().minus({ days: 30 }).toISO().substr(0, 10),
-        DateTime.local().toISO().substr(0, 10),
+        DateTime.local().minus({ days: 30 }).toISO().substring(0, 10),
+        DateTime.local().toISO().substring(0, 10),
     ];
 
     private debounceTimer: NodeJS.Timeout | null = null;
@@ -52,8 +52,8 @@ export default class Dashboard extends Vue {
 
     private dailyDataDatesModal = false;
     private selectedDates: string[] = [
-        DateTime.local().minus({ days: 10 }).toISO().substr(0, 10),
-        DateTime.local().toISO().substr(0, 10),
+        DateTime.local().minus({ days: 10 }).toISO().substring(0, 10),
+        DateTime.local().toISO().substring(0, 10),
     ];
 
     private tableData: DailyData[] = [];
@@ -62,7 +62,13 @@ export default class Dashboard extends Vue {
     private onIsLoading(newVal: boolean, oldVal: boolean) {
         if (oldVal && !newVal) {
             this.tableData.sort((a, b) => {
-                return a.date < b.date ? 1 : a.date > b.date ? -1 : 0;
+                if (a.date < b.date) {
+                    return 1;
+                }
+                if (a.date > b.date) {
+                    return -1;
+                }
+                return 0;
             });
         }
     }
@@ -282,9 +288,8 @@ export default class Dashboard extends Vue {
     private getRatings() {
         this.isLoadingRatings = true;
         var endDate = DateTime.fromISO(this.ratingPeriodDates[1])
-            .plus({ days: 1 })
             .toISO()
-            .substr(0, 10);
+            .substring(0, 10);
         this.dashboardService
             .getRatings(this.ratingPeriodDates[0], endDate)
             .then((ratings) => {
