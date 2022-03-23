@@ -46,7 +46,7 @@ namespace HealthGateway.Laboratory.Delegates
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="isCovid19">Indicates whether the COVID-19 report should be returned..</param>
         /// <returns>A base64 encoded PDF.</returns>
-        Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, string bearerToken, bool isCovid19);
+        Task<RequestResult<LaboratoryReport>> GetLabReport(string id, string hdid, string bearerToken, bool isCovid19);
 
         /// <summary>
         /// Gets the Provincial Lab Information System Lab Summary belonging to the authenticated user.
