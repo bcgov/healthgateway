@@ -48,7 +48,7 @@ export interface LaboratoryOrderResult {
 
 // laboratory order model
 export interface LaboratoryOrder {
-    laboratoryReportId: string;
+    labPdfId: string;
     reportingSource: string;
     reportId: string;
     collectionDateTime: StringISODateTime;
