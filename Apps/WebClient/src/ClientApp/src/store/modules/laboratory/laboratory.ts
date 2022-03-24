@@ -23,6 +23,7 @@ const state: LaboratoryState = {
         laboratoryOrders: [],
         error: undefined,
         status: LoadStatus.NONE,
+        queued: false,
     },
 };
 
