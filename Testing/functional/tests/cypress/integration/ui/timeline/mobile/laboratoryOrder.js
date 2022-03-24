@@ -1,6 +1,6 @@
 const { AuthMethod } = require("../../../../support/constants");
 
-describe("Laboratory Orders", () => {
+describe("Laboratory Orders Not Queued", () => {
     beforeEach(() => {
         cy.viewport("iphone-6");
         cy.restoreAuthCookies();
@@ -18,6 +18,9 @@ describe("Laboratory Orders", () => {
 
     it("Validate Card", () => {
         cy.log("Verifying card data");
+        cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
+            "not.exist"
+        );
         cy.get("[data-testid=timelineCard]").first().click();
 
         cy.get("[data-testid=backBtn]").should("be.visible");
@@ -51,5 +54,30 @@ describe("Laboratory Orders", () => {
 
         cy.get("[data-testid=backBtn]").click({ force: true });
         cy.get("[data-testid=filterTextInput]").should("be.visible");
+    });
+});
+
+describe("Validate Card - Laboratory Orders Queud", () => {
+    beforeEach(() => {
+        cy.viewport("iphone-6");
+        cy.restoreAuthCookies();
+        cy.enableModules("AllLaboratory");
+        cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
+            fixture: "LaboratoryService/laboratoryOrdersQueud.json",
+        });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+    });
+
+    it("Show Queued Alert Message", () => {
+        cy.log("Verifying queued alert message displays");
+        cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
     });
 });
