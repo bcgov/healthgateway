@@ -64,6 +64,9 @@ export default class ReportsView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
+    @Getter("laboratoryOrdersAreQueued", { namespace: "laboratory" })
+    isLaboratoryQueued!: boolean;
+
     @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
     @Getter("medicationStatements", { namespace: "medication" })
@@ -158,6 +161,13 @@ export default class ReportsView extends Vue {
             !this.reportComponentName ||
             !this.patientData.hdid ||
             !this.hasRecords
+        );
+    }
+
+    private get showLaboratoryOrderQueuedMessage(): boolean {
+        return (
+            this.reportComponentName === laboratoryReport &&
+            this.isLaboratoryQueued
         );
     }
 
@@ -329,6 +339,19 @@ export default class ReportsView extends Vue {
 <template>
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
         <BreadcrumbComponent :items="breadcrumbItems" />
+        <b-alert
+            v-if="showLaboratoryOrderQueuedMessage"
+            show
+            dismissible
+            variant="info"
+            class="no-print"
+            data-testid="laboratory-orders-queued-alert-message"
+        >
+            <span>
+                We are getting your lab results. It may take up to 48 hours
+                until you can see them.
+            </span>
+        </b-alert>
         <page-title title="Export Records" />
         <div class="my-3 px-3 py-4 form">
             <b-row>
