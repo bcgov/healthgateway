@@ -60,9 +60,9 @@ namespace HealthGateway.WebClient.Test.Services
                 OpenIdConnect = new OpenIdConnectConfiguration()
                 {
                     Authority = "Authority",
+                    Uri = new Uri("https://localhost/service/auth"),
                     ClientId = "ClientId",
-                    ResponseType = "ResponseType",
-                    Scope = "Scope",
+                    Realms = "Realms",
                     Callbacks = new Dictionary<string, Uri>
                     {
                         { "Logon", new Uri("https://localhost/logon") },

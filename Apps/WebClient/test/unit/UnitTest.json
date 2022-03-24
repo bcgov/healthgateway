@@ -1,9 +1,9 @@
-﻿{
+{
     "OpenIdConnect": {
         "Authority": "Authority",
+        "Uri": "https://localhost/service/auth",
         "ClientId": "ClientId",
-        "ResponseType": "ResponseType",
-        "Scope": "Scope",
+        "Realms": "Realms",
         "Callbacks": {
             "Logon": "https://localhost/logon",
             "Logout": "https://localhost/logout"

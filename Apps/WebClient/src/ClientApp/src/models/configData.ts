@@ -35,14 +35,12 @@ export interface IdentityProviderConfiguration {
 export interface OpenIdConnectConfiguration {
     // Gets or sets the OpenIDConnect Authority.
     authority: string;
-    // Gets or sets the Audience.
-    audience: string;
+    // Gets or sets the OpenIDConnect Authority Url.
+    uri: string;
     // Gets or sets the OpenIdConnect Client ID.
     clientId: string;
-    // Gets or sets the OpenIDConnect Response types.
-    responseType: string;
-    // Gets or sets the OpenIDConnect Scopes.
-    scope: string;
+    // Gets or sets the OpenIDConnect realms.
+    realms: string;
     // Gets or sets the Callback URIs.
     callbacks: Dictionary<string>;
 }

@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Models
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -28,24 +29,19 @@ namespace HealthGateway.WebClient.Models
         public string Authority { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the OpenIDConnect Authority Uri.
+        /// </summary>
+        public Uri? Uri { get; set; }
+
+        /// <summary>
         /// Gets or sets the OpenIdConnect Client ID.
         /// </summary>
         public string ClientId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Audience.
+        /// Gets or sets the OpenIdConnect Realms.
         /// </summary>
-        public string Audience { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the OpenIDConnect Response types.
-        /// </summary>
-        public string ResponseType { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the OpenIDConnect Scopes.
-        /// </summary>
-        public string? Scope { get; set; }
+        public string Realms { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Callback URIs.
