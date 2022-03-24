@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.LaboratoryTests
+namespace HealthGateway.LaboratoryTests.Services
 {
     using System;
     using System.Collections.Generic;
@@ -98,7 +98,7 @@ namespace HealthGateway.LaboratoryTests
             {
                 Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
                 int count = 0;
-                foreach (Covid19Order model in actualResult.Result!.ResourcePayload!.Covid19Orders)
+                foreach (Covid19Order model in actualResult.Result.ResourcePayload!.Covid19Orders)
                 {
                     count++;
                     Assert.True(model.MessageID.Equals(MockedMessageID + count, StringComparison.Ordinal));
@@ -134,7 +134,7 @@ namespace HealthGateway.LaboratoryTests
                     new PhsaLaboratoryOrder()
                     {
                         ReportId = expectedReportId1,
-                        LabPdfGuid = Guid.NewGuid(),
+                        LabPdfId = expectedReportId1,
                         CommonName = "Lab Test",
                         OrderingProvider = "PLISBVCC, TREVOR",
                         CollectionDateTime = DateTime.Now,
@@ -154,7 +154,7 @@ namespace HealthGateway.LaboratoryTests
                     new PhsaLaboratoryOrder()
                     {
                         ReportId = expectedReportId2,
-                        LabPdfGuid = Guid.NewGuid(),
+                        LabPdfId = expectedReportId2,
                         CommonName = "Lab Test",
                         OrderingProvider = "PLISBVCC, TREVOR",
                         CollectionDateTime = DateTime.Now,
@@ -301,7 +301,7 @@ namespace HealthGateway.LaboratoryTests
 
             ILaboratoryService service = new LaboratoryServiceMock(delegateResult, TOKEN).LaboratoryServiceMockInstance();
 
-            Task<RequestResult<LaboratoryReport>> actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, true);
+            Task<RequestResult<LaboratoryReport>> actualResult = service.GetLabReport("ReportId", string.Empty, true);
 
             Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
             Assert.Equal(MockedReportContent, actualResult.Result.ResourcePayload!.Report);
