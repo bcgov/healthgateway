@@ -42,6 +42,7 @@ export interface Covid19LaboratoryTest {
 // result model for retrieving lab orders
 export interface LaboratoryOrderResult {
     loaded: boolean;
+    queued: boolean;
     retryin: number;
     orders: LaboratoryOrder[];
 }

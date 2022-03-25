@@ -32,6 +32,12 @@ public class LaboratoryOrderResult
     public bool Loaded { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the orders have been queued.
+    /// </summary>
+    [JsonPropertyName("queued")]
+    public bool Queued { get; set; }
+
+    /// <summary>
     /// Gets or sets the minimal amount of time that should be waited before another request.
     /// The unit of measurement is in milliseconds.
     /// </summary>

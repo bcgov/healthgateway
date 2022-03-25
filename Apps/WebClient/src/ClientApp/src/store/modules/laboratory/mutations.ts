@@ -1,7 +1,7 @@
 import { CustomBannerError } from "@/models/bannerError";
 import {
     Covid19LaboratoryOrder,
-    LaboratoryOrder,
+    LaboratoryOrderResult,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import { LoadStatus } from "@/models/storeOperations";
@@ -30,12 +30,13 @@ export const mutations: LaboratoryMutations = {
     },
     setLaboratoryOrders(
         state: LaboratoryState,
-        laboratoryOrders: LaboratoryOrder[]
+        laboratoryOrderResult: LaboratoryOrderResult
     ) {
-        state.authenticated.laboratoryOrders = laboratoryOrders;
+        state.authenticated.laboratoryOrders = laboratoryOrderResult.orders;
         state.authenticated.error = undefined;
         state.authenticated.statusMessage = "success";
         state.authenticated.status = LoadStatus.LOADED;
+        state.authenticated.queued = laboratoryOrderResult.queued;
     },
     laboratoryError(state: LaboratoryState, error: Error) {
         state.authenticated.statusMessage = error.message;

@@ -123,6 +123,7 @@ export const actions: LaboratoryActions = {
         return new Promise((resolve, reject) => {
             const laboratoryOrders: LaboratoryOrder[] =
                 context.getters.laboratoryOrders;
+            const laboratoryQueued: boolean = context.getters.queued;
             if (context.state.authenticated.status === LoadStatus.LOADED) {
                 logger.debug("Laboratory Orders found stored, not querying!");
                 resolve({
@@ -130,6 +131,7 @@ export const actions: LaboratoryActions = {
                     pageSize: 0,
                     resourcePayload: {
                         loaded: true,
+                        queued: laboratoryQueued,
                         retryin: 0,
                         orders: laboratoryOrders,
                     },
@@ -148,10 +150,7 @@ export const actions: LaboratoryActions = {
                                 EntryType.LaboratoryOrder,
                                 result.totalResultCount
                             );
-                            context.commit(
-                                "setLaboratoryOrders",
-                                payload.orders
-                            );
+                            context.commit("setLaboratoryOrders", payload);
                             resolve(result);
                         } else if (
                             result.resultError?.actionCode ===

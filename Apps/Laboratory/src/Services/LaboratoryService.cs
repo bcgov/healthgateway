@@ -153,6 +153,7 @@ namespace HealthGateway.Laboratory.Services
                 PhsaLoadState? loadState = delegateResult.ResourcePayload?.LoadState;
                 if (loadState != null)
                 {
+                    retVal.ResourcePayload.Queued = loadState.Queued;
                     retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
                     if (loadState.RefreshInProgress)
                     {

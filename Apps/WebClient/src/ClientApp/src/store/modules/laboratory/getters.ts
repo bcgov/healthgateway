@@ -27,6 +27,9 @@ export const getters: LaboratoryGetters = {
     laboratoryOrdersAreLoading(state: LaboratoryState): boolean {
         return state.authenticated.status === LoadStatus.REQUESTED;
     },
+    laboratoryOrdersAreQueued(state: LaboratoryState): boolean {
+        return state.authenticated.queued;
+    },
     publicCovidTestResponseResult(
         state: LaboratoryState
     ): PublicCovidTestResponseResult | undefined {
