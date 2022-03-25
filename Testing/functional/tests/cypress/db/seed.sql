@@ -96,6 +96,35 @@ VALUES (
 	null
 );
 
+/* Labratory Queued - Keycloak User */
+INSERT INTO gateway."UserProfile"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"AcceptedTermsOfService", 
+	"Email", 
+	"ClosedDateTime", 
+	"IdentityManagementId", 
+	"LastLoginDateTime", 
+	"EncryptionKey", 
+	"SMSNumber")
+VALUES (
+	'3ZQCSNNC6KVP2GYLA4O3EFZXGUAPWBQHU6ZEB7FXNZJ2WYCLPH3A',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	true, 
+	null,
+	null,
+	null,
+	current_timestamp, 
+	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
+	null
+);
+
 /* Notfound - Keycloak User */
 INSERT INTO gateway."UserProfile"(
 	"UserProfileId", 
