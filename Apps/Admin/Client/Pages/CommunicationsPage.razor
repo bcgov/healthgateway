@@ -7,18 +7,32 @@
 <PageTitle>Communications</PageTitle>
 <HgPageHeading>Communications</HgPageHeading>
 
-<HgBannerFeedback Severity="@Severity.Error" IsEnabled="@HasError" TResetAction="@CommunicationsActions.ResetStateAction">
-    @CommunicationsState.Value.Error?.Message
+<HgBannerFeedback Severity="@Severity.Error" IsEnabled="@(HasLoadError || HasDeleteError)" TResetAction="@CommunicationsActions.ResetStateAction">
+    @ErrorMessage
 </HgBannerFeedback>
 
 @if (CommunicationsLoaded || CommunicationsLoading)
 {
-    <HgTabs>
-        <MudTabPanel Text="Global">
-            <CommunicationsTable Data="@GlobalCommunications" IsLoading="@CommunicationsLoading" />
-        </MudTabPanel>
-        <MudTabPanel Text="In-App">
-            <CommunicationsTable Data="@InAppCommunications" IsLoading="@CommunicationsLoading" />
-        </MudTabPanel>
+    <HgTabs @ref="@Tabs">
+        <Header>
+            @if (SelectedBannerName != null)
+            {
+                <HgButton EndIcon="@Icons.Material.Filled.Add"
+                  TopMargin="@Breakpoint.Always"
+                  RightMargin="@Breakpoint.Always"
+                  BottomMargin="@Breakpoint.Always"
+                  @onclick="@CreateBannerAsync">
+                    Create
+                </HgButton>
+            }
+        </Header>
+        <ChildContent>
+            <MudTabPanel Text="Global Banners">
+                <CommunicationsTable Data="@GlobalCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditBannerAsync" />
+            </MudTabPanel>
+            <MudTabPanel Text="In-App Banners">
+                <CommunicationsTable Data="@InAppCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditBannerAsync" />
+            </MudTabPanel>
+        </ChildContent>
     </HgTabs>
 }

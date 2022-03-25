@@ -1,0 +1,31 @@
+@inherits HgComponentBase
+
+@using Blazored.TextEditor
+
+<div>
+    <MudField Class="@CombinedClass"
+              Style="@Style"
+              Tag="@Tag"
+              Label="@Label"
+              FullWidth="@true"
+              InnerPadding="@false"
+              Variant="Variant.Filled"
+              Margin="Margin.Dense">
+        <BlazoredTextEditor @ref="@BlazoredComponent"
+                            Placeholder="@string.Empty"
+                            Theme="snow"
+                            DebugLevel="warn"
+                            @attributes="UnmatchedAttributes">
+            <ToolbarContent>
+                <span class="ql-formats">
+                    <button class="ql-bold" />
+                    <button class="ql-italic" />
+                    <button class="ql-link" />
+                </span>
+            </ToolbarContent>
+            <EditorContent>
+                @((MarkupString)InitialValue)
+            </EditorContent>
+        </BlazoredTextEditor>
+    </MudField>
+</div>

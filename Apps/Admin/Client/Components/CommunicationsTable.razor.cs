@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Client.Components
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Models;
@@ -38,11 +39,18 @@ namespace HealthGateway.Admin.Client.Components
         public IEnumerable<ExtendedCommunication> Data { get; set; } = Enumerable.Empty<ExtendedCommunication>();
 
         /// <summary>
-        /// Gets or sets a value indicating whether the .
+        /// Gets or sets a value indicating whether data is loading.
         /// </summary>
         [Parameter]
         [EditorRequired]
         public bool IsLoading { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the event callback that will be triggered when the button is clicked.
+        /// </summary>
+        [Parameter]
+        [EditorRequired]
+        public EventCallback<ExtendedCommunication> OnEditCallback { get; set; }
 
         [Inject]
         private IDispatcher Dispatcher { get; set; } = default!;
@@ -52,6 +60,15 @@ namespace HealthGateway.Admin.Client.Components
         private void ToggleExpandRow(Guid id)
         {
             this.Dispatcher.Dispatch(new CommunicationsActions.ToggleIsExpandedAction(id));
+        }
+
+        private async Task EditCommunicationAsync(Guid id)
+        {
+            ExtendedCommunication? communication = this.Data.FirstOrDefault(c => c.Id == id);
+            if (communication != null)
+            {
+                await this.OnEditCallback.InvokeAsync(communication).ConfigureAwait(true);
+            }
         }
 
         private void DeleteCommunication(Guid id)

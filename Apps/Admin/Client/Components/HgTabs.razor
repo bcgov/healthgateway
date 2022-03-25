@@ -1,8 +1,10 @@
 @inherits HgComponentBase
 
-<MudTabs Elevation="2"
+<MudTabs @ref="MudComponent"
+         Elevation="2"
          Rounded="true"
          ApplyEffectsToContainer="true"
+         Header="@Header"
          Class="@CombinedClass"
          Tag="@Tag"
          @attributes="UnmatchedAttributes">
