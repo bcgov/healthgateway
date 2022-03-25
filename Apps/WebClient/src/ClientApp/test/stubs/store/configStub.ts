@@ -33,7 +33,6 @@ const configGetters: ConfigGetters = {
             uri: "",
             clientId: "",
             realms: "",
-            callbacks: {},
         };
     },
     webClient(): WebClientConfiguration {

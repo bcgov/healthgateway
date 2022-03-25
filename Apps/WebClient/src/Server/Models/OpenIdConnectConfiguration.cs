@@ -42,11 +42,5 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the OpenIdConnect Realms.
         /// </summary>
         public string Realms { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Callback URIs.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public Dictionary<string, System.Uri>? Callbacks { get; set; }
     }
 }

@@ -63,11 +63,6 @@ namespace HealthGateway.WebClient.Test.Services
                     Uri = new Uri("https://localhost/service/auth"),
                     ClientId = "ClientId",
                     Realms = "Realms",
-                    Callbacks = new Dictionary<string, Uri>
-                    {
-                        { "Logon", new Uri("https://localhost/logon") },
-                        { "Logout", new Uri("https://localhost/logout") },
-                    },
                 },
                 IdentityProviders = new IdentityProviderConfiguration[]
                 {

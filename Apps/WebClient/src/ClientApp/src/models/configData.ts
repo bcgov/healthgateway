@@ -41,8 +41,6 @@ export interface OpenIdConnectConfiguration {
     clientId: string;
     // Gets or sets the OpenIDConnect realms.
     realms: string;
-    // Gets or sets the Callback URIs.
-    callbacks: Dictionary<string>;
 }
 
 // Configuration data to be used by the Health Gateway Webclient.

@@ -51,8 +51,6 @@ export class RestAuthenticationService implements IAuthenticationService {
             }),
             authority: config.authority,
             client_id: config.clientId,
-            redirect_uri: config.callbacks["Logon"],
-            post_logout_redirect_uri: config.callbacks["Logout"],
             filterProtocolClaims: true,
             loadUserInfo: false,
             automaticSilentRenew: true,
