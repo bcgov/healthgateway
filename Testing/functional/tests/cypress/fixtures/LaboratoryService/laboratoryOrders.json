@@ -1,7 +1,7 @@
 {
     "resourcePayload": {
         "loaded": true,
-        "queude": false,
+        "queued": false,
         "retryin": 0,
         "orders": [
             {

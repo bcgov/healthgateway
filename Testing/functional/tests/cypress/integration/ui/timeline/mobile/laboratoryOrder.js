@@ -57,13 +57,13 @@ describe("Laboratory Orders Not Queued", () => {
     });
 });
 
-describe("Validate Card - Laboratory Orders Queud", () => {
+describe("Laboratory Orders Queued", () => {
     beforeEach(() => {
         cy.viewport("iphone-6");
         cy.restoreAuthCookies();
         cy.enableModules("AllLaboratory");
         cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
-            fixture: "LaboratoryService/laboratoryOrdersQueud.json",
+            fixture: "LaboratoryService/laboratoryOrdersQueued.json",
         });
         cy.login(
             Cypress.env("keycloak.username"),
