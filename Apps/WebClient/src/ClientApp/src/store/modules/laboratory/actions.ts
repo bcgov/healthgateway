@@ -38,7 +38,7 @@ export const actions: LaboratoryActions = {
                 context.state.authenticatedCovid19.status === LoadStatus.LOADED
             ) {
                 logger.debug(
-                    "COVID-19 Laboratory Orders found stored, not querying!."
+                    "COVID-19 Laboratory Orders found stored, not querying!"
                 );
                 resolve({
                     pageIndex: 0,
