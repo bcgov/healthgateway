@@ -103,6 +103,10 @@ export interface LaboratoryMutations extends MutationTree<LaboratoryState> {
         state: LaboratoryState,
         laboratoryOrderResult: LaboratoryOrderResult
     ): void;
+    setLaboratoryOrdersRefreshInProgress(
+        state: LaboratoryState,
+        laboratoryOrderResult: LaboratoryOrderResult
+    ): void;
     laboratoryError(state: LaboratoryState, error: Error): void;
     setPublicCovidTestResponseResultRequested(state: LaboratoryState): void;
     setPublicCovidTestResponseResult(
