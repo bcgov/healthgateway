@@ -86,6 +86,7 @@ const laboratoryMutations: LaboratoryMutations = {
     covid19LaboratoryError: voidMethod,
     setLaboratoryOrdersRequested: voidMethod,
     setLaboratoryOrders: voidMethod,
+    setLaboratoryOrdersRefreshInProgress: voidMethod,
     laboratoryError: voidMethod,
     setPublicCovidTestResponseResultRequested: voidMethod,
     setPublicCovidTestResponseResult: voidMethod,
