@@ -32,30 +32,31 @@
                     </MudDatePicker>
                 </MudItem>
                 <MudItem xs="6">
-                    <MudTimePicker @ref="@EffectiveTimePicker"
-                                   @bind-Time="@EffectiveTime"
-                                   Label="Effective Time"
-                                   Required="@true"
-                                   PickerVariant="@PickerVariant.Dialog"
-                                   AmPm="@true"
-                                   TimeFormat="h:mm tt"
-                                   Variant="@Variant.Filled"
-                                   Margin="@Margin.Dense"
-                                   Class="mt-3">
-                        <PickerActions>
-                            <MudButton Class="mr-auto align-self-start"
-                                       OnClick="@(() => EffectiveTimePicker.Clear())">
-                                Clear
-                            </MudButton>
-                            <MudButton OnClick="@(() => EffectiveTimePicker.Close(false))">
-                                Cancel
-                            </MudButton>
-                            <MudButton Color="@Color.Primary"
-                                       OnClick="@(() => EffectiveTimePicker.Close())">
-                                Ok
-                            </MudButton>
-                        </PickerActions>
-                    </MudTimePicker>
+                    <div class="mt-3">
+                        <MudTimePicker @ref="@EffectiveTimePicker"
+                                       @bind-Time="@EffectiveTime"
+                                       Label="Effective Time"
+                                       Required="@true"
+                                       PickerVariant="@PickerVariant.Dialog"
+                                       AmPm="@true"
+                                       TimeFormat="h:mm tt"
+                                       Variant="@Variant.Filled"
+                                       Margin="@Margin.Dense">
+                            <PickerActions>
+                                <MudButton Class="mr-auto align-self-start"
+                                           OnClick="@(() => EffectiveTimePicker.Clear())">
+                                    Clear
+                                </MudButton>
+                                <MudButton OnClick="@(() => EffectiveTimePicker.Close(false))">
+                                    Cancel
+                                </MudButton>
+                                <MudButton Color="@Color.Primary"
+                                           OnClick="@(() => EffectiveTimePicker.Close())">
+                                    Ok
+                                </MudButton>
+                            </PickerActions>
+                        </MudTimePicker>
+                    </div>
                 </MudItem>
                 <MudItem xs="6">
                     <MudDatePicker @ref="@ExpiryDatePicker"
@@ -78,30 +79,31 @@
                     </MudDatePicker>
                 </MudItem>
                 <MudItem xs="6">
-                    <MudTimePicker @ref="@ExpiryTimePicker"
-                                   @bind-Time="@ExpiryTime"
-                                   Label="Expiry Time"
-                                   Required="@true"
-                                   PickerVariant="@PickerVariant.Dialog"
-                                   AmPm="@true"
-                                   TimeFormat="h:mm tt"
-                                   Variant="@Variant.Filled"
-                                   Margin="@Margin.Dense"
-                                   Class="mt-3">
-                        <PickerActions>
-                            <MudButton Class="mr-auto align-self-start"
-                                       OnClick="@(() => ExpiryTimePicker.Clear())">
-                                Clear
-                            </MudButton>
-                            <MudButton OnClick="@(() => ExpiryTimePicker.Close(false))">
-                                Cancel
-                            </MudButton>
-                            <MudButton Color="@Color.Primary"
-                                       OnClick="@(() => ExpiryTimePicker.Close())">
-                                Ok
-                            </MudButton>
-                        </PickerActions>
-                    </MudTimePicker>
+                    <div class="mt-3">
+                        <MudTimePicker @ref="@ExpiryTimePicker"
+                                       @bind-Time="@ExpiryTime"
+                                       Label="Expiry Time"
+                                       Required="@true"
+                                       PickerVariant="@PickerVariant.Dialog"
+                                       AmPm="@true"
+                                       TimeFormat="h:mm tt"
+                                       Variant="@Variant.Filled"
+                                       Margin="@Margin.Dense">
+                            <PickerActions>
+                                <MudButton Class="mr-auto align-self-start"
+                                           OnClick="@(() => ExpiryTimePicker.Clear())">
+                                    Clear
+                                </MudButton>
+                                <MudButton OnClick="@(() => ExpiryTimePicker.Close(false))">
+                                    Cancel
+                                </MudButton>
+                                <MudButton Color="@Color.Primary"
+                                           OnClick="@(() => ExpiryTimePicker.Close())">
+                                    Ok
+                                </MudButton>
+                            </PickerActions>
+                        </MudTimePicker>
+                    </div>
                 </MudItem>
                 <MudItem xs="6">
                     <HgTextField Label="Subject" @bind-Value="Communication.Subject" T="@string" Required="@true" RightMargin="@Breakpoint.Always" />
