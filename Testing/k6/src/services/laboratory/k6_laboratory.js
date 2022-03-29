@@ -15,8 +15,8 @@
 //-------------------------------------------------------------------------
 
 import http from "k6/http";
-import { sleep } from "k6";
-import * as common from "../inc/common.js";
+import { check, group, sleep } from "k6";
+import * as common from "../../inc/common.js";
 
 export let options = common.OptionConfig();
 
@@ -25,7 +25,7 @@ export default function () {
 
     common.authorizeUser(user);
     let response = http.get(
-        common.PatientServiceUrl + "/" + user.hdid,
+        common.LaboratoryServiceUrl + "?hdid=" + user.hdid,
         common.params(user)
     );
     common.checkResponse(response);

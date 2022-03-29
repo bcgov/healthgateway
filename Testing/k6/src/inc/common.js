@@ -64,7 +64,7 @@ export let TokenEndpointUrl =
 export let MedicationServiceUrl =
     baseUrl + "/api/medicationservice/v1/api/MedicationStatement";
 export let LaboratoryServiceUrl =
-    baseUrl + "/api/laboratoryservice/v1/api/Laboratory";
+    baseUrl + "/api/laboratoryservice/v1/api/Laboratory/LaboratoryOrders";
 export let PatientServiceUrl = baseUrl + "/api/PatientService/v1/api/Patient";
 
 // console.log("Running tests against baseUrl := " + baseUrl);

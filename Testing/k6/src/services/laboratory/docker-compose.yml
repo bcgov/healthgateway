@@ -1,0 +1,12 @@
+version: '3.4'
+services:
+  k6:
+    image: loadimpact/k6:latest
+    command: run /services/laboratory/k6_laboratory.js
+    volumes:
+      - ../../../src/services/laboratory:/services/laboratory
+      - ../../../src/inc:/inc
+    environment: 
+      - "HG_TYPE=${HG_TYPE}"
+      - "HG_ENV=${HG_ENV}"
+      - "HG_KEY=${HG_KEY}"
