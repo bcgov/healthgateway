@@ -27,8 +27,8 @@
             }
         </Header>
         <ChildContent>
-            <MudTabPanel Text="Global Banners">
-                <CommunicationsTable Data="@GlobalCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditBannerAsync" />
+            <MudTabPanel Text="Public Banners">
+                <CommunicationsTable Data="@PublicCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditBannerAsync" />
             </MudTabPanel>
             <MudTabPanel Text="In-App Banners">
                 <CommunicationsTable Data="@InAppCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditBannerAsync" />

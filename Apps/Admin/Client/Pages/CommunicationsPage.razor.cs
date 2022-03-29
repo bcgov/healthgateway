@@ -67,7 +67,7 @@ public partial class CommunicationsPage : FluxorComponent
     private IEnumerable<ExtendedCommunication> AllCommunications =>
         this.CommunicationsState.Value.Data ?? Enumerable.Empty<ExtendedCommunication>();
 
-    private IEnumerable<ExtendedCommunication> GlobalCommunications =>
+    private IEnumerable<ExtendedCommunication> PublicCommunications =>
         this.AllCommunications.Where(c => c.CommunicationTypeCode == CommunicationType.Banner);
 
     private IEnumerable<ExtendedCommunication> InAppCommunications =>
@@ -84,7 +84,7 @@ public partial class CommunicationsPage : FluxorComponent
     private string? SelectedBannerName =>
         this.SelectedCommunicationType switch
         {
-            CommunicationType.Banner => "Global",
+            CommunicationType.Banner => "Public",
             CommunicationType.InApp => "In-App",
             _ => null,
         };
