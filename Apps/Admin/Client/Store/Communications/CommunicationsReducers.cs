@@ -110,12 +110,12 @@ public static class CommunicationsReducers
     /// The reducer for the add success action.
     /// </summary>
     /// <param name="state">The communications state.</param>
-    /// <param name="action">The load success action.</param>
+    /// <param name="action">The add success action.</param>
     /// <returns>The new state.</returns>
     [ReducerMethod]
     public static CommunicationsState ReduceAddSuccessAction(CommunicationsState state, CommunicationsActions.AddSuccessAction action)
     {
-        IEnumerable<ExtendedCommunication> data = state.Data ?? Enumerable.Empty<ExtendedCommunication>();
+        IList<ExtendedCommunication> data = state.Data ?? new List<ExtendedCommunication>();
 
         Communication? communication = action.Data.ResourcePayload;
         if (communication != null)
@@ -162,6 +162,84 @@ public static class CommunicationsReducers
     }
 
     /// <summary>
+    /// The reducer for updating communications.
+    /// </summary>
+    /// <param name="state">The communications state.</param>
+    /// <returns>The new state.</returns>
+    [ReducerMethod(typeof(CommunicationsActions.UpdateAction))]
+    public static CommunicationsState ReduceUpdateAction(CommunicationsState state)
+    {
+        return state with
+        {
+            Update = state.Update with
+            {
+                IsLoading = true,
+            },
+            IsLoading = true,
+        };
+    }
+
+    /// <summary>
+    /// The reducer for the update success action.
+    /// </summary>
+    /// <param name="state">The communications state.</param>
+    /// <param name="action">The update success action.</param>
+    /// <returns>The new state.</returns>
+    [ReducerMethod]
+    public static CommunicationsState ReduceUpdateSuccessAction(CommunicationsState state, CommunicationsActions.UpdateSuccessAction action)
+    {
+        IList<ExtendedCommunication> data = state.Data ?? new List<ExtendedCommunication>();
+
+        Communication? communication = action.Data.ResourcePayload;
+        if (communication != null)
+        {
+            ExtendedCommunication? existingCommunication = data.SingleOrDefault(c => c.Id == communication.Id);
+            if (existingCommunication != null)
+            {
+                existingCommunication.PopulateFromModel(communication);
+            }
+            else
+            {
+                data.Add(new ExtendedCommunication(communication));
+            }
+        }
+
+        return state with
+        {
+            Update = state.Update with
+            {
+                IsLoading = false,
+                Result = action.Data,
+                Error = null,
+            },
+            IsLoading = false,
+            Data = data,
+            Error = null,
+        };
+    }
+
+    /// <summary>
+    /// The reducer for the update fail action.
+    /// </summary>
+    /// <param name="state">The communications state.</param>
+    /// <param name="action">The update fail action.</param>
+    /// <returns>The new state.</returns>
+    [ReducerMethod]
+    public static CommunicationsState ReduceUpdateFailAction(CommunicationsState state, CommunicationsActions.UpdateFailAction action)
+    {
+        return state with
+        {
+            Update = state.Update with
+            {
+                IsLoading = false,
+                Error = action.Error,
+            },
+            IsLoading = false,
+            Error = action.Error,
+        };
+    }
+
+    /// <summary>
     /// The reducer for deleting communications.
     /// </summary>
     /// <param name="state">The communications state.</param>
@@ -183,12 +261,12 @@ public static class CommunicationsReducers
     /// The reducer for the delete success action.
     /// </summary>
     /// <param name="state">The communications state.</param>
-    /// <param name="action">The load success action.</param>
+    /// <param name="action">The delete success action.</param>
     /// <returns>The new state.</returns>
     [ReducerMethod]
     public static CommunicationsState ReduceDeleteSuccessAction(CommunicationsState state, CommunicationsActions.DeleteSuccessAction action)
     {
-        IEnumerable<ExtendedCommunication> data = state.Data ?? Enumerable.Empty<ExtendedCommunication>();
+        IList<ExtendedCommunication> data = state.Data ?? new List<ExtendedCommunication>();
 
         Communication? communication = action.Data.ResourcePayload;
         if (communication != null)
@@ -214,7 +292,7 @@ public static class CommunicationsReducers
     /// The reducer for the delete fail action.
     /// </summary>
     /// <param name="state">The communications state.</param>
-    /// <param name="action">The add fail action.</param>
+    /// <param name="action">The delete fail action.</param>
     /// <returns>The new state.</returns>
     [ReducerMethod]
     public static CommunicationsState ReduceDeleteFailAction(CommunicationsState state, CommunicationsActions.DeleteFailAction action)

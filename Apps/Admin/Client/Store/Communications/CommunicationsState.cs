@@ -53,7 +53,7 @@ public record CommunicationsState
     /// <summary>
     /// Gets the collection of data.
     /// </summary>
-    public IEnumerable<ExtendedCommunication>? Data { get; init; }
+    public IList<ExtendedCommunication>? Data { get; init; }
 
     /// <summary>
     /// Gets the request error if available.

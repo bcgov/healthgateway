@@ -29,6 +29,20 @@ public class ExtendedCommunication : Communication
     /// <param name="model">The communication model.</param>
     public ExtendedCommunication(Communication model)
     {
+        this.PopulateFromModel(model);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the communication details have been expanded.
+    /// </summary>
+    public bool IsExpanded { get; set; }
+
+    /// <summary>
+    /// Populates all properties from a communication model.
+    /// </summary>
+    /// <param name="model">The communication model.</param>
+    public void PopulateFromModel(Communication model)
+    {
         this.Id = model.Id;
         this.Text = model.Text;
         this.Subject = model.Subject;
@@ -44,9 +58,4 @@ public class ExtendedCommunication : Communication
         this.UpdatedDateTime = model.UpdatedDateTime;
         this.Version = model.Version;
     }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the communication details have been expanded.
-    /// </summary>
-    public bool IsExpanded { get; set; }
 }

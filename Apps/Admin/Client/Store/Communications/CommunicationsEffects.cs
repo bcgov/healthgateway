@@ -112,7 +112,7 @@ public class CommunicationsEffects
         if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
         {
             this.Logger.LogInformation("Communication updated successfully!");
-            dispatcher.Dispatch(new CommunicationsActions.AddSuccessAction(response.Content));
+            dispatcher.Dispatch(new CommunicationsActions.UpdateSuccessAction(response.Content));
             return;
         }
 
