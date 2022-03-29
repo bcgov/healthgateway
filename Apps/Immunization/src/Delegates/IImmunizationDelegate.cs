@@ -30,15 +30,15 @@ namespace HealthGateway.Immunization.Delegates
         /// </summary>
         /// <param name="immunizationId">The id of the immunization to retrieve.</param>
         /// <returns>The immunization that matches the given id.</returns>
-        Task<RequestResult<PHSAResult<ImmunizationViewResponse>>> GetImmunization(string immunizationId);
+        Task<RequestResult<PhsaResult<ImmunizationViewResponse>>> GetImmunization(string immunizationId);
 
         /// <summary>
         /// Returns a PHSA Result including the load state and a List of Immunizations for the authenticated user.
         /// It has a collection of one or more Immunizations.
         /// </summary>
         /// <param name="pageIndex">The page index to return.</param>
-        /// <returns>The PHSAResult including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
-        Task<RequestResult<PHSAResult<ImmunizationResponse>>> GetImmunizations(int pageIndex = 0);
+        /// <returns>The PhsaResult including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
+        Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizations(int pageIndex = 0);
 
         /// <summary>
         /// Gets the immunization card for the supplied HDID and Immunization Disease.
@@ -46,6 +46,6 @@ namespace HealthGateway.Immunization.Delegates
         /// <param name="hdid">The hdid to query.</param>
         /// <param name="immunizationDisease">The associated disease to query.</param>
         /// <returns>A Immunization Card.</returns>
-        Task<RequestResult<PHSAResult<ImmunizationCard>>> GetVaccineHistory(string hdid, string immunizationDisease);
+        Task<RequestResult<PhsaResult<ImmunizationCard>>> GetVaccineHistory(string hdid, string immunizationDisease);
     }
 }

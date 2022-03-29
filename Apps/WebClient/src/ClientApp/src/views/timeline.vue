@@ -109,6 +109,9 @@ export default class TimelineView extends Vue {
     @Getter("covid19LaboratoryOrdersAreLoading", { namespace: "laboratory" })
     isCovid19LaboratoryLoading!: boolean;
 
+    @Getter("laboratoryOrdersAreQueued", { namespace: "laboratory" })
+    isLaboratoryQueued!: boolean;
+
     @Getter("laboratoryOrdersAreLoading", { namespace: "laboratory" })
     isLaboratoryLoading!: boolean;
 
@@ -349,6 +352,19 @@ export default class TimelineView extends Vue {
             data-testid="loading-in-progress"
         />
         <BreadcrumbComponent :items="breadcrumbItems" />
+        <b-alert
+            v-if="isLaboratoryQueued"
+            show
+            dismissible
+            variant="info"
+            class="no-print"
+            data-testid="laboratory-orders-queued-alert-message"
+        >
+            <span>
+                We are getting your lab results. It may take up to 48 hours
+                until you can see them.
+            </span>
+        </b-alert>
         <b-row>
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
                 <page-title title="Timeline">

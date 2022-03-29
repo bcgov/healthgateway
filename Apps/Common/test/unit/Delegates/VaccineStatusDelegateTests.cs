@@ -69,7 +69,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 StatusIndicator = "Exempt",
             };
 
-            PHSAResult<VaccineStatusResult> phsaResponse = new()
+            PhsaResult<VaccineStatusResult> phsaResponse = new()
             {
                 Result = expectedVaccineStatus,
             };
@@ -95,7 +95,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 DateOfBirth = this.dob,
             };
 
-            RequestResult<PHSAResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
+            RequestResult<PhsaResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -113,7 +113,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 StatusIndicator = "NotFound",
             };
 
-            PHSAResult<VaccineStatusResult> phsaResponse = new()
+            PhsaResult<VaccineStatusResult> phsaResponse = new()
             {
                 Result = expectedVaccineStatus,
             };
@@ -139,7 +139,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 DateOfBirth = this.dob,
             };
 
-            RequestResult<PHSAResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
+            RequestResult<PhsaResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);

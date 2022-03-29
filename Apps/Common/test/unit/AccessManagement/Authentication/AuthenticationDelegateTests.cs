@@ -64,7 +64,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             using IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
 
             string json = @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
-            JWTModel? expected = JsonSerializer.Deserialize<JWTModel>(json);
+            JwtModel? expected = JsonSerializer.Deserialize<JwtModel>(json);
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<IAuthenticationDelegate> logger = loggerFactory.CreateLogger<IAuthenticationDelegate>();
             Mock<HttpMessageHandler> handlerMock = new();
@@ -85,13 +85,13 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
             IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object, configuration, memoryCache, null);
-            JWTModel actualModel = authDelegate.AuthenticateAsUser(tokenUri, tokenRequest, false);
+            JwtModel actualModel = authDelegate.AuthenticateAsUser(tokenUri, tokenRequest, false);
             expected.ShouldDeepEqual(actualModel);
 
-            (JWTModel cacheResult, bool cached) = authDelegate.AuthenticateUser(tokenUri, tokenRequest, true);
+            (JwtModel cacheResult, bool cached) = authDelegate.AuthenticateUser(tokenUri, tokenRequest, true);
             Assert.True(!cached);
 
-            (JWTModel fetchedCachedResult, cached) = authDelegate.AuthenticateUser(tokenUri, tokenRequest, true);
+            (JwtModel fetchedCachedResult, cached) = authDelegate.AuthenticateUser(tokenUri, tokenRequest, true);
             Assert.True(cached);
         }
 
@@ -108,7 +108,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
                 ClientSecret = "SOME_SECRET",
             };
             string json = @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
-            JWTModel? expected = JsonSerializer.Deserialize<JWTModel>(json);
+            JwtModel? expected = JsonSerializer.Deserialize<JwtModel>(json);
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<IAuthenticationDelegate> logger = loggerFactory.CreateLogger<IAuthenticationDelegate>();
             Mock<HttpMessageHandler> handlerMock = new();
@@ -130,7 +130,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             Dictionary<string, string> extraConfig = new();
             IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object, CreateConfiguration(extraConfig), null, null);
-            JWTModel actualModel = authDelegate.AuthenticateAsSystem(tokenUri, tokenRequest);
+            JwtModel actualModel = authDelegate.AuthenticateAsSystem(tokenUri, tokenRequest);
             expected.ShouldDeepEqual(actualModel);
         }
 

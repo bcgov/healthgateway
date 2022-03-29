@@ -62,7 +62,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
 
             IUserAdminDelegate keycloakDelegate = new KeycloakUserAdminDelegate(logger, new Mock<IHttpClientService>().Object, this.configuration);
 
-            Assert.Throws<NotImplementedException>(() => keycloakDelegate.GetUser(Guid.NewGuid(), new JWTModel()));
+            Assert.Throws<NotImplementedException>(() => keycloakDelegate.GetUser(Guid.NewGuid(), new JwtModel()));
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             };
             IUserAdminDelegate keycloakDelegate = GetKeycloakUserAdminDelegate(this.configuration, logger, httpResponseMessage);
 
-            JWTModel jwt = new()
+            JwtModel jwt = new()
             {
                 AccessToken = "Bearer Token",
             };
@@ -131,7 +131,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             };
             IUserAdminDelegate keycloakDelegate = GetKeycloakUserAdminDelegate(this.configuration, logger, httpResponseMessage);
 
-            JWTModel jwt = new()
+            JwtModel jwt = new()
             {
                 AccessToken = "Bearer Token",
             };
@@ -162,7 +162,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             };
             IUserAdminDelegate keycloakDelegate = GetKeycloakUserAdminDelegate(this.configuration, logger, httpResponseMessage);
 
-            JWTModel jwt = new()
+            JwtModel jwt = new()
             {
                 AccessToken = "Bearer Token",
             };
@@ -191,7 +191,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             };
             IUserAdminDelegate keycloakDelegate = GetKeycloakUserAdminDelegate(this.configuration, logger, httpResponseMessage);
 
-            JWTModel jwt = new()
+            JwtModel jwt = new()
             {
                 AccessToken = "Bearer Token",
             };
@@ -218,7 +218,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             };
             IUserAdminDelegate keycloakDelegate = GetKeycloakUserAdminDelegate(this.configuration, logger, httpResponseMessage);
 
-            JWTModel jwt = new()
+            JwtModel jwt = new()
             {
                 AccessToken = "Bearer Token",
             };

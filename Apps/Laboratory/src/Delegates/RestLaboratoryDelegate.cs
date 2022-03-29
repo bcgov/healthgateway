@@ -74,11 +74,11 @@ namespace HealthGateway.Laboratory.Delegates
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestLaboratoryDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PHSAResult<List<PhsaCovid19Order>>>> GetCovid19Orders(string bearerToken, string hdid, int pageIndex = 0)
+        public async Task<RequestResult<PhsaResult<List<PhsaCovid19Order>>>> GetCovid19Orders(string bearerToken, string hdid, int pageIndex = 0)
         {
             using (Source.StartActivity("GetCovid19Orders"))
             {
-                RequestResult<PHSAResult<List<PhsaCovid19Order>>> retVal = new()
+                RequestResult<PhsaResult<List<PhsaCovid19Order>>> retVal = new()
                 {
                     ResultStatus = ResultType.Error,
                     PageIndex = pageIndex,
@@ -106,7 +106,7 @@ namespace HealthGateway.Laboratory.Delegates
                     {
                         case HttpStatusCode.OK:
                             this.logger.LogTrace($"Response payload: {payload}");
-                            PHSAResult<List<PhsaCovid19Order>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<List<PhsaCovid19Order>>>(payload);
+                            PhsaResult<List<PhsaCovid19Order>>? phsaResult = JsonSerializer.Deserialize<PhsaResult<List<PhsaCovid19Order>>>(payload);
                             if (phsaResult != null)
                             {
                                 retVal.ResultStatus = ResultType.Success;
@@ -153,7 +153,7 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, string bearerToken, bool isCovid19)
+        public async Task<RequestResult<LaboratoryReport>> GetLabReport(string id, string hdid, string bearerToken, bool isCovid19)
         {
             using (Source.StartActivity("GetLabReport"))
             {
@@ -239,11 +239,11 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PHSAResult<PhsaLaboratorySummary>>> GetLaboratorySummary(string hdid, string bearerToken)
+        public async Task<RequestResult<PhsaResult<PhsaLaboratorySummary>>> GetLaboratorySummary(string hdid, string bearerToken)
         {
             using Activity? activity = Source.StartActivity();
 
-            RequestResult<PHSAResult<PhsaLaboratorySummary>> retVal = new()
+            RequestResult<PhsaResult<PhsaLaboratorySummary>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -269,7 +269,7 @@ namespace HealthGateway.Laboratory.Delegates
                 {
                     case HttpStatusCode.OK:
                         this.logger.LogTrace($"Response payload: {payload}");
-                        PHSAResult<PhsaLaboratorySummary>? phsaResult = JsonSerializer.Deserialize<PHSAResult<PhsaLaboratorySummary>>(payload);
+                        PhsaResult<PhsaLaboratorySummary>? phsaResult = JsonSerializer.Deserialize<PhsaResult<PhsaLaboratorySummary>>(payload);
                         if (phsaResult != null)
                         {
                             retVal.ResultStatus = ResultType.Success;
@@ -316,7 +316,7 @@ namespace HealthGateway.Laboratory.Delegates
 
         /// <inheritdoc/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
-        public async Task<RequestResult<PHSAResult<IEnumerable<CovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate)
+        public async Task<RequestResult<PhsaResult<IEnumerable<CovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate)
         {
             using Activity? activity = Source.StartActivity("GetPublicTestResults");
             this.logger.LogDebug($"Getting public COVID-19 test results {phn} {dateOfBirth} {collectionDate}...");
@@ -324,7 +324,7 @@ namespace HealthGateway.Laboratory.Delegates
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
 
-            RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> retVal = new()
+            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
                 PageIndex = 0,
@@ -356,7 +356,7 @@ namespace HealthGateway.Laboratory.Delegates
                 {
                     case HttpStatusCode.OK:
                         this.logger.LogTrace($"Response payload: {payload}");
-                        PHSAResult<IEnumerable<CovidTestResult>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<IEnumerable<CovidTestResult>>>(payload);
+                        PhsaResult<IEnumerable<CovidTestResult>>? phsaResult = JsonSerializer.Deserialize<PhsaResult<IEnumerable<CovidTestResult>>>(payload);
                         if (phsaResult != null && phsaResult.Result != null)
                         {
                             retVal.ResultStatus = ResultType.Success;

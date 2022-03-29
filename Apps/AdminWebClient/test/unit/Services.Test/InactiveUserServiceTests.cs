@@ -213,8 +213,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
 
             Mock<IUserAdminDelegate> userAdminDelegateMock = new();
-            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.AdminUser, It.IsAny<JWTModel>())).Returns(Task.FromResult(adminUserResult));
-            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.SupportUser, It.IsAny<JWTModel>())).Returns(Task.FromResult(supportUserResult));
+            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.AdminUser, It.IsAny<JwtModel>())).Returns(Task.FromResult(adminUserResult));
+            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.SupportUser, It.IsAny<JwtModel>())).Returns(Task.FromResult(supportUserResult));
 
             IInactiveUserService service = new InactiveUserService(
                 authenticationDelegateMock.Object,
@@ -317,8 +317,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
 
             Mock<IUserAdminDelegate> userAdminDelegateMock = new();
-            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.AdminUser, It.IsAny<JWTModel>())).Returns(Task.FromResult(adminUserResult));
-            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.SupportUser, It.IsAny<JWTModel>())).Returns(Task.FromResult(supportUserResult));
+            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.AdminUser, It.IsAny<JwtModel>())).Returns(Task.FromResult(adminUserResult));
+            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.SupportUser, It.IsAny<JwtModel>())).Returns(Task.FromResult(supportUserResult));
 
             IInactiveUserService service = new InactiveUserService(
                 authenticationDelegateMock.Object,
@@ -376,8 +376,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
 
             Mock<IUserAdminDelegate> userAdminDelegateMock = new();
-            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.AdminUser, It.IsAny<JWTModel>())).Returns(Task.FromResult(adminUserResult));
-            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.SupportUser, It.IsAny<JWTModel>())).Returns(Task.FromResult(supportUserResult));
+            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.AdminUser, It.IsAny<JwtModel>())).Returns(Task.FromResult(adminUserResult));
+            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.SupportUser, It.IsAny<JwtModel>())).Returns(Task.FromResult(supportUserResult));
 
             IInactiveUserService service = new InactiveUserService(
                 authenticationDelegateMock.Object,
@@ -445,8 +445,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
 
             Mock<IUserAdminDelegate> userAdminDelegateMock = new();
-            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.AdminUser, It.IsAny<JWTModel>())).Returns(Task.FromResult(adminUserResult));
-            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.SupportUser, It.IsAny<JWTModel>())).Returns(Task.FromResult(supportUserResult));
+            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.AdminUser, It.IsAny<JwtModel>())).Returns(Task.FromResult(adminUserResult));
+            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.SupportUser, It.IsAny<JwtModel>())).Returns(Task.FromResult(supportUserResult));
 
             IInactiveUserService service = new InactiveUserService(
                 authenticationDelegateMock.Object,
@@ -510,8 +510,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
 
             Mock<IUserAdminDelegate> userAdminDelegateMock = new();
-            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.AdminUser, It.IsAny<JWTModel>())).Returns(Task.FromResult(adminUserResult));
-            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.SupportUser, It.IsAny<JWTModel>())).Returns(Task.FromResult(supportUserResult));
+            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.AdminUser, It.IsAny<JwtModel>())).Returns(Task.FromResult(adminUserResult));
+            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.SupportUser, It.IsAny<JwtModel>())).Returns(Task.FromResult(supportUserResult));
 
             IInactiveUserService service = new InactiveUserService(
                 authenticationDelegateMock.Object,
@@ -574,8 +574,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
 
             Mock<IUserAdminDelegate> userAdminDelegateMock = new();
-            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.AdminUser, It.IsAny<JWTModel>())).Returns(Task.FromResult(adminUserResult));
-            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.SupportUser, It.IsAny<JWTModel>())).Returns(Task.FromResult(supportUserResult));
+            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.AdminUser, It.IsAny<JwtModel>())).Returns(Task.FromResult(adminUserResult));
+            userAdminDelegateMock.Setup(s => s.GetUsers(IdentityAccessRole.SupportUser, It.IsAny<JwtModel>())).Returns(Task.FromResult(supportUserResult));
 
             IInactiveUserService service = new InactiveUserService(
                 authenticationDelegateMock.Object,
@@ -606,9 +606,9 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 .Build();
         }
 
-        private static JWTModel GetJwtModel()
+        private static JwtModel GetJwtModel()
         {
-            return new JWTModel()
+            return new JwtModel()
             {
                 AccessToken = "Bearer Token",
             };

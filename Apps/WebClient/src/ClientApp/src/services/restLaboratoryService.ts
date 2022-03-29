@@ -118,7 +118,12 @@ export class RestLaboratoryService implements ILaboratoryService {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
-                    resourcePayload: { loaded: true, retryin: 0, orders: [] },
+                    resourcePayload: {
+                        loaded: true,
+                        queued: false,
+                        retryin: 0,
+                        orders: [],
+                    },
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
                 });

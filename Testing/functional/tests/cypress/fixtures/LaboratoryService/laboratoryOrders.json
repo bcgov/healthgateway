@@ -1,10 +1,11 @@
 {
     "resourcePayload": {
         "loaded": true,
+        "queued": false,
         "retryin": 0,
         "orders": [
             {
-                "laboratoryReportId": "ccee5028-6d51-4474-ce18-08d91c31b95b",
+                "labPdfId": "ccee5028-6d51-4474-ce18-08d91c31b95b",
                 "reportingSource": "Vancouver Coastal Health",
                 "reportId": "341L56330T278085",
                 "collectionDateTime": "2021-05-11T11:57:00",
@@ -58,7 +59,7 @@
                 ]
             },
             {
-                "laboratoryReportId": "7452919b-7411-40e4-ce19-08d91c31b95b",
+                "labPdfId": "7452919b-7411-40e4-ce19-08d91c31b95b",
                 "reportingSource": "Vancouver Coastal Health",
                 "reportId": "341L52341T275612",
                 "collectionDateTime": "2021-05-11T06:00:00",
@@ -210,7 +211,7 @@
                 ]
             },
             {
-                "laboratoryReportId": "aec5015c-fcf0-4ab5-ce1a-08d91c31b95b",
+                "labPdfId": "aec5015c-fcf0-4ab5-ce1a-08d91c31b95b",
                 "reportingSource": "Vancouver Coastal Health",
                 "reportId": "341L47099T274701",
                 "collectionDateTime": "2021-05-11T06:00:00",
@@ -236,7 +237,7 @@
                 ]
             },
             {
-                "laboratoryReportId": "292647ea-5fb7-4270-ce1b-08d91c31b95b",
+                "labPdfId": "292647ea-5fb7-4270-ce1b-08d91c31b95b",
                 "reportingSource": "Vancouver Coastal Health",
                 "reportId": "341L52334T275610",
                 "collectionDateTime": "2021-05-11T06:00:00",
@@ -255,7 +256,7 @@
                 ]
             },
             {
-                "laboratoryReportId": "34075168-4982-4c1a-ce1c-08d91c31b95b",
+                "labPdfId": "34075168-4982-4c1a-ce1c-08d91c31b95b",
                 "reportingSource": "Vancouver Coastal Health",
                 "reportId": "341L53984T275983",
                 "collectionDateTime": "2021-05-11T02:00:00",
@@ -274,7 +275,7 @@
                 ]
             },
             {
-                "laboratoryReportId": "f3122fe1-08ce-48d6-ce1d-08d91c31b95b",
+                "labPdfId": "f3122fe1-08ce-48d6-ce1d-08d91c31b95b",
                 "reportingSource": "Vancouver Coastal Health",
                 "reportId": "341L54565T276529",
                 "collectionDateTime": "2021-05-11T00:00:00",
@@ -293,7 +294,7 @@
                 ]
             },
             {
-                "laboratoryReportId": "aa3070d8-23ca-4060-ce1e-08d91c31b95b",
+                "labPdfId": "aa3070d8-23ca-4060-ce1e-08d91c31b95b",
                 "reportingSource": "Vancouver Coastal Health",
                 "reportId": "341L52336T275611",
                 "collectionDateTime": "2021-05-11T00:00:00",
@@ -424,7 +425,7 @@
                 ]
             },
             {
-                "laboratoryReportId": "4cbcf288-8ed8-427d-ce1f-08d91c31b95b",
+                "labPdfId": "4cbcf288-8ed8-427d-ce1f-08d91c31b95b",
                 "reportingSource": "Vancouver Coastal Health",
                 "reportId": "341L53942T275943",
                 "collectionDateTime": "2021-05-11T00:00:00",
@@ -443,7 +444,7 @@
                 ]
             },
             {
-                "laboratoryReportId": "3c955e6e-65ac-408d-ce20-08d91c31b95b",
+                "labPdfId": "3c955e6e-65ac-408d-ce20-08d91c31b95b",
                 "reportingSource": "Vancouver Coastal Health",
                 "reportId": "341L52331T275607",
                 "collectionDateTime": "2021-05-11T00:00:00",

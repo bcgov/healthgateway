@@ -82,6 +82,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         reports3DosesC19Vaccine: CovidTreatmentAssessmentOption.Unspecified,
         hasChronicConditionDiagnoses:
             CovidTreatmentAssessmentOption.Unspecified,
+        consentToSendCC: CovidTreatmentAssessmentOption.Unspecified,
         agentComments: "",
         streetAddresses: [],
         provOrState: "",
@@ -124,6 +125,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
             reports3DosesC19Vaccine: CovidTreatmentAssessmentOption.Unspecified,
             hasChronicConditionDiagnoses:
                 CovidTreatmentAssessmentOption.Unspecified,
+            consentToSendCC: CovidTreatmentAssessmentOption.Unspecified,
             agentComments: "",
             streetAddresses: [],
             provOrState: "",
@@ -302,13 +304,6 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                 </ValidationProvider>
                             </v-col>
                         </v-row>
-                        <Card title="Do you identify as Indigenous?">
-                            <OptionDetails
-                                :value.sync="
-                                    covidTreatmentAssessmentRequest.identifiesIndigenous
-                                "
-                            />
-                        </Card>
                         <Card
                             title="Do you have a family doctor or nurse practitioner?"
                         >
@@ -482,22 +477,10 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             </ValidationProvider>
                         </Card>
                         <Card
-                            title="7. Have you had 3 doses of the vaccine?"
-                            additional-info="Citizen has had 3 doses of vaccine for more than 14 days."
-                            :display-additional-info="
-                                details.has3DoseMoreThan14Days
-                            "
-                        >
-                            <OptionDetails
-                                :value.sync="
-                                    covidTreatmentAssessmentRequest.reports3DosesC19Vaccine
-                                "
-                                :has-not-sure-option="true"
-                                :response-of-yes-indicates-no-benefit="true"
-                            />
-                        </Card>
-                        <Card
-                            title="8. Have you been diagnosed by a health care provider with a chronic condition?"
+                            title="7. Have you been diagnosed by a health care provider with a chronic condition 
+                            or have received a letter from Dr. Bonnie Henry stating that you
+                            are Clinically Extremely Vulnerable (CEV) because you are
+                            immunocompromised?"
                             additional-info="Citizen has a chronic condition."
                             :display-additional-info="
                                 details.hasDocumentedChronicCondition
@@ -510,6 +493,45 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                 :has-not-sure-option="true"
                                 :response-of-yes-indicates-benefit="true"
                             />
+                        </Card>
+                        <Card title="8. Do you identify as Indigenous?">
+                            <OptionDetails
+                                :value.sync="
+                                    covidTreatmentAssessmentRequest.identifiesIndigenous
+                                "
+                            />
+                        </Card>
+                        <Card
+                            title="9. Have you had 3 doses of the vaccine?"
+                            additional-info="Citizen has had 3 doses of vaccine for more than 14 days."
+                            :display-additional-info="
+                                details.has3DoseMoreThan14Days
+                            "
+                        >
+                            <OptionDetails
+                                :value.sync="
+                                    covidTreatmentAssessmentRequest.reports3DosesC19Vaccine
+                                "
+                                :has-not-sure-option="true"
+                            />
+                        </Card>
+                        <Card
+                            title="10. Do you agree to the information being added to your CareConnect electronic 
+                            health record as part of the process to obtain COVID-19 treatment?*"
+                        >
+                            <ValidationProvider
+                                v-slot="{ errors }"
+                                rules="oneOf:Yes,No"
+                            >
+                                <OptionDetails
+                                    :value.sync="
+                                        covidTreatmentAssessmentRequest.consentToSendCC
+                                    "
+                                />
+                                <div class="error-message">
+                                    {{ errors[0] }}
+                                </div>
+                            </ValidationProvider>
                         </Card>
                         <Card title="Notes">
                             <div class="pt-2">

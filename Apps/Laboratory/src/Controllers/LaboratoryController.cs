@@ -114,7 +114,7 @@ namespace HealthGateway.Laboratory.Controllers
         [Produces("application/json")]
         [Route("{reportId}/Report")]
         [Authorize(Policy = LaboratoryPolicy.Read)]
-        public async Task<RequestResult<LaboratoryReport>> GetLaboratoryReport(Guid reportId, [FromQuery] string hdid, bool isCovid19 = true)
+        public async Task<RequestResult<LaboratoryReport>> GetLaboratoryReport(string reportId, [FromQuery] string hdid, bool isCovid19 = true)
         {
             this.logger.LogDebug("Getting PDF version of Laboratory Report for Hdid: {Hdid} and isCovid19: {IsCovid10}...", hdid, isCovid19.ToString());
             RequestResult<LaboratoryReport> result = await this.labService.GetLabReport(reportId, hdid, isCovid19).ConfigureAwait(true);

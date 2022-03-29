@@ -10,7 +10,7 @@ const statusFinal = "Final";
 
 // The laboratory order timeline entry model
 export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
-    public laboratoryReportId: string;
+    public labPdfId: string;
     public reportingLab: string;
     public reportId: string;
     public collectionDateTime: DateWrapper;
@@ -38,7 +38,7 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
 
         this.commonName = model.commonName;
         this.reportAvailable = model.reportAvailable;
-        this.laboratoryReportId = model.laboratoryReportId;
+        this.labPdfId = model.labPdfId;
         this.collectionDateTime = new DateWrapper(model.collectionDateTime, {
             hasTime: true,
         });

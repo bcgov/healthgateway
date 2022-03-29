@@ -52,7 +52,7 @@ namespace HealthGateway.Medication.Delegates
         private readonly IHttpClientService httpClientService;
         private readonly IGenericCacheDelegate genericCacheDelegate;
         private readonly IHashDelegate hashDelegate;
-        private readonly ODRConfig odrConfig;
+        private readonly OdrConfig odrConfig;
         private readonly Uri baseURL;
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace HealthGateway.Medication.Delegates
             this.httpClientService = httpClientService;
             this.genericCacheDelegate = genericCacheDelegate;
             this.hashDelegate = hashDelegate;
-            this.odrConfig = new ODRConfig();
+            this.odrConfig = new OdrConfig();
             configuration.Bind(ODRConfigSectionKey, this.odrConfig);
             if (this.odrConfig.DynamicServiceLookup)
             {
@@ -100,7 +100,7 @@ namespace HealthGateway.Medication.Delegates
 
         /// <inheritdoc/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Catch all required")]
-        public async Task<RequestResult<MedicationHistoryResponse>> GetMedicationStatementsAsync(ODRHistoryQuery query, string? protectiveWord, string hdid, string ipAddress)
+        public async Task<RequestResult<MedicationHistoryResponse>> GetMedicationStatementsAsync(OdrHistoryQuery query, string? protectiveWord, string hdid, string ipAddress)
         {
             using (Source.StartActivity("GetMedicationStatementsAsync"))
             {

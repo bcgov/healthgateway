@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.LaboratoryTests
+namespace HealthGateway.LaboratoryTests.Services
 {
     using System;
     using System.Collections.Generic;
@@ -82,7 +82,7 @@ namespace HealthGateway.LaboratoryTests
                 },
             };
 
-            RequestResult<PHSAResult<List<PhsaCovid19Order>>> delegateResult = new()
+            RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult = new()
             {
                 ResultStatus = expectedResultType,
                 PageSize = 100,
@@ -98,7 +98,7 @@ namespace HealthGateway.LaboratoryTests
             {
                 Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
                 int count = 0;
-                foreach (Covid19Order model in actualResult.Result!.ResourcePayload!.Covid19Orders)
+                foreach (Covid19Order model in actualResult.Result.ResourcePayload!.Covid19Orders)
                 {
                     count++;
                     Assert.True(model.MessageID.Equals(MockedMessageID + count, StringComparison.Ordinal));
@@ -134,7 +134,7 @@ namespace HealthGateway.LaboratoryTests
                     new PhsaLaboratoryOrder()
                     {
                         ReportId = expectedReportId1,
-                        LabPdfGuid = Guid.NewGuid(),
+                        LabPdfId = expectedReportId1,
                         CommonName = "Lab Test",
                         OrderingProvider = "PLISBVCC, TREVOR",
                         CollectionDateTime = DateTime.Now,
@@ -154,7 +154,7 @@ namespace HealthGateway.LaboratoryTests
                     new PhsaLaboratoryOrder()
                     {
                         ReportId = expectedReportId2,
-                        LabPdfGuid = Guid.NewGuid(),
+                        LabPdfId = expectedReportId2,
                         CommonName = "Lab Test",
                         OrderingProvider = "PLISBVCC, TREVOR",
                         CollectionDateTime = DateTime.Now,
@@ -175,7 +175,7 @@ namespace HealthGateway.LaboratoryTests
                 LabOrderCount = 2,
             };
 
-            RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult = new()
+            RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult = new()
             {
                 ResultStatus = expectedResultType,
                 PageSize = 100,
@@ -222,7 +222,7 @@ namespace HealthGateway.LaboratoryTests
                 LabOrderCount = 0,
             };
 
-            RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult = new()
+            RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
                 PageSize = 100,
@@ -258,7 +258,7 @@ namespace HealthGateway.LaboratoryTests
                 LabOrderCount = 0,
             };
 
-            RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult = new()
+            RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
                 PageSize = 100,
@@ -301,7 +301,7 @@ namespace HealthGateway.LaboratoryTests
 
             ILaboratoryService service = new LaboratoryServiceMock(delegateResult, TOKEN).LaboratoryServiceMockInstance();
 
-            Task<RequestResult<LaboratoryReport>> actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, true);
+            Task<RequestResult<LaboratoryReport>> actualResult = service.GetLabReport("ReportId", string.Empty, true);
 
             Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
             Assert.Equal(MockedReportContent, actualResult.Result.ResourcePayload!.Report);
@@ -323,7 +323,7 @@ namespace HealthGateway.LaboratoryTests
                 },
             };
 
-            RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> delegateResult = new()
+            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new()
@@ -356,7 +356,7 @@ namespace HealthGateway.LaboratoryTests
         [InlineData(nameof(LabIndicatorType.NotFound))]
         public void ShouldGetCovidTestsWithValidError(string statusIndicator)
         {
-            RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> delegateResult = new()
+            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new()
@@ -390,7 +390,7 @@ namespace HealthGateway.LaboratoryTests
         [InlineData(nameof(LabIndicatorType.Blocked))]
         public void ShouldGetCovidTestsWithInvalidError(string statusIndicator)
         {
-            RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> delegateResult = new()
+            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new()
@@ -423,7 +423,7 @@ namespace HealthGateway.LaboratoryTests
         {
             const int backOffMiliseconds = 500;
 
-            RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> delegateResult = new()
+            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new()

@@ -55,7 +55,7 @@ namespace HealthGateway.Admin.Server.Services
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IVaccineProofDelegate vaccineProofDelegate;
-        private readonly BCMailPlusConfig bcmpConfig;
+        private readonly BcMailPlusConfig bcmpConfig;
         private readonly VaccineCardConfig vaccineCardConfig;
         private readonly IImmunizationAdminClient immunizationAdminClient;
         private readonly IAuthenticationDelegate authenticationDelegate;
@@ -207,7 +207,7 @@ namespace HealthGateway.Admin.Server.Services
                 PersonalHealthNumber = request.PersonalHealthNumber,
                 DateOfBirth = birthdate,
             };
-            RequestResult<PHSAResult<VaccineStatusResult>> vaccineStatusResult =
+            RequestResult<PhsaResult<VaccineStatusResult>> vaccineStatusResult =
                 await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(statusQuery, bearerToken, false).ConfigureAwait(true);
 
             PrimitiveRequestResult<bool> retVal = new();
@@ -466,7 +466,7 @@ namespace HealthGateway.Admin.Server.Services
                 PersonalHealthNumber = phn,
                 DateOfBirth = birthdate,
             };
-            RequestResult<PHSAResult<VaccineStatusResult>> statusResult =
+            RequestResult<PhsaResult<VaccineStatusResult>> statusResult =
                 await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(statusQuery, bearerToken, false).ConfigureAwait(true);
 
             if (statusResult.ResultStatus != ResultType.Success)

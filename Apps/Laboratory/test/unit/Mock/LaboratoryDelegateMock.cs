@@ -34,7 +34,7 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// Initializes a new instance of the <see cref="LaboratoryDelegateMock"/> class.
         /// </summary>
         /// <param name="delegateResult">List of COVID-19 Orders.</param>
-        public LaboratoryDelegateMock(RequestResult<PHSAResult<List<PhsaCovid19Order>>> delegateResult)
+        public LaboratoryDelegateMock(RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult)
         {
             this.Setup(s => s.GetCovid19Orders(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
         }
@@ -46,7 +46,7 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// <param name="isCovid19">Indicates whether the COVID-19 report should be returned.</param>
         public LaboratoryDelegateMock(RequestResult<LaboratoryReport> delegateResult, bool isCovid19 = true)
         {
-            this.Setup(s => s.GetLabReport(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), isCovid19)).Returns(Task.FromResult(delegateResult));
+            this.Setup(s => s.GetLabReport(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), isCovid19)).Returns(Task.FromResult(delegateResult));
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// </summary>
         /// <param name="delegateResult">list of COVID-19 Test Results.</param>
         /// <param name="token">token needed for authentication.</param>
-        public LaboratoryDelegateMock(RequestResult<PHSAResult<IEnumerable<CovidTestResult>>> delegateResult, string token)
+        public LaboratoryDelegateMock(RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> delegateResult, string token)
         {
             this.Setup(s => s.GetPublicTestResults(token, It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<DateOnly>())).Returns(Task.FromResult(delegateResult));
         }
@@ -63,7 +63,7 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// Initializes a new instance of the <see cref="LaboratoryDelegateMock"/> class.
         /// </summary>
         /// <param name="delegateResult">List of Laboratory Orders.</param>
-        public LaboratoryDelegateMock(RequestResult<PHSAResult<PhsaLaboratorySummary>> delegateResult)
+        public LaboratoryDelegateMock(RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult)
         {
             this.Setup(s => s.GetLaboratorySummary(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
         }

@@ -13,9 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.LaboratoryTests
+namespace HealthGateway.LaboratoryTests.Controllers
 {
-    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -156,9 +155,9 @@ namespace HealthGateway.LaboratoryTests
         public async Task ShouldGetLabReport()
         {
             Mock<ILaboratoryService> svcMock = new();
-            Guid guid = Guid.NewGuid();
+            string reportId = "ReportID";
             MockLaboratoryDelegate laboratoryDelegate = new();
-            svcMock.Setup(s => s.GetLabReport(guid, Hdid, It.IsAny<bool>())).ReturnsAsync(await laboratoryDelegate.GetLabReport(guid, Hdid, Token, It.IsAny<bool>()).ConfigureAwait(true));
+            svcMock.Setup(s => s.GetLabReport(reportId, Hdid, It.IsAny<bool>())).ReturnsAsync(await laboratoryDelegate.GetLabReport(reportId, Hdid, Token, It.IsAny<bool>()).ConfigureAwait(true));
 
             Mock<ILabTestKitService> mockLabTestKitService = new();
 
@@ -168,7 +167,7 @@ namespace HealthGateway.LaboratoryTests
                 mockLabTestKitService.Object);
 
             // Act
-            RequestResult<LaboratoryReport> actual = await controller.GetLaboratoryReport(guid, Hdid, It.IsAny<bool>()).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> actual = await controller.GetLaboratoryReport(reportId, Hdid, It.IsAny<bool>()).ConfigureAwait(true);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
@@ -182,8 +181,8 @@ namespace HealthGateway.LaboratoryTests
         public async Task ShouldGetLabReportError()
         {
             Mock<ILaboratoryService> svcMock = new();
-            Guid guid = Guid.NewGuid();
-            svcMock.Setup(s => s.GetLabReport(guid, Hdid, It.IsAny<bool>())).ReturnsAsync(new RequestResult<LaboratoryReport>()
+            string reportId = "ReportId";
+            svcMock.Setup(s => s.GetLabReport(reportId, Hdid, It.IsAny<bool>())).ReturnsAsync(new RequestResult<LaboratoryReport>()
             {
                 ResultStatus = ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = "Test Error" },
@@ -198,7 +197,7 @@ namespace HealthGateway.LaboratoryTests
                 mockLabTestKitService.Object);
 
             // Act
-            RequestResult<LaboratoryReport> actual = await controller.GetLaboratoryReport(guid, Hdid, It.IsAny<bool>()).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> actual = await controller.GetLaboratoryReport(reportId, Hdid, It.IsAny<bool>()).ConfigureAwait(true);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Error);

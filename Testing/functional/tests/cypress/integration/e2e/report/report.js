@@ -11,7 +11,6 @@ describe("Reports", () => {
             "Laboratory",
             "Immunization",
             "MedicationRequest",
-            "Note",
             "AllLaboratory",
         ]);
         cy.login(
@@ -192,10 +191,13 @@ describe("Reports", () => {
         cy.get("[data-testid=genericMessageModal]").should("not.exist");
     });
 
-    it("Validate Notes Report", () => {
-        cy.get("[data-testid=reportType]").select("My Notes");
+    it("Validate Laboratory Report", () => {
+        cy.get("[data-testid=reportType]").select("Laboratory Tests");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=labResultDateItem]", { timeout: 60000 })
+            .last()
+            .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
         cy.viewport("iphone-6");
         cy.get("[data-testid=reportSample]").should("not.be.visible");
@@ -218,14 +220,26 @@ describe("Reports", () => {
 
         cy.get("[data-testid=genericMessageModal]").should("not.exist");
     });
+});
 
-    it("Validate Laboratory Report", () => {
-        cy.get("[data-testid=reportType]").select("Laboratory Tests");
+describe("Reports - Notes", () => {
+    let sensitiveDocText =
+        " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
+    beforeEach(() => {
+        cy.setupDownloads();
+        cy.enableModules(["Note"]);
+        cy.login(
+            Cypress.env("keycloak.invaliddoses.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/reports"
+        );
+    });
+
+    it("Validate Notes Report", () => {
+        cy.get("[data-testid=reportType]").select("My Notes");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
-        cy.get("[data-testid=labResultDateItem]", { timeout: 60000 })
-            .last()
-            .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
         cy.viewport("iphone-6");
         cy.get("[data-testid=reportSample]").should("not.be.visible");
