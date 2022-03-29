@@ -98,18 +98,18 @@ public partial class BannerDialog : FluxorComponent
     {
         if (!this.IsNewBanner)
         {
-            this.EffectiveDate = this.Communication.EffectiveDateTime.Date;
-            this.EffectiveTime = this.Communication.EffectiveDateTime.TimeOfDay;
-            this.ExpiryDate = this.Communication.ExpiryDateTime.Date;
-            this.ExpiryTime = this.Communication.ExpiryDateTime.TimeOfDay;
+            this.EffectiveDate = this.Communication.EffectiveDateTime.ToLocalTime().Date;
+            this.EffectiveTime = this.Communication.EffectiveDateTime.ToLocalTime().TimeOfDay;
+            this.ExpiryDate = this.Communication.ExpiryDateTime.ToLocalTime().Date;
+            this.ExpiryTime = this.Communication.ExpiryDateTime.ToLocalTime().TimeOfDay;
             this.HtmlContent = this.Communication.Text;
         }
     }
 
     private async Task RetrieveFormValuesAsync()
     {
-        this.Communication.EffectiveDateTime = this.EffectiveDate!.Value + this.EffectiveTime!.Value;
-        this.Communication.ExpiryDateTime = this.ExpiryDate!.Value + this.ExpiryTime!.Value;
+        this.Communication.EffectiveDateTime = (this.EffectiveDate!.Value + this.EffectiveTime!.Value).ToUniversalTime();
+        this.Communication.ExpiryDateTime = (this.ExpiryDate!.Value + this.ExpiryTime!.Value).ToUniversalTime();
         this.Communication.Text = await this.RichTextEditor.BlazoredComponent.GetHTML().ConfigureAwait(true);
     }
 
