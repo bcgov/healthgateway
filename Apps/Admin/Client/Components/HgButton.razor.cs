@@ -13,35 +13,41 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Components
+namespace HealthGateway.Admin.Client.Components;
+
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using MudBlazor;
+
+/// <summary>
+/// Backing logic for the HgButton component.
+/// </summary>
+public partial class HgButton : HgComponentBase
 {
-    using Microsoft.AspNetCore.Components;
-    using MudBlazor;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HgButton"/> class.
+    /// </summary>
+    public HgButton()
+    {
+        this.HorizontalMarginSize = 3;
+        this.VerticalMarginSize = 3;
+    }
 
     /// <summary>
-    /// Backing logic for the HgButton component.
+    /// Gets or sets the MudBlazor variant that should be applied to the component.
     /// </summary>
-    public partial class HgButton : HgComponentBase
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HgButton"/> class.
-        /// </summary>
-        public HgButton()
-        {
-            this.HorizontalMarginSize = 3;
-            this.VerticalMarginSize = 3;
-        }
+    [Parameter]
+    public Variant Variant { get; set; } = Variant.Filled;
 
-        /// <summary>
-        /// Gets or sets the MudBlazor variant that should be applied to the component.
-        /// </summary>
-        [Parameter]
-        public Variant Variant { get; set; } = Variant.Filled;
+    /// <summary>
+    /// Gets or sets the MudBlazor colour that should be applied to the component.
+    /// </summary>
+    [Parameter]
+    public Color Color { get; set; } = Color.Primary;
 
-        /// <summary>
-        /// Gets or sets the MudBlazor colour that should be applied to the component.
-        /// </summary>
-        [Parameter]
-        public Color Color { get; set; } = Color.Primary;
-    }
+    /// <summary>
+    /// Gets or sets the event callback that will be triggered when the button is clicked.
+    /// </summary>
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
 }

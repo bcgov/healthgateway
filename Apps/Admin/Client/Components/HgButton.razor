@@ -3,8 +3,9 @@
 <MudButton Class="@CombinedClass"
            Style="@Style"
            Tag="@Tag"
-           Variant="Variant"
-           Color="Color"
-           @attributes="UnmatchedAttributes">
+           Variant="@Variant"
+           Color="@Color"
+           OnClick="@OnClick"
+           @attributes="@UnmatchedAttributes">
     @ChildContent
 </MudButton>

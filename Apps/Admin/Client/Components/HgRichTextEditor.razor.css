@@ -1,0 +1,22 @@
+::deep .ql-toolbar.ql-snow,
+::deep .ql-container.ql-snow {
+    border: none;
+}
+
+::deep .ql-editor {
+    padding-top: 0;
+}
+
+::deep .mud-input-control.mud-field .mud-input-slot.mud-input-slot-nopadding {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+::deep .ql-snow .ql-tooltip {
+    z-index: 1;
+}
+
+::deep .ql-container,
+::deep .ql-snow .ql-tooltip input[type=text] {
+    font-size: 1rem;
+}

@@ -1,0 +1,76 @@
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudTable Class="mt-3" Items="@Rows" Loading="@IsLoading" Breakpoint="@Breakpoint.Md" HorizontalScrollbar="true" Striped="true" Dense="true">
+    <ColGroup>
+        <MudHidden Breakpoint="@Breakpoint.MdAndDown">
+            <col />
+            <col style="width: 125px;" />
+            <col style="width: 200px;" />
+            <col style="width: 200px;" />
+            <col style="width: 200px;" />
+        </MudHidden>
+    </ColGroup>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<CommunicationRow, object>(x => x.Subject)">
+                Subject
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<CommunicationRow, object>(x => x.Status)">
+                Status
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<CommunicationRow, object>(x => x.EffectiveDate)" InitialDirection="SortDirection.Descending">
+                Effective On
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<CommunicationRow, object>(x => x.ExpiryDate)" InitialDirection="SortDirection.Descending">
+                Expires On
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh Style="text-align:right">
+            Actions
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Subject">@context.Subject</MudTd>
+        <MudTd DataLabel="Status">@context.Status</MudTd>
+        <MudTd DataLabel="Effective On">@context.EffectiveDate</MudTd>
+        <MudTd DataLabel="Expires On">@context.ExpiryDate</MudTd>
+        <MudTd DataLabel="Actions" Style="text-align:right">
+            <div>
+                <MudTooltip Text="@(context.IsExpanded ? "Collapse" : "Expand")">
+                    <MudIconButton OnClick="@(() => ToggleExpandRow(context.Id))"
+                                   Icon="@(context.IsExpanded ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
+                                   Color="@Color.Primary" />
+                </MudTooltip>
+                <MudTooltip Text="Edit">
+                    <MudIconButton OnClick="@(async () => await EditCommunicationAsync(context.Id))"
+                                   Icon="@Icons.Material.Filled.Edit"
+                                   Color="@Color.Primary" />
+                </MudTooltip>
+                <MudTooltip Text="Delete">
+                    <MudIconButton OnClick="@(() => DeleteCommunication(context.Id))"
+                                   Icon="@Icons.Material.Filled.Delete"
+                                   Color="@Color.Primary" />
+                </MudTooltip>
+            </div>
+        </MudTd>
+    </RowTemplate>
+    <ChildRowContent>
+        @if (context.IsExpanded)
+        {
+            <MudTr>
+                <MudTd colspan="5" Style="text-align:center">
+                    <div class="ma-3">@context.Text</div>
+                </MudTd>
+            </MudTr>
+        }
+    </ChildRowContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
