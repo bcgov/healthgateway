@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Components
 {
+    using Microsoft.AspNetCore.Components;
     using MudBlazor;
 
     /// <summary>
@@ -31,5 +32,16 @@ namespace HealthGateway.Admin.Client.Components
             this.VerticalMarginSize = 4;
             this.BottomMargin = Breakpoint.Always;
         }
+
+        /// <summary>
+        /// Gets or sets the header content of this component.
+        /// </summary>
+        [Parameter]
+        public RenderFragment<MudTabs>? Header { get; set; }
+
+        /// <summary>
+        /// Gets the underlying MudBlazor component.
+        /// </summary>
+        public MudTabs MudComponent { get; private set; } = default!;
     }
 }

@@ -48,7 +48,9 @@
                                    Color="@Color.Primary" />
                 </MudTooltip>
                 <MudTooltip Text="Edit">
-                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="@Color.Primary" />
+                    <MudIconButton OnClick="@(async () => await EditCommunicationAsync(context.Id))"
+                                   Icon="@Icons.Material.Filled.Edit"
+                                   Color="@Color.Primary" />
                 </MudTooltip>
                 <MudTooltip Text="Delete">
                     <MudIconButton OnClick="@(() => DeleteCommunication(context.Id))"
