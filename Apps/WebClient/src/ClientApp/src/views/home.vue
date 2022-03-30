@@ -199,7 +199,17 @@ export default class HomeView extends Vue {
         );
     }
 
+    private trackClickLink(linkType: string | undefined) {
+        if (linkType) {
+            SnowPlow.trackEvent({
+                action: "click",
+                text: `home_${linkType}`,
+            });
+        }
+    }
+
     private retrieveVaccinePdf() {
+        this.trackClickLink("federal_proof");
         this.retrieveAuthenticatedVaccineRecord({
             hdid: this.user.hdid,
         });
@@ -218,8 +228,14 @@ export default class HomeView extends Vue {
     }
 
     private handleClickHealthRecords(): void {
+        this.trackClickLink("all_records");
         this.clearFilter();
         this.$router.push({ path: "/timeline" });
+    }
+
+    private handleClickVaccineCard(): void {
+        this.trackClickLink("bc_vaccine_card");
+        this.$router.push({ path: "/covid19" });
     }
 
     private handleClickRemoveQuickLink(index: number): void {
@@ -233,6 +249,11 @@ export default class HomeView extends Vue {
         const entryTypes = quickLink.filter.modules
             .map((module) => module as EntryType)
             .filter((entryType) => entryType !== undefined);
+
+        if (entryTypes.length === 1) {
+            const linkType = entryTypeMap.get(entryTypes[0])?.eventName;
+            this.trackClickLink(linkType);
+        }
 
         const builder =
             TimelineFilterBuilder.create().withEntryTypes(entryTypes);
@@ -355,7 +376,7 @@ export default class HomeView extends Vue {
                 <hg-card-button
                     title="Health Records"
                     data-testid="health-records-card-btn"
-                    @click="handleClickHealthRecords"
+                    @click="handleClickHealthRecords()"
                 >
                     <template #icon>
                         <img
@@ -393,8 +414,8 @@ export default class HomeView extends Vue {
             <b-col v-if="showVaccineCardButton" class="p-3">
                 <hg-card-button
                     title="BC Vaccine Card"
-                    to="/covid19"
                     data-testid="bc-vaccine-card-btn"
+                    @click="handleClickVaccineCard()"
                 >
                     <template #icon>
                         <hg-icon

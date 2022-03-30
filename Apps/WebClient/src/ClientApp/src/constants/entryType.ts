@@ -52,7 +52,7 @@ entryTypeMap.set(EntryType.LaboratoryOrder, {
         "View your lab results. Most results are available within 24–48 hours.",
     icon: "microscope",
     component: "LaboratoryOrderComponent",
-    eventName: "all_laboratory",
+    eventName: "lab_results",
 });
 
 entryTypeMap.set(EntryType.Covid19LaboratoryOrder, {
@@ -84,7 +84,7 @@ entryTypeMap.set(EntryType.Note, {
     description: "View and edit notes that you added to your medical records.",
     icon: "edit",
     component: "NoteComponent",
-    eventName: "",
+    eventName: "my_notes",
 });
 
 entryTypeMap.set(EntryType.MedicationRequest, {
