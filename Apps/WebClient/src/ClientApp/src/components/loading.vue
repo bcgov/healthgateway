@@ -4,7 +4,7 @@ import "vue-loading-overlay/dist/vue-loading.css";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faEdit,
-    faFlask,
+    faMicroscope,
     faPills,
     faSyringe,
 } from "@fortawesome/free-solid-svg-icons";
@@ -12,7 +12,7 @@ import Vue from "vue";
 import Loading from "vue-loading-overlay";
 import { Component, Prop } from "vue-property-decorator";
 
-library.add(faEdit, faFlask, faPills, faSyringe);
+library.add(faEdit, faMicroscope, faPills, faSyringe);
 
 @Component({
     components: {
@@ -89,7 +89,7 @@ export default class LoadingComponent extends Vue {
                     <hg-icon icon="pills" size="large" />
                 </div>
                 <div id="second" class="double-bounce">
-                    <hg-icon icon="flask" size="large" />
+                    <hg-icon icon="vial" size="large" />
                 </div>
                 <div id="third" class="double-bounce">
                     <hg-icon icon="syringe" size="large" />

@@ -1,6 +1,6 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faDownload, faVial } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faMicroscope } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
@@ -18,7 +18,7 @@ import SnowPlow from "@/utility/snowPlow";
 
 import EntrycardTimelineComponent from "./entrycard.vue";
 
-library.add(faDownload, faVial);
+library.add(faDownload, faMicroscope);
 
 @Component({
     components: {
@@ -101,7 +101,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
 <template>
     <EntryCard
         :card-id="index + '-' + datekey"
-        entry-icon="vial"
+        entry-icon="microscope"
         :title="entry.commonName"
         :entry="entry"
         :is-mobile-details="isMobileDetails"

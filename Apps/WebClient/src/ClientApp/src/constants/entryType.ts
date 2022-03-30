@@ -50,7 +50,7 @@ entryTypeMap.set(EntryType.LaboratoryOrder, {
     name: "Lab Results",
     description:
         "View your lab results. Most results are available within 24–48 hours.",
-    icon: "vial",
+    icon: "microscope",
     component: "LaboratoryOrderComponent",
     eventName: "all_laboratory",
 });
@@ -61,7 +61,7 @@ entryTypeMap.set(EntryType.Covid19LaboratoryOrder, {
     name: "COVID‑19 Tests",
     description:
         "View and download your COVID‑19 test results as soon as they are available.",
-    icon: "flask",
+    icon: "vial",
     component: "Covid19LaboratoryOrderComponent",
     eventName: "covid_test",
 });

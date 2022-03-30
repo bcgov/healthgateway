@@ -3,7 +3,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faClipboardList,
     faEdit,
-    faFlask,
+    faMicroscope,
     faPills,
     faSyringe,
     faUserMd,
@@ -29,7 +29,7 @@ import { CalendarEntry, CalendarWeek } from "./models";
 library.add(
     faClipboardList,
     faEdit,
-    faFlask,
+    faMicroscope,
     faPills,
     faSyringe,
     faUserMd,
