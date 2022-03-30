@@ -142,20 +142,40 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
             </div>
             <div class="my-2">
                 <div data-testid="laboratoryCollectionDate">
-                    <strong>Collection Date:</strong>
-                    {{ formatDate(entry.collectionDateTime) }}
+                    <strong>Collection Date: </strong>
+                    <span>{{ formatDate(entry.collectionDateTime) }}</span>
                 </div>
             </div>
             <div class="my-2">
                 <div data-testid="laboratoryOrderingProvider">
-                    <strong>Ordering Provider:</strong>
-                    {{ entry.orderingProvider }}
+                    <strong>Ordering Provider: </strong>
+                    <span>{{ entry.orderingProvider }}</span>
                 </div>
             </div>
             <div class="my-2">
                 <div data-testid="laboratoryReportingLab">
-                    <strong>Reporting Lab:</strong>
-                    {{ entry.reportingLab }}
+                    <strong>Reporting Lab: </strong>
+                    <span>{{ entry.reportingLab }}</span>
+                    <span
+                        :id="`popover-info${index}-${datekey}`"
+                        class="infoIcon ml-2"
+                        tabindex="0"
+                    >
+                        <hg-icon icon="info-circle" size="medium" />
+                    </span>
+                    <b-popover
+                        :target="`popover-info${index}-${datekey}`"
+                        placement="top"
+                        triggers="hover focus"
+                        custom-class="p-2"
+                    >
+                        Laboratory tests provide a partial picture of your
+                        health. To interpret these results, clinicians must
+                        combine these tests results with your other health
+                        information. Visit the
+                        <router-link to="/faq">FAQ</router-link> page to learn
+                        more.
+                    </b-popover>
                 </div>
             </div>
             <b-table-lite
@@ -180,3 +200,11 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
         </div>
     </EntryCard>
 </template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+
+.infoIcon {
+    color: $aquaBlue;
+}
+</style>
