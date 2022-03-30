@@ -6,6 +6,7 @@ import {
     faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { BTab, BTabs } from "bootstrap-vue";
+import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Emit, Prop, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -199,12 +200,17 @@ export default class DependentCardComponent extends Vue {
                 true
             )
             .then((result) => {
-                const link = document.createElement("a");
                 let report: LaboratoryReport = result.resourcePayload;
-                link.href = `data:${report.mediaType};${report.encoding},${report.data}`;
-                link.download = `COVID_Result_${this.dependent.dependentInformation.firstname}${this.dependent.dependentInformation.lastname}_${test.collectedDateTime}.pdf`;
-                link.click();
-                URL.revokeObjectURL(link.href);
+                fetch(
+                    `data:${report.mediaType};${report.encoding},${report.data}`
+                )
+                    .then((response) => response.blob())
+                    .then((blob) => {
+                        saveAs(
+                            blob,
+                            `COVID_Result_${this.dependent.dependentInformation.firstname}${this.dependent.dependentInformation.lastname}_${test.collectedDateTime}.pdf`
+                        );
+                    });
             })
             .catch((err: ResultError) => {
                 this.logger.error(err.resultMessage);
