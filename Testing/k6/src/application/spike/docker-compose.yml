@@ -2,9 +2,9 @@ version: '3.4'
 services:
   k6:
     image: loadimpact/k6:latest
-    command: run /services/profile/k6_profile.js
+    command: run /application/spike/k6_spike.js
     volumes:
-      - ../../../src/services/profile:/services/profile
+      - ../../../src/application/spike:/application/spike
       - ../../../src/inc:/inc
     environment: 
       - "HG_TYPE=${HG_TYPE}"

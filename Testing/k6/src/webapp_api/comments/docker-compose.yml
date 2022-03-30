@@ -2,9 +2,9 @@ version: '3.4'
 services:
   k6:
     image: loadimpact/k6:latest
-    command: run /services/profile/k6_profile.js
+    command: run /webapp_api/comments/k6_comments.js
     volumes:
-      - ../../../src/services/profile:/services/profile
+      - ../../../src/webapp_api/comments:/webapp_api/comments
       - ../../../src/inc:/inc
     environment: 
       - "HG_TYPE=${HG_TYPE}"

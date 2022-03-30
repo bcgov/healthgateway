@@ -16,7 +16,7 @@
 
 import http from "k6/http";
 import { sleep } from "k6";
-import * as common from "../inc/common.js";
+import * as common from "../../inc/common.js";
 
 export let options = common.OptionConfig();
 

@@ -2,9 +2,9 @@ version: '3.4'
 services:
   k6:
     image: loadimpact/k6:latest
-    command: run /services/profile/k6_profile.js
+    command: run /webapp_api/configuration/k6_configuration.js
     volumes:
-      - ../../../src/services/profile:/services/profile
+      - ../../../src/webapp_api/configuration:/webapp_api/configuration
       - ../../../src/inc:/inc
     environment: 
       - "HG_TYPE=${HG_TYPE}"

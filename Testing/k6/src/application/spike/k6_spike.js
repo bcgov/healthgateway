@@ -16,18 +16,30 @@
 
 import http from "k6/http";
 import { sleep } from "k6";
-import * as common from "../inc/common.js";
+import * as common from "../../inc/common.js";
 
-export let options = common.OptionConfig();
+export let options = {
+    stages: [
+        { duration: "20s", target: 10 }, // below normal load
+        { duration: "1m", target: 10 },
+        { duration: "1m", target: 400 }, // spike to super high users
+        { duration: "5m", target: 400 }, // stay there
+        { duration: "1m", target: 200 }, // scale down
+        { duration: "3m", target: 10 },
+        { duration: "10s", target: 0 }, //
+    ],
+};
 
 export default function () {
     let user = common.users[__VU % common.users.length];
 
-    common.authorizeUser(user);
-    let response = http.get(
-        common.CommentUrl + "/" + user.hdid,
-        common.params(user)
-    );
-    common.checkResponse(response);
+    common.authorizeUser(user); // only refreshes if needed.
+
+    let webClientBatchResponses = http.batch(common.webClientRequests(user));
+    let timelineBatchResponses = http.batch(common.timelineRequests(user));
+
+    common.checkResponses(webClientBatchResponses);
+    common.checkResponses(timelineBatchResponses);
+
     sleep(1);
 }
