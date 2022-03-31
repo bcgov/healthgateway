@@ -38,6 +38,16 @@ export const mutations: LaboratoryMutations = {
         state.authenticated.status = LoadStatus.LOADED;
         state.authenticated.queued = laboratoryOrderResult.queued;
     },
+    setLaboratoryOrdersRefreshInProgress(
+        state: LaboratoryState,
+        laboratoryOrderResult: LaboratoryOrderResult
+    ) {
+        state.authenticated.laboratoryOrders = laboratoryOrderResult.orders;
+        state.authenticated.error = undefined;
+        state.authenticated.statusMessage = "";
+        state.authenticated.status = LoadStatus.REQUESTED;
+        state.authenticated.queued = laboratoryOrderResult.queued;
+    },
     laboratoryError(state: LaboratoryState, error: Error) {
         state.authenticated.statusMessage = error.message;
         state.authenticated.status = LoadStatus.ERROR;

@@ -78,7 +78,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
             .getReportDocument(this.entry.id, this.user.hdid, false)
             .then((result) => {
                 let dateString =
-                    this.entry.collectionDateTime.format("YYYY_MM_DD-HH_mm");
+                    this.entry.timelineDateTime.format("YYYY_MM_DD-HH_mm");
                 let report: LaboratoryReport = result.resourcePayload;
                 fetch(
                     `data:${report.mediaType};${report.encoding},${report.data}`
@@ -143,7 +143,9 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
             <div class="my-2">
                 <div data-testid="laboratoryCollectionDate">
                     <strong>Collection Date: </strong>
-                    <span>{{ formatDate(entry.collectionDateTime) }}</span>
+                    <span v-if="entry.collectionDateTime !== undefined">
+                        {{ formatDate(entry.collectionDateTime) }}
+                    </span>
                 </div>
             </div>
             <div class="my-2">

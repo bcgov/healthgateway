@@ -145,11 +145,15 @@ export const actions: LaboratoryActions = {
                     .getLaboratoryOrders(params.hdid)
                     .then((result) => {
                         const payload = result.resourcePayload;
-                        if (result.resultStatus === ResultType.Success) {
+                        if (
+                            result.resultStatus === ResultType.Success &&
+                            payload.loaded
+                        ) {
                             EventTracker.loadData(
                                 EntryType.LaboratoryOrder,
                                 result.totalResultCount
                             );
+                            logger.info("Laboratory Orders loaded.");
                             context.commit("setLaboratoryOrders", payload);
                             resolve(result);
                         } else if (
@@ -158,7 +162,13 @@ export const actions: LaboratoryActions = {
                             !payload.loaded &&
                             payload.retryin > 0
                         ) {
-                            logger.info("Laboratory Orders not loaded");
+                            logger.info(
+                                "Refresh in progress... partially load Laboratory Orders"
+                            );
+                            context.commit(
+                                "setLaboratoryOrdersRefreshInProgress",
+                                payload
+                            );
                             setTimeout(() => {
                                 logger.info(
                                     "Re-querying for Laboratory Orders"
