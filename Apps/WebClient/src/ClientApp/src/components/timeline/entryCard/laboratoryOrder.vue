@@ -140,10 +140,12 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                     </hg-button>
                 </span>
             </div>
-            <div v-if="entry.collectionDateTime !== undefined" class="my-2">
+            <div class="my-2">
                 <div data-testid="laboratoryCollectionDate">
                     <strong>Collection Date:</strong>
-                    {{ formatDate(entry.collectionDateTime) }}
+                    <span v-if="entry.collectionDateTime !== undefined">
+                        {{ formatDate(entry.collectionDateTime) }}
+                    </span>
                 </div>
             </div>
             <div class="my-2">
