@@ -41,7 +41,7 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
         this.reportAvailable = model.reportAvailable;
         this.labPdfId = model.labPdfId;
 
-        if (model.collectionDateTime !== undefined) {
+        if (model.collectionDateTime != null) {
             this.collectionDateTime = new DateWrapper(
                 model.collectionDateTime,
                 {
