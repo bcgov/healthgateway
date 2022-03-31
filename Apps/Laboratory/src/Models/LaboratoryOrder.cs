@@ -69,6 +69,12 @@ public class LaboratoryOrder
     public DateTime? CollectionDateTime { get; set; }
 
     /// <summary>
+    /// Gets or sets the date time for the most relevant date when displaying on a timeline.
+    /// </summary>
+    [JsonPropertyName("timelineDateTime")]
+    public DateTime TimelineDateTime { get; set; }
+
+    /// <summary>
     /// Gets or sets a value for common name.
     /// </summary>
     [JsonPropertyName("commonName")]
@@ -114,6 +120,7 @@ public class LaboratoryOrder
             ReportingSource = model.ReportingSource,
             ReportId = model.ReportId,
             CollectionDateTime = model.CollectionDateTime,
+            TimelineDateTime = model.TimelineDateTime,
             CommonName = model.CommonName,
             OrderingProvider = model.OrderingProvider,
             TestStatus = model.PlisTestStatus,

@@ -49,6 +49,12 @@ public class PhsaLaboratoryOrder
     public DateTime? CollectionDateTime { get; set; }
 
     /// <summary>
+    /// Gets or sets the date time for the most relevant date when displaying on a timeline.
+    /// </summary>
+    [JsonPropertyName("timelineDateTime")]
+    public DateTime TimelineDateTime { get; set; }
+
+    /// <summary>
     /// Gets or sets a value for common name.
     /// </summary>
     [JsonPropertyName("commonName")]

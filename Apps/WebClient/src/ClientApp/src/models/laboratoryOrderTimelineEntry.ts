@@ -13,7 +13,8 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
     public labPdfId: string;
     public reportingLab: string;
     public reportId: string;
-    public collectionDateTime: DateWrapper;
+    public collectionDateTime: DateWrapper | undefined;
+    public timelineDateTime: DateWrapper;
     public commonName: string;
     public orderingProvider: string;
     public testStatus: string;
@@ -39,7 +40,17 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
         this.commonName = model.commonName;
         this.reportAvailable = model.reportAvailable;
         this.labPdfId = model.labPdfId;
-        this.collectionDateTime = new DateWrapper(model.collectionDateTime, {
+
+        if (model.collectionDateTime !== undefined) {
+            this.collectionDateTime = new DateWrapper(
+                model.collectionDateTime,
+                {
+                    hasTime: true,
+                }
+            );
+        }
+
+        this.timelineDateTime = new DateWrapper(model.timelineDateTime, {
             hasTime: true,
         });
         this.orderingProvider = model.orderingProvider;
