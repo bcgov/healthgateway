@@ -32,7 +32,7 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
         super(
             model.reportId,
             EntryType.LaboratoryOrder,
-            new DateWrapper(model.collectionDateTime, {
+            new DateWrapper(model.timelineDateTime, {
                 hasTime: true,
             })
         );
