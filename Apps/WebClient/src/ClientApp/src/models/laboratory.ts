@@ -52,7 +52,8 @@ export interface LaboratoryOrder {
     labPdfId: string;
     reportingSource: string;
     reportId: string;
-    collectionDateTime: StringISODateTime;
+    collectionDateTime: StringISODateTime | undefined;
+    timelineDateTime: StringISODateTime;
     commonName: string;
     orderingProvider: string;
     testStatus: string;

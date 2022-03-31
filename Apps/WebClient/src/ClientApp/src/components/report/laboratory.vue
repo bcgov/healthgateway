@@ -46,11 +46,11 @@ export default class LaboratoryReportComponent extends Vue {
 
     private get visibleRecords(): LaboratoryOrder[] {
         let records = this.laboratoryOrders.filter((record) => {
-            return this.filter.allowsDate(record.collectionDateTime);
+            return this.filter.allowsDate(record.timelineDateTime);
         });
         records.sort((a, b) => {
-            const firstDate = new DateWrapper(a.collectionDateTime);
-            const secondDate = new DateWrapper(b.collectionDateTime);
+            const firstDate = new DateWrapper(a.timelineDateTime);
+            const secondDate = new DateWrapper(b.timelineDateTime);
 
             if (firstDate.isBefore(secondDate)) {
                 return 1;
@@ -72,10 +72,10 @@ export default class LaboratoryReportComponent extends Vue {
 
     private get items(): LabTestRow[] {
         return this.visibleRecords.flatMap<LabTestRow>((x) => {
-            const collectionDateTime = DateWrapper.format(x.collectionDateTime);
+            const timelineDateTime = DateWrapper.format(x.timelineDateTime);
             return x.laboratoryTests.map<LabTestRow>((y) => {
                 return {
-                    date: collectionDateTime,
+                    date: timelineDateTime,
                     test: y.batteryType || "",
                     result: this.getResult(y.testStatus, y.outOfRange),
                     status: y.testStatus || "",

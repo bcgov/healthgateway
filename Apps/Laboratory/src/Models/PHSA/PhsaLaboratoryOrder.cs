@@ -46,7 +46,13 @@ public class PhsaLaboratoryOrder
     /// Gets or sets the date time when the lab collection took place.
     /// </summary>
     [JsonPropertyName("collectionDateTime")]
-    public DateTime CollectionDateTime { get; set; }
+    public DateTime? CollectionDateTime { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date time for the most relevant date when displaying on a timeline.
+    /// </summary>
+    [JsonPropertyName("timelineDateTime")]
+    public DateTime TimelineDateTime { get; set; }
 
     /// <summary>
     /// Gets or sets a value for common name.
