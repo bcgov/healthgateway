@@ -1,6 +1,6 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faDownload, faFlask } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faVial } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
@@ -19,7 +19,7 @@ import SnowPlow from "@/utility/snowPlow";
 
 import EntrycardTimelineComponent from "./entrycard.vue";
 
-library.add(faDownload, faFlask);
+library.add(faDownload, faVial);
 
 @Component({
     components: {
@@ -107,7 +107,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
 <template>
     <EntryCard
         :card-id="index + '-' + datekey"
-        entry-icon="flask"
+        entry-icon="vial"
         :title="entry.summaryTitle"
         :entry="entry"
         :is-mobile-details="isMobileDetails"

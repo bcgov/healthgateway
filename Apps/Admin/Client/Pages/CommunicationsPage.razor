@@ -1,0 +1,38 @@
+@page "/communications"
+@attribute [Authorize(Roles = Roles.Admin)]
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@using HealthGateway.Admin.Client.Store.Communications
+
+<PageTitle>Communications</PageTitle>
+<HgPageHeading>Communications</HgPageHeading>
+
+<HgBannerFeedback Severity="@Severity.Error" IsEnabled="@(HasLoadError || HasDeleteError)" TResetAction="@CommunicationsActions.ResetStateAction">
+    @ErrorMessage
+</HgBannerFeedback>
+
+@if (CommunicationsLoaded || CommunicationsLoading)
+{
+    <HgTabs @ref="@Tabs">
+        <Header>
+            @if (SelectedBannerName != null)
+            {
+                <HgButton EndIcon="@Icons.Material.Filled.Add"
+                  TopMargin="@Breakpoint.Always"
+                  RightMargin="@Breakpoint.Always"
+                  BottomMargin="@Breakpoint.Always"
+                  @onclick="@CreateBannerAsync">
+                    Create
+                </HgButton>
+            }
+        </Header>
+        <ChildContent>
+            <MudTabPanel Text="Public Banners">
+                <CommunicationsTable Data="@PublicCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditBannerAsync" />
+            </MudTabPanel>
+            <MudTabPanel Text="In-App Banners">
+                <CommunicationsTable Data="@InAppCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditBannerAsync" />
+            </MudTabPanel>
+        </ChildContent>
+    </HgTabs>
+}

@@ -30,7 +30,7 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
         getComments: (entyId: string) => UserComment[] | null
     ) {
         super(
-            model.reportId,
+            model.labPdfId,
             EntryType.LaboratoryOrder,
             new DateWrapper(model.timelineDateTime, {
                 hasTime: true,
