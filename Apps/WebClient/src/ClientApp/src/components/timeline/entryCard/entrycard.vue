@@ -39,6 +39,13 @@ export default class EntrycardTimelineComponent extends Vue {
     private eventBus = EventBus;
     private detailsVisible = false;
 
+    private get isInteractive() {
+        return (
+            (!this.isMobileWidth && this.canShowDetails) ||
+            (this.isMobileWidth && !this.isMobileDetails)
+        );
+    }
+
     private get displayTitle(): string {
         if (this.title === "") {
             return this.entry.type.toString();
@@ -101,7 +108,10 @@ export default class EntrycardTimelineComponent extends Vue {
         <b-col class="timelineCard ml-0 ml-md-2">
             <b-row
                 class="entryHeading px-3 py-2"
-                :class="{ mobileDetail: isMobileDetails }"
+                :class="{
+                    mobileDetail: isMobileDetails,
+                    interactive: isInteractive,
+                }"
                 @click="handleCardClick()"
             >
                 <b-col class="leftPane">
@@ -112,11 +122,14 @@ export default class EntrycardTimelineComponent extends Vue {
                 <b-col class="entryTitleWrapper">
                     <b-row>
                         <b-col
-                            :data-testid="entry.type.toLowerCase() + 'Title'"
+                            :data-testid="`${entry.type.toLowerCase()}Title`"
                         >
-                            <span data-testid="entryCardDetailsTitle"
-                                ><strong>{{ displayTitle }}</strong></span
+                            <span
+                                data-testid="entryCardDetailsTitle"
+                                class="entry-title"
                             >
+                                <strong>{{ displayTitle }}</strong>
+                            </span>
                         </b-col>
                         <b-col cols="4" class="text-right">
                             <span
@@ -160,13 +173,13 @@ export default class EntrycardTimelineComponent extends Vue {
             </b-row>
             <b-collapse :id="'entryDetails-' + cardId" v-model="detailsVisible">
                 <b-row>
-                    <b-col class="leftPane d-none d-md-block"></b-col>
+                    <b-col class="leftPane d-none d-md-block" />
                     <b-col class="pb-1 pt-1 px-3">
-                        <slot name="details-body"></slot>
+                        <slot name="details-body" />
                     </b-col>
                 </b-row>
                 <b-row v-if="allowComment && isCommentEnabled">
-                    <b-col class="leftPane d-none d-md-block"></b-col>
+                    <b-col class="leftPane d-none d-md-block" />
                     <b-col class="pb-1 pt-1 px-3">
                         <CommentSection
                             :parent-entry="entry"
@@ -220,7 +233,22 @@ div[class*=" row"] {
 
 .entryHeading {
     background-color: $soft_background;
+
+    &.interactive {
+        &:hover,
+        &:active,
+        &:focus,
+        &:focus-visible {
+            background-color: #ebebeb;
+            cursor: pointer;
+
+            .entry-title {
+                text-decoration: underline;
+            }
+        }
+    }
 }
+
 .mobileDetail {
     background-color: white;
 }
