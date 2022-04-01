@@ -1,0 +1,71 @@
+{
+    "resourcePayload": {
+        "loaded": false,
+        "queued": false,
+        "retryin": 3000,
+        "orders": [
+            {
+                "labPdfId": "ccee5028-6d51-4474-ce18-08d91c31b95b",
+                "reportingSource": "Vancouver Coastal Health",
+                "reportId": "341L56330T278085",
+                "collectionDateTime": "2021-08-05T08:43:00",
+                "timelineDateTime": "2021-08-05T08:43:00",
+                "commonName": "Lab Test",
+                "orderingProvider": "PLISBVCC, TREVOR",
+                "testStatus": "Not Set",
+                "reportAvailable": false,
+                "laboratoryTests": [
+                    {
+                        "batteryType": "Alanine Aminotransferase Test",
+                        "obxId": "341L56330T278085ALT",
+                        "outOfRange": false,
+                        "loinc": null,
+                        "testStatus": "Partial"
+                    },
+                    {
+                        "batteryType": "Aspartate Aminotransferase",
+                        "obxId": "341L56330T278085AST",
+                        "outOfRange": false,
+                        "loinc": null,
+                        "testStatus": "Partial"
+                    },
+                    {
+                        "batteryType": "CBC & Differential",
+                        "obxId": "341L56330T278085CBCD",
+                        "outOfRange": false,
+                        "loinc": "XCA01592-5",
+                        "testStatus": "Partial"
+                    },
+                    {
+                        "batteryType": "Creatinine & Glomerular Filtration Rate Predicted Panel",
+                        "obxId": "341L56330T278085CREE",
+                        "outOfRange": false,
+                        "loinc": null,
+                        "testStatus": "Partial"
+                    },
+                    {
+                        "batteryType": "Glucose Random",
+                        "obxId": "341L56330T278085GLUC",
+                        "outOfRange": false,
+                        "loinc": "14749-6",
+                        "testStatus": "Partial"
+                    },
+                    {
+                        "batteryType": "Urea",
+                        "obxId": "341L56330T278085URE",
+                        "outOfRange": false,
+                        "loinc": "22664-7",
+                        "testStatus": "Partial"
+                    }
+                ]
+            }
+        ]
+    },
+    "totalResultCount": 1,
+    "pageIndex": null,
+    "pageSize": 25,
+    "resultStatus": 1,
+    "resultError": {
+        "actionCode": "REFRESH"
+    }
+}

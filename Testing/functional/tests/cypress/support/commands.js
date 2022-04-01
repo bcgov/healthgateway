@@ -225,6 +225,10 @@ Cypress.Commands.add("readConfig", () => {
         .its("body");
 });
 
+Cypress.Commands.add("checkOnTimeline", () => {
+    cy.get("#subject").should("be.visible").and("have.text", "Timeline");
+});
+
 Cypress.Commands.add("checkTimelineHasLoaded", () => {
     cy.get("#subject").should("be.visible").and("have.text", "Timeline");
     cy.get("[data-testid=loading-in-progress]").should("not.exist");
