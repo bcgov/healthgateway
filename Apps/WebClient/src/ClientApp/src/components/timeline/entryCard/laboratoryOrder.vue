@@ -143,7 +143,10 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
             <div class="my-2">
                 <div data-testid="laboratoryCollectionDate">
                     <strong>Collection Date: </strong>
-                    <span v-if="entry.collectionDateTime !== undefined">
+                    <span
+                        v-if="entry.collectionDateTime !== undefined"
+                        data-testid="laboratory-collection-date-value"
+                    >
                         {{ formatDate(entry.collectionDateTime) }}
                     </span>
                 </div>

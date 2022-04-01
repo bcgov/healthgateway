@@ -81,3 +81,84 @@ describe("Laboratory Orders Queued", () => {
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
     });
 });
+
+describe("Laboratory Orders Refresh in progress", () => {
+    beforeEach(() => {
+        let isLoading = false;
+        cy.viewport("iphone-6");
+        cy.restoreAuthCookies();
+        cy.enableModules("AllLaboratory");
+        cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", (req) => {
+            req.reply((res) => {
+                if (!isLoading) {
+                    res.send({
+                        fixture:
+                            "LaboratoryService/laboratoryOrdersRefresh.json",
+                    });
+                } else {
+                    res.send({
+                        fixture: "LaboratoryService/laboratoryOrders.json",
+                    });
+                }
+                isLoading = !isLoading;
+            });
+        });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+    });
+
+    it("Validate Card and Refresh", () => {
+        cy.log("Verify on timeline and refresh in progress");
+        cy.checkOnTimeline();
+        cy.get("[data-testid=loading-in-progress]").should("exist");
+        cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
+            "not.exist"
+        );
+
+        // Verify initial call
+        cy.log(
+            "Verify refresh in progress call from PHSA has returned 1 record."
+        );
+        cy.get("[data-testid=displayCountText]")
+            .should("be.visible")
+            .contains("Displaying 1 out of 1 records");
+
+        // Verify subsequent call
+        cy.log(
+            "Verify refresh in progress call from PHSA has returned remaining records."
+        );
+        cy.get("[data-testid=loading-in-progress]").should("exist");
+        cy.get("[data-testid=displayCountText]")
+            .should("be.visible")
+            .contains("Displaying 9 out of 9 records");
+        cy.get("[data-testid=loading-in-progress]").should("not.exist");
+
+        // Validate collection date time when not null in json
+        cy.get("[data-testid=timelineCard]").eq(6).scrollIntoView().click();
+        cy.get("[data-testid=laboratory-collection-date-value]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=backBtn]").click({ force: true });
+
+        // Validate collection date time when attribute is not passed in json
+        cy.get("[data-testid=timelineCard]").eq(7).click();
+        cy.get("[data-testid=entryDetailsCard]").within(() => {
+            cy.get("[data-testid=laboratory-collection-date-value]").should(
+                "not.exist"
+            );
+        });
+        cy.get("[data-testid=backBtn]").click({ force: true });
+
+        // Validate collection date time when attribute value is null in json
+        cy.get("[data-testid=timelineCard]").eq(8).click();
+        cy.get("[data-testid=entryDetailsCard]").within(() => {
+            cy.get("[data-testid=laboratory-collection-date-value]").should(
+                "not.exist"
+            );
+        });
+        cy.get("[data-testid=backBtn]").click({ force: true });
+    });
+});
