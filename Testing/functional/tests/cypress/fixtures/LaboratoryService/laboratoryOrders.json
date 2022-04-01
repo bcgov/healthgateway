@@ -247,7 +247,7 @@
                 "commonName": "Lab Test",
                 "orderingProvider": "PLISBVCC, TREVOR",
                 "testStatus": "Not Set",
-                "reportAvailable": false,
+                "reportAvailable": true,
                 "laboratoryTests": [
                     {
                         "batteryType": "Gas Panel & Oxyhemoglobin; Arterial",

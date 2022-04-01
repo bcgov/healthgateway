@@ -125,6 +125,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                         Detailed Report:
                     </strong>
                     <hg-button
+                        data-testid="laboratory-report-download-btn"
                         variant="link"
                         class="p-1 ml-1"
                         @click="showConfirmationModal()"

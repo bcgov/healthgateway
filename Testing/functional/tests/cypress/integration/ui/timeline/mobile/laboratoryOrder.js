@@ -1,5 +1,78 @@
 const { AuthMethod } = require("../../../../support/constants");
 
+describe("Laboratory Orders - Download Report", () => {
+    beforeEach(() => {
+        cy.deleteDownloadsFolder();
+        cy.viewport("iphone-6");
+        cy.restoreAuthCookies();
+        cy.enableModules("AllLaboratory");
+
+        cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
+            fixture: "LaboratoryService/laboratoryOrders.json",
+        });
+
+        cy.intercept(
+            "GET",
+            "**/v1/api/Laboratory/*/Report?hdid=P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A&isCovid19=false",
+            {
+                fixture: "LaboratoryService/laboratoryReportPdf.json",
+            }
+        );
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+    });
+
+    it("Download Laboratory Report PDF", () => {
+        cy.log("Verifying Laboratory Report PDF download");
+        cy.get("[data-testid=timelineCard]").eq(5).scrollIntoView().click();
+
+        cy.get("[data-testid=laboratory-report-download-btn]")
+            .should("be.visible")
+            .contains("Final")
+            .click({ force: true });
+
+        cy.get("[data-testid=genericMessageSubmitBtn]")
+            .should("be.visible")
+            .click({ force: true })
+            .within(() => {
+                cy.verifyDownload(
+                    "Laboratory_Report_YYYY_07_Jul 5, 2021-08_43.pdf"
+                );
+            });
+        cy.get("[data-testid=backBtn]").click({ force: true });
+    });
+});
+
+describe("Laboratory Orders Queued", () => {
+    beforeEach(() => {
+        cy.viewport("iphone-6");
+        cy.restoreAuthCookies();
+        cy.enableModules("AllLaboratory");
+        cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
+            fixture: "LaboratoryService/laboratoryOrdersQueued.json",
+        });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+    });
+
+    it("Show Queued Alert Message", () => {
+        cy.log("Verifying queued alert message displays");
+        cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
+    });
+});
+
 describe("Laboratory Orders Not Queued", () => {
     beforeEach(() => {
         cy.viewport("iphone-6");
@@ -54,31 +127,6 @@ describe("Laboratory Orders Not Queued", () => {
 
         cy.get("[data-testid=backBtn]").click({ force: true });
         cy.get("[data-testid=filterTextInput]").should("be.visible");
-    });
-});
-
-describe("Laboratory Orders Queued", () => {
-    beforeEach(() => {
-        cy.viewport("iphone-6");
-        cy.restoreAuthCookies();
-        cy.enableModules("AllLaboratory");
-        cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
-            fixture: "LaboratoryService/laboratoryOrdersQueued.json",
-        });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.checkTimelineHasLoaded();
-    });
-
-    it("Show Queued Alert Message", () => {
-        cy.log("Verifying queued alert message displays");
-        cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
     });
 });
 
