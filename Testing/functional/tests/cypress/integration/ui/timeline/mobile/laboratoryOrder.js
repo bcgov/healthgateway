@@ -1,12 +1,17 @@
 const { AuthMethod } = require("../../../../support/constants");
 
-describe("Laboratory Orders - Download Report", () => {
-    beforeEach(() => {
-        cy.deleteDownloadsFolder();
-        cy.viewport("iphone-6");
-        cy.restoreAuthCookies();
-        cy.enableModules("AllLaboratory");
+before(() => {
+    cy.deleteDownloadsFolder();
+});
 
+beforeEach(() => {
+    cy.viewport("iphone-6");
+    cy.restoreAuthCookies();
+    cy.enableModules("AllLaboratory");
+});
+
+describe("Laboratory Orders - Report", () => {
+    beforeEach(() => {
         cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrders.json",
         });
@@ -50,9 +55,6 @@ describe("Laboratory Orders - Download Report", () => {
 
 describe("Laboratory Orders Not Queued", () => {
     beforeEach(() => {
-        cy.viewport("iphone-6");
-        cy.restoreAuthCookies();
-        cy.enableModules("AllLaboratory");
         cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrders.json",
         });
@@ -105,16 +107,8 @@ describe("Laboratory Orders Not Queued", () => {
     });
 });
 
-describe("Laboratory Orders", () => {
+describe("Laboratory Orders Refresh", () => {
     beforeEach(() => {
-        cy.viewport("iphone-6");
-        cy.restoreAuthCookies();
-        cy.enableModules("AllLaboratory");
-    });
-
-    it("Validate Refresh", () => {
-        cy.log("Verify on timeline and refresh in progress");
-
         let isLoading = false;
         cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", (req) => {
             req.reply((res) => {
@@ -137,8 +131,11 @@ describe("Laboratory Orders", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-
         cy.checkOnTimeline();
+    });
+
+    it("Validate Refresh", () => {
+        cy.log("Verify on timeline and refresh in progress");
         cy.get("[data-testid=loading-in-progress]").should("exist");
         cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
             "not.exist"
@@ -188,10 +185,10 @@ describe("Laboratory Orders", () => {
         cy.get("[data-testid=backBtn]").click({ force: true });
         cy.get("[data-testid=filterTextInput]").should("be.visible");
     });
+});
 
-    it("Show Queued Alert Message", () => {
-        cy.log("Verifying queued alert message displays");
-
+describe("Laboratory Orders Queued", () => {
+    beforeEach(() => {
         cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrdersQueued.json",
         });
@@ -201,8 +198,11 @@ describe("Laboratory Orders", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-
         cy.checkTimelineHasLoaded();
+    });
+
+    it("Show Queued Alert Message", () => {
+        cy.log("Verifying queued alert message displays");
         cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
             "be.visible"
         );
