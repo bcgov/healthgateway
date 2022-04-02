@@ -27,13 +27,13 @@ describe("Laboratory Orders - Download Report", () => {
         cy.checkTimelineHasLoaded();
     });
 
-    it("Download Laboratory Report PDF", () => {
+    it("Validate Download", () => {
         cy.log("Verifying Laboratory Report PDF download");
-        cy.get("[data-testid=timelineCard]").eq(5).scrollIntoView().click();
+        cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
 
         cy.get("[data-testid=laboratory-report-download-btn]")
             .should("be.visible")
-            .contains("Final")
+            .contains("Incomplete")
             .click({ force: true });
 
         cy.get("[data-testid=genericMessageSubmitBtn]")
@@ -41,35 +41,10 @@ describe("Laboratory Orders - Download Report", () => {
             .click({ force: true })
             .within(() => {
                 cy.verifyDownload(
-                    "Laboratory_Report_YYYY_07_Jul 5, 2021-08_43.pdf"
+                    "Laboratory_Report_YYYY_04_Apr 4, 2021-08_43.pdf"
                 );
             });
         cy.get("[data-testid=backBtn]").click({ force: true });
-    });
-});
-
-describe("Laboratory Orders Queued", () => {
-    beforeEach(() => {
-        cy.viewport("iphone-6");
-        cy.restoreAuthCookies();
-        cy.enableModules("AllLaboratory");
-        cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
-            fixture: "LaboratoryService/laboratoryOrdersQueued.json",
-        });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.checkTimelineHasLoaded();
-    });
-
-    it("Show Queued Alert Message", () => {
-        cy.log("Verifying queued alert message displays");
-        cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
     });
 });
 
@@ -94,7 +69,7 @@ describe("Laboratory Orders Not Queued", () => {
         cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
             "not.exist"
         );
-        cy.get("[data-testid=timelineCard]").first().click();
+        cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
 
         cy.get("[data-testid=backBtn]").should("be.visible");
         cy.get("[data-testid=entryCardDetailsTitle]").should("be.visible");
@@ -130,12 +105,17 @@ describe("Laboratory Orders Not Queued", () => {
     });
 });
 
-describe("Laboratory Orders Refresh in progress", () => {
+describe("Laboratory Orders", () => {
     beforeEach(() => {
-        let isLoading = false;
         cy.viewport("iphone-6");
         cy.restoreAuthCookies();
         cy.enableModules("AllLaboratory");
+    });
+
+    it("Validate Refresh", () => {
+        cy.log("Verify on timeline and refresh in progress");
+
+        let isLoading = false;
         cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", (req) => {
             req.reply((res) => {
                 if (!isLoading) {
@@ -151,15 +131,13 @@ describe("Laboratory Orders Refresh in progress", () => {
                 isLoading = !isLoading;
             });
         });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-    });
 
-    it("Validate Card and Refresh", () => {
-        cy.log("Verify on timeline and refresh in progress");
         cy.checkOnTimeline();
         cy.get("[data-testid=loading-in-progress]").should("exist");
         cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
@@ -208,5 +186,26 @@ describe("Laboratory Orders Refresh in progress", () => {
             );
         });
         cy.get("[data-testid=backBtn]").click({ force: true });
+        cy.get("[data-testid=filterTextInput]").should("be.visible");
+    });
+
+    it("Show Queued Alert Message", () => {
+        cy.log("Verifying queued alert message displays");
+
+        cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
+            fixture: "LaboratoryService/laboratoryOrdersQueued.json",
+        });
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+
+        cy.checkTimelineHasLoaded();
+        cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
     });
 });

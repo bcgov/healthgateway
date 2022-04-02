@@ -20,7 +20,7 @@ describe("Laboratory Orders - Download Report", () => {
         cy.checkTimelineHasLoaded();
     });
 
-    it("Download Laboratory Report PDF", () => {
+    it("Validate Download", () => {
         cy.log("Verifying Laboratory Report PDF download");
 
         cy.get("[data-testid=timelineCard]").first().click();
@@ -38,28 +38,6 @@ describe("Laboratory Orders - Download Report", () => {
         cy.verifyDownload("Laboratory_Report_YYYY_07_Jul 4, 2021-01_43.pdf");
 
         cy.get("[data-testid=backBtn]").click({ force: true });
-    });
-});
-
-describe("Laboratory Orders Queud", () => {
-    beforeEach(() => {
-        cy.viewport("iphone-6");
-        cy.restoreAuthCookies();
-        cy.enableModules("AllLaboratory");
-        cy.login(
-            Cypress.env("keycloak.laboratory.queued.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.checkTimelineHasLoaded();
-    });
-
-    it("Show Queued Alert Message", () => {
-        cy.log("Verifying queued alert message displays");
-        cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
     });
 });
 
@@ -122,11 +100,16 @@ describe("Laboratory Orders Not Queued", () => {
     });
 });
 
-describe("Laboratory Orders Refresh in progress", () => {
+describe("Laboratory Orders", () => {
     beforeEach(() => {
         cy.viewport("iphone-6");
         cy.restoreAuthCookies();
         cy.enableModules("AllLaboratory");
+    });
+
+    it("Validate Refresh", () => {
+        cy.log("Verify on timeline and refresh in progress");
+
         cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*").as(
             "getLaboratoryOrders"
         );
@@ -135,10 +118,7 @@ describe("Laboratory Orders Refresh in progress", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-    });
-
-    it("Validate Refresh", () => {
-        cy.log("Verify on timeline and refresh in progress");
+        cy.checkOnTimeline();
 
         // Verify initial call
         cy.wait("@getLaboratoryOrders").then((interception) => {
@@ -173,5 +153,21 @@ describe("Laboratory Orders Refresh in progress", () => {
             }
             cy.get("[data-testid=loading-in-progress]").should("not.exist");
         });
+    });
+
+    it("Show Queued Alert Message", () => {
+        cy.log("Verifying queued alert message displays");
+
+        cy.login(
+            Cypress.env("keycloak.laboratory.queued.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+
+        cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
     });
 });
