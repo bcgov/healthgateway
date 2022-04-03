@@ -1,59 +1,12 @@
 const { AuthMethod } = require("../../../../support/constants");
 
-before(() => {
-    cy.deleteDownloadsFolder();
-});
-
 beforeEach(() => {
     cy.viewport("iphone-6");
     cy.restoreAuthCookies();
     cy.enableModules("AllLaboratory");
 });
 
-describe("Laboratory Orders - Report", () => {
-    beforeEach(() => {
-        cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
-            fixture: "LaboratoryService/laboratoryOrders.json",
-        });
-
-        cy.intercept(
-            "GET",
-            "**/v1/api/Laboratory/*/Report?hdid=P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A&isCovid19=false",
-            {
-                fixture: "LaboratoryService/laboratoryReportPdf.json",
-            }
-        );
-
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.checkTimelineHasLoaded();
-    });
-
-    it("Validate Download", () => {
-        cy.log("Verifying Laboratory Report PDF download");
-        cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
-
-        cy.get("[data-testid=laboratory-report-download-btn]")
-            .should("be.visible")
-            .contains("Incomplete")
-            .click({ force: true });
-
-        cy.get("[data-testid=genericMessageSubmitBtn]")
-            .should("be.visible")
-            .click({ force: true })
-            .within(() => {
-                cy.verifyDownload(
-                    "Laboratory_Report_YYYY_04_Apr 4, 2021-08_43.pdf"
-                );
-            });
-        cy.get("[data-testid=backBtn]").click({ force: true });
-    });
-});
-
-describe("Laboratory Orders Not Queued", () => {
+describe("Laboratory Orders", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrders.json",
@@ -104,6 +57,33 @@ describe("Laboratory Orders Not Queued", () => {
 
         cy.get("[data-testid=backBtn]").click({ force: true });
         cy.get("[data-testid=filterTextInput]").should("be.visible");
+
+        cy.log("Verifying collection date");
+
+        // Validate collection date time when not null in json
+        cy.get("[data-testid=timelineCard]").eq(6).scrollIntoView().click();
+        cy.get("[data-testid=laboratory-collection-date-value]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=backBtn]").click({ force: true });
+
+        // Validate collection date time when attribute is not passed in json
+        cy.get("[data-testid=timelineCard]").eq(7).click();
+        cy.get("[data-testid=entryDetailsCard]").within(() => {
+            cy.get("[data-testid=laboratory-collection-date-value]").should(
+                "not.exist"
+            );
+        });
+        cy.get("[data-testid=backBtn]").click({ force: true });
+
+        // Validate collection date time when attribute value is null in json
+        cy.get("[data-testid=timelineCard]").eq(8).click();
+        cy.get("[data-testid=entryDetailsCard]").within(() => {
+            cy.get("[data-testid=laboratory-collection-date-value]").should(
+                "not.exist"
+            );
+        });
+        cy.get("[data-testid=backBtn]").click({ force: true });
     });
 });
 
@@ -158,32 +138,6 @@ describe("Laboratory Orders Refresh", () => {
             .should("be.visible")
             .contains("Displaying 9 out of 9 records");
         cy.get("[data-testid=loading-in-progress]").should("not.exist");
-
-        // Validate collection date time when not null in json
-        cy.get("[data-testid=timelineCard]").eq(6).scrollIntoView().click();
-        cy.get("[data-testid=laboratory-collection-date-value]").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=backBtn]").click({ force: true });
-
-        // Validate collection date time when attribute is not passed in json
-        cy.get("[data-testid=timelineCard]").eq(7).click();
-        cy.get("[data-testid=entryDetailsCard]").within(() => {
-            cy.get("[data-testid=laboratory-collection-date-value]").should(
-                "not.exist"
-            );
-        });
-        cy.get("[data-testid=backBtn]").click({ force: true });
-
-        // Validate collection date time when attribute value is null in json
-        cy.get("[data-testid=timelineCard]").eq(8).click();
-        cy.get("[data-testid=entryDetailsCard]").within(() => {
-            cy.get("[data-testid=laboratory-collection-date-value]").should(
-                "not.exist"
-            );
-        });
-        cy.get("[data-testid=backBtn]").click({ force: true });
-        cy.get("[data-testid=filterTextInput]").should("be.visible");
     });
 });
 
