@@ -13,7 +13,7 @@
                 "commonName": "Lab Test",
                 "orderingProvider": "PLISBVCC, TREVOR",
                 "testStatus": "Not Set",
-                "reportAvailable": false,
+                "reportAvailable": true,
                 "laboratoryTests": [
                     {
                         "batteryType": "Alanine Aminotransferase Test",
@@ -247,7 +247,7 @@
                 "commonName": "Lab Test",
                 "orderingProvider": "PLISBVCC, TREVOR",
                 "testStatus": "Not Set",
-                "reportAvailable": true,
+                "reportAvailable": false,
                 "laboratoryTests": [
                     {
                         "batteryType": "Gas Panel & Oxyhemoglobin; Arterial",
