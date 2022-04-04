@@ -478,7 +478,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                         </Card>
                         <Card
                             title="7. Have you been diagnosed by a health care provider with a chronic condition 
-                            or have received a letter from Dr. Bonnie Henry stating that you
+                            or received a letter from Dr. Bonnie Henry stating that you
                             are Clinically Extremely Vulnerable (CEV)?"
                             additional-info="Citizen has a chronic condition."
                             :display-additional-info="
