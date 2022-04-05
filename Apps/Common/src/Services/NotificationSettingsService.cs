@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -63,7 +63,7 @@ namespace HealthGateway.Common.Services
             string json = JsonSerializer.Serialize(notificationSettings);
             this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json));
 
-            // Retrieve and update each delegate notification setting
+            // Update the notification settings for any dependents
             DBResult<IEnumerable<ResourceDelegate>> dbResult = this.resourceDelegateDelegate.Get(notificationSettings.SubjectHdid, 0, 500);
             foreach (ResourceDelegate resourceDelegate in dbResult.Payload)
             {
@@ -76,7 +76,7 @@ namespace HealthGateway.Common.Services
                     EmailScope = notificationSettings.EmailScope,
                 };
 
-                // Only send dependents sms number if it has been verified
+                // Only populate SMS number if it has been verified
                 if (notificationSettings.SMSVerified)
                 {
                     dependentNotificationSettings.SMSNumber = notificationSettings.SMSNumber;
