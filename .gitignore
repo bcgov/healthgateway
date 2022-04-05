@@ -41,3 +41,7 @@ Testing/functional/e2e/debug.log
 
 # CSV files and Logs
 *.log
+
+Apps/WebClient/src/ClientApp/.env.local
+
+Apps/.run/Web.run.xml
