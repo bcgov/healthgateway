@@ -123,6 +123,7 @@ export const actions: LaboratoryActions = {
         return new Promise((resolve, reject) => {
             const laboratoryOrders: LaboratoryOrder[] =
                 context.getters.laboratoryOrders;
+            const laboratoryQueued: boolean = context.getters.queued;
             if (context.state.authenticated.status === LoadStatus.LOADED) {
                 logger.debug("Laboratory Orders found stored, not querying!");
                 resolve({
@@ -130,6 +131,7 @@ export const actions: LaboratoryActions = {
                     pageSize: 0,
                     resourcePayload: {
                         loaded: true,
+                        queued: laboratoryQueued,
                         retryin: 0,
                         orders: laboratoryOrders,
                     },
@@ -143,15 +145,16 @@ export const actions: LaboratoryActions = {
                     .getLaboratoryOrders(params.hdid)
                     .then((result) => {
                         const payload = result.resourcePayload;
-                        if (result.resultStatus === ResultType.Success) {
+                        if (
+                            result.resultStatus === ResultType.Success &&
+                            payload.loaded
+                        ) {
                             EventTracker.loadData(
                                 EntryType.LaboratoryOrder,
                                 result.totalResultCount
                             );
-                            context.commit(
-                                "setLaboratoryOrders",
-                                payload.orders
-                            );
+                            logger.info("Laboratory Orders loaded.");
+                            context.commit("setLaboratoryOrders", payload);
                             resolve(result);
                         } else if (
                             result.resultError?.actionCode ===
@@ -159,7 +162,13 @@ export const actions: LaboratoryActions = {
                             !payload.loaded &&
                             payload.retryin > 0
                         ) {
-                            logger.info("Laboratory Orders not loaded");
+                            logger.info(
+                                "Refresh in progress... partially load Laboratory Orders"
+                            );
+                            context.commit(
+                                "setLaboratoryOrdersRefreshInProgress",
+                                payload
+                            );
                             setTimeout(() => {
                                 logger.info(
                                     "Re-querying for Laboratory Orders"

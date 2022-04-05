@@ -1,10 +1,13 @@
 const { AuthMethod } = require("../../../../support/constants");
 
+beforeEach(() => {
+    cy.viewport("iphone-6");
+    cy.restoreAuthCookies();
+    cy.enableModules("AllLaboratory");
+});
+
 describe("Laboratory Orders", () => {
     beforeEach(() => {
-        cy.viewport("iphone-6");
-        cy.restoreAuthCookies();
-        cy.enableModules("AllLaboratory");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -15,6 +18,9 @@ describe("Laboratory Orders", () => {
 
     it("Validate Card", () => {
         cy.log("Verifying card data");
+        cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
+            "not.exist"
+        );
         cy.get("[data-testid=timelineCard]").first().click();
 
         cy.get("[data-testid=backBtn]").should("be.visible");
@@ -51,7 +57,7 @@ describe("Laboratory Orders", () => {
                     });
             });
 
-        cy.get("[data-testid=backBtn]").click();
+        cy.get("[data-testid=backBtn]").click({ force: true });
         cy.get("[data-testid=filterTextInput]").should("be.visible");
     });
 });

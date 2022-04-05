@@ -47,8 +47,8 @@ public class LaboratoryOrder
     /// <summary>
     /// Gets or sets the id for the laboratory report.
     /// </summary>
-    [JsonPropertyName("laboratoryReportId")]
-    public Guid LaboratoryReportId { get; set; }
+    [JsonPropertyName("labPdfId")]
+    public string? LabPdfId { get; set; }
 
     /// <summary>
     /// Gets or sets a value for reporting source.
@@ -66,7 +66,13 @@ public class LaboratoryOrder
     /// Gets or sets the date time when the lab collection took place.
     /// </summary>
     [JsonPropertyName("collectionDateTime")]
-    public DateTime CollectionDateTime { get; set; }
+    public DateTime? CollectionDateTime { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date time for the most relevant date when displaying on a timeline.
+    /// </summary>
+    [JsonPropertyName("timelineDateTime")]
+    public DateTime TimelineDateTime { get; set; }
 
     /// <summary>
     /// Gets or sets a value for common name.
@@ -110,10 +116,11 @@ public class LaboratoryOrder
 
         return new LaboratoryOrder(laboratoryTests)
         {
-            LaboratoryReportId = model.LabPdfGuid,
+            LabPdfId = model.LabPdfId,
             ReportingSource = model.ReportingSource,
             ReportId = model.ReportId,
             CollectionDateTime = model.CollectionDateTime,
+            TimelineDateTime = model.TimelineDateTime,
             CommonName = model.CommonName,
             OrderingProvider = model.OrderingProvider,
             TestStatus = model.PlisTestStatus,

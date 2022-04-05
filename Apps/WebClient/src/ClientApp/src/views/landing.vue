@@ -3,8 +3,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faClipboardCheck,
     faEdit,
-    faExclamationTriangle,
-    faFlask,
+    faMicroscope,
     faPills,
     faSyringe,
     faUserMd,
@@ -26,8 +25,7 @@ import type { WebClientConfiguration } from "@/models/configData";
 library.add(
     faClipboardCheck,
     faEdit,
-    faExclamationTriangle,
-    faFlask,
+    faMicroscope,
     faPills,
     faSyringe,
     faUserMd,
@@ -93,7 +91,7 @@ export default class LandingView extends Vue {
         },
         {
             name: "Laboratory",
-            definition: "exclamation-triangle",
+            definition: "vial",
             label: "COVID-19 Test Results",
             active: true,
         },
@@ -117,7 +115,7 @@ export default class LandingView extends Vue {
         },
         {
             name: "AllLaboratory",
-            definition: "vial",
+            definition: "microscope",
             label: "Lab Results",
             active: false,
         },

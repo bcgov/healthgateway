@@ -21,6 +21,7 @@
 
 # Local settings files
 *.local.json
+*.env.local
 
 # Additional Apple macOS and iCloud
 .AppleDesktop
@@ -41,3 +42,5 @@ Testing/functional/e2e/debug.log
 
 # CSV files and Logs
 *.log
+
+

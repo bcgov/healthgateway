@@ -24,7 +24,10 @@ using System.Globalization;
 /// </summary>
 public static class DateFormatter
 {
-    private static readonly CultureInfo CanadianCulture = CultureInfo.CreateSpecificCulture("en-CA");
+    /// <summary>
+    /// CultureInfo corresponding to the "en-CA" culture.
+    /// </summary>
+    public static readonly CultureInfo CanadianCulture = CultureInfo.CreateSpecificCulture("en-CA");
 
     /// <summary>
     /// Converts the supplied date to a string formatted as YYYY-MM-DD (2022-01-01).

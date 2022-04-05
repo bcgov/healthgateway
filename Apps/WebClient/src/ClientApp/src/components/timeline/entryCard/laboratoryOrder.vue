@@ -1,6 +1,6 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faDownload, faVial } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faMicroscope } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
@@ -18,7 +18,7 @@ import SnowPlow from "@/utility/snowPlow";
 
 import EntrycardTimelineComponent from "./entrycard.vue";
 
-library.add(faDownload, faVial);
+library.add(faDownload, faMicroscope);
 
 @Component({
     components: {
@@ -78,7 +78,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
             .getReportDocument(this.entry.id, this.user.hdid, false)
             .then((result) => {
                 let dateString =
-                    this.entry.collectionDateTime.format("YYYY_MM_DD-HH_mm");
+                    this.entry.timelineDateTime.format("YYYY_MM_DD-HH_mm");
                 let report: LaboratoryReport = result.resourcePayload;
                 fetch(
                     `data:${report.mediaType};${report.encoding},${report.data}`
@@ -101,7 +101,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
 <template>
     <EntryCard
         :card-id="index + '-' + datekey"
-        entry-icon="vial"
+        entry-icon="microscope"
         :title="entry.commonName"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
@@ -125,6 +125,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                         Detailed Report:
                     </strong>
                     <hg-button
+                        data-testid="laboratory-report-download-btn"
                         variant="link"
                         class="p-1 ml-1"
                         @click="showConfirmationModal()"
@@ -142,20 +143,45 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
             </div>
             <div class="my-2">
                 <div data-testid="laboratoryCollectionDate">
-                    <strong>Collection Date:</strong>
-                    {{ formatDate(entry.collectionDateTime) }}
+                    <strong>Collection Date: </strong>
+                    <span
+                        v-if="entry.collectionDateTime !== undefined"
+                        data-testid="laboratory-collection-date-value"
+                    >
+                        {{ formatDate(entry.collectionDateTime) }}
+                    </span>
                 </div>
             </div>
             <div class="my-2">
                 <div data-testid="laboratoryOrderingProvider">
-                    <strong>Ordering Provider:</strong>
-                    {{ entry.orderingProvider }}
+                    <strong>Ordering Provider: </strong>
+                    <span>{{ entry.orderingProvider }}</span>
                 </div>
             </div>
             <div class="my-2">
                 <div data-testid="laboratoryReportingLab">
-                    <strong>Reporting Lab:</strong>
-                    {{ entry.reportingLab }}
+                    <strong>Reporting Lab: </strong>
+                    <span>{{ entry.reportingLab }}</span>
+                    <span
+                        :id="`popover-info${index}-${datekey}`"
+                        class="infoIcon ml-2"
+                        tabindex="0"
+                    >
+                        <hg-icon icon="info-circle" size="medium" />
+                    </span>
+                    <b-popover
+                        :target="`popover-info${index}-${datekey}`"
+                        placement="top"
+                        triggers="hover focus"
+                        custom-class="p-2"
+                    >
+                        Laboratory tests provide a partial picture of your
+                        health. To interpret these results, clinicians must
+                        combine these tests results with your other health
+                        information. Visit the
+                        <router-link to="/faq">FAQ</router-link> page to learn
+                        more.
+                    </b-popover>
                 </div>
             </div>
             <b-table-lite
@@ -180,3 +206,11 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
         </div>
     </EntryCard>
 </template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+
+.infoIcon {
+    color: $aquaBlue;
+}
+</style>

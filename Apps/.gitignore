@@ -302,6 +302,9 @@ _Pvt_Extensions
 .paket/paket.exe
 paket-files/
 
+# JetBrains Rider Workspace file
+*.run/Web.run.xml
+
 # FAKE - F# Make
 .fake/
 

@@ -38,6 +38,7 @@ export interface LaboratoryState {
         statusMessage: string;
         error?: ResultError;
         status: LoadStatus;
+        queued: boolean;
     };
 }
 
@@ -49,6 +50,7 @@ export interface LaboratoryGetters
     laboratoryOrders(state: LaboratoryState): LaboratoryOrder[];
     laboratoryOrdersCount(state: LaboratoryState): number;
     laboratoryOrdersAreLoading(state: LaboratoryState): boolean;
+    laboratoryOrdersAreQueued(state: LaboratoryState): boolean;
     publicCovidTestResponseResult(
         state: LaboratoryState
     ): PublicCovidTestResponseResult | undefined;
@@ -99,7 +101,11 @@ export interface LaboratoryMutations extends MutationTree<LaboratoryState> {
     setLaboratoryOrdersRequested(state: LaboratoryState): void;
     setLaboratoryOrders(
         state: LaboratoryState,
-        laboratoryOrders: LaboratoryOrder[]
+        laboratoryOrderResult: LaboratoryOrderResult
+    ): void;
+    setLaboratoryOrdersRefreshInProgress(
+        state: LaboratoryState,
+        laboratoryOrderResult: LaboratoryOrderResult
     ): void;
     laboratoryError(state: LaboratoryState, error: Error): void;
     setPublicCovidTestResponseResultRequested(state: LaboratoryState): void;

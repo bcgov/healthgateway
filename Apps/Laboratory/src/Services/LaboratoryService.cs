@@ -153,6 +153,7 @@ namespace HealthGateway.Laboratory.Services
                 PhsaLoadState? loadState = delegateResult.ResourcePayload?.LoadState;
                 if (loadState != null)
                 {
+                    retVal.ResourcePayload.Queued = loadState.Queued;
                     retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
                     if (loadState.RefreshInProgress)
                     {
@@ -169,7 +170,7 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, bool isCovid19)
+        public async Task<RequestResult<LaboratoryReport>> GetLabReport(string id, string hdid, bool isCovid19)
         {
             RequestResult<LaboratoryReport> retVal = new();
 

@@ -42,16 +42,18 @@ export interface Covid19LaboratoryTest {
 // result model for retrieving lab orders
 export interface LaboratoryOrderResult {
     loaded: boolean;
+    queued: boolean;
     retryin: number;
     orders: LaboratoryOrder[];
 }
 
 // laboratory order model
 export interface LaboratoryOrder {
-    laboratoryReportId: string;
+    labPdfId: string;
     reportingSource: string;
     reportId: string;
-    collectionDateTime: StringISODateTime;
+    collectionDateTime: StringISODateTime | null;
+    timelineDateTime: StringISODateTime;
     commonName: string;
     orderingProvider: string;
     testStatus: string;

@@ -15,8 +15,10 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Controllers
 {
-    using HealthGateway.Admin.Server.Models;
+    using System.Collections.Generic;
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
+    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -50,9 +52,9 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
-        public IActionResult Add(Communication communication)
+        public RequestResult<Communication> Add(Communication communication)
         {
-            return new JsonResult(this.communicationService.Add(communication));
+            return this.communicationService.Add(communication);
         }
 
         /// <summary>
@@ -64,9 +66,9 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
-        public IActionResult Update(Communication communication)
+        public RequestResult<Communication> Update(Communication communication)
         {
-            return new JsonResult(this.communicationService.Update(communication));
+            return this.communicationService.Update(communication);
         }
 
         /// <summary>
@@ -77,9 +79,9 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
-        public IActionResult GetAll()
+        public RequestResult<IEnumerable<Communication>> GetAll()
         {
-            return new JsonResult(this.communicationService.GetAll());
+            return this.communicationService.GetAll();
         }
 
         /// <summary>
@@ -91,9 +93,9 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested.</response>
         [HttpDelete]
-        public IActionResult Delete([FromBody] Communication communication)
+        public RequestResult<Communication> Delete([FromBody] Communication communication)
         {
-            return new JsonResult(this.communicationService.Delete(communication));
+            return this.communicationService.Delete(communication);
         }
     }
 }

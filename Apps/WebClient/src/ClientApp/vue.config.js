@@ -6,7 +6,10 @@ const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 module.exports = {
     productionSourceMap: false,
     lintOnSave: true,
-    integrity: true,
+    integrity:
+        process.env.VUE_APP_CONFIG_INTEGRITY === undefined
+            ? true
+            : process.env.VUE_APP_CONFIG_INTEGRITY === "true",
     devServer: {
         client: {
             logging: "info",

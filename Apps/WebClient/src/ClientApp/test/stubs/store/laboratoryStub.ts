@@ -31,6 +31,7 @@ const laboratoryState: LaboratoryState = {
         laboratoryOrders: [],
         statusMessage: "",
         status: LoadStatus.NONE,
+        queued: false,
     },
 };
 
@@ -51,6 +52,9 @@ const laboratoryGetters: LaboratoryGetters = {
         return 0;
     },
     laboratoryOrdersAreLoading(): boolean {
+        return false;
+    },
+    laboratoryOrdersAreQueued(): boolean {
         return false;
     },
     publicCovidTestResponseResult(): PublicCovidTestResponseResult | undefined {
@@ -82,6 +86,7 @@ const laboratoryMutations: LaboratoryMutations = {
     covid19LaboratoryError: voidMethod,
     setLaboratoryOrdersRequested: voidMethod,
     setLaboratoryOrders: voidMethod,
+    setLaboratoryOrdersRefreshInProgress: voidMethod,
     laboratoryError: voidMethod,
     setPublicCovidTestResponseResultRequested: voidMethod,
     setPublicCovidTestResponseResult: voidMethod,

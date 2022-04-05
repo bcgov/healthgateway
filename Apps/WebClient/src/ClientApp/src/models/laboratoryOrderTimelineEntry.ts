@@ -10,10 +10,11 @@ const statusFinal = "Final";
 
 // The laboratory order timeline entry model
 export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
-    public laboratoryReportId: string;
+    public labPdfId: string;
     public reportingLab: string;
     public reportId: string;
-    public collectionDateTime: DateWrapper;
+    public collectionDateTime: DateWrapper | undefined;
+    public timelineDateTime: DateWrapper;
     public commonName: string;
     public orderingProvider: string;
     public testStatus: string;
@@ -29,17 +30,27 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
         getComments: (entyId: string) => UserComment[] | null
     ) {
         super(
-            model.reportId,
+            model.labPdfId,
             EntryType.LaboratoryOrder,
-            new DateWrapper(model.collectionDateTime, {
+            new DateWrapper(model.timelineDateTime, {
                 hasTime: true,
             })
         );
 
         this.commonName = model.commonName;
         this.reportAvailable = model.reportAvailable;
-        this.laboratoryReportId = model.laboratoryReportId;
-        this.collectionDateTime = new DateWrapper(model.collectionDateTime, {
+        this.labPdfId = model.labPdfId;
+
+        if (model.collectionDateTime != null) {
+            this.collectionDateTime = new DateWrapper(
+                model.collectionDateTime,
+                {
+                    hasTime: true,
+                }
+            );
+        }
+
+        this.timelineDateTime = new DateWrapper(model.timelineDateTime, {
             hasTime: true,
         });
         this.orderingProvider = model.orderingProvider;

@@ -116,6 +116,11 @@ export default class App extends Vue {
                 Process.NODE_ENV
             )}; host: ${JSON.stringify(this.host)}`
         );
+        logger.debug(
+            `VUE Config Integrity Environment Variable: ${JSON.stringify(
+                process.env.VUE_APP_CONFIG_INTEGRITY
+            )}`
+        );
     }
 
     @Watch("isAppIdle")
