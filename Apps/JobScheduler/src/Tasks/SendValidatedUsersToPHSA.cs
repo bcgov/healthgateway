@@ -21,7 +21,6 @@ namespace Healthgateway.JobScheduler.Tasks
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -60,7 +59,7 @@ namespace Healthgateway.JobScheduler.Tasks
             this.logger.LogInformation($"Queueing NotificationSettings for {users.Count()} users");
             foreach (UserProfile user in users)
             {
-                NotificationSettingsRequest nsr = new NotificationSettingsRequest()
+                NotificationSettingsRequest nsr = new()
                 {
                     SubjectHdid = user.HdId,
                     EmailAddress = user.Email,
