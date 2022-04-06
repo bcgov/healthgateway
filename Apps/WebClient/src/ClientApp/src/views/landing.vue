@@ -63,8 +63,8 @@ export default class LandingView extends Vue {
     @Getter("userIsRegistered", { namespace: "user" })
     userIsRegistered!: boolean;
 
-    private get isVaccinationStatusEnabled(): boolean {
-        return this.config.modules["VaccinationStatus"];
+    private get isVaccinationBannerEnabled(): boolean {
+        return false;
     }
 
     private get isPublicLaboratoryResultEnabled(): boolean {
@@ -179,7 +179,7 @@ export default class LandingView extends Vue {
 <template>
     <div class="landing mx-2">
         <b-row
-            v-if="isVaccinationStatusEnabled"
+            v-if="isVaccinationBannerEnabled"
             no-gutters
             class="vaccine-card-banner small-banner d-flex mx-n2 justify-content-center"
             :class="{ 'd-lg-none': !isSidebarAvailable }"
@@ -205,7 +205,7 @@ export default class LandingView extends Vue {
             </b-col>
         </b-row>
         <b-row
-            v-if="isVaccinationStatusEnabled"
+            v-if="isVaccinationBannerEnabled"
             class="vaccine-card-banner large-banner d-none justify-content-end mx-n2"
             :class="{ 'd-lg-flex': !isSidebarAvailable }"
         >
