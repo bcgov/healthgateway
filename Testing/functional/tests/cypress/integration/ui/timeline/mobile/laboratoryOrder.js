@@ -40,6 +40,12 @@ describe("Laboratory Orders", () => {
             cy.contains("td", "Alanine Aminotransferase Test")
                 .parent("tr")
                 .within(() => {
+                    // Check the Name Column
+                    cy.get("td:nth-child(1)").then(($name) => {
+                        const name = $name.text().trim();
+                        cy.log(name);
+                        expect(name).equal("Alanine Aminotransferase Test");
+                    });
                     // Check the Result Column
                     cy.get("td:nth-child(2)").then(($result) => {
                         const result = $result.text().trim();
@@ -50,7 +56,81 @@ describe("Laboratory Orders", () => {
                     cy.get("td:nth-child(3)").then(($status) => {
                         const status = $status.text().trim();
                         cy.log(status);
-                        expect(status).equal("Partial");
+                        expect(status).equal("Active");
+                    });
+                });
+
+            cy.contains(
+                "td",
+                "Creatinine & Glomerular Filtration Rate Predicted Panel"
+            )
+                .parent("tr")
+                .within(() => {
+                    // Check the Name Column
+                    cy.get("td:nth-child(1)").then(($name) => {
+                        const name = $name.text().trim();
+                        cy.log(name);
+                        expect(name).equal(
+                            "Creatinine & Glomerular Filtration Rate Predicted Panel"
+                        );
+                    });
+                    // Check the Result Column
+                    cy.get("td:nth-child(2)").then(($result) => {
+                        const result = $result.text().trim();
+                        cy.log(result);
+                        expect(result).equal("Out of Range");
+                    });
+                    // Check the Status Column
+                    cy.get("td:nth-child(3)").then(($status) => {
+                        const status = $status.text().trim();
+                        cy.log(status);
+                        expect(status).equal("Completed");
+                    });
+                });
+
+            cy.contains("td", "Glucose Random")
+                .parent("tr")
+                .within(() => {
+                    // Check the Name Column
+                    cy.get("td:nth-child(1)").then(($name) => {
+                        const name = $name.text().trim();
+                        cy.log(name);
+                        expect(name).equal("Glucose Random");
+                    });
+                    // Check the Result Column
+                    cy.get("td:nth-child(2)").then(($result) => {
+                        const result = $result.text().trim();
+                        cy.log(result);
+                        expect(result).equal("In Range");
+                    });
+                    // Check the Status Column
+                    cy.get("td:nth-child(3)").then(($status) => {
+                        const status = $status.text().trim();
+                        cy.log(status);
+                        expect(status).equal("Completed");
+                    });
+                });
+
+            cy.contains("td", "CBC & Differential")
+                .parent("tr")
+                .within(() => {
+                    // Check the Name Column
+                    cy.get("td:nth-child(1)").then(($name) => {
+                        const name = $name.text().trim();
+                        cy.log(name);
+                        expect(name).equal("CBC & Differential");
+                    });
+                    // Check the Result Column
+                    cy.get("td:nth-child(2)").then(($result) => {
+                        const result = $result.text().trim();
+                        cy.log(result);
+                        expect(result).equal("Cancelled");
+                    });
+                    // Check the Status Column
+                    cy.get("td:nth-child(3)").then(($status) => {
+                        const status = $status.text().trim();
+                        cy.log(status);
+                        expect(status).equal("Cancelled");
                     });
                 });
         });
