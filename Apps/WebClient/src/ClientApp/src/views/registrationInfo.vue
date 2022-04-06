@@ -10,7 +10,6 @@ import Image01 from "@/assets/images/registration/001_BC-Services-Card.png";
 import Image02 from "@/assets/images/registration/002_App-Store.png";
 import Image03 from "@/assets/images/registration/003_Mobile-App.png";
 import Image04 from "@/assets/images/registration/004_USB-Card-Reader.png";
-import Image05 from "@/assets/images/registration/005_Mobile-Card.png";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
 
@@ -28,7 +27,6 @@ export default class RegistrationInfoView extends Vue {
     private appStoreImg: string = Image02;
     private mobileAppImg: string = Image03;
     private cardReaderImg: string = Image04;
-    private mobileCardImg: string = Image05;
     private signupProcessVisible = false;
     private dongleVisible = false;
     private registrationLink = "/registration/";
@@ -87,12 +85,9 @@ export default class RegistrationInfoView extends Vue {
                                         variant="primary"
                                         data-testid="registerBtn"
                                     >
-                                        <img
-                                            class="mr-3"
-                                            :src="mobileCardImg"
-                                            height="40"
-                                            alt="BC Services Card App Icon"
-                                        />Register for Health Gateway
+                                        <span>
+                                            Register for Health Gateway
+                                        </span>
                                     </hg-button>
                                 </router-link>
                             </b-col>

@@ -18,7 +18,6 @@ import Image02 from "@/assets/images/landing/002_Devices.png";
 import Image03 from "@/assets/images/landing/003_reduced-3.jpeg";
 import Image04 from "@/assets/images/landing/004_reduced-living-room.jpeg";
 import Image05 from "@/assets/images/landing/005_reduced-family.jpeg";
-import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
 
@@ -73,7 +72,6 @@ export default class LandingView extends Vue {
 
     private logo: string = Image00;
     private devices: string = Image02;
-    private bcsclogo: string = Image06;
     private isOpenRegistration = false;
 
     private icons: Icon[] = [
@@ -277,13 +275,7 @@ export default class LandingView extends Vue {
                             variant="primary"
                             class="btn-auth-landing"
                         >
-                            <img
-                                class="mr-2 mb-1"
-                                :src="bcsclogo"
-                                height="16"
-                                alt="BC Services Card App Icon"
-                            />
-                            <span>Log In with BC Services Card App</span>
+                            <span>Log In with BC Services Card</span>
                         </hg-button>
                     </router-link>
                     <div v-if="!oidcIsAuthenticated" class="my-3">
