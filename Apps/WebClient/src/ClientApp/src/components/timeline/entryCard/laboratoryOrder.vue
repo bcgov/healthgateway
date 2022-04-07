@@ -190,6 +190,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                         placement="top"
                         triggers="hover focus"
                         custom-class="p-2"
+                        boundary="viewport"
                     >
                         Laboratory tests provide a partial picture of your
                         health. To interpret these results, clinicians must
