@@ -30,7 +30,7 @@ describe("COVID-19 Orders", () => {
         cy.get("[data-testid=laboratoryTestType]").should("be.visible");
         cy.get("[data-testid=laboratoryTestStatus-0]").should("be.visible");
 
-        cy.get("[data-testid=backBtn]").click();
+        cy.get("[data-testid=backBtn]").click({ force: true });
         cy.get("[data-testid=filterTextInput]").should("be.visible");
 
         cy.log("Verifying final status");
@@ -61,7 +61,17 @@ describe("COVID-19 Orders", () => {
                 }).should(($div) => {
                     expect($div.text().trim()).equal(finalStatus);
                 });
-                cy.get("[data-testid=backBtn]").click();
+
+                // Validate Report Attachment Icon
+                cy.log("Card with reports should have an attachment icon.");
+                cy.get("[data-testid=attachmentIcon]").should("exist");
+
+                cy.log("Card with attachment icon should have a report.");
+                cy.get("[data-testid=laboratoryReportAvailable]").should(
+                    "exist"
+                );
+
+                cy.get("[data-testid=backBtn]").click({ force: true });
             });
         cy.get("[data-testid=filterTextInput]").should("be.visible");
 
@@ -91,7 +101,7 @@ describe("COVID-19 Orders", () => {
                         expect($div.text().trim()).equal(otherStatus);
                     });
 
-                cy.get("[data-testid=backBtn]").click();
+                cy.get("[data-testid=backBtn]").click({ force: true });
             });
         cy.get("[data-testid=filterTextInput]").should("be.visible");
 
@@ -124,7 +134,16 @@ describe("COVID-19 Orders", () => {
                     }
                 );
 
-                cy.get("[data-testid=backBtn]").click();
+                // Validate Report Attachment Icon
+                cy.log("Card with reports should have an attachment icon.");
+                cy.get("[data-testid=attachmentIcon]").should("exist");
+
+                cy.log("Card with attachment icon should have a report.");
+                cy.get("[data-testid=laboratoryReportAvailable]").should(
+                    "exist"
+                );
+
+                cy.get("[data-testid=backBtn]").click({ force: true });
             });
 
         cy.get("[data-testid=filterTextInput]").should("be.visible");
@@ -156,29 +175,18 @@ describe("COVID-19 Orders", () => {
                         expect($div.text().trim()).equal(amendedStatus);
                     }
                 );
-                cy.get("[data-testid=backBtn]").click();
-            });
 
+                // Validate Report Attachment Icon
+                cy.log("Card with reports should have an attachment icon.");
+                cy.get("[data-testid=attachmentIcon]").should("exist");
+
+                cy.log("Card with attachment icon should have a report.");
+                cy.get("[data-testid=laboratoryReportAvailable]").should(
+                    "exist"
+                );
+
+                cy.get("[data-testid=backBtn]").click({ force: true });
+            });
         cy.get("[data-testid=filterTextInput]").should("be.visible");
-    });
-
-    it("Validate Report Attachment Icons", () => {
-        cy.log("All cards with reports should have attachment icons.");
-        cy.get("[data-testid=laboratoryReportAvailable]")
-            .closest("[data-testid=timelineCard]")
-            .each((card) => {
-                cy.wrap(card)
-                    .find("[data-testid=attachmentIcon]")
-                    .should("exist");
-            });
-
-        cy.log("All cards with attachment icons should have reports.");
-        cy.get("[data-testid=attachmentIcon]")
-            .closest("[data-testid=timelineCard]")
-            .each((card) => {
-                cy.wrap(card)
-                    .find("[data-testid=laboratoryReportAvailable]")
-                    .should("exist");
-            });
     });
 });

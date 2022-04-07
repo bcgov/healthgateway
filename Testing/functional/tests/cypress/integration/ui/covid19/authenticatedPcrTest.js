@@ -44,30 +44,31 @@ describe("Authenticated Pcr Test Registration", () => {
         });
     });
 
-    it("Authenticated PcrTest Registration Form", () => {
+    it("Successful Test Kit", () => {
+        // Authenticated PcrTest Registration Form
+        cy.log("Validate Authenticated PcrTest Registration Form");
         cy.get(testKitCodeInput).should("be.visible");
         cy.get(testTakenMinutesAgo).should("be.visible");
         cy.get(cancelBtn).should("be.visible");
         cy.get(registerKitBtn).should("be.visible");
         cy.get(pcrPrivacyStatement).should("be.visible");
-    });
 
-    it("Required Validations", () => {
+        // Required Validations
+        cy.log("Validate Required Validations");
         clickRegisterKitButton();
         cy.get(feedbackTestKitCodeIsRequiredSelector).should("be.visible");
         cy.get(feedbackTestTakenIsRequiredSelector).should("be.visible");
-    });
 
-    it("Test Kit Code Invalid Validations", () => {
+        // Test Kit Code Invalid Validations
+        cy.log("Validate Test Kit Code Input");
         cy.get(testKitCodeInput).type("111");
         clickRegisterKitButton();
         cy.get(feedbackTestKitCodeValidSelector).should("be.visible");
-    });
 
-    it("Successful Test Kit", () => {
         // get the data in the fixture.
         cy.fixture("LaboratoryService/authenticatedPcrTest.json").then(
             (data) => {
+                cy.get(testKitCodeInput).clear();
                 cy.get(testKitCodeInput).type(
                     data.resourcePayload.shortCodeFirst +
                         "-" +
