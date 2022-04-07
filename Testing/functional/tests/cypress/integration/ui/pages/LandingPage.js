@@ -8,10 +8,6 @@ describe("Landing Page", () => {
         cy.title().should("eq", "Health Gateway");
     });
 
-    it("Greeting", () => {
-        cy.contains("h2", "Proof of Vaccination");
-    });
-
     it("Sign Up Button", () => {
         cy.get("#btnStart")
             .should("be.visible")
