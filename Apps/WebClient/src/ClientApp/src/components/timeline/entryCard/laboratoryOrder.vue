@@ -162,6 +162,22 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                 <div data-testid="laboratoryReportingLab">
                     <strong>Reporting Lab: </strong>
                     <span>{{ entry.reportingLab }}</span>
+                </div>
+            </div>
+            <b-table-lite
+                :items="entry.tests"
+                sticky-header
+                head-variant="light"
+                class="mt-4 mb-2"
+                data-testid="laboratoryResultTable"
+            >
+                <template #cell(result)="data">
+                    <strong :class="getResultClasses(data.value)">
+                        {{ data.value }}
+                    </strong>
+                </template>
+                <template #head(result)="data">
+                    <span>{{ data.label }}</span>
                     <span
                         :id="`popover-info${index}-${datekey}`"
                         class="infoIcon ml-2"
@@ -182,19 +198,6 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                         <router-link to="/faq">FAQ</router-link> page to learn
                         more.
                     </b-popover>
-                </div>
-            </div>
-            <b-table-lite
-                :items="entry.tests"
-                sticky-header
-                head-variant="light"
-                class="mt-4 mb-2"
-                data-testid="laboratoryResultTable"
-            >
-                <template #cell(result)="data">
-                    <strong :class="getResultClasses(data.value)">
-                        {{ data.value }}
-                    </strong>
                 </template>
             </b-table-lite>
             <MessageModalComponent
