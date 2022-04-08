@@ -4,12 +4,12 @@ import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import DatePickerComponent from "@/components/datePicker.vue";
-import LoadingComponent from "@/components/loading.vue";
+import DatePickerComponent from "@/components/DatePickerComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import MultiSelectComponent, {
     SelectOption,
-} from "@/components/multiSelect.vue";
+} from "@/components/MultiSelectComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import Covid19ReportComponent from "@/components/report/covid19.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
@@ -18,7 +18,7 @@ import MedicationHistoryReportComponent from "@/components/report/medicationHist
 import MedicationRequestReportComponent from "@/components/report/medicationRequest.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
 import NotesReportComponent from "@/components/report/notes.vue";
-import ResourceCentreComponent from "@/components/resourceCentre.vue";
+import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";

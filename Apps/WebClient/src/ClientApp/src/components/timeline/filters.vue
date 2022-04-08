@@ -11,7 +11,7 @@ import Component from "vue-class-component";
 import { Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import DatePickerComponent from "@/components/datePicker.vue";
+import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import type { WebClientConfiguration } from "@/models/configData";
 import { StringISODate } from "@/models/dateWrapper";

@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 
 import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
-import ReleaseNoteComponent from "@/components/releaseNote.vue";
+import ReleaseNoteComponent from "@/components/ReleaseNoteComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 
 @Component({

@@ -8,10 +8,10 @@ import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
-import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
+import MonthYearPickerComponent from "@/components/MonthYearPickerComponent.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 
-import CalendarBody from "./body.vue";
+import CalendarBody from "./CalendarBodyComponent.vue";
 
 library.add(faChevronLeft, faChevronRight);
 
@@ -21,7 +21,7 @@ library.add(faChevronLeft, faChevronRight);
         MonthYearPickerComponent,
     },
 })
-export default class CalendarComponent extends Vue {
+export default class CalendarHeaderComponent extends Vue {
     @Prop() readonly currentMonth!: DateWrapper;
     @Prop() readonly availableMonths!: DateWrapper[];
 

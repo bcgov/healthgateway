@@ -8,9 +8,9 @@ import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
 import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
-import ErrorCardComponent from "@/components/errorCard.vue";
-import LoadingComponent from "@/components/loading.vue";
-import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
+import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
+import HgDateDropdownComponent from "@/components/shared/hgDateDropdownComponent.vue";
 import { CustomBannerError } from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import {

@@ -5,11 +5,11 @@ import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import DependentCardComponent from "@/components/dependentCard.vue";
-import LoadingComponent from "@/components/loading.vue";
+import DependentCardComponent from "@/components/DependentCardComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 import NewDependentComponent from "@/components/modal/newDependent.vue";
 import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
-import ResourceCentreComponent from "@/components/resourceCentre.vue";
+import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";

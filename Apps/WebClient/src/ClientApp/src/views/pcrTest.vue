@@ -14,10 +14,10 @@ import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
 import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
-import ErrorCardComponent from "@/components/errorCard.vue";
-import LoadingComponent from "@/components/loading.vue";
-import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
-import HgTimeDropdownComponent from "@/components/shared/hgTimeDropdown.vue";
+import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
+import HgDateDropdownComponent from "@/components/shared/hgDateDropdownComponent.vue";
+import HgTimeDropdownComponent from "@/components/shared/hgTimeDropdownComponent.vue";
 import { ActionType } from "@/constants/actionType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { PcrDataSource } from "@/constants/pcrTestDataSource";

@@ -14,7 +14,7 @@ import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import FeedbackComponent from "@/components/feedback.vue";
+import FeedbackComponent from "@/components/FeedbackComponent.vue";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";

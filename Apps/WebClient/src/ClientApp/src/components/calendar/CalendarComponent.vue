@@ -9,8 +9,8 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
-import CalendarBody from "./body.vue";
-import CalendarHeader from "./header.vue";
+import CalendarBody from "./CalendarBodyComponent.vue";
+import CalendarHeader from "./CalendarHeaderComponent.vue";
 
 @Component({
     components: {

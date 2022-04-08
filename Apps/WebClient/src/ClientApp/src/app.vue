@@ -63,8 +63,8 @@ import { Component, Ref, Watch } from "vue-property-decorator";
 import VueTheMask from "vue-the-mask";
 import { Action, Getter } from "vuex-class";
 
-import CommunicationComponent from "@/components/communication.vue";
-import ErrorCard from "@/components/errorCard.vue";
+import CommunicationComponent from "@/components/CommunicationComponent.vue";
+import ErrorCard from "@/components/ErrorCardComponent.vue";
 import IdleComponent from "@/components/modal/idle.vue";
 import FooterComponent from "@/components/navmenu/navFooter.vue";
 import HeaderComponent from "@/components/navmenu/navHeader.vue";

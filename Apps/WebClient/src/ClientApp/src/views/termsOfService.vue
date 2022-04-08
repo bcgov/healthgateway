@@ -2,8 +2,8 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 
-import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
-import LoadingComponent from "@/components/loading.vue";
+import HtmlTextAreaComponent from "@/components/HtmlTextAreaComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
