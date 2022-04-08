@@ -162,26 +162,6 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                 <div data-testid="laboratoryReportingLab">
                     <strong>Reporting Lab: </strong>
                     <span>{{ entry.reportingLab }}</span>
-                    <span
-                        :id="`popover-info${index}-${datekey}`"
-                        class="infoIcon ml-2"
-                        tabindex="0"
-                    >
-                        <hg-icon icon="info-circle" size="medium" />
-                    </span>
-                    <b-popover
-                        :target="`popover-info${index}-${datekey}`"
-                        placement="top"
-                        triggers="hover focus"
-                        custom-class="p-2"
-                    >
-                        Laboratory tests provide a partial picture of your
-                        health. To interpret these results, clinicians must
-                        combine these tests results with your other health
-                        information. Visit the
-                        <router-link to="/faq">FAQ</router-link> page to learn
-                        more.
-                    </b-popover>
                 </div>
             </div>
             <b-table-lite
@@ -195,6 +175,30 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                     <strong :class="getResultClasses(data.value)">
                         {{ data.value }}
                     </strong>
+                </template>
+                <template #head(result)="data">
+                    <span>{{ data.label }}</span>
+                    <span
+                        :id="`popover-info${index}-${datekey}`"
+                        class="infoIcon ml-2"
+                        tabindex="0"
+                    >
+                        <hg-icon icon="info-circle" size="medium" />
+                    </span>
+                    <b-popover
+                        :target="`popover-info${index}-${datekey}`"
+                        placement="top"
+                        triggers="hover focus"
+                        custom-class="p-2"
+                        boundary="viewport"
+                    >
+                        Laboratory tests provide a partial picture of your
+                        health. To interpret these results, clinicians must
+                        combine these tests results with your other health
+                        information. Visit the
+                        <router-link to="/faq">FAQ</router-link> page to learn
+                        more.
+                    </b-popover>
                 </template>
             </b-table-lite>
             <MessageModalComponent
