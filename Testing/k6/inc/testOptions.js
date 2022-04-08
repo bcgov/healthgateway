@@ -14,11 +14,8 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-import http from "k6/http";
-import { sleep } from "k6";
-import * as common from "../../inc/common.js";
 
-export let options = {
+export let loadOptions = {
     vu: maxVus,
     stages: [
         { duration: "2m", target: rampVus }, // simulate ramp-up of traffic from 1 users over a few minutes.
@@ -35,21 +32,39 @@ export let options = {
         http_req_duration: ["avg < 5000"], // average of requests must complete within this time
     },
 };
-
-export default function () {
-    let user = common.users[__VU % common.users.length];
-
-    common.authorizeUser(user);
-
-    common.groupWithDurationMetric("batch", function () {
-        let webClientBatchResponses = http.batch(
-            common.webClientRequests(user)
-        );
-        let timelineBatchResponses = http.batch(common.timelineRequests(user));
-
-        common.checkResponses(webClientBatchResponses);
-        common.checkResponses(timelineBatchResponses);
-    });
-
-    sleep(1);
-}
+export let smokeOptions = {
+    vus: 2,
+    iterations: 5,
+};
+export let soakOptions = {
+    stages: [
+        { duration: "1m", target: 10 }, // below normal load
+        { duration: "2m", target: 250 },
+        { duration: "3h56m", target: 250 }, // stay at high users for hours 'soaking' the system
+        { duration: "2m", target: 0 }, // drop back down
+    ],
+};
+export let spikeOptions = {
+    stages: [
+        { duration: "20s", target: 10 }, // below normal load
+        { duration: "1m", target: 10 },
+        { duration: "1m", target: 400 }, // spike to super high users
+        { duration: "5m", target: 400 }, // stay there
+        { duration: "1m", target: 200 }, // scale down
+        { duration: "3m", target: 10 },
+        { duration: "10s", target: 0 }, //
+    ],
+};
+export let stressOptions = {
+    stages: [
+        { duration: "2m", target: 50 }, // below normal load
+        { duration: "5m", target: 100 },
+        { duration: "2m", target: 200 }, // normal load
+        { duration: "5m", target: 200 },
+        { duration: "2m", target: 400 }, // around the breaking point
+        { duration: "4m", target: 400 },
+        { duration: "2m", target: 500 }, // beyond the breaking point
+        { duration: "5m", target: 550 },
+        { duration: "5m", target: 0 }, // scale down. Recovery stage.
+    ],
+};

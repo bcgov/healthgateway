@@ -17,6 +17,7 @@ import http from "k6/http";
 import { b64decode } from "k6/encoding";
 import { check, group, sleep } from "k6";
 import { Rate, Trend } from "k6/metrics";
+import * as TestOptions from "./testOptions";
 
 export let passwd = __ENV.HG_PASSWORD;
 
@@ -30,30 +31,9 @@ export let errorRate = new Rate("errors");
 
 export let refreshTokenSuccess = new Rate("auth_refresh_successful");
 
-export let environment = __ENV.HG_ENV ? __ENV.HG_ENV : "test"; // default to test environment
+export let environment = __ENV.HG_ENV ? __ENV.HG_ENV : "test"; // default to test environment. choice of dev, test
+export let OptionsType = __ENV.HG_TYPE ? __ENV.HG_TYPE : "smoke"; // choice of load, smoke, soak, spike, stress
 
-export let smokeOptions = {
-    vus: 5,
-    iterations: 5,
-};
-
-export let loadOptions = {
-    vu: maxVus,
-    stages: [
-        { duration: "2m", target: rampVus }, // simulate ramp-up of traffic from 1 users over a few minutes.
-        { duration: "3m", target: rampVus }, // stay at number of users for several minutes
-        { duration: "3m", target: maxVus }, // ramp-up to users peak for some minutes (peak hour starts)
-        { duration: "3m", target: maxVus }, // stay at users for short amount of time (peak hour)
-        { duration: "2m", target: rampVus }, // ramp-down to lower users over 3 minutes (peak hour ends)
-        { duration: "3m", target: rampVus }, // continue for additional time
-        { duration: "2m", target: 0 }, // ramp-down to 0 users
-    ],
-    thresholds: {
-        errors: ["rate < 0.05"], // threshold on a custom metric
-        http_req_duration: ["p(90)< 9000"], // 90% of requests must complete this threshold
-        http_req_duration: ["avg < 5000"], // average of requests must complete within this time
-    },
-};
 export let groupDuration = Trend("batch");
 
 export let baseUrl = "https://" + environment + ".healthgateway.gov.bc.ca"; // with this, we can be confident that production can't be hit.
@@ -67,8 +47,6 @@ export let LaboratoryServiceUrl =
     baseUrl + "/api/laboratoryservice/v1/api/Laboratory/LaboratoryOrders";
 export let PatientServiceUrl = baseUrl + "/api/PatientService/v1/api/Patient";
 
-// console.log("Running tests against baseUrl := " + baseUrl);
-
 // Health Gateway WebClient app APIs:
 export let CommentUrl = baseUrl + "/v1/api/Comment";
 export let CommunicationUrl = baseUrl + "/v1/api/Communication";
@@ -77,7 +55,6 @@ export let NoteUrl = baseUrl + "/v1/api/Note";
 export let UserProfileUrl = baseUrl + "/v1/api/UserProfile";
 
 export let ClientId = __ENV.HG_CLIENT ? __ENV.HG_CLIENT : "k6"; // default to k6 client id
-export let OptionsType = __ENV.HG_TEST ? __ENV.HG_TEST : "load"; // default to smoke test
 
 export let users = [
     {
@@ -143,79 +120,7 @@ export let users = [
         token: null,
         refresh: null,
         expires: null,
-    },
-    {
-        username: "loadtest_10",
-        password: passwd,
-        hdid: null,
-        token: null,
-        refresh: null,
-        expires: null,
-    },
-    {
-        username: "loadtest_11",
-        password: passwd,
-        hdid: null,
-        token: null,
-        refresh: null,
-        expires: null,
-    },
-    {
-        username: "loadtest_12",
-        password: passwd,
-        hdid: null,
-        token: null,
-        refresh: null,
-        expires: null,
-    },
-    {
-        username: "loadtest_14",
-        password: passwd,
-        hdid: null,
-        token: null,
-        refresh: null,
-        expires: null,
-    },
-    {
-        username: "loadtest_15",
-        password: passwd,
-        hdid: null,
-        token: null,
-        refresh: null,
-        expires: null,
-    },
-    {
-        username: "loadtest_20",
-        password: passwd,
-        hdid: null,
-        token: null,
-        refresh: null,
-        expires: null,
-    },
-    {
-        username: "loadtest_401",
-        password: passwd,
-        hdid: null,
-        token: null,
-        refresh: null,
-        expires: null,
-    },
-    {
-        username: "loadtest_402",
-        password: passwd,
-        hdid: null,
-        token: null,
-        refresh: null,
-        expires: null,
-    },
-    {
-        username: "loadtest_403",
-        password: passwd,
-        hdid: null,
-        token: null,
-        refresh: null,
-        expires: null,
-    },
+    }
 ];
 
 function parseJwt(jwt) {
@@ -241,12 +146,21 @@ export function groupWithDurationMetric(name, group_function) {
 
 export function OptionConfig() {
     if (OptionsType == "load") {
-        return loadOptions;
+        return TestOptions.loadOptions;
     }
     if (OptionsType === "smoke") {
-        return smokeOptions;
+        return TestOptions.smokeOptions;
     }
-    return loadOptions;
+    if (OptionsType === "soak") {
+        return TestOptions.soakOptions;
+    }
+    if (OptionsType === "spike") {
+        return TestOptions.soakOptions;
+    }
+    if (OptionsType === "stress") {
+        return soakOptions;
+    }
+    return TestOptions.smokeOptions;
 }
 
 export function getExpiresTime(seconds) {
@@ -275,9 +189,9 @@ function authenticateUser(user) {
     };
     console.log(
         "Authenticating username: " +
-            auth_form_data.username +
-            ", KeyCloak client_id: " +
-            ClientId
+        auth_form_data.username +
+        ", KeyCloak client_id: " +
+        ClientId
     );
     var res = http.post(TokenEndpointUrl, auth_form_data);
     if (res.status == 200) {
@@ -291,11 +205,11 @@ function authenticateUser(user) {
     } else {
         console.log(
             "Authentication Error for user= " +
-                user.username +
-                ". ResponseCode[" +
-                res.status +
-                "] " +
-                res.error
+            user.username +
+            ". ResponseCode[" +
+            res.status +
+            "] " +
+            res.error
         );
         authSuccess.add(0);
         user.token = null;
@@ -337,11 +251,11 @@ export function refreshUser(user) {
     } else {
         console.log(
             "Token Refresh Error for user= " +
-                user.username +
-                ". ResponseCode[" +
-                res.status +
-                "] " +
-                res.error
+            user.username +
+            ". ResponseCode[" +
+            res.status +
+            "] " +
+            res.error
         );
         refreshTokenSuccess.add(0);
         user.token = null; // clear out the expiring token, forcing to re-authenticate.

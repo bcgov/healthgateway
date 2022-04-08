@@ -2,12 +2,13 @@ version: '3.4'
 services:
   k6:
     image: loadimpact/k6:latest
-    command: run /application/spike/k6_spike.js
+    command: run /application/load/k6_load.js
     volumes:
-      - ../../../src/application/spike:/application/spike
+      - ../../../src/application/load:/application/load
       - ../../../src/inc:/inc
     environment: 
-      - "HG_TYPE=${HG_TYPE}"
       - "HG_ENV=${HG_ENV}"
       - "HG_KEY=${HG_KEY}"
+      - "HG_TYPE=${HG_TYPE}"
       - "HG_PASSWORD=${HG_PASSWORD}"
+
