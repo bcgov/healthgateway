@@ -7,7 +7,6 @@ import { required } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
-import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
 import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import HgDateDropdownComponent from "@/components/shared/hgDateDropdownComponent.vue";
@@ -73,8 +72,6 @@ export default class PublicCovidTestView extends Vue {
         namespace: "laboratory",
     })
     publicCovidTestResponseResultStatusMessage!: string;
-
-    private bcsclogo: string = Image06;
 
     private logger!: ILogger;
     private displayResult = false;
@@ -431,13 +428,7 @@ export default class PublicCovidTestView extends Vue {
                                 variant="primary"
                                 class="login-button"
                             >
-                                <img
-                                    class="mr-2 mb-1"
-                                    :src="bcsclogo"
-                                    height="16"
-                                    alt="BC Services Card App Icon"
-                                />
-                                <span>Log In with BC Services Card App</span>
+                                <span>Log In with BC Services Card</span>
                             </hg-button>
                         </router-link>
                     </div>
@@ -679,13 +670,7 @@ export default class PublicCovidTestView extends Vue {
                                 variant="primary"
                                 class="login-button"
                             >
-                                <img
-                                    class="mr-2 mb-1"
-                                    :src="bcsclogo"
-                                    height="16"
-                                    alt="BC Services Card App Icon"
-                                />
-                                <span>Log In with BC Services Card App</span>
+                                <span>Log In with BC Services Card</span>
                             </hg-button>
                         </router-link>
                     </div>

@@ -13,7 +13,6 @@ import {
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
-import Image06 from "@/assets/images/landing/006-BCServicesCardLogo.png";
 import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import HgDateDropdownComponent from "@/components/shared/hgDateDropdownComponent.vue";
@@ -105,8 +104,6 @@ export default class PcrTestView extends Vue {
     private logger!: ILogger;
 
     private loading = false;
-
-    private bcsclogo: string = Image06;
 
     private errorMessage = "";
 
@@ -541,13 +538,7 @@ export default class PcrTestView extends Vue {
                                 class="login-button"
                                 @click="setDataSource(DSKEYCLOAK)"
                             >
-                                <img
-                                    class="mr-2 mb-1"
-                                    :src="bcsclogo"
-                                    height="16"
-                                    alt="BC Services Card App Icon"
-                                />
-                                <span>Log In with BC Services Card App</span>
+                                <span>Log In with BC Services Card</span>
                             </hg-button>
                         </b-col>
                     </b-row>
@@ -562,7 +553,6 @@ export default class PcrTestView extends Vue {
                         <b-col>
                             <hg-button
                                 id="btn-manual"
-                                aria-label="BC Services Card Login"
                                 data-testid="btn-manual"
                                 variant="secondary"
                                 class="manual-enter-button"
