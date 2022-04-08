@@ -2,7 +2,7 @@ import "@/plugins/inversify.config";
 
 import { mount, shallowMount } from "@vue/test-utils";
 
-import ErrorComponent from "@/components/error.vue";
+import ErrorComponent from "@/components/PageErrorComponent.vue";
 import PageError from "@/models/pageError";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
