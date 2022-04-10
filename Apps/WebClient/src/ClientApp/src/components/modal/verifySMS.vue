@@ -4,7 +4,7 @@ import Vue from "vue";
 import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import LoadingComponent from "@/components/loading.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";

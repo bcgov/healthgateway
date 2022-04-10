@@ -7,9 +7,9 @@ import { required } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
-import ErrorCardComponent from "@/components/errorCard.vue";
-import LoadingComponent from "@/components/loading.vue";
-import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
+import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
+import HgDateDropdownComponent from "@/components/shared/hgDateDropdownComponent.vue";
 import { CustomBannerError } from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import {

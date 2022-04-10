@@ -7,8 +7,8 @@ import { email, helpers, requiredIf, sameAs } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
-import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
-import LoadingComponent from "@/components/loading.vue";
+import HtmlTextAreaComponent from "@/components/HtmlTextAreaComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";

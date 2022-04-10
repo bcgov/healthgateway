@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
-import CalendarComponent from "@/components/calendar/calendar.vue";
+import CalendarComponent from "@/components/calendar/CalendarComponent.vue";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 
 @Component({

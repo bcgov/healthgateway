@@ -6,8 +6,8 @@ import { minLength, required, sameAs } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
 import { Getter } from "vuex-class";
 
-import DatePickerComponent from "@/components/datePicker.vue";
-import LoadingComponent from "@/components/loading.vue";
+import DatePickerComponent from "@/components/DatePickerComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 import AddDependentRequest from "@/models/addDependentRequest";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";

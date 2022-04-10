@@ -10,7 +10,7 @@ import { Component, Prop } from "vue-property-decorator";
 import VueRouter from "vue-router";
 import { Action, Getter } from "vuex-class";
 
-import LoadingComponent from "@/components/loading.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { IdentityProviderConfiguration } from "@/models/configData";
 

@@ -3,12 +3,12 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import ErrorCardComponent from "@/components/errorCard.vue";
-import LoadingComponent from "@/components/loading.vue";
+import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import LineChartComponent from "@/components/plot/lineChart.vue";
-import ResourceCentreComponent from "@/components/resourceCentre.vue";
+import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";

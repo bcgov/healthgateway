@@ -15,7 +15,7 @@ import {
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
-import LoadingComponent from "@/components/loading.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 import VerifySMSComponent from "@/components/modal/verifySMS.vue";
 import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";

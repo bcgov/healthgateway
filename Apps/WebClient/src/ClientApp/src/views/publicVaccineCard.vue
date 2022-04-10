@@ -9,11 +9,11 @@ import { required } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
-import ErrorCardComponent from "@/components/errorCard.vue";
-import LoadingComponent from "@/components/loading.vue";
+import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
-import HgDateDropdownComponent from "@/components/shared/hgDateDropdown.vue";
-import VaccineCardComponent from "@/components/vaccineCard.vue";
+import HgDateDropdownComponent from "@/components/shared/hgDateDropdownComponent.vue";
+import VaccineCardComponent from "@/components/VaccineCardComponent.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";

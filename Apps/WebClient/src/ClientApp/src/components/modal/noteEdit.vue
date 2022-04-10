@@ -7,8 +7,8 @@ import { required } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
-import DatePickerComponent from "@/components/datePicker.vue";
-import LoadingComponent from "@/components/loading.vue";
+import DatePickerComponent from "@/components/DatePickerComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
