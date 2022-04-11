@@ -126,9 +126,15 @@ export default class DependentsView extends Vue {
                 <h5 class="my-3">
                     You can add your dependents under the age of
                     {{ webClientConfig.maxDependentAge }} to view their COVID-19
-                    results. Please complete the form with your dependent's
-                    information, exactly as it appears on their BC Services
-                    Card.
+                    test results. Make sure you include all given names exactly 
+                    as shown on their BC Services Card. To access your dependent’s 
+                    proof of vaccination, please visit 
+                    <a
+                                            href="https://www.healthgateway.gov.bc.ca/vaccinecard"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >www.healthgateway.gov.bc.ca/vaccinecard</a
+                                        > 
                 </h5>
                 <b-row
                     v-for="dependent in dependents"
