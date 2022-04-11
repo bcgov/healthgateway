@@ -9,7 +9,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions } from "@/store/types";
-import LoginComponent from "@/views/login.vue";
+import LoginComponent from "@/views/LoginView.vue";
 
 const pushMethod = jest.fn();
 

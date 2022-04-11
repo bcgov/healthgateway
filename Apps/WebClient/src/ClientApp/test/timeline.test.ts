@@ -10,7 +10,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions, RootState } from "@/store/types";
-import TimelineView from "@/views/timeline.vue";
+import TimelineView from "@/views/TimelineView.vue";
 
 let store: Store<RootState>;
 

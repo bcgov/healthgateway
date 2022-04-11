@@ -7,8 +7,8 @@ import PageError from "@/models/pageError";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
-import NotFoundView from "@/views/errors/notFound.vue";
-import UnauthorizedView from "@/views/errors/unauthorized.vue";
+import NotFoundView from "@/views/errors/NotFoundView.vue";
+import UnauthorizedView from "@/views/errors/UnauthorizedView.vue";
 
 describe("ErrorComponent", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
