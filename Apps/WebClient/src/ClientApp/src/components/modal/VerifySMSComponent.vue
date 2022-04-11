@@ -8,8 +8,8 @@ import LoadingComponent from "@/components/LoadingComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 
 @Component({

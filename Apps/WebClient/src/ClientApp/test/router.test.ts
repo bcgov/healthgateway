@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-import container from "@/plugins/inversify.container";
+import container from "@/plugins/container";
 
 import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
 import "setimmediate";
@@ -12,7 +12,7 @@ import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
 import router, { beforeEachGuard, UserState } from "@/router";
 import { ILogger, IStoreProvider } from "@/services/interfaces";
 import { WinstonLogger } from "@/services/winstonLogger";
-import StoreProvider from "@/store/provider";
+import StoreProvider from "@/store/StoreProvider";
 import { GatewayStoreOptions } from "@/store/types";
 import NotFoundComponent from "@/views/errors/NotFoundView.vue";
 import UnauthorizedComponent from "@/views/errors/UnauthorizedView.vue";

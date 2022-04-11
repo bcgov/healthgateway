@@ -4,8 +4,8 @@ import { ServiceName } from "@/models/errorInterfaces";
 import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { IHttpDelegate, ILogger, IReportService } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 

@@ -1,33 +1,35 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faDownload, faMicroscope } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faVial } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
+import Covid19LaboratoryTestDescriptionComponent from "@/components/laboratory/Covid19LaboratoryTestDescriptionComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
+import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryReport } from "@/models/laboratory";
-import LaboratoryOrderTimelineEntry from "@/models/laboratoryOrderTimelineEntry";
 import User from "@/models/user";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 
-import EntrycardTimelineComponent from "./entrycard.vue";
+import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
-library.add(faDownload, faMicroscope);
+library.add(faDownload, faVial);
 
 @Component({
     components: {
         MessageModalComponent,
         EntryCard: EntrycardTimelineComponent,
+        Covid19LaboratoryTestDescriptionComponent,
     },
 })
-export default class LaboratoryOrderTimelineComponent extends Vue {
-    @Prop() entry!: LaboratoryOrderTimelineEntry;
+export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
+    @Prop() entry!: Covid19LaboratoryOrderTimelineEntry;
     @Prop() index!: number;
     @Prop() datekey!: string;
     @Prop() isMobileDetails!: boolean;
@@ -41,6 +43,10 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
     private isLoadingDocument = false;
     private logger!: ILogger;
 
+    private get reportAvailable(): boolean {
+        return this.entry.reportAvailable;
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.laboratoryService = container.get<ILaboratoryService>(
@@ -52,12 +58,12 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
         return date.format("yyyy-MMM-dd, t");
     }
 
-    private getResultClasses(result: string): string[] {
-        switch (result?.toUpperCase()) {
-            case "OUT OF RANGE":
-                return ["text-danger"];
-            case "IN RANGE":
+    private getOutcomeClasses(outcome: string): string[] {
+        switch (outcome?.toUpperCase()) {
+            case "NEGATIVE":
                 return ["text-success"];
+            case "POSITIVE":
+                return ["text-danger"];
             default:
                 return [];
         }
@@ -70,22 +76,22 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
     private getReport() {
         SnowPlow.trackEvent({
             action: "download_report",
-            text: "Laboratory Report PDF",
+            text: "COVID Test PDF",
         });
 
         this.isLoadingDocument = true;
         this.laboratoryService
-            .getReportDocument(this.entry.id, this.user.hdid, false)
+            .getReportDocument(this.entry.id, this.user.hdid, true)
             .then((result) => {
                 let dateString =
-                    this.entry.timelineDateTime.format("YYYY_MM_DD-HH_mm");
+                    this.entry.displayDate.format("YYYY_MM_DD-HH_mm");
                 let report: LaboratoryReport = result.resourcePayload;
                 fetch(
                     `data:${report.mediaType};${report.encoding},${report.data}`
                 )
                     .then((response) => response.blob())
                     .then((blob) => {
-                        saveAs(blob, `Laboratory_Report_${dateString}.pdf`);
+                        saveAs(blob, `COVID_Result_${dateString}.pdf`);
                     });
             })
             .catch((err) => {
@@ -101,31 +107,36 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
 <template>
     <EntryCard
         :card-id="index + '-' + datekey"
-        entry-icon="microscope"
-        :title="entry.commonName"
+        entry-icon="vial"
+        :title="entry.summaryTitle"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
-        :has-attachment="entry.reportAvailable"
+        :has-attachment="reportAvailable"
     >
-        <div slot="header-description">
-            <span>Number of Tests: </span>
-            <strong data-testid="laboratoryHeaderResultCount">
-                {{ entry.tests.length }}
+        <div v-if="entry.tests.length === 1" slot="header-description">
+            <strong
+                v-show="entry.isTestResultReady"
+                data-testid="laboratoryHeaderDescription"
+            >
+                <span>Result:</span>
+                <span :class="getOutcomeClasses(entry.labResultOutcome)">
+                    {{ entry.labResultOutcome }}
+                </span>
             </strong>
         </div>
         <div slot="details-body">
             <div
-                v-if="entry.reportAvailable"
+                v-if="reportAvailable"
                 data-testid="laboratoryReportAvailable"
                 class="mt-2 mb-n1"
             >
                 <b-spinner v-if="isLoadingDocument" class="mb-1" />
                 <span v-else data-testid="laboratoryReport">
                     <strong class="align-bottom d-inline-block pb-1">
-                        Detailed Report:
+                        Report:
                     </strong>
                     <hg-button
-                        data-testid="laboratory-report-download-btn"
+                        v-if="entry.isTestResultReady"
                         variant="link"
                         class="p-1 ml-1"
                         @click="showConfirmationModal()"
@@ -135,72 +146,64 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                             size="medium"
                             square
                             aria-hidden="true"
-                            class="mr-1"
                         />
-                        <span>{{ entry.downloadLabel }}</span>
                     </hg-button>
                 </span>
             </div>
             <div class="my-2">
-                <div data-testid="laboratoryCollectionDate">
-                    <strong>Collection Date: </strong>
-                    <span
-                        v-if="entry.collectionDateTime !== undefined"
-                        data-testid="laboratory-collection-date-value"
-                    >
-                        {{ formatDate(entry.collectionDateTime) }}
-                    </span>
-                </div>
-            </div>
-            <div class="my-2">
-                <div data-testid="laboratoryOrderingProvider">
-                    <strong>Ordering Provider: </strong>
-                    <span>{{ entry.orderingProvider }}</span>
-                </div>
-            </div>
-            <div class="my-2">
                 <div data-testid="laboratoryReportingLab">
-                    <strong>Reporting Lab: </strong>
-                    <span>{{ entry.reportingLab }}</span>
+                    <strong>Reporting Lab:</strong>
+                    {{ entry.reportingLab }}
                 </div>
             </div>
-            <b-table-lite
-                :items="entry.tests"
-                sticky-header
-                head-variant="light"
-                class="mt-4 mb-2"
-                data-testid="laboratoryResultTable"
+            <div
+                v-for="(test, index) in entry.tests"
+                :key="test.id"
+                :data-testid="`laboratoryTestBlock-${index}`"
             >
-                <template #cell(result)="data">
-                    <strong :class="getResultClasses(data.value)">
-                        {{ data.value }}
+                <hr />
+                <div data-testid="laboratoryTestType" class="my-2">
+                    <strong
+                        v-if="test.isTestResultReady && entry.tests.length > 1"
+                        data-testid="laboratoryTestResult"
+                    >
+                        <span>Result:</span>
+                        <span :class="getOutcomeClasses(test.labResultOutcome)">
+                            {{ test.labResultOutcome }}
+                        </span>
                     </strong>
-                </template>
-                <template #head(result)="data">
-                    <span>{{ data.label }}</span>
-                    <span
-                        :id="`popover-info${index}-${datekey}`"
-                        class="infoIcon ml-2"
-                        tabindex="0"
-                    >
-                        <hg-icon icon="info-circle" size="medium" />
-                    </span>
-                    <b-popover
-                        :target="`popover-info${index}-${datekey}`"
-                        placement="top"
-                        triggers="hover focus"
-                        custom-class="p-2"
-                        boundary="viewport"
-                    >
-                        Laboratory tests provide a partial picture of your
-                        health. To interpret these results, clinicians must
-                        combine these tests results with your other health
-                        information. Visit the
-                        <router-link to="/faq">FAQ</router-link> page to learn
-                        more.
-                    </b-popover>
-                </template>
-            </b-table-lite>
+                </div>
+                <div data-testid="laboratoryTestType" class="my-2">
+                    <strong>Test Type:</strong>
+                    {{ test.testType }}
+                </div>
+                <div
+                    :data-testid="`laboratoryTestStatus-${index}`"
+                    class="my-2"
+                >
+                    <strong>Test Status:</strong>
+                    {{ test.testStatus }}
+                </div>
+                <div class="my-2">
+                    <strong>Collection Date:</strong>
+                    {{ formatDate(test.collectedDateTime) }}
+                </div>
+                <div class="my-2">
+                    <strong>Result Date:</strong>
+                    {{ formatDate(test.resultDateTime) }}
+                </div>
+                <div
+                    v-if="test.resultDescription.length > 0"
+                    class="my-2"
+                    :data-testid="`laboratoryResultDescription-${index}`"
+                >
+                    <strong>Result Description:</strong>
+                    <Covid19LaboratoryTestDescriptionComponent
+                        :description="test.resultDescription"
+                        :link="test.resultLink"
+                    />
+                </div>
+            </div>
             <MessageModalComponent
                 ref="messageModal"
                 title="Sensitive Document Download"
@@ -214,7 +217,12 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-.infoIcon {
-    color: $aquaBlue;
+.col {
+    padding: 0px;
+    margin: 0px;
+}
+.row {
+    padding: 0;
+    margin: 0px;
 }
 </style>

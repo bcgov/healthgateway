@@ -13,8 +13,8 @@ import { TemplateType } from "@/models/reportRequest";
 import { ReportFormatType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger, IReportService } from "@/services/interfaces";
 
 interface LabTestRow {

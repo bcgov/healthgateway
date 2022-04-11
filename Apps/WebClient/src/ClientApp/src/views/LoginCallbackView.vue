@@ -4,8 +4,8 @@ import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import User from "@/models/user";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 @Component

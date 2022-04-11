@@ -6,8 +6,8 @@ import { Action, Getter } from "vuex-class";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult, { ResultError } from "@/models/requestResult";
 import User from "@/models/user";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 const med = "medication";

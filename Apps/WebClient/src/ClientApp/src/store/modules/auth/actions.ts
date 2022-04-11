@@ -1,5 +1,5 @@
+import container from "@/plugins/container";
 import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import {
     IAuthenticationService,
     IHttpDelegate,

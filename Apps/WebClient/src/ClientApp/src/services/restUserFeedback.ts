@@ -2,8 +2,8 @@
 
 import { ServiceName } from "@/models/errorInterfaces";
 import UserFeedback from "@/models/userFeedback";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import {
     IHttpDelegate,
     ILogger,

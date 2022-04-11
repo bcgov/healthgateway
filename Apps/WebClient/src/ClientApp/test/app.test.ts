@@ -6,8 +6,8 @@ import VueRouter from "vue-router";
 import Vuex from "vuex";
 
 import AppComponent from "@/app.vue";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 describe("Home view", () => {

@@ -1,8 +1,8 @@
 import { User as OidcUser } from "oidc-client";
 import Vue from "vue";
 
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 import { AuthMutations, AuthState } from "./types";

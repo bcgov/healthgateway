@@ -6,8 +6,8 @@ import Vuex from "vuex";
 
 import MonthYearPickerComponent from "@/components/MonthYearPickerComponent.vue";
 import { DateWrapper } from "@/models/dateWrapper";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 describe("MonthYearPickerComponent", () => {

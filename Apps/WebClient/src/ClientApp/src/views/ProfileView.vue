@@ -25,8 +25,8 @@ import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
 import User, { OidcUserProfile } from "@/models/user";
 import UserProfile from "@/models/userProfile";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import {
     IAuthenticationService,
     ILogger,

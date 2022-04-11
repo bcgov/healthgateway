@@ -7,8 +7,8 @@ import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile from "@/models/userProfile";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 import { UserMutation, UserState } from "./types";

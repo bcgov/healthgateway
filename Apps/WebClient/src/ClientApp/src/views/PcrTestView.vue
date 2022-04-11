@@ -27,8 +27,8 @@ import RegisterTestKitPublicRequest from "@/models/registerTestKitPublicRequest"
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import { ResultError } from "@/models/requestResult";
 import User, { OidcUserProfile } from "@/models/user";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { IAuthenticationService, ILogger } from "@/services/interfaces";
 import { IPcrTestService } from "@/services/interfaces";
 import { Mask, phnMask, smsMask } from "@/utility/masks";

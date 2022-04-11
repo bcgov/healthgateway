@@ -48,8 +48,8 @@ import { RestReportService } from "@/services/restReportService";
 import { RestPcrTestService } from "@/services/restPcrTestService";
 import { RestVaccinationStatusService } from "@/services/restVaccinationStatusService";
 import { WinstonLogger } from "@/services/winstonLogger";
-import StoreProvider from "@/store/provider";
-import container from "./inversify.container";
+import StoreProvider from "@/store/StoreProvider";
+import container from "./container";
 import { GatewayStoreOptions } from "@/store/types";
 import { StoreOptions } from "@/store/options";
 

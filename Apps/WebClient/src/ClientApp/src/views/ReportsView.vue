@@ -11,13 +11,13 @@ import MultiSelectComponent, {
     SelectOption,
 } from "@/components/MultiSelectComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
-import Covid19ReportComponent from "@/components/report/covid19.vue";
-import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
-import LaboratoryReportComponent from "@/components/report/laboratory.vue";
-import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
-import MedicationRequestReportComponent from "@/components/report/medicationRequest.vue";
-import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
-import NotesReportComponent from "@/components/report/notes.vue";
+import Covid19ReportComponent from "@/components/report/Covid19ReportComponent.vue";
+import ImmunizationHistoryReportComponent from "@/components/report/ImmunizationHistoryReportComponent.vue";
+import LaboratoryReportComponent from "@/components/report/LaboratoryReportComponent.vue";
+import MedicationHistoryReportComponent from "@/components/report/MedicationHistoryReportComponent.vue";
+import MedicationRequestReportComponent from "@/components/report/MedicationRequestReportComponent.vue";
+import MSPVisitsReportComponent from "@/components/report/MSPVisitsReportComponent.vue";
+import NotesReportComponent from "@/components/report/NotesReportComponent.vue";
 import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -30,8 +30,8 @@ import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import EventTracker from "@/utility/eventTracker";
 

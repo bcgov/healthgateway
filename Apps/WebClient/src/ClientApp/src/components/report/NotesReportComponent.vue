@@ -4,7 +4,6 @@ import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import { DateWrapper } from "@/models/dateWrapper";
-import Encounter from "@/models/encounter";
 import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
@@ -12,44 +11,44 @@ import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
+import UserNote from "@/models/userNote";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger, IReportService } from "@/services/interfaces";
 
-interface EncounterRow {
+interface UserNoteRow {
     date: string;
-    specialty_description: string;
-    practitioner: string;
-    clinic_practitioner: string;
+    title: string;
+    note: string;
 }
 
 @Component
-export default class MSPVisitsReportComponent extends Vue {
+export default class NotesReportComponent extends Vue {
     @Prop() private filter!: ReportFilter;
 
-    @Action("retrieve", { namespace: "encounter" })
-    retrieveEncounters!: (params: { hdid: string }) => Promise<void>;
+    @Action("retrieve", { namespace: "note" })
+    retrieveNotes!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("isLoading", { namespace: "encounter" })
+    @Getter("isLoading", { namespace: "note" })
     isLoading!: boolean;
 
-    @Getter("patientEncounters", { namespace: "encounter" })
-    patientEncounters!: Encounter[];
+    @Getter("notes", { namespace: "note" })
+    notes!: UserNote[];
 
     @Getter("user", { namespace: "user" })
     private user!: User;
 
     private logger!: ILogger;
 
-    private readonly headerClass = "encounter-report-table-header";
+    private readonly headerClass = "note-report-table-header";
 
-    private get visibleRecords(): Encounter[] {
-        let records = this.patientEncounters.filter((record) => {
-            return this.filter.allowsDate(record.encounterDate);
+    private get visibleRecords(): UserNote[] {
+        let records = this.notes.filter((record) => {
+            return this.filter.allowsDate(record.journalDate);
         });
         records.sort((a, b) => {
-            const firstDate = new DateWrapper(a.encounterDate);
-            const secondDate = new DateWrapper(b.encounterDate);
+            const firstDate = new DateWrapper(a.journalDate);
+            const secondDate = new DateWrapper(b.journalDate);
 
             if (firstDate.isBefore(secondDate)) {
                 return 1;
@@ -69,13 +68,12 @@ export default class MSPVisitsReportComponent extends Vue {
         return this.visibleRecords.length === 0;
     }
 
-    private get items(): EncounterRow[] {
-        return this.visibleRecords.map<EncounterRow>((x) => {
+    private get items(): UserNoteRow[] {
+        return this.visibleRecords.map<UserNoteRow>((x) => {
             return {
-                date: DateWrapper.format(x.encounterDate),
-                specialty_description: x.specialtyDescription,
-                practitioner: x.practitionerName,
-                clinic_practitioner: x.clinic.name,
+                date: DateWrapper.format(x.journalDate),
+                title: x.title,
+                note: x.text,
             };
         });
     }
@@ -94,8 +92,8 @@ export default class MSPVisitsReportComponent extends Vue {
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveEncounters({ hdid: this.user.hdid }).catch((err) => {
-            this.logger.error(`Error loading encounter data: ${err}`);
+        this.retrieveNotes({ hdid: this.user.hdid }).catch((err) => {
+            this.logger.error(`Error loading user note data: ${err}`);
         });
     }
 
@@ -116,7 +114,7 @@ export default class MSPVisitsReportComponent extends Vue {
                 header: headerData,
                 records: this.items,
             },
-            template: TemplateType.Encounter,
+            template: TemplateType.Notes,
             type: reportFormatType,
         });
     }
@@ -125,20 +123,20 @@ export default class MSPVisitsReportComponent extends Vue {
         {
             key: "date",
             thClass: this.headerClass,
-            tdAttr: { "data-testid": "mspVisitDateItem" },
+            tdAttr: { "data-testid": "user-note-date" },
+            thStyle: { width: "10%" },
         },
         {
-            key: "specialty_description",
+            key: "title",
             thClass: this.headerClass,
+            tdAttr: { "data-testid": "user-note-title" },
+            thStyle: { width: "30%" },
         },
         {
-            key: "practitioner",
+            key: "note",
             thClass: this.headerClass,
-        },
-        {
-            key: "clinic_practitioner",
-            label: "Clinic/Practitioner",
-            thClass: this.headerClass,
+            thStyle: { width: "60%" },
+            tdClass: "text-left",
         },
     ];
 }
@@ -155,7 +153,6 @@ export default class MSPVisitsReportComponent extends Vue {
                 <b-table
                     v-if="!isEmpty || isLoading"
                     :striped="true"
-                    :fixed="true"
                     :busy="isLoading"
                     :items="items"
                     :fields="fields"
@@ -174,7 +171,7 @@ export default class MSPVisitsReportComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
-.encounter-report-table-header {
+.note-report-table-header {
     color: $heading_color;
     font-size: 0.8rem;
 }

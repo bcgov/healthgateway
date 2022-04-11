@@ -11,13 +11,13 @@ import { Operation } from "@/models/storeOperations";
 import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
 
-import Covid19LaboratoryOrderTimelineComponent from "./covid19LaboratoryOrder.vue";
-import EncounterTimelineComponent from "./encounter.vue";
-import ImmunizationTimelineComponent from "./immunization.vue";
-import LaboratoryOrderTimelineComponent from "./laboratoryOrder.vue";
-import MedicationTimelineComponent from "./medication.vue";
-import MedicationRequestTimelineComponent from "./medicationRequest.vue";
-import NoteTimelineComponent from "./note.vue";
+import Covid19LaboratoryOrderTimelineComponent from "./Covid19LaboratoryOrderTimelineComponent.vue";
+import EncounterTimelineComponent from "./EncounterTimelineComponent.vue";
+import ImmunizationTimelineComponent from "./ImmunizationTimelineComponent.vue";
+import LaboratoryOrderTimelineComponent from "./LaboratoryOrderTimelineComponent.vue";
+import MedicationRequestTimelineComponent from "./MedicationRequestTimelineComponent.vue";
+import MedicationTimelineComponent from "./MedicationTimelineComponent.vue";
+import NoteTimelineComponent from "./NoteTimelineComponent.vue";
 
 library.add(faArrowLeft);
 

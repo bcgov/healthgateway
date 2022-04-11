@@ -7,8 +7,8 @@ import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import {
     IHttpDelegate,
     ILogger,

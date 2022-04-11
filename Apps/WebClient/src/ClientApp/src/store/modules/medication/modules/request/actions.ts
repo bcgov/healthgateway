@@ -4,8 +4,8 @@ import { ResultType } from "@/constants/resulttype";
 import MedicationRequest from "@/models/MedicationRequest";
 import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger, IMedicationService } from "@/services/interfaces";
 import EventTracker from "@/utility/eventTracker";
 

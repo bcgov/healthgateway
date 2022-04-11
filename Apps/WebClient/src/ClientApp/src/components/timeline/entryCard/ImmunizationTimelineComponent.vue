@@ -8,7 +8,7 @@ import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 
 library.add(faIdCard, faSyringe);
 
-import EntrycardTimelineComponent from "./entrycard.vue";
+import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 @Component({
     components: {

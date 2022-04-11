@@ -4,8 +4,8 @@ import { ResultType } from "@/constants/resulttype";
 import Encounter from "@/models/encounter";
 import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { IEncounterService, ILogger } from "@/services/interfaces";
 import EventTracker from "@/utility/eventTracker";
 

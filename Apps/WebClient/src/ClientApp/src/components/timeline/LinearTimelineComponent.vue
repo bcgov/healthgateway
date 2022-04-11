@@ -8,13 +8,13 @@ import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
 
-import Covid19LaboratoryOrderTimelineComponent from "./entryCard/covid19LaboratoryOrder.vue";
-import EncounterTimelineComponent from "./entryCard/encounter.vue";
-import ImmunizationTimelineComponent from "./entryCard/immunization.vue";
-import LaboratoryOrderTimelineComponent from "./entryCard/laboratoryOrder.vue";
-import MedicationTimelineComponent from "./entryCard/medication.vue";
-import MedicationRequestTimelineComponent from "./entryCard/medicationRequest.vue";
-import NoteTimelineComponent from "./entryCard/note.vue";
+import Covid19LaboratoryOrderTimelineComponent from "./entryCard/Covid19LaboratoryOrderTimelineComponent.vue";
+import EncounterTimelineComponent from "./entryCard/EncounterTimelineComponent.vue";
+import ImmunizationTimelineComponent from "./entryCard/ImmunizationTimelineComponent.vue";
+import LaboratoryOrderTimelineComponent from "./entryCard/LaboratoryOrderTimelineComponent.vue";
+import MedicationRequestTimelineComponent from "./entryCard/MedicationRequestTimelineComponent.vue";
+import MedicationTimelineComponent from "./entryCard/MedicationTimelineComponent.vue";
+import NoteTimelineComponent from "./entryCard/NoteTimelineComponent.vue";
 
 @Component({
     components: {

@@ -3,8 +3,8 @@ import { ResultType } from "@/constants/resulttype";
 import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import UserNote from "@/models/userNote";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger, IUserNoteService } from "@/services/interfaces";
 
 import { NoteActions } from "./types";

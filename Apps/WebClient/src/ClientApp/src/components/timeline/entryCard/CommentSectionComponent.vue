@@ -3,16 +3,16 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import AddCommentComponent from "@/components/timeline/entryCard/addComment.vue";
-import CommentComponent from "@/components/timeline/entryCard/comment.vue";
+import AddCommentComponent from "@/components/timeline/entryCard/AddCommentComponent.vue";
+import CommentComponent from "@/components/timeline/entryCard/CommentComponent.vue";
 import { CommentEntryType } from "@/constants/commentEntryType";
 import { entryTypeMap } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 @Component({
