@@ -16,8 +16,8 @@ import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
-import VerifySMSComponent from "@/components/modal/verifySMS.vue";
-import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
+import VerifySMSComponent from "@/components/modal/VerifySMSComponent.vue";
+import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";

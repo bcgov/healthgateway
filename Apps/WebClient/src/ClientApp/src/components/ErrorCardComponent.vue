@@ -7,7 +7,7 @@ import VueClipboard from "vue-clipboard2";
 import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";

@@ -6,11 +6,11 @@ import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
-import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import MultiSelectComponent, {
     SelectOption,
 } from "@/components/MultiSelectComponent.vue";
-import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
+import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import Covid19ReportComponent from "@/components/report/covid19.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
 import LaboratoryReportComponent from "@/components/report/laboratory.vue";

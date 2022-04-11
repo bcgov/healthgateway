@@ -5,9 +5,9 @@ import { Action, Getter } from "vuex-class";
 
 import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
-import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
-import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
-import LineChartComponent from "@/components/plot/lineChart.vue";
+import ProtectiveWordComponent from "@/components/modal/ProtectiveWordComponent.vue";
+import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
+import LineChartComponent from "@/components/plot/LineChartComponent.vue";
 import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { DateWrapper } from "@/models/dateWrapper";

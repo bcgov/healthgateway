@@ -15,8 +15,8 @@ import { Action, Getter } from "vuex-class";
 
 import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
-import HgDateDropdownComponent from "@/components/shared/hgDateDropdownComponent.vue";
-import HgTimeDropdownComponent from "@/components/shared/hgTimeDropdownComponent.vue";
+import HgDateDropdownComponent from "@/components/shared/HgDateDropdownComponent.vue";
+import HgTimeDropdownComponent from "@/components/shared/HgTimeDropdownComponent.vue";
 import { ActionType } from "@/constants/actionType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { PcrDataSource } from "@/constants/pcrTestDataSource";

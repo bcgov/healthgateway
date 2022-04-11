@@ -12,8 +12,8 @@ import { Component, Emit, Prop, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import Covid19LaboratoryTestDescriptionComponent from "@/components/laboratory/Covid19LaboratoryTestDescriptionComponent.vue";
-import DeleteModalComponent from "@/components/modal/deleteConfirmation.vue";
-import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import DeleteModalComponent from "@/components/modal/DeleteModalComponent.vue";
+import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import { ActionType } from "@/constants/actionType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";

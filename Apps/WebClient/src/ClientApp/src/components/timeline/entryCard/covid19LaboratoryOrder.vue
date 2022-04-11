@@ -7,7 +7,7 @@ import { Component, Prop, Ref } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 import Covid19LaboratoryTestDescriptionComponent from "@/components/laboratory/Covid19LaboratoryTestDescriptionComponent.vue";
-import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryReport } from "@/models/laboratory";

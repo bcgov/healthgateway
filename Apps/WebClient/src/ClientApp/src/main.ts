@@ -29,12 +29,12 @@ import VueRouter from "vue-router";
 import Vuelidate from "vuelidate";
 import { Store } from "vuex";
 
-import HgButtonComponent from "@/components/shared/hgButtonComponent.vue";
-import HgCardButtonComponent from "@/components/shared/hgCardButtonComponent.vue";
-import HgDropdownComponent from "@/components/shared/hgDropdownComponent.vue";
-import HgIconComponent from "@/components/shared/hgIconComponent.vue";
-import PageTitleComponent from "@/components/shared/pageTitleComponent.vue";
-import StatusLabelComponent from "@/components/shared/statusLabelComponent.vue";
+import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
+import HgCardButtonComponent from "@/components/shared/HgCardButtonComponent.vue";
+import HgDropdownComponent from "@/components/shared/HgDropdownComponent.vue";
+import HgIconComponent from "@/components/shared/HgIconComponent.vue";
+import PageTitleComponent from "@/components/shared/PageTitleComponent.vue";
+import StatusLabelComponent from "@/components/shared/StatusLabelComponent.vue";
 
 import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";

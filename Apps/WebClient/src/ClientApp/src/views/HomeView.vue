@@ -19,8 +19,8 @@ import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
-import AddQuickLinkComponent from "@/components/modal/addQuickLink.vue";
-import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import AddQuickLinkComponent from "@/components/modal/AddQuickLinkComponent.vue";
+import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";

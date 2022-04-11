@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
+import ProtectiveWordComponent from "@/components/modal/ProtectiveWordComponent.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import Report from "@/models/report";

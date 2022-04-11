@@ -12,8 +12,8 @@ import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
-import MessageModalComponent from "@/components/modal/genericMessage.vue";
-import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
+import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
+import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import VaccineCardComponent from "@/components/VaccineCardComponent.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import BreadcrumbItem from "@/models/breadcrumbItem";
