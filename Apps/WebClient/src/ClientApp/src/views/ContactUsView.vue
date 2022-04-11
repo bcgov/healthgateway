@@ -2,7 +2,7 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 
-import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
+import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 

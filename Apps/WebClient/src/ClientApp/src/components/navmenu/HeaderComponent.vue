@@ -11,7 +11,7 @@ import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import RatingComponent from "@/components/modal/rating.vue";
+import RatingComponent from "@/components/modal/RatingComponent.vue";
 import User, { OidcUserProfile } from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";

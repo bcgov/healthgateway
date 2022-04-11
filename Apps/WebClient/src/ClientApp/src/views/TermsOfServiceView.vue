@@ -4,7 +4,7 @@ import { Component } from "vue-property-decorator";
 
 import HtmlTextAreaComponent from "@/components/HtmlTextAreaComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
-import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
+import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";

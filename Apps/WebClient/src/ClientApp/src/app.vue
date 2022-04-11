@@ -65,10 +65,10 @@ import { Action, Getter } from "vuex-class";
 
 import CommunicationComponent from "@/components/CommunicationComponent.vue";
 import ErrorCard from "@/components/ErrorCardComponent.vue";
-import IdleComponent from "@/components/modal/idle.vue";
-import FooterComponent from "@/components/navmenu/navFooter.vue";
-import HeaderComponent from "@/components/navmenu/navHeader.vue";
-import SidebarComponent from "@/components/navmenu/sidebar.vue";
+import IdleComponent from "@/components/modal/IdleComponent.vue";
+import FooterComponent from "@/components/navmenu/FooterComponent.vue";
+import HeaderComponent from "@/components/navmenu/HeaderComponent.vue";
+import SidebarComponent from "@/components/navmenu/SidebarComponent.vue";
 import Process, { EnvironmentType } from "@/constants/process";
 import ScreenWidth from "@/constants/screenWidth";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";

@@ -7,8 +7,8 @@ import { Action, Getter } from "vuex-class";
 
 import DependentCardComponent from "@/components/DependentCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
-import NewDependentComponent from "@/components/modal/newDependent.vue";
-import BreadcrumbComponent from "@/components/navmenu/breadcrumb.vue";
+import NewDependentComponent from "@/components/modal/NewDependentComponent.vue";
+import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";

@@ -5,7 +5,7 @@ import { createLocalVue, shallowMount } from "@vue/test-utils";
 import VueRouter from "vue-router";
 import Vuex from "vuex";
 
-import HeaderComponent from "@/components/navmenu/navHeader.vue";
+import HeaderComponent from "@/components/navmenu/HeaderComponent.vue";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
