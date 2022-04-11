@@ -4,8 +4,8 @@ import { Component, Emit } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 import type { WebClientConfiguration } from "@/models/configData";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger, IUserRatingService } from "@/services/interfaces";
 
 @Component

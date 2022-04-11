@@ -11,7 +11,7 @@ import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
 
-import CommentSectionComponent from "./commentSection.vue";
+import CommentSectionComponent from "./CommentSectionComponent.vue";
 
 library.add(farComment, faPaperclip);
 

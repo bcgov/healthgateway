@@ -21,8 +21,8 @@ import {
     PublicCovidTestRecord,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import router from "@/router";
 import { ILogger } from "@/services/interfaces";
 import { Mask, phnMask } from "@/utility/masks";

@@ -6,7 +6,7 @@ import { Component, Prop } from "vue-property-decorator";
 
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 
-import EntrycardTimelineComponent from "./entrycard.vue";
+import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 library.add(faInfoCircle, faUserMd);
 

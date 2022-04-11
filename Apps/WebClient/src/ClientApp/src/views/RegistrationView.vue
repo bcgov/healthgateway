@@ -14,8 +14,8 @@ import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
 import { ResultError } from "@/models/requestResult";
 import type { OidcUserProfile } from "@/models/user";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import {
     IAuthenticationService,
     ILogger,

@@ -12,7 +12,7 @@ import { ResultError } from "@/models/requestResult";
 import User from "@/models/user";
 import UserNote from "@/models/userNote";
 
-import EntrycardTimelineComponent from "./entrycard.vue";
+import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 library.add(faEdit, faEllipsisV);
 

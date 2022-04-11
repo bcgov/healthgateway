@@ -8,7 +8,7 @@ import DateTimeFormat from "@/constants/dateTimeFormat";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationRequestTimelineEntry from "@/models/medicationRequestTimelineEntry";
 
-import EntrycardTimelineComponent from "./entrycard.vue";
+import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 library.add(faClipboard);
 

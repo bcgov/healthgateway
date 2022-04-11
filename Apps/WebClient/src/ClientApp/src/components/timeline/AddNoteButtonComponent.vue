@@ -7,8 +7,8 @@ import UserPreferenceType from "@/constants/userPreferenceType";
 import EventBus, { EventMessageName } from "@/eventbus";
 import User from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 @Component

@@ -6,8 +6,8 @@ import HtmlTextAreaComponent from "@/components/HtmlTextAreaComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 
 @Component({

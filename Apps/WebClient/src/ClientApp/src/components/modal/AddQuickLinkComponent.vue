@@ -7,8 +7,8 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import type { WebClientConfiguration } from "@/models/configData";
 import { QuickLink } from "@/models/quickLink";
 import User from "@/models/user";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 interface QuickLinkFilter {

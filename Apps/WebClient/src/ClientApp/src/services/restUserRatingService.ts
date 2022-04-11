@@ -2,8 +2,8 @@ import { injectable } from "inversify";
 
 import { ServiceName } from "@/models/errorInterfaces";
 import UserRating from "@/models/userRating";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import {
     IHttpDelegate,
     ILogger,

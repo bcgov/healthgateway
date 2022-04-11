@@ -4,8 +4,8 @@ import { mount, shallowMount } from "@vue/test-utils";
 
 import ErrorComponent from "@/components/PageErrorComponent.vue";
 import PageError from "@/models/pageError";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import NotFoundView from "@/views/errors/NotFoundView.vue";
 import UnauthorizedView from "@/views/errors/UnauthorizedView.vue";

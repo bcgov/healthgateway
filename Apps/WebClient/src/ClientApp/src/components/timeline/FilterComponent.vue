@@ -16,8 +16,8 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import type { WebClientConfiguration } from "@/models/configData";
 import { StringISODate } from "@/models/dateWrapper";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 library.add(faBars, faCalendarDay, faChevronDown, faSlidersH);

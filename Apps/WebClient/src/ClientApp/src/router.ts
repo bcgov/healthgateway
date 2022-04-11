@@ -7,9 +7,9 @@ import { Position, PositionResult } from "vue-router/types/router";
 
 import { ClientModule } from "@/constants/clientModule";
 import { Dictionary } from "@/models/baseTypes";
+import container from "@/plugins/container";
 import { SnowplowWindow } from "@/plugins/extensions";
 import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger, IStoreProvider } from "@/services/interfaces";
 
 declare let window: SnowplowWindow;

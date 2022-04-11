@@ -7,7 +7,7 @@ import { Component, Prop } from "vue-property-decorator";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import PhoneUtil from "@/utility/phoneUtil";
 
-import EntrycardTimelineComponent from "./entrycard.vue";
+import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 library.add(faPills);
 

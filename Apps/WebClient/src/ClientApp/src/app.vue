@@ -71,8 +71,8 @@ import HeaderComponent from "@/components/navmenu/HeaderComponent.vue";
 import SidebarComponent from "@/components/navmenu/SidebarComponent.vue";
 import Process, { EnvironmentType } from "@/constants/process";
 import ScreenWidth from "@/constants/screenWidth";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);

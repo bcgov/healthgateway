@@ -8,8 +8,8 @@ import { Action, Getter } from "vuex-class";
 import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";
 import type { UserComment } from "@/models/userComment";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 library.add(faArrowCircleUp, faLock);

@@ -16,8 +16,8 @@ import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 @Component({

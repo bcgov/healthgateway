@@ -3,8 +3,8 @@ import { ResultType } from "@/constants/resulttype";
 import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import { UserComment } from "@/models/userComment";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger, IUserCommentService } from "@/services/interfaces";
 
 import { CommentActions } from "./types";

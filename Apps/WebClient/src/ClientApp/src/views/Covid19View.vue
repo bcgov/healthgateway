@@ -25,8 +25,8 @@ import { ResultError } from "@/models/requestResult";
 import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
 import VaccinationStatus from "@/models/vaccinationStatus";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 

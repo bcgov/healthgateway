@@ -4,8 +4,8 @@ import { Component, Prop } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 import BreadcrumbItem from "@/models/breadcrumbItem";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 @Component

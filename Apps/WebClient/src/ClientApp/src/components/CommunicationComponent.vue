@@ -4,8 +4,8 @@ import { Component, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 import Communication, { CommunicationType } from "@/models/communication";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ICommunicationService, ILogger } from "@/services/interfaces";
 
 @Component

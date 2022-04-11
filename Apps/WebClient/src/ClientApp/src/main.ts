@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-import container from "@/plugins/inversify.container";
+import container from "@/plugins/container";
 
 import "@/plugins/inversify.config";
 
