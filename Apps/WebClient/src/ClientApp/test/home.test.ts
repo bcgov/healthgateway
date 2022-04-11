@@ -11,7 +11,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions, RootState } from "@/store/types";
-import HomeView from "@/views/home.vue";
+import HomeView from "@/views/HomeView.vue";
 
 let store: Store<RootState>;
 

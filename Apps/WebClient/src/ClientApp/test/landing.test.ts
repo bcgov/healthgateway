@@ -9,7 +9,7 @@ import type { WebClientConfiguration } from "@/models/configData";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
-import LandingComponent from "@/views/landing.vue";
+import LandingComponent from "@/views/LandingView.vue";
 
 describe("Landing view", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);

@@ -10,7 +10,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions, RootState } from "@/store/types";
-import HealthInsightsView from "@/views/healthInsights.vue";
+import HealthInsightsView from "@/views/HealthInsightsView.vue";
 
 let store: Store<RootState>;
 
