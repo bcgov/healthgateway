@@ -280,15 +280,15 @@ export default class LandingView extends Vue {
             </b-row>
         </b-container>
         <b-container v-else>
-            <b-row class="py-4" no-gutters>
-                <b-col class="col-12 col-lg-6">
-                    <h1 class="mb-3">Access your health information online</h1>
-                    <p>
+            <b-row class="my-4 my-md-5">
+                <b-col class="col-12 col-lg-5">
+                    <h1 class="mb-4">Access your health information online</h1>
+                    <p class="mb-4">
                         Health Gateway provides secure and convenient access to
                         your health records in British Columbia
                     </p>
-                    <div class="my-5">
-                        <router-link v-if="!oidcIsAuthenticated" to="/login">
+                    <div v-if="!oidcIsAuthenticated" class="mb-3">
+                        <router-link to="/login">
                             <hg-button
                                 id="btnLogin"
                                 data-testid="btnLogin"
@@ -298,7 +298,7 @@ export default class LandingView extends Vue {
                                 <span>Log In with BC Services Card</span>
                             </hg-button>
                         </router-link>
-                        <div v-if="!oidcIsAuthenticated" class="my-3">
+                        <div class="mt-3">
                             <span class="mr-2">Need an account?</span>
                             <router-link
                                 id="btnStart"
@@ -313,7 +313,7 @@ export default class LandingView extends Vue {
                         </div>
                     </div>
                 </b-col>
-                <b-col class="d-none d-lg-block text-center col-6">
+                <b-col class="d-none d-lg-block text-center col-7">
                     <img
                         class="img-fluid"
                         src="@/assets/images/landing/landing-top.png"
@@ -322,47 +322,46 @@ export default class LandingView extends Vue {
                     />
                 </b-col>
             </b-row>
-            <b-row>
-                <b-col>
-                    <h1 class="mb-3">What you can access</h1>
-                    <b-row>
-                        <b-col
-                            v-for="tile in tiles"
-                            :key="tile.name"
-                            class="text-center px-5 py-3"
-                            cols="12"
-                            md="6"
-                            lg="4"
-                        >
-                            <div>
-                                <hg-icon
-                                    :icon="tile.icon"
-                                    size="extra-extra-large"
-                                    square
-                                    class="m-3"
-                                />
-                            </div>
-                            <h4>{{ tile.name }}</h4>
-                            <p>{{ tile.description }}</p>
-                        </b-col>
-                    </b-row>
-                </b-col>
-            </b-row>
-            <b-row class="my-5">
-                <b-col cols="12" lg="6">
-                    <h1 class="mb-3">What you can do</h1>
-                </b-col>
-                <b-col cols="12" lg="6">
-                    <p>
-                        Health Gateway brings together your information from
-                        BC’s health databases. View your prescriptions, health
-                        visits, immunizations and more, all in one place. New
-                        features and information are regularly added.
-                    </p>
-                </b-col>
-            </b-row>
-            <div class="mt-5 text-center">
-                <div>
+            <div class="my-4 my-md-5">
+                <h1 class="mb-2 mb-md-3 mb-lg-4">What you can access</h1>
+                <b-row>
+                    <b-col
+                        v-for="tile in tiles"
+                        :key="tile.name"
+                        class="text-center px-4 px-lg-5 pb-4"
+                        cols="12"
+                        md="6"
+                        lg="4"
+                    >
+                        <div>
+                            <hg-icon
+                                :icon="tile.icon"
+                                size="extra-extra-large"
+                                square
+                                class="m-3"
+                            />
+                        </div>
+                        <h4>{{ tile.name }}</h4>
+                        <p class="mb-0">{{ tile.description }}</p>
+                    </b-col>
+                </b-row>
+            </div>
+            <div class="my-4 my-md-5">
+                <b-row>
+                    <b-col cols="12" lg="6">
+                        <h1 class="mb-4">What you can do</h1>
+                    </b-col>
+                    <b-col cols="12" lg="6">
+                        <p class="mb-0">
+                            Health Gateway brings together your information from
+                            BC’s health databases. View your prescriptions,
+                            health visits, immunizations and more, all in one
+                            place. New features and information are regularly
+                            added.
+                        </p>
+                    </b-col>
+                </b-row>
+                <div class="mt-4 mt-lg-5 text-center">
                     <button
                         id="preview-device-button-laptop"
                         v-b-tooltip="'Show Laptop Preview'"
@@ -402,7 +401,7 @@ export default class LandingView extends Vue {
                         />
                     </button>
                 </div>
-                <div>
+                <div class="text-center">
                     <img
                         v-show="selectedPreviewDevice === 'laptop'"
                         src="@/assets/images/landing/preview-laptop.png"
@@ -425,54 +424,56 @@ export default class LandingView extends Vue {
                         alt="Preview of Health Gateway on a Smartphone"
                     />
                 </div>
+                <b-row>
+                    <b-col cols="12" lg="4" class="p-3">
+                        <b-card class="h-100 text-center">
+                            <div>
+                                <hg-icon
+                                    icon="clock-rotate-left"
+                                    size="extra-large"
+                                />
+                            </div>
+                            <h4 class="my-3">Stay up-to-date</h4>
+                            <p class="mb-0 h-100">
+                                View your health information in a list or
+                                calendar view, so you can easily find your most
+                                recent records. Filter or search to narrow your
+                                results.
+                            </p>
+                        </b-card>
+                    </b-col>
+                    <b-col cols="12" lg="4" class="p-3">
+                        <b-card class="h-100 text-center">
+                            <div>
+                                <hg-icon
+                                    icon="cloud-arrow-down"
+                                    size="extra-large"
+                                />
+                            </div>
+                            <h4 class="my-3">Manage your information</h4>
+                            <p class="mb-0">
+                                Download records so you can organize, print and
+                                use them as needed. Make your own notes on
+                                records to track important health events (e.g.,
+                                broke ankle).
+                            </p>
+                        </b-card>
+                    </b-col>
+                    <b-col cols="12" lg="4" class="p-3">
+                        <b-card class="h-100 text-center">
+                            <div>
+                                <hg-icon icon="user-group" size="extra-large" />
+                            </div>
+                            <h4 class="my-3">Support loved ones</h4>
+                            <p class="mb-0">
+                                Add your dependents under 12 years of age to
+                                your account so you can view their available
+                                health information.
+                            </p>
+                        </b-card>
+                    </b-col>
+                </b-row>
             </div>
-            <b-row class="mb-5">
-                <b-col cols="12" lg="4" class="py-3 px-3 px-lg-3">
-                    <b-card class="h-100 text-center">
-                        <div>
-                            <hg-icon
-                                icon="clock-rotate-left"
-                                size="extra-large"
-                            />
-                        </div>
-                        <h4 class="my-3">Stay up-to-date</h4>
-                        <p class="mb-0 h-100">
-                            View your health information in a list or calendar
-                            view, so you can easily find your most recent
-                            records. Filter or search to narrow your results.
-                        </p>
-                    </b-card>
-                </b-col>
-                <b-col cols="12" lg="4" class="py-3 px-3 px-lg-3">
-                    <b-card class="h-100 text-center">
-                        <div>
-                            <hg-icon
-                                icon="cloud-arrow-down"
-                                size="extra-large"
-                            />
-                        </div>
-                        <h4 class="my-3">Manage your information</h4>
-                        <p class="mb-0">
-                            Download records so you can organize, print and use
-                            them as needed. Make your own notes on records to
-                            track important health events (e.g., broke ankle).
-                        </p>
-                    </b-card>
-                </b-col>
-                <b-col cols="12" lg="4" class="py-3 px-3 px-lg-3">
-                    <b-card class="h-100 text-center">
-                        <div>
-                            <hg-icon icon="user-group" size="extra-large" />
-                        </div>
-                        <h4 class="my-3">Support loved ones</h4>
-                        <p class="mb-0">
-                            Add your dependents under 12 years of age to your
-                            account so you can view their available health
-                            information.
-                        </p>
-                    </b-card>
-                </b-col>
-            </b-row>
         </b-container>
     </div>
 </template>
