@@ -1,12 +1,5 @@
 const { AuthMethod } = require("../../../../support/constants");
 
-beforeEach(() => {
-    cy.deleteDownloadsFolder();
-    cy.viewport("iphone-6");
-    cy.restoreAuthCookies();
-    cy.enableModules("AllLaboratory");
-});
-
 describe("Laboratory Orders - Download Report", () => {
     beforeEach(() => {
         cy.viewport("iphone-6");
@@ -28,7 +21,9 @@ describe("Laboratory Orders - Download Report", () => {
     it("Validate Download", () => {
         cy.log("Verifying Laboratory Report PDF download");
 
-        cy.get("[data-testid=timelineCard]").first().click();
+        cy.get("[data-testid=entryCardDate]")
+            .contains("2021-Jul-04")
+            .click({ force: true });
 
         cy.get("[data-testid=laboratory-report-download-btn]")
             .should("be.visible")
@@ -40,7 +35,7 @@ describe("Laboratory Orders - Download Report", () => {
             .click({ force: true });
 
         cy.wait("@getLaboratoryReport");
-        cy.verifyDownload("Laboratory_Report_YYYY_07_Jul 4, 2021-01_43.pdf");
+        cy.verifyDownload("Laboratory_Report_YYYY_07_Jul 4, 2021-08_43.pdf");
 
         cy.get("[data-testid=backBtn]").click({ force: true });
     });
