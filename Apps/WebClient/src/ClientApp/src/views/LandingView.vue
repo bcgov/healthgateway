@@ -126,10 +126,6 @@ export default class LandingView extends Vue {
         return proofOfVaccinationTile;
     }
 
-    private getTileClass(index: number): string {
-        return index % 2 == 0 ? "order-md-1" : "order-md-2";
-    }
-
     private getTile(entryType: EntryType): Tile | undefined {
         const entry = entryTypeMap.get(entryType);
         if (entry) {
@@ -154,7 +150,7 @@ export default class LandingView extends Vue {
     private filterActiveTiles(): void {
         for (const moduleName in this.config.modules) {
             var tile = this.tiles.find(
-                (tileEntry) => tileEntry.name === moduleName
+                (tileEntry) => tileEntry.type === moduleName
             );
             if (tile) {
                 tile.active = this.config.modules[moduleName];
@@ -167,9 +163,9 @@ export default class LandingView extends Vue {
 
     private loadCoreTiles(): void {
         // Get core tiles from entry type constants
-        const coreTiles: Tile[] = this.entryTypes.map((type) => {
+        this.tiles = this.entryTypes.map((type) => {
             const details = entryTypeMap.get(type);
-            let tile: Tile = {
+            const tile: Tile = {
                 type: type,
                 icon: details?.icon ?? "",
                 name: details?.name ?? "",
@@ -177,10 +173,6 @@ export default class LandingView extends Vue {
                 active: false,
             };
             return tile;
-        });
-
-        this.tiles = coreTiles.filter((tile) => {
-            return tile !== undefined;
         });
 
         this.tiles.forEach((tile) =>
@@ -309,6 +301,7 @@ export default class LandingView extends Vue {
                         width="auto"
                         height="auto"
                         alt="Health Gateway Preview"
+                        data-testid="landing-top-image-id"
                     />
                 </b-col>
             </b-row>
