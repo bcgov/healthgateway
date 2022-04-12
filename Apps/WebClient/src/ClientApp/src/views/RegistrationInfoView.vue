@@ -57,8 +57,8 @@ export default class RegistrationInfoView extends Vue {
                 </h4>
             </b-col>
             <b-container class="register-with-bc-card">
-                <b-row>
-                    <b-col>
+                <b-row align-v="center" class="mb-4">
+                    <b-col cols="12" md="6">
                         <img
                             class="img-fluid d-none d-md-block logo"
                             :src="logoImg"
@@ -67,31 +67,16 @@ export default class RegistrationInfoView extends Vue {
                             alt="B.C. Government Logo"
                         />
                     </b-col>
-                </b-row>
-                <b-row>
-                    <b-col fluid>
-                        <img
-                            width="350"
-                            src="@/assets/images/landing/002_Devices.png"
-                            alt="Different Devices (Laptop, Tablet, Phone)"
-                    /></b-col>
-
-                    <b-col fluid>
-                        <b-row class="mt-5">
-                            <b-col>
-                                <router-link :to="registrationLink">
-                                    <hg-button
-                                        size="lg"
-                                        variant="primary"
-                                        data-testid="registerBtn"
-                                    >
-                                        <span>
-                                            Register for Health Gateway
-                                        </span>
-                                    </hg-button>
-                                </router-link>
-                            </b-col>
-                        </b-row>
+                    <b-col cols="12" md="6">
+                        <router-link :to="registrationLink">
+                            <hg-button
+                                size="lg"
+                                variant="primary"
+                                data-testid="registerBtn"
+                            >
+                                <span> Register for Health Gateway </span>
+                            </hg-button>
+                        </router-link>
                     </b-col>
                 </b-row>
                 <b-row>
@@ -295,7 +280,6 @@ export default class RegistrationInfoView extends Vue {
 }
 .logo {
     width: 300px;
-    margin-bottom: 1em;
 }
 .image-step {
     height: 100px;

@@ -3,10 +3,16 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faCheckCircle,
     faClipboardCheck,
+    faClockRotateLeft,
+    faCloudArrowDown,
+    faDesktop,
     faEdit,
     faMicroscope,
+    faMobileScreenButton,
     faPills,
     faSyringe,
+    faTabletScreenButton,
+    faUserGroup,
     faUserMd,
     faVial,
 } from "@fortawesome/free-solid-svg-icons";
@@ -14,7 +20,6 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
-import LandingTopImage from "@/assets/images/landing/landing-top.png";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -25,10 +30,16 @@ import { ILogger } from "@/services/interfaces";
 library.add(
     faCheckCircle,
     faClipboardCheck,
+    faClockRotateLeft,
+    faCloudArrowDown,
+    faDesktop,
     faEdit,
     faMicroscope,
+    faMobileScreenButton,
     faPills,
     faSyringe,
+    faTabletScreenButton,
+    faUserGroup,
     faUserMd,
     faVial
 );
@@ -66,9 +77,9 @@ export default class LandingView extends Vue {
         return this.config.modules["PublicLaboratoryResult"];
     }
 
-    private landingTop: string = LandingTopImage;
     private logger!: ILogger;
     private isOpenRegistration = false;
+    private selectedPreviewDevice = "laptop";
 
     private entryTypes: EntryType[] = [
         EntryType.Medication,
@@ -179,15 +190,23 @@ export default class LandingView extends Vue {
             this.logger.debug(`Core Tile:  ${JSON.stringify(tile)}`)
         );
     }
+
+    private selectPreviewDevice(deviceName: string): void {
+        this.selectedPreviewDevice = deviceName;
+        this.$root.$emit(
+            "bv::hide::tooltip",
+            `preview-device-button-${deviceName}`
+        );
+    }
 }
 </script>
 
 <template>
-    <div class="landing mx-2">
+    <div class="landing">
         <b-row
             v-if="isVaccinationBannerEnabled"
             no-gutters
-            class="vaccine-card-banner small-banner d-flex mx-n2 justify-content-center"
+            class="vaccine-card-banner small-banner d-flex justify-content-center"
             :class="{ 'd-lg-none': !isSidebarAvailable }"
         >
             <b-col cols="auto">
@@ -212,7 +231,7 @@ export default class LandingView extends Vue {
         </b-row>
         <b-row
             v-if="isVaccinationBannerEnabled"
-            class="vaccine-card-banner large-banner d-none justify-content-end mx-n2"
+            class="vaccine-card-banner large-banner d-none justify-content-end"
             :class="{ 'd-lg-flex': !isSidebarAvailable }"
         >
             <b-col cols="auto">
@@ -261,15 +280,15 @@ export default class LandingView extends Vue {
             </b-row>
         </b-container>
         <b-container v-else>
-            <b-row class="py-4" no-gutters>
-                <b-col class="col-12 col-lg-6">
-                    <h1 class="mb-3">Access your health information online</h1>
-                    <p>
+            <b-row class="my-4 my-md-5">
+                <b-col class="col-12 col-lg-5">
+                    <h1 class="mb-4">Access your health information online</h1>
+                    <p class="mb-4">
                         Health Gateway provides secure and convenient access to
                         your health records in British Columbia
                     </p>
-                    <div class="my-5">
-                        <router-link v-if="!oidcIsAuthenticated" to="/login">
+                    <div v-if="!oidcIsAuthenticated" class="mb-3">
+                        <router-link to="/login">
                             <hg-button
                                 id="btnLogin"
                                 data-testid="btnLogin"
@@ -279,7 +298,7 @@ export default class LandingView extends Vue {
                                 <span>Log In with BC Services Card</span>
                             </hg-button>
                         </router-link>
-                        <div v-if="!oidcIsAuthenticated" class="my-3">
+                        <div class="mt-3">
                             <span class="mr-2">Need an account?</span>
                             <router-link
                                 id="btnStart"
@@ -294,44 +313,167 @@ export default class LandingView extends Vue {
                         </div>
                     </div>
                 </b-col>
-                <b-col class="d-none d-lg-block text-center col-6">
+                <b-col class="d-none d-lg-block text-center col-7">
                     <img
                         class="img-fluid"
-                        :src="landingTop"
-                        width="auto"
-                        height="auto"
+                        src="@/assets/images/landing/landing-top.png"
                         alt="Health Gateway Preview"
                         data-testid="landing-top-image-id"
                     />
                 </b-col>
             </b-row>
-
-            <b-row>
-                <b-col>
-                    <h1>What you can access</h1>
-                    <b-row class="mx-2 my-2">
-                        <b-col
-                            v-for="tile in tiles"
-                            :key="tile.name"
-                            class="text-center px-5 py-3"
-                            cols="12"
-                            md="6"
-                            lg="4"
-                        >
+            <div class="my-4 my-md-5">
+                <h1 class="mb-2 mb-md-3 mb-lg-4">What you can access</h1>
+                <b-row>
+                    <b-col
+                        v-for="tile in tiles"
+                        :key="tile.name"
+                        class="text-center px-4 px-lg-5 pb-4"
+                        cols="12"
+                        md="6"
+                        lg="4"
+                    >
+                        <div>
+                            <hg-icon
+                                :icon="tile.icon"
+                                size="extra-extra-large"
+                                square
+                                class="m-3"
+                            />
+                        </div>
+                        <h4>{{ tile.name }}</h4>
+                        <p class="mb-0">{{ tile.description }}</p>
+                    </b-col>
+                </b-row>
+            </div>
+            <div class="my-4 my-md-5">
+                <b-row>
+                    <b-col cols="12" lg="6">
+                        <h1 class="mb-4">What you can do</h1>
+                    </b-col>
+                    <b-col cols="12" lg="6">
+                        <p class="mb-0">
+                            Health Gateway brings together your information from
+                            BC’s health databases. View your prescriptions,
+                            health visits, immunizations and more, all in one
+                            place. New features and information are regularly
+                            added.
+                        </p>
+                    </b-col>
+                </b-row>
+                <div class="mt-4 mt-lg-5 text-center">
+                    <button
+                        id="preview-device-button-laptop"
+                        v-b-tooltip="'Show Laptop Preview'"
+                        :disabled="selectedPreviewDevice === 'laptop'"
+                        data-testid="preview-device-button-laptop"
+                        class="preview-device-button bg-transparent border-0 shadow-none mx-3 p-2"
+                        @click="selectPreviewDevice('laptop')"
+                    >
+                        <hg-icon icon="desktop" size="extra-large" square />
+                    </button>
+                    <button
+                        id="preview-device-button-tablet"
+                        v-b-tooltip="'Show Tablet Preview'"
+                        :disabled="selectedPreviewDevice === 'tablet'"
+                        data-testid="preview-device-button-tablet"
+                        class="preview-device-button bg-transparent border-0 shadow-none mx-3 p-2"
+                        @click="selectPreviewDevice('tablet')"
+                    >
+                        <hg-icon
+                            icon="tablet-screen-button"
+                            size="extra-large"
+                            square
+                        />
+                    </button>
+                    <button
+                        id="preview-device-button-smartphone"
+                        v-b-tooltip="'Show Smartphone Preview'"
+                        :disabled="selectedPreviewDevice === 'smartphone'"
+                        data-testid="preview-device-button-smartphone"
+                        class="preview-device-button bg-transparent border-0 shadow-none mx-3 p-2"
+                        @click="selectPreviewDevice('smartphone')"
+                    >
+                        <hg-icon
+                            icon="mobile-screen-button"
+                            size="extra-large"
+                            square
+                        />
+                    </button>
+                </div>
+                <div class="text-center">
+                    <img
+                        v-show="selectedPreviewDevice === 'laptop'"
+                        src="@/assets/images/landing/preview-laptop.png"
+                        class="img-fluid"
+                        data-testid="preview-image-laptop"
+                        alt="Preview of Health Gateway on a Laptop"
+                    />
+                    <img
+                        v-show="selectedPreviewDevice === 'tablet'"
+                        src="@/assets/images/landing/preview-tablet.png"
+                        class="img-fluid"
+                        data-testid="preview-image-tablet"
+                        alt="Preview of Health Gateway on a Tablet"
+                    />
+                    <img
+                        v-show="selectedPreviewDevice === 'smartphone'"
+                        src="@/assets/images/landing/preview-smartphone.png"
+                        class="img-fluid"
+                        data-testid="preview-image-smartphone"
+                        alt="Preview of Health Gateway on a Smartphone"
+                    />
+                </div>
+                <b-row>
+                    <b-col cols="12" lg="4" class="p-3">
+                        <b-card class="h-100 text-center">
                             <div>
                                 <hg-icon
-                                    :icon="tile.icon"
-                                    size="extra-extra-large"
-                                    square
-                                    class="m-3"
+                                    icon="clock-rotate-left"
+                                    size="extra-large"
                                 />
                             </div>
-                            <h4>{{ tile.name }}</h4>
-                            <p>{{ tile.description }}</p>
-                        </b-col>
-                    </b-row>
-                </b-col>
-            </b-row>
+                            <h4 class="my-3">Stay up-to-date</h4>
+                            <p class="mb-0 h-100">
+                                View your health information in a list or
+                                calendar view, so you can easily find your most
+                                recent records. Filter or search to narrow your
+                                results.
+                            </p>
+                        </b-card>
+                    </b-col>
+                    <b-col cols="12" lg="4" class="p-3">
+                        <b-card class="h-100 text-center">
+                            <div>
+                                <hg-icon
+                                    icon="cloud-arrow-down"
+                                    size="extra-large"
+                                />
+                            </div>
+                            <h4 class="my-3">Manage your information</h4>
+                            <p class="mb-0">
+                                Download records so you can organize, print and
+                                use them as needed. Make your own notes on
+                                records to track important health events (e.g.,
+                                broke ankle).
+                            </p>
+                        </b-card>
+                    </b-col>
+                    <b-col cols="12" lg="4" class="p-3">
+                        <b-card class="h-100 text-center">
+                            <div>
+                                <hg-icon icon="user-group" size="extra-large" />
+                            </div>
+                            <h4 class="my-3">Support loved ones</h4>
+                            <p class="mb-0">
+                                Add your dependents under 12 years of age to
+                                your account so you can view their available
+                                health information.
+                            </p>
+                        </b-card>
+                    </b-col>
+                </b-row>
+            </div>
         </b-container>
     </div>
 </template>
@@ -355,10 +497,6 @@ export default class LandingView extends Vue {
         border-color: #1a5a95;
     }
 
-    .title-section {
-        color: $primary;
-    }
-
     .vaccine-card-banner {
         color: #212529;
         background-color: $hg-vaccine-card-header;
@@ -379,6 +517,14 @@ export default class LandingView extends Vue {
                 width: 250px;
                 margin-right: 15px;
             }
+        }
+    }
+
+    .preview-device-button {
+        color: $hg-brand-secondary;
+
+        &[disabled] {
+            color: $hg-brand-primary;
         }
     }
 }
