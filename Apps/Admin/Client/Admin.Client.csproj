@@ -55,4 +55,18 @@
         <None Remove="Store\" />
         <None Remove="Theme\" />
     </ItemGroup>
+    <ItemGroup>
+      <Content Update="wwwroot\appsettings.hgdev.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Update="wwwroot\appsettings.hgmock.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Update="wwwroot\appsettings.hgpoc.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Update="wwwroot\appsettings.hgtest.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
 </Project>

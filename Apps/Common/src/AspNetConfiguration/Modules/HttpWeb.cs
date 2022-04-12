@@ -231,7 +231,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// </summary>
         /// <param name="app">The application build provider.</param>
         /// <param name="logger">The logger to use.</param>
-        private static void UseResponseCaching(IApplicationBuilder app, ILogger logger)
+        public static void UseResponseCaching(IApplicationBuilder app, ILogger logger)
         {
             logger.LogDebug("Setting up Response Cache");
             app.UseResponseCaching();
