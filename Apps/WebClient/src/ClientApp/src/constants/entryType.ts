@@ -27,7 +27,7 @@ entryTypeMap.set(EntryType.Immunization, {
     commentType: CommentEntryType.Immunization,
     name: "Immunizations",
     description:
-        "View your immunizations from public health. Vaccines received in a pharmacy may be recorded as a prescription medication.",
+        "View immunizations you received from public health and community pharmacies",
     icon: "syringe",
     component: "ImmunizationComponent",
     eventName: "immunizations",
@@ -38,7 +38,7 @@ entryTypeMap.set(EntryType.Medication, {
     commentType: CommentEntryType.Medication,
     name: "Medications",
     description:
-        "View your prescription medication records. Vaccines received in a pharmacy may be recorded as a prescription medication.",
+        "See your medication history dating back to 1995",
     icon: "pills",
     component: "MedicationComponent",
     eventName: "medications",
@@ -49,7 +49,7 @@ entryTypeMap.set(EntryType.LaboratoryOrder, {
     commentType: CommentEntryType.LaboratoryOrder,
     name: "Lab Results",
     description:
-        "View your lab results. Most results are available within 24–48 hours.",
+        "Find out your lab results within about 48 hours of taking a test",
     icon: "microscope",
     component: "LaboratoryOrderComponent",
     eventName: "lab_results",
@@ -60,7 +60,7 @@ entryTypeMap.set(EntryType.Covid19LaboratoryOrder, {
     commentType: CommentEntryType.Covid19LaboratoryOrder,
     name: "COVID‑19 Tests",
     description:
-        "View and download your COVID‑19 test results as soon as they are available.",
+        "View and download your COVID-19 test results as soon as they are available",
     icon: "vial",
     component: "Covid19LaboratoryOrderComponent",
     eventName: "covid_test",
@@ -71,7 +71,7 @@ entryTypeMap.set(EntryType.Encounter, {
     commentType: CommentEntryType.Encounter,
     name: "Health Visits",
     description:
-        "View the last seven years of your health visits, consultations and procedures billed to the BC Medical Services Plan.",
+        "See the last seven years of your health visits billed to the BC Medical Services Plan",
     icon: "user-md",
     component: "EncounterComponent",
     eventName: "health_visits",
@@ -81,7 +81,7 @@ entryTypeMap.set(EntryType.Note, {
     type: EntryType.Note,
     commentType: CommentEntryType.None,
     name: "My Notes",
-    description: "View and edit notes that you added to your medical records.",
+    description: "View and edit notes that you added to your medical records",
     icon: "edit",
     component: "NoteComponent",
     eventName: "my_notes",
@@ -92,7 +92,7 @@ entryTypeMap.set(EntryType.MedicationRequest, {
     commentType: CommentEntryType.MedicationRequest,
     name: "Special Authority",
     description:
-        "View the status of your Special Authority drug coverage requests made since March 2021.",
+        "Check the status of your Special Authority Requests since March 2021",
     icon: "clipboard-list",
     component: "MedicationRequestComponent",
     eventName: "special_authority",
