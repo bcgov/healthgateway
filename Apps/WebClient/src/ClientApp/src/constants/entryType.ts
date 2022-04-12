@@ -37,8 +37,7 @@ entryTypeMap.set(EntryType.Medication, {
     type: EntryType.Medication,
     commentType: CommentEntryType.Medication,
     name: "Medications",
-    description:
-        "See your medication history dating back to 1995",
+    description: "See your medication history dating back to 1995",
     icon: "pills",
     component: "MedicationComponent",
     eventName: "medications",
