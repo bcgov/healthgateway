@@ -1,6 +1,7 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
+    faCheckCircle,
     faClipboardCheck,
     faEdit,
     faMicroscope,
@@ -13,15 +14,16 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
-import Image00 from "@/assets/images/landing/000_Logo-Overlay.png";
-import Image02 from "@/assets/images/landing/002_Devices.png";
-import Image03 from "@/assets/images/landing/003_reduced-3.jpeg";
-import Image04 from "@/assets/images/landing/004_reduced-living-room.jpeg";
-import Image05 from "@/assets/images/landing/005_reduced-family.jpeg";
+import LandingTopImage from "@/assets/images/landing/landing-top.png";
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
+import container from "@/plugins/container";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 library.add(
+    faCheckCircle,
     faClipboardCheck,
     faEdit,
     faMicroscope,
@@ -31,18 +33,12 @@ library.add(
     faVial
 );
 
-interface Icon {
-    name: string;
-    label: string;
-    definition: string;
-    active: boolean;
-}
-
 interface Tile {
-    title: string;
+    type: string;
+    name: string;
     description: string;
-    bullets?: string[];
-    imageSrc: string;
+    icon: string;
+    active: boolean;
 }
 
 @Component
@@ -70,81 +66,20 @@ export default class LandingView extends Vue {
         return this.config.modules["PublicLaboratoryResult"];
     }
 
-    private logo: string = Image00;
-    private devices: string = Image02;
+    private landingTop: string = LandingTopImage;
+    private logger!: ILogger;
     private isOpenRegistration = false;
 
-    private icons: Icon[] = [
-        {
-            name: "Medication",
-            definition: "pills",
-            label: "Prescription Medications",
-            active: false,
-        },
-        {
-            name: "Note",
-            definition: "edit",
-            label: "Add Notes to Records",
-            active: false,
-        },
-        {
-            name: "Laboratory",
-            definition: "vial",
-            label: "COVID-19 Test Results",
-            active: true,
-        },
-        {
-            name: "Immunization",
-            definition: "syringe",
-            label: "Immunization Records",
-            active: false,
-        },
-        {
-            name: "Encounter",
-            definition: "user-md",
-            label: "Health Visits",
-            active: false,
-        },
-        {
-            name: "VaccinationStatus",
-            definition: "clipboard-check",
-            label: "BC Vaccine Card",
-            active: false,
-        },
-        {
-            name: "AllLaboratory",
-            definition: "microscope",
-            label: "Lab Results",
-            active: false,
-        },
+    private entryTypes: EntryType[] = [
+        EntryType.Medication,
+        EntryType.LaboratoryOrder,
+        EntryType.Covid19LaboratoryOrder,
+        EntryType.Encounter,
+        EntryType.Immunization,
+        EntryType.MedicationRequest,
     ];
 
-    private tiles: Tile[] = [
-        {
-            title: "One card, many services",
-            description:
-                "Securely access your data using your BC Services Card on a mobile device.",
-
-            imageSrc: Image03,
-        },
-        {
-            title: "Take control of your health",
-            description: "Look at historical information.",
-            bullets: [
-                "Dispensed Medications",
-                "COVID-19 Test Results",
-                "COVID-19 Immunization Records",
-            ],
-
-            imageSrc: Image04,
-        },
-        {
-            title: "Guardian access",
-            description:
-                "Access COVID-19 test results for children eleven and under.",
-            imageSrc: Image05,
-        },
-    ];
+    private tiles: Tile[] = [];
 
     private get offlineMessage(): string {
         if (this.isOffline) {
@@ -154,22 +89,95 @@ export default class LandingView extends Vue {
         }
     }
 
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
+
     private mounted() {
         this.isOpenRegistration =
             this.config.registrationStatus == RegistrationStatus.Open;
 
-        for (const moduleName in this.config.modules) {
-            var icon = this.icons.find(
-                (iconEntry) => iconEntry.name === moduleName
-            );
-            if (icon) {
-                icon.active = this.config.modules[moduleName];
-            }
-        }
+        // Get core tiles from entry type constants
+        this.loadCoreTiles();
+
+        // Add Proof of Vaccination tile to tiles
+        this.addProofOfVaccinationTile();
+
+        // Filter out only active tiles to display
+        this.filterActiveTiles();
     }
 
-    private getTileClass(index: number): string {
-        return index % 2 == 0 ? "order-md-1" : "order-md-2";
+    private getProofOfVaccinationTile(): Tile {
+        const proofOfVaccinationTile: Tile = {
+            type: "ProofOfVaccination",
+            icon: "check-circle",
+            name: "Proof of Vaccination",
+            description:
+                "View and download your Federal or Provincial proof of vaccination",
+            active: true,
+        };
+
+        this.logger.debug(
+            `Proof of Vaccination Tile:  ${JSON.stringify(
+                proofOfVaccinationTile
+            )}`
+        );
+
+        return proofOfVaccinationTile;
+    }
+
+    private getTile(entryType: EntryType): Tile | undefined {
+        const entry = entryTypeMap.get(entryType);
+        if (entry) {
+            return {
+                type: entryType.toString(),
+                icon: entry.icon,
+                name: entry.name,
+                description: entry.description,
+                active: false,
+            };
+        }
+        return undefined;
+    }
+
+    private addProofOfVaccinationTile(): void {
+        this.tiles.splice(2, 0, this.getProofOfVaccinationTile());
+        this.tiles.forEach((tile) =>
+            this.logger.debug(`Tile:  ${JSON.stringify(tile)}`)
+        );
+    }
+
+    private filterActiveTiles(): void {
+        for (const moduleName in this.config.modules) {
+            var tile = this.tiles.find(
+                (tileEntry) => tileEntry.type === moduleName
+            );
+            if (tile) {
+                tile.active = this.config.modules[moduleName];
+            }
+        }
+        this.tiles.forEach((tile) =>
+            this.logger.debug(`Active Tile:  ${JSON.stringify(tile)}`)
+        );
+    }
+
+    private loadCoreTiles(): void {
+        // Get core tiles from entry type constants
+        this.tiles = this.entryTypes.map((type) => {
+            const details = entryTypeMap.get(type);
+            const tile: Tile = {
+                type: type,
+                icon: details?.icon ?? "",
+                name: details?.name ?? "",
+                description: details?.description ?? "",
+                active: false,
+            };
+            return tile;
+        });
+
+        this.tiles.forEach((tile) =>
+            this.logger.debug(`Core Tile:  ${JSON.stringify(tile)}`)
+        );
     }
 }
 </script>
@@ -230,145 +238,101 @@ export default class LandingView extends Vue {
                 </div>
             </b-col>
         </b-row>
-        <h3 class="text-center font-weight-normal my-4 mx-1">
-            BC residents can access all their health records in a single place
-        </h3>
-        <b-row
-            v-if="!isOffline"
-            class="devices-section justify-content-center justify-content-lg-around align-items-center mx-0 mx-md-5"
-        >
-            <b-col class="d-none d-lg-block text-center col-6 col-xl-4">
-                <img
-                    class="img-fluid devices-image"
-                    :src="devices"
-                    width="auto"
-                    height="auto"
-                    alt="Devices"
-                />
-            </b-col>
-            <b-col class="col-12 col-sm-7 col-lg-5 devices-text ml-md-4">
-                <b-row
-                    v-for="icon in icons"
-                    :key="icon.label"
-                    class="my-4 align-items-center"
-                    :class="icon.active ? 'status-active' : 'status-inactive'"
-                    no-gutters
-                >
-                    <b-col cols="auto">
-                        <hg-icon
-                            :icon="icon.definition"
-                            size="large"
-                            square
-                            class="mr-2"
-                        />
-                    </b-col>
-                    <b-col>
-                        <span>{{ icon.label }}</span>
-                        <span v-if="!icon.active"> (Coming soon)</span>
-                    </b-col>
-                </b-row>
-                <div class="my-5">
-                    <router-link v-if="!oidcIsAuthenticated" to="/login">
-                        <hg-button
-                            id="btnLogin"
-                            data-testid="btnLogin"
-                            variant="primary"
-                            class="btn-auth-landing"
-                        >
-                            <span>Log In with BC Services Card</span>
-                        </hg-button>
-                    </router-link>
-                    <div v-if="!oidcIsAuthenticated" class="my-3">
-                        <span class="mr-2">Need an account?</span>
-                        <router-link
-                            id="btnStart"
-                            data-testid="btnStart"
-                            :to="
-                                isOpenRegistration
-                                    ? 'registration'
-                                    : 'registrationInfo'
-                            "
-                            >Register</router-link
-                        >
-                    </div>
-                </div>
-            </b-col>
-        </b-row>
-        <b-row v-else class="align-items-center pt-2 pb-5 align-middle">
-            <b-col class="cols-12 text-center">
-                <hr class="py-4" />
-                <b-row class="py-2">
-                    <b-col class="title">
-                        The site is offline for maintenance
-                    </b-col>
-                </b-row>
-                <b-row class="py-3">
-                    <b-col data-testid="offlineMessage" class="sub-title">
-                        {{ offlineMessage }}
-                    </b-col>
-                </b-row>
-                <b-row class="pt-5">
-                    <b-col>
-                        <hr class="pt-5" />
-                    </b-col>
-                </b-row>
-            </b-col>
-        </b-row>
-        <b-row
-            v-if="isPublicLaboratoryResultEnabled"
-            class="covid19-section mb-3 mb-md-0 py-4 mx-n2"
-            data-testid="covidRecordLandingPage"
-        >
-            <b-col class="col-12 col-md-5 offset-md-1">
-                <h2>Get your COVID‑19 test result</h2>
-                <hg-button
-                    variant="secondary"
-                    class="my-2 text-center"
-                    data-testid="covid-test-button"
-                    to="/covidtest"
-                >
-                    Get Result
-                </hg-button>
-            </b-col>
-        </b-row>
-        <b-row class="tile-section my-0 my-md-1">
-            <b-col>
-                <b-row
-                    v-for="(tile, index) in tiles"
-                    :key="tile.title"
-                    class="d-flex justify-content-center align-content-around tile-row my-md-5 my-0"
-                >
-                    <b-col
-                        class="col-12 col-md-5"
-                        :class="getTileClass(index + 1)"
-                    >
-                        <div class="background-tint"></div>
-                        <img
-                            class="img-fluid d-md-block"
-                            :src="tile.imageSrc"
-                            width="auto"
-                            height="auto"
-                            alt="B.C. Government Logo"
-                        />
-                    </b-col>
-                    <b-col class="col-12 col-md-5" :class="getTileClass(index)">
-                        <div class="text-wrapper mx-4 position-absolute">
-                            <h2 class="font-weight-normal">{{ tile.title }}</h2>
-                            <div class="small-text">{{ tile.description }}</div>
-                            <ul>
-                                <li
-                                    v-for="bullet in tile.bullets"
-                                    :key="bullet"
-                                    class="small-text"
-                                >
-                                    {{ bullet }}
-                                </li>
-                            </ul>
+        <b-container v-if="isOffline">
+            <b-row class="align-items-center pt-2 pb-5 align-middle">
+                <b-col class="cols-12 text-center">
+                    <hr class="py-4" />
+                    <b-row class="py-2">
+                        <b-col class="title">
+                            The site is offline for maintenance
+                        </b-col>
+                    </b-row>
+                    <b-row class="py-3">
+                        <b-col data-testid="offlineMessage" class="sub-title">
+                            {{ offlineMessage }}
+                        </b-col>
+                    </b-row>
+                    <b-row class="pt-5">
+                        <b-col>
+                            <hr class="pt-5" />
+                        </b-col>
+                    </b-row>
+                </b-col>
+            </b-row>
+        </b-container>
+        <b-container v-else>
+            <b-row class="py-4" no-gutters>
+                <b-col class="col-12 col-lg-6">
+                    <h1 class="mb-3">Access your health information online</h1>
+                    <p>
+                        Health Gateway provides secure and convenient access to
+                        your health records in British Columbia
+                    </p>
+                    <div class="my-5">
+                        <router-link v-if="!oidcIsAuthenticated" to="/login">
+                            <hg-button
+                                id="btnLogin"
+                                data-testid="btnLogin"
+                                variant="primary"
+                                class="btn-auth-landing"
+                            >
+                                <span>Log In with BC Services Card</span>
+                            </hg-button>
+                        </router-link>
+                        <div v-if="!oidcIsAuthenticated" class="my-3">
+                            <span class="mr-2">Need an account?</span>
+                            <router-link
+                                id="btnStart"
+                                data-testid="btnStart"
+                                :to="
+                                    isOpenRegistration
+                                        ? 'registration'
+                                        : 'registrationInfo'
+                                "
+                                >Register</router-link
+                            >
                         </div>
-                    </b-col>
-                </b-row>
-            </b-col>
-        </b-row>
+                    </div>
+                </b-col>
+                <b-col class="d-none d-lg-block text-center col-6">
+                    <img
+                        class="img-fluid"
+                        :src="landingTop"
+                        width="auto"
+                        height="auto"
+                        alt="Health Gateway Preview"
+                        data-testid="landing-top-image-id"
+                    />
+                </b-col>
+            </b-row>
+
+            <b-row>
+                <b-col>
+                    <h1>What you can access</h1>
+                    <b-row class="mx-2 my-2">
+                        <b-col
+                            v-for="tile in tiles"
+                            :key="tile.name"
+                            class="text-center px-5 py-3"
+                            cols="12"
+                            md="6"
+                            lg="4"
+                        >
+                            <div>
+                                <hg-icon
+                                    :icon="tile.icon"
+                                    size="extra-extra-large"
+                                    square
+                                    class="m-3"
+                                />
+                            </div>
+                            <h4>{{ tile.name }}</h4>
+                            <p>{{ tile.description }}</p>
+                        </b-col>
+                    </b-row>
+                </b-col>
+            </b-row>
+        </b-container>
     </div>
 </template>
 
@@ -395,27 +359,6 @@ export default class LandingView extends Vue {
         color: $primary;
     }
 
-    .devices-section {
-        .devices-image {
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 20px;
-        }
-
-        .devices-text {
-            color: $primary;
-            max-width: 500px !important;
-
-            .status-active {
-                color: $primary;
-            }
-
-            .status-inactive {
-                color: darkgray;
-            }
-        }
-    }
-
     .vaccine-card-banner {
         color: #212529;
         background-color: $hg-vaccine-card-header;
@@ -437,86 +380,6 @@ export default class LandingView extends Vue {
                 margin-right: 15px;
             }
         }
-    }
-
-    .tile-section {
-        margin-left: 0px;
-        margin-right: 0px;
-        padding-left: 0px;
-        padding-right: 0px;
-
-        .col {
-            padding-left: 0px;
-            padding-right: 0px;
-        }
-
-        .text-wrapper {
-            color: $primary;
-            z-index: 1;
-
-            .title {
-                font-size: 2.2rem;
-            }
-        }
-        /* Small Devices*/
-        @media (max-width: 767px) {
-            .text-wrapper {
-                color: white;
-                bottom: 0;
-
-                .title {
-                    font-size: 1.8rem;
-                    color: white;
-                }
-
-                .small-text {
-                    font-size: 1rem;
-                }
-            }
-
-            .background-tint {
-                background: -moz-linear-gradient(
-                    top,
-                    rgba(255, 255, 255, 0) 0%,
-                    rgba(0, 0, 0, 0.8) 100%
-                ); /* FF3.6+ */
-                background: -webkit-gradient(
-                    linear,
-                    left top,
-                    left bottom,
-                    color-stop(0%, rgba(255, 255, 255, 0)),
-                    color-stop(100%, rgba(0, 0, 0, 0.65))
-                ); /* Chrome,Safari4+ */
-                background: -webkit-linear-gradient(
-                    top,
-                    rgba(255, 255, 255, 0) 0%,
-                    rgba(0, 0, 0, 0.8) 100%
-                ); /* Chrome10+,Safari5.1+ */
-                background: -o-linear-gradient(
-                    top,
-                    rgba(255, 255, 255, 0) 0%,
-                    rgba(0, 0, 0, 0.8) 100%
-                ); /* Opera 11.10+ */
-                background: -ms-linear-gradient(
-                    top,
-                    rgba(255, 255, 255, 0) 0%,
-                    rgba(0, 0, 0, 0.8) 100%
-                ); /* IE10+ */
-                background: linear-gradient(
-                    to bottom,
-                    rgba(255, 255, 255, 0) 0%,
-                    rgba(0, 0, 0, 0.8) 100%
-                ); /* W3C */
-
-                background-blend-mode: multiply;
-                width: 100%;
-                height: 100%;
-                position: absolute;
-            }
-        }
-    }
-    .covid19-section {
-        background-color: #e8eef5;
     }
 }
 </style>
