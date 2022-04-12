@@ -81,7 +81,7 @@ entryTypeMap.set(EntryType.Note, {
     type: EntryType.Note,
     commentType: CommentEntryType.None,
     name: "My Notes",
-    description: "View and edit notes that you added to your medical records",
+    description: "Create and edit your own notes on your health records",
     icon: "edit",
     component: "NoteComponent",
     eventName: "my_notes",
