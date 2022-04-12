@@ -59,7 +59,7 @@ entryTypeMap.set(EntryType.Covid19LaboratoryOrder, {
     commentType: CommentEntryType.Covid19LaboratoryOrder,
     name: "COVID‑19 Tests",
     description:
-        "View and download your COVID-19 test results as soon as they are available",
+        "View and download your COVID&#8209;19 test results as soon as they are available",
     icon: "vial",
     component: "Covid19LaboratoryOrderComponent",
     eventName: "covid_test",
