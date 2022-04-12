@@ -46,7 +46,7 @@ describe("Public COVID-19 Test Form", () => {
 
     it("Cancel Button Should Go to Landing Page", () => {
         cy.get("[data-testid=btnCancel]").should("be.visible").click();
-        cy.get("[data-testid=covid-test-button]").should("exist");
+        cy.get("[data-testid=landing-top-image-id]").should("be.visible");
     });
 
     it("Log In Button Should Go to Login Page", () => {
