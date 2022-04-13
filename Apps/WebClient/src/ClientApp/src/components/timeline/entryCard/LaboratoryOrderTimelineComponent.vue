@@ -171,7 +171,8 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                     </strong>
                     <span
                         ><router-link to="/faq"
-                            >See FAQs for guidance and trusted resources</router-link
+                            >See FAQs for guidance and trusted
+                            resources</router-link
                         >.</span
                     >
                 </div>
