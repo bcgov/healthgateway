@@ -1,14 +1,4 @@
 <script lang="ts">
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-    faClipboardList,
-    faEdit,
-    faMicroscope,
-    faPills,
-    faSyringe,
-    faUserMd,
-    faVial,
-} from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action } from "vuex-class";
@@ -26,17 +16,7 @@ import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 
 import { CalendarEntry, CalendarWeek } from "./models";
 
-library.add(
-    faClipboardList,
-    faEdit,
-    faMicroscope,
-    faPills,
-    faSyringe,
-    faUserMd,
-    faVial
-);
-
-@Component({})
+@Component
 export default class CalendarBodyComponent extends Vue {
     @Action("setLinearView", { namespace: "timeline" }) setLinearView!: (
         isLinearView: boolean
@@ -156,7 +136,7 @@ export default class CalendarBodyComponent extends Vue {
     }
 
     private getIcon(event: CalendarEntry) {
-        return entryTypeMap.get(event.type)?.icon ?? "";
+        return entryTypeMap.get(event.type)?.icon ?? "question";
     }
 
     private getBackground(event: CalendarEntry) {

@@ -7,13 +7,14 @@ import {
     faCloudArrowDown,
     faDesktop,
     faEdit,
+    faFileMedical,
     faMicroscope,
     faMobileScreenButton,
     faPills,
+    faStethoscope,
     faSyringe,
     faTabletScreenButton,
     faUserGroup,
-    faUserMd,
     faVial,
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
@@ -34,13 +35,14 @@ library.add(
     faCloudArrowDown,
     faDesktop,
     faEdit,
+    faFileMedical,
     faMicroscope,
     faMobileScreenButton,
     faPills,
+    faStethoscope,
     faSyringe,
     faTabletScreenButton,
     faUserGroup,
-    faUserMd,
     faVial
 );
 

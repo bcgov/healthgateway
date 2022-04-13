@@ -1,12 +1,13 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faDownload, faMicroscope } from "@fortawesome/free-solid-svg-icons";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryReport } from "@/models/laboratory";
 import LaboratoryOrderTimelineEntry from "@/models/laboratoryOrderTimelineEntry";
@@ -18,7 +19,7 @@ import SnowPlow from "@/utility/snowPlow";
 
 import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
-library.add(faDownload, faMicroscope);
+library.add(faDownload);
 
 @Component({
     components: {
@@ -46,6 +47,10 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
         this.laboratoryService = container.get<ILaboratoryService>(
             SERVICE_IDENTIFIER.LaboratoryService
         );
+    }
+
+    private get entryIcon(): string | undefined {
+        return entryTypeMap.get(EntryType.LaboratoryOrder)?.icon;
     }
 
     private formatDate(date: DateWrapper): string {
@@ -101,7 +106,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
 <template>
     <EntryCard
         :card-id="index + '-' + datekey"
-        entry-icon="microscope"
+        :entry-icon="entryIcon"
         :title="entry.commonName"
         :entry="entry"
         :is-mobile-details="isMobileDetails"

@@ -1,12 +1,14 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faIdCard, faSyringe } from "@fortawesome/free-solid-svg-icons";
+import { faIdCard } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 
-library.add(faIdCard, faSyringe);
+library.add(faIdCard);
+
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 
 import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
@@ -29,13 +31,17 @@ export default class ImmunizationTimelineComponent extends Vue {
                 .includes("covid")
         );
     }
+
+    private get entryIcon(): string | undefined {
+        return entryTypeMap.get(EntryType.Immunization)?.icon;
+    }
 }
 </script>
 
 <template>
     <EntryCard
         :card-id="index + '-' + datekey"
-        entry-icon="syringe"
+        :entry-icon="entryIcon"
         :title="entry.immunization.name"
         :entry="entry"
         :is-mobile-details="isMobileDetails"

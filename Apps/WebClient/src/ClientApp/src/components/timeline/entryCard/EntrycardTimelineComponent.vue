@@ -25,7 +25,7 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop() cardId!: string;
     @Prop() title!: string;
     @Prop() subtitle!: string;
-    @Prop() entryIcon!: string;
+    @Prop() entryIcon: string | undefined;
     @Prop() iconClass!: string;
     @Prop({ default: true }) allowComment!: boolean;
     @Prop({ default: true }) canShowDetails!: boolean;
@@ -38,6 +38,10 @@ export default class EntrycardTimelineComponent extends Vue {
 
     private eventBus = EventBus;
     private detailsVisible = false;
+
+    private get icon(): string {
+        return this.entryIcon ?? "question";
+    }
 
     private get isInteractive() {
         return (
@@ -116,7 +120,7 @@ export default class EntrycardTimelineComponent extends Vue {
             >
                 <b-col class="leftPane">
                     <div class="icon" :class="iconClass">
-                        <hg-icon :icon="entryIcon" size="large" fixed-width />
+                        <hg-icon :icon="icon" size="large" fixed-width />
                     </div>
                 </b-col>
                 <b-col class="entryTitleWrapper">
