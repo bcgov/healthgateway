@@ -1,6 +1,5 @@
 describe("Landing Page", () => {
     beforeEach(() => {
-        cy.enableModules(["VaccinationStatus"]);
         cy.visit("/");
     });
 
@@ -21,6 +20,79 @@ describe("Landing Page", () => {
             .parent()
             .should("have.attr", "href", "/login")
             .contains("Log In");
+    });
+
+    it("Device Previews", () => {
+        cy.log("Laptop preview should be displayed by default");
+        cy.get("[data-testid=preview-device-button-laptop]").should(
+            "be.disabled"
+        );
+        cy.get("[data-testid=preview-device-button-tablet]").should(
+            "not.be.disabled"
+        );
+        cy.get("[data-testid=preview-device-button-smartphone]").should(
+            "not.be.disabled"
+        );
+        cy.get("[data-testid=preview-image-laptop]").should("be.visible");
+        cy.get("[data-testid=preview-image-tablet]").should("not.be.visible");
+        cy.get("[data-testid=preview-image-smartphone]").should(
+            "not.be.visible"
+        );
+
+        cy.log(
+            "Tablet preview button should switch the displayed image and enabled buttons"
+        );
+        cy.get("[data-testid=preview-device-button-tablet]").click();
+        cy.get("[data-testid=preview-device-button-laptop]").should(
+            "not.be.disabled"
+        );
+        cy.get("[data-testid=preview-device-button-tablet]").should(
+            "be.disabled"
+        );
+        cy.get("[data-testid=preview-device-button-smartphone]").should(
+            "not.be.disabled"
+        );
+        cy.get("[data-testid=preview-image-laptop]").should("not.be.visible");
+        cy.get("[data-testid=preview-image-tablet]").should("be.visible");
+        cy.get("[data-testid=preview-image-smartphone]").should(
+            "not.be.visible"
+        );
+
+        cy.log(
+            "Smartphone preview button should switch the displayed image and enabled buttons"
+        );
+        cy.get("[data-testid=preview-device-button-smartphone]").click();
+        cy.get("[data-testid=preview-device-button-laptop]").should(
+            "not.be.disabled"
+        );
+        cy.get("[data-testid=preview-device-button-tablet]").should(
+            "not.be.disabled"
+        );
+        cy.get("[data-testid=preview-device-button-smartphone]").should(
+            "be.disabled"
+        );
+        cy.get("[data-testid=preview-image-laptop]").should("not.be.visible");
+        cy.get("[data-testid=preview-image-tablet]").should("not.be.visible");
+        cy.get("[data-testid=preview-image-smartphone]").should("be.visible");
+
+        cy.log(
+            "Laptop preview button should switch the displayed image and enabled buttons"
+        );
+        cy.get("[data-testid=preview-device-button-laptop]").click();
+        cy.get("[data-testid=preview-device-button-laptop]").should(
+            "be.disabled"
+        );
+        cy.get("[data-testid=preview-device-button-tablet]").should(
+            "not.be.disabled"
+        );
+        cy.get("[data-testid=preview-device-button-smartphone]").should(
+            "not.be.disabled"
+        );
+        cy.get("[data-testid=preview-image-laptop]").should("be.visible");
+        cy.get("[data-testid=preview-image-tablet]").should("not.be.visible");
+        cy.get("[data-testid=preview-image-smartphone]").should(
+            "not.be.visible"
+        );
     });
 
     it("Offline", () => {
