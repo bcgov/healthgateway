@@ -8,6 +8,7 @@ import {
     faDesktop,
     faEdit,
     faFileMedical,
+    faHome,
     faMicroscope,
     faMobileScreenButton,
     faPills,
@@ -36,6 +37,7 @@ library.add(
     faDesktop,
     faEdit,
     faFileMedical,
+    faHome,
     faMicroscope,
     faMobileScreenButton,
     faPills,
@@ -125,8 +127,7 @@ export default class LandingView extends Vue {
             type: "ProofOfVaccination",
             icon: "check-circle",
             name: "Proof of Vaccination",
-            description:
-                "View and download your Federal or Provincial proof of vaccination",
+            description: "View and download your proof of vaccination",
             active: true,
         };
 
@@ -282,7 +283,7 @@ export default class LandingView extends Vue {
             </b-row>
         </b-container>
         <b-container v-else>
-            <b-row class="my-4 my-md-5">
+            <b-row class="mt-4 mt-md-5">
                 <b-col class="col-12 col-lg-5">
                     <h1 class="mb-4">Access your health information online</h1>
                     <p class="mb-4">
@@ -324,18 +325,18 @@ export default class LandingView extends Vue {
                     />
                 </b-col>
             </b-row>
-            <div class="my-4 my-md-5">
+            <div class="mt-4 mt-md-5">
                 <h1 class="mb-2 mb-md-3 mb-lg-4">What you can access</h1>
                 <b-row>
                     <b-col
                         v-for="tile in tiles"
                         :key="tile.name"
-                        class="text-center px-4 px-lg-5 pb-4"
+                        class="text-center px-4 px-md-5 pb-4 pb-md-5"
                         cols="12"
                         md="6"
                         lg="4"
                     >
-                        <div>
+                        <div class="icon-header">
                             <hg-icon
                                 :icon="tile.icon"
                                 size="extra-extra-large"
@@ -348,7 +349,7 @@ export default class LandingView extends Vue {
                     </b-col>
                 </b-row>
             </div>
-            <div class="my-4 my-md-5">
+            <div class="my-4 mb-md-5">
                 <b-row>
                     <b-col cols="12" lg="6">
                         <h1 class="mb-4">What you can do</h1>
@@ -356,10 +357,9 @@ export default class LandingView extends Vue {
                     <b-col cols="12" lg="6">
                         <p class="mb-0">
                             Health Gateway brings together your information from
-                            BC’s health databases. View your prescriptions,
-                            health visits, immunizations and more, all in one
-                            place. New features and information are regularly
-                            added.
+                            BC’s health databases. View your medications, health
+                            visits, immunizations and more, all in one place.
+                            New features and information are regularly added.
                         </p>
                     </b-col>
                 </b-row>
@@ -429,7 +429,7 @@ export default class LandingView extends Vue {
                 <b-row>
                     <b-col cols="12" lg="4" class="p-3">
                         <b-card class="h-100 text-center">
-                            <div>
+                            <div class="icon-header">
                                 <hg-icon
                                     icon="clock-rotate-left"
                                     size="extra-large"
@@ -446,7 +446,7 @@ export default class LandingView extends Vue {
                     </b-col>
                     <b-col cols="12" lg="4" class="p-3">
                         <b-card class="h-100 text-center">
-                            <div>
+                            <div class="icon-header">
                                 <hg-icon
                                     icon="cloud-arrow-down"
                                     size="extra-large"
@@ -456,21 +456,19 @@ export default class LandingView extends Vue {
                             <p class="mb-0">
                                 Download records so you can organize, print and
                                 use them as needed. Make your own notes on
-                                records to track important health events (e.g.,
-                                broke ankle).
+                                records to track important health events.
                             </p>
                         </b-card>
                     </b-col>
                     <b-col cols="12" lg="4" class="p-3">
                         <b-card class="h-100 text-center">
-                            <div>
-                                <hg-icon icon="user-group" size="extra-large" />
+                            <div class="icon-header">
+                                <hg-icon icon="home" size="extra-large" />
                             </div>
-                            <h4 class="my-3">Support loved ones</h4>
+                            <h4 class="my-3">Quick and easy</h4>
                             <p class="mb-0">
-                                Add your dependents under 12 years of age to
-                                your account so you can view their available
-                                health information.
+                                Add a shortcut to your preferred health records
+                                on the home screen.
                             </p>
                         </b-card>
                     </b-col>
@@ -484,7 +482,15 @@ export default class LandingView extends Vue {
 @import "@/assets/scss/_variables.scss";
 
 .landing {
-    color: $primary;
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    .icon-header {
+        color: $primary;
+    }
 
     .title {
         font-size: 2.2rem;
