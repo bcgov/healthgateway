@@ -57,7 +57,7 @@ export let UserProfileUrl = baseUrl + "/v1/api/UserProfile";
 export let ClientId = __ENV.HG_CLIENT ? __ENV.HG_CLIENT : "k6"; // default to k6 client id
 //-------------------------------------------------------------------------
 export let loadOptions = {
-    vu: maxVus,
+    vus: maxVus,
     stages: [
         { duration: "2m", target: rampVus }, // simulate ramp-up of traffic from 1 users over a few minutes.
         { duration: "3m", target: rampVus }, // stay at number of users for several minutes
