@@ -120,7 +120,7 @@ steps:
       command: "publish"
       publishWebProjects: false
       projects: "$(App.Home)/Server"
-      arguments: "-o $(Build.BinariesDirectory)"
+      arguments: "-c Release -o $(Build.BinariesDirectory)"
       zipAfterPublish: false
 
   - task: Docker@2
