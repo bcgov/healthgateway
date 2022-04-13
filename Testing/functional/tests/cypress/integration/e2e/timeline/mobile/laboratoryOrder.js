@@ -25,12 +25,17 @@ describe("Laboratory Orders", () => {
 
         cy.get("[data-testid=backBtn]").should("be.visible");
         cy.get("[data-testid=entryCardDetailsTitle]").should("be.visible");
-        cy.get("[data-testid=laboratoryHeaderResultCount]").should(
+        cy.get("[data-testid=laboratory-header-result-count").should(
             "be.visible"
         );
-        cy.get("[data-testid=laboratoryCollectionDate]").should("be.visible");
-        cy.get("[data-testid=laboratoryOrderingProvider]").should("be.visible");
-        cy.get("[data-testid=laboratoryReportingLab]").should("be.visible");
+        cy.get("[data-testid=laboratory-collection-date]").should("be.visible");
+        cy.get("[data-testid=laboratory-ordering-provider]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=laboratory-reporting-lab]").should("be.visible");
+        cy.get("[data-testid=reporting-lab-information-text]").should(
+            "be.visible"
+        );
 
         cy.get("[data-testid=laboratoryResultTable]")
             .first()

@@ -69,7 +69,7 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
         this.sortResults();
 
         this.downloadLabel = "Incomplete";
-        if (this.tests.every((test) => test.testStatus === statusFinal)) {
+        if (this.tests.every((test) => test.status === statusFinal)) {
             this.downloadLabel = "Final";
         }
 
@@ -114,7 +114,7 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
 export class LaboratoryTestViewModel {
     public testName: string;
     public result: string;
-    public testStatus: string;
+    public status: string;
 
     constructor(model: LaboratoryTest) {
         this.testName = model.batteryType;
@@ -125,6 +125,6 @@ export class LaboratoryTestViewModel {
         } else if (model.testStatus === statusCancelled) {
             this.result = statusCancelled;
         }
-        this.testStatus = model.testStatus;
+        this.status = model.testStatus;
     }
 }

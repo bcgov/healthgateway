@@ -109,14 +109,14 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
     >
         <div slot="header-description">
             <span>Number of Tests: </span>
-            <strong data-testid="laboratoryHeaderResultCount">
+            <strong data-testid="laboratory-header-result-count">
                 {{ entry.tests.length }}
             </strong>
         </div>
         <div slot="details-body">
             <div
                 v-if="entry.reportAvailable"
-                data-testid="laboratoryReportAvailable"
+                data-testid="laboratory-report-available"
                 class="mt-2 mb-n1"
             >
                 <b-spinner v-if="isLoadingDocument" class="mb-1" />
@@ -142,7 +142,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                 </span>
             </div>
             <div class="my-2">
-                <div data-testid="laboratoryCollectionDate">
+                <div data-testid="laboratory-collection-date">
                     <strong>Collection Date: </strong>
                     <span
                         v-if="entry.collectionDateTime !== undefined"
@@ -153,15 +153,27 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                 </div>
             </div>
             <div class="my-2">
-                <div data-testid="laboratoryOrderingProvider">
+                <div data-testid="laboratory-ordering-provider">
                     <strong>Ordering Provider: </strong>
                     <span>{{ entry.orderingProvider }}</span>
                 </div>
             </div>
             <div class="my-2">
-                <div data-testid="laboratoryReportingLab">
+                <div data-testid="laboratory-reporting-lab">
                     <strong>Reporting Lab: </strong>
                     <span>{{ entry.reportingLab }}</span>
+                </div>
+            </div>
+            <div class="my-2 mb-2">
+                <div data-testid="reporting-lab-information-text">
+                    <strong
+                        >Lab Results may require clinical interpretation.
+                    </strong>
+                    <span
+                        ><router-link to="/faq"
+                            >See FAQ for more information.</router-link
+                        ></span
+                    >
                 </div>
             </div>
             <b-table-lite
@@ -175,30 +187,6 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                     <strong :class="getResultClasses(data.value)">
                         {{ data.value }}
                     </strong>
-                </template>
-                <template #head(result)="data">
-                    <span>{{ data.label }}</span>
-                    <span
-                        :id="`popover-info${index}-${datekey}`"
-                        class="infoIcon ml-2"
-                        tabindex="0"
-                    >
-                        <hg-icon icon="info-circle" size="medium" />
-                    </span>
-                    <b-popover
-                        :target="`popover-info${index}-${datekey}`"
-                        placement="top"
-                        triggers="hover focus"
-                        custom-class="p-2"
-                        boundary="viewport"
-                    >
-                        Laboratory tests provide a partial picture of your
-                        health. To interpret these results, clinicians must
-                        combine these tests results with your other health
-                        information. Visit the
-                        <router-link to="/faq">FAQ</router-link> page to learn
-                        more.
-                    </b-popover>
                 </template>
             </b-table-lite>
             <MessageModalComponent
