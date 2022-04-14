@@ -1,6 +1,17 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faCheckCircle, faSearch } from "@fortawesome/free-solid-svg-icons";
+import {
+    faCheckCircle,
+    faEdit,
+    faFileMedical,
+    faMicroscope,
+    faPills,
+    faQuestion,
+    faSearch,
+    faStethoscope,
+    faSyringe,
+    faVial,
+} from "@fortawesome/free-solid-svg-icons";
 import { BToast } from "bootstrap-vue";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
@@ -40,7 +51,18 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
-library.add(faSearch, faCheckCircle);
+library.add(
+    faCheckCircle,
+    faEdit,
+    faFileMedical,
+    faMicroscope,
+    faPills,
+    faQuestion,
+    faSearch,
+    faStethoscope,
+    faSyringe,
+    faVial
+);
 
 @Component({
     components: {

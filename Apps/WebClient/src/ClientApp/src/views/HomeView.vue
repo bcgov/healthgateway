@@ -2,15 +2,15 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faCheckCircle,
-    faClipboard,
     faEdit,
     faEllipsisV,
+    faFileMedical,
     faMicroscope,
     faPills,
     faPlus,
     faSearch,
+    faStethoscope,
     faSyringe,
-    faUserMd,
     faVial,
 } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
@@ -32,15 +32,15 @@ import SnowPlow from "@/utility/snowPlow";
 
 library.add(
     faCheckCircle,
-    faClipboard,
     faEdit,
     faEllipsisV,
+    faFileMedical,
     faMicroscope,
     faPills,
     faPlus,
     faSearch,
+    faStethoscope,
     faSyringe,
-    faUserMd,
     faVial
 );
 

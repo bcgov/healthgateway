@@ -1,10 +1,11 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faEdit, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import EventBus, { EventMessageName } from "@/eventbus";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
@@ -14,7 +15,7 @@ import UserNote from "@/models/userNote";
 
 import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
-library.add(faEdit, faEllipsisV);
+library.add(faEllipsisV);
 
 @Component({
     components: {
@@ -39,6 +40,10 @@ export default class NoteTimelineComponent extends Vue {
 
     private isSaving = false;
     private eventBus = EventBus;
+
+    private get entryIcon(): string | undefined {
+        return entryTypeMap.get(EntryType.Note)?.icon;
+    }
 
     private get canShowDetails(): boolean {
         return (
@@ -76,7 +81,7 @@ export default class NoteTimelineComponent extends Vue {
 <template>
     <EntryCard
         :card-id="'note-' + entry.title"
-        entry-icon="edit"
+        :entry-icon="entryIcon"
         :icon-class="'note-icon'"
         :title="entry.title"
         :subtitle="entry.textSummary"

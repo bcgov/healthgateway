@@ -71,7 +71,7 @@ entryTypeMap.set(EntryType.Encounter, {
     name: "Health Visits",
     description:
         "See the last seven years of your health visits billed to the BC Medical Services Plan",
-    icon: "user-md",
+    icon: "stethoscope",
     component: "EncounterComponent",
     eventName: "health_visits",
 });
@@ -92,7 +92,7 @@ entryTypeMap.set(EntryType.MedicationRequest, {
     name: "Special Authority",
     description:
         "Check the status of your Special Authority Requests since March 2021",
-    icon: "clipboard-list",
+    icon: "file-medical",
     component: "MedicationRequestComponent",
     eventName: "special_authority",
 });

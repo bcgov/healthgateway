@@ -1,6 +1,6 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faDownload, faVial } from "@fortawesome/free-solid-svg-icons";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
@@ -8,6 +8,7 @@ import { Getter } from "vuex-class";
 
 import Covid19LaboratoryTestDescriptionComponent from "@/components/laboratory/Covid19LaboratoryTestDescriptionComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryReport } from "@/models/laboratory";
@@ -19,7 +20,7 @@ import SnowPlow from "@/utility/snowPlow";
 
 import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
-library.add(faDownload, faVial);
+library.add(faDownload);
 
 @Component({
     components: {
@@ -42,6 +43,10 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
 
     private isLoadingDocument = false;
     private logger!: ILogger;
+
+    private get entryIcon(): string | undefined {
+        return entryTypeMap.get(EntryType.Covid19LaboratoryOrder)?.icon;
+    }
 
     private get reportAvailable(): boolean {
         return this.entry.reportAvailable;
@@ -107,7 +112,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
 <template>
     <EntryCard
         :card-id="index + '-' + datekey"
-        entry-icon="vial"
+        :entry-icon="entryIcon"
         :title="entry.summaryTitle"
         :entry="entry"
         :is-mobile-details="isMobileDetails"

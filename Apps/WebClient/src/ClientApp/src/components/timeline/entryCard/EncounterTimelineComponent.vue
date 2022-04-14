@@ -1,14 +1,15 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faInfoCircle, faUserMd } from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 
 import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
-library.add(faInfoCircle, faUserMd);
+library.add(faInfoCircle);
 
 @Component({
     components: {
@@ -20,13 +21,17 @@ export default class EncounterTimelineComponent extends Vue {
     @Prop() index!: number;
     @Prop() datekey!: string;
     @Prop() isMobileDetails!: boolean;
+
+    private get entryIcon(): string | undefined {
+        return entryTypeMap.get(EntryType.Encounter)?.icon;
+    }
 }
 </script>
 
 <template>
     <EntryCard
         :card-id="index + '-' + datekey"
-        entry-icon="user-md"
+        :entry-icon="entryIcon"
         :title="entry.specialtyDescription"
         :subtitle="entry.practitionerName"
         :entry="entry"

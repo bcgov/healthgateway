@@ -5,7 +5,6 @@ import {
     faChartLine,
     faCheckCircle,
     faClipboardList,
-    faEdit,
     faHome,
     faStream,
     faUserFriends,
@@ -28,7 +27,6 @@ library.add(
     faChartLine,
     faCheckCircle,
     faClipboardList,
-    faEdit,
     faHome,
     faStream,
     faUserFriends
