@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Controllers
 {
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
     using Microsoft.AspNetCore.Mvc;
 
@@ -27,25 +28,17 @@ namespace HealthGateway.Admin.Server.Controllers
     [Produces("application/json")]
     public class ConfigurationController : Controller
     {
-        private readonly IConfigurationService configservice;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationController"/> class.
-        /// </summary>
-        /// <param name="service">The injected configuration service provider.</param>
-        public ConfigurationController(IConfigurationService service)
-        {
-            this.configservice = service;
-        }
-
         /// <summary>
         /// Returns the external Health Gateway configuration.
         /// </summary>
-        /// <returns>The Health Gatway Configuration.</returns>
+        /// <param name="configurationService">The injected configuration provider.</param>
+        /// <returns>The Health Gateway Configuration.</returns>
         [HttpGet]
-        public Models.ExternalConfiguration Index()
+        public ExternalConfiguration Index([FromServices] IConfigurationService configurationService)
         {
-            return this.configservice.GetConfiguration();
+            ExternalConfiguration externalConfig = configurationService.GetConfiguration();
+            externalConfig.ClientIp = this.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+            return externalConfig;
         }
     }
 }
