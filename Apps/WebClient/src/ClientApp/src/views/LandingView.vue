@@ -366,7 +366,10 @@ export default class LandingView extends Vue {
                 <div class="mt-4 mt-lg-5 text-center">
                     <button
                         id="preview-device-button-laptop"
-                        v-b-tooltip="'Show Laptop Preview'"
+                        v-b-tooltip.nofade.d0="{
+                            customClass: 'd-none d-xl-block',
+                        }"
+                        title="Show Laptop Preview"
                         :disabled="selectedPreviewDevice === 'laptop'"
                         data-testid="preview-device-button-laptop"
                         class="preview-device-button bg-transparent border-0 shadow-none mx-3 p-2"
@@ -376,7 +379,10 @@ export default class LandingView extends Vue {
                     </button>
                     <button
                         id="preview-device-button-tablet"
-                        v-b-tooltip="'Show Tablet Preview'"
+                        v-b-tooltip.nofade.d0="{
+                            customClass: 'd-none d-xl-block',
+                        }"
+                        title="Show Tablet Preview"
                         :disabled="selectedPreviewDevice === 'tablet'"
                         data-testid="preview-device-button-tablet"
                         class="preview-device-button bg-transparent border-0 shadow-none mx-3 p-2"
@@ -390,7 +396,10 @@ export default class LandingView extends Vue {
                     </button>
                     <button
                         id="preview-device-button-smartphone"
-                        v-b-tooltip="'Show Smartphone Preview'"
+                        v-b-tooltip.nofade.d0="{
+                            customClass: 'd-none d-xl-block',
+                        }"
+                        title="Show Smartphone Preview"
                         :disabled="selectedPreviewDevice === 'smartphone'"
                         data-testid="preview-device-button-smartphone"
                         class="preview-device-button bg-transparent border-0 shadow-none mx-3 p-2"
