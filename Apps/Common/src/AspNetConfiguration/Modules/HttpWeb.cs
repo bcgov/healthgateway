@@ -48,7 +48,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
             services.AddResponseCompression(options =>
             {
-                options.Providers.Add<GzipCompressionProvider>();
+                options.EnableForHttps = true;
             });
 
             services.AddHttpClient<IHttpClientService, HttpClientService>();
@@ -72,14 +72,45 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="logger">The logger to use.</param>
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="environment">The environment to use.</param>
-        public static void UseHttp(IApplicationBuilder app, ILogger logger, IConfiguration configuration, IWebHostEnvironment environment)
+        /// <param name="blazor">If true, will add blazor optimizations for static files.</param>
+        public static void UseHttp(IApplicationBuilder app, ILogger logger, IConfiguration configuration, IWebHostEnvironment environment, bool blazor = false)
         {
+            app.UseResponseCompression();
+
             if (environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseStaticFiles();
+            if (!blazor)
+            {
+                app.UseStaticFiles();
+            }
+            else
+            {
+                app.UseStaticFiles(new StaticFileOptions
+                {
+                    OnPrepareResponse = context =>
+                    {
+                        if (context.File.Name == "service-worker-assets.js")
+                        {
+                            context.Context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
+                            context.Context.Response.Headers.Add("Expires", "-1");
+                        }
+
+                        if (context.File.Name == "blazor.boot.json")
+                        {
+                            if (context.Context.Response.Headers.ContainsKey("blazor-environment"))
+                            {
+                                context.Context.Response.Headers.Remove("blazor-environment");
+                            }
+
+                            context.Context.Response.Headers.Add("blazor-environment", environment.EnvironmentName);
+                        }
+                    },
+                });
+            }
+
             app.UseRouting();
 
             // Enable health endpoint for readiness probe
@@ -97,8 +128,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         .AllowAnyMethod();
                 });
             }
-
-            app.UseResponseCompression();
 
             // Setup response secure headers
             app.Use(async (context, next) =>

@@ -31,6 +31,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Returns the external Health Gateway configuration.
         /// </summary>
+        /// <param name="configurationService">The injected configuration provider.</param>
         /// <returns>The Health Gateway Configuration.</returns>
         [HttpGet]
         public ExternalConfiguration Index([FromServices] IConfigurationService configurationService)

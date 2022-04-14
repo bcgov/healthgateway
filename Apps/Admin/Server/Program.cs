@@ -101,9 +101,7 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
 
             WebApplication app = builder.Build();
-
-            HttpWeb.UseForwardHeaders(app, logger, configuration);
-            UseHttp(app, logger, configuration, environment);
+            HttpWeb.UseHttp(app, logger, configuration, environment, true);
             HttpWeb.UseContentSecurityPolicy(app, configuration);
             SwaggerDoc.UseSwagger(app, logger);
             Auth.UseAuth(app, logger);
@@ -124,74 +122,6 @@ namespace HealthGateway.Admin.Server
             app.MapFallbackToFile("index.html");
 
             await app.RunAsync().ConfigureAwait(true);
-        }
-
-        /// <summary>
-        /// Configures the app to use http.
-        /// This is normally common code but the static files is changed here as per https://github.com/dotnet/aspnetcore/issues/25152 .
-        /// </summary>
-        /// <param name="app">The application builder provider.</param>
-        /// <param name="logger">The logger to use.</param>
-        /// <param name="configuration">The configuration to use.</param>
-        /// <param name="environment">The environment to use.</param>
-        public static void UseHttp(IApplicationBuilder app, ILogger logger, IConfiguration configuration, IWebHostEnvironment environment)
-        {
-            if (environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                OnPrepareResponse = context =>
-                {
-                    if (context.File.Name == "service-worker-assets.js")
-                    {
-                        context.Context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
-                        context.Context.Response.Headers.Add("Expires", "-1");
-                    }
-
-                    if (context.File.Name == "blazor.boot.json")
-                    {
-                        if (context.Context.Response.Headers.ContainsKey("blazor-environment"))
-                        {
-                            context.Context.Response.Headers.Remove("blazor-environment");
-                        }
-
-                        context.Context.Response.Headers.Add("blazor-environment", environment.EnvironmentName);
-                    }
-                },
-            });
-            app.UseRouting();
-
-            // Enable health endpoint for readiness probe
-            app.UseHealthChecks("/health");
-
-            // Enable CORS
-            string enableCors = configuration.GetValue("AllowOrigins", string.Empty);
-            if (!string.IsNullOrEmpty(enableCors))
-            {
-                app.UseCors(builder =>
-                {
-                    builder
-                        .WithOrigins(enableCors)
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-                });
-            }
-
-            app.UseResponseCompression();
-
-            // Setup response secure headers
-            app.Use(async (context, next) =>
-            {
-                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-                context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
-                await next().ConfigureAwait(true);
-            });
-
-            // Enable Cache control and set defaults
-            HttpWeb.UseResponseCaching(app, logger);
         }
 
         private static void RegisterRefitClients(IServiceCollection services, IConfiguration configuration)
