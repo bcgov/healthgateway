@@ -58,8 +58,8 @@ namespace HealthGateway.Admin.Server
             ILogger logger = ProgramConfiguration.GetInitialLogger(configuration);
             IWebHostEnvironment environment = builder.Environment;
 
-            Db.ConfigureDatabaseServices(services, logger, configuration);
             HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
+            Db.ConfigureDatabaseServices(services, logger, configuration);
             HttpWeb.ConfigureHttpServices(services, logger);
             Audit.ConfigureAuditServices(services, logger);
             Auth.ConfigureAuthServicesForJwtBearer(services, logger, configuration, environment);
@@ -102,9 +102,9 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
 
             WebApplication app = builder.Build();
+            HttpWeb.UseForwardHeaders(app, logger, configuration);
             HttpWeb.UseHttp(app, logger, configuration, environment, true);
             HttpWeb.UseContentSecurityPolicy(app, configuration);
-            HttpWeb.UseForwardHeaders(app, logger, configuration);
             SwaggerDoc.UseSwagger(app, logger);
             Auth.UseAuth(app, logger);
 
