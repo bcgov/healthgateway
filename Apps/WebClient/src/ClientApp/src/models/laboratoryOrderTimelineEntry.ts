@@ -69,7 +69,7 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
         this.sortResults();
 
         this.downloadLabel = "Incomplete";
-        if (this.tests.every((test) => test.status === statusComplete)) {
+        if (this.tests.every((test) => test.status === statusCompleted)) {
             this.downloadLabel = "Final";
         }
 
