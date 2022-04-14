@@ -1,4 +1,3 @@
-@using HealthGateway.Admin.Client.Theme
 @inherits LayoutComponentBase
 <MudThemeProvider Theme="@CurrentTheme" />
 <MudDialogProvider />
@@ -18,7 +17,7 @@
                         <MudIcon Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Edge="Edge.End" />
                     </ActivatorContent>
                     <ChildContent>
-                        <MudNavLink href="claims" Typo="Typo.h6" Underline="Underline.None" align="center">
+                        <MudNavLink href="userinfo" Typo="Typo.h6" Underline="Underline.None" align="center" Disabled="@UserInfoDisabled">
                             @(context.User.Identity?.Name ?? "Unknown")
                         </MudNavLink>
                         <MudNavLink Icon="@Icons.Material.Outlined.Login" OnClick="BeginSignOut">Logout</MudNavLink>

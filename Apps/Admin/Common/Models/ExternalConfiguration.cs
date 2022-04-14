@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Common.Models
 {
-    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -25,25 +24,21 @@ namespace HealthGateway.Admin.Common.Models
     public class ExternalConfiguration
     {
         /// <summary>
-        /// Gets or sets the OpenIdConnect configuration.
+        /// Gets or sets the client IP address.
+        /// This value is populated at runtime with the client invoking the web service.
         /// </summary>
-        public OpenIdConnectConfiguration OpenIdConnect { get; set; } = new OpenIdConnectConfiguration();
+        public string? ClientIp { get; set; }
 
         /// <summary>
-        /// Gets or sets the List of Identity providers.
+        /// Gets or sets features enabled for the application.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Team decision")]
-        public IdentityProviderConfiguration[] IdentityProviders { get; set; } = Array.Empty<IdentityProviderConfiguration>();
-
-        /// <summary>
-        /// Gets or sets the Health Gateway Webclient specific configuration.
-        /// </summary>
-        public WebClientConfiguration WebClient { get; set; } = new WebClientConfiguration();
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        public Dictionary<string, bool> Features { get; set; } = new Dictionary<string, bool>();
 
         /// <summary>
         /// Gets or sets the Service Endpoints.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public Dictionary<string, System.Uri> ServiceEndpoints { get; set; } = new Dictionary<string, Uri>();
+        public Dictionary<string, System.Uri> ServiceEndpoints { get; set; } = new Dictionary<string, System.Uri>();
     }
 }

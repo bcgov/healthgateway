@@ -64,6 +64,11 @@ namespace HealthGateway.Admin.Client.Layouts
         [Inject]
         private SignOutSessionStateManager SignOutManager { get; set; } = default!;
 
+        [Inject]
+        private IState<ConfigurationState> ConfigurationState { get; set; } = default!;
+
+        private bool UserInfoDisabled => !this.ConfigurationState.Value.Result?.Features["UserInfo"] ?? true;
+
         private bool DrawerOpen { get; set; } = true;
 
         private bool DarkMode { get; set; } = true;

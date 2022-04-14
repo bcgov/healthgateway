@@ -1,6 +1,7 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 <MudNavMenu>
-    <MudNavGroup Title="Showcase" Icon="@Icons.Material.Filled.WbSunny" Expanded="true">
+    @if(ConfigurationState.Value.Result?.Features["StyleGuide"] ?? false)
+    {<MudNavGroup Title="Showcase" Icon="@Icons.Material.Filled.WbSunny" Expanded="true">
         <MudNavLink Href="showcase/alerts" Icon="@Icons.Material.Filled.PriorityHigh">Alerts</MudNavLink>
         <MudNavLink Href="showcase/chips" Icon="@Icons.Material.Filled.Label">Chips</MudNavLink>
         <MudNavLink Href="showcase/forms" Icon="@Icons.Material.Filled.DynamicForm">Forms</MudNavLink>
@@ -14,7 +15,7 @@
         <MudNavLink Href="showcase/pagination" Icon="@Icons.Filled.KeyboardArrowRight">Pagination</MudNavLink>
         <MudNavLink Href="showcase/tool-bar" Icon="@Icons.Material.Filled.Construction">Tool Bar</MudNavLink>
         <MudNavLink Href="showcase/typography" Icon="@Icons.Material.Filled.TextFields">Typography</MudNavLink>
-    </MudNavGroup>
+    </MudNavGroup>}
 
     <AuthorizeView Roles="@($" {Roles.Admin},{Roles.Reviewer}")">
         <MudNavLink Href="dashboard" Icon="@Icons.Material.Filled.ViewQuilt">Dashboard</MudNavLink>
@@ -34,7 +35,8 @@
     <AuthorizeView Roles="@Roles.Admin">
         <MudNavLink Href="support" Icon="@Icons.Material.Filled.PersonSearch">Support</MudNavLink>
     </AuthorizeView>
+    @if(ConfigurationState.Value.Result?.Features["VaccineCard"] ?? false){
     <AuthorizeView Roles="@Roles.Support">
         <MudNavLink Href="vaccine-proof" Icon="fas fa-address-card">BC Vaccine Card</MudNavLink>
-    </AuthorizeView>
+    </AuthorizeView>}
 </MudNavMenu>
