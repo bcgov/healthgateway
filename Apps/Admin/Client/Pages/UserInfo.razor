@@ -1,4 +1,4 @@
-@page "/user-info"
+﻿@page "/user-info"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @using System.Security.Claims
 
@@ -13,18 +13,22 @@
 <MudField Label="IP Address " Variant="Variant.Outlined">
     @(ConfigurationState.Value.Result?.ClientIp ?? ConfigurationState.Value.Error?.Message)
 </MudField>
-@if(Token != null)
-{<MudTextField @bind-Value="Token" Label="Token" Variant="Variant.Outlined" Lines="6" ReadOnly="true" />}
+@if (Token != null)
+{
+    <MudTextField @bind-Value="Token" Label="Token" Variant="Variant.Outlined" Lines="6" ReadOnly="true" />
+}
 @if (Claims.Any())
-{<MudField Label="Claims" Variant="Variant.Outlined">
-     <MudTable Items="@Claims" Dense="true" Hover="true" Striped="true" Style="overflow-x: auto;">
-         <HeaderContent>
-             <MudTh>Claim</MudTh>
-             <MudTh>Value</MudTh>
-         </HeaderContent>
-         <RowTemplate>
-             <MudTd DataLabel="Claim">@context.Type</MudTd>
-             <MudTd DataLabel="Value">@context.Value</MudTd>
-         </RowTemplate>
-     </MudTable>
- </MudField>}
+{
+    <MudField Label="Claims" Variant="Variant.Outlined">
+    <MudTable Items="@Claims" Dense="true" Hover="true" Striped="true" Style="overflow-x: auto;">
+        <HeaderContent>
+            <MudTh>Claim</MudTh>
+            <MudTh>Value</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Claim">@context.Type</MudTd>
+            <MudTd DataLabel="Value">@context.Value</MudTd>
+        </RowTemplate>
+    </MudTable>
+    </MudField>
+ }
