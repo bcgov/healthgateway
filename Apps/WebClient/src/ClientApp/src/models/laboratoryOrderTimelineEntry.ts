@@ -6,7 +6,6 @@ import { UserComment } from "@/models/userComment";
 
 const resultOutOfRange = "Out of Range";
 const resultInRange = "In Range";
-const statusFinal = "Final";
 const statusCancelled = "Cancelled";
 const statusCompleted = "Completed";
 
@@ -69,7 +68,7 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
         this.sortResults();
 
         this.downloadLabel = "Incomplete";
-        if (this.tests.every((test) => test.status === statusCompleted)) {
+        if (this.testStatus === statusCompleted) {
             this.downloadLabel = "Final";
         }
 
