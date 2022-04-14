@@ -1,23 +1,23 @@
 @inherits LayoutComponentBase
-<MudThemeProvider Theme="@CurrentTheme" />
-<MudDialogProvider />
-<MudSnackbarProvider />
+<MudThemeProvider Theme="@CurrentTheme"/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="DrawerToggle" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="DrawerToggle"/>
         <MudText Typo="Typo.h6" Class="ml-4">HG Admin</MudText>
-        <MudSpacer />
+        <MudSpacer/>
         <MudTooltip Text="Toggle Dark Mode">
-            <MudIconButton Icon="@Icons.Material.Filled.BrightnessMedium" Color="Color.Inherit" Edge="Edge.End" OnClick="ToggleTheme" />
+            <MudIconButton Icon="@Icons.Material.Filled.BrightnessMedium" Color="Color.Inherit" Edge="Edge.End" OnClick="ToggleTheme"/>
         </MudTooltip>
         <AuthorizeView>
             <Authorized>
                 <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
                     <ActivatorContent>
-                        <MudIcon Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Edge="Edge.End" />
+                        <MudIcon Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Edge="Edge.End"/>
                     </ActivatorContent>
                     <ChildContent>
-                        <MudNavLink href="userinfo" Typo="Typo.h6" Underline="Underline.None" align="center" Disabled="@UserInfoDisabled">
+                        <MudNavLink href="user-info" Typo="Typo.h6" Underline="Underline.None" align="center" Disabled="@UserInfoDisabled">
                             @(context.User.Identity?.Name ?? "Unknown")
                         </MudNavLink>
                         <MudNavLink Icon="@Icons.Material.Outlined.Login" OnClick="BeginSignOut">Logout</MudNavLink>
@@ -27,7 +27,7 @@
         </AuthorizeView>
     </MudAppBar>
     <MudDrawer @bind-Open="DrawerOpen" Elevation="1" ClipMode="DrawerClipMode.Always">
-        <NavMenu />
+        <NavMenu/>
     </MudDrawer>
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.Large" Class="pa-6">

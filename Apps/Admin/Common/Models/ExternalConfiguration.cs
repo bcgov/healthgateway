@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Common.Models
 {
+    using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// A collection of configuration items for use by Health Gateway and
@@ -32,13 +34,13 @@ namespace HealthGateway.Admin.Common.Models
         /// <summary>
         /// Gets or sets features enabled for the application.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
         public Dictionary<string, bool> Features { get; set; } = new Dictionary<string, bool>();
 
         /// <summary>
         /// Gets or sets the Service Endpoints.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public Dictionary<string, System.Uri> ServiceEndpoints { get; set; } = new Dictionary<string, System.Uri>();
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        public Dictionary<string, Uri> ServiceEndpoints { get; set; } = new Dictionary<string, Uri>();
     }
 }
