@@ -59,6 +59,7 @@ namespace HealthGateway.Admin.Server
             IWebHostEnvironment environment = builder.Environment;
 
             Db.ConfigureDatabaseServices(services, logger, configuration);
+            HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
             HttpWeb.ConfigureHttpServices(services, logger);
             Audit.ConfigureAuditServices(services, logger);
             Auth.ConfigureAuthServicesForJwtBearer(services, logger, configuration, environment);
@@ -103,6 +104,7 @@ namespace HealthGateway.Admin.Server
             WebApplication app = builder.Build();
             HttpWeb.UseHttp(app, logger, configuration, environment, true);
             HttpWeb.UseContentSecurityPolicy(app, configuration);
+            HttpWeb.UseForwardHeaders(app, logger, configuration);
             SwaggerDoc.UseSwagger(app, logger);
             Auth.UseAuth(app, logger);
 
