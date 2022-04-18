@@ -70,7 +70,7 @@
         "@types/vue-clickaway": "^2.2.0",
         "@types/vue-the-mask": "^0.11.1",
         "axios": "^0.26.1",
-        "bootstrap-vue": "^2.21.2",
+        "bootstrap-vue": "^2.22.0",
         "browserify-zlib": "^0.2.0",
         "chart.js": "^2.9.4",
         "cookie-storage": "^6.1.0",
