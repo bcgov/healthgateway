@@ -122,37 +122,6 @@ namespace HealthGateway.Immunization.Delegates
             return requestResult;
         }
 
-        /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<ImmunizationCard>>> GetVaccineHistory(
-            string hdid,
-            string immunizationDisease)
-        {
-            using Activity? activity = Source.StartActivity("GetVaccineHistory");
-            this.logger.LogDebug($"Getting vaccine history...");
-
-            RequestResult<PhsaResult<ImmunizationCard>> requestResult = InitializeResult<ImmunizationCard>();
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
-
-            try
-            {
-                IApiResponse<PhsaResult<ImmunizationCard>> response =
-                    await this.immunizationClient.GetVaccineHistory(immunizationDisease, accessToken).ConfigureAwait(true);
-                this.ProcessResponse(requestResult, response);
-            }
-            catch (HttpRequestException e)
-            {
-                this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
-                requestResult.ResultError = new RequestResultError()
-                {
-                    ResultMessage = $"Error with HTTP Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                };
-            }
-
-            this.logger.LogDebug($"Finished getting vaccine history.");
-            return requestResult;
-        }
-
         private static RequestResult<PhsaResult<T>> InitializeResult<T>()
             where T : class
         {

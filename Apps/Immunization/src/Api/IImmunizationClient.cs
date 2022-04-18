@@ -44,13 +44,4 @@ public interface IImmunizationClient
     /// <returns>The PHSA Result including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
     [Get("/api/v1/Immunizations?limit={limit}")]
     Task<IApiResponse<PhsaResult<ImmunizationResponse>>> GetImmunizations(string limit, [Authorize("Bearer")] string token);
-
-    /// <summary>
-    /// Gets the immunization card for the supplied Immunization Disease.
-    /// </summary>
-    /// <param name="immunizationDisease">The associated disease to query.</param>
-    /// <param name="token">The bearer token to authorize the call.</param>
-    /// <returns>A Immunization Card.</returns>
-    [Get("/api/v1/Immunizations/RecordCards/{immunizationDisease}")]
-    Task<IApiResponse<PhsaResult<ImmunizationCard>>> GetVaccineHistory(string immunizationDisease, [Authorize("Bearer")] string token);
 }
