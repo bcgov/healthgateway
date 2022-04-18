@@ -20,25 +20,17 @@ namespace HealthGateway.Immunization.Test.Delegates
     using System.Globalization;
     using System.Net;
     using System.Net.Http;
-    using System.Security.Claims;
-    using System.Text.Json;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DeepEqual.Syntax;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Models.PHSA.Recommendation;
-    using HealthGateway.Common.Services;
+    using HealthGateway.Immunization.Api;
     using HealthGateway.Immunization.Delegates;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using Moq.Protected;
+    using Refit;
     using Xunit;
 
     /// <summary>
@@ -46,10 +38,13 @@ namespace HealthGateway.Immunization.Test.Delegates
     /// </summary>
     public class ImmunizationDelegateTests
     {
+        private const string AccessToken = "access_token";
+        private const string HttpExceptionMessage = "Error with HTTP Request";
+        private const string UnauthorizedResultMessage = "Unable to connect to Immunizations Endpoint, HTTP Error Unauthorized";
+        private const string ForbiddenResultMessage = "DID Claim is missing or can not resolve PHN, HTTP Error Forbidden";
+        private const string MethodNotAllowedResultMessage = "Unable to connect to Immunizations Endpoint, HTTP Error MethodNotAllowed";
+        private const string RequestTimeoutResultMessage = "Unable to connect to Immunizations Endpoint, HTTP Error RequestTimeout";
         private readonly IConfiguration configuration;
-        private readonly string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-        private readonly string token = "Fake Access Token";
-        private readonly string userId = "1001";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmunizationDelegateTests"/> class.
@@ -57,6 +52,48 @@ namespace HealthGateway.Immunization.Test.Delegates
         public ImmunizationDelegateTests()
         {
             this.configuration = GetIConfigurationRoot();
+        }
+
+        /// <summary>
+        /// Tests a various http status codes on Immunization View Response.
+        /// </summary>
+        /// <param name="httpStatusCode">The http status code to return from the mock.</param>
+        /// <param name="resultStatus">The result code to return from the mock.</param>
+        /// <param name="resultMessage">The result message from the mock.</param>
+        [Theory]
+        [InlineData(HttpStatusCode.OK, ResultType.Success, null)]
+        [InlineData(HttpStatusCode.NoContent, ResultType.Success, null)]
+        [InlineData(HttpStatusCode.Unauthorized, ResultType.Error, UnauthorizedResultMessage)]
+        [InlineData(HttpStatusCode.Forbidden, ResultType.Error, ForbiddenResultMessage)]
+        [InlineData(HttpStatusCode.MethodNotAllowed, ResultType.Error, MethodNotAllowedResultMessage)]
+        [InlineData(HttpStatusCode.RequestTimeout, ResultType.Error, RequestTimeoutResultMessage)]
+        public void GetImmunizationResponse(HttpStatusCode httpStatusCode, ResultType resultStatus, string resultMessage)
+        {
+            PhsaResult<ImmunizationViewResponse> expectedResult = new();
+            RequestResult<PhsaResult<ImmunizationViewResponse>> actualResult = GetImmunizationDelegate(expectedResult, httpStatusCode, false).GetImmunization(It.IsAny<string>()).Result;
+            Assert.True(actualResult.ResultStatus == resultStatus);
+            Assert.Equal(actualResult?.ResultError?.ResultMessage, resultMessage);
+        }
+
+        /// <summary>
+        /// Tests a various http status codes on Immunization Response.
+        /// </summary>
+        /// <param name="httpStatusCode">The http status code to return from the mock.</param>
+        /// <param name="resultStatus">The result code to return from the mock.</param>
+        /// <param name="resultMessage">The result message from the mock.</param>
+        [Theory]
+        [InlineData(HttpStatusCode.OK, ResultType.Success, null)]
+        [InlineData(HttpStatusCode.NoContent, ResultType.Success, null)]
+        [InlineData(HttpStatusCode.Unauthorized, ResultType.Error, UnauthorizedResultMessage)]
+        [InlineData(HttpStatusCode.Forbidden, ResultType.Error, ForbiddenResultMessage)]
+        [InlineData(HttpStatusCode.MethodNotAllowed, ResultType.Error, MethodNotAllowedResultMessage)]
+        [InlineData(HttpStatusCode.RequestTimeout, ResultType.Error, RequestTimeoutResultMessage)]
+        public void GetImmunizationsResponse(HttpStatusCode httpStatusCode, ResultType resultStatus, string resultMessage)
+        {
+            PhsaResult<ImmunizationResponse> expectedResult = new();
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(expectedResult, httpStatusCode, false).GetImmunizations(It.IsAny<int>()).Result;
+            Assert.True(actualResult.ResultStatus == resultStatus);
+            Assert.Equal(actualResult?.ResultError?.ResultMessage, resultMessage);
         }
 
         /// <summary>
@@ -78,26 +115,11 @@ namespace HealthGateway.Immunization.Test.Delegates
                 Result = expectedViewResponse,
             };
 
-            string json = JsonSerializer.Serialize(phsaResponse);
-
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(json),
-            };
-            IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
-
-            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(
-                loggerFactory.CreateLogger<RestImmunizationDelegate>(),
-                httpClientService,
-                this.configuration,
-                this.GetHttpContextAccessor().Object);
-
-            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(0).Result;
+            RequestResult<PhsaResult<ImmunizationViewResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, false).GetImmunization(It.IsAny<string>()).Result;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
+            Assert.Equal(expectedViewResponse.Id, actualResult.ResourcePayload?.Result?.Id);
         }
 
         /// <summary>
@@ -121,270 +143,140 @@ namespace HealthGateway.Immunization.Test.Delegates
                     new List<ImmunizationRecommendationResponse>()),
             };
 
-            string json = JsonSerializer.Serialize(phsaResponse);
-
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(json),
-            };
-            IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
-
-            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(
-                loggerFactory.CreateLogger<RestImmunizationDelegate>(),
-                httpClientService,
-                this.configuration,
-                this.GetHttpContextAccessor().Object);
-
-            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(0).Result;
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, false).GetImmunizations(It.IsAny<int>()).Result;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-            Assert.Collection(actualResult.ResourcePayload?.Result?.ImmunizationViews, item => Assert.Equal(expectedViewResponse.Id, item.Id));
+            Assert.Equal(expectedViewResponse.Id, actualResult.ResourcePayload?.Result?.ImmunizationViews[0].Id);
         }
 
         /// <summary>
-        /// GetImmunizations - Bad Data.
+        /// GetImmunization - HttpRequestException.
         /// </summary>
         [Fact]
-        public void BadData()
+        public void GetImmunizationThrowsException()
         {
-            string json = "{}";
-
-            RequestResult<IEnumerable<ImmunizationResponse>> expectedResult = new()
+            ImmunizationViewResponse expectedViewResponse = new()
             {
-                PageIndex = 0,
-                ResultStatus = ResultType.Error,
-                ResultError = new RequestResultError()
-                {
-                    ResultMessage = $"Error with JSON data",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                },
+                Id = Guid.NewGuid(),
+                SourceSystemId = "mockSourceSystemId",
+                Name = "mockName",
+                OccurrenceDateTime = DateTime.ParseExact("2020/09/10 17:16:10.809", "yyyy/MM/dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
             };
 
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            using HttpResponseMessage httpResponseMessage = new()
+            PhsaResult<ImmunizationViewResponse> phsaResponse = new()
             {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(json),
-            };
-            IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
-
-            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(
-                loggerFactory.CreateLogger<RestImmunizationDelegate>(),
-                httpClientService,
-                this.configuration,
-                this.GetHttpContextAccessor().Object);
-
-            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(0).Result;
-
-            expectedResult.ShouldDeepEqual(actualResult);
-        }
-
-        /// <summary>
-        /// GetImmunizations - No Content.
-        /// </summary>
-        [Fact]
-        public void NoContent()
-        {
-            int pageIndex = 0;
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.NoContent,
-                Content = new StringContent(string.Empty),
-            };
-            IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
-            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(
-                loggerFactory.CreateLogger<RestImmunizationDelegate>(),
-                httpClientService,
-                this.configuration,
-                this.GetHttpContextAccessor().Object);
-
-            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
-
-            Assert.True(actualResult.ResultStatus == ResultType.Success && actualResult?.ResourcePayload?.Result == null);
-            Assert.Null(actualResult?.ResourcePayload?.Result);
-        }
-
-        /// <summary>
-        /// GetImmunizations - Forbidden.
-        /// </summary>
-        [Fact]
-        public void Forbidden()
-        {
-            int pageIndex = 0;
-            RequestResult<IEnumerable<ImmunizationResponse>> expectedResult = new()
-            {
-                ResultStatus = ResultType.Error,
-                ResultError = new RequestResultError()
-                {
-                    ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {HttpStatusCode.Forbidden}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                },
-                PageIndex = pageIndex,
+                Result = expectedViewResponse,
             };
 
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.Forbidden,
-                Content = new StringContent(string.Empty),
-            };
-            IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
-            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(
-                loggerFactory.CreateLogger<RestImmunizationDelegate>(),
-                httpClientService,
-                this.configuration,
-                this.GetHttpContextAccessor().Object);
+            RequestResult<PhsaResult<ImmunizationViewResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, true).GetImmunization(It.IsAny<string>()).Result;
 
-            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
-
-            actualResult.ShouldDeepEqual(expectedResult);
-        }
-
-        /// <summary>
-        /// GetImmunizations - RequestTimeout.
-        /// </summary>
-        [Fact]
-        public void RequestTimeout()
-        {
-            int pageIndex = 0;
-            RequestResult<IEnumerable<ImmunizationResponse>> expectedResult = new()
-            {
-                ResultStatus = ResultType.Error,
-                ResultError = new RequestResultError()
-                {
-                    ResultMessage = $"Unable to connect to Immunizations Endpoint, HTTP Error {HttpStatusCode.RequestTimeout}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                },
-                PageIndex = pageIndex,
-            };
-
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.RequestTimeout,
-                Content = new StringContent(string.Empty),
-            };
-            IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
-            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(
-                loggerFactory.CreateLogger<RestImmunizationDelegate>(),
-                httpClientService,
-                this.configuration,
-                this.GetHttpContextAccessor().Object);
-
-            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
-
-            actualResult.ShouldDeepEqual(expectedResult);
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal(HttpExceptionMessage, actualResult.ResultError?.ResultMessage);
         }
 
         /// <summary>
         /// GetImmunizations - HttpRequestException.
         /// </summary>
         [Fact]
-        public void Exception()
+        public void GetImmunizationsThrowsException()
         {
-            Mock<HttpMessageHandler> handlerMock = new();
-            handlerMock
-               .Protected()
-               .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.IsAny<HttpRequestMessage>(),
-                  ItExpr.IsAny<CancellationToken>())
-               .Throws<HttpRequestException>()
-               .Verifiable();
-
-            int pageIndex = 0;
-            Mock<IHttpClientService> mockHttpClientService = new();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            using HttpResponseMessage httpResponseMessage = new()
+            ImmunizationViewResponse expectedViewResponse = new()
             {
-                StatusCode = HttpStatusCode.RequestTimeout,
-                Content = new StringContent(string.Empty),
+                Id = Guid.NewGuid(),
+                SourceSystemId = "mockSourceSystemId",
+                Name = "mockName",
+                OccurrenceDateTime = DateTime.ParseExact("2020/09/10 17:16:10.809", "yyyy/MM/dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
             };
-            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(
-                loggerFactory.CreateLogger<RestImmunizationDelegate>(),
-                mockHttpClientService.Object,
-                this.configuration,
-                this.GetHttpContextAccessor().Object);
 
-            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = immsDelegate.GetImmunizations(pageIndex).Result;
+            PhsaResult<ImmunizationResponse> phsaResponse = new()
+            {
+                Result = new ImmunizationResponse(
+                    new List<ImmunizationViewResponse>() { expectedViewResponse },
+                    new List<ImmunizationRecommendationResponse>()),
+            };
 
-            Assert.True(actualResult.ResultStatus == ResultType.Error);
-            Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CE-PHSA", StringComparison.InvariantCulture));
-        }
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, true).GetImmunizations(It.IsAny<int>()).Result;
 
-        private static IHttpClientService GetHttpClientService(HttpResponseMessage httpResponseMessage)
-        {
-            Mock<HttpMessageHandler> handlerMock = new();
-            handlerMock
-               .Protected()
-               .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.IsAny<HttpRequestMessage>(),
-                  ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(httpResponseMessage)
-               .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            return mockHttpClientService.Object;
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal(HttpExceptionMessage, actualResult.ResultError?.ResultMessage);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
+            Dictionary<string, string> myConfiguration = new()
+            {
+                { "Section:Key", "Value" },
+            };
+
             return new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("appsettings.Development.json", optional: true)
                 .AddJsonFile("appsettings.local.json", optional: true)
+                .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
 
-        private Mock<IHttpContextAccessor> GetHttpContextAccessor()
+        private static IImmunizationDelegate GetImmunizationDelegate(PhsaResult<ImmunizationViewResponse> response, HttpStatusCode statusCode, bool throwException)
         {
-            ClaimsPrincipal claimsPrincipal = this.GetClaimsPrincipal();
-            IHeaderDictionary headerDictionary = new HeaderDictionary
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(AccessToken);
+
+            Mock<IApiResponse<PhsaResult<ImmunizationViewResponse>>> mockApiResponse = new();
+            mockApiResponse.Setup(s => s.Content).Returns(response);
+            mockApiResponse.Setup(s => s.StatusCode).Returns(statusCode);
+
+            Mock<IImmunizationClient> mockImmunizationClient = new();
+            if (!throwException)
             {
-                { "Authorization", this.token },
-            };
-            Mock<HttpRequest> httpRequestMock = new();
-            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
-            Mock<HttpContext> httpContextMock = new();
-            httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
-            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
-
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new();
-            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
-
-            Mock<IAuthenticationService> authenticationMock = new();
-            httpContextAccessorMock
-                .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
-                .Returns(authenticationMock.Object);
-            AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
-            authResult.Properties.StoreTokens(new[]
+                mockImmunizationClient.Setup(s => s.GetImmunization(It.IsAny<string>(), AccessToken))
+                    .ReturnsAsync(mockApiResponse.Object);
+            }
+            else
             {
-                new AuthenticationToken { Name = "access_token", Value = this.token },
-            });
-            authenticationMock
-                .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
-                .ReturnsAsync(authResult);
+                mockImmunizationClient.Setup(s =>
+                        s.GetImmunization(It.IsAny<string>(), AccessToken))
+                    .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
+            }
 
-            return httpContextAccessorMock;
+            IImmunizationDelegate mockImmunizationDelegate = new RestImmunizationDelegate(
+                new Mock<ILogger<RestImmunizationDelegate>>().Object,
+                GetIConfigurationRoot(),
+                mockAuthDelegate.Object,
+                mockImmunizationClient.Object);
+
+            return mockImmunizationDelegate;
         }
 
-        private ClaimsPrincipal GetClaimsPrincipal()
+        private static IImmunizationDelegate GetImmunizationDelegate(PhsaResult<ImmunizationResponse> response, HttpStatusCode statusCode, bool throwException)
         {
-            List<Claim> claims = new()
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(AccessToken);
+
+            Mock<IApiResponse<PhsaResult<ImmunizationResponse>>> mockApiResponse = new();
+            mockApiResponse.Setup(s => s.Content).Returns(response);
+            mockApiResponse.Setup(s => s.StatusCode).Returns(statusCode);
+
+            Mock<IImmunizationClient> mockImmunizationClient = new();
+            if (!throwException)
             {
-                new Claim(ClaimTypes.Name, "username"),
-                new Claim(ClaimTypes.NameIdentifier, this.userId),
-                new Claim("hdid", this.hdid),
-            };
-            ClaimsIdentity identity = new(claims, "TestAuth");
-            return new ClaimsPrincipal(identity);
+                mockImmunizationClient.Setup(s => s.GetImmunizations(It.IsAny<string>(), AccessToken))
+                    .ReturnsAsync(mockApiResponse.Object);
+            }
+            else
+            {
+                mockImmunizationClient.Setup(s =>
+                        s.GetImmunizations(It.IsAny<string>(), AccessToken))
+                    .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
+            }
+
+            IImmunizationDelegate mockImmunizationDelegate = new RestImmunizationDelegate(
+                new Mock<ILogger<RestImmunizationDelegate>>().Object,
+                GetIConfigurationRoot(),
+                mockAuthDelegate.Object,
+                mockImmunizationClient.Object);
+
+            return mockImmunizationDelegate;
         }
     }
 }
