@@ -26,6 +26,11 @@ namespace HealthGateway.Database.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+
+            string schema = "gateway";
+            migrationBuilder.Sql(@$"DROP TRIGGER IF EXISTS ""UserProfileHistoryLoginTrigger"" ON {schema}.""UserProfile"";");
+            migrationBuilder.Sql($@"ALTER TABLE {schema}.""Communication"" DROP CONSTRAINT unique_date_range;");
+
             migrationBuilder.AlterColumn<DateTime>(
                 name: "UpdatedDateTime",
                 schema: "gateway",
@@ -1041,10 +1046,32 @@ namespace HealthGateway.Database.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp without time zone");
+
+            string trigger = @$"
+     CREATE TRIGGER ""UserProfileHistoryLoginTrigger""
+     AFTER UPDATE OF ""LastLoginDateTime""
+     ON {schema}.""UserProfile""
+     FOR EACH ROW
+     EXECUTE PROCEDURE {schema}.""UserProfileHistoryFunction""();";
+
+             migrationBuilder.Sql(trigger);
+
+             string constraint = @$"
+     ALTER TABLE {schema}.""Communication""
+         ADD CONSTRAINT unique_date_range EXCLUDE USING gist (
+         tstzrange(""EffectiveDateTime"", ""ExpiryDateTime"") WITH &&)
+         WHERE (""CommunicationTypeCode"" = 'Banner' AND
+                ""CommunicationStatusCode"" IN ('New' ,'Pending','Processed','Processing'))";
+
+             migrationBuilder.Sql(constraint);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            string schema = "gateway";
+            migrationBuilder.Sql(@$"DROP TRIGGER IF EXISTS ""UserProfileHistoryLoginTrigger"" ON {schema}.""UserProfile"";");
+            migrationBuilder.Sql($@"ALTER TABLE {schema}.""Communication"" DROP CONSTRAINT unique_date_range;");
+
             migrationBuilder.AlterColumn<DateTime>(
                 name: "UpdatedDateTime",
                 schema: "gateway",
@@ -2060,6 +2087,25 @@ namespace HealthGateway.Database.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone");
+
+
+            string trigger = @$"
+     CREATE TRIGGER ""UserProfileHistoryLoginTrigger""
+     AFTER UPDATE OF ""LastLoginDateTime""
+     ON {schema}.""UserProfile""
+     FOR EACH ROW
+     EXECUTE PROCEDURE {schema}.""UserProfileHistoryFunction""();";
+
+            migrationBuilder.Sql(trigger);
+
+            string constraint = @$"
+     ALTER TABLE {schema}.""Communication""
+         ADD CONSTRAINT unique_date_range EXCLUDE USING gist (
+         tsrange(""EffectiveDateTime"", ""ExpiryDateTime"") WITH &&)
+         WHERE (""CommunicationTypeCode"" = 'Banner' AND
+                ""CommunicationStatusCode"" IN ('New' ,'Pending','Processed','Processing'))";
+
+            migrationBuilder.Sql(constraint);
         }
     }
 }
