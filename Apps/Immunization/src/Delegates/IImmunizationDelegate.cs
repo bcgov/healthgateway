@@ -39,13 +39,5 @@ namespace HealthGateway.Immunization.Delegates
         /// <param name="pageIndex">The page index to return.</param>
         /// <returns>The PhsaResult including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
         Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizations(int pageIndex = 0);
-
-        /// <summary>
-        /// Gets the immunization card for the supplied HDID and Immunization Disease.
-        /// </summary>
-        /// <param name="hdid">The hdid to query.</param>
-        /// <param name="immunizationDisease">The associated disease to query.</param>
-        /// <returns>A Immunization Card.</returns>
-        Task<RequestResult<PhsaResult<ImmunizationCard>>> GetVaccineHistory(string hdid, string immunizationDisease);
     }
 }
