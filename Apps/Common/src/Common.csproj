@@ -27,12 +27,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="5.0.16" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
-    <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="1.2.0-beta1" />
-    <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.2.0-beta1" />
+    <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="1.2.0" />
+    <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.2.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc8" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc8" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc8" />
-    <PackageReference Include="OpenTelemetry.Api" Version="1.2.0-beta1" />
+    <PackageReference Include="OpenTelemetry.Api" Version="1.2.0" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="6.0.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.17.0" />
   </ItemGroup>
