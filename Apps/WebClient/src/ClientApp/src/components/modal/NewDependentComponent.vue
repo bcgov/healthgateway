@@ -195,7 +195,7 @@ export default class NewDependentComponent extends Vue {
                                     <label for="firstName">Given Names</label>
                                     <b-form-input
                                         id="firstName"
-                                        v-model="dependent.firstName"
+                                        v-model.trim="dependent.firstName"
                                         data-testid="firstNameInput"
                                         class="dependentCardInput"
                                         placeholder="John Alexander"
@@ -214,7 +214,7 @@ export default class NewDependentComponent extends Vue {
                                     <label for="lastName">Last Name</label>
                                     <b-form-input
                                         id="lastName"
-                                        v-model="dependent.lastName"
+                                        v-model.trim="dependent.lastName"
                                         data-testid="lastNameInput"
                                         class="dependentCardInput"
                                         placeholder="Doe"
