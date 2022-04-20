@@ -72,7 +72,7 @@ namespace HealthGateway.Database.Delegates
             DBResult<IEnumerable<Note>> result = new DBResult<IEnumerable<Note>>();
             result.Payload = this.dbContext.Note
                     .Where(p => p.HdId == hdId)
-                    .OrderBy(o => o.JournalDateTime)
+                    .OrderBy(o => o.JournalDate)
                     .Skip(offset)
                     .Take(pagesize)
                     .ToList();
