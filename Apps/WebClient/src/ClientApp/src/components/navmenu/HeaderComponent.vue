@@ -12,7 +12,7 @@ import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import RatingComponent from "@/components/modal/RatingComponent.vue";
-import User, { OidcUserProfile } from "@/models/user";
+import User, { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IAuthenticationService, ILogger } from "@/services/interfaces";
@@ -58,7 +58,7 @@ export default class HeaderComponent extends Vue {
     @Ref("ratingComponent")
     readonly ratingComponent!: RatingComponent;
 
-    private oidcUser: OidcUserProfile | null = null;
+    private oidcUserInfo: OidcUserInfo | null = null;
 
     private logger!: ILogger;
     private authenticationService!: IAuthenticationService;
@@ -67,8 +67,8 @@ export default class HeaderComponent extends Vue {
     private static minimunScrollChange = 2;
 
     private get userName(): string {
-        return this.oidcUser
-            ? this.oidcUser.given_name + " " + this.oidcUser.family_name
+        return this.oidcUserInfo
+            ? `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`
             : "";
     }
 
@@ -80,10 +80,10 @@ export default class HeaderComponent extends Vue {
     }
 
     @Watch("oidcIsAuthenticated")
-    private loadOidcUserOnChange() {
+    private loadOidcUserInfoOnChange() {
         // If there is no name in the scope, retrieve it from the service.
         if (this.oidcIsAuthenticated) {
-            this.loadOidcUser();
+            this.loadOidcUserInfo();
         }
     }
 
@@ -102,7 +102,7 @@ export default class HeaderComponent extends Vue {
     }
 
     private mounted() {
-        this.loadOidcUserOnChange();
+        this.loadOidcUserInfoOnChange();
     }
 
     private destroyed() {
@@ -160,10 +160,10 @@ export default class HeaderComponent extends Vue {
         this.toggleSidebar();
     }
 
-    private loadOidcUser(): void {
-        this.authenticationService.getOidcUserProfile().then((oidcUser) => {
-            if (oidcUser) {
-                this.oidcUser = oidcUser;
+    private loadOidcUserInfo(): void {
+        this.authenticationService.getOidcUserInfo().then((oidcUserInfo) => {
+            if (oidcUserInfo) {
+                this.oidcUserInfo = oidcUserInfo;
             }
         });
     }

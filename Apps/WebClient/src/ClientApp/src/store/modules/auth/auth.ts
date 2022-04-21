@@ -7,7 +7,7 @@ import { AuthModule, AuthState } from "./types";
 
 export const state: AuthState = {
     statusMessage: "",
-    authentication: { isChecked: false, identityProvider: "" },
+    authentication: { isChecked: false },
     error: undefined,
     isAuthenticated: false,
     status: LoadStatus.NONE,

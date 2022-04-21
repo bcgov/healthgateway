@@ -54,10 +54,8 @@ Cypress.Commands.add(
                     JSON.stringify(stateStore)
                 );
 
-                cy.log(
-                    `Creating OIDC Active Route: ${path} in Session storage`
-                );
-                window.sessionStorage.setItem("vuex_oidc_active_route", path);
+                const escapedRedirectPath = encodeURI(path);
+                const redirectUri = `${config.openIdConnect.callbacks.Logon}?redirect=${escapedRedirectPath}`;
 
                 cy.log("Requesting Keycloak Authentication form");
                 cy.request({
@@ -67,7 +65,7 @@ Cypress.Commands.add(
                         scope: config.openIdConnect.scope,
                         response_type: config.openIdConnect.responseType,
                         approval_prompt: "auto",
-                        redirect_uri: config.openIdConnect.callbacks.Logon,
+                        redirect_uri: redirectUri,
                         client_id: config.openIdConnect.clientId,
                         response_mode: "query",
                         state: stateStore.id,

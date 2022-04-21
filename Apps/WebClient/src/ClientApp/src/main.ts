@@ -36,7 +36,6 @@ import HgIconComponent from "@/components/shared/HgIconComponent.vue";
 import PageTitleComponent from "@/components/shared/PageTitleComponent.vue";
 import StatusLabelComponent from "@/components/shared/StatusLabelComponent.vue";
 
-import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import {
     DELEGATE_IDENTIFIER,
@@ -103,7 +102,7 @@ const configService: IConfigService = container.get(
 configService.initialize(httpDelegate);
 
 // Retrieve configuration and initialize services
-configService.getConfiguration().then((config: ExternalConfiguration) => {
+configService.getConfiguration().then((config) => {
     // Retrieve service interfaces
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     const authService: IAuthenticationService = container.get(
@@ -164,7 +163,7 @@ configService.getConfiguration().then((config: ExternalConfiguration) => {
     logger.initialize(config.webClient.logLevel);
 
     // Initialize services
-    authService.initialize(config.openIdConnect, httpDelegate);
+    const authInitializePromise = authService.initialize(config.openIdConnect);
     immunizationService.initialize(config, httpDelegate);
     patientService.initialize(config, httpDelegate);
     medicationService.initialize(config, httpDelegate);
@@ -181,28 +180,30 @@ configService.getConfiguration().then((config: ExternalConfiguration) => {
     reportService.initialize(httpDelegate);
     vaccinationStatusService.initialize(config, httpDelegate);
 
-    Vue.use(IdleVue, {
-        eventEmitter: new Vue(),
-        idleTime: config.webClient.timeouts.idle,
-        store,
-        startAtIdle: false,
-    });
-    if (window.location.pathname === "/loginCallback") {
-        initializeVue(store);
-    } else {
-        store.dispatch("auth/getOidcUser").then(() => {
-            const isValid: boolean =
-                store.getters["auth/isValidIdentityProvider"];
-            const user: User = store.getters["user/user"];
-            if (user.hdid && isValid) {
-                store.dispatch("user/checkRegistration").then(() => {
-                    initializeVue(store);
-                });
-            } else {
-                initializeVue(store);
-            }
+    authInitializePromise.then(() => {
+        Vue.use(IdleVue, {
+            eventEmitter: new Vue(),
+            idleTime: config.webClient.timeouts.idle,
+            store,
+            startAtIdle: false,
         });
-    }
+        if (window.location.pathname === "/loginCallback") {
+            initializeVue(store);
+        } else {
+            store.dispatch("auth/getOidcUser").then(() => {
+                const isValid: boolean =
+                    store.getters["auth/isValidIdentityProvider"];
+                const user: User = store.getters["user/user"];
+                if (user.hdid && isValid) {
+                    store.dispatch("user/checkRegistration").then(() => {
+                        initializeVue(store);
+                    });
+                } else {
+                    initializeVue(store);
+                }
+            });
+        }
+    });
 });
 
 const App = () => import(/* webpackChunkName: "entry" */ "./app.vue");

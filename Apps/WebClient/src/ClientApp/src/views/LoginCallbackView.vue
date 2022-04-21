@@ -10,26 +10,38 @@ import { ILogger } from "@/services/interfaces";
 
 @Component
 export default class LoginCallbackView extends Vue {
-    @Action("oidcSignInCallback", { namespace: "auth" })
-    oidcSignInCallback!: () => Promise<string>;
+    @Action("signIn", { namespace: "auth" })
+    signIn!: (params: {
+        redirectPath: string;
+        idpHint?: string;
+    }) => Promise<void>;
 
-    @Action("clearStorage", { namespace: "auth" }) clearStorage!: () => void;
+    @Action("clearStorage", { namespace: "auth" })
+    clearStorage!: () => void;
 
     @Action("checkRegistration", { namespace: "user" })
     checkRegistration!: () => Promise<boolean>;
 
-    @Getter("user", { namespace: "user" }) user!: User;
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     @Getter("isValidIdentityProvider", { namespace: "auth" })
     isValidIdentityProvider!: boolean;
 
     private logger!: ILogger;
+    private redirectPath = "/home";
 
     private created() {
-        this.oidcSignInCallback()
-            .then((redirectPath) => {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
+        if (this.$route.query.redirect && this.$route.query.redirect !== "") {
+            this.redirectPath = this.$route.query.redirect.toString();
+        }
+
+        this.signIn({ redirectPath: this.redirectPath })
+            .then(() => {
                 this.logger.debug(
-                    `oidcSignInCallback for user: ${JSON.stringify(this.user)}`
+                    `signIn for user: ${JSON.stringify(this.user)}`
                 );
 
                 // If the idp is valid, check the registration status and continue the route.
@@ -37,30 +49,30 @@ export default class LoginCallbackView extends Vue {
                 if (this.isValidIdentityProvider) {
                     this.checkRegistration().then(() => {
                         this.$router
-                            .push({ path: redirectPath })
+                            .push({ path: this.redirectPath })
                             .catch((error) => {
-                                console.warn(error.message);
+                                this.logger.warn(error.message);
                             });
                     });
                 } else {
-                    this.$router.push({ path: redirectPath }).catch((error) => {
-                        console.warn(error.message);
-                    });
+                    this.$router
+                        .push({ path: this.redirectPath })
+                        .catch((error) => {
+                            this.logger.warn(error.message);
+                        });
                 }
             })
             .catch((err) => {
-                // Login failed redirect it back to the login page.
-                console.error("LoginCallback Error:", err);
+                // login failed - redirect back to the login page
+                this.logger.error(
+                    `LoginCallback Error: ${JSON.stringify(err)}`
+                );
                 this.clearStorage();
                 this.$router.push({
                     path: "/login",
                     query: { isRetry: "true" },
                 });
             });
-    }
-
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 }
 </script>

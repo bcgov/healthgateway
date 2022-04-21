@@ -1,164 +1,122 @@
-import { CookieStorage } from "cookie-storage";
 import { injectable } from "inversify";
-import {
-    SignoutResponse,
-    User as OidcUser,
-    UserManager,
-    UserManagerSettings,
-    WebStorageStateStore,
-} from "oidc-client";
+import Keycloak, { KeycloakConfig, KeycloakInstance } from "keycloak-js";
 
 import { OpenIdConnectConfiguration } from "@/models/configData";
-import { OidcUserProfile } from "@/models/user";
+import { OidcTokenDetails, OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import {
-    IAuthenticationService,
-    IHttpDelegate,
-    ILogger,
-} from "@/services/interfaces";
-import { FragmentedStorage } from "@/utility/fragmentStorage";
+import { IAuthenticationService, ILogger } from "@/services/interfaces";
 
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly USER_INFO_PATH: string =
-        "/protocol/openid-connect/userinfo";
 
-    private oidcUserManager!: UserManager;
-    private authorityUri = "";
-    private http!: IHttpDelegate;
+    private keycloak!: KeycloakInstance;
+    private scope!: string;
+    private logonCallback!: string;
+    private logoutCallback!: string;
 
-    public initialize(
-        config: OpenIdConnectConfiguration,
-        httpDelegate: IHttpDelegate
-    ): void {
-        const oidcConfig = {
-            userStore: new WebStorageStateStore({
-                store: new FragmentedStorage(
-                    new CookieStorage({
-                        domain: null,
-                        expires: null,
-                        path: "/",
-                        secure: true,
-                        sameSite: "Strict",
-                    }),
-                    2000
-                ),
-            }),
-            stateStore: new WebStorageStateStore({
-                store: window.sessionStorage,
-            }),
-            authority: config.authority,
-            client_id: config.clientId,
-            redirect_uri: config.callbacks["Logon"],
-            response_type: config.responseType,
-            scope: config.scope,
-            post_logout_redirect_uri: config.callbacks["Logout"],
-            filterProtocolClaims: true,
-            loadUserInfo: false,
-            automaticSilentRenew: true,
+    public async initialize(config: OpenIdConnectConfiguration): Promise<void> {
+        this.scope = config.scope;
+        this.logonCallback = config.callbacks["Logon"];
+        this.logoutCallback = config.callbacks["Logout"];
+
+        const [url, realm] = config.authority.split("/realms/");
+        const keycloakConfig: KeycloakConfig = {
+            url,
+            realm,
+            clientId: config.clientId,
         };
-        this.http = httpDelegate;
-        this.authorityUri = config.authority;
-        this.oidcUserManager = new UserManager(oidcConfig);
+        this.keycloak = Keycloak(keycloakConfig);
 
-        this.oidcUserManager.events.addUserLoaded(() => {
-            this.logger.verbose("OIDC: User Loaded");
-        });
-        this.oidcUserManager.events.addUserUnloaded(() => {
-            this.logger.verbose("OIDC: User Unloaded");
-        });
-        this.oidcUserManager.events.addAccessTokenExpiring(() => {
-            this.logger.verbose("OIDC: Access Token Expiring");
-        });
-        this.oidcUserManager.events.addAccessTokenExpired(() => {
-            this.logger.verbose("OIDC: Access Token Expired");
-            this.logout();
-        });
-        this.oidcUserManager.events.addSilentRenewError(() => {
-            this.logger.verbose("OIDC: Silent Renew Error");
-        });
-        this.oidcUserManager.events.addUserSignedIn(() => {
-            this.logger.verbose("OIDC: User Signed In");
-        });
-        this.oidcUserManager.events.addUserSignedOut(() => {
-            this.logger.verbose("OIDC: User Signed Out");
-        });
-        this.oidcUserManager.events.addUserSessionChanged(() => {
-            this.logger.verbose("OIDC: User Session Changed");
-        });
-    }
+        this.keycloak.onReady = () => {
+            this.logger.verbose("Keycloak: onReady");
+        };
+        this.keycloak.onAuthSuccess = () => {
+            this.logger.verbose("Keycloak: onAuthSuccess");
+        };
+        this.keycloak.onAuthError = (error) => {
+            this.logger.verbose(`Keycloak: onAuthError - ${error.error}`);
+            this.logger.error(error.error_description);
+        };
+        this.keycloak.onAuthRefreshSuccess = () => {
+            this.logger.verbose("Keycloak: onAuthRefreshSuccess");
+        };
+        this.keycloak.onAuthRefreshError = () => {
+            this.logger.verbose("Keycloak: onAuthRefreshError");
+        };
+        this.keycloak.onAuthLogout = () => {
+            this.logger.verbose("Keycloak: onAuthLogout");
+        };
+        this.keycloak.onTokenExpired = () => {
+            this.logger.verbose("Keycloak: onTokenExpired");
+        };
+        this.keycloak.onActionUpdate = (status) => {
+            this.logger.verbose(`Keycloak: onActionUpdate - ${status}`);
+        };
 
-    public getOidcConfig(): UserManagerSettings {
-        return this.oidcUserManager.settings;
-    }
-
-    public getUser(): Promise<OidcUser | null> {
-        return new Promise<OidcUser | null>((resolve) => {
-            this.oidcUserManager
-                .getUser()
-                .then((user) => {
-                    resolve(user);
-                })
-                .catch((err) => {
-                    this.logger.error(err);
-                    resolve(null);
-                });
+        await this.keycloak.init({
+            onLoad: "check-sso",
         });
     }
 
-    public getOidcUserProfile(): Promise<OidcUserProfile> {
-        return this.http.get(`${this.authorityUri}${this.USER_INFO_PATH}`);
+    public async signIn(
+        redirectPath: string,
+        idpHint?: string
+    ): Promise<OidcTokenDetails> {
+        this.logger.verbose("Checking authentication...");
+        const escapedRedirectPath = encodeURI(redirectPath);
+        const callbackUri = `${this.logonCallback}?redirect=${escapedRedirectPath}`;
+
+        const tokenDetails = this.getOidcTokenDetails();
+        if (tokenDetails !== null) {
+            this.logger.verbose("Already authenticated");
+            return tokenDetails;
+        }
+
+        this.logger.verbose(
+            "Not yet authenticated; redirecting to Keycloak login..."
+        );
+        await this.keycloak.login({
+            scope: this.scope,
+            redirectUri: callbackUri,
+            idpHint: idpHint,
+        });
+
+        // if keycloak.login() doesn't cause a redirect, something is terribly wrong
+        throw Error("Redirect to Keycloak login page failed");
     }
 
-    public logout(): Promise<void> {
-        return this.oidcUserManager.signoutRedirect();
-    }
-
-    public signinSilent(): Promise<OidcUser> {
-        return this.oidcUserManager.signinSilent();
-    }
-
-    public signinRedirect(
-        idpHint: string,
-        redirectPath: string
-    ): Promise<void> {
-        sessionStorage.setItem("vuex_oidc_active_route", redirectPath);
-        return this.oidcUserManager.signinRedirect({
-            extraQueryParams: {
-                kc_idp_hint: idpHint,
-            },
+    public signOut(): Promise<void> {
+        return this.keycloak.logout({
+            redirectUri: this.logoutCallback,
         });
     }
 
-    public signinRedirectCallback(): Promise<OidcUser> {
-        return this.oidcUserManager.signinRedirectCallback();
+    public getOidcTokenDetails(): OidcTokenDetails | null {
+        if (!this.keycloak.authenticated) {
+            return null;
+        }
+
+        return {
+            idToken: this.keycloak.idToken ?? "",
+            sessionState: this.keycloak.sessionId,
+            refreshToken: this.keycloak.refreshToken,
+            accessToken: this.keycloak.token ?? "",
+            expired: this.keycloak.isTokenExpired(),
+            hdid: this.keycloak.idTokenParsed?.hdid ?? "",
+        };
     }
 
-    public signoutRedirectCallback(): Promise<SignoutResponse> {
-        return this.oidcUserManager.signoutRedirectCallback();
+    public async getOidcUserInfo(): Promise<OidcUserInfo> {
+        if (!this.keycloak.userInfo) {
+            await this.keycloak.loadUserInfo();
+        }
+
+        return this.keycloak.userInfo as OidcUserInfo;
     }
 
-    public removeUser(): Promise<void> {
-        return this.oidcUserManager.removeUser();
-    }
-
-    public storeUser(user: OidcUser): Promise<void> {
-        return this.oidcUserManager.storeUser(user);
-    }
-
-    public clearStaleState(): Promise<void> {
-        return this.oidcUserManager.clearStaleState();
-    }
-
-    public checkOidcUserSize(user: OidcUser): number {
-        const key = `user:${this.oidcUserManager.settings.authority}:${this.oidcUserManager.settings.client_id}`;
-        const completString = key + "=" + user.toStorageString();
-        return this.stringbyteCount(completString);
-    }
-
-    private stringbyteCount(s: string): number {
-        return encodeURIComponent("" + s).length;
+    public clearState(): void {
+        this.keycloak.clearToken();
     }
 }
