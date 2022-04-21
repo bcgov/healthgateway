@@ -60,7 +60,7 @@ namespace HealthGateway.Immunization
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
-            this.startupConfig.ConfigureAuthorizationServices(services);
+            this.startupConfig.ConfigureDelegateAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureTracing(services);
             this.startupConfig.ConfigureAccessControl(services);
