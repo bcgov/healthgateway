@@ -1,4 +1,4 @@
-import { User as OidcUser } from "oidc-client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     ActionContext,
     ActionTree,
@@ -9,6 +9,7 @@ import {
 
 import AuthenticationData from "@/models/authenticationData";
 import { LoadStatus } from "@/models/storeOperations";
+import { OidcTokenDetails, OidcUserInfo } from "@/models/user";
 import { RootState } from "@/store/types";
 
 export interface AuthState {
@@ -22,30 +23,34 @@ export interface AuthState {
 export interface AuthGetters extends GetterTree<AuthState, RootState> {
     authenticationStatus(state: AuthState): string;
     oidcIsAuthenticated(state: AuthState): boolean;
-    oidcScopes(state: AuthState): string[] | undefined;
     oidcAuthenticationIsChecked(state: AuthState): boolean;
     oidcError(state: AuthState): unknown;
-    isValidIdentityProvider(state: AuthState): boolean;
+    isValidIdentityProvider(
+        _state: AuthState,
+        _getters: any,
+        _rootState: RootState,
+        rootGetters: any
+    ): boolean;
 }
 
 type StoreContext = ActionContext<AuthState, RootState>;
 export interface AuthActions extends ActionTree<AuthState, RootState> {
-    oidcCheckUser(context: StoreContext): Promise<boolean>;
-    authenticateOidc(
+    signIn(
         context: StoreContext,
         params: { idpHint: string; redirectPath: string }
     ): Promise<void>;
-    oidcSignInCallback(context: StoreContext): Promise<string>;
-    authenticateOidcSilent(context: StoreContext): Promise<void>;
-    oidcWasAuthenticated(context: StoreContext, oidcUser: OidcUser): void;
+    signOut(): void;
+    oidcCheckUser(context: StoreContext): Promise<boolean>;
     getOidcUser(context: StoreContext): Promise<void>;
-    signOutOidc(): void;
-    signOutOidcCallback(context: StoreContext): Promise<string>;
+    oidcWasAuthenticated(
+        context: StoreContext,
+        params: { tokenDetails: OidcTokenDetails; userInfo: OidcUserInfo }
+    ): void;
     clearStorage(context: StoreContext): void;
 }
 
 export interface AuthMutations extends MutationTree<AuthState> {
-    setOidcAuth(state: AuthState, user: OidcUser): void;
+    setOidcAuth(state: AuthState, user: OidcTokenDetails): void;
     unsetOidcAuth(state: AuthState): void;
     setOidcAuthIsChecked(state: AuthState): void;
     setOidcError(state: AuthState, error: unknown): void;

@@ -12,7 +12,6 @@ import {
 const authState: AuthState = {
     authentication: {
         isChecked: true,
-        identityProvider: "",
     },
     isAuthenticated: true,
     statusMessage: "",
@@ -27,9 +26,6 @@ const authGetters: AuthGetters = {
     oidcIsAuthenticated(): boolean {
         return true;
     },
-    oidcScopes(): string[] | undefined {
-        return undefined;
-    },
     oidcAuthenticationIsChecked(): boolean {
         return true;
     },
@@ -42,14 +38,11 @@ const authGetters: AuthGetters = {
 };
 
 const authActions: AuthActions = {
+    signIn: voidPromise,
+    signOut: voidMethod,
     oidcCheckUser: voidPromise,
-    authenticateOidc: voidPromise,
-    oidcSignInCallback: voidPromise,
-    authenticateOidcSilent: voidPromise,
-    oidcWasAuthenticated: voidMethod,
     getOidcUser: voidPromise,
-    signOutOidc: voidMethod,
-    signOutOidcCallback: voidPromise,
+    oidcWasAuthenticated: voidMethod,
     clearStorage: voidMethod,
 };
 

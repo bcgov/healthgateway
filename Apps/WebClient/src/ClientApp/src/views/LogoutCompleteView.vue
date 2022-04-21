@@ -1,14 +1,12 @@
 ﻿<script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { Getter } from "vuex-class";
 
 import type { WebClientConfiguration } from "@/models/configData";
 
 @Component
 export default class LogoutCompleteView extends Vue {
-    @Action("signOutOidcCallback", { namespace: "auth" })
-    logoutCallback!: () => void;
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -18,10 +16,6 @@ export default class LogoutCompleteView extends Vue {
                 this.$router.push({ path: "/" });
             }
         }, Number(this.config.timeouts.logoutRedirect));
-    }
-
-    private mounted() {
-        this.logoutCallback();
     }
 }
 </script>

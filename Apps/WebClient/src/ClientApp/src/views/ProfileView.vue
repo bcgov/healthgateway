@@ -23,7 +23,7 @@ import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
-import User, { OidcUserProfile } from "@/models/user";
+import User, { OidcUserInfo } from "@/models/user";
 import UserProfile from "@/models/userProfile";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -107,7 +107,7 @@ export default class ProfileView extends Vue {
     private emailVerified = false;
     private email = "";
     private isEmailEditable = false;
-    private oidcUser!: OidcUserProfile;
+    private oidcUserInfo!: OidcUserInfo;
     private emailVerificationSent = false;
 
     private smsVerified = false;
@@ -175,24 +175,24 @@ export default class ProfileView extends Vue {
 
         this.isLoading = true;
         var patientPromise = this.retrievePatientData();
-        var oidcUserPromise = authenticationService.getOidcUserProfile();
+        var oidcUserInfoPromise = authenticationService.getOidcUserInfo();
         var userProfilePromise = this.userProfileService.getProfile(
             this.user.hdid
         );
 
-        Promise.all([oidcUserPromise, userProfilePromise, patientPromise])
-            .then((results) => {
+        Promise.all([oidcUserInfoPromise, userProfilePromise, patientPromise])
+            .then(([oidcUserInfo, userProfile]) => {
                 // Load oidc user details
-                if (results[0]) {
-                    this.oidcUser = results[0];
+                if (oidcUserInfo) {
+                    this.oidcUserInfo = oidcUserInfo;
                 }
 
-                if (results[1]) {
+                if (userProfile) {
                     // Load user profile
                     this.logger.verbose(
                         `User Profile: ${JSON.stringify(this.userProfile)}`
                     );
-                    this.userProfile = results[1];
+                    this.userProfile = userProfile;
                     this.loginDateTimes = this.userProfile.lastLoginDateTimes;
                     this.email = this.userProfile.email;
                     this.emailVerified = this.userProfile.isEmailVerified;
@@ -280,7 +280,7 @@ export default class ProfileView extends Vue {
     }
 
     private get fullName(): string {
-        return this.oidcUser.given_name + " " + this.oidcUser.family_name;
+        return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
     }
 
     private calculateTimeForDeletion(): void {

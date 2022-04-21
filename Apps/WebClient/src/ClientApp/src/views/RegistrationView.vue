@@ -13,7 +13,7 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
 import { ResultError } from "@/models/requestResult";
-import type { OidcUserProfile } from "@/models/user";
+import type { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
@@ -64,7 +64,7 @@ export default class RegistrationView extends Vue {
     private isEmailChecked = true;
     private isSMSNumberChecked = true;
 
-    private oidcUser!: OidcUserProfile;
+    private oidcUserInfo!: OidcUserInfo;
     private userProfileService!: IUserProfileService;
     private submitStatus = "";
     private loadingUserData = true;
@@ -102,18 +102,18 @@ export default class RegistrationView extends Vue {
             SERVICE_IDENTIFIER.AuthenticationService
         );
         authenticationService
-            .getOidcUserProfile()
-            .then((oidcUser) => {
-                if (oidcUser) {
-                    this.oidcUser = oidcUser;
+            .getOidcUserInfo()
+            .then((oidcUserInfo) => {
+                if (oidcUserInfo) {
+                    this.oidcUserInfo = oidcUserInfo;
 
-                    if (this.oidcUser.email !== null) {
-                        this.email = this.oidcUser.email;
-                        this.emailConfirmation = this.oidcUser.email;
+                    if (this.oidcUserInfo.email !== null) {
+                        this.email = this.oidcUserInfo.email;
+                        this.emailConfirmation = this.oidcUserInfo.email;
                     }
 
                     return this.userProfileService
-                        .validateAge(oidcUser.hdid)
+                        .validateAge(oidcUserInfo.hdid)
                         .then((isValid) => {
                             this.isValidAge = isValid;
                             this.loadingUserData = false;
@@ -176,7 +176,7 @@ export default class RegistrationView extends Vue {
     }
 
     private get fullName(): string {
-        return this.oidcUser.given_name + " " + this.oidcUser.family_name;
+        return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
     }
     private get isRegistrationClosed(): boolean {
         return (
@@ -235,7 +235,7 @@ export default class RegistrationView extends Vue {
         this.userProfileService
             .createProfile({
                 profile: {
-                    hdid: this.oidcUser.hdid,
+                    hdid: this.oidcUserInfo.hdid,
                     acceptedTermsOfService: this.accepted,
                     email: this.email || "",
                     isEmailVerified: false,

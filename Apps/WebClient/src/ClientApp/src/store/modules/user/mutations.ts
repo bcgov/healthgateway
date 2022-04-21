@@ -1,10 +1,9 @@
-import { User as OidcUser } from "oidc-client";
 import Vue from "vue";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
-import User from "@/models/user";
+import User, { OidcUserInfo } from "@/models/user";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile from "@/models/userProfile";
 import container from "@/plugins/container";
@@ -17,8 +16,9 @@ export const mutations: UserMutation = {
     setRequested(state: UserState) {
         state.status = LoadStatus.REQUESTED;
     },
-    setOidcUserData(state: UserState, oidcUser: OidcUser) {
-        Vue.set(state.user, "hdid", oidcUser.profile.hdid);
+    setOidcUserInfo(state: UserState, userInfo: OidcUserInfo) {
+        Vue.set(state.user, "hdid", userInfo.hdid);
+        state.oidcUserInfo = userInfo;
         state.error = false;
         state.statusMessage = "success";
         state.status = LoadStatus.LOADED;
@@ -41,22 +41,18 @@ export const mutations: UserMutation = {
             "closedDateTime",
             userProfile ? userProfile.closedDateTime : undefined
         );
-
         Vue.set(
             state.user,
             "preferences",
             userProfile ? userProfile.preferences : {}
         );
-
         Vue.set(state.user, "hasEmail", !!userProfile.email);
-
         Vue.set(state.user, "verifiedEmail", userProfile.isEmailVerified);
-
         Vue.set(state.user, "hasSMS", !!userProfile.smsNumber);
-
         Vue.set(state.user, "verifiedSMS", userProfile.isSMSNumberVerified);
 
         logger.verbose(`state.user: ${JSON.stringify(state.user)}`);
+
         state.error = false;
         state.statusMessage = "success";
         if (state.patientData.hdid !== undefined) {
@@ -66,7 +62,7 @@ export const mutations: UserMutation = {
         }
     },
     setSMSResendDateTime(state: UserState, dateTime: DateWrapper) {
-        Vue.set(state, "smsResendDateTime", dateTime);
+        state.smsResendDateTime = dateTime;
         state.error = false;
         state.statusMessage = "success";
         state.status = LoadStatus.LOADED;
@@ -99,6 +95,7 @@ export const mutations: UserMutation = {
     },
     clearUserData(state: UserState) {
         state.user = new User();
+        state.oidcUserInfo = undefined;
         state.error = false;
         state.statusMessage = "success";
         state.status = LoadStatus.LOADED;

@@ -26,7 +26,7 @@ import PcrTestData from "@/models/pcrTestData";
 import RegisterTestKitPublicRequest from "@/models/registerTestKitPublicRequest";
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import { ResultError } from "@/models/requestResult";
-import User, { OidcUserProfile } from "@/models/user";
+import User, { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IAuthenticationService, ILogger } from "@/services/interfaces";
@@ -71,10 +71,10 @@ export default class PcrTestView extends Vue {
     @Action("clearError", { namespace: "errorBanner" })
     clearError!: () => void;
 
-    @Action("authenticateOidc", { namespace: "auth" })
-    authenticateOidc!: (params: {
-        idpHint: string;
+    @Action("signIn", { namespace: "auth" })
+    signIn!: (params: {
         redirectPath: string;
+        idpHint?: string;
     }) => Promise<void>;
 
     @Getter("user", { namespace: "user" }) user!: User;
@@ -97,7 +97,7 @@ export default class PcrTestView extends Vue {
 
     private noPhn = false;
 
-    private oidcUser?: OidcUserProfile = undefined;
+    private oidcUserInfo?: OidcUserInfo = undefined;
 
     private registrationComplete = false;
 
@@ -171,11 +171,11 @@ export default class PcrTestView extends Vue {
             );
             this.loading = true;
             authenticationService
-                .getOidcUserProfile()
-                .then((result) => {
+                .getOidcUserInfo()
+                .then((oidcUserInfo) => {
                     // Load oidc user details
-                    this.oidcUser = result;
-                    this.pcrTest.hdid = this.oidcUser.hdid;
+                    this.oidcUserInfo = oidcUserInfo;
+                    this.pcrTest.hdid = this.oidcUserInfo.hdid;
                 })
                 .catch((err) => {
                     this.logger.error(`Error loading profile: ${err}`);
@@ -207,8 +207,8 @@ export default class PcrTestView extends Vue {
     }
 
     private getFullName(): string {
-        if (this.oidcUser !== undefined) {
-            return this.oidcUser.given_name + " " + this.oidcUser.family_name;
+        if (this.oidcUserInfo !== undefined) {
+            return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
         } else {
             return "";
         }
@@ -251,11 +251,19 @@ export default class PcrTestView extends Vue {
             !this.oidcIsAuthenticated
         ) {
             this.loading = true;
-            // don't need to reset loading property if login succeeds
-            // since redirect will kick in and component will be recreated after
-            this.oidcLogin(this.identityProviders[0].hint).catch(
-                () => (this.loading = false)
-            );
+            this.signIn({
+                redirectPath: this.oidcRedirectPath,
+                idpHint: this.identityProviders[0].hint,
+            })
+                .catch((err) => {
+                    this.logger.error(`oidcLogin Error: ${err}`);
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.User,
+                        traceId: undefined,
+                    });
+                })
+                .finally(() => (this.loading = false));
         }
         this.resetForm();
         this.dataSource = dataSource;
@@ -375,7 +383,7 @@ export default class PcrTestView extends Vue {
             // ### Submitted through OIDC
             case this.DSKEYCLOAK:
                 var testKitRequest: RegisterTestKitRequest = {
-                    hdid: this.oidcUser?.hdid,
+                    hdid: this.oidcUserInfo?.hdid,
                     testTakenMinutesAgo: this.pcrTest.testTakenMinutesAgo,
                     testKitCid: this.pcrTest.testKitCid,
                     shortCodeFirst,
@@ -485,21 +493,6 @@ export default class PcrTestView extends Vue {
         };
         this.noPhn = false;
         this.$v.$reset();
-    }
-
-    // Auth
-    private async oidcLogin(hint: string): Promise<void> {
-        return this.authenticateOidc({
-            idpHint: hint,
-            redirectPath: this.oidcRedirectPath,
-        }).catch((err) => {
-            this.logger.error(`oidcLogin Error: ${err}`);
-            this.addError({
-                errorType: ErrorType.Retrieve,
-                source: ErrorSourceType.User,
-                traceId: undefined,
-            });
-        });
     }
 }
 </script>

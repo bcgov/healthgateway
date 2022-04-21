@@ -1,7 +1,6 @@
 import "@/plugins/inversify.config";
 
-import { User as OidcUser, UserSettings } from "oidc-client";
-
+import { OidcTokenDetails } from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
@@ -14,104 +13,66 @@ describe("Auth mutations", () => {
 
     test("Sets oidcAuth authenticated", () => {
         const state = initialState;
-        const settings: UserSettings = {
-            id_token: "id_token",
-            session_state: "",
-            access_token: "access_token",
-            refresh_token: "refresh_token",
-            token_type: "",
-            scope: "test_scope_a test_scope_b",
-            profile: {
-                name: "User Name",
-                iss: "",
-                sub: "",
-                aud: "",
-                exp: 0,
-                iat: 0,
-            },
-            expires_at: 0,
-            state: undefined,
+
+        const details: OidcTokenDetails = {
+            idToken: "id_token",
+            accessToken: "access_token",
+            refreshToken: "refresh_token",
+            expired: false,
+            hdid: "",
         };
 
-        const user: OidcUser = new OidcUser(settings);
-
         // apply mutation
-        mutations.setOidcAuth(state, user);
+        mutations.setOidcAuth(state, details);
 
         // assert result
         expect(state.isAuthenticated).toBe(true);
-        expect(state.authentication.scopes).toEqual(settings.scope.split(" "));
-        expect(state.authentication.idToken).toBe(settings.id_token);
-        expect(state.authentication.accessToken).toBe(settings.access_token);
+        expect(state.authentication.idToken).toBe(details.idToken);
+        expect(state.authentication.accessToken).toBe(details.accessToken);
     });
 
     test("Sets oidcAuth not authenticated", () => {
         const state = initialState;
-        const settings: UserSettings = {
-            id_token: "",
-            session_state: "",
-            access_token: "access_token",
-            refresh_token: "refresh_token",
-            token_type: "",
-            scope: "test_scope",
-            profile: {
-                name: "User Name",
-                iss: "",
-                sub: "",
-                aud: "",
-                exp: 0,
-                iat: 0,
-            },
-            expires_at: 0,
-            state: undefined,
+
+        const details: OidcTokenDetails = {
+            idToken: "",
+            accessToken: "access_token",
+            refreshToken: "refresh_token",
+            expired: false,
+            hdid: "",
         };
-        const user: OidcUser = new OidcUser(settings);
 
         // apply mutation
-        mutations.setOidcAuth(state, user);
+        mutations.setOidcAuth(state, details);
 
         // assert result
         expect(state.isAuthenticated).toBe(false);
-        expect(state.authentication.scopes).toEqual(settings.scope.split(" "));
-        expect(state.authentication.idToken).toBe(settings.id_token);
-        expect(state.authentication.accessToken).toBe(settings.access_token);
+        expect(state.authentication.idToken).toBe(details.idToken);
+        expect(state.authentication.accessToken).toBe(details.accessToken);
     });
 
     test("Unsets oidc data", () => {
         const state = initialState;
-        const settings: UserSettings = {
-            id_token: "id_token",
-            session_state: "",
-            access_token: "access_token",
-            refresh_token: "refresh_token",
-            token_type: "",
-            scope: "test_scope",
-            profile: {
-                name: "User Name",
-                iss: "",
-                sub: "",
-                aud: "",
-                exp: 0,
-                iat: 0,
-            },
-            expires_at: 0,
-            state: undefined,
+
+        const details: OidcTokenDetails = {
+            idToken: "id_token",
+            accessToken: "access_token",
+            refreshToken: "refresh_token",
+            expired: false,
+            hdid: "",
         };
-        const user: OidcUser = new OidcUser(settings);
 
         // apply mutation
-        mutations.setOidcAuth(state, user);
+        mutations.setOidcAuth(state, details);
 
         // assert result
         expect(state.isAuthenticated).toBe(true);
-        expect(state.authentication.scopes).toEqual(settings.scope.split(" "));
-        expect(state.authentication.idToken).toBe(settings.id_token);
-        expect(state.authentication.accessToken).toBe(settings.access_token);
+        expect(state.authentication.idToken).toBe(details.idToken);
+        expect(state.authentication.accessToken).toBe(details.accessToken);
 
         mutations.unsetOidcAuth(state);
 
         expect(state.isAuthenticated).toBe(false);
-        expect(state.authentication.scopes).toBe(undefined);
         expect(state.authentication.idToken).toBe(undefined);
         expect(state.authentication.accessToken).toBe(undefined);
     });
