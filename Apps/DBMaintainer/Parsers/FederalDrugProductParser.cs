@@ -46,19 +46,19 @@ namespace HealthGateway.DrugMaintainer
         public IList<DrugProduct> ParseDrugFile(string sourceFolder, FileDownload fileDownload)
         {
             this.logger.LogInformation("Parsing Drug file");
-            using var reader = new StreamReader(GetFileMatching(sourceFolder, "drug*.txt"));
-            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+            using StreamReader reader = new(GetFileMatching(sourceFolder, "drug*.txt"));
+            CsvConfiguration csvConfig = new(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = false,
             };
-            using var csv = new CsvReader(reader, csvConfig);
+            using CsvReader csv = new(reader, csvConfig);
             TypeConverterOptions options = new()
             {
-                Formats = new[] { "dd-MMM-yyyy" },
+                Formats = new[] { "dd-MMM-yyyy", },
                 DateTimeStyle = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
             };
             csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
-            DrugProductMapper mapper = new DrugProductMapper(fileDownload);
+            DrugProductMapper mapper = new(fileDownload);
             csv.Context.RegisterClassMap(mapper);
             List<DrugProduct> records = csv.GetRecords<DrugProduct>().ToList();
 
@@ -69,13 +69,13 @@ namespace HealthGateway.DrugMaintainer
         public IList<ActiveIngredient> ParseActiveIngredientFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Ingredients file");
-            using var reader = new StreamReader(GetFileMatching(filePath, "ingred*.txt"));
-            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+            using StreamReader reader = new(GetFileMatching(filePath, "ingred*.txt"));
+            CsvConfiguration csvConfig = new(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = false,
             };
-            using var csv = new CsvReader(reader, csvConfig);
-            ActiveIngredientMapper mapper = new ActiveIngredientMapper(drugProducts);
+            using CsvReader csv = new(reader, csvConfig);
+            ActiveIngredientMapper mapper = new(drugProducts);
             csv.Context.RegisterClassMap(mapper);
             List<ActiveIngredient> records = csv.GetRecords<ActiveIngredient>().ToList();
             return records;
@@ -85,13 +85,13 @@ namespace HealthGateway.DrugMaintainer
         public IList<Company> ParseCompanyFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Company file");
-            using var reader = new StreamReader(GetFileMatching(filePath, "comp*.txt"));
-            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+            using StreamReader reader = new(GetFileMatching(filePath, "comp*.txt"));
+            CsvConfiguration csvConfig = new(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = false,
             };
-            using var csv = new CsvReader(reader, csvConfig);
-            CompanyMapper mapper = new CompanyMapper(drugProducts);
+            using CsvReader csv = new(reader, csvConfig);
+            CompanyMapper mapper = new(drugProducts);
             csv.Context.RegisterClassMap(mapper);
             List<Company> records = csv.GetRecords<Company>().ToList();
             return records;
@@ -101,20 +101,20 @@ namespace HealthGateway.DrugMaintainer
         public IList<Status> ParseStatusFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Status file");
-            using var reader = new StreamReader(GetFileMatching(filePath, "status*.txt"));
-            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+            using StreamReader reader = new(GetFileMatching(filePath, "status*.txt"));
+            CsvConfiguration csvConfig = new(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = false,
             };
-            using var csv = new CsvReader(reader, csvConfig);
+            using CsvReader csv = new(reader, csvConfig);
             TypeConverterOptions options = new()
             {
-                Formats = new[] {"dd-MMM-yyyy"},
-                DateTimeStyle = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal
+                Formats = new[] { "dd-MMM-yyyy", },
+                DateTimeStyle = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
             };
             csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
             csv.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
-            StatusMapper mapper = new StatusMapper(drugProducts);
+            StatusMapper mapper = new(drugProducts);
             csv.Context.RegisterClassMap(mapper);
             List<Status> records = csv.GetRecords<Status>().ToList();
             return records;
@@ -124,13 +124,13 @@ namespace HealthGateway.DrugMaintainer
         public IList<Form> ParseFormFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Form file");
-            using var reader = new StreamReader(GetFileMatching(filePath, "form*.txt"));
-            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+            using StreamReader reader = new(GetFileMatching(filePath, "form*.txt"));
+            CsvConfiguration csvConfig = new(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = false,
             };
-            using var csv = new CsvReader(reader, csvConfig);
-            FormMapper mapper = new FormMapper(drugProducts);
+            using CsvReader csv = new(reader, csvConfig);
+            FormMapper mapper = new(drugProducts);
             csv.Context.RegisterClassMap(mapper);
             List<Form> records = csv.GetRecords<Form>().ToList();
             return records;
@@ -140,13 +140,13 @@ namespace HealthGateway.DrugMaintainer
         public IList<Packaging> ParsePackagingFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Package file");
-            using var reader = new StreamReader(GetFileMatching(filePath, "package*.txt"));
-            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+            using StreamReader reader = new(GetFileMatching(filePath, "package*.txt"));
+            CsvConfiguration csvConfig = new(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = false,
             };
-            using var csv = new CsvReader(reader, csvConfig);
-            PackagingMapper mapper = new PackagingMapper(drugProducts);
+            using CsvReader csv = new(reader, csvConfig);
+            PackagingMapper mapper = new(drugProducts);
             csv.Context.RegisterClassMap(mapper);
             List<Packaging> records = csv.GetRecords<Packaging>().ToList();
             return records;
@@ -156,13 +156,13 @@ namespace HealthGateway.DrugMaintainer
         public IList<PharmaceuticalStd> ParsePharmaceuticalStdFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Pharmaceutical file");
-            using var reader = new StreamReader(GetFileMatching(filePath, "pharm*.txt"));
-            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+            using StreamReader reader = new(GetFileMatching(filePath, "pharm*.txt"));
+            CsvConfiguration csvConfig = new(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = false,
             };
             using var csv = new CsvReader(reader, csvConfig);
-            PharmaceuticalStdMapper mapper = new PharmaceuticalStdMapper(drugProducts);
+            PharmaceuticalStdMapper mapper = new(drugProducts);
             csv.Context.RegisterClassMap(mapper);
             List<PharmaceuticalStd> records = csv.GetRecords<PharmaceuticalStd>().ToList();
             return records;
@@ -172,13 +172,13 @@ namespace HealthGateway.DrugMaintainer
         public IList<Route> ParseRouteFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Route file");
-            using var reader = new StreamReader(GetFileMatching(filePath, "route*.txt"));
-            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+            using StreamReader reader = new(GetFileMatching(filePath, "route*.txt"));
+            CsvConfiguration csvConfig = new(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = false,
             };
-            using var csv = new CsvReader(reader, csvConfig);
-            RouteMapper mapper = new RouteMapper(drugProducts);
+            using CsvReader csv = new(reader, csvConfig);
+            RouteMapper mapper = new(drugProducts);
             csv.Context.RegisterClassMap(mapper);
             List<Route> records = csv.GetRecords<Route>().ToList();
             return records;
@@ -188,13 +188,13 @@ namespace HealthGateway.DrugMaintainer
         public IList<Schedule> ParseScheduleFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Schedule file");
-            using var reader = new StreamReader(GetFileMatching(filePath, "schedule*.txt"));
-            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+            using StreamReader reader = new(GetFileMatching(filePath, "schedule*.txt"));
+            CsvConfiguration csvConfig = new(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = false,
             };
-            using var csv = new CsvReader(reader, csvConfig);
-            ScheduleMapper mapper = new ScheduleMapper(drugProducts);
+            using CsvReader csv = new(reader, csvConfig);
+            ScheduleMapper mapper = new(drugProducts);
             csv.Context.RegisterClassMap(mapper);
             List<Schedule> records = csv.GetRecords<Schedule>().ToList();
             return records;
@@ -204,13 +204,13 @@ namespace HealthGateway.DrugMaintainer
         public IList<TherapeuticClass> ParseTherapeuticFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Therapeutical file");
-            using var reader = new StreamReader(GetFileMatching(filePath, "ther*.txt"));
-            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+            using StreamReader reader = new(GetFileMatching(filePath, "ther*.txt"));
+            CsvConfiguration csvConfig = new(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = false,
             };
-            using var csv = new CsvReader(reader, csvConfig);
-            TherapeuticMapper mapper = new TherapeuticMapper(drugProducts);
+            using CsvReader csv = new(reader, csvConfig);
+            TherapeuticMapper mapper = new(drugProducts);
             csv.Context.RegisterClassMap(mapper);
             List<TherapeuticClass> records = csv.GetRecords<TherapeuticClass>().ToList();
             return records;
@@ -220,13 +220,13 @@ namespace HealthGateway.DrugMaintainer
         public IList<VeterinarySpecies> ParseVeterinarySpeciesFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Veterinary file");
-            using var reader = new StreamReader(GetFileMatching(filePath, "vet*.txt"));
-            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+            using StreamReader reader = new(GetFileMatching(filePath, "vet*.txt"));
+            CsvConfiguration csvConfig = new(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = false,
             };
-            using var csv = new CsvReader(reader, csvConfig);
-            VeterinarySpeciesMapper mapper = new VeterinarySpeciesMapper(drugProducts);
+            using CsvReader csv = new(reader, csvConfig);
+            VeterinarySpeciesMapper mapper = new(drugProducts);
             csv.Context.RegisterClassMap(mapper);
             List<VeterinarySpecies> records = csv.GetRecords<VeterinarySpecies>().ToList();
             return records;
