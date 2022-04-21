@@ -111,7 +111,7 @@ export default class DependentsView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
         <b-row>
-            <b-col class="col-12 col-lg-9 column-wrapper">
+            <b-col class="col-12 column-wrapper">
                 <page-title title="Dependents">
                     <hg-button
                         data-testid="addNewDependentBtn"
