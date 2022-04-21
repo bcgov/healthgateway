@@ -27,7 +27,7 @@ describe("Laboratory Orders - Download Report", () => {
 
         cy.get("[data-testid=laboratory-report-download-btn]")
             .should("be.visible")
-            .contains("Incomplete")
+            .contains("Final")
             .click({ force: true });
 
         cy.get("[data-testid=genericMessageSubmitBtn]")
