@@ -21,6 +21,11 @@ import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
 import {
+    ImmunizationAgent,
+    ImmunizationEvent,
+    Recommendation,
+} from "@/models/immunizationModel";
+import {
     Covid19LaboratoryTest,
     LaboratoryReport,
     LaboratoryUtil,
@@ -31,6 +36,7 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IDependentService,
+    IImmunizationService,
     ILaboratoryService,
     ILogger,
 } from "@/services/interfaces";
@@ -41,6 +47,20 @@ interface Covid19LaboratoryTestRow {
     id: string;
     reportAvailable: boolean;
     test: Covid19LaboratoryTest;
+}
+
+interface ImmunizationRow {
+    date: StringISODate;
+    immunization: string;
+    agents: string;
+    provider_clinic: string;
+    lotNumber: string;
+}
+
+interface RecommendationRow {
+    immunization: string;
+    due_date: StringISODate;
+    status: string;
 }
 
 @Component({
@@ -82,10 +102,14 @@ export default class DependentCardComponent extends Vue {
 
     private isLoading = false;
     private logger!: ILogger;
+    private immunizationService!: IImmunizationService;
     private laboratoryService!: ILaboratoryService;
     private dependentService!: IDependentService;
     private testRows: Covid19LaboratoryTestRow[] = [];
+    private immunizations: ImmunizationEvent[] = [];
+    private recommendations: Recommendation[] = [];
     private isDataLoaded = false;
+    private isImmunizationDataLoaded = false;
 
     private selectedTestRow!: Covid19LaboratoryTestRow;
 
@@ -100,8 +124,46 @@ export default class DependentCardComponent extends Vue {
         );
     }
 
+    private get immunizationTabShown(): boolean {
+        return this.webClientConfig.modules["DependentImmunizationTab"];
+    }
+
+    private get immunizationItems(): ImmunizationRow[] {
+        return this.immunizations.map<ImmunizationRow>((x) => {
+            return {
+                date: DateWrapper.format(x.dateOfImmunization),
+                immunization: x.immunization.name,
+                agents: "Agent 1, Agent 2, Agentmmmmmmmmmmmmmmm mmmmmmmmmmmmmmm",
+                //agents: this.getAgentNames(x.immunization.immunizationAgents),
+                //provider_clinic: x.providerOrClinic,
+                provider_clinic: "Island Health District 99999999999999",
+                //lotNumber: this.getAgentLotNumbers(
+                //    x.immunization.immunizationAgents
+                //),
+                lotNumber: "ET93847-99990asdafa, Lot 1, Lot 2, Lot 3",
+            };
+        });
+    }
+
+    private get recomendationItems(): RecommendationRow[] {
+        return this.recommendations.map<RecommendationRow>((x) => {
+            return {
+                //immunization: x.immunization.name,
+                immunization: "COVID-19",
+                due_date:
+                    x.diseaseDueDate === undefined || x.diseaseDueDate === null
+                        ? ""
+                        : DateWrapper.format(x.diseaseDueDate),
+                status: x.status || "",
+            };
+        });
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.immunizationService = container.get<IImmunizationService>(
+            SERVICE_IDENTIFIER.ImmunizationService
+        );
         this.laboratoryService = container.get<ILaboratoryService>(
             SERVICE_IDENTIFIER.LaboratoryService
         );
@@ -116,9 +178,15 @@ export default class DependentCardComponent extends Vue {
     }
 
     private fetchCovid19LaboratoryTests() {
+        this.logger.debug(
+            `Fetching COVID 19 Laboratory Tests - data loaded: ${this.isDataLoaded}`
+        );
         if (this.isDataLoaded) {
             return;
         }
+        this.logger.debug(
+            `Fetching COVID 19 Laboratory Tests for Hdid: ${this.dependent.ownerId}`
+        );
         this.isLoading = true;
         this.laboratoryService
             .getCovid19LaboratoryOrders(this.dependent.ownerId)
@@ -175,6 +243,139 @@ export default class DependentCardComponent extends Vue {
                 });
                 this.isLoading = false;
             });
+    }
+
+    private fetchPatientImmunizations() {
+        const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A"; //this.dependent.dependentInformation.hdid
+        this.logger.debug(
+            `Fetching Patient Immunizations - immunization data laoded: ${this.isImmunizationDataLoaded}`
+        );
+
+        if (this.isImmunizationDataLoaded) {
+            return;
+        }
+
+        this.logger.debug(`Fetching Patient Immunizations for Hdid: ${hdid}`);
+
+        this.isLoading = true;
+        this.immunizationService
+            .getPatientImmunizations(hdid)
+            .then((result) => {
+                if (result.resultStatus == ResultType.Success) {
+                    const payload = result.resourcePayload;
+                    if (payload.loadState.refreshInProgress) {
+                        this.logger.info("Re-querying Patient Immunizations");
+                        setTimeout(() => {
+                            this.fetchPatientImmunizations();
+                        }, 10000);
+                    } else {
+                        this.setImmunizations(payload.immunizations);
+                        this.setRecommendations(payload.recommendations);
+                        this.isImmunizationDataLoaded = true;
+                        this.isLoading = false;
+                        this.logger.debug(
+                            `Patient Immunizations: 
+                                ${JSON.stringify(this.immunizations)}`
+                        );
+                        this.logger.debug(
+                            `Patient Recommendations: 
+                                ${JSON.stringify(this.recommendations)}`
+                        );
+                    }
+                } else {
+                    this.logger.error(
+                        `Error returned from the Patient Immunizations call: 
+                            ${JSON.stringify(result.resultError)}`
+                    );
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Immunization,
+                        traceId: result.resultError?.traceId,
+                    });
+                    this.isLoading = false;
+                }
+            })
+            .catch((err: ResultError) => {
+                this.logger.error(err.resultMessage);
+                this.addError({
+                    errorType: ErrorType.Retrieve,
+                    source: ErrorSourceType.Immunization,
+                    traceId: err.traceId,
+                });
+                this.isLoading = false;
+            });
+    }
+
+    private getAgentLotNumbers(
+        immunizationAgents: ImmunizationAgent[]
+    ): string {
+        const lotNumbers: string[] = immunizationAgents.map<string>(
+            (x) => x.lotNumber
+        );
+        return lotNumbers.join(", ");
+    }
+
+    private getAgentNames(immunizationAgents: ImmunizationAgent[]): string {
+        const agents: string[] = immunizationAgents.map<string>((x) => x.name);
+        return agents.join(", ");
+    }
+
+    private setImmunizations(immunizations: ImmunizationEvent[]) {
+        this.immunizations = immunizations;
+
+        this.immunizations.sort((a, b) => {
+            const firstDate = new DateWrapper(a.dateOfImmunization);
+            const secondDate = new DateWrapper(b.dateOfImmunization);
+
+            if (firstDate.isBefore(secondDate)) {
+                return 1;
+            }
+
+            if (firstDate.isAfter(secondDate)) {
+                return -1;
+            }
+
+            return 0;
+        });
+    }
+
+    private setRecommendations(recommendations: Recommendation[]) {
+        //this.recommendations = recommendations.filter(
+        //    (x) => x.immunization.name !== null && x.immunization.name !== ""
+        //);
+
+        this.recommendations = recommendations;
+        this.recommendations.sort((a, b) => {
+            const firstDateEmpty =
+                a.diseaseDueDate === null || a.diseaseDueDate === undefined;
+            const secondDateEmpty =
+                b.diseaseDueDate === null || b.diseaseDueDate === undefined;
+
+            if (firstDateEmpty && secondDateEmpty) {
+                return 0;
+            }
+
+            if (firstDateEmpty) {
+                return 1;
+            }
+
+            if (secondDateEmpty) {
+                return -1;
+            }
+
+            const firstDate = new DateWrapper(a.diseaseDueDate);
+            const secondDate = new DateWrapper(b.diseaseDueDate);
+
+            if (firstDate.isBefore(secondDate)) {
+                return 1;
+            }
+
+            if (firstDate.isAfter(secondDate)) {
+                return -1;
+            }
+
+            return 0;
+        });
     }
 
     private sortEntries() {
@@ -470,6 +671,149 @@ export default class DependentCardComponent extends Vue {
                             </td>
                         </tr>
                     </table>
+                </b-tab>
+                <b-tab
+                    v-if="immunizationTabShown"
+                    :disabled="isExpired"
+                    :data-testid="`immunization-tab-${dependent.dependentInformation.hdid}`"
+                    class="tableTab mt-2"
+                    @click="fetchPatientImmunizations()"
+                >
+                    <template #title>
+                        <div
+                            :data-testid="`immunization-tab-title-${dependent.dependentInformation.hdid}`"
+                        >
+                            Immunization
+                        </div>
+                    </template>
+                    <b-row v-if="isLoading" class="m-2">
+                        <b-col><b-spinner /></b-col>
+                    </b-row>
+                    <div
+                        v-else
+                        :data-testid="`immunization-tab-div-${dependent.dependentInformation.hdid}`"
+                    >
+                        <b-card no-body>
+                            <b-tabs class="p-2">
+                                <b-tab title="History" active>
+                                    <b-row
+                                        v-if="immunizationItems.length == 0"
+                                        class="m-2"
+                                    >
+                                        <b-col
+                                            :data-testid="`immunization-history-no-rows-found-${dependent.dependentInformation.hdid}`"
+                                        >
+                                            No records found.
+                                        </b-col>
+                                    </b-row>
+                                    <table
+                                        v-else
+                                        class="w-100"
+                                        aria-describedby="Immunization History"
+                                        :data-testid="`immunization-history-table-${dependent.dependentInformation.hdid}`"
+                                    >
+                                        <tr>
+                                            <th scope="col">Date</th>
+                                            <th scope="col">Product</th>
+                                            <th
+                                                scope="col"
+                                                class="d-none d-sm-table-cell"
+                                            >
+                                                Immunizing Agent
+                                            </th>
+                                            <th scope="col">Provider/Clinic</th>
+                                            <th
+                                                scope="col"
+                                                class="d-none d-sm-table-cell"
+                                            >
+                                                Lot Number
+                                            </th>
+                                        </tr>
+                                        <tr
+                                            v-for="(
+                                                row, index
+                                            ) in immunizationItems"
+                                            :key="index"
+                                        >
+                                            <td
+                                                :data-testid="`history-immunization-date-${dependent.dependentInformation.hdid}-${index}`"
+                                            >
+                                                {{ row.date }}
+                                            </td>
+                                            <td
+                                                :data-testid="`history-product-${dependent.dependentInformation.hdid}-${index}`"
+                                            >
+                                                {{ row.immunization }}
+                                            </td>
+                                            <td
+                                                :data-testid="`history-immunizing-agent-${dependent.dependentInformation.hdid}-${index}`"
+                                                class="d-none d-sm-table-cell"
+                                            >
+                                                {{ row.agents }}
+                                            </td>
+                                            <td
+                                                :data-testid="`history-provider-clinic-${dependent.dependentInformation.hdid}-${index}`"
+                                            >
+                                                {{ row.provider_clinic }}
+                                            </td>
+                                            <td
+                                                :data-testid="`history-lot-number-${dependent.dependentInformation.hdid}-${index}`"
+                                                class="d-none d-sm-table-cell"
+                                            >
+                                                {{ row.lotNumber }}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </b-tab>
+                                <b-tab title="Forecasts">
+                                    <b-row
+                                        v-if="recomendationItems.length == 0"
+                                        class="m-2"
+                                    >
+                                        <b-col
+                                            :data-testid="`immunization-forecast-no-rows-found-${dependent.dependentInformation.hdid}`"
+                                        >
+                                            No records found.
+                                        </b-col>
+                                    </b-row>
+                                    <table
+                                        v-else
+                                        class="w-100"
+                                        aria-describedby="Immunization Forecast"
+                                        :data-testid="`immunization-forecast-table-${dependent.dependentInformation.hdid}`"
+                                    >
+                                        <tr>
+                                            <th scope="col">Immunization</th>
+                                            <th scope="col">Due Date</th>
+                                            <th scope="col">Status</th>
+                                        </tr>
+                                        <tr
+                                            v-for="(
+                                                row, index
+                                            ) in recomendationItems"
+                                            :key="index"
+                                        >
+                                            <td
+                                                :data-testid="`forecast-immunization-${dependent.dependentInformation.hdid}-${index}`"
+                                            >
+                                                {{ row.immunization }}
+                                            </td>
+                                            <td
+                                                :data-testid="`forecast-due-date-${dependent.dependentInformation.hdid}-${index}`"
+                                            >
+                                                {{ row.due_date }}
+                                            </td>
+                                            <td
+                                                :data-testid="`forecast-status-${dependent.dependentInformation.hdid}-${index}`"
+                                            >
+                                                {{ row.status }}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </b-tab>
+                            </b-tabs>
+                        </b-card>
+                    </div>
                 </b-tab>
                 <template #tabs-start>
                     <div class="w-100">
