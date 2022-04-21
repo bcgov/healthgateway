@@ -22,6 +22,7 @@ namespace HealthGateway.DrugMaintainer
     using System.Linq;
     using CsvHelper;
     using CsvHelper.Configuration;
+    using CsvHelper.TypeConversion;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
 
@@ -48,7 +49,9 @@ namespace HealthGateway.DrugMaintainer
             using var reader = new StreamReader(filename);
             var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture);
             using var csv = new CsvReader(reader, csvConfig);
-            csv.Context.TypeConverterOptionsCache.GetOptions<DateTime>().Formats = new[] { "yyyyMMdd" };
+            TypeConverterOptions options = new TypeConverterOptions { Formats = new[] { "yyyyMMdd" } };
+            options.DateTimeStyle = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal;
+            csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
             PharmaCareDrugMapper mapper = new PharmaCareDrugMapper(filedownload);
             csv.Context.RegisterClassMap(mapper);
             List<PharmaCareDrug> records = csv.GetRecords<PharmaCareDrug>().ToList();

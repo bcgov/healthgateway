@@ -52,6 +52,12 @@ namespace HealthGateway.DrugMaintainer
                 HasHeaderRecord = false,
             };
             using var csv = new CsvReader(reader, csvConfig);
+            TypeConverterOptions options = new()
+            {
+                Formats = new[] { "dd-MMM-yyyy" },
+                DateTimeStyle = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
             DrugProductMapper mapper = new DrugProductMapper(fileDownload);
             csv.Context.RegisterClassMap(mapper);
             List<DrugProduct> records = csv.GetRecords<DrugProduct>().ToList();
@@ -101,6 +107,13 @@ namespace HealthGateway.DrugMaintainer
                 HasHeaderRecord = false,
             };
             using var csv = new CsvReader(reader, csvConfig);
+            TypeConverterOptions options = new()
+            {
+                Formats = new[] {"dd-MMM-yyyy"},
+                DateTimeStyle = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
+            csv.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
             StatusMapper mapper = new StatusMapper(drugProducts);
             csv.Context.RegisterClassMap(mapper);
             List<Status> records = csv.GetRecords<Status>().ToList();
