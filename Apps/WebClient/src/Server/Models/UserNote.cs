@@ -91,7 +91,7 @@ namespace HealthGateway.WebClient.Models
             {
                 Id = model.Id,
                 HdId = model.HdId,
-                JournalDate = DateOnly.FromDateTime(model.JournalDateTime),
+                JournalDate = model.JournalDate,
                 Version = model.Version,
                 CreatedDateTime = model.CreatedDateTime,
                 CreatedBy = model.CreatedBy,
@@ -132,7 +132,7 @@ namespace HealthGateway.WebClient.Models
             {
                 Id = this.Id,
                 HdId = this.HdId,
-                JournalDateTime = this.JournalDate.ToDateTime(TimeOnly.Parse("12:00 AM")),
+                JournalDate = this.JournalDate,
                 Version = this.Version,
                 CreatedDateTime = this.CreatedDateTime,
                 CreatedBy = this.CreatedBy,
