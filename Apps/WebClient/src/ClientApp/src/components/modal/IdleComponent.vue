@@ -36,7 +36,6 @@ export default class IdleComponent extends Vue {
     }
 
     private reset() {
-        // TODO: refresh OIDC access token
         this.logoutCountdown = this.maxCountdownTime;
         window.clearTimeout(this.timeoutHandle);
         window.clearInterval(this.timerHandle);

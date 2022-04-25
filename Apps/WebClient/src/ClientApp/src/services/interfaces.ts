@@ -40,6 +40,7 @@ export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration): Promise<void>;
     signIn(redirectPath: string, idpHint?: string): Promise<OidcTokenDetails>;
     signOut(): Promise<void>;
+    refreshToken(): Promise<boolean>;
     getOidcTokenDetails(): OidcTokenDetails | null;
     getOidcUserInfo(): Promise<OidcUserInfo>;
     clearState(): void;

@@ -7,6 +7,9 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IAuthenticationService, ILogger } from "@/services/interfaces";
 
+/** The number of seconds between initiation of a token refresh and expiry of the old token. */
+const REFRESH_CUSHION = 30;
+
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
@@ -93,10 +96,18 @@ export class RestAuthenticationService implements IAuthenticationService {
         });
     }
 
+    public refreshToken(): Promise<boolean> {
+        return this.keycloak.updateToken(REFRESH_CUSHION + 5);
+    }
+
     public getOidcTokenDetails(): OidcTokenDetails | null {
         if (!this.keycloak.authenticated) {
             return null;
         }
+
+        const currentTime = Math.ceil(new Date().getTime() / 1000);
+        const tokenExpiryTime = this.keycloak.tokenParsed?.exp ?? currentTime;
+        const timeSkew = this.keycloak.timeSkew ?? 0;
 
         return {
             idToken: this.keycloak.idToken ?? "",
@@ -104,6 +115,7 @@ export class RestAuthenticationService implements IAuthenticationService {
             refreshToken: this.keycloak.refreshToken,
             accessToken: this.keycloak.token ?? "",
             expired: this.keycloak.isTokenExpired(),
+            refreshTokenTime: tokenExpiryTime + timeSkew - REFRESH_CUSHION,
             hdid: this.keycloak.idTokenParsed?.hdid ?? "",
         };
     }
