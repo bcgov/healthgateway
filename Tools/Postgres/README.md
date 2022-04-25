@@ -37,6 +37,8 @@ oc create -f ./openshift/pdb.yaml
 
 NOTE: The provisioning of disk is fairly slow and you may not notice anything for a few minutes.
 
+Once the database is created and prior to the Application being deployed, you must manually run the initialization script see Azure ticket 12919.
+
 ### Clean up
 
 CAUTION: If you would like to remove all resources associated to Patroni, you can execute the following
