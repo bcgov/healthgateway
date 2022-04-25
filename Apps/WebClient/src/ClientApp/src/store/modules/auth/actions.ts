@@ -8,6 +8,9 @@ import {
 
 import { AuthActions } from "./types";
 
+/** Timeout that fires the "refreshToken" action. */
+let refreshTimeout: NodeJS.Timeout | undefined = undefined;
+
 export const actions: AuthActions = {
     async signIn(
         context,
@@ -30,6 +33,7 @@ export const actions: AuthActions = {
                 tokenDetails,
                 userInfo,
             });
+            context.dispatch("queueRefresh", tokenDetails);
 
             logger.verbose("Signed in successfully");
         } catch (err) {
@@ -47,7 +51,59 @@ export const actions: AuthActions = {
             SERVICE_IDENTIFIER.AuthenticationService
         );
 
+        if (refreshTimeout !== undefined) {
+            clearTimeout(refreshTimeout);
+            refreshTimeout = undefined;
+        }
+
         authService.signOut();
+    },
+    async refreshToken(context): Promise<void> {
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const authService = container.get<IAuthenticationService>(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
+        const httpDelegate = container.get<IHttpDelegate>(
+            DELEGATE_IDENTIFIER.HttpDelegate
+        );
+
+        logger.info("Refreshing access token");
+
+        try {
+            const refreshed = await authService.refreshToken();
+            if (refreshed) {
+                logger.verbose("Refreshed access token");
+
+                const tokenDetails = authService.getOidcTokenDetails();
+                if (tokenDetails !== null) {
+                    httpDelegate.setAuthorizationHeader(
+                        tokenDetails.accessToken
+                    );
+                    context.commit("setOidcAuth", tokenDetails);
+                    context.dispatch("queueRefresh", tokenDetails);
+                }
+            } else {
+                logger.verbose("Access token refresh not required");
+            }
+        } catch (err) {
+            logger.warn("Access token expired unexpectedly");
+            context.dispatch("clearStorage");
+        }
+    },
+    queueRefresh(context, tokenDetails): void {
+        const refreshTimeMilliseconds = tokenDetails.refreshTokenTime * 1000;
+        const currentTimeMilliseconds = new Date().getTime();
+        const accessTokenDuration =
+            refreshTimeMilliseconds - currentTimeMilliseconds;
+
+        if (accessTokenDuration > 0) {
+            if (refreshTimeout !== undefined) {
+                clearTimeout(refreshTimeout);
+            }
+            refreshTimeout = setTimeout(() => {
+                context.dispatch("refreshToken");
+            }, accessTokenDuration);
+        }
     },
     async getOidcUser(context): Promise<void> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -113,6 +169,11 @@ export const actions: AuthActions = {
         const httpDelegate = container.get<IHttpDelegate>(
             DELEGATE_IDENTIFIER.HttpDelegate
         );
+
+        if (refreshTimeout !== undefined) {
+            clearTimeout(refreshTimeout);
+            refreshTimeout = undefined;
+        }
 
         authService.clearState();
         httpDelegate.unsetAuthorizationHeader();

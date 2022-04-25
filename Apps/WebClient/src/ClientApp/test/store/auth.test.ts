@@ -18,6 +18,7 @@ describe("Auth mutations", () => {
             idToken: "id_token",
             accessToken: "access_token",
             refreshToken: "refresh_token",
+            refreshTokenTime: 0,
             expired: false,
             hdid: "",
         };
@@ -38,6 +39,7 @@ describe("Auth mutations", () => {
             idToken: "",
             accessToken: "access_token",
             refreshToken: "refresh_token",
+            refreshTokenTime: 0,
             expired: false,
             hdid: "",
         };
@@ -58,6 +60,7 @@ describe("Auth mutations", () => {
             idToken: "id_token",
             accessToken: "access_token",
             refreshToken: "refresh_token",
+            refreshTokenTime: 0,
             expired: false,
             hdid: "",
         };
