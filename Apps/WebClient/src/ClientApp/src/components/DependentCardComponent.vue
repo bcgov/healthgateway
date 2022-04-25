@@ -242,7 +242,7 @@ export default class DependentCardComponent extends Vue {
     }
 
     private fetchPatientImmunizations() {
-        const hdid = this.dependent.dependentInformation.hdid; //"P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A"; //this.dependent.dependentInformation.hdid
+        const hdid = this.dependent.dependentInformation.hdid;
         this.logger.debug(
             `Fetching Patient Immunizations - immunization data laoded: ${this.isImmunizationDataLoaded}`
         );
