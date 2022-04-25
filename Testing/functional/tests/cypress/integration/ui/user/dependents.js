@@ -77,3 +77,94 @@ describe("COVID-19", () => {
             .contains("SomeOtherState");
     });
 });
+
+describe("Dependents - Immuniazation Tab - Enabled", () => {
+    const dependentHdid = "645645767756756767";
+    beforeEach(() => {
+        cy.intercept("GET", "**/v1/api/UserProfile/*/Dependent", {
+            fixture: "UserProfileService/dependent.json",
+        });
+
+        cy.enableModules([
+            "Dependent",
+            "Immunization",
+            "DependentImmunizationTab",
+        ]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
+    });
+
+    it("Immunization Tab - Configuration Enabled", () => {
+        cy.intercept("GET", "**/v1/api/Immunization?hdid=*", {
+            fixture: "ImmunizationService/dependentImmunization.json",
+        });
+
+        cy.log("Validating Immunization Tab - configuration enabled");
+
+        cy.get("[data-testid=immunization-tab-title-" + dependentHdid + "]")
+            .parent()
+            .click();
+        cy.get(
+            "[data-testid=immunization-history-table-" + dependentHdid + "]"
+        ).should("be.visible");
+        cy.get(
+            "[data-testid=immunization-tab-div-" + dependentHdid + "]"
+        ).within(() => {
+            cy.contains("a", "Forecasts").click();
+        });
+        cy.get(
+            "[data-testid=immunization-forecast-table-" + dependentHdid + "]"
+        ).should("be.visible");
+    });
+
+    it("Immunization tab - No Data Found", () => {
+        cy.intercept("GET", "**/v1/api/Immunization?hdid=*", {
+            fixture: "ImmunizationService/immunizationNoRecords.json",
+        });
+
+        cy.log("Validating Immunization Tab - No Data Found");
+
+        cy.get("[data-testid=immunization-tab-title-" + dependentHdid + "]")
+            .parent()
+            .click();
+        cy.get(
+            "[data-testid=immunization-history-no-rows-found-" +
+                dependentHdid +
+                "]"
+        ).should("be.visible");
+        cy.get(
+            "[data-testid=immunization-tab-div-" + dependentHdid + "]"
+        ).within(() => {
+            cy.contains("a", "Forecasts").click();
+        });
+        cy.get(
+            "[data-testid=immunization-forecast-no-rows-found-" +
+                dependentHdid +
+                "]"
+        ).should("be.visible");
+    });
+});
+
+describe("Dependents - Immuniazation Tab - Disabled", () => {
+    const dependentHdid = "645645767756756767";
+    beforeEach(() => {
+        cy.enableModules(["Dependent"]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
+    });
+
+    it("Immunization Tab - Configuration Disabled", () => {
+        cy.log("Validating Immunization Tab - configuration enabled");
+        cy.get("[data-testid=immunization-tab-" + dependentHdid + "]").should(
+            "not.exist"
+        );
+    });
+});
