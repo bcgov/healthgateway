@@ -29,5 +29,6 @@ export default function () {
         common.params(user)
     );
     common.checkResponse(response);
+    common.checkForRequestResult(response);
     sleep(1);
 }

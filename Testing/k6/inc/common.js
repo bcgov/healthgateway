@@ -404,6 +404,21 @@ function isObject(val) {
     return typeof val === "object";
 }
 
+export function checkForRequestResult(response) {
+    if (isObject(response)) {
+
+        if (response.status === 200)
+        {
+            console.log(response.body)
+            var json = JSON.parse(response.body);
+            var resultJson = json["resultError"];
+            check(resultJson,  {
+                "ActionCode is NOT REFRESH": (r) => r.actionCode != "REFRESH" });
+        }
+
+    }
+}
+
 export function checkResponse(response) {
     if (isObject(response)) {
         var ok =
