@@ -11,7 +11,7 @@ describe("Auth mutations", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     logger.initialize("info");
 
-    test("Sets oidcAuth authenticated", () => {
+    test("Sets authenticated", () => {
         const state = initialState;
 
         const details: OidcTokenDetails = {
@@ -24,15 +24,20 @@ describe("Auth mutations", () => {
         };
 
         // apply mutation
-        mutations.setOidcAuth(state, details);
+        mutations.setAuthenticated(state, details);
 
         // assert result
-        expect(state.isAuthenticated).toBe(true);
-        expect(state.authentication.idToken).toBe(details.idToken);
-        expect(state.authentication.accessToken).toBe(details.accessToken);
+        expect(state.tokenDetails?.idToken).toBe(details.idToken);
+        expect(state.tokenDetails?.accessToken).toBe(details.accessToken);
+        expect(state.tokenDetails?.refreshToken).toBe(details.refreshToken);
+        expect(state.tokenDetails?.refreshTokenTime).toBe(
+            details.refreshTokenTime
+        );
+        expect(state.tokenDetails?.expired).toBe(details.expired);
+        expect(state.tokenDetails?.hdid).toBe(details.hdid);
     });
 
-    test("Sets oidcAuth not authenticated", () => {
+    test("Sets authenticated (invalid)", () => {
         const state = initialState;
 
         const details: OidcTokenDetails = {
@@ -45,15 +50,20 @@ describe("Auth mutations", () => {
         };
 
         // apply mutation
-        mutations.setOidcAuth(state, details);
+        mutations.setAuthenticated(state, details);
 
         // assert result
-        expect(state.isAuthenticated).toBe(false);
-        expect(state.authentication.idToken).toBe(details.idToken);
-        expect(state.authentication.accessToken).toBe(details.accessToken);
+        expect(state.tokenDetails?.idToken).toBe(details.idToken);
+        expect(state.tokenDetails?.accessToken).toBe(details.accessToken);
+        expect(state.tokenDetails?.refreshToken).toBe(details.refreshToken);
+        expect(state.tokenDetails?.refreshTokenTime).toBe(
+            details.refreshTokenTime
+        );
+        expect(state.tokenDetails?.expired).toBe(details.expired);
+        expect(state.tokenDetails?.hdid).toBe(details.hdid);
     });
 
-    test("Unsets oidc data", () => {
+    test("Sets unauthenticated", () => {
         const state = initialState;
 
         const details: OidcTokenDetails = {
@@ -66,44 +76,37 @@ describe("Auth mutations", () => {
         };
 
         // apply mutation
-        mutations.setOidcAuth(state, details);
+        mutations.setAuthenticated(state, details);
 
         // assert result
-        expect(state.isAuthenticated).toBe(true);
-        expect(state.authentication.idToken).toBe(details.idToken);
-        expect(state.authentication.accessToken).toBe(details.accessToken);
+        expect(state.tokenDetails?.idToken).toBe(details.idToken);
+        expect(state.tokenDetails?.accessToken).toBe(details.accessToken);
+        expect(state.tokenDetails?.refreshToken).toBe(details.refreshToken);
+        expect(state.tokenDetails?.refreshTokenTime).toBe(
+            details.refreshTokenTime
+        );
+        expect(state.tokenDetails?.expired).toBe(details.expired);
+        expect(state.tokenDetails?.hdid).toBe(details.hdid);
 
-        mutations.unsetOidcAuth(state);
+        mutations.setUnauthenticated(state);
 
-        expect(state.isAuthenticated).toBe(false);
-        expect(state.authentication.idToken).toBe(undefined);
-        expect(state.authentication.accessToken).toBe(undefined);
+        expect(state.tokenDetails).toBe(undefined);
     });
 
-    test("Sets oidc isChecked", () => {
-        const state = initialState;
-        // assert result
-        expect(state.authentication.isChecked).toBe(false);
-
-        // apply mutation
-        mutations.setOidcAuthIsChecked(state);
-        expect(state.authentication.isChecked).toBe(true);
-    });
-
-    test("Sets oidc error", () => {
+    test("Sets error", () => {
         const state = initialState;
 
         const errorMessage = "some error string";
 
         // apply mutation
-        mutations.setOidcError(state, errorMessage);
+        mutations.setError(state, errorMessage);
 
         // assert result
         expect(state.error).toBe(errorMessage);
 
         // apply mutation
         const errorObject = { message: errorMessage, otherProp: false };
-        mutations.setOidcError(state, errorObject);
+        mutations.setError(state, errorObject);
 
         // assert result
         expect(state.error).toBe(errorObject);
