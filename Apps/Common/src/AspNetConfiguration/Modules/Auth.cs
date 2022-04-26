@@ -125,7 +125,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         FhirResource.Immunization,
                         FhirAccessType.Read,
                         FhirResourceLookup.Parameter,
-                        supportsUserDelegation: false));
+                        supportsUserDelegation: true));
                 });
                 options.AddPolicy(ImmunizationPolicy.Write, policy =>
                 {

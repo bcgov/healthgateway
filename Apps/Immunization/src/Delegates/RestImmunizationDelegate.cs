@@ -36,6 +36,9 @@ namespace HealthGateway.Immunization.Delegates
     /// </summary>
     public class RestImmunizationDelegate : IImmunizationDelegate
     {
+        /// <summary>
+        /// Configuration section key for PHSA values.
+        /// </summary>
         public const string PHSAConfigSectionKey = "PHSA";
         private readonly ILogger logger;
         private readonly PhsaConfig phsaConfig;
