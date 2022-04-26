@@ -20,42 +20,42 @@
                         "obxId": "341L56330T278085ALT",
                         "outOfRange": false,
                         "loinc": null,
-                        "testStatus": "Partial"
+                        "testStatus": "Active"
                     },
                     {
                         "batteryType": "Aspartate Aminotransferase",
                         "obxId": "341L56330T278085AST",
                         "outOfRange": false,
                         "loinc": null,
-                        "testStatus": "Partial"
+                        "testStatus": "Active"
                     },
                     {
                         "batteryType": "CBC & Differential",
                         "obxId": "341L56330T278085CBCD",
                         "outOfRange": false,
                         "loinc": "XCA01592-5",
-                        "testStatus": "Partial"
+                        "testStatus": "Cancelled"
                     },
                     {
                         "batteryType": "Creatinine & Glomerular Filtration Rate Predicted Panel",
                         "obxId": "341L56330T278085CREE",
-                        "outOfRange": false,
+                        "outOfRange": true,
                         "loinc": null,
-                        "testStatus": "Partial"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Glucose Random",
                         "obxId": "341L56330T278085GLUC",
                         "outOfRange": false,
                         "loinc": "14749-6",
-                        "testStatus": "Partial"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Urea",
                         "obxId": "341L56330T278085URE",
                         "outOfRange": false,
                         "loinc": "22664-7",
-                        "testStatus": "Partial"
+                        "testStatus": "Cancelled"
                     }
                 ]
             },
@@ -74,140 +74,140 @@
                         "obxId": "341L52341T275612ALT",
                         "outOfRange": false,
                         "loinc": null,
-                        "testStatus": "Final"
+                        "testStatus": "Active"
                     },
                     {
                         "batteryType": "Albumin",
                         "obxId": "341L52341T275612ALB",
                         "outOfRange": true,
                         "loinc": "1751-7",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Alkaline Phosphatase",
                         "obxId": "341L52341T275612ALKP",
                         "outOfRange": false,
                         "loinc": "6768-6",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Amylase",
                         "obxId": "341L52341T275612AMY",
                         "outOfRange": true,
                         "loinc": "1798-8",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "APTT",
                         "obxId": "341L52341T275612PTTB",
                         "outOfRange": false,
                         "loinc": "14979-9",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Aspartate Aminotransferase",
                         "obxId": "341L52341T275612AST",
                         "outOfRange": true,
                         "loinc": null,
-                        "testStatus": "Final"
+                        "testStatus": "Active"
                     },
                     {
                         "batteryType": "Bilirubin Panel",
                         "obxId": "341L52341T275612BILI",
                         "outOfRange": true,
                         "loinc": "XBC1197-2",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Calcium Ionized",
                         "obxId": "341L52341T275612CAI",
                         "outOfRange": true,
                         "loinc": "1995-0",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "CBC & Differential",
                         "obxId": "341L52341T275612CBCD",
-                        "outOfRange": true,
+                        "outOfRange": false,
                         "loinc": "XCA01592-5",
-                        "testStatus": "Final"
+                        "testStatus": "Cancelled"
                     },
                     {
                         "batteryType": "Creatine Kinase",
                         "obxId": "341L52341T275612CK",
                         "outOfRange": false,
                         "loinc": "2157-6",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Electrolyte, Urea & Creatinine Panel",
                         "obxId": "341L52341T275612REN",
                         "outOfRange": true,
                         "loinc": null,
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Gamma Glutamyl Transferase",
                         "obxId": "341L52341T275612GGT",
                         "outOfRange": true,
                         "loinc": "17858-2",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "INR",
                         "obxId": "341L52341T275612INRB",
                         "outOfRange": true,
                         "loinc": "6301-6",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Lactate",
                         "obxId": "341L52341T275612LACT",
                         "outOfRange": true,
                         "loinc": "2524-7",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Lactate Dehydrogenase",
                         "obxId": "341L52341T275612LD",
                         "outOfRange": true,
                         "loinc": "2532-0",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Magnesium",
                         "obxId": "341L52341T275612MG",
                         "outOfRange": false,
                         "loinc": "2601-3",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Peripheral Blood Film Review",
                         "obxId": "341L52341T275612MORFX",
                         "outOfRange": false,
                         "loinc": "XXX-2600",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Phosphate",
                         "obxId": "341L52341T275612PO4",
                         "outOfRange": false,
                         "loinc": "14879-1",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Protein",
                         "obxId": "341L52341T275612TP",
                         "outOfRange": false,
                         "loinc": "2885-2",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Triacylglycerol Lipase",
                         "obxId": "341L52341T275612LIPA",
                         "outOfRange": true,
                         "loinc": "3040-3",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     }
                 ]
             },
@@ -254,7 +254,7 @@
                         "obxId": "341L52334T275610ABGO",
                         "outOfRange": true,
                         "loinc": "XXX-2133",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     }
                 ]
             },
@@ -274,7 +274,7 @@
                         "obxId": "341L53984T275983ABGO",
                         "outOfRange": true,
                         "loinc": "XXX-2133",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     }
                 ]
             },
@@ -293,7 +293,7 @@
                         "obxId": "341L54565T276529ABR",
                         "outOfRange": false,
                         "loinc": null,
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     }
                 ]
             },
@@ -313,119 +313,119 @@
                         "obxId": "341L52336T275611ALT",
                         "outOfRange": false,
                         "loinc": null,
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Albumin",
                         "obxId": "341L52336T275611ALB",
                         "outOfRange": true,
                         "loinc": "1751-7",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Alkaline Phosphatase",
                         "obxId": "341L52336T275611ALKP",
                         "outOfRange": false,
                         "loinc": "6768-6",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Amylase",
                         "obxId": "341L52336T275611AMY",
                         "outOfRange": true,
                         "loinc": "1798-8",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "APTT",
                         "obxId": "341L52336T275611PTTB",
                         "outOfRange": false,
                         "loinc": "14979-9",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Aspartate Aminotransferase",
                         "obxId": "341L52336T275611AST",
                         "outOfRange": true,
                         "loinc": null,
-                        "testStatus": "Final"
+                        "testStatus": "Active"
                     },
                     {
                         "batteryType": "Bilirubin Panel",
                         "obxId": "341L52336T275611BILI",
                         "outOfRange": true,
                         "loinc": "XBC1197-2",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Calcium Ionized",
                         "obxId": "341L52336T275611CAI",
                         "outOfRange": true,
                         "loinc": "1995-0",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "CBC & Differential",
                         "obxId": "341L52336T275611CBCD",
-                        "outOfRange": true,
+                        "outOfRange": false,
                         "loinc": "XCA01592-5",
-                        "testStatus": "Final"
+                        "testStatus": "Cancelled"
                     },
                     {
                         "batteryType": "Creatine Kinase",
                         "obxId": "341L52336T275611CK",
                         "outOfRange": false,
                         "loinc": "2157-6",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Gamma Glutamyl Transferase",
                         "obxId": "341L52336T275611GGT",
                         "outOfRange": true,
                         "loinc": "17858-2",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "INR",
                         "obxId": "341L52336T275611INRB",
                         "outOfRange": true,
                         "loinc": "6301-6",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Lactate",
                         "obxId": "341L52336T275611LACT",
                         "outOfRange": false,
                         "loinc": "2524-7",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Lactate Dehydrogenase",
                         "obxId": "341L52336T275611LD",
                         "outOfRange": false,
                         "loinc": "2532-0",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Magnesium",
                         "obxId": "341L52336T275611MG",
                         "outOfRange": false,
                         "loinc": "2601-3",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Peripheral Blood Film Review",
                         "obxId": "341L52336T275611MORFX",
                         "outOfRange": false,
                         "loinc": "XXX-2600",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     },
                     {
                         "batteryType": "Phosphate",
                         "obxId": "341L52336T275611PO4",
                         "outOfRange": false,
                         "loinc": "14879-1",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     }
                 ]
             },
@@ -445,7 +445,7 @@
                         "obxId": "341L53942T275943REN",
                         "outOfRange": true,
                         "loinc": null,
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     }
                 ]
             },
@@ -465,7 +465,7 @@
                         "obxId": "341L52331T275607ABGO",
                         "outOfRange": true,
                         "loinc": "XXX-2133",
-                        "testStatus": "Final"
+                        "testStatus": "Completed"
                     }
                 ]
             }

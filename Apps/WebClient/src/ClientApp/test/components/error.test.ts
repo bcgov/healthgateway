@@ -2,13 +2,13 @@ import "@/plugins/inversify.config";
 
 import { mount, shallowMount } from "@vue/test-utils";
 
-import ErrorComponent from "@/components/error.vue";
+import ErrorComponent from "@/components/PageErrorComponent.vue";
 import PageError from "@/models/pageError";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
-import NotFoundView from "@/views/errors/notFound.vue";
-import UnauthorizedView from "@/views/errors/unauthorized.vue";
+import NotFoundView from "@/views/errors/NotFoundView.vue";
+import UnauthorizedView from "@/views/errors/UnauthorizedView.vue";
 
 describe("ErrorComponent", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);

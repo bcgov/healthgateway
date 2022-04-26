@@ -16,6 +16,8 @@
 
 namespace HealthGateway.Admin.Server.Services
 {
+    using HealthGateway.Admin.Common.Models;
+
     /// <summary>
     /// Admin configuration.
     /// </summary>
@@ -25,6 +27,6 @@ namespace HealthGateway.Admin.Server.Services
         /// Creates and returns Configuration data for clients.
         /// </summary>
         /// <returns>The Config object containing configuration elements useful for client consumption.</returns>
-        Models.ExternalConfiguration GetConfiguration();
+        ExternalConfiguration GetConfiguration();
     }
 }

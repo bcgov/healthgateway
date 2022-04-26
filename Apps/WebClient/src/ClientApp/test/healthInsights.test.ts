@@ -6,11 +6,11 @@ import VueContentPlaceholders from "vue-content-placeholders";
 import VueRouter from "vue-router";
 import Vuex, { Store } from "vuex";
 
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions, RootState } from "@/store/types";
-import HealthInsightsView from "@/views/healthInsights.vue";
+import HealthInsightsView from "@/views/HealthInsightsView.vue";
 
 let store: Store<RootState>;
 

@@ -6,7 +6,8 @@ import { UserComment } from "@/models/userComment";
 
 const resultOutOfRange = "Out of Range";
 const resultInRange = "In Range";
-const statusFinal = "Final";
+const statusCancelled = "Cancelled";
+const statusCompleted = "Completed";
 
 // The laboratory order timeline entry model
 export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
@@ -67,7 +68,7 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
         this.sortResults();
 
         this.downloadLabel = "Incomplete";
-        if (this.tests.every((test) => test.testStatus === statusFinal)) {
+        if (this.testStatus === statusCompleted) {
             this.downloadLabel = "Final";
         }
 
@@ -112,16 +113,17 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
 export class LaboratoryTestViewModel {
     public testName: string;
     public result: string;
-    public testStatus: string;
+    public status: string;
 
     constructor(model: LaboratoryTest) {
         this.testName = model.batteryType;
 
         this.result = "Pending";
-        if (model.testStatus === statusFinal) {
+        if (model.testStatus === statusCompleted) {
             this.result = model.outOfRange ? resultOutOfRange : resultInRange;
+        } else if (model.testStatus === statusCancelled) {
+            this.result = statusCancelled;
         }
-
-        this.testStatus = model.testStatus;
+        this.status = model.testStatus;
     }
 }

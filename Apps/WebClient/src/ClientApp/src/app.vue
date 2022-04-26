@@ -63,16 +63,16 @@ import { Component, Ref, Watch } from "vue-property-decorator";
 import VueTheMask from "vue-the-mask";
 import { Action, Getter } from "vuex-class";
 
-import CommunicationComponent from "@/components/communication.vue";
-import ErrorCard from "@/components/errorCard.vue";
-import IdleComponent from "@/components/modal/idle.vue";
-import FooterComponent from "@/components/navmenu/navFooter.vue";
-import HeaderComponent from "@/components/navmenu/navHeader.vue";
-import SidebarComponent from "@/components/navmenu/sidebar.vue";
+import CommunicationComponent from "@/components/CommunicationComponent.vue";
+import ErrorCard from "@/components/ErrorCardComponent.vue";
+import IdleComponent from "@/components/modal/IdleComponent.vue";
+import FooterComponent from "@/components/navmenu/FooterComponent.vue";
+import HeaderComponent from "@/components/navmenu/HeaderComponent.vue";
+import SidebarComponent from "@/components/navmenu/SidebarComponent.vue";
 import Process, { EnvironmentType } from "@/constants/process";
 import ScreenWidth from "@/constants/screenWidth";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);

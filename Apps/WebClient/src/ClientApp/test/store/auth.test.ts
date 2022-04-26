@@ -2,8 +2,8 @@ import "@/plugins/inversify.config";
 
 import { User as OidcUser, UserSettings } from "oidc-client";
 
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import { state as initialState } from "@/store/modules/auth/auth";
 import { mutations } from "@/store/modules/auth/mutations";

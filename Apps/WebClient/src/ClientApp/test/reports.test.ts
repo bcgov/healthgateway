@@ -21,11 +21,11 @@ import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import Report from "@/models/report";
 import RequestResult from "@/models/requestResult";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions } from "@/store/types";
-import ReportsView from "@/views/reports.vue";
+import ReportsView from "@/views/ReportsView.vue";
 
 interface ReportComponent extends Vue {
     generateReport(): Promise<void>;

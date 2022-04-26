@@ -88,8 +88,8 @@ namespace Healthgateway.JobScheduler.Jobs
 
                     if (string.IsNullOrEmpty(accessToken))
                     {
-                        this.logger.LogError($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
-                        throw new FormatException($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
+                        this.logger.LogError($"Authenticated as User System access token is null or empty, Error:\n{accessToken}");
+                        throw new FormatException($"Authenticated as User System access token is null or empty, Error:\n{accessToken}");
                     }
                     else
                     {

@@ -7,8 +7,8 @@ import { DateWrapper } from "@/models/dateWrapper";
 import { QuickLink } from "@/models/quickLink";
 import { ResultError } from "@/models/requestResult";
 import { UserPreference } from "@/models/userPreference";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import {
     ILogger,
     IPatientService,

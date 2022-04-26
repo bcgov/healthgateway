@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-import container from "@/plugins/inversify.container";
+import container from "@/plugins/container";
 
 import "@/plugins/inversify.config";
 
@@ -29,12 +29,12 @@ import VueRouter from "vue-router";
 import Vuelidate from "vuelidate";
 import { Store } from "vuex";
 
-import HgButtonComponent from "@/components/shared/hgButton.vue";
-import HgCardButtonComponent from "@/components/shared/hgCardButton.vue";
-import HgDropdownComponent from "@/components/shared/hgDropdown.vue";
-import HgIconComponent from "@/components/shared/hgIcon.vue";
-import PageTitleComponent from "@/components/shared/pageTitle.vue";
-import StatusLabelComponent from "@/components/shared/statusLabel.vue";
+import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
+import HgCardButtonComponent from "@/components/shared/HgCardButtonComponent.vue";
+import HgDropdownComponent from "@/components/shared/HgDropdownComponent.vue";
+import HgIconComponent from "@/components/shared/HgIconComponent.vue";
+import PageTitleComponent from "@/components/shared/PageTitleComponent.vue";
+import StatusLabelComponent from "@/components/shared/StatusLabelComponent.vue";
 
 import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";

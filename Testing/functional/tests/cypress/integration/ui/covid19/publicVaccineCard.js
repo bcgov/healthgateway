@@ -52,8 +52,6 @@ describe("Public Vaccine Card Form", () => {
 
     it("Cancel Button Should Go to Landing Page", () => {
         cy.get("[data-testid=btnCancel]").should("be.visible").click();
-
-        cy.get("[data-testid=btnVaccineCard]").should("exist");
     });
 
     it("Log In Button Should Go to Login Page", () => {

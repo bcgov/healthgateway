@@ -2,8 +2,8 @@ import Axios, { AxiosRequestConfig } from "axios";
 import { injectable } from "inversify";
 
 import { Dictionary } from "@/models/baseTypes";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { IHttpDelegate, ILogger } from "@/services/interfaces";
 
 @injectable()

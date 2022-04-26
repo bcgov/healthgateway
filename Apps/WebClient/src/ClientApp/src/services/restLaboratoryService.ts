@@ -11,8 +11,8 @@ import {
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import {
     IHttpDelegate,
     ILaboratoryService,

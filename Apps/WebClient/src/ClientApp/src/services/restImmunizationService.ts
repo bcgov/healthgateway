@@ -5,8 +5,8 @@ import { ExternalConfiguration } from "@/models/configData";
 import { ServiceName } from "@/models/errorInterfaces";
 import ImmunizationResult from "@/models/immunizationResult";
 import RequestResult from "@/models/requestResult";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import {
     IHttpDelegate,
     IImmunizationService,

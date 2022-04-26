@@ -7,73 +7,86 @@ import { Position, PositionResult } from "vue-router/types/router";
 
 import { ClientModule } from "@/constants/clientModule";
 import { Dictionary } from "@/models/baseTypes";
+import container from "@/plugins/container";
 import { SnowplowWindow } from "@/plugins/extensions";
 import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger, IStoreProvider } from "@/services/interfaces";
 
 declare let window: SnowplowWindow;
 const ProfileView = () =>
-    import(/* webpackChunkName: "profile" */ "@/views/profile.vue");
+    import(/* webpackChunkName: "profile" */ "@/views/ProfileView.vue");
 const LandingView = () =>
-    import(/* webpackChunkName: "landing" */ "@/views/landing.vue");
+    import(/* webpackChunkName: "landing" */ "@/views/LandingView.vue");
 const PublicCovidTestView = () =>
-    import(/* webpackChunkName: "covidTest" */ "@/views/publicCovidTest.vue");
+    import(
+        /* webpackChunkName: "covidTest" */ "@/views/PublicCovidTestView.vue"
+    );
 const PublicVaccineCardView = () =>
     import(
-        /* webpackChunkName: "vaccinationStatus" */ "@/views/publicVaccineCard.vue"
+        /* webpackChunkName: "vaccinationStatus" */ "@/views/PublicVaccineCardView.vue"
     );
 const NotFoundView = () =>
-    import(/* webpackChunkName: "notFound" */ "@/views/errors/notFound.vue");
+    import(
+        /* webpackChunkName: "notFound" */ "@/views/errors/NotFoundView.vue"
+    );
 const LoginView = () =>
-    import(/* webpackChunkName: "login" */ "@/views/login.vue");
+    import(/* webpackChunkName: "login" */ "@/views/LoginView.vue");
 const LogoutView = () =>
-    import(/* webpackChunkName: "logout" */ "@/views/logout.vue");
+    import(/* webpackChunkName: "logout" */ "@/views/LogoutView.vue");
 const LogoutCompleteView = () =>
-    import(/* webpackChunkName: "logout" */ "@/views/logoutComplete.vue");
+    import(/* webpackChunkName: "logout" */ "@/views/LogoutCompleteView.vue");
 const UnauthorizedView = () =>
     import(
-        /* webpackChunkName: "unauthorized" */ "@/views/errors/unauthorized.vue"
+        /* webpackChunkName: "unauthorized" */ "@/views/errors/UnauthorizedView.vue"
     );
 const IdirLoggedInView = () =>
     import(
-        /* webpackChunkName: "idirLoggedIn" */ "@/views/errors/idirLoggedIn.vue"
+        /* webpackChunkName: "idirLoggedIn" */ "@/views/errors/IdirLoggedInView.vue"
     );
 const LoginCallbackView = () =>
-    import(/* webpackChunkName: "loginCallback" */ "@/views/loginCallback.vue");
+    import(
+        /* webpackChunkName: "loginCallback" */ "@/views/LoginCallbackView.vue"
+    );
 const RegistrationView = () =>
-    import(/* webpackChunkName: "registration" */ "@/views/registration.vue");
+    import(
+        /* webpackChunkName: "registration" */ "@/views/RegistrationView.vue"
+    );
 const RegistrationInfoView = () =>
     import(
-        /* webpackChunkName: "registrationInfo" */ "@/views/registrationInfo.vue"
+        /* webpackChunkName: "registrationInfo" */ "@/views/RegistrationInfoView.vue"
     );
 const HomeView = () =>
-    import(/* webpackChunkName: "home" */ "@/views/home.vue");
+    import(/* webpackChunkName: "home" */ "@/views/HomeView.vue");
 const TimelineView = () =>
-    import(/* webpackChunkName: "timeline" */ "@/views/timeline.vue");
+    import(/* webpackChunkName: "timeline" */ "@/views/TimelineView.vue");
 const Covid19View = () =>
-    import(/* webpackChunkName: "covid19" */ "@/views/covid19.vue");
+    import(/* webpackChunkName: "covid19" */ "@/views/Covid19View.vue");
 const ValidateEmailView = () =>
-    import(/* webpackChunkName: "validateEmail" */ "@/views/validateEmail.vue");
+    import(
+        /* webpackChunkName: "validateEmail" */ "@/views/ValidateEmailView.vue"
+    );
 const TermsOfServiceView = () =>
     import(
-        /* webpackChunkName: "termsOfService" */ "@/views/termsOfService.vue"
+        /* webpackChunkName: "termsOfService" */ "@/views/TermsOfServiceView.vue"
     );
 const HealthInsightsView = () =>
     import(
-        /* webpackChunkName: "healthInsights" */ "@/views/healthInsights.vue"
+        /* webpackChunkName: "healthInsights" */ "@/views/HealthInsightsView.vue"
     );
 const ReportsView = () =>
-    import(/* webpackChunkName: "reports" */ "@/views/reports.vue");
+    import(/* webpackChunkName: "reports" */ "@/views/ReportsView.vue");
 const ReleaseNotesView = () =>
-    import(/* webpackChunkName: "releaseNotes" */ "@/views/releaseNotes.vue");
+    import(
+        /* webpackChunkName: "releaseNotes" */ "@/views/ReleaseNotesView.vue"
+    );
 const ContactUsView = () =>
-    import(/* webpackChunkName: "contactUs" */ "@/views/contactUs.vue");
+    import(/* webpackChunkName: "contactUs" */ "@/views/ContactUsView.vue");
 const DependentsView = () =>
-    import(/* webpackChunkName: "dependents" */ "@/views/dependents.vue");
-const FAQView = () => import(/* webpackChunkName: "faq" */ "@/views/faq.vue");
+    import(/* webpackChunkName: "dependents" */ "@/views/DependentsView.vue");
+const FAQView = () =>
+    import(/* webpackChunkName: "faq" */ "@/views/FaqView.vue");
 const PcrTestView = () =>
-    import(/* webpackChunkName: "pcrTest" */ "@/views/pcrTest.vue");
+    import(/* webpackChunkName: "pcrTest" */ "@/views/PcrTestView.vue");
 
 export enum UserState {
     unauthenticated = "unauthenticated",

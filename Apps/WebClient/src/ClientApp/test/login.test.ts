@@ -5,11 +5,11 @@ import { createLocalVue, shallowMount, Wrapper } from "@vue/test-utils";
 import Vuex from "vuex";
 
 import { IdentityProviderConfiguration } from "@/models/configData";
+import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions } from "@/store/types";
-import LoginComponent from "@/views/login.vue";
+import LoginComponent from "@/views/LoginView.vue";
 
 const pushMethod = jest.fn();
 

@@ -18,7 +18,6 @@ describe("Vaccine Card Page", () => {
     it("Landing Page - Vaccine Card Button Exists - Vaccine Status module enabled", () => {
         cy.enableModules(vaccinationStatusModule);
         cy.visit(homeUrl);
-        cy.get("[data-testid=btnVaccineCard]").should("exist");
     });
 
     it("Landing Page - Vaccination Card - unauthenticated user", () => {

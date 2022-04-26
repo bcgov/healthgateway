@@ -45,6 +45,7 @@ jobs:
             /k:bcgov_healthgateway \
             /n:"HealthGateway" \
             /d:sonar.login="$(SonarToken)" \
+            /d:sonar.dotnet.excludeTestProjects=true \
             /s:$(Build.SourcesDirectory)/Apps/sonar-config.xml
         displayName: "Begin Static Code Analysis"
         continueOnError: true

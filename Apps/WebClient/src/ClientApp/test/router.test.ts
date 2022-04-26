@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-import container from "@/plugins/inversify.container";
+import container from "@/plugins/container";
 
 import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
 import "setimmediate";
@@ -12,16 +12,16 @@ import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
 import router, { beforeEachGuard, UserState } from "@/router";
 import { ILogger, IStoreProvider } from "@/services/interfaces";
 import { WinstonLogger } from "@/services/winstonLogger";
-import StoreProvider from "@/store/provider";
+import StoreProvider from "@/store/StoreProvider";
 import { GatewayStoreOptions } from "@/store/types";
-import NotFoundComponent from "@/views/errors/notFound.vue";
-import UnauthorizedComponent from "@/views/errors/unauthorized.vue";
-import LandingComponent from "@/views/landing.vue";
-import LoginComponent from "@/views/login.vue";
-import LogoutComponent from "@/views/logout.vue";
-import ProfileComponent from "@/views/profile.vue";
-import PublicCovidTestComponent from "@/views/publicCovidTest.vue";
-import RegistrationComponent from "@/views/registration.vue";
+import NotFoundComponent from "@/views/errors/NotFoundView.vue";
+import UnauthorizedComponent from "@/views/errors/UnauthorizedView.vue";
+import LandingComponent from "@/views/LandingView.vue";
+import LoginComponent from "@/views/LoginView.vue";
+import LogoutComponent from "@/views/LogoutView.vue";
+import ProfileComponent from "@/views/ProfileView.vue";
+import PublicCovidTestComponent from "@/views/PublicCovidTestView.vue";
+import RegistrationComponent from "@/views/RegistrationView.vue";
 
 function flushPromises() {
     return new Promise((resolve) => setImmediate(resolve));

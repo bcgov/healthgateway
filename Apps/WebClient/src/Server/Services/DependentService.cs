@@ -73,7 +73,7 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public RequestResult<DependentModel> AddDependent(string delegateHdId, AddDependentRequest addDependentRequest)
         {
-            this.logger.LogTrace($"Dependent hdid: {delegateHdId}");
+            this.logger.LogTrace($"Delegate hdid: {delegateHdId}");
 
             int? maxDependentAge = this.configurationService.GetConfiguration().WebClient.MaxDependentAge;
             if (maxDependentAge.HasValue)
@@ -136,7 +136,7 @@ namespace HealthGateway.WebClient.Services
             JsonDocument jsonDoc = JsonDocument.Parse(json);
 
             // Insert Dependent to database
-            var dependent = new ResourceDelegate()
+            ResourceDelegate dependent = new()
             {
                 ResourceOwnerHdid = patientResult.ResourcePayload.HdId,
                 ProfileHdid = delegateHdId,
@@ -231,7 +231,7 @@ namespace HealthGateway.WebClient.Services
                 this.UpdateNotificationSettings(dependent.OwnerId, dependent.DelegateId, isDelete: true);
             }
 
-            RequestResult<DependentModel> result = new RequestResult<DependentModel>()
+            RequestResult<DependentModel> result = new()
             {
                 ResourcePayload = new DependentModel(),
                 ResultStatus = dbDependent.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
@@ -276,8 +276,11 @@ namespace HealthGateway.WebClient.Services
             UserProfile delegateUserProfile = dbResult.Payload;
 
             // Update the notification settings
-            NotificationSettingsRequest request = new NotificationSettingsRequest(delegateUserProfile, delegateUserProfile.Email, delegateUserProfile.SMSNumber);
-            request.SubjectHdid = dependentHdid;
+            NotificationSettingsRequest request = new(delegateUserProfile, delegateUserProfile.Email, delegateUserProfile.SMSNumber)
+            {
+                SubjectHdid = dependentHdid,
+            };
+
             if (isDelete)
             {
                 request.EmailAddress = null;
