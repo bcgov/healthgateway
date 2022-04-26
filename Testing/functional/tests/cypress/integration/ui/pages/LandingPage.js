@@ -18,8 +18,7 @@ describe("Landing Page", () => {
         cy.get("[data-testid=btnLogin]")
             .should("be.visible")
             .parent()
-            .should("have.attr", "href", "/login")
-            .contains("Log In");
+            .should("have.attr", "href", "/login");
     });
 
     it("Device Previews", () => {
