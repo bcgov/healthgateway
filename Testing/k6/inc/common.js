@@ -409,7 +409,7 @@ export function checkForRequestResult(response) {
 
         if (response.status === 200)
         {
-            console.log(response.body)
+            // console.log(response.body)
             var json = JSON.parse(response.body);
             var resultJson = json["resultError"];
             check(resultJson,  {
