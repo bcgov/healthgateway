@@ -651,7 +651,7 @@ export default class PublicVaccineCardView extends Vue {
                                 variant="primary"
                                 class="login-button"
                             >
-                                <span>Log In with BC Services Card</span>
+                                <span>Log in with BC Services Card</span>
                             </hg-button>
                         </router-link>
                     </div>

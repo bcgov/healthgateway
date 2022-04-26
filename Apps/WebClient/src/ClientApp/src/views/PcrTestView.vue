@@ -538,7 +538,7 @@ export default class PcrTestView extends Vue {
                                 class="login-button"
                                 @click="setDataSource(DSKEYCLOAK)"
                             >
-                                <span>Log In with BC Services Card</span>
+                                <span>Log in with BC Services Card</span>
                             </hg-button>
                         </b-col>
                     </b-row>
