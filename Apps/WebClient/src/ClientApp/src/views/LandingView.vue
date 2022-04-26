@@ -298,7 +298,7 @@ export default class LandingView extends Vue {
                                 variant="primary"
                                 class="btn-auth-landing"
                             >
-                                <span>Log In with BC Services Card</span>
+                                <span>Log in with BC Services Card</span>
                             </hg-button>
                         </router-link>
                         <div class="mt-3">
