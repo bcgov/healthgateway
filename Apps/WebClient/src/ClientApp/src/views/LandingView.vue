@@ -104,6 +104,10 @@ export default class LandingView extends Vue {
         }
     }
 
+    private get activeTiles(): Tile[] {
+        return this.tiles.filter((tile) => tile.active);
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
@@ -329,7 +333,7 @@ export default class LandingView extends Vue {
                 <h1 class="mb-2 mb-md-3 mb-lg-4">What you can access</h1>
                 <b-row>
                     <b-col
-                        v-for="tile in tiles"
+                        v-for="tile in activeTiles"
                         :key="tile.name"
                         class="text-center px-4 px-md-5 pb-4 pb-md-5"
                         cols="12"
