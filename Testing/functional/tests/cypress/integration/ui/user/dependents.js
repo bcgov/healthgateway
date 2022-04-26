@@ -162,7 +162,7 @@ describe("Dependents - Immuniazation Tab - Disabled", () => {
     });
 
     it("Immunization Tab - Configuration Disabled", () => {
-        cy.log("Validating Immunization Tab - configuration enabled");
+        cy.log("Validating Immunization Tab - configuration disabled");
         cy.get("[data-testid=immunization-tab-" + dependentHdid + "]").should(
             "not.exist"
         );

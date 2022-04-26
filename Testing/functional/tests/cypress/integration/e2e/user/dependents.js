@@ -2,8 +2,8 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("dependents", () => {
     const validDependent = {
-        firstName: "Sam ", // Aooend soace to ensure field is trimmed
-        lastName: "Testfive ", // Aooend soace to ensure field is trimmed
+        firstName: "Sam ", // Aooend space to ensure field is trimmed
+        lastName: "Testfive ", // Aooend space to ensure field is trimmed
         wrongLastName: "Testfive2",
         invalidDoB: "2007-Aug-05",
         doB: "2014-Mar-15",
