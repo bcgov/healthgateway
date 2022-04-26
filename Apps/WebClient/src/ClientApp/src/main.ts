@@ -180,29 +180,27 @@ configService.getConfiguration().then((config) => {
     reportService.initialize(httpDelegate);
     vaccinationStatusService.initialize(config, httpDelegate);
 
-    authInitializePromise.then(() => {
+    authInitializePromise.then(async () => {
         Vue.use(IdleVue, {
             eventEmitter: new Vue(),
             idleTime: config.webClient.timeouts.idle,
             store,
             startAtIdle: false,
         });
-        if (window.location.pathname === "/loginCallback") {
-            initializeVue(store);
-        } else {
-            store.dispatch("auth/getOidcUser").then(() => {
-                const isValid: boolean =
-                    store.getters["auth/isValidIdentityProvider"];
-                const user: User = store.getters["user/user"];
-                if (user.hdid && isValid) {
-                    store.dispatch("user/checkRegistration").then(() => {
-                        initializeVue(store);
-                    });
-                } else {
-                    initializeVue(store);
-                }
-            });
+
+        if (window.location.pathname !== "/loginCallback") {
+            await store.dispatch("auth/initialize");
+
+            const isValidIdentityProvider: boolean =
+                store.getters["auth/isValidIdentityProvider"];
+            const user: User = store.getters["user/user"];
+
+            if (user.hdid && isValidIdentityProvider) {
+                await store.dispatch("user/checkRegistration");
+            }
         }
+
+        initializeVue(store);
     });
 });
 

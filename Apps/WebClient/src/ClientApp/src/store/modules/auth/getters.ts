@@ -5,14 +5,11 @@ import { RootState } from "@/store/types";
 import { AuthGetters, AuthState } from "./types";
 
 export const getters: AuthGetters = {
-    authenticationStatus(state: AuthState): string {
-        return state.statusMessage;
-    },
     oidcIsAuthenticated(state: AuthState): boolean {
-        return state.isAuthenticated;
-    },
-    oidcAuthenticationIsChecked(state: AuthState): boolean {
-        return state.authentication.isChecked;
+        return (
+            state.tokenDetails !== undefined &&
+            state.tokenDetails.idToken.length > 0
+        );
     },
     oidcError(state: AuthState): unknown {
         return state.error;
