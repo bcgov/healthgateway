@@ -16,11 +16,7 @@ import { ResultError } from "@/models/requestResult";
 import type { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import {
-    IAuthenticationService,
-    ILogger,
-    IUserProfileService,
-} from "@/services/interfaces";
+import { ILogger, IUserProfileService } from "@/services/interfaces";
 
 library.add(faExclamationTriangle);
 
@@ -33,14 +29,6 @@ library.add(faExclamationTriangle);
 export default class RegistrationView extends Vue {
     @Prop() inviteKey?: string;
     @Prop() inviteEmail?: string;
-
-    @Action("checkRegistration", { namespace: "user" })
-    checkRegistration!: () => Promise<boolean>;
-
-    @Ref("registrationForm") form!: HTMLFormElement;
-
-    @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
 
     @Action("addError", { namespace: "errorBanner" })
     addError!: (params: {
@@ -56,6 +44,18 @@ export default class RegistrationView extends Vue {
         traceId: string | undefined;
     }) => void;
 
+    @Action("checkRegistration", { namespace: "user" })
+    checkRegistration!: () => Promise<boolean>;
+
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
+
+    @Getter("oidcUserInfo", { namespace: "user" })
+    oidcUserInfo!: OidcUserInfo | undefined;
+
+    @Ref("registrationForm")
+    form!: HTMLFormElement;
+
     private accepted = false;
     private email = "";
     private emailConfirmation = "";
@@ -64,7 +64,6 @@ export default class RegistrationView extends Vue {
     private isEmailChecked = true;
     private isSMSNumberChecked = true;
 
-    private oidcUserInfo!: OidcUserInfo;
     private userProfileService!: IUserProfileService;
     private submitStatus = "";
     private loadingUserData = true;
@@ -77,6 +76,31 @@ export default class RegistrationView extends Vue {
     private minimumAge!: number;
 
     private termsOfService = "";
+
+    private get isLoading(): boolean {
+        return this.loadingTermsOfService || this.loadingUserData;
+    }
+
+    private get fullName(): string {
+        if (this.oidcUserInfo === undefined) {
+            return "";
+        }
+        return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
+    }
+
+    private get isRegistrationClosed(): boolean {
+        return (
+            this.webClientConfig.registrationStatus == RegistrationStatus.Closed
+        );
+    }
+    private get isPredefinedEmail() {
+        if (
+            this.webClientConfig.registrationStatus != RegistrationStatus.Open
+        ) {
+            return !!this.inviteEmail;
+        }
+        return false;
+    }
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -92,54 +116,42 @@ export default class RegistrationView extends Vue {
             this.emailConfirmation = this.email;
         }
 
+        if (this.oidcUserInfo === undefined) {
+            this.addError({
+                errorType: ErrorType.Retrieve,
+                source: ErrorSourceType.User,
+                traceId: undefined,
+            });
+            return;
+        }
+
+        if (this.oidcUserInfo.email !== null) {
+            this.email = this.oidcUserInfo.email;
+            this.emailConfirmation = this.oidcUserInfo.email;
+        }
+
         this.userProfileService = container.get(
             SERVICE_IDENTIFIER.UserProfileService
         );
 
-        // Load the user name
         this.loadingUserData = true;
-        var authenticationService: IAuthenticationService = container.get(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
-        authenticationService
-            .getOidcUserInfo()
-            .then((oidcUserInfo) => {
-                if (oidcUserInfo) {
-                    this.oidcUserInfo = oidcUserInfo;
-
-                    if (this.oidcUserInfo.email !== null) {
-                        this.email = this.oidcUserInfo.email;
-                        this.emailConfirmation = this.oidcUserInfo.email;
-                    }
-
-                    return this.userProfileService
-                        .validateAge(oidcUserInfo.hdid)
-                        .then((isValid) => {
-                            this.isValidAge = isValid;
-                            this.loadingUserData = false;
-                        })
-                        .catch(() => {
-                            this.loadingUserData = false;
-                            this.clientRegistryError = true;
-                            this.addCustomError({
-                                title:
-                                    "Unable to validate " +
-                                    ErrorSourceType.User.toLowerCase(),
-                                source: ErrorSourceType.User,
-                                traceId: undefined,
-                            });
-                        });
-                } else {
-                    this.loadingUserData = false;
-                }
+        this.userProfileService
+            .validateAge(this.oidcUserInfo.hdid)
+            .then((isValid) => {
+                this.isValidAge = isValid;
             })
             .catch(() => {
-                this.loadingUserData = false;
-                this.addError({
-                    errorType: ErrorType.Retrieve,
-                    source: ErrorSourceType.Profile,
+                this.clientRegistryError = true;
+                this.addCustomError({
+                    title:
+                        "Unable to validate " +
+                        ErrorSourceType.User.toLowerCase(),
+                    source: ErrorSourceType.User,
                     traceId: undefined,
                 });
+            })
+            .finally(() => {
+                this.loadingUserData = false;
             });
 
         this.loadTermsOfService();
@@ -171,27 +183,6 @@ export default class RegistrationView extends Vue {
         };
     }
 
-    private get isLoading(): boolean {
-        return this.loadingTermsOfService || this.loadingUserData;
-    }
-
-    private get fullName(): string {
-        return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
-    }
-    private get isRegistrationClosed(): boolean {
-        return (
-            this.webClientConfig.registrationStatus == RegistrationStatus.Closed
-        );
-    }
-    private get isPredefinedEmail() {
-        if (
-            this.webClientConfig.registrationStatus != RegistrationStatus.Open
-        ) {
-            return !!this.inviteEmail;
-        }
-        return false;
-    }
-
     private loadTermsOfService(): void {
         this.loadingTermsOfService = true;
         this.userProfileService
@@ -221,7 +212,7 @@ export default class RegistrationView extends Vue {
 
     private onSubmit(event: Event) {
         this.$v.$touch();
-        if (this.$v.$invalid) {
+        if (this.$v.$invalid || this.oidcUserInfo === undefined) {
             this.submitStatus = "ERROR";
             event.preventDefault();
             return;

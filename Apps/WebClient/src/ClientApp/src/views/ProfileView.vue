@@ -27,16 +27,9 @@ import User, { OidcUserInfo } from "@/models/user";
 import UserProfile from "@/models/userProfile";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import {
-    IAuthenticationService,
-    ILogger,
-    IUserProfileService,
-} from "@/services/interfaces";
+import { ILogger, IUserProfileService } from "@/services/interfaces";
 
 library.add(faExclamationTriangle);
-
-const userNamespace = "user";
-const authNamespace = "auth";
 
 @Component({
     components: {
@@ -46,38 +39,6 @@ const authNamespace = "auth";
     },
 })
 export default class ProfileView extends Vue {
-    @Getter("oidcIsAuthenticated", {
-        namespace: authNamespace,
-    })
-    oidcIsAuthenticated!: boolean;
-
-    @Action("updateUserEmail", { namespace: userNamespace })
-    updateUserEmail!: ({
-        emailAddress,
-    }: {
-        emailAddress: string;
-    }) => Promise<void>;
-
-    @Action("checkRegistration", { namespace: userNamespace })
-    checkRegistration!: () => Promise<boolean>;
-
-    @Action("closeUserAccount", { namespace: userNamespace })
-    closeUserAccount!: () => Promise<void>;
-
-    @Action("recoverUserAccount", { namespace: userNamespace })
-    recoverUserAccount!: () => Promise<void>;
-
-    @Action("updateSMSResendDateTime", { namespace: userNamespace })
-    updateSMSResendDateTime!: ({ dateTime }: { dateTime: DateWrapper }) => void;
-
-    @Getter("user", { namespace: userNamespace }) user!: User;
-
-    @Getter("userIsActive", { namespace: userNamespace })
-    isActiveProfile!: boolean;
-
-    @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
-
     @Action("addError", { namespace: "errorBanner" })
     addError!: (params: {
         errorType: ErrorType;
@@ -92,11 +53,45 @@ export default class ProfileView extends Vue {
         traceId: string | undefined;
     }) => void;
 
+    @Action("updateUserEmail", { namespace: "user" })
+    updateUserEmail!: ({
+        emailAddress,
+    }: {
+        emailAddress: string;
+    }) => Promise<void>;
+
+    @Action("checkRegistration", { namespace: "user" })
+    checkRegistration!: () => Promise<boolean>;
+
+    @Action("closeUserAccount", { namespace: "user" })
+    closeUserAccount!: () => Promise<void>;
+
+    @Action("recoverUserAccount", { namespace: "user" })
+    recoverUserAccount!: () => Promise<void>;
+
+    @Action("updateSMSResendDateTime", { namespace: "user" })
+    updateSMSResendDateTime!: ({ dateTime }: { dateTime: DateWrapper }) => void;
+
     @Action("retrievePatientData", { namespace: "user" })
     retrievePatientData!: () => Promise<void>;
 
+    @Getter("oidcIsAuthenticated", { namespace: "auth" })
+    oidcIsAuthenticated!: boolean;
+
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
+
+    @Getter("oidcUserInfo", { namespace: "user" })
+    oidcUserInfo!: OidcUserInfo | undefined;
+
     @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
+
+    @Getter("userIsActive", { namespace: "user" })
+    isActiveProfile!: boolean;
 
     @Ref("verifySMSModal")
     readonly verifySMSModal!: VerifySMSComponent;
@@ -107,7 +102,6 @@ export default class ProfileView extends Vue {
     private emailVerified = false;
     private email = "";
     private isEmailEditable = false;
-    private oidcUserInfo!: OidcUserInfo;
     private emailVerificationSent = false;
 
     private smsVerified = false;
@@ -139,10 +133,48 @@ export default class ProfileView extends Vue {
         },
     ];
 
+    private get fullName(): string {
+        if (this.oidcUserInfo === undefined) {
+            return "";
+        }
+        return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
+    }
+
+    private get phn(): string {
+        return this.patientData.personalhealthnumber;
+    }
+
     private get isEmptyEmail(): boolean {
         return (
             this.email === null || this.email === undefined || this.email === ""
         );
+    }
+
+    private get timeForDeletionString(): string {
+        if (this.isActiveProfile) {
+            return "";
+        }
+
+        if (this.timeForDeletion < 0) {
+            return "Your account will be closed imminently";
+        }
+
+        let duration = Duration.fromMillis(this.timeForDeletion);
+        let timeRemaining = duration.as("days");
+        if (timeRemaining > 1) {
+            return this.pluralize(timeRemaining, "day");
+        }
+        timeRemaining = duration.as("hours");
+        if (timeRemaining > 1) {
+            return this.pluralize(timeRemaining, "hour");
+        }
+        timeRemaining = duration.as("minutes");
+        if (timeRemaining > 1) {
+            return this.pluralize(timeRemaining, "minute");
+        }
+
+        timeRemaining = duration.as("seconds");
+        return this.pluralize(timeRemaining, "second");
     }
 
     private get formattedLoginDateTimes(): string[] {
@@ -168,25 +200,14 @@ export default class ProfileView extends Vue {
             SERVICE_IDENTIFIER.UserProfileService
         );
 
-        // Load the user name and current email
-        let authenticationService = container.get<IAuthenticationService>(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
-
         this.isLoading = true;
         var patientPromise = this.retrievePatientData();
-        var oidcUserInfoPromise = authenticationService.getOidcUserInfo();
         var userProfilePromise = this.userProfileService.getProfile(
             this.user.hdid
         );
 
-        Promise.all([oidcUserInfoPromise, userProfilePromise, patientPromise])
-            .then(([oidcUserInfo, userProfile]) => {
-                // Load oidc user details
-                if (oidcUserInfo) {
-                    this.oidcUserInfo = oidcUserInfo;
-                }
-
+        Promise.all([userProfilePromise, patientPromise])
+            .then(([userProfile]) => {
                 if (userProfile) {
                     // Load user profile
                     this.logger.verbose(
@@ -279,10 +300,6 @@ export default class ProfileView extends Vue {
         };
     }
 
-    private get fullName(): string {
-        return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
-    }
-
     private calculateTimeForDeletion(): void {
         if (this.isActiveProfile) {
             return undefined;
@@ -291,33 +308,6 @@ export default class ProfileView extends Vue {
         let endDate = new DateWrapper(this.user.closedDateTime);
         endDate = endDate.add({ hour: this.webClientConfig.hoursForDeletion });
         this.timeForDeletion = endDate.diff(new DateWrapper()).milliseconds;
-    }
-
-    private get timeForDeletionString(): string {
-        if (this.isActiveProfile) {
-            return "";
-        }
-
-        if (this.timeForDeletion < 0) {
-            return "Your account will be closed imminently";
-        }
-
-        let duration = Duration.fromMillis(this.timeForDeletion);
-        let timeRemaining = duration.as("days");
-        if (timeRemaining > 1) {
-            return this.pluralize(timeRemaining, "day");
-        }
-        timeRemaining = duration.as("hours");
-        if (timeRemaining > 1) {
-            return this.pluralize(timeRemaining, "hour");
-        }
-        timeRemaining = duration.as("minutes");
-        if (timeRemaining > 1) {
-            return this.pluralize(timeRemaining, "minute");
-        }
-
-        timeRemaining = duration.as("seconds");
-        return this.pluralize(timeRemaining, "second");
     }
 
     private pluralize(count: number, message: string): string {
@@ -487,10 +477,6 @@ export default class ProfileView extends Vue {
             .finally(() => {
                 this.isLoading = false;
             });
-    }
-
-    private get phn(): string {
-        return this.patientData.personalhealthnumber;
     }
 }
 </script>

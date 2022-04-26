@@ -29,7 +29,7 @@ import { ResultError } from "@/models/requestResult";
 import User, { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { IAuthenticationService, ILogger } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
 import { IPcrTestService } from "@/services/interfaces";
 import { Mask, phnMask, smsMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
@@ -77,7 +77,11 @@ export default class PcrTestView extends Vue {
         idpHint?: string;
     }) => Promise<void>;
 
-    @Getter("user", { namespace: "user" }) user!: User;
+    @Getter("user", { namespace: "user" })
+    user!: User;
+
+    @Getter("oidcUserInfo", { namespace: "user" })
+    oidcUserInfo!: OidcUserInfo | undefined;
 
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated!: boolean;
@@ -96,8 +100,6 @@ export default class PcrTestView extends Vue {
     private noTestKitCode = false;
 
     private noPhn = false;
-
-    private oidcUserInfo?: OidcUserInfo = undefined;
 
     private registrationComplete = false;
 
@@ -163,29 +165,6 @@ export default class PcrTestView extends Vue {
     private oidcIsAuthenticatedChanged() {
         if (this.oidcIsAuthenticated) {
             this.dataSource = this.DSKEYCLOAK;
-
-            // If the user chooses to log in with keycloak, log them in and get their info
-            // Load the user name and current email
-            const authenticationService = container.get<IAuthenticationService>(
-                SERVICE_IDENTIFIER.AuthenticationService
-            );
-            this.loading = true;
-            authenticationService
-                .getOidcUserInfo()
-                .then((oidcUserInfo) => {
-                    // Load oidc user details
-                    this.oidcUserInfo = oidcUserInfo;
-                    this.pcrTest.hdid = this.oidcUserInfo.hdid;
-                })
-                .catch((err) => {
-                    this.logger.error(`Error loading profile: ${err}`);
-                    this.addError({
-                        errorType: ErrorType.Retrieve,
-                        source: ErrorSourceType.Profile,
-                        traceId: undefined,
-                    });
-                })
-                .finally(() => (this.loading = false));
         }
     }
 
@@ -206,12 +185,11 @@ export default class PcrTestView extends Vue {
         return smsMask;
     }
 
-    private getFullName(): string {
-        if (this.oidcUserInfo !== undefined) {
-            return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
-        } else {
+    private get fullName(): string {
+        if (this.oidcUserInfo === undefined) {
             return "";
         }
+        return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
     }
 
     // Redirect back to serial number path if user had it before logging in
@@ -595,7 +573,7 @@ export default class PcrTestView extends Vue {
                             <b-col>
                                 <label for="pcrTestFullName">Name:</label>
                                 <strong id="prcTestFullName">
-                                    {{ getFullName() }}
+                                    {{ fullName }}
                                 </strong>
                             </b-col>
                         </b-row>
