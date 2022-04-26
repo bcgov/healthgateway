@@ -8,7 +8,7 @@ import {
     faDesktop,
     faEdit,
     faFileMedical,
-    faHome,
+    faMagnifyingGlass,
     faMicroscope,
     faMobileScreenButton,
     faPills,
@@ -37,7 +37,7 @@ library.add(
     faDesktop,
     faEdit,
     faFileMedical,
-    faHome,
+    faMagnifyingGlass,
     faMicroscope,
     faMobileScreenButton,
     faPills,
@@ -444,12 +444,10 @@ export default class LandingView extends Vue {
                                     size="extra-large"
                                 />
                             </div>
-                            <h4 class="my-3">Stay up-to-date</h4>
+                            <h4 class="my-3">Stay up to date</h4>
                             <p class="mb-0 h-100">
                                 View your health information in a list or
-                                calendar view, so you can easily find your most
-                                recent records. Filter or search to narrow your
-                                results.
+                                calendar view, so you can easily see what’s new.
                             </p>
                         </b-card>
                     </b-col>
@@ -463,21 +461,24 @@ export default class LandingView extends Vue {
                             </div>
                             <h4 class="my-3">Manage your information</h4>
                             <p class="mb-0">
-                                Download records so you can organize, print and
-                                use them as needed. Make your own notes on
-                                records to track important health events.
+                                Download your health records, organize, and
+                                print them. Make your own notes on records to
+                                track health events.
                             </p>
                         </b-card>
                     </b-col>
                     <b-col cols="12" lg="4" class="p-3">
                         <b-card class="h-100 text-center">
                             <div class="icon-header">
-                                <hg-icon icon="home" size="extra-large" />
+                                <hg-icon
+                                    icon="magnifying-glass"
+                                    size="extra-large"
+                                />
                             </div>
-                            <h4 class="my-3">Quick and easy</h4>
+                            <h4 class="my-3">Find what you need</h4>
                             <p class="mb-0">
-                                Add a shortcut to your preferred health records
-                                on the home screen.
+                                Add a quick link to the records you use the
+                                most. Filter or search to find what you need.
                             </p>
                         </b-card>
                     </b-col>
