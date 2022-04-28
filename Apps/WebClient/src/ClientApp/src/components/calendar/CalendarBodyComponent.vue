@@ -88,8 +88,6 @@ export default class CalendarBodyComponent extends Vue {
     }
 
     private slotEvents(date: DateWrapper): CalendarEntry[] {
-        //TODO: It should do this computation once instead of every single time
-
         // find all events start from this date
         let dateGroup: DateGroup = this.dateGroups.find((d) =>
             date.isSame(d.date, "day")

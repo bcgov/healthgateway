@@ -163,7 +163,7 @@ export default class LandingView extends Vue {
 
     private filterActiveTiles(): void {
         for (const moduleName in this.config.modules) {
-            var tile = this.tiles.find(
+            const tile = this.tiles.find(
                 (tileEntry) => tileEntry.type === moduleName
             );
             if (tile) {

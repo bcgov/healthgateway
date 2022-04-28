@@ -55,33 +55,35 @@ export default class HgTimeDropdownComponent extends Vue {
     }
 
     private get getHour() {
-        let hourOptions: ISelectOption[] = [{ value: null, text: "Hour" }];
-        for (var i = 0; i < this.hourValues.length; i++) {
+        const hourOptions: ISelectOption[] = [{ value: null, text: "Hour" }];
+        for (const value of this.hourValues) {
             hourOptions.push({
-                value: this.hourValues[i],
-                text: this.hourValues[i],
+                value: value,
+                text: value,
             });
         }
         return hourOptions;
     }
 
     private get getMinute() {
-        let minuteOptions: ISelectOption[] = [{ value: null, text: "Minute" }];
-        for (var i = 0; i < this.minuteValues.length; i++) {
+        const minuteOptions: ISelectOption[] = [
+            { value: null, text: "Minute" },
+        ];
+        for (const value of this.minuteValues) {
             minuteOptions.push({
-                value: this.minuteValues[i],
-                text: this.minuteValues[i],
+                value: value,
+                text: value,
             });
         }
         return minuteOptions;
     }
 
     private get getAmPm() {
-        let amPmOptions: ISelectOption[] = [{ value: null, text: "AM/PM" }];
-        for (var i = 0; i < this.amPmValues.length; i++) {
+        const amPmOptions: ISelectOption[] = [{ value: null, text: "AM/PM" }];
+        for (const value of this.amPmValues) {
             amPmOptions.push({
-                value: this.amPmValues[i],
-                text: this.amPmValues[i],
+                value: value,
+                text: value,
             });
         }
         return amPmOptions;

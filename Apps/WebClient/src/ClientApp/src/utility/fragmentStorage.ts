@@ -66,9 +66,8 @@ export class FragmentedStorage implements Storage {
             const fragmentSection = this.getFragmentSection(storedItem);
             const fragmentNames = this.getFragmentNames(fragmentSection);
 
-            for (let i = 0; i < fragmentNames.length; i++) {
-                const fragment = fragmentNames[i];
-                this.internalStorage.removeItem(fragment);
+            for (const fragmentName of fragmentNames) {
+                this.internalStorage.removeItem(fragmentName);
             }
         }
 
@@ -106,8 +105,8 @@ export class FragmentedStorage implements Storage {
 
     private assembleFragments(fragmentNames: string[]): string {
         let reconstitutedItem = "";
-        for (let i = 0; i < fragmentNames.length; i++) {
-            reconstitutedItem += this.internalStorage.getItem(fragmentNames[i]);
+        for (const fragmentName of fragmentNames) {
+            reconstitutedItem += this.internalStorage.getItem(fragmentName);
         }
         return reconstitutedItem;
     }
