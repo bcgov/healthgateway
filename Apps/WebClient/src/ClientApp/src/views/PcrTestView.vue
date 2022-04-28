@@ -29,8 +29,11 @@ import { ResultError } from "@/models/requestResult";
 import User, { OidcUserProfile } from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { IAuthenticationService, ILogger } from "@/services/interfaces";
-import { IPcrTestService } from "@/services/interfaces";
+import {
+    IAuthenticationService,
+    ILogger,
+    IPcrTestService,
+} from "@/services/interfaces";
 import { Mask, phnMask, smsMask } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
 
@@ -107,7 +110,8 @@ export default class PcrTestView extends Vue {
 
     private errorMessage = "";
 
-    private testTakenMinutesAgoValues = [
+    private testTakenMinutesAgoOptions: ISelectOption[] = [
+        { value: -1, text: "Time" },
         { value: 5, text: "Just now" },
         { value: 30, text: "Within 30 minutes" },
         { value: 120, text: "Within 2 hours" },
@@ -217,21 +221,6 @@ export default class PcrTestView extends Vue {
     // Redirect back to serial number path if user had it before logging in
     private get oidcRedirectPath() {
         return this.noSerialNumber ? "/pcrtest" : this.redirectPath;
-    }
-
-    // Build dropdown for testTakenMinutesAgo dropdown
-    private get testTakenMinutesAgoOptions() {
-        // Initial value is -1, which is the default value for the dropdown
-        let testTakenMinutesAgoOptions: ISelectOption[] = [
-            { value: -1, text: "Time" },
-        ];
-        for (var i = 0; i < this.testTakenMinutesAgoValues.length; i++) {
-            testTakenMinutesAgoOptions.push({
-                value: this.testTakenMinutesAgoValues[i].value,
-                text: this.testTakenMinutesAgoValues[i].text,
-            });
-        }
-        return testTakenMinutesAgoOptions;
     }
 
     // ### Setters ###

@@ -4,6 +4,6 @@ const path = require("path");
 // the correct images are loaded for components.
 
 module.exports = {
-    process: (src, filename, config, options) =>
+    process: (_src, filename) =>
         `module.exports = '${JSON.stringify(path.basename(filename))}';`,
 };

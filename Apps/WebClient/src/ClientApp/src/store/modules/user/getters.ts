@@ -31,10 +31,8 @@ export const getters: UserGetters = {
             return state.user.preferences[preferenceName];
         },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    quickLinks(state: UserState, _getters: any): QuickLink[] | undefined {
-        const preference = _getters.getPreference(
-            UserPreferenceType.QuickLinks
-        );
+    quickLinks(_state: UserState, getters: any): QuickLink[] | undefined {
+        const preference = getters.getPreference(UserPreferenceType.QuickLinks);
         if (preference === undefined) {
             return undefined;
         }

@@ -220,7 +220,7 @@ export default class TimelineView extends Vue {
 
         let timelineEntries = [];
         // Add the medication request entries to the timeline list
-        for (let medicationRequest of this.medicationRequests) {
+        for (const medicationRequest of this.medicationRequests) {
             timelineEntries.push(
                 new MedicationRequestTimelineEntry(
                     medicationRequest,
@@ -230,14 +230,14 @@ export default class TimelineView extends Vue {
         }
 
         // Add the medication entries to the timeline list
-        for (let medication of this.medicationStatements) {
+        for (const medication of this.medicationStatements) {
             timelineEntries.push(
                 new MedicationTimelineEntry(medication, this.getEntryComments)
             );
         }
 
         // Add the COVID-19 Laboratory entries to the timeline list
-        for (let order of this.covid19LaboratoryOrders) {
+        for (const order of this.covid19LaboratoryOrders) {
             timelineEntries.push(
                 new Covid19LaboratoryOrderTimelineEntry(
                     order,
@@ -247,26 +247,26 @@ export default class TimelineView extends Vue {
         }
 
         // Add the Laboratory entries to the timeline list
-        for (let order of this.laboratoryOrders) {
+        for (const order of this.laboratoryOrders) {
             timelineEntries.push(
                 new LaboratoryOrderTimelineEntry(order, this.getEntryComments)
             );
         }
 
         // Add the Encounter entries to the timeline list
-        for (let encounter of this.patientEncounters) {
+        for (const encounter of this.patientEncounters) {
             timelineEntries.push(
                 new EncounterTimelineEntry(encounter, this.getEntryComments)
             );
         }
 
         // Add the Note entries to the timeline list
-        for (let note of this.userNotes) {
+        for (const note of this.userNotes) {
             timelineEntries.push(new NoteTimelineEntry(note));
         }
 
         // Add the immunization entries to the timeline list
-        for (let immunization of this.patientImmunizations) {
+        for (const immunization of this.patientImmunizations) {
             timelineEntries.push(new ImmunizationTimelineEntry(immunization));
         }
 

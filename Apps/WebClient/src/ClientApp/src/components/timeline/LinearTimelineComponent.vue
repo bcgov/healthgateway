@@ -116,16 +116,14 @@ export default class LinearTimelineComponent extends Vue {
 
     @Watch("selectedDate")
     private onSelectedDate() {
-        if (this.selectedDate !== null) {
-            const selectedDate = this.selectedDate as DateWrapper;
-
-            if (this.setPageFromDate(selectedDate)) {
-                // Wait for next render cycle until the pages have been calculated and displayed
-                this.$nextTick().then(() => {
-                    const date = this.selectedDate as DateWrapper;
-                    this.focusOnDate(date);
-                });
-            }
+        if (
+            this.selectedDate !== null &&
+            this.setPageFromDate(this.selectedDate)
+        ) {
+            // Wait for next render cycle until the pages have been calculated and displayed
+            this.$nextTick().then(() => {
+                this.focusOnDate(this.selectedDate as DateWrapper);
+            });
         }
     }
 
