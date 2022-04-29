@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Delegates
 {
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
     using System.Net;
@@ -97,18 +98,23 @@ namespace HealthGateway.Immunization.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizations(int pageIndex = 0)
+        public async Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizations(string hdid)
         {
             using Activity? activity = Source.StartActivity("GetImmunizations");
-            this.logger.LogDebug($"Getting immunizations...");
+            this.logger.LogDebug("Getting immunizations for hdid: {Hdid}", hdid);
 
             RequestResult<PhsaResult<ImmunizationResponse>> requestResult = InitializeResult<ImmunizationResponse>();
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            Dictionary<string, string?> query = new()
+            {
+                ["limit"] = this.phsaConfig.FetchSize,
+                ["subjectHdid"] = hdid,
+            };
 
             try
             {
                 IApiResponse<PhsaResult<ImmunizationResponse>> response =
-                    await this.immunizationClient.GetImmunizations(this.phsaConfig.FetchSize, accessToken).ConfigureAwait(true);
+                    await this.immunizationClient.GetImmunizations(query, accessToken).ConfigureAwait(true);
                 this.ProcessResponse(requestResult, response);
             }
             catch (HttpRequestException e)
