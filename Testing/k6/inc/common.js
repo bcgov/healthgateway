@@ -407,13 +407,18 @@ function isObject(val) {
 export function checkForRequestResult(response) {
     if (isObject(response)) {
 
-        if (response.status === 200)
-        {
+        if (response.status === 200) {
             // console.log(response.body)
             var json = JSON.parse(response.body);
-            var resultJson = json["resultError"];
-            check(resultJson,  {
-                "ActionCode is NOT REFRESH": (r) => r.actionCode != "REFRESH" });
+            check(json, {
+                "Returned 200 Ok with NO JSON": (r) => isObject(r)
+            });
+            if (isObject(json)) {
+                var resultJson = json["resultError"];
+                check(resultJson, {
+                    "ActionCode is NOT REFRESH": (r) => isObject(r) && r.actionCode != "REFRESH"
+                });
+            }
         }
 
     }
