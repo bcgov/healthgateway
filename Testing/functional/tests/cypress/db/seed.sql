@@ -358,7 +358,7 @@ INSERT INTO gateway."Note"(
 	"UserProfileId", 
 	"Title", 
 	"Text", 
-	"JournalDateTime")
+	"JournalDate")
 VALUES (
 	uuid_generate_v4(),
 	'DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA',
@@ -381,7 +381,7 @@ INSERT INTO gateway."Note"(
 	"UserProfileId", 
 	"Title", 
 	"Text", 
-	"JournalDateTime")
+	"JournalDate")
 VALUES (
 	uuid_generate_v4(),
 	'DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA',
@@ -391,7 +391,7 @@ VALUES (
 	'DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA',
 	'Z5/Z7ZkAF8t5HpJq07QGBw==',
 	'W/rhf01ikEQrN9v1wX5sfA==',
-	'2022-01-17 00:48:01.116171'
+	'2022-01-17'
 );
 
 INSERT INTO gateway."Note"(
@@ -403,7 +403,7 @@ INSERT INTO gateway."Note"(
 	"UserProfileId", 
 	"Title", 
 	"Text", 
-	"JournalDateTime")
+	"JournalDate")
 VALUES (
 	uuid_generate_v4(),
 	'DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA',
@@ -413,6 +413,6 @@ VALUES (
 	'DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA',
 	'Z5/Z7ZkAF8t5HpJq07QGBw==',
 	'W/rhf01ikEQrN9v1wX5sfA==',
-	'2022-01-16 00:48:01.11617'
+	'2022-01-16'
 );
 

@@ -8,7 +8,7 @@ import {
     faDesktop,
     faEdit,
     faFileMedical,
-    faHome,
+    faMagnifyingGlass,
     faMicroscope,
     faMobileScreenButton,
     faPills,
@@ -37,7 +37,7 @@ library.add(
     faDesktop,
     faEdit,
     faFileMedical,
-    faHome,
+    faMagnifyingGlass,
     faMicroscope,
     faMobileScreenButton,
     faPills,
@@ -104,6 +104,10 @@ export default class LandingView extends Vue {
         }
     }
 
+    private get activeTiles(): Tile[] {
+        return this.tiles.filter((tile) => tile.active);
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
@@ -118,8 +122,8 @@ export default class LandingView extends Vue {
         // Add Proof of Vaccination tile to tiles
         this.addProofOfVaccinationTile();
 
-        // Filter out only active tiles to display
-        this.filterActiveTiles();
+        // Populate tiles with active value from config module
+        this.populateActiveValue();
     }
 
     private getProofOfVaccinationTile(): Tile {
@@ -157,11 +161,13 @@ export default class LandingView extends Vue {
     private addProofOfVaccinationTile(): void {
         this.tiles.splice(2, 0, this.getProofOfVaccinationTile());
         this.tiles.forEach((tile) =>
-            this.logger.debug(`Tile:  ${JSON.stringify(tile)}`)
+            this.logger.debug(
+                `Add Proof of Vaccine - Tile:  ${JSON.stringify(tile)}`
+            )
         );
     }
 
-    private filterActiveTiles(): void {
+    private populateActiveValue(): void {
         for (const moduleName in this.config.modules) {
             var tile = this.tiles.find(
                 (tileEntry) => tileEntry.type === moduleName
@@ -171,7 +177,9 @@ export default class LandingView extends Vue {
             }
         }
         this.tiles.forEach((tile) =>
-            this.logger.debug(`Active Tile:  ${JSON.stringify(tile)}`)
+            this.logger.debug(
+                `Populate Active Value - Tile:  ${JSON.stringify(tile)}`
+            )
         );
     }
 
@@ -298,7 +306,7 @@ export default class LandingView extends Vue {
                                 variant="primary"
                                 class="btn-auth-landing"
                             >
-                                <span>Log In with BC Services Card</span>
+                                <span>Log in with BC Services Card</span>
                             </hg-button>
                         </router-link>
                         <div class="mt-3">
@@ -329,7 +337,7 @@ export default class LandingView extends Vue {
                 <h1 class="mb-2 mb-md-3 mb-lg-4">What you can access</h1>
                 <b-row>
                     <b-col
-                        v-for="tile in tiles"
+                        v-for="tile in activeTiles"
                         :key="tile.name"
                         class="text-center px-4 px-md-5 pb-4 pb-md-5"
                         cols="12"
@@ -444,12 +452,10 @@ export default class LandingView extends Vue {
                                     size="extra-large"
                                 />
                             </div>
-                            <h4 class="my-3">Stay up-to-date</h4>
+                            <h4 class="my-3">Stay up to date</h4>
                             <p class="mb-0 h-100">
                                 View your health information in a list or
-                                calendar view, so you can easily find your most
-                                recent records. Filter or search to narrow your
-                                results.
+                                calendar view, so you can easily see what’s new.
                             </p>
                         </b-card>
                     </b-col>
@@ -463,21 +469,24 @@ export default class LandingView extends Vue {
                             </div>
                             <h4 class="my-3">Manage your information</h4>
                             <p class="mb-0">
-                                Download records so you can organize, print and
-                                use them as needed. Make your own notes on
-                                records to track important health events.
+                                Download your health records, organize, and
+                                print them. Make your own notes on records to
+                                track health events.
                             </p>
                         </b-card>
                     </b-col>
                     <b-col cols="12" lg="4" class="p-3">
                         <b-card class="h-100 text-center">
                             <div class="icon-header">
-                                <hg-icon icon="home" size="extra-large" />
+                                <hg-icon
+                                    icon="magnifying-glass"
+                                    size="extra-large"
+                                />
                             </div>
-                            <h4 class="my-3">Quick and easy</h4>
+                            <h4 class="my-3">Find what you need</h4>
                             <p class="mb-0">
-                                Add a shortcut to your preferred health records
-                                on the home screen.
+                                Add a quick link to the records you use the
+                                most. Filter or search to find what you need.
                             </p>
                         </b-card>
                     </b-col>

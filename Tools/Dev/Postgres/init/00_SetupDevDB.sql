@@ -14,5 +14,7 @@ CREATE DATABASE gateway WITH
   CONNECTION LIMIT = -1
   TEMPLATE template0;
 
+GRANT gateway to postgres;
+
 \c gateway
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
