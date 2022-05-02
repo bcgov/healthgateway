@@ -1,9 +1,16 @@
 # Developer DB Setup
 
-Install Docker
+To initialize the Health Gateway DB start Docker image
 
-In the Tools/DB folder run
+```console
+docker compose up -d
+docker logs --follow gatewaydb
+```
 
-`docker-compose up -d`
+Once that DB has started, and you see a message like
 
-Once that DB has started, start the JobScheduler application to run the migrations or view the DBMainter README to run them manually.
+```console
+database system is ready to accept connections
+```
+
+At this point you can stop following the logs CTRL-C and start the JobScheduler application to run the migrations or view the DBMainter README to run them manually.

@@ -22,6 +22,7 @@ namespace HealthGateway.DrugMaintainer
     using System.Linq;
     using CsvHelper;
     using CsvHelper.Configuration;
+    using CsvHelper.TypeConversion;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
 
@@ -45,11 +46,16 @@ namespace HealthGateway.DrugMaintainer
         public IList<PharmaCareDrug> ParsePharmaCareDrugFile(string filename, FileDownload filedownload)
         {
             this.logger.LogInformation("Parsing PharmaCare Drug file");
-            using var reader = new StreamReader(filename);
-            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture);
-            using var csv = new CsvReader(reader, csvConfig);
-            csv.Context.TypeConverterOptionsCache.GetOptions<DateTime>().Formats = new[] { "yyyyMMdd" };
-            PharmaCareDrugMapper mapper = new PharmaCareDrugMapper(filedownload);
+            using StreamReader reader = new(filename);
+            CsvConfiguration csvConfig = new(CultureInfo.InvariantCulture);
+            using CsvReader csv = new(reader, csvConfig);
+            TypeConverterOptions options = new()
+            {
+                Formats = new[] { "yyyyMMdd", },
+                DateTimeStyle = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
+            PharmaCareDrugMapper mapper = new(filedownload);
             csv.Context.RegisterClassMap(mapper);
             List<PharmaCareDrug> records = csv.GetRecords<PharmaCareDrug>().ToList();
             return records;

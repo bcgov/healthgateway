@@ -122,8 +122,8 @@ export default class LandingView extends Vue {
         // Add Proof of Vaccination tile to tiles
         this.addProofOfVaccinationTile();
 
-        // Filter out only active tiles to display
-        this.filterActiveTiles();
+        // Populate tiles with active value from config module
+        this.populateActiveValue();
     }
 
     private getProofOfVaccinationTile(): Tile {
@@ -161,11 +161,13 @@ export default class LandingView extends Vue {
     private addProofOfVaccinationTile(): void {
         this.tiles.splice(2, 0, this.getProofOfVaccinationTile());
         this.tiles.forEach((tile) =>
-            this.logger.debug(`Tile:  ${JSON.stringify(tile)}`)
+            this.logger.debug(
+                `Add Proof of Vaccine - Tile:  ${JSON.stringify(tile)}`
+            )
         );
     }
 
-    private filterActiveTiles(): void {
+    private populateActiveValue(): void {
         for (const moduleName in this.config.modules) {
             var tile = this.tiles.find(
                 (tileEntry) => tileEntry.type === moduleName
@@ -175,7 +177,9 @@ export default class LandingView extends Vue {
             }
         }
         this.tiles.forEach((tile) =>
-            this.logger.debug(`Active Tile:  ${JSON.stringify(tile)}`)
+            this.logger.debug(
+                `Populate Active Value - Tile:  ${JSON.stringify(tile)}`
+            )
         );
     }
 
