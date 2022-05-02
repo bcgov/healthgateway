@@ -36,8 +36,8 @@ namespace HealthGateway.Immunization.Delegates
         /// Returns a PHSA Result including the load state and a List of Immunizations for the authenticated user.
         /// It has a collection of one or more Immunizations.
         /// </summary>
-        /// <param name="pageIndex">The page index to return.</param>
-        /// <returns>The PhsaResult including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
-        Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizations(int pageIndex = 0);
+        /// <param name="hdid">The hdid patient id.</param>
+        /// <returns>The PhsaResult including the load state and the list of Immunizations available for the user hdid.</returns>
+        Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizations(string hdid);
     }
 }

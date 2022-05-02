@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Api;
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using HealthGateway.Common.Data.ViewModels;
 using HealthGateway.Common.Models.PHSA;
@@ -39,9 +40,9 @@ public interface IImmunizationClient
     /// Returns a PHSA Result including the load state and a List of Immunizations for the authenticated user.
     /// It has a collection of one or more Immunizations.
     /// </summary>
-    /// <param name="limit">The number of lab reports to return.</param>
+    /// <param name="query">Query parameters used to query immunizations.</param>
     /// <param name="token">The bearer token to authorize the call.</param>
-    /// <returns>The PHSA Result including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
-    [Get("/api/v1/Immunizations?limit={limit}")]
-    Task<IApiResponse<PhsaResult<ImmunizationResponse>>> GetImmunizations(string limit, [Authorize("Bearer")] string token);
+    /// <returns>The PHSA Result including the load state and the list of Immunizations available for the user identified by either the subject id in the query or by the user identified in the bearer token.</returns>
+    [Get("/api/v1/Immunizations")]
+    Task<IApiResponse<PhsaResult<ImmunizationResponse>>> GetImmunizations(Dictionary<string, string?> query, [Authorize("Bearer")] string token);
 }

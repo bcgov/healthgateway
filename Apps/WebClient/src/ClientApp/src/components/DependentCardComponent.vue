@@ -50,7 +50,7 @@ interface Covid19LaboratoryTestRow {
 }
 
 interface ImmunizationRow {
-    date: StringISODate;
+    date: string;
     immunization: string;
     agents: string;
     provider_clinic: string;
@@ -59,7 +59,7 @@ interface ImmunizationRow {
 
 interface RecommendationRow {
     immunization: string;
-    due_date: StringISODate;
+    due_date: string;
     status: string;
 }
 
@@ -145,7 +145,7 @@ export default class DependentCardComponent extends Vue {
     private get recomendationItems(): RecommendationRow[] {
         return this.recommendations.map<RecommendationRow>((x) => {
             return {
-                immunization: x.immunization.name,
+                immunization: x.targetDiseases.find((y) => y.name)?.name ?? "",
                 due_date:
                     x.diseaseDueDate === undefined || x.diseaseDueDate === null
                         ? ""
@@ -242,7 +242,9 @@ export default class DependentCardComponent extends Vue {
     }
 
     private fetchPatientImmunizations() {
-        const hdid = this.dependent.dependentInformation.hdid;
+        const hdid = this.dependent.ownerId;
+        this.logger.debug(`Fetching Patient Immunizations for Hdid: ${hdid}`);
+        this.logger.debug(`Logged in user Hdid: ${this.user.hdid}`);
         this.logger.debug(
             `Fetching Patient Immunizations - immunization data laoded: ${this.isImmunizationDataLoaded}`
         );
@@ -250,8 +252,6 @@ export default class DependentCardComponent extends Vue {
         if (this.isImmunizationDataLoaded) {
             return;
         }
-
-        this.logger.debug(`Fetching Patient Immunizations for Hdid: ${hdid}`);
 
         this.isLoading = true;
         this.immunizationService
@@ -336,8 +336,8 @@ export default class DependentCardComponent extends Vue {
     }
 
     private setRecommendations(recommendations: Recommendation[]) {
-        this.recommendations = recommendations.filter(
-            (x) => x.immunization.name !== null && x.immunization.name !== ""
+        this.recommendations = recommendations.filter((x) =>
+            x.targetDiseases.some((y) => y.name)
         );
 
         this.recommendations.sort((a, b) => {
@@ -670,13 +670,13 @@ export default class DependentCardComponent extends Vue {
                 <b-tab
                     v-if="immunizationTabShown"
                     :disabled="isExpired"
-                    :data-testid="`immunization-tab-${dependent.dependentInformation.hdid}`"
+                    :data-testid="`immunization-tab-${dependent.ownerId}`"
                     class="tableTab mt-2"
                     @click="fetchPatientImmunizations()"
                 >
                     <template #title>
                         <div
-                            :data-testid="`immunization-tab-title-${dependent.dependentInformation.hdid}`"
+                            :data-testid="`immunization-tab-title-${dependent.ownerId}`"
                         >
                             Immunization
                         </div>
@@ -686,7 +686,7 @@ export default class DependentCardComponent extends Vue {
                     </b-row>
                     <div
                         v-else
-                        :data-testid="`immunization-tab-div-${dependent.dependentInformation.hdid}`"
+                        :data-testid="`immunization-tab-div-${dependent.ownerId}`"
                     >
                         <b-card no-body>
                             <b-tabs class="p-2">
@@ -696,7 +696,7 @@ export default class DependentCardComponent extends Vue {
                                         class="m-2"
                                     >
                                         <b-col
-                                            :data-testid="`immunization-history-no-rows-found-${dependent.dependentInformation.hdid}`"
+                                            :data-testid="`immunization-history-no-rows-found-${dependent.ownerId}`"
                                         >
                                             No records found.
                                         </b-col>
@@ -705,7 +705,7 @@ export default class DependentCardComponent extends Vue {
                                         v-else
                                         class="w-100"
                                         aria-describedby="Immunization History"
-                                        :data-testid="`immunization-history-table-${dependent.dependentInformation.hdid}`"
+                                        :data-testid="`immunization-history-table-${dependent.ownerId}`"
                                     >
                                         <tr>
                                             <th scope="col">Date</th>
@@ -731,28 +731,28 @@ export default class DependentCardComponent extends Vue {
                                             :key="index"
                                         >
                                             <td
-                                                :data-testid="`history-immunization-date-${dependent.dependentInformation.hdid}-${index}`"
+                                                :data-testid="`history-immunization-date-${dependent.ownerId}-${index}`"
                                             >
                                                 {{ row.date }}
                                             </td>
                                             <td
-                                                :data-testid="`history-product-${dependent.dependentInformation.hdid}-${index}`"
+                                                :data-testid="`history-product-${dependent.ownerId}-${index}`"
                                             >
                                                 {{ row.immunization }}
                                             </td>
                                             <td
-                                                :data-testid="`history-immunizing-agent-${dependent.dependentInformation.hdid}-${index}`"
+                                                :data-testid="`history-immunizing-agent-${dependent.ownerId}-${index}`"
                                                 class="d-none d-sm-table-cell"
                                             >
                                                 {{ row.agents }}
                                             </td>
                                             <td
-                                                :data-testid="`history-provider-clinic-${dependent.dependentInformation.hdid}-${index}`"
+                                                :data-testid="`history-provider-clinic-${dependent.ownerId}-${index}`"
                                             >
                                                 {{ row.provider_clinic }}
                                             </td>
                                             <td
-                                                :data-testid="`history-lot-number-${dependent.dependentInformation.hdid}-${index}`"
+                                                :data-testid="`history-lot-number-${dependent.ownerId}-${index}`"
                                                 class="d-none d-sm-table-cell"
                                             >
                                                 {{ row.lotNumber }}
@@ -766,7 +766,7 @@ export default class DependentCardComponent extends Vue {
                                         class="m-2"
                                     >
                                         <b-col
-                                            :data-testid="`immunization-forecast-no-rows-found-${dependent.dependentInformation.hdid}`"
+                                            :data-testid="`immunization-forecast-no-rows-found-${dependent.ownerId}`"
                                         >
                                             No records found.
                                         </b-col>
@@ -775,7 +775,7 @@ export default class DependentCardComponent extends Vue {
                                         v-else
                                         class="w-100"
                                         aria-describedby="Immunization Forecast"
-                                        :data-testid="`immunization-forecast-table-${dependent.dependentInformation.hdid}`"
+                                        :data-testid="`immunization-forecast-table-${dependent.ownerId}`"
                                     >
                                         <tr>
                                             <th scope="col">Immunization</th>
@@ -789,17 +789,17 @@ export default class DependentCardComponent extends Vue {
                                             :key="index"
                                         >
                                             <td
-                                                :data-testid="`forecast-immunization-${dependent.dependentInformation.hdid}-${index}`"
+                                                :data-testid="`forecast-immunization-${dependent.ownerId}-${index}`"
                                             >
                                                 {{ row.immunization }}
                                             </td>
                                             <td
-                                                :data-testid="`forecast-due-date-${dependent.dependentInformation.hdid}-${index}`"
+                                                :data-testid="`forecast-due-date-${dependent.ownerId}-${index}`"
                                             >
                                                 {{ row.due_date }}
                                             </td>
                                             <td
-                                                :data-testid="`forecast-status-${dependent.dependentInformation.hdid}-${index}`"
+                                                :data-testid="`forecast-status-${dependent.ownerId}-${index}`"
                                             >
                                                 {{ row.status }}
                                             </td>

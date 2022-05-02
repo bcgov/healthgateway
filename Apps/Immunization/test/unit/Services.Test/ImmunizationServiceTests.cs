@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Test.Services
+namespace HealthGateway.ImmunizationTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
@@ -88,10 +88,10 @@ namespace HealthGateway.Immunization.Test.Services
                 TotalResultCount = delegateResult.TotalResultCount,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<int>())).ReturnsAsync(delegateResult);
+            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<string>())).ReturnsAsync(delegateResult);
             IImmunizationService service = new ImmunizationService(mockDelegate.Object);
 
-            Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(0);
+            Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(It.IsAny<string>());
 
             expectedResult.ShouldDeepEqual(actualResult.Result);
         }
@@ -160,10 +160,10 @@ namespace HealthGateway.Immunization.Test.Services
                 TotalResultCount = delegateResult.TotalResultCount,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
             IImmunizationService service = new ImmunizationService(mockDelegate.Object);
 
-            Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(0);
+            Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(It.IsAny<string>());
 
             expectedResult.ShouldDeepEqual(actualResult.Result);
             Assert.Equal(1, expectedResult.ResourcePayload.Recommendations.Count);
@@ -206,10 +206,10 @@ namespace HealthGateway.Immunization.Test.Services
                 ResultError = delegateResult.ResultError,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
             IImmunizationService service = new ImmunizationService(mockDelegate.Object);
 
-            Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(0);
+            Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(It.IsAny<string>());
 
             expectedResult.ShouldDeepEqual(actualResult.Result);
         }

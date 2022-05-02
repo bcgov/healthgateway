@@ -94,7 +94,7 @@ namespace HealthGateway.Immunization.Controllers
         public async Task<RequestResult<ImmunizationResult>> GetImmunizations([FromQuery] string hdid)
         {
             this.logger.LogDebug($"Getting immunizations for user {hdid}");
-            RequestResult<ImmunizationResult> result = await this.service.GetImmunizations().ConfigureAwait(true);
+            RequestResult<ImmunizationResult> result = await this.service.GetImmunizations(hdid).ConfigureAwait(true);
 
             this.logger.LogDebug($"Finished getting immunizations for user {hdid}");
             return result;

@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Test.Delegates
+namespace HealthGateway.ImmunizationTests.Delegates.Test
 {
     using System;
     using System.Collections.Generic;
@@ -91,7 +91,7 @@ namespace HealthGateway.Immunization.Test.Delegates
         public void GetImmunizationsResponse(HttpStatusCode httpStatusCode, ResultType resultStatus, string resultMessage)
         {
             PhsaResult<ImmunizationResponse> expectedResult = new();
-            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(expectedResult, httpStatusCode, false).GetImmunizations(It.IsAny<int>()).Result;
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(expectedResult, httpStatusCode, false).GetImmunizations(It.IsAny<string>()).Result;
             Assert.True(actualResult.ResultStatus == resultStatus);
             Assert.Equal(actualResult?.ResultError?.ResultMessage, resultMessage);
         }
@@ -143,7 +143,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                     new List<ImmunizationRecommendationResponse>()),
             };
 
-            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, false).GetImmunizations(It.IsAny<int>()).Result;
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, false).GetImmunizations(It.IsAny<string>()).Result;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -196,7 +196,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                     new List<ImmunizationRecommendationResponse>()),
             };
 
-            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, true).GetImmunizations(It.IsAny<int>()).Result;
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, true).GetImmunizations(It.IsAny<string>()).Result;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(HttpExceptionMessage, actualResult.ResultError?.ResultMessage);
@@ -260,13 +260,13 @@ namespace HealthGateway.Immunization.Test.Delegates
             Mock<IImmunizationClient> mockImmunizationClient = new();
             if (!throwException)
             {
-                mockImmunizationClient.Setup(s => s.GetImmunizations(It.IsAny<string>(), AccessToken))
+                mockImmunizationClient.Setup(s => s.GetImmunizations(It.IsAny<Dictionary<string, string?>>(), AccessToken))
                     .ReturnsAsync(mockApiResponse.Object);
             }
             else
             {
                 mockImmunizationClient.Setup(s =>
-                        s.GetImmunizations(It.IsAny<string>(), AccessToken))
+                        s.GetImmunizations(It.IsAny<Dictionary<string, string?>>(), AccessToken))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 
