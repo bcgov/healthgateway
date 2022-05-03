@@ -13,14 +13,14 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Services
+namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
-    using HealthGateway.WebClient.Models;
+    using HealthGateway.GatewayApi.Models;
 
     /// <summary>
     /// The User Profile service.

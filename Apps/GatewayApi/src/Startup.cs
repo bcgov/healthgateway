@@ -14,7 +14,7 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 #pragma warning disable CA1303 //disable literal strings check
-namespace HealthGateway.WebClient
+namespace HealthGateway.GatewayApi
 {
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -24,8 +24,8 @@ namespace HealthGateway.WebClient
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.WebClient.Listeners;
-    using HealthGateway.WebClient.Services;
+    using HealthGateway.GatewayApi.Listeners;
+    using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;

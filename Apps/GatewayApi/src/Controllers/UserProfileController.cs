@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Controllers
+namespace HealthGateway.GatewayApi.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -25,8 +25,8 @@ namespace HealthGateway.WebClient.Controllers
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Models;
-    using HealthGateway.WebClient.Models;
-    using HealthGateway.WebClient.Services;
+    using HealthGateway.GatewayApi.Models;
+    using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;

@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClientTests.Services.Test.Constants
+namespace HealthGateway.GatewayApiTests.Services.Test.Constants
 {
     /// <summary>
     /// Class that have all constants.

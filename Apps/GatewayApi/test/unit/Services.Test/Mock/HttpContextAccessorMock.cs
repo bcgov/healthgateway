@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClientTests.Services.Test.Mock
+namespace HealthGateway.GatewayApiTests.Services.Test.Mock
 {
     using Microsoft.AspNetCore.Http;
     using Moq;

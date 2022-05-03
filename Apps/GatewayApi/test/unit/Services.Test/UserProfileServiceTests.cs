@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Test.Services
+namespace HealthGateway.GatewayApi.Test.Services
 {
     using System;
     using System.Collections.Generic;
@@ -26,11 +26,11 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.WebClient.Constants;
-    using HealthGateway.WebClient.Models;
-    using HealthGateway.WebClient.Services;
-    using HealthGateway.WebClientTests.Services.Test.Constants;
-    using HealthGateway.WebClientTests.Services.Test.Mock;
+    using HealthGateway.GatewayApi.Constants;
+    using HealthGateway.GatewayApi.Models;
+    using HealthGateway.GatewayApi.Services;
+    using HealthGateway.GatewayApiTests.Services.Test.Constants;
+    using HealthGateway.GatewayApiTests.Services.Test.Mock;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Moq;

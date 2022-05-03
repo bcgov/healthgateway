@@ -14,7 +14,7 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-namespace HealthGateway.WebClient.Services
+namespace HealthGateway.GatewayApi.Services
 {
     /// <summary>
     /// Webclient configuration.

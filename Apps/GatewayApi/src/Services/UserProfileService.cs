@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Services
+namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Collections.Generic;
@@ -32,8 +32,8 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.WebClient.Constants;
-    using HealthGateway.WebClient.Models;
+    using HealthGateway.GatewayApi.Constants;
+    using HealthGateway.GatewayApi.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;

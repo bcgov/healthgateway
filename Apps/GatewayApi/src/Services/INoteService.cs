@@ -13,11 +13,11 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Services
+namespace HealthGateway.GatewayApi.Services
 {
     using System.Collections.Generic;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.WebClient.Models;
+    using HealthGateway.GatewayApi.Models;
 
     /// <summary>
     /// Service to interact with the Note Delegate.

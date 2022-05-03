@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Constants
+namespace HealthGateway.GatewayApi.Constants
 {
     /// <summary>
     /// Registration status modes.

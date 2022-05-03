@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Controllers
+namespace HealthGateway.GatewayApi.Controllers
 {
     using System;
     using System.Net.Mime;
@@ -35,8 +35,8 @@ namespace HealthGateway.WebClient.Controllers
         public RobotsController(IConfiguration configuration)
         {
             string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
-            string? defaultRobotsAssetContent = Common.Utils.AssetReader.Read("HealthGateway.WebClient.Assets.Robots.txt");
-            string? envRobotsAssetContent = Common.Utils.AssetReader.Read($"HealthGateway.WebClient.Assets.Robots.{environment}.txt");
+            string? defaultRobotsAssetContent = Common.Utils.AssetReader.Read("HealthGateway.GatewayApi.Assets.Robots.txt");
+            string? envRobotsAssetContent = Common.Utils.AssetReader.Read($"HealthGateway.GatewayApi.Assets.Robots.{environment}.txt");
             this.robotsContent = configuration.GetValue("robots.txt", envRobotsAssetContent ?? defaultRobotsAssetContent);
         }
 

@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Test.Services
+namespace HealthGateway.GatewayApi.Test.Services
 {
     using System;
     using System.Collections.Generic;
@@ -27,8 +27,8 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.WebClient.Models;
-    using HealthGateway.WebClient.Services;
+    using HealthGateway.GatewayApi.Models;
+    using HealthGateway.GatewayApi.Services;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;

@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClientTests.Services.Test.Mock
+namespace HealthGateway.GatewayApiTests.Services.Test.Mock
 {
     using System.Collections.Generic;
     using HealthGateway.Common.Data.Models;
@@ -24,8 +24,8 @@ namespace HealthGateway.WebClientTests.Services.Test.Mock
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.WebClient.Models;
-    using HealthGateway.WebClient.Services;
+    using HealthGateway.GatewayApi.Models;
+    using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;

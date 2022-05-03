@@ -13,12 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Test.Controllers
+namespace HealthGateway.GatewayApi.Test.Controllers
 {
     using System.Collections.Generic;
     using System.Net.Mime;
     using DeepEqual.Syntax;
-    using HealthGateway.WebClient.Controllers;
+    using HealthGateway.GatewayApi.Controllers;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;

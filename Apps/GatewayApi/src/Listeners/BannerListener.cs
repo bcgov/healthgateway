@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Listeners
+namespace HealthGateway.GatewayApi.Listeners
 {
     using System;
     using System.Data;
@@ -24,8 +24,8 @@ namespace HealthGateway.WebClient.Listeners
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
-    using HealthGateway.WebClient.Models;
-    using HealthGateway.WebClient.Services;
+    using HealthGateway.GatewayApi.Models;
+    using HealthGateway.GatewayApi.Services;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;

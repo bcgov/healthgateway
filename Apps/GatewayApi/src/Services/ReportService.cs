@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Services
+namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Globalization;
@@ -25,7 +25,7 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.CDogs;
-    using HealthGateway.WebClient.Models;
+    using HealthGateway.GatewayApi.Models;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
@@ -89,7 +89,7 @@ namespace HealthGateway.WebClient.Services
         private static string ReadTemplate(TemplateType template, ReportFormatType formatType)
         {
             string extension = GetTemplateExtension(formatType);
-            string resourceName = $"HealthGateway.WebClient.Assets.Templates.{template}Report.{extension}";
+            string resourceName = $"HealthGateway.GatewayApi.Assets.Templates.{template}Report.{extension}";
             Assembly? assembly = Assembly.GetAssembly(typeof(ReportService));
             Stream? resourceStream = assembly!.GetManifestResourceStream(resourceName);
 
