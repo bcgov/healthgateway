@@ -12,7 +12,7 @@
     },
     "devDependencies": {
         "@types/chart.js": "^2.9.37",
-        "@types/jest": "^27.4.1",
+        "@types/jest": "^27.5.0",
         "@types/luxon": "^1.27.0",
         "@types/qrcode": "^1.4.2",
         "@types/vuelidate": "^0.7.15",
