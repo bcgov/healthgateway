@@ -35,8 +35,8 @@ namespace HealthGateway.Immunization.Services
         /// <summary>
         /// Gets the ImmunizationResult inluding load state and a list of immunization records.
         /// </summary>
-        /// <param name="pageIndex">The page index to return.</param>
+        /// <param name="hdid">The hdid patient id.</param>
         /// <returns>Returns a list of immunizations.</returns>
-        Task<RequestResult<ImmunizationResult>> GetImmunizations(int pageIndex = 0);
+        Task<RequestResult<ImmunizationResult>> GetImmunizations(string hdid);
     }
 }
