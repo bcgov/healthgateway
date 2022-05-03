@@ -26,6 +26,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
@@ -175,7 +176,7 @@ namespace HealthGateway.Database.Delegates
         {
             IList<Email> oldIds = this.dbContext.Email
                                 .Where(email => email.EmailStatusCode == EmailStatus.Processed &&
-                                                email.CreatedDateTime.Date <= DateTime.UtcNow.AddDays(daysAgo * -1).Date)
+                                                email.CreatedDateTime <= GatewayDbContext.DateTrunc("days", DateTime.UtcNow.AddDays(daysAgo * -1)))
                                 .Where(email => !this.dbContext.CommunicationEmail.Any(commEmail => commEmail.EmailId == email.Id))
                                 .Where(email => !this.dbContext.MessagingVerification.Any(msgVerification => msgVerification.EmailId == email.Id))
                                 .Select(email => new Email { Id = email.Id, Version = email.Version })
