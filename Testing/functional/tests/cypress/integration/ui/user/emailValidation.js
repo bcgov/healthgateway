@@ -2,7 +2,6 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("User Email Verification", () => {
     beforeEach(() => {
-        cy.enableModules([]);
         const baseUrl =
             "**/v1/api/UserProfile/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
         cy.intercept("GET", `${baseUrl}/email/validate/valid`, {
@@ -15,6 +14,7 @@ describe("User Email Verification", () => {
             fixture: "WebClientService/EmailValidation/expired.json",
         });
         cy.intercept("GET", "**/v1/api/UserProfile/*").as("getUserProfile");
+        cy.enableModules([]);
     });
 
     it("Check verified email invite", () => {

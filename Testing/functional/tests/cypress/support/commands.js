@@ -21,16 +21,22 @@ function generateRandomString(length) {
     return text;
 }
 
+Cypress.Commands.add("logout", () => {
+    cy.readConfig().then((config) => {
+        cy.log(`Performing Keycloak logout`);
+        cy.request({
+            url: `${config.openIdConnect.authority}/protocol/openid-connect/logout`,
+            failOnStatusCode: false,
+        });
+    });
+});
+
 Cypress.Commands.add(
     "login",
     (username, password, authMethod = AuthMethod.BCSC, path = "/timeline") => {
         if (authMethod == AuthMethod.KeyCloak) {
             cy.readConfig().then((config) => {
-                cy.log(`Performing Keycloak logout`);
-                cy.request({
-                    url: `${config.openIdConnect.authority}/protocol/openid-connect/logout`,
-                    failOnStatusCode: false,
-                });
+                cy.logout();
                 let stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
                 let codeVerifier = generateRandomString(96);
                 cy.log(

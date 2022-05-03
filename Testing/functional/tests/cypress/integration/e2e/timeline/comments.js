@@ -15,6 +15,7 @@ describe("Comments Disable", () => {
         cy.get("[data-testid=postCommentBtn]").should("not.exist");
     });
 });
+
 describe("Comments Enable", () => {
     beforeEach(() => {
         cy.enableModules(["Laboratory", "Comment"]);

@@ -1,5 +1,7 @@
 describe("FAQ Page", () => {
-    beforeEach(() => {});
+    beforeEach(() => {
+        cy.logout();
+    });
 
     it("Page exists", () => {
         cy.visit("/faq");

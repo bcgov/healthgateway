@@ -108,6 +108,7 @@ function checkResult(
 describe("Public COVID-19 Test Results", () => {
     beforeEach(() => {
         cy.enableModules([laboratoryModule, publicLaboratoryResultModule]);
+        cy.logout();
         cy.visit(covidTestUrl);
     });
 

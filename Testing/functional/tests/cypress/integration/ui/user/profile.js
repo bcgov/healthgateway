@@ -3,7 +3,7 @@ const fakeSMSNumber = "7781234567";
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("User Profile", () => {
-    before(() => {
+    beforeEach(() => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

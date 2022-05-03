@@ -1,14 +1,14 @@
 const { AuthMethod } = require("../../../support/constants");
 
 describe("COVID-19", () => {
-    before(() => {
-        cy.enableModules(["CovidLabResults", "Laboratory", "Dependent"]);
+    beforeEach(() => {
         cy.intercept("GET", "**/v1/api/Laboratory/Covid19Orders*", {
             fixture: "LaboratoryService/covid19Orders.json",
         });
         cy.intercept("GET", "**/v1/api/UserProfile/*/Dependent", {
             fixture: "UserProfileService/dependent.json",
         });
+        cy.enableModules(["CovidLabResults", "Laboratory", "Dependent"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

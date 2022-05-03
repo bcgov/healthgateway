@@ -1,13 +1,9 @@
 const { AuthMethod } = require("../../../../support/constants");
 
-beforeEach(() => {
-    cy.viewport("iphone-6");
-    cy.restoreAuthCookies();
-    cy.enableModules("AllLaboratory");
-});
-
 describe("Laboratory Orders", () => {
     beforeEach(() => {
+        cy.enableModules("AllLaboratory");
+        cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

@@ -2,6 +2,7 @@ describe("WebClient Communication Service", () => {
     const BASEURL = "/v1/api/Communication/";
 
     it("Verify Get Communication", () => {
+        cy.logout();
         cy.request({
             url: `${BASEURL}`,
             followRedirect: false,

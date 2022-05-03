@@ -2,14 +2,9 @@ const { AuthMethod } = require("../../../../support/constants");
 
 describe("Laboratory Orders - Report", () => {
     beforeEach(() => {
-        cy.deleteDownloadsFolder();
-        cy.viewport("iphone-6");
-        cy.restoreAuthCookies();
-        cy.enableModules("AllLaboratory");
         cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrders.json",
         });
-
         cy.intercept(
             "GET",
             "**/v1/api/Laboratory/*/Report?hdid=P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A&isCovid19=false",
@@ -17,7 +12,9 @@ describe("Laboratory Orders - Report", () => {
                 fixture: "LaboratoryService/laboratoryReportPdf.json",
             }
         );
-
+        cy.deleteDownloadsFolder();
+        cy.enableModules("AllLaboratory");
+        cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

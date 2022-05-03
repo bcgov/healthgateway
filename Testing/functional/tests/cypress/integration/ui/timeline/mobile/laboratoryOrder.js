@@ -1,16 +1,12 @@
 const { AuthMethod } = require("../../../../support/constants");
 
-beforeEach(() => {
-    cy.viewport("iphone-6");
-    cy.restoreAuthCookies();
-    cy.enableModules("AllLaboratory");
-});
-
 describe("Laboratory Orders", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrders.json",
         });
+        cy.enableModules("AllLaboratory");
+        cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -190,7 +186,8 @@ describe("Laboratory Orders Refresh", () => {
                 isLoading = !isLoading;
             });
         });
-
+        cy.enableModules("AllLaboratory");
+        cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -231,7 +228,8 @@ describe("Laboratory Orders Queued", () => {
         cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrdersQueued.json",
         });
-
+        cy.enableModules("AllLaboratory");
+        cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

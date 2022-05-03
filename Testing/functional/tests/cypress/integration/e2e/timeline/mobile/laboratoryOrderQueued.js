@@ -2,9 +2,8 @@ const { AuthMethod } = require("../../../../support/constants");
 
 describe("Laboratory Orders Queued", () => {
     beforeEach(() => {
-        cy.viewport("iphone-6");
-        cy.restoreAuthCookies();
         cy.enableModules("AllLaboratory");
+        cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.laboratory.queued.username"),
             Cypress.env("keycloak.password"),

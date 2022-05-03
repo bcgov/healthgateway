@@ -14,8 +14,6 @@ function login(isMobile) {
 }
 
 describe("Menu System", () => {
-    beforeEach(() => {});
-
     it("Validate Toggle Sidebar", () => {
         login(false);
         cy.get("[data-testid=timelineLabel]")

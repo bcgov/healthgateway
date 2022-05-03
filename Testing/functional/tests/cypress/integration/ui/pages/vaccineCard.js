@@ -5,23 +5,27 @@ const vaccinationStatusModule = "VaccinationStatus";
 describe("Vaccine Card Page", () => {
     it("Landing Page - Vaccine Card Button does not exist - Vaccine Status module disabled", () => {
         cy.enableModules([]);
+        cy.logout();
         cy.visit(homeUrl);
         cy.get("[data-testid=btnVaccineCard]").should("not.exist");
     });
 
     it("Landing Page - Log In - Vaccine Status module disabled and vaccine card URL entered directly", () => {
         cy.enableModules([]);
+        cy.logout();
         cy.visit(vaccineCardUrl);
         cy.get("[data-testid=vaccineCardFormTitle]").should("not.exist");
     });
 
     it("Landing Page - Vaccine Card Button Exists - Vaccine Status module enabled", () => {
         cy.enableModules(vaccinationStatusModule);
+        cy.logout();
         cy.visit(homeUrl);
     });
 
     it("Landing Page - Vaccination Card - unauthenticated user", () => {
         cy.enableModules(vaccinationStatusModule);
+        cy.logout();
         cy.visit(vaccineCardUrl);
 
         cy.get("[data-testid=vaccineCardFormTitle]").should("be.visible");
