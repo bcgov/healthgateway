@@ -46,6 +46,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         [InlineData(TemplateType.Covid, "HealthGatewayCovidReport")]
         [InlineData(TemplateType.MedicationRequest, "HealthGatewayMedicationRequestReport")]
         [InlineData(TemplateType.Laboratory, "HealthGatewayLaboratoryReport")]
+        [InlineData(TemplateType.DependentImmunization, "HealthGatewayDependentImmunizationReport")]
         public void ShouldGetReport(TemplateType templateType, string reportName)
         {
             RequestResult<ReportModel> expectedResult = new()

@@ -52,6 +52,11 @@ namespace HealthGateway.GatewayApi.Models
         Encounter,
 
         /// <summary>
+        /// Indicates a Dependent Immunization template type.
+        /// </summary>
+        DependentImmunization,
+
+        /// <summary>
         /// Indicates an Immunization template type.
         /// </summary>
         Immunization,
