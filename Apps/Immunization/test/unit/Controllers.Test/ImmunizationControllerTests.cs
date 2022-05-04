@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Test.Controllers
+namespace HealthGateway.ImmunizationTests.Controllers.Test
 {
     using System;
     using System.Collections.Generic;
@@ -24,7 +24,6 @@ namespace HealthGateway.Immunization.Test.Controllers
     using HealthGateway.Immunization.Controllers;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -86,7 +85,7 @@ namespace HealthGateway.Immunization.Test.Controllers
             };
 
             Mock<IImmunizationService> svcMock = new();
-            svcMock.Setup(s => s.GetImmunizations(0)).ReturnsAsync(expectedRequestResult);
+            svcMock.Setup(s => s.GetImmunizations(It.IsAny<string>())).ReturnsAsync(expectedRequestResult);
 
             ImmunizationController controller = new(new Mock<ILogger<ImmunizationController>>().Object, svcMock.Object);
 

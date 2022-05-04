@@ -1,0 +1,19 @@
+name: PR$(Rev:.r) #Build number
+
+pr:
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - Apps/GatewayApi
+
+trigger: none
+
+extends:
+  template: /Build/hg.yaml
+  parameters:
+    Application: GatewayApi
+    DotNetTests: true
+    NPMInstall: false
+    NPMTests: false

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <RootNamespace>HealthGateway.GatewayApi</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'GatewayApi' " />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.8" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\src\Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\DumpHeaders\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Robots.txt" />
+    <EmbeddedResource Include="Assets\Templates\CovidReport.docx" />
+    <EmbeddedResource Include="Assets\Templates\CovidReport.xlsx" />
+    <EmbeddedResource Include="Assets\Templates\EncounterReport.xlsx" />
+    <EmbeddedResource Include="Assets\Templates\ImmunizationReport.docx" />
+    <EmbeddedResource Include="Assets\Templates\EncounterReport.docx" />
+    <EmbeddedResource Include="Assets\Templates\ImmunizationReport.xlsx" />
+    <EmbeddedResource Include="Assets\Templates\MedicationReport.docx" />
+    <EmbeddedResource Include="Assets\Templates\MedicationReport.xlsx" />
+    <EmbeddedResource Include="Assets\Templates\MedicationRequestReport.docx" />
+    <EmbeddedResource Include="Assets\Templates\MedicationRequestReport.xlsx" />
+    <EmbeddedResource Include="Assets\Templates\NotesReport.docx" />
+    <EmbeddedResource Include="Assets\Templates\NotesReport.xlsx" />
+    <EmbeddedResource Include="Assets\Templates\LaboratoryReport.docx" />
+    <EmbeddedResource Include="Assets\Templates\LaboratoryReport.xlsx" />
+  </ItemGroup>
+</Project>

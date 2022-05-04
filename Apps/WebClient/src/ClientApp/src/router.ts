@@ -444,8 +444,8 @@ function getDefaultPath(
 }
 
 function scrollBehaviour(
-    to: Route,
-    from: Route,
+    _to: Route,
+    _from: Route,
     savedPosition: void | Position
 ): PositionResult {
     if (savedPosition) {

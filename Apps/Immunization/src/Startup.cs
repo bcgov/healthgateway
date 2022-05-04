@@ -20,13 +20,16 @@ namespace HealthGateway.Immunization
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Immunization.Api;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Refit;
 
     /// <summary>
     /// Configures the application during startup.
@@ -57,7 +60,7 @@ namespace HealthGateway.Immunization
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
-            this.startupConfig.ConfigureAuthorizationServices(services);
+            this.startupConfig.ConfigureDelegateAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureTracing(services);
             this.startupConfig.ConfigureAccessControl(services);
@@ -72,6 +75,12 @@ namespace HealthGateway.Immunization
             services.AddTransient<Delegates.IImmunizationDelegate, Delegates.RestImmunizationDelegate>();
             services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+
+            // Add API Clients
+            PhsaConfig phsaConfig = new();
+            this.startupConfig.Configuration.Bind(RestImmunizationDelegate.PHSAConfigSectionKey, phsaConfig);
+            services.AddRefitClient<IImmunizationClient>()
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
         }
 
         /// <summary>

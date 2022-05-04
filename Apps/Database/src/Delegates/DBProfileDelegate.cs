@@ -166,7 +166,7 @@ namespace HealthGateway.Database.Delegates
         {
             Dictionary<DateTime, int> dateCount = this.dbContext.UserProfile
                             .Where(x => x.AcceptedTermsOfService)
-                            .Select(x => new { x.HdId, createdDate = x.CreatedDateTime.AddMinutes(offset.TotalMinutes).Date })
+                            .Select(x => new { x.HdId, createdDate = GatewayDbContext.DateTrunc("days", x.CreatedDateTime.AddMinutes(offset.TotalMinutes)) })
                             .GroupBy(x => x.createdDate).Select(x => new { createdDate = x.Key, count = x.Count() })
                             .OrderBy(x => x.createdDate)
                             .ToDictionary(x => x.createdDate, x => x.count);
@@ -181,7 +181,7 @@ namespace HealthGateway.Database.Delegates
                 .Select(x => new { x.HdId, x.LastLoginDateTime })
                 .Concat(
                     this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
-                .Select(x => new { x.HdId, lastLoginDate = x.LastLoginDateTime.AddMinutes(offset.TotalMinutes).Date })
+                .Select(x => new { x.HdId, lastLoginDate = GatewayDbContext.DateTrunc("days", x.LastLoginDateTime.AddMinutes(offset.TotalMinutes)) })
                 .Distinct()
                 .GroupBy(x => x.lastLoginDate).Select(x => new { lastLoginDate = x.Key, count = x.Count() })
                 .OrderBy(x => x.lastLoginDate)

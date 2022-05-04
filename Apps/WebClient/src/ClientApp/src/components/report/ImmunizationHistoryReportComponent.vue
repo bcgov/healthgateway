@@ -106,8 +106,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get visibleRecomendations(): Recommendation[] {
-        let records = this.patientRecommendations.filter(
-            (x) => x.immunization.name !== null && x.immunization.name !== ""
+        let records = this.patientRecommendations.filter((x) =>
+            x.targetDiseases.some((y) => y.name)
         );
 
         records.sort((a, b) => {
@@ -148,7 +148,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     private get recomendationItems(): RecomendationRow[] {
         return this.visibleRecomendations.map<RecomendationRow>((x) => {
             return {
-                immunization: x.immunization.name,
+                immunization: x.targetDiseases.find((y) => y.name)?.name ?? "",
                 due_date:
                     x.diseaseDueDate === undefined || x.diseaseDueDate === null
                         ? ""
@@ -173,6 +173,9 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.logger.debug(
+            `Retrieving immunizations for Hdid: ${this.user.hdid}`
+        );
         this.retrieveImmunizations({ hdid: this.user.hdid }).catch((err) => {
             this.logger.error(`Error loading immunization data: ${err}`);
         });

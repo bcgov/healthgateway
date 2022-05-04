@@ -1,0 +1,35 @@
+﻿{
+    "OpenIdConnect": {
+        "Authority": "Authority",
+        "ClientId": "ClientId",
+        "ResponseType": "ResponseType",
+        "Scope": "Scope",
+        "Callbacks": {
+            "Logon": "https://localhost/logon",
+            "Logout": "https://localhost/logout"
+        }
+    },
+    "IdentityProviders": [
+        {
+            "Id": "Id",
+            "Name": "Name",
+            "Icon": "Icon",
+            "Hint": "Hint",
+            "disabled": "true"
+        }
+    ],
+    "WebClient": {
+        "LogLevel": "LogLevel",
+        "TimeOuts": {
+            "Idle": "10000",
+            "LogoutRedirect": "LogoutRedirect"
+        },
+        "ExternalURLs": {
+            "External": "https://localhost/external"
+        },
+        "UserProfileHistoryRecordLimit": 2
+    },
+    "ServiceEndpoints": {
+        "Service": "https://localhost/service"
+    }
+}

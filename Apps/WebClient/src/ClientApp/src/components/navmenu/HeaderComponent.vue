@@ -115,7 +115,7 @@ export default class HeaderComponent extends Vue {
     }
 
     private onScroll() {
-        var st = window.pageYOffset || document.documentElement.scrollTop;
+        var st = window.scrollY || document.documentElement.scrollTop;
         if (
             Math.abs(st - this.lastScrollTop) >
                 HeaderComponent.minimunScrollChange &&
