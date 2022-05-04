@@ -1,7 +1,7 @@
 const { AuthMethod } = require("../../../support/constants");
 
 describe("Miscellaneous", () => {
-    before(() => {
+    beforeEach(() => {
         cy.enableModules("");
         cy.login(
             Cypress.env("keycloak.username"),

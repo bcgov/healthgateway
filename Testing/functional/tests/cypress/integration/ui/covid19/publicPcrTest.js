@@ -82,6 +82,7 @@ function inputAddressFieldsShouldBeVisible() {
 describe("Public PcrTest Registration Form", () => {
     beforeEach(() => {
         cy.enableModules("PcrTest");
+        cy.logout();
         cy.visit(pcrTestUrl);
     });
 
@@ -166,6 +167,7 @@ describe("Public PcrTest Registration Form", () => {
 describe("Public PcrTest Registration Submission with Valid PHN", () => {
     beforeEach(() => {
         cy.enableModules("PcrTest");
+        cy.logout();
         cy.visit(pcrTestUrl);
         cy.intercept("POST", "**/v1/api/PublicLaboratory/LabTestKit", {
             fixture: "LaboratoryService/publicPcrTestValidPhn.json",
@@ -212,6 +214,7 @@ describe("Public PcrTest Registration Submission with Valid PHN", () => {
 describe("Public PcrTest Registration Submission with no valid PHN", () => {
     beforeEach(() => {
         cy.enableModules("PcrTest");
+        cy.logout();
         cy.visit(pcrTestUrl);
         cy.intercept("POST", "**/v1/api/PublicLaboratory/LabTestKit", {
             fixture: "LaboratoryService/publicPcrTestNoValidPhn.json",
@@ -267,6 +270,7 @@ describe("Public PcrTest Registration Submission with no valid PHN", () => {
 describe("Public PcrTest Registration Submission Module Disabled", () => {
     beforeEach(() => {
         cy.enableModules();
+        cy.logout();
         cy.visit(pcrTestUrl);
     });
 
@@ -279,6 +283,7 @@ describe("Public PcrTest Registration Submission Module Disabled", () => {
 describe("Public PcrTest Registration with Test Kit Id", () => {
     beforeEach(() => {
         cy.enableModules("PcrTest");
+        cy.logout();
         cy.visit(`${pcrTestUrl}/222BAAB1-8C6E-4FA1-86ED-C4E3517A16A2`);
     });
 
@@ -291,6 +296,7 @@ describe("Public PcrTest Registration with Test Kit Id", () => {
 describe("Public PcrTest Registration with Test Kit Id with Disable Module", () => {
     beforeEach(() => {
         cy.enableModules();
+        cy.logout();
         cy.visit(`${pcrTestUrl}/222BAAB1-8C6E-4FA1-86ED-C4E3517A16A2`);
     });
 

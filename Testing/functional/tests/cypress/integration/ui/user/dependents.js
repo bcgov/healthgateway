@@ -1,14 +1,17 @@
 const { AuthMethod } = require("../../../support/constants");
 
+const sensitiveDocMessage =
+    " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
+
 describe("COVID-19", () => {
-    before(() => {
-        cy.enableModules(["CovidLabResults", "Laboratory", "Dependent"]);
+    beforeEach(() => {
         cy.intercept("GET", "**/v1/api/Laboratory/Covid19Orders*", {
             fixture: "LaboratoryService/covid19Orders.json",
         });
         cy.intercept("GET", "**/v1/api/UserProfile/*/Dependent", {
             fixture: "UserProfileService/dependent.json",
         });
+        cy.enableModules(["CovidLabResults", "Laboratory", "Dependent"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -18,8 +21,6 @@ describe("COVID-19", () => {
     });
 
     it("Validate Covid Tab with Results", () => {
-        let sensitiveDocMessage =
-            " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
         // Validate the tab and elements are present
         cy.get("[data-testid=covid19TabTitle]").last().parent().click();
         cy.get("[data-testid=dependentCovidTestDate]")
@@ -53,6 +54,7 @@ describe("COVID-19", () => {
     });
 
     it("Validate Covid with multiple results", () => {
+        cy.get("[data-testid=covid19TabTitle]").last().parent().click();
         cy.get("[data-testid=dependentCovidTestDate]")
             .contains("td", "2020-Oct-06")
             .siblings("[data-testid=dependentCovidTestLabResult]")

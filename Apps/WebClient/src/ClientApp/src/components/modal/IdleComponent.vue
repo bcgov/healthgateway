@@ -5,8 +5,6 @@ import { Action } from "vuex-class";
 
 @Component
 export default class IdleComponent extends Vue {
-    @Action("authenticateOidcSilent", { namespace: "auth" })
-    authenticateOidcSilent!: () => Promise<void>;
     @Action("setVisibleState", { namespace: "idle" })
     setVisibleState!: (isVisible: boolean) => void;
 
@@ -38,7 +36,6 @@ export default class IdleComponent extends Vue {
     }
 
     private reset() {
-        this.authenticateOidcSilent();
         this.logoutCountdown = this.maxCountdownTime;
         window.clearTimeout(this.timeoutHandle);
         window.clearInterval(this.timerHandle);

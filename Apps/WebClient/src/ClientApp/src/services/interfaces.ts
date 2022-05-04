@@ -1,8 +1,3 @@
-import {
-    SignoutResponse,
-    User as OidcUser,
-    UserManagerSettings,
-} from "oidc-client";
 import { Store } from "vuex";
 
 import AddDependentRequest from "@/models/addDependentRequest";
@@ -31,7 +26,7 @@ import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
-import { OidcUserProfile } from "@/models/user";
+import { OidcTokenDetails, OidcUserInfo } from "@/models/user";
 import type { UserComment } from "@/models/userComment";
 import UserFeedback from "@/models/userFeedback";
 import UserNote from "@/models/userNote";
@@ -42,20 +37,13 @@ import VaccinationStatus from "@/models/vaccinationStatus";
 import { RootState } from "@/store/types";
 
 export interface IAuthenticationService {
-    initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
-    getUser(): Promise<OidcUser | null>;
-    logout(): Promise<void>;
-    signinSilent(): Promise<OidcUser | null>;
-    signinRedirect(idphint: string, redirectPath: string): Promise<void>;
-    signinRedirectCallback(): Promise<OidcUser>;
-    signoutRedirectCallback(): Promise<SignoutResponse>;
-    checkOidcUserSize(user: OidcUser): number;
-
-    getOidcConfig(): UserManagerSettings;
-    removeUser(): Promise<void>;
-    storeUser(user: OidcUser): Promise<void>;
-    clearStaleState(): Promise<void>;
-    getOidcUserProfile(): Promise<OidcUserProfile>;
+    initialize(config: OpenIdConnectConfiguration): Promise<void>;
+    signIn(redirectPath: string, idpHint?: string): Promise<OidcTokenDetails>;
+    signOut(): Promise<void>;
+    refreshToken(): Promise<boolean>;
+    getOidcTokenDetails(): OidcTokenDetails | null;
+    getOidcUserInfo(): Promise<OidcUserInfo>;
+    clearState(): void;
 }
 
 export interface IImmunizationService {

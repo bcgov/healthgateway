@@ -8,6 +8,7 @@ describe("Public Route", () => {
             "VaccinationStatus",
             "VaccinationStatusPdf",
         ]);
+        cy.logout();
         cy.visit(vaccineCardPath);
         cy.get("[data-testid=loginBtn]").should("not.exist");
         cy.location("pathname").should("eq", vaccineCardPath);
@@ -15,6 +16,7 @@ describe("Public Route", () => {
 
     it("Redirect to Covid Test", () => {
         cy.enableModules(["Laboratory", "PublicLaboratoryResult"]);
+        cy.logout();
         cy.visit(covidTestPath);
         cy.get("[data-testid=loginBtn]").should("not.exist");
         cy.location("pathname").should("eq", covidTestPath);

@@ -11,14 +11,14 @@ describe("Validate Star Rating", () => {
         cy.checkTimelineHasLoaded();
     });
 
-    it("Cliking the 5 star button should logout", () => {
+    it("Clicking the 5 star button should log out", () => {
         cy.get("[data-testid=headerDropdownBtn]").click();
         cy.get("[data-testid=logoutBtn]").click();
         cy.get("[data-testid=formRating] > .b-rating-star-empty:last").click();
         cy.url().should("include", "/logout");
     });
 
-    it("Clicking Skip button should logout", () => {
+    it("Clicking Skip button should log out", () => {
         cy.get("[data-testid=headerDropdownBtn]").click();
         cy.get("[data-testid=logoutBtn]").click();
         cy.get("[data-testid=ratingModalSkipBtn]").click();

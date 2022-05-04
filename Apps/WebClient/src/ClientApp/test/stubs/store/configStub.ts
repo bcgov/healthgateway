@@ -30,9 +30,7 @@ const configGetters: ConfigGetters = {
     openIdConnect(): OpenIdConnectConfiguration {
         return {
             authority: "",
-            audience: "",
             clientId: "",
-            responseType: "",
             scope: "",
             callbacks: {},
         };

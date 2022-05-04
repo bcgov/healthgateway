@@ -3,8 +3,6 @@ const registrationPath = "/registration";
 const profilePath = "/profile";
 
 describe("Registration Page", () => {
-    beforeEach(() => {});
-
     it("Minimum Age error", () => {
         cy.enableModules("Medication");
         cy.login(

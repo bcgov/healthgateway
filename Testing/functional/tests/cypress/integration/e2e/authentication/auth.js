@@ -41,28 +41,25 @@ describe("Authentication", () => {
     });
 
     it("Logout", () => {
-        if (Cypress.config().baseUrl != localDevUri) {
-            cy.login(
-                Cypress.env("keycloak.username"),
-                Cypress.env("keycloak.password"),
-                AuthMethod.KeyCloak
-            );
-            cy.checkTimelineHasLoaded();
-            cy.get("[data-testid=headerDropdownBtn]").click();
-            cy.get("[data-testid=logoutBtn]").click();
-            cy.get("[data-testid=ratingModalSkipBtn]").click();
-            cy.contains("h3", "You signed out of your account");
-            cy.get("[data-testid=loginBtn]")
-                .should("be.visible")
-                .should("not.be.disabled")
-                .should("have.attr", "href", "/login");
-        } else {
-            cy.log("Skipped Logout Test as running locally");
-        }
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+        cy.get("[data-testid=headerDropdownBtn]").click();
+        cy.get("[data-testid=logoutBtn]").click();
+        cy.get("[data-testid=ratingModalSkipBtn]").click();
+        cy.contains("h3", "You signed out of your account");
+        cy.get("[data-testid=loginBtn]")
+            .should("be.visible")
+            .should("not.be.disabled")
+            .should("have.attr", "href", "/login");
     });
 
     it("IDIR Blocked", () => {
         if (Cypress.config().baseUrl != localDevUri) {
+            cy.logout();
             cy.visit("/login");
             cy.log(
                 `Authenticating as IDIR user ${Cypress.env("idir.username")}`

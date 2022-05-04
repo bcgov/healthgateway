@@ -1,5 +1,3 @@
-const { AuthMethod } = require("../../../support/constants");
-
 describe("Patient Service", () => {
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
     const BOGUSHDID = "BOGUSHDID";

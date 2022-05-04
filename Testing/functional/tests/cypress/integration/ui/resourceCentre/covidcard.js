@@ -1,10 +1,6 @@
 const { AuthMethod } = require("../../../support/constants");
 
 describe("Resource Centre", () => {
-    before(() => {
-        cy.enableModules("Immunization");
-    });
-
     it("Validate Disabled Covid Card", () => {
         cy.intercept("GET", "**/v1/api/Immunization", (req) => {
             req.reply((res) => {

@@ -124,6 +124,7 @@ describe("Authenticated PCR Test Kit Registration", () => {
 describe("Unauthenticated PCR Test Kit Registration", () => {
     beforeEach(() => {
         cy.enableModules("PcrTest");
+        cy.logout();
     });
 
     it("Success with Test Kit CID and PHN", () => {

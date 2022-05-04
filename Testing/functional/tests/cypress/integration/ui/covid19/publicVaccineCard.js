@@ -47,6 +47,7 @@ function clickVaccineCardEnterButton() {
 describe("Public Vaccine Card Form", () => {
     beforeEach(() => {
         cy.enableModules(vaccinationStatusModule);
+        cy.logout();
         cy.visit(vaccineCardUrl);
     });
 
@@ -222,6 +223,7 @@ describe("Public Vaccine Card Downloads", () => {
             "VaccinationStatusPdf",
             "PublicVaccineDownloadPdf",
         ]);
+        cy.logout();
         cy.intercept("GET", "**/v1/api/PublicVaccineStatus", {
             fixture: "ImmunizationService/publicVaccineStatusLoaded.json",
         });
@@ -312,6 +314,7 @@ describe("Public Vaccine Card Downloads When PublicVaccineDownloadPdf Disabled",
             "VaccinationStatus",
             "VaccinationStatusPdf",
         ]);
+        cy.logout();
         cy.intercept("GET", "**/v1/api/PublicVaccineStatus", {
             fixture: "ImmunizationService/publicVaccineStatusLoaded.json",
         });

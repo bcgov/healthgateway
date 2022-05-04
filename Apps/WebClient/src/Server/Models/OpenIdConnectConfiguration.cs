@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,42 +15,43 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Models
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
-    /// Configuration to be used by external clients for authentication.
+    /// Configuration to be used for OpenID Connect authentication.
     /// </summary>
     public class OpenIdConnectConfiguration
     {
         /// <summary>
-        /// Gets or sets the OpenIDConnect Authority.
+        /// Gets or sets the authority.
         /// </summary>
         public string Authority { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the OpenIdConnect Client ID.
+        /// Gets or sets the client ID.
         /// </summary>
         public string ClientId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Audience.
+        /// Gets or sets the audience.
         /// </summary>
         public string Audience { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the OpenIDConnect Response types.
+        /// Gets or sets the response type.
         /// </summary>
         public string ResponseType { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the OpenIDConnect Scopes.
+        /// Gets or sets the scope.
         /// </summary>
-        public string? Scope { get; set; }
+        public string Scope { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Callback URIs.
+        /// Gets or sets the callback URIs.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public Dictionary<string, System.Uri>? Callbacks { get; set; }
+        public Dictionary<string, Uri>? Callbacks { get; set; }
     }
 }

@@ -1,6 +1,5 @@
 import { voidMethod, voidPromise } from "@test/stubs/util";
 
-import { LoadStatus } from "@/models/storeOperations";
 import {
     AuthActions,
     AuthGetters,
@@ -10,27 +9,12 @@ import {
 } from "@/store/modules/auth/types";
 
 const authState: AuthState = {
-    authentication: {
-        isChecked: true,
-        identityProvider: "",
-    },
-    isAuthenticated: true,
-    statusMessage: "",
+    tokenDetails: undefined,
     error: "",
-    status: LoadStatus.NONE,
 };
 
 const authGetters: AuthGetters = {
-    authenticationStatus(): string {
-        return "";
-    },
     oidcIsAuthenticated(): boolean {
-        return true;
-    },
-    oidcScopes(): string[] | undefined {
-        return undefined;
-    },
-    oidcAuthenticationIsChecked(): boolean {
         return true;
     },
     oidcError(): unknown {
@@ -42,22 +26,18 @@ const authGetters: AuthGetters = {
 };
 
 const authActions: AuthActions = {
-    oidcCheckUser: voidPromise,
-    authenticateOidc: voidPromise,
-    oidcSignInCallback: voidPromise,
-    authenticateOidcSilent: voidPromise,
-    oidcWasAuthenticated: voidMethod,
-    getOidcUser: voidPromise,
-    signOutOidc: voidMethod,
-    signOutOidcCallback: voidPromise,
+    initialize: voidPromise,
+    signIn: voidPromise,
+    signOut: voidMethod,
+    refreshToken: voidPromise,
     clearStorage: voidMethod,
+    handleSuccessfulAuthentication: voidMethod,
 };
 
 const authMutations: AuthMutations = {
-    setOidcAuth: voidMethod,
-    unsetOidcAuth: voidMethod,
-    setOidcAuthIsChecked: voidMethod,
-    setOidcError: voidMethod,
+    setAuthenticated: voidMethod,
+    setUnauthenticated: voidMethod,
+    setError: voidMethod,
 };
 
 const authStub: AuthModule = {

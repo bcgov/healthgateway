@@ -81,7 +81,7 @@ export default class SidebarComponent extends Vue {
 
     @Watch("isOpen")
     private onIsOpen(val: boolean) {
-        console.log("isOpen", val);
+        this.logger.verbose(`isOpen: ${val}`);
 
         // disable popover when transition starts
         this.isExportTutorialEnabled = false;

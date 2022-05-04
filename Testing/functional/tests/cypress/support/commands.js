@@ -21,16 +21,22 @@ function generateRandomString(length) {
     return text;
 }
 
+Cypress.Commands.add("logout", () => {
+    cy.readConfig().then((config) => {
+        cy.log(`Performing Keycloak logout`);
+        cy.request({
+            url: `${config.openIdConnect.authority}/protocol/openid-connect/logout`,
+            failOnStatusCode: false,
+        });
+    });
+});
+
 Cypress.Commands.add(
     "login",
     (username, password, authMethod = AuthMethod.BCSC, path = "/timeline") => {
         if (authMethod == AuthMethod.KeyCloak) {
             cy.readConfig().then((config) => {
-                cy.log(`Performing Keycloak logout`);
-                cy.request({
-                    url: `${config.openIdConnect.authority}/protocol/openid-connect/logout`,
-                    failOnStatusCode: false,
-                });
+                cy.logout();
                 let stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
                 let codeVerifier = generateRandomString(96);
                 cy.log(
@@ -54,10 +60,8 @@ Cypress.Commands.add(
                     JSON.stringify(stateStore)
                 );
 
-                cy.log(
-                    `Creating OIDC Active Route: ${path} in Session storage`
-                );
-                window.sessionStorage.setItem("vuex_oidc_active_route", path);
+                const escapedRedirectPath = encodeURI(path);
+                const redirectUri = `${config.openIdConnect.callbacks.Logon}?redirect=${escapedRedirectPath}`;
 
                 cy.log("Requesting Keycloak Authentication form");
                 cy.request({
@@ -67,7 +71,7 @@ Cypress.Commands.add(
                         scope: config.openIdConnect.scope,
                         response_type: config.openIdConnect.responseType,
                         approval_prompt: "auto",
-                        redirect_uri: config.openIdConnect.callbacks.Logon,
+                        redirect_uri: redirectUri,
                         client_id: config.openIdConnect.clientId,
                         response_mode: "query",
                         state: stateStore.id,
