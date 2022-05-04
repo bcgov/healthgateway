@@ -2,6 +2,7 @@ import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
 import { Dictionary } from "@/models/baseTypes";
+import { ExternalConfiguration } from "@/models/configData";
 import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
@@ -23,16 +24,21 @@ export class RestUserProfileService implements IUserProfileService {
     private readonly FETCH_ERROR: string = "Fetch error:";
     private readonly USER_PROFILE_BASE_URI: string = "/v1/api/UserProfile";
     private http!: IHttpDelegate;
+    private baseUri = "";
 
-    public initialize(http: IHttpDelegate): void {
+    public initialize(
+        config: ExternalConfiguration,
+        http: IHttpDelegate
+    ): void {
         this.http = http;
+        this.baseUri = config.serviceEndpoints["GatewayApi"];
     }
 
     public getProfile(hdid: string): Promise<UserProfile> {
         return new Promise((resolve, reject) => {
             this.http
                 .getWithCors<RequestResult<UserProfile>>(
-                    `${this.USER_PROFILE_BASE_URI}/${hdid}`
+                    `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}`
                 )
                 .then((requestResult) => {
                     this.logger.debug(`getProfile ${requestResult}`);
@@ -60,7 +66,7 @@ export class RestUserProfileService implements IUserProfileService {
         return new Promise((resolve, reject) => {
             this.http
                 .post<RequestResult<UserProfile>>(
-                    `${this.USER_PROFILE_BASE_URI}/${createRequest.profile.hdid}`,
+                    `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${createRequest.profile.hdid}`,
                     createRequest
                 )
                 .then((requestResult) => {
@@ -89,7 +95,7 @@ export class RestUserProfileService implements IUserProfileService {
         return new Promise((resolve, reject) => {
             this.http
                 .delete<RequestResult<UserProfile>>(
-                    `${this.USER_PROFILE_BASE_URI}/${hdid}`
+                    `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}`
                 )
                 .then((requestResult) => {
                     this.logger.debug(`closeAccount ${requestResult}`);
@@ -117,7 +123,7 @@ export class RestUserProfileService implements IUserProfileService {
         return new Promise((resolve, reject) => {
             this.http
                 .get<RequestResult<UserProfile>>(
-                    `${this.USER_PROFILE_BASE_URI}/${hdid}/recover`
+                    `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/recover`
                 )
                 .then((requestResult) => {
                     this.logger.debug(`recoverAccount ${requestResult}`);
@@ -145,7 +151,7 @@ export class RestUserProfileService implements IUserProfileService {
         return new Promise((resolve, reject) => {
             this.http
                 .get<RequestResult<boolean>>(
-                    `${this.USER_PROFILE_BASE_URI}/${hdid}/Validate`
+                    `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/Validate`
                 )
                 .then((requestResult) => {
                     this.logger.debug(`validateAge ${requestResult}`);
@@ -173,7 +179,7 @@ export class RestUserProfileService implements IUserProfileService {
         return new Promise((resolve, reject) => {
             this.http
                 .get<RequestResult<TermsOfService>>(
-                    `${this.USER_PROFILE_BASE_URI}/termsofservice`
+                    `${this.baseUri}${this.USER_PROFILE_BASE_URI}/termsofservice`
                 )
                 .then((requestResult) => {
                     this.logger.debug(`getTermsOfService ${requestResult}`);
@@ -204,7 +210,7 @@ export class RestUserProfileService implements IUserProfileService {
         return new Promise((resolve, reject) => {
             this.http
                 .get<RequestResult<boolean>>(
-                    `${this.USER_PROFILE_BASE_URI}/${hdid}/email/validate/${inviteKey}`
+                    `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/email/validate/${inviteKey}`
                 )
                 .then((requestResult) => {
                     return resolve(requestResult);
@@ -225,7 +231,7 @@ export class RestUserProfileService implements IUserProfileService {
         return new Promise((resolve, reject) => {
             this.http
                 .get<RequestResult<boolean>>(
-                    `${this.USER_PROFILE_BASE_URI}/${hdid}/sms/validate/${digit}`
+                    `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/sms/validate/${digit}`
                 )
                 .then((requestResult) => {
                     if (requestResult.resultStatus === ResultType.Success) {
@@ -253,7 +259,7 @@ export class RestUserProfileService implements IUserProfileService {
 
             this.http
                 .put<void>(
-                    `${this.USER_PROFILE_BASE_URI}/${hdid}/email`,
+                    `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/email`,
                     JSON.stringify(email),
                     headers
                 )
@@ -281,7 +287,7 @@ export class RestUserProfileService implements IUserProfileService {
 
             this.http
                 .put<void>(
-                    `${this.USER_PROFILE_BASE_URI}/${hdid}/sms`,
+                    `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/sms`,
                     JSON.stringify(smsNumber),
                     headers
                 )
@@ -309,7 +315,7 @@ export class RestUserProfileService implements IUserProfileService {
         return new Promise<UserPreference>((resolve, reject) => {
             this.http
                 .put<RequestResult<UserPreference>>(
-                    `${this.USER_PROFILE_BASE_URI}/${hdid}/preference`,
+                    `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/preference`,
                     userPreference
                 )
                 .then((requestResult) => {
@@ -343,7 +349,7 @@ export class RestUserProfileService implements IUserProfileService {
         return new Promise<UserPreference>((resolve, reject) => {
             this.http
                 .post<RequestResult<UserPreference>>(
-                    `${this.USER_PROFILE_BASE_URI}/${hdid}/preference`,
+                    `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/preference`,
                     userPreference
                 )
                 .then((requestResult) => {

@@ -169,15 +169,15 @@ configService.getConfiguration().then((config) => {
     medicationService.initialize(config, httpDelegate);
     laboratoryService.initialize(config, httpDelegate);
     encounterService.initialize(config, httpDelegate);
-    userProfileService.initialize(httpDelegate);
-    userFeedbackService.initialize(httpDelegate);
+    userProfileService.initialize(config, httpDelegate);
+    userFeedbackService.initialize(config, httpDelegate);
     userNoteService.initialize(config, httpDelegate);
     communicationService.initialize(httpDelegate);
     userCommentService.initialize(config, httpDelegate);
-    userRatingService.initialize(httpDelegate);
+    userRatingService.initialize(config, httpDelegate);
     dependentService.initialize(config, httpDelegate);
     pcrTestKitService.initialize(config, httpDelegate);
-    reportService.initialize(httpDelegate);
+    reportService.initialize(config, httpDelegate);
     vaccinationStatusService.initialize(config, httpDelegate);
 
     authInitializePromise.then(async () => {
