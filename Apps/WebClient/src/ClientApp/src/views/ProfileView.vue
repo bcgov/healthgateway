@@ -568,6 +568,11 @@ export default class ProfileView extends Vue {
                                                 />
                                             </b-col>
                                             <b-col
+                                                v-if="
+                                                    !emailVerified &&
+                                                    !isEmailEditable &&
+                                                    email
+                                                "
                                                 cols="12"
                                                 md="auto"
                                                 class="pl-md-0 pl-3"
@@ -729,6 +734,11 @@ export default class ProfileView extends Vue {
                                                 />
                                             </b-col>
                                             <b-col
+                                                v-if="
+                                                    !smsVerified &&
+                                                    !isSMSEditable &&
+                                                    smsNumber
+                                                "
                                                 cols="12"
                                                 md="auto"
                                                 class="pl-md-0 pl-3"
