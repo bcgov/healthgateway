@@ -28,8 +28,8 @@ namespace HealthGateway.WebClient.Models
         public bool Online { get; set; }
 
         /// <summary>
-        /// Gets or sets the base uri for the endpoints to be used by the mobile application.
+        /// Gets or sets the base url for the endpoints to be used by the mobile application.
         /// </summary>
-        public Uri BaseUri { get; set; }
+        public Uri BaseUrl { get; set; }
     }
 }
