@@ -65,6 +65,8 @@
     <EmbeddedResource Include="Server\Assets\Templates\NotesReport.xlsx" />
     <EmbeddedResource Include="Server\Assets\Templates\LaboratoryReport.docx" />
     <EmbeddedResource Include="Server\Assets\Templates\LaboratoryReport.xlsx" />
+    <EmbeddedResource Include="Server\Assets\Templates\DependentImmunizationReport.docx" />
+    <EmbeddedResource Include="Server\Assets\Templates\DependentImmunizationReport.xlsx" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
@@ -85,7 +87,7 @@
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
       <DistFiles Include="$(SpaRoot)dist\**" />
-      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+      <ResolvedFileToPublish Include="@(DistFiles-&gt;'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
         <RelativePath>%(DistFiles.Identity)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </ResolvedFileToPublish>
