@@ -13,6 +13,7 @@
         config:
             fault_tolerant: true
             hide_client_headers: false
+            limit_by: service
             minute: 15
         protocols:
             - http
@@ -60,7 +61,7 @@
                   fault_tolerant: true
                   hide_client_headers: false
                   limit_by: consumer
-                  minute: 10
+                  minute: 5000
               protocols:
                   - http
                   - https
