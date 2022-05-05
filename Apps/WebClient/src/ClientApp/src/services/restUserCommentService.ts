@@ -19,7 +19,7 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 @injectable()
 export class RestUserCommentService implements IUserCommentService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly USER_COMMENT_BASE_URI: string = "/v1/api";
+    private readonly USER_COMMENT_BASE_URI: string = "v1/api";
     private http!: IHttpDelegate;
     private isEnabled = false;
     private baseUri = "";

@@ -15,7 +15,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 @injectable()
 export class RestUserFeedbackService implements IUserFeedbackService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly USER_FEEDBACK_BASE_URI: string = "/v1/api/UserFeedback";
+    private readonly USER_FEEDBACK_BASE_URI: string = "v1/api/UserFeedback";
     private http!: IHttpDelegate;
     private baseUri = "";
 

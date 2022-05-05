@@ -22,7 +22,7 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 export class RestUserProfileService implements IUserProfileService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly FETCH_ERROR: string = "Fetch error:";
-    private readonly USER_PROFILE_BASE_URI: string = "/v1/api/UserProfile";
+    private readonly USER_PROFILE_BASE_URI: string = "v1/api/UserProfile";
     private http!: IHttpDelegate;
     private baseUri = "";
 

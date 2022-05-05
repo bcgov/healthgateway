@@ -18,7 +18,7 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 @injectable()
 export class RestDependentService implements IDependentService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly DEPENDENT_BASE_URI: string = "/v1/api";
+    private readonly DEPENDENT_BASE_URI: string = "v1/api";
     private http!: IHttpDelegate;
     private isEnabled = false;
     private baseUri = "";
