@@ -120,7 +120,7 @@ export interface IConfigService {
 }
 
 export interface IUserProfileService {
-    initialize(http: IHttpDelegate): void;
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     createProfile(createRequest: CreateUserRequest): Promise<UserProfile>;
     getProfile(hdid: string): Promise<UserProfile>;
     validateAge(hdid: string): Promise<boolean>;
@@ -145,12 +145,12 @@ export interface IUserProfileService {
 }
 
 export interface IUserFeedbackService {
-    initialize(http: IHttpDelegate): void;
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     submitFeedback(hdid: string, feedback: UserFeedback): Promise<boolean>;
 }
 
 export interface IUserRatingService {
-    initialize(http: IHttpDelegate): void;
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     submitRating(rating: UserRating): Promise<boolean>;
 }
 
@@ -233,7 +233,7 @@ export interface IPcrTestService {
 }
 
 export interface IReportService {
-    initialize(http: IHttpDelegate): void;
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     generateReport(
         reportRequest: ReportRequest
     ): Promise<RequestResult<Report>>;

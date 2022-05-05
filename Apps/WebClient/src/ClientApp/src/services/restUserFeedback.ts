@@ -1,5 +1,6 @@
 ﻿import { injectable } from "inversify";
 
+import { ExternalConfiguration } from "@/models/configData";
 import { ServiceName } from "@/models/errorInterfaces";
 import UserFeedback from "@/models/userFeedback";
 import container from "@/plugins/container";
@@ -16,9 +17,14 @@ export class RestUserFeedbackService implements IUserFeedbackService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly USER_FEEDBACK_BASE_URI: string = "/v1/api/UserFeedback";
     private http!: IHttpDelegate;
+    private baseUri = "";
 
-    public initialize(http: IHttpDelegate): void {
+    public initialize(
+        config: ExternalConfiguration,
+        http: IHttpDelegate
+    ): void {
         this.http = http;
+        this.baseUri = config.serviceEndpoints["GatewayApi"];
     }
 
     public submitFeedback(
@@ -27,7 +33,10 @@ export class RestUserFeedbackService implements IUserFeedbackService {
     ): Promise<boolean> {
         return new Promise((resolve, reject) => {
             this.http
-                .post<void>(`${this.USER_FEEDBACK_BASE_URI}/${hdid}`, feedback)
+                .post<void>(
+                    `${this.baseUri}${this.USER_FEEDBACK_BASE_URI}/${hdid}`,
+                    feedback
+                )
                 .then(() => {
                     return resolve(true);
                 })
