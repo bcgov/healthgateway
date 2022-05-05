@@ -143,7 +143,7 @@ export default class DependentCardComponent extends Vue {
                   this.dependent.dependentInformation.lastname
                 : "",
             isRedacted: false,
-            datePrinted: new DateWrapper(new DateWrapper().toISO()).format(),
+            datePrinted: new DateWrapper().format(),
             filterText: "",
         };
     }
@@ -589,7 +589,7 @@ export default class DependentCardComponent extends Vue {
         });
     }
 
-    private showCovid19DownloadConfirmationModalModal(
+    private showCovid19DownloadConfirmationModal(
         row: Covid19LaboratoryTestRow
     ) {
         this.selectedTestRow = row;
@@ -799,7 +799,7 @@ export default class DependentCardComponent extends Vue {
                                     variant="link"
                                     class="p-1"
                                     @click="
-                                        showCovid19DownloadConfirmationModalModal(
+                                        showCovid19DownloadConfirmationModal(
                                             row
                                         )
                                     "
