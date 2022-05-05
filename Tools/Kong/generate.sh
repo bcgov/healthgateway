@@ -10,7 +10,7 @@ EOF
 
   source "hg-$environment.env"
 
-  services=('encounter' 'gatewayapi' 'immunization' 'laboratory' 'patient')
+  services=('encounter' 'gatewayapi' 'immunization' 'laboratory' 'medication' 'patient')
   
   for service in "${services[@]}"; do
     export SERVICE=$service
