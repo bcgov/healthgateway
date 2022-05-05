@@ -893,7 +893,7 @@ export default class DependentCardComponent extends Vue {
                                     >
                                         <tr>
                                             <th scope="col">Date</th>
-                                            <th scope="col">Product</th>
+                                            <th scope="col">Immunization</th>
                                             <th
                                                 scope="col"
                                                 class="d-none d-sm-table-cell"
