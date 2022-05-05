@@ -24,4 +24,5 @@ oc project $project
 ./route.sh $routeId immunization immunization "/api/immunizationservice"
 ./route.sh $routeId laboratory laboratory "/api/laboratoryservice"
 ./route.sh $routeId encounter encounter "/api/encounterservice"
+./route.sh $routeId gatewayapi gatewayapi "/api/gatewayapiservice"
 #./route.sh  odrproxy odrproxy "/dev/odrproxy"
