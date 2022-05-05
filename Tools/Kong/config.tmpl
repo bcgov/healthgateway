@@ -1,72 +1,83 @@
-    - name: $SERVICE-$KONG_NAMESPACE
-      url: http://$SERVICE.$LICENCE_PLATE-$ENVIRONMENT.svc:8080
-      plugins:
-          - name: cors
-            tags: [ns.$KONG_NAMESPACE]
-            enabled: true
-            config:
-                preflight_continue: true
-      routes:
-          - name: $SERVICE-$KONG_NAMESPACE-get-post
-            methods:
-                - GET
-                - POST
-            hosts:
-                - $KONG_NAMESPACE.api.gov.bc.ca
-            paths:
-                - /$SERVICE
-            strip_path: true
-            plugins:
-                - name: jwt-keycloak
-                  tags: [ns.$KONG_NAMESPACE]
-                  enabled: true
-                  config:
-                      client_roles: null
-                      allowed_iss:
-                          - $KEYCLOAK_URI
-                      run_on_preflight: true
-                      iss_key_grace_period: 10
-                      maximum_expiration: 0
-                      claims_to_verify:
-                          - exp
-                      consumer_match_claim_custom_id: false
-                      cookie_names: []
-                      scope: null
-                      uri_param_names:
-                          - jwt
-                      roles: null
-                      consumer_match: false
-                      well_known_template: $KEYCLOAK_URI/.well-known/openid-configuration
-                      consumer_match_ignore_not_found: false
-                      anonymous: null
-                      algorithm: RS256
-                      realm_roles: null
-                      consumer_match_claim: azp
-                - name: rate-limiting
-                  tags: [ns.$KONG_NAMESPACE]
-                  enabled: true
-                  config:
-                      fault_tolerant: true
-                      hide_client_headers: false
-                      limit_by: consumer
-                      minute: 10
-                  protocols:
-                      - http
-                      - https
-            tags:
-                - OAS3_import
-                - ns.$KONG_NAMESPACE
-          - name: $SERVICE-$KONG_NAMESPACE-options
-            methods:
-                - OPTIONS
-            hosts:
-                - $KONG_NAMESPACE.api.gov.bc.ca
-            paths:
-                - /$SERVICE
-            strip_path: true
-            tags:
-                - OAS3_import
-                - ns.$KONG_NAMESPACE
-      tags:
-          - OAS3_import
-          - ns.$KONG_NAMESPACE
+- name: $SERVICE-$KONG_NAMESPACE
+  url: http://$SERVICE.$LICENCE_PLATE-$ENVIRONMENT.svc:8080
+  plugins:
+      - name: cors
+        tags: [ns.$KONG_NAMESPACE]
+        enabled: true
+        config:
+            preflight_continue: true
+      - name: rate-limiting
+        tags: [ns.$KONG_NAMESPACE]
+        enabled: true
+        service: $SERVICE-$KONG_NAMESPACE
+        config:
+            fault_tolerant: true
+            hide_client_headers: false
+            minute: 15
+        protocols:
+            - http
+            - https
+  routes:
+      - name: $SERVICE-$KONG_NAMESPACE-get-post
+        methods:
+            - GET
+            - POST
+        hosts:
+            - $KONG_NAMESPACE.api.gov.bc.ca
+        paths:
+            - /$SERVICE
+        strip_path: true
+        plugins:
+            - name: jwt-keycloak
+              tags: [ns.$KONG_NAMESPACE]
+              enabled: true
+              config:
+                  client_roles: null
+                  allowed_iss:
+                      - $KEYCLOAK_URI
+                  run_on_preflight: true
+                  iss_key_grace_period: 10
+                  maximum_expiration: 0
+                  claims_to_verify:
+                      - exp
+                  consumer_match_claim_custom_id: false
+                  cookie_names: []
+                  scope: null
+                  uri_param_names:
+                      - jwt
+                  roles: null
+                  consumer_match: false
+                  well_known_template: $KEYCLOAK_URI/.well-known/openid-configuration
+                  consumer_match_ignore_not_found: false
+                  anonymous: null
+                  algorithm: RS256
+                  realm_roles: null
+                  consumer_match_claim: azp
+            - name: rate-limiting
+              tags: [ns.$KONG_NAMESPACE]
+              enabled: true
+              config:
+                  fault_tolerant: true
+                  hide_client_headers: false
+                  limit_by: consumer
+                  minute: 10
+              protocols:
+                  - http
+                  - https
+        tags:
+            - OAS3_import
+            - ns.$KONG_NAMESPACE
+      - name: $SERVICE-$KONG_NAMESPACE-options
+        methods:
+            - OPTIONS
+        hosts:
+            - $KONG_NAMESPACE.api.gov.bc.ca
+        paths:
+            - /$SERVICE
+        strip_path: true
+        tags:
+            - OAS3_import
+            - ns.$KONG_NAMESPACE
+  tags:
+      - OAS3_import
+      - ns.$KONG_NAMESPACE
