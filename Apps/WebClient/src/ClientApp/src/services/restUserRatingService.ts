@@ -16,7 +16,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 export class RestUserRatingService implements IUserRatingService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly USER_RATING_BASE_URI: string =
-        "/v1/api/UserFeedback/Rating";
+        "v1/api/UserFeedback/Rating";
     private http!: IHttpDelegate;
     private baseUri = "";
 
