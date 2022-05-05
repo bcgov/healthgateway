@@ -30,7 +30,10 @@ import {
     LaboratoryReport,
     LaboratoryUtil,
 } from "@/models/laboratory";
-import { ResultError } from "@/models/requestResult";
+import Report from "@/models/report";
+import ReportHeader from "@/models/reportHeader";
+import { ReportFormatType, TemplateType } from "@/models/reportRequest";
+import RequestResult, { ResultError } from "@/models/requestResult";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -39,7 +42,11 @@ import {
     IImmunizationService,
     ILaboratoryService,
     ILogger,
+    IReportService,
 } from "@/services/interfaces";
+import EventTracker from "@/utility/eventTracker";
+
+import LoadingComponent from "./LoadingComponent.vue";
 
 library.add(faEllipsisV, faDownload, faInfoCircle);
 
@@ -52,7 +59,8 @@ interface Covid19LaboratoryTestRow {
 interface ImmunizationRow {
     date: string;
     immunization: string;
-    agents: string;
+    agent: string;
+    product: string;
     provider_clinic: string;
     lotNumber: string;
 }
@@ -67,7 +75,8 @@ interface RecommendationRow {
     components: {
         BTabs,
         BTab,
-        MessageModalComponent,
+        LoadingComponent,
+        "sensitive-document-download-modal": MessageModalComponent,
         DeleteModalComponent,
         Covid19LaboratoryTestDescriptionComponent,
     },
@@ -87,11 +96,16 @@ export default class DependentCardComponent extends Vue {
         traceId: string | undefined;
     }) => void;
 
-    @Ref("sensitivedocumentDownloadModal")
-    readonly sensitivedocumentDownloadModal!: MessageModalComponent;
+    @Ref("sensitiveDocumentDownloadModal")
+    readonly sensitiveDocumentDownloadModal!: MessageModalComponent;
 
     @Ref("deleteModal")
     readonly deleteModal!: DeleteModalComponent;
+
+    @Emit()
+    private needsUpdate() {
+        return;
+    }
 
     private message =
         "Are you sure you want to remove " +
@@ -109,9 +123,42 @@ export default class DependentCardComponent extends Vue {
     private immunizations: ImmunizationEvent[] = [];
     private recommendations: Recommendation[] = [];
     private isDataLoaded = false;
+    private isGeneratingReport = false;
     private isImmunizationDataLoaded = false;
+    private reportFormatType = ReportFormatType.PDF;
+    private ReportFormatType: unknown = ReportFormatType;
+    private dependentTab = 0;
 
     private selectedTestRow!: Covid19LaboratoryTestRow;
+
+    private get headerData(): ReportHeader {
+        return {
+            phn: this.dependent.dependentInformation.PHN,
+            dateOfBirth: this.formatDate(
+                this.dependent.dependentInformation.dateOfBirth || ""
+            ),
+            name: this.dependent.dependentInformation
+                ? this.dependent.dependentInformation.firstname +
+                  " " +
+                  this.dependent.dependentInformation.lastname
+                : "",
+            isRedacted: false,
+            datePrinted: new DateWrapper().format(),
+            filterText: "",
+        };
+    }
+
+    private get isDownloadImmunizationReportButtonDisabled(): boolean {
+        this.logger.debug(
+            `isGeneratingReport: ${this.isGeneratingReport} immunizationItems:  ${this.immunizationItems.length} and recommendationItems: ${this.recommendationItems.length}`
+        );
+        return (
+            this.isGeneratingReport ||
+            this.dependentTab !== 2 ||
+            (this.immunizationItems.length == 0 &&
+                this.recommendationItems.length == 0)
+        );
+    }
 
     private get isExpired() {
         let birthDate = new DateWrapper(
@@ -133,7 +180,10 @@ export default class DependentCardComponent extends Vue {
             return {
                 date: DateWrapper.format(x.dateOfImmunization),
                 immunization: x.immunization.name,
-                agents: this.getAgentNames(x.immunization.immunizationAgents),
+                agent: this.getAgentNames(x.immunization.immunizationAgents),
+                product: this.getProductNames(
+                    x.immunization.immunizationAgents
+                ),
                 provider_clinic: x.providerOrClinic,
                 lotNumber: this.getAgentLotNumbers(
                     x.immunization.immunizationAgents
@@ -142,7 +192,7 @@ export default class DependentCardComponent extends Vue {
         });
     }
 
-    private get recomendationItems(): RecommendationRow[] {
+    private get recommendationItems(): RecommendationRow[] {
         return this.recommendations.map<RecommendationRow>((x) => {
             return {
                 immunization: x.targetDiseases.find((y) => y.name)?.name ?? "",
@@ -153,6 +203,10 @@ export default class DependentCardComponent extends Vue {
                 status: x.status || "",
             };
         });
+    }
+
+    private checkResultReady(test: Covid19LaboratoryTest): boolean {
+        return LaboratoryUtil.isTestResultReady(test.testStatus);
     }
 
     private created() {
@@ -168,9 +222,106 @@ export default class DependentCardComponent extends Vue {
         );
     }
 
-    private showSensitiveDocumentDownloadModal(row: Covid19LaboratoryTestRow) {
-        this.selectedTestRow = row;
-        this.sensitivedocumentDownloadModal.showModal();
+    private deleteDependent(): void {
+        this.isLoading = true;
+        this.dependentService
+            .removeDependent(this.user.hdid, this.dependent)
+            .then(() => {
+                this.needsUpdate();
+            })
+            .catch((err: ResultError) => {
+                this.addError({
+                    errorType: ErrorType.Delete,
+                    source: ErrorSourceType.Dependent,
+                    traceId: err.traceId,
+                });
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    }
+
+    private downloadCovid19Report() {
+        this.isGeneratingReport = true;
+        let test = this.selectedTestRow.test;
+        this.laboratoryService
+            .getReportDocument(
+                this.selectedTestRow.id,
+                this.dependent.ownerId,
+                true
+            )
+            .then((result) => {
+                let report: LaboratoryReport = result.resourcePayload;
+                fetch(
+                    `data:${report.mediaType};${report.encoding},${report.data}`
+                )
+                    .then((response) => response.blob())
+                    .then((blob) => {
+                        saveAs(
+                            blob,
+                            `COVID_Result_${this.dependent.dependentInformation.firstname}${this.dependent.dependentInformation.lastname}_${test.collectedDateTime}.pdf`
+                        );
+                    });
+            })
+            .catch((err: ResultError) => {
+                this.logger.error(err.resultMessage);
+                this.addError({
+                    errorType: ErrorType.Download,
+                    source: ErrorSourceType.Covid19LaboratoryReport,
+                    traceId: err.traceId,
+                });
+            })
+            .finally(() => {
+                this.isGeneratingReport = false;
+            });
+    }
+
+    private downloadImmunizationReport() {
+        this.isGeneratingReport = true;
+
+        this.trackDownload();
+
+        this.generateReport(
+            TemplateType.DependentImmunization,
+            this.reportFormatType,
+            this.headerData
+        )
+            .then((result: RequestResult<Report>) => {
+                const mimeType = this.getMimeType(this.reportFormatType);
+                const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
+                fetch(downloadLink).then((res) => {
+                    res.blob().then((blob) => {
+                        saveAs(blob, result.resourcePayload.fileName);
+                    });
+                });
+            })
+            .finally(() => {
+                this.isGeneratingReport = false;
+            });
+    }
+
+    private downloadReport() {
+        this.logger.debug(
+            `Download report for dependent tab: ${this.dependentTab}`
+        );
+
+        if (this.dependentTab === 1) {
+            this.downloadCovid19Report();
+        } else if (this.dependentTab === 2) {
+            this.downloadImmunizationReport();
+        }
+    }
+
+    private formatDate(date: StringISODate): string {
+        return new DateWrapper(date).format();
+    }
+
+    private formatResult(test: Covid19LaboratoryTest): string {
+        if (this.checkResultReady(test)) {
+            return test?.labResultOutcome ?? "";
+        } else {
+            return "";
+        }
     }
 
     private fetchCovid19LaboratoryTests() {
@@ -270,17 +421,17 @@ export default class DependentCardComponent extends Vue {
                         this.isImmunizationDataLoaded = true;
                         this.isLoading = false;
                         this.logger.debug(
-                            `Patient Immunizations: 
+                            `Patient Immunizations:
                                 ${JSON.stringify(this.immunizations)}`
                         );
                         this.logger.debug(
-                            `Patient Recommendations: 
+                            `Patient Recommendations:
                                 ${JSON.stringify(this.recommendations)}`
                         );
                     }
                 } else {
                     this.logger.error(
-                        `Error returned from the Patient Immunizations call: 
+                        `Error returned from the Patient Immunizations call:
                             ${JSON.stringify(result.resultError)}`
                     );
                     this.addError({
@@ -302,6 +453,26 @@ export default class DependentCardComponent extends Vue {
             });
     }
 
+    private generateReport(
+        templateType: TemplateType,
+        reportFormatType: ReportFormatType,
+        headerData: ReportHeader
+    ): Promise<RequestResult<Report>> {
+        const reportService: IReportService = container.get<IReportService>(
+            SERVICE_IDENTIFIER.ReportService
+        );
+
+        return reportService.generateReport({
+            data: {
+                header: headerData,
+                records: this.immunizationItems,
+                recommendations: this.recommendationItems,
+            },
+            template: templateType,
+            type: reportFormatType,
+        });
+    }
+
     private getAgentLotNumbers(
         immunizationAgents: ImmunizationAgent[]
     ): string {
@@ -314,6 +485,37 @@ export default class DependentCardComponent extends Vue {
     private getAgentNames(immunizationAgents: ImmunizationAgent[]): string {
         const agents: string[] = immunizationAgents.map<string>((x) => x.name);
         return agents.join(", ");
+    }
+
+    private getMimeType(reportFormatType: ReportFormatType) {
+        switch (reportFormatType) {
+            case ReportFormatType.PDF:
+                return "application/pdf";
+            case ReportFormatType.CSV:
+                return "text/csv";
+            case ReportFormatType.XLSX:
+                return "application/vnd.openxmlformats";
+            default:
+                return "";
+        }
+    }
+
+    private getOutcomeClasses(outcome: string): string[] {
+        switch (outcome?.toUpperCase()) {
+            case "NEGATIVE":
+                return ["text-success"];
+            case "POSITIVE":
+                return ["text-danger"];
+            default:
+                return ["text-muted"];
+        }
+    }
+
+    private getProductNames(immunizationAgents: ImmunizationAgent[]): string {
+        const productNames: string[] = immunizationAgents.map<string>(
+            (x) => x.productName
+        );
+        return productNames.join(", ");
     }
 
     private setImmunizations(immunizations: ImmunizationEvent[]) {
@@ -387,90 +589,34 @@ export default class DependentCardComponent extends Vue {
         });
     }
 
-    private getReport() {
-        let test = this.selectedTestRow.test;
-        this.laboratoryService
-            .getReportDocument(
-                this.selectedTestRow.id,
-                this.dependent.ownerId,
-                true
-            )
-            .then((result) => {
-                let report: LaboratoryReport = result.resourcePayload;
-                fetch(
-                    `data:${report.mediaType};${report.encoding},${report.data}`
-                )
-                    .then((response) => response.blob())
-                    .then((blob) => {
-                        saveAs(
-                            blob,
-                            `COVID_Result_${this.dependent.dependentInformation.firstname}${this.dependent.dependentInformation.lastname}_${test.collectedDateTime}.pdf`
-                        );
-                    });
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(err.resultMessage);
-                this.addError({
-                    errorType: ErrorType.Download,
-                    source: ErrorSourceType.Covid19LaboratoryReport,
-                    traceId: err.traceId,
-                });
-            });
+    private showCovid19DownloadConfirmationModal(
+        row: Covid19LaboratoryTestRow
+    ) {
+        this.selectedTestRow = row;
+        this.sensitiveDocumentDownloadModal.showModal();
     }
 
-    private deleteDependent(): void {
-        this.isLoading = true;
-        this.dependentService
-            .removeDependent(this.user.hdid, this.dependent)
-            .then(() => {
-                this.needsUpdate();
-            })
-            .catch((err: ResultError) => {
-                this.addError({
-                    errorType: ErrorType.Delete,
-                    source: ErrorSourceType.Dependent,
-                    traceId: err.traceId,
-                });
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
+    private showImmunizationDownloadConfirmationModal(
+        reportFormatType: ReportFormatType
+    ): void {
+        this.logger.debug(
+            `Show sensitive immunization document download modal: ${reportFormatType}`
+        );
+        this.reportFormatType = reportFormatType;
+        this.sensitiveDocumentDownloadModal.showModal();
     }
 
     private showDeleteConfirmationModal(): void {
         this.deleteModal.showModal();
     }
 
-    @Emit()
-    private needsUpdate() {
-        return;
-    }
+    private trackDownload(): void {
+        const reportName = "Dependent Immunization";
+        const formatTypeName = ReportFormatType[this.reportFormatType];
+        const eventName = `${reportName} (${formatTypeName})`;
+        this.logger.debug(`Track download for: ${eventName}`);
 
-    private formatDate(date: StringISODate): string {
-        return new DateWrapper(date).format();
-    }
-
-    private checkResultReady(test: Covid19LaboratoryTest): boolean {
-        return LaboratoryUtil.isTestResultReady(test.testStatus);
-    }
-
-    private formatResult(test: Covid19LaboratoryTest): string {
-        if (this.checkResultReady(test)) {
-            return test?.labResultOutcome ?? "";
-        } else {
-            return "";
-        }
-    }
-
-    private getOutcomeClasses(outcome: string): string[] {
-        switch (outcome?.toUpperCase()) {
-            case "NEGATIVE":
-                return ["text-success"];
-            case "POSITIVE":
-                return ["text-danger"];
-            default:
-                return ["text-muted"];
-        }
+        EventTracker.downloadReport(eventName);
     }
 }
 </script>
@@ -478,7 +624,7 @@ export default class DependentCardComponent extends Vue {
 <template>
     <div>
         <b-card no-body>
-            <b-tabs card>
+            <b-tabs v-model="dependentTab" card>
                 <b-tab active data-testid="dependentTab">
                     <template #title>
                         <div>Profile</div>
@@ -653,7 +799,9 @@ export default class DependentCardComponent extends Vue {
                                     variant="link"
                                     class="p-1"
                                     @click="
-                                        showSensitiveDocumentDownloadModal(row)
+                                        showCovid19DownloadConfirmationModal(
+                                            row
+                                        )
                                     "
                                 >
                                     <hg-icon
@@ -691,6 +839,42 @@ export default class DependentCardComponent extends Vue {
                         <b-card no-body>
                             <b-tabs class="p-2">
                                 <b-tab title="History" active>
+                                    <b-dropdown
+                                        v-if="immunizationItems.length != 0"
+                                        id="download-immunization-history-report-btn"
+                                        text="Download"
+                                        class="p-4 float-right"
+                                        variant="outline-dark"
+                                        data-testid="download-immunization-history-report-btn"
+                                        :disabled="
+                                            isDownloadImmunizationReportButtonDisabled
+                                        "
+                                    >
+                                        <b-dropdown-item
+                                            @click="
+                                                showImmunizationDownloadConfirmationModal(
+                                                    ReportFormatType.PDF
+                                                )
+                                            "
+                                            >PDF</b-dropdown-item
+                                        >
+                                        <b-dropdown-item
+                                            @click="
+                                                showImmunizationDownloadConfirmationModal(
+                                                    ReportFormatType.CSV
+                                                )
+                                            "
+                                            >CSV</b-dropdown-item
+                                        >
+                                        <b-dropdown-item
+                                            @click="
+                                                showImmunizationDownloadConfirmationModal(
+                                                    ReportFormatType.XLSX
+                                                )
+                                            "
+                                            >XLSX</b-dropdown-item
+                                        >
+                                    </b-dropdown>
                                     <b-row
                                         v-if="immunizationItems.length == 0"
                                         class="m-2"
@@ -714,7 +898,13 @@ export default class DependentCardComponent extends Vue {
                                                 scope="col"
                                                 class="d-none d-sm-table-cell"
                                             >
-                                                Immunizing Agent
+                                                Agent
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                class="d-none d-sm-table-cell"
+                                            >
+                                                Product
                                             </th>
                                             <th scope="col">Provider/Clinic</th>
                                             <th
@@ -744,7 +934,13 @@ export default class DependentCardComponent extends Vue {
                                                 :data-testid="`history-immunizing-agent-${dependent.ownerId}-${index}`"
                                                 class="d-none d-sm-table-cell"
                                             >
-                                                {{ row.agents }}
+                                                {{ row.agent }}
+                                            </td>
+                                            <td
+                                                :data-testid="`history-immunizing-product-${dependent.ownerId}-${index}`"
+                                                class="d-none d-sm-table-cell"
+                                            >
+                                                {{ row.product }}
                                             </td>
                                             <td
                                                 :data-testid="`history-provider-clinic-${dependent.ownerId}-${index}`"
@@ -761,8 +957,44 @@ export default class DependentCardComponent extends Vue {
                                     </table>
                                 </b-tab>
                                 <b-tab title="Forecasts">
+                                    <b-dropdown
+                                        v-if="recommendationItems.length != 0"
+                                        id="download-immunization-forecast-report-btn"
+                                        text="Download"
+                                        class="p-4 float-right"
+                                        variant="outline-dark"
+                                        data-testid="download-immunization-forecast-report-btn"
+                                        :disabled="
+                                            isDownloadImmunizationReportButtonDisabled
+                                        "
+                                    >
+                                        <b-dropdown-item
+                                            @click="
+                                                showImmunizationDownloadConfirmationModal(
+                                                    ReportFormatType.PDF
+                                                )
+                                            "
+                                            >PDF</b-dropdown-item
+                                        >
+                                        <b-dropdown-item
+                                            @click="
+                                                showImmunizationDownloadConfirmationModal(
+                                                    ReportFormatType.CSV
+                                                )
+                                            "
+                                            >CSV</b-dropdown-item
+                                        >
+                                        <b-dropdown-item
+                                            @click="
+                                                showImmunizationDownloadConfirmationModal(
+                                                    ReportFormatType.XLSX
+                                                )
+                                            "
+                                            >XLSX</b-dropdown-item
+                                        >
+                                    </b-dropdown>
                                     <b-row
-                                        v-if="recomendationItems.length == 0"
+                                        v-if="recommendationItems.length == 0"
                                         class="m-2"
                                     >
                                         <b-col
@@ -785,7 +1017,7 @@ export default class DependentCardComponent extends Vue {
                                         <tr
                                             v-for="(
                                                 row, index
-                                            ) in recomendationItems"
+                                            ) in recommendationItems"
                                             :key="index"
                                         >
                                             <td
@@ -861,17 +1093,21 @@ export default class DependentCardComponent extends Vue {
                 </template>
             </b-tabs>
         </b-card>
+        <LoadingComponent
+            :is-loading="isGeneratingReport"
+            :full-screen="false"
+        ></LoadingComponent>
         <delete-modal-component
             ref="deleteModal"
             title="Remove Dependent"
             message="Are you sure you want to remove this dependent?"
             @submit="deleteDependent()"
         />
-        <MessageModalComponent
-            ref="sensitivedocumentDownloadModal"
+        <sensitive-document-download-modal
+            ref="sensitiveDocumentDownloadModal"
             title="Sensitive Document Download"
             message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-            @submit="getReport"
+            @submit="downloadReport()"
         />
     </div>
 </template>

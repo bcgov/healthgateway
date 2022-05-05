@@ -11,6 +11,7 @@ export default interface ReportRequest {
 
 export enum TemplateType {
     Encounter,
+    DependentImmunization,
     Immunization,
     Medication,
     COVID,
