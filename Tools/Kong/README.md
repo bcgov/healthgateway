@@ -2,33 +2,33 @@
 
 ## Prerequisites
 
-Read the [Kong](https://github.com/bcgov/gwa-api/blob/dev/USER-JOURNEY.md) documentation
+Read the [GWA API documentation](https://github.com/bcgov/gwa-api/blob/dev/USER-JOURNEY.md).
 
-Run the Network policy in namespace environment that you would like to open up to Kong
+Based on reading above documentation you should have the `gwa` command-line application installed locally.
+
+Grab the environment files from Sharepoint (`hg-dev.env`, `hg-test.env`, and `hg-test.env`) and place them in this folder.
+
+## Enabling Access to OpenShift
+
+To allow Kong to access the OpenShift environments, network policies should be added by running these commands for each environment:
 
 ```console
 oc project [environment]
-oc apply -f networkpolicy.yaml
+oc apply -f network-policies.yaml
 ```
 
-## Health Gateway Dev Environment Setup
+## Publish Kong Configurations
 
-Based on reading the Kong documentation you should have the gwa cli installed locally and should have completed namespaces for each environment along with secrets.
-
-Grab the appropriate environment file from Sharepoint and name it .env on the ilesystem.
-
-Set the required environment variables
+Running `generate.sh` will generate configuration files for each of the environments by replacing the variables in `config.tmpl` with values from the appropriate `.env` file and iterating over each service.
 
 ```console
-export environment=dev
-export licensePlate=0bd5ad
-export kongNamespace=hg-dev
-export keycloakUri=https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f
+./generate.sh
 ```
 
-Evaluate the template and publish to the Kong Gateway API
+> The variable substitutions are performed using `envsubst`, which is part of `gettext`. If it's not preinstalled on your system, you can use a package manager to install `gettext`.
+
+After the configurations for the environments have been generated, they can be published by running the following script. This will override any previously published configurations.
 
 ```console
-eval "echo \"$(cat immunization.tmpl)\"" > imms-$environment.yaml
-./gwa pg imms-$environment.yaml
+./publish.sh
 ```
