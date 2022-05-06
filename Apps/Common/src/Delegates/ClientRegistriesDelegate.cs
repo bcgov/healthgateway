@@ -150,22 +150,6 @@ namespace HealthGateway.Common.Delegates
             }
         }
 
-        private static bool SetIdentifier(string personIdentifierType, string personIdentifier, PatientModel patient)
-        {
-            if (personIdentifierType == OidType.HDID.ToString())
-            {
-                patient.HdId = personIdentifier;
-                return true;
-            }
-            else if (personIdentifierType == OidType.PHN.ToString())
-            {
-                patient.PersonalHealthNumber = personIdentifier;
-                return true;
-            }
-
-            return false;
-        }
-
         private static bool SetNames(PN? nameSection, PatientModel patient)
         {
             if (nameSection == null)
@@ -333,31 +317,42 @@ namespace HealthGateway.Common.Delegates
                 }
 
                 // Populates the PHN
-                II? identifiedPersonId = retrievedPerson.identifiedPerson.id.GetValue(0) as II;
-                string? personIdentifierType = identifiedPersonId?.root;
-                string personIdentifier = identifiedPersonId?.extension ?? string.Empty;
-                if (!ClientRegistriesDelegate.SetIdentifier(personIdentifierType, personIdentifier, patient) && !disableIDValidation)
+                II? identifiedPersonId = retrievedPerson.identifiedPerson.id.FirstOrDefault(x => x.root == OidType.PHN.ToString());
+                if (identifiedPersonId != null)
                 {
-                    this.logger.LogWarning($"Client Registry returned a person with a person identifier not recognized. No PHN or HDID was populated.");
-                    return new RequestResult<PatientModel>()
+                    patient.PersonalHealthNumber = identifiedPersonId.extension;
+                }
+                else
+                {
+                    this.logger.LogWarning($"Client Registry returned a person without a PHN and ID Validation is set to {disableIDValidation}");
+                    if (!disableIDValidation)
                     {
-                        ResultStatus = ResultType.ActionRequired,
-                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
-                    };
+                        return new RequestResult<PatientModel>()
+                        {
+                            ResultStatus = ResultType.ActionRequired,
+                            ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
+                        };
+                    }
                 }
 
                 // Populates the HDID
-                II? subjectId = retrievedPerson.id?.GetValue(0) as II;
-                string? subjectIdentifierType = subjectId?.root;
-                string subjectIdentifier = subjectId?.extension ?? string.Empty;
-                if (!ClientRegistriesDelegate.SetIdentifier(subjectIdentifierType, subjectIdentifier, patient) && !disableIDValidation)
+                II? subjectId = retrievedPerson.id.FirstOrDefault(x => x.displayable && x.root == OidType.HDID.ToString());
+                if (subjectId != null)
                 {
-                    this.logger.LogWarning($"Client Registry returned a person with a subject identifier not recognized. No PHN or HDID was populated.");
-                    return new RequestResult<PatientModel>()
+                    patient.HdId = subjectId.extension;
+                }
+                else
+                {
+                    this.logger.LogWarning($"Client Registry returned a person without an HDID and ID Validation is set to {disableIDValidation}");
+                    if (!disableIDValidation)
                     {
-                        ResultStatus = ResultType.ActionRequired,
-                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
-                    };
+                        return new RequestResult<PatientModel>()
+                        {
+                            ResultStatus = ResultType.ActionRequired,
+                            ResultError =
+                                ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
+                        };
+                    }
                 }
 
                 AD[] addresses = retrievedPerson.addr;
