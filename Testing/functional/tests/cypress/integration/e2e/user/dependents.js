@@ -272,6 +272,33 @@ describe("dependents", () => {
                 validDependent.hdid +
                 "]"
         ).should("be.visible");
+
+        // Clear download folder
+        cy.deleteDownloadsFolder();
+
+        // Click download dropdown under History tab
+        cy.get(
+            "[data-testid=download-immunization-history-report-btn-" +
+                validDependent.hdid +
+                "]"
+        ).click();
+
+        // Click PDF
+        cy.get(
+            "[data-testid=download-immunization-history-report-pdf-btn-" +
+                validDependent.hdid +
+                "]"
+        ).click();
+
+        // Confirmation modal
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf");
+
+        // Clear download folder for next round of verifications
+        cy.deleteDownloadsFolder();
+
         cy.get(
             "[data-testid=immunization-tab-div-" + validDependent.hdid + "]"
         ).within(() => {
@@ -282,6 +309,26 @@ describe("dependents", () => {
                 validDependent.hdid +
                 "]"
         ).should("be.visible");
+
+        // Click download dropdown under Forecast tab
+        cy.get(
+            "[data-testid=download-immunization-forecast-report-btn-" +
+                validDependent.hdid +
+                "]"
+        ).click();
+
+        // Click PDF
+        cy.get(
+            "[data-testid=download-immunization-forecast-report-pdf-btn-" +
+                validDependent.hdid +
+                "]"
+        ).click();
+
+        // Confirmation modal
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf");
 
         cy.log("Adding same dependent as another user");
 

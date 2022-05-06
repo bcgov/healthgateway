@@ -845,12 +845,13 @@ export default class DependentCardComponent extends Vue {
                                         text="Download"
                                         class="p-4 float-right"
                                         variant="outline-dark"
-                                        data-testid="download-immunization-history-report-btn"
+                                        :data-testid="`download-immunization-history-report-btn-${dependent.ownerId}`"
                                         :disabled="
                                             isDownloadImmunizationReportButtonDisabled
                                         "
                                     >
                                         <b-dropdown-item
+                                            :data-testid="`download-immunization-history-report-pdf-btn-${dependent.ownerId}`"
                                             @click="
                                                 showImmunizationDownloadConfirmationModal(
                                                     ReportFormatType.PDF
@@ -859,6 +860,7 @@ export default class DependentCardComponent extends Vue {
                                             >PDF</b-dropdown-item
                                         >
                                         <b-dropdown-item
+                                            :data-testid="`download-immunization-history-report-csv-btn-${dependent.ownerId}`"
                                             @click="
                                                 showImmunizationDownloadConfirmationModal(
                                                     ReportFormatType.CSV
@@ -867,6 +869,7 @@ export default class DependentCardComponent extends Vue {
                                             >CSV</b-dropdown-item
                                         >
                                         <b-dropdown-item
+                                            :data-testid="`download-immunization-history-report-xlsx-btn-${dependent.ownerId}`"
                                             @click="
                                                 showImmunizationDownloadConfirmationModal(
                                                     ReportFormatType.XLSX
@@ -963,12 +966,13 @@ export default class DependentCardComponent extends Vue {
                                         text="Download"
                                         class="p-4 float-right"
                                         variant="outline-dark"
-                                        data-testid="download-immunization-forecast-report-btn"
+                                        :data-testid="`download-immunization-forecast-report-btn-${dependent.ownerId}`"
                                         :disabled="
                                             isDownloadImmunizationReportButtonDisabled
                                         "
                                     >
                                         <b-dropdown-item
+                                            :data-testid="`download-immunization-forecast-report-pdf-btn-${dependent.ownerId}`"
                                             @click="
                                                 showImmunizationDownloadConfirmationModal(
                                                     ReportFormatType.PDF
@@ -977,6 +981,7 @@ export default class DependentCardComponent extends Vue {
                                             >PDF</b-dropdown-item
                                         >
                                         <b-dropdown-item
+                                            :data-testid="`download-immunization-forecast-report-csv-btn-${dependent.ownerId}`"
                                             @click="
                                                 showImmunizationDownloadConfirmationModal(
                                                     ReportFormatType.CSV
@@ -985,6 +990,7 @@ export default class DependentCardComponent extends Vue {
                                             >CSV</b-dropdown-item
                                         >
                                         <b-dropdown-item
+                                            :data-testid="`download-immunization-forecast-report-xlsx-btn-${dependent.ownerId}`"
                                             @click="
                                                 showImmunizationDownloadConfirmationModal(
                                                     ReportFormatType.XLSX
