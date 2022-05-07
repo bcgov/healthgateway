@@ -74,6 +74,7 @@ namespace HealthGateway.CommonTests.Delegates
                         {
                             root = "2.16.840.1.113883.3.51.1.1.6",
                             extension = expectedHdId,
+                            displayable = true,
                         },
                     },
                 addr = new AD[]
@@ -382,6 +383,7 @@ namespace HealthGateway.CommonTests.Delegates
                         {
                             root = "2.16.840.1.113883.3.51.1.1.6",
                             extension = expectedHdId,
+                            displayable = true,
                         },
                     },
                 identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
@@ -505,6 +507,7 @@ namespace HealthGateway.CommonTests.Delegates
                         {
                             root = "2.16.840.1.113883.3.51.1.1.6",
                             extension = expectedHdId,
+                            displayable = true,
                         },
                     },
                 identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
