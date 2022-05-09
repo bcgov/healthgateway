@@ -180,7 +180,7 @@ export interface IUserCommentService {
 }
 
 export interface ICommunicationService {
-    initialize(http: IHttpDelegate): void;
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getActive(type: CommunicationType): Promise<RequestResult<Communication>>;
 }
 

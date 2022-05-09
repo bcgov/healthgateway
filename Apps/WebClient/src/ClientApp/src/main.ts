@@ -172,7 +172,7 @@ configService.getConfiguration().then((config) => {
     userProfileService.initialize(config, httpDelegate);
     userFeedbackService.initialize(config, httpDelegate);
     userNoteService.initialize(config, httpDelegate);
-    communicationService.initialize(httpDelegate);
+    communicationService.initialize(config, httpDelegate);
     userCommentService.initialize(config, httpDelegate);
     userRatingService.initialize(config, httpDelegate);
     dependentService.initialize(config, httpDelegate);
