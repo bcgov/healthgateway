@@ -9,68 +9,66 @@
             "path": "AdminWebClient/src/ClientApp"
         },
         {
-            "name": "AdminWebClient",
+            "path": "Admin"
+        },
+        {
             "path": "AdminWebClient"
         },
         {
-            "name": "Common",
             "path": "Common"
         },
         {
-            "name": "Database",
+            "path": "CommonData"
+        },
+        {
+            "path": "CommonUi"
+        },
+        {
             "path": "Database"
         },
         {
-            "name": "DBMaintainer",
             "path": "DBMaintainer"
-        },
-        {
-            "name": "Documentation",
-            "path": "Documentation"
-        },
-        {
-            "name": "Immunization",
-            "path": "Immunization"
-        },
-        {
-            "name": "JobScheduler",
-            "path": "JobScheduler"
-        },
-        {
-            "name": "Laboratory",
-            "path": "Laboratory"
-        },
-        {
-            "name": "Medication",
-            "path": "Medication"
-        },
-        {
-            "name": "ODRProxy",
-            "path": "ODRProxy"
-        },
-        {
-            "name": "Patient",
-            "path": "Patient"
-        },
-        {
-            "name": "WebClient",
-            "path": "WebClient"
         },
         {
             "path": "Encounter"
         },
         {
-            "name": "Mock",
+            "path": "GatewayApi"
+        },
+        {
+            "path": "Immunization"
+        },
+        {
+            "path": "JobScheduler"
+        },
+        {
+            "path": "Laboratory"
+        },
+        {
+            "path": "Medication"
+        },
+        {
             "path": "Mock"
         },
         {
+            "path": "ODRProxy"
+        },
+        {
+            "path": "Offline"
+        },
+        {
+            "path": "Patient"
+        },
+        {
+            "path": "WebClient"
+        },
+        {
+            "name": "../Testing/functional/tests",
             "path": "../Testing/functional/tests"
         },
         {
-            "path": "../Tools/Dev/Design/sampler"
-        },
-        {
-            "path": "../Tools/Dev/Design"
+            "name": "../Tools",
+            "path": "../Tools"
         }
     ],
     "settings": {
