@@ -12,7 +12,7 @@ Grab the environment files from Sharepoint (`hg-dev.env`, `hg-test.env`, and `hg
 
 To allow Kong to access the OpenShift environments, network policies should be added by running these commands for each environment:
 
-```console
+```shell
 oc project [environment]
 oc apply -f network-policies.yaml
 ```
@@ -21,7 +21,7 @@ oc apply -f network-policies.yaml
 
 Running `generate.sh` will generate configuration files for each of the environments by replacing the variables in `config.tmpl` with values from the appropriate `.env` file and iterating over each service.
 
-```console
+```shell
 ./generate.sh
 ```
 
@@ -29,6 +29,6 @@ Running `generate.sh` will generate configuration files for each of the environm
 
 After the configurations for the environments have been generated, they can be published by running the following script. This will override any previously published configurations.
 
-```console
+```shell
 ./publish.sh
 ```
