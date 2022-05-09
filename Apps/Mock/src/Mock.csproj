@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="CoreWCF.Http" Version="1.0.0" />
     <PackageReference Include="CoreWCF.NetTcp" Version="1.0.0" />
-    <PackageReference Include="CoreWCF.Primitives" Version="1.0.0" />
+    <PackageReference Include="CoreWCF.Primitives" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
     <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
