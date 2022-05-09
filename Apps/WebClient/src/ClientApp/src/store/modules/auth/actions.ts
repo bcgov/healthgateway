@@ -13,7 +13,7 @@ import { AuthActions } from "./types";
 let refreshTimeout: NodeJS.Timeout | undefined = undefined;
 
 export const actions: AuthActions = {
-    async initialize(context): Promise<void> {
+    async checkStatus(context): Promise<boolean> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const authService = container.get<IAuthenticationService>(
             SERVICE_IDENTIFIER.AuthenticationService
@@ -21,15 +21,18 @@ export const actions: AuthActions = {
 
         const tokenDetails = authService.getOidcTokenDetails();
         if (!tokenDetails || tokenDetails.expired) {
-            logger.verbose("User is not signed in");
-            return;
+            if (context.getters["oidcIsAuthenticated"]) {
+                logger.verbose("Authentication status was not in sync");
+                context.dispatch("clearStorage");
+            }
+            return false;
         }
         const userInfo = await authService.getOidcUserInfo();
 
         context.commit("user/setOidcUserInfo", userInfo, { root: true });
         context.dispatch("handleSuccessfulAuthentication", tokenDetails);
 
-        logger.verbose("User is signed in");
+        return true;
     },
     async signIn(
         context,

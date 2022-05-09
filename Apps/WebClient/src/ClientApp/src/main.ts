@@ -189,7 +189,12 @@ configService.getConfiguration().then((config) => {
         });
 
         if (window.location.pathname !== "/loginCallback") {
-            await store.dispatch("auth/initialize");
+            const signedIn = await store.dispatch("auth/checkStatus");
+            if (signedIn) {
+                logger.verbose("User is signed in");
+            } else {
+                logger.verbose("User is not signed in");
+            }
 
             const isValidIdentityProvider: boolean =
                 store.getters["auth/isValidIdentityProvider"];

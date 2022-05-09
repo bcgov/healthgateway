@@ -28,7 +28,7 @@ export interface AuthGetters extends GetterTree<AuthState, RootState> {
 
 type StoreContext = ActionContext<AuthState, RootState>;
 export interface AuthActions extends ActionTree<AuthState, RootState> {
-    initialize(context: StoreContext): Promise<void>;
+    checkStatus(context: StoreContext): Promise<boolean>;
     signIn(
         context: StoreContext,
         params: { idpHint: string; redirectPath: string }

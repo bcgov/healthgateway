@@ -26,7 +26,7 @@ const authGetters: AuthGetters = {
 };
 
 const authActions: AuthActions = {
-    initialize: voidPromise,
+    checkStatus: voidPromise,
     signIn: voidPromise,
     signOut: voidMethod,
     refreshToken: voidPromise,
