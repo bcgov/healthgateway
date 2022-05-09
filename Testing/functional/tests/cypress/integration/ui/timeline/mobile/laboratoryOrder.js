@@ -57,7 +57,7 @@ describe("Laboratory Orders", () => {
                     cy.get("td:nth-child(3)").then(($status) => {
                         const status = $status.text().trim();
                         cy.log(status);
-                        expect(status).equal("Active");
+                        expect(status).equal("Pending");
                     });
                 });
 

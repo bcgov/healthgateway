@@ -47,12 +47,20 @@ describe("Laboratory Orders", () => {
                                 cy.log(result);
                                 cy.log(status);
 
-                                if (status === "Partial") {
-                                    expect(result).equal("Pending");
+                                if (status === "Completed") {
+                                    expect([
+                                        "Out of Range",
+                                        "In Range",
+                                    ]).to.include(result);
                                 }
 
-                                if (result === "Out of Range") {
-                                    expect(status).equal("Final");
+                                if (status === "Cancelled") {
+                                    expect(result).equal("Cancelled");
+                                }
+
+                                if (result === "Pending") {
+                                    // PHSA stattus is Actuve but has been converted to Pending for user readability
+                                    expect(status).equal("Pending");
                                 }
                             });
                     });

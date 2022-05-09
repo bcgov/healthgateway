@@ -78,7 +78,7 @@ export default class LaboratoryReportComponent extends Vue {
                     date: timelineDateTime,
                     test: y.batteryType || "",
                     result: this.getResult(y.testStatus, y.outOfRange),
-                    status: y.testStatus || "",
+                    status: this.getStatus(y.testStatus),
                 };
             });
         });
@@ -120,6 +120,13 @@ export default class LaboratoryReportComponent extends Vue {
             return "Pending";
         }
         return outOfRange ? "Out of Range" : "In Range";
+    }
+
+    private getStatus(testStatus: string | null): string {
+        if (testStatus) {
+            return testStatus === "Active" ? "Pending" : testStatus;
+        }
+        return "";
     }
 
     public generateReport(
