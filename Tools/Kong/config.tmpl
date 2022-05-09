@@ -6,15 +6,17 @@
         enabled: true
         config:
             preflight_continue: true
+        protocols:
+            - http
+            - https
       - name: rate-limiting
         tags: [ns.$KONG_NAMESPACE]
         enabled: true
-        service: $SERVICE-$KONG_NAMESPACE
         config:
             fault_tolerant: true
             hide_client_headers: false
             limit_by: service
-            minute: 15
+            minute: 100
         protocols:
             - http
             - https
