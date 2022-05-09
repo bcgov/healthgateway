@@ -46,7 +46,6 @@ namespace HealthGateway.CommonTests.Delegates
             string expectedPhn = "0009735353315";
             string expectedFirstName = "Jane";
             string expectedLastName = "Doe";
-            string expectedGender = "Female";
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
             {
                 identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
@@ -67,14 +66,14 @@ namespace HealthGateway.CommonTests.Delegates
                             {
                                 new engiven()
                                 {
-                                    Text = new string[] {expectedFirstName},
+                                    Text = new string[] { expectedFirstName },
                                 },
                                 new enfamily()
                                 {
-                                    Text = new string[] {expectedLastName},
+                                    Text = new string[] { expectedLastName },
                                 },
                             },
-                            use = new cs_EntityNameUse[] {cs_EntityNameUse.C},
+                            use = new cs_EntityNameUse[] { cs_EntityNameUse.C },
                         },
                     },
                     birthTime = new TS()
@@ -122,7 +121,7 @@ namespace HealthGateway.CommonTests.Delegates
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPHNAsync("9875023209").ConfigureAwait(true);
 
             // Verify
-            Assert.True(ResultType.ActionRequired == actual.ResultStatus);
+            Assert.True(actual.ResultStatus == ResultType.ActionRequired);
         }
 
         /// <summary>
