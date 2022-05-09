@@ -8,6 +8,7 @@ const resultOutOfRange = "Out of Range";
 const resultInRange = "In Range";
 const statusCancelled = "Cancelled";
 const statusCompleted = "Completed";
+const statusPending = "Pending";
 
 // The laboratory order timeline entry model
 export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
@@ -18,7 +19,7 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
     public timelineDateTime: DateWrapper;
     public commonName: string;
     public orderingProvider: string;
-    public testStatus: string;
+    public orderStatus: string;
     public reportAvailable: boolean;
     public downloadLabel: string | null = null;
 
@@ -58,7 +59,23 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
         this.reportingLab = model.reportingSource;
 
         this.reportId = model.reportId;
-        this.testStatus = model.testStatus;
+
+        switch (model.testStatus.toLowerCase()) {
+            case "held":
+            case "partial":
+            case "pending":
+                this.orderStatus = statusPending;
+                break;
+            case "completed":
+                this.orderStatus = statusCompleted;
+                break;
+            case "cancelled":
+                this.orderStatus = statusCancelled;
+                break;
+            default:
+                this.orderStatus = model.testStatus;
+                break;
+        }
 
         this.tests = [];
         model.laboratoryTests.forEach((test) => {
@@ -68,7 +85,7 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
         this.sortResults();
 
         this.downloadLabel = "Incomplete";
-        if (this.testStatus === statusCompleted) {
+        if (this.orderStatus === statusCompleted) {
             this.downloadLabel = "Final";
         }
 

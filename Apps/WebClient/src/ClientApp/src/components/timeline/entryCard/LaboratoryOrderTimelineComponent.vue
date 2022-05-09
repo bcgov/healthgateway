@@ -113,9 +113,9 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
         :has-attachment="entry.reportAvailable"
     >
         <div slot="header-description">
-            <span>Number of Tests: </span>
-            <strong data-testid="laboratory-header-result-count">
-                {{ entry.tests.length }}
+            <span>Order Status: </span>
+            <strong data-testid="laboratory-header-order-status">
+                {{ entry.orderStatus }}
             </strong>
         </div>
         <div slot="details-body">
