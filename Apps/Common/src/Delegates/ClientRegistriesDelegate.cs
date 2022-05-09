@@ -317,7 +317,7 @@ namespace HealthGateway.Common.Delegates
                 }
 
                 // Populates the PHN
-                II? identifiedPersonId = retrievedPerson.identifiedPerson.id.FirstOrDefault(x => x.root == OidType.PHN.ToString());
+                II? identifiedPersonId = retrievedPerson.identifiedPerson?.id?.FirstOrDefault(x => x.root == OidType.PHN.ToString());
                 if (identifiedPersonId != null)
                 {
                     patient.PersonalHealthNumber = identifiedPersonId.extension;
@@ -336,7 +336,7 @@ namespace HealthGateway.Common.Delegates
                 }
 
                 // Populates the HDID
-                II? subjectId = retrievedPerson.id.FirstOrDefault(x => x.displayable && x.root == OidType.HDID.ToString());
+                II? subjectId = retrievedPerson.id?.FirstOrDefault(x => x.displayable && x.root == OidType.HDID.ToString());
                 if (subjectId != null)
                 {
                     patient.HdId = subjectId.extension;
