@@ -14,6 +14,7 @@ EOF
   
   for service in "${services[@]}"; do
     export SERVICE=$service
+    export BASE_PATH="/api/${service}service"
     MSYS_NO_PATHCONV=1 envsubst < config.tmpl >> config-$environment.yaml
   done
 done
