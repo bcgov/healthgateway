@@ -30,8 +30,8 @@
         hosts:
             - $KONG_NAMESPACE.api.gov.bc.ca
         paths:
-            - /$SERVICE
-        strip_path: true
+            - $BASE_PATH
+        strip_path: false
         plugins:
             - name: jwt-keycloak
               tags: [ns.$KONG_NAMESPACE]
@@ -65,7 +65,7 @@
                   fault_tolerant: true
                   hide_client_headers: false
                   limit_by: consumer
-                  minute: 10
+                  minute: 100
               protocols:
                   - http
                   - https
@@ -78,8 +78,19 @@
         hosts:
             - $KONG_NAMESPACE.api.gov.bc.ca
         paths:
-            - /$SERVICE
-        strip_path: true
+            - $BASE_PATH
+        strip_path: false
+        tags:
+            - OAS3_import
+            - ns.$KONG_NAMESPACE
+      - name: $SERVICE-$KONG_NAMESPACE-swagger
+        methods:
+            - GET
+        hosts:
+            - $KONG_NAMESPACE.api.gov.bc.ca
+        paths:
+            - $BASE_PATH/swagger
+        strip_path: false
         tags:
             - OAS3_import
             - ns.$KONG_NAMESPACE
