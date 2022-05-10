@@ -370,12 +370,16 @@ const routes = [
     }, // Not found; Will catch all other paths not covered previously
 ];
 
-export const beforeEachGuard: NavigationGuard = (
+export const beforeEachGuard: NavigationGuard = async (
     to: Route,
     from: Route,
     next: NavigationGuardNext<Vue>
 ) => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    const storeWrapper: IStoreProvider = container.get(
+        STORE_IDENTIFIER.StoreProvider
+    );
+    const store = storeWrapper.getStore();
     logger.debug(
         `from.fullPath: ${JSON.stringify(
             from.fullPath
@@ -392,6 +396,8 @@ export const beforeEachGuard: NavigationGuard = (
         next();
         return;
     }
+
+    await store.dispatch("auth/checkStatus");
 
     // Make sure that the route accepts the current state
     const currentUserState = calculateUserState();
