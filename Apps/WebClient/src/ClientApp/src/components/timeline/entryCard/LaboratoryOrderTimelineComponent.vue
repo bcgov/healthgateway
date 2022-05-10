@@ -171,14 +171,10 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
             </div>
             <div class="my-2 mb-2">
                 <div data-testid="reporting-lab-information-text">
-                    <strong
-                        >Lab results provide a partial picture of your health.
-                    </strong>
                     <span
-                        ><router-link to="/faq"
-                            >See FAQs for guidance and trusted
-                            resources</router-link
-                        >.</span
+                        ><router-link to="/faq">Find resources</router-link> to
+                        learn about your lab test and what the results
+                        mean.</span
                     >
                 </div>
             </div>
