@@ -1,3 +1,4 @@
 gwa
 *.env
-imms-*.yaml
+config-*.yaml
+!config-dev.yaml

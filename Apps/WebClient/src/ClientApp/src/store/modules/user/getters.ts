@@ -3,7 +3,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
 import { QuickLink } from "@/models/quickLink";
 import { LoadStatus } from "@/models/storeOperations";
-import User from "@/models/user";
+import User, { OidcUserInfo } from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
 import { QuickLinkUtil } from "@/utility/quickLinkUtil";
 
@@ -13,6 +13,10 @@ export const getters: UserGetters = {
     user(state: UserState): User {
         const { user } = state;
         return user;
+    },
+    oidcUserInfo(state: UserState): OidcUserInfo | undefined {
+        const { oidcUserInfo } = state;
+        return oidcUserInfo;
     },
     userIsRegistered(state: UserState): boolean {
         const { user } = state;
@@ -31,10 +35,8 @@ export const getters: UserGetters = {
             return state.user.preferences[preferenceName];
         },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    quickLinks(state: UserState, _getters: any): QuickLink[] | undefined {
-        const preference = _getters.getPreference(
-            UserPreferenceType.QuickLinks
-        );
+    quickLinks(_state: UserState, getters: any): QuickLink[] | undefined {
+        const preference = getters.getPreference(UserPreferenceType.QuickLinks);
         if (preference === undefined) {
             return undefined;
         }

@@ -17,6 +17,7 @@ parameters:
       - Mock
       - CommonUi
       - CommonData
+      - GatewayApi
       - NotSpecified
 
   - name: ImageName

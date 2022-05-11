@@ -18,9 +18,10 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 @injectable()
 export class RestDependentService implements IDependentService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly BASE_URI: string = "/v1/api";
+    private readonly DEPENDENT_BASE_URI: string = "v1/api";
     private http!: IHttpDelegate;
     private isEnabled = false;
+    private baseUri = "";
 
     public initialize(
         config: ExternalConfiguration,
@@ -28,6 +29,7 @@ export class RestDependentService implements IDependentService {
     ): void {
         this.http = http;
         this.isEnabled = config.webClient.modules["Dependent"];
+        this.baseUri = config.serviceEndpoints["GatewayApi"];
     }
 
     public addDependent(
@@ -42,7 +44,7 @@ export class RestDependentService implements IDependentService {
                 }
                 this.http
                     .post<RequestResult<AddDependentRequest>>(
-                        `${this.BASE_URI}/UserProfile/${hdid}/Dependent`,
+                        `${this.baseUri}${this.DEPENDENT_BASE_URI}/UserProfile/${hdid}/Dependent`,
                         dependent
                     )
                     .then((requestResult) => {
@@ -74,7 +76,7 @@ export class RestDependentService implements IDependentService {
         return new Promise((resolve, reject) => {
             this.http
                 .getWithCors<RequestResult<Dependent[]>>(
-                    `${this.BASE_URI}/UserProfile/${hdid}/Dependent`
+                    `${this.baseUri}${this.DEPENDENT_BASE_URI}/UserProfile/${hdid}/Dependent`
                 )
                 .then((requestResult) => {
                     this.logger.verbose(
@@ -104,7 +106,7 @@ export class RestDependentService implements IDependentService {
         return new Promise((resolve, reject) => {
             this.http
                 .delete<RequestResult<void>>(
-                    `${this.BASE_URI}/UserProfile/${hdid}/Dependent/${dependent.ownerId}`,
+                    `${this.baseUri}${this.DEPENDENT_BASE_URI}/UserProfile/${hdid}/Dependent/${dependent.ownerId}`,
                     dependent
                 )
                 .then((requestResult) => {

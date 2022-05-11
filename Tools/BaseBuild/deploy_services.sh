@@ -27,3 +27,4 @@ oc process -f ./service.yaml -p NAME=immunization -p APP_NAME=immunization -p TO
 oc process -f ./service.yaml -p NAME=medication -p APP_NAME=medication -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
 oc process -f ./service.yaml -p NAME=patient -p APP_NAME=patient -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
 oc process -f ./service.yaml -p NAME=odrproxy -p APP_NAME=odrproxy -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
+oc process -f ./service.yaml -p NAME=gatewayapi -p APP_NAME=gatewayapi -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -

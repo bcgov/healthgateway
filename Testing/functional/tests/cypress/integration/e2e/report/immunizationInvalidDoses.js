@@ -1,14 +1,14 @@
 const { AuthMethod } = require("../../../support/constants");
 
+const validDoseDate1 = "2021-Jul-14";
+const invalidDoseDate1 = "2021-Mar-30";
+
 describe("Export Reports - Immunizations - Invalid Doses", () => {
-    before(() => {
+    beforeEach(() => {
         cy.enableModules("Immunization");
     });
 
     it("Immunization Report - Partially Vaccinated 1 Valid Dose and 1 Invalid Dose - Keycloak user", () => {
-        const validDoseDate1 = "2021-Jul-14";
-        const invalidDoseDate1 = "2021-Mar-30";
-
         cy.login(
             Cypress.env("keycloak.invaliddoses.username"),
             Cypress.env("keycloak.password"),

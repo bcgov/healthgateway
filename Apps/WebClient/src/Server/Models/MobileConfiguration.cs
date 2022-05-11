@@ -16,7 +16,6 @@
 namespace HealthGateway.WebClient.Models
 {
     using System;
-    using System.Collections.Generic;
 
     /// <summary>
     /// A collection of configuration items for use by Health Gateway Mobile.
@@ -27,5 +26,10 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets a value indicating whether the mobile application should be considered online or not.
         /// </summary>
         public bool Online { get; set; }
+
+        /// <summary>
+        /// Gets or sets the base url for the endpoints to be used by the mobile application.
+        /// </summary>
+        public Uri? BaseUrl { get; set; }
     }
 }

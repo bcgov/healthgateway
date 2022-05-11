@@ -25,7 +25,6 @@ namespace HealthGateway.Common.Auditing
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Routing;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     #pragma warning disable CA1303 // Do not pass literals as localized parameters
@@ -60,7 +59,7 @@ namespace HealthGateway.Common.Auditing
                 this.writeEventDelegate.WriteAuditEvent(auditEvent);
                 this.logger.LogDebug(@"Saved AuditEvent");
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 this.logger.LogError(ex, @"In WriteAuditEvent");
             }
@@ -139,6 +138,7 @@ namespace HealthGateway.Common.Auditing
             {
                 case "Configuration":
                     return ApplicationType.Configuration;
+                case "GatewayApi":
                 case "WebClient":
                     return ApplicationType.WebClient;
                 case "Immunization":

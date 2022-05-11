@@ -47,6 +47,7 @@ describe("Public Vaccine Card Result", () => {
             "VaccinationStatus",
             "VaccinationStatusPdf",
         ]);
+        cy.logout();
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(phn);
@@ -70,6 +71,7 @@ describe("Public Vaccine Card Result", () => {
             "VaccinationStatus",
             "VaccinationStatusPdf",
         ]);
+        cy.logout();
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(fullyVaccinatedPhn);
@@ -97,6 +99,7 @@ describe("Public Vaccine Card Downloads", () => {
             "VaccinationStatusPdf",
             "PublicVaccineDownloadPdf",
         ]);
+        cy.logout();
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(fullyVaccinatedPhn);

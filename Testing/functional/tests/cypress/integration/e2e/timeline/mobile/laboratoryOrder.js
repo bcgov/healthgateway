@@ -1,13 +1,9 @@
 const { AuthMethod } = require("../../../../support/constants");
 
-beforeEach(() => {
-    cy.viewport("iphone-6");
-    cy.restoreAuthCookies();
-    cy.enableModules("AllLaboratory");
-});
-
 describe("Laboratory Orders", () => {
     beforeEach(() => {
+        cy.enableModules("AllLaboratory");
+        cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -25,7 +21,7 @@ describe("Laboratory Orders", () => {
 
         cy.get("[data-testid=backBtn]").should("be.visible");
         cy.get("[data-testid=entryCardDetailsTitle]").should("be.visible");
-        cy.get("[data-testid=laboratory-header-result-count").should(
+        cy.get("[data-testid=laboratory-header-order-status").should(
             "be.visible"
         );
         cy.get("[data-testid=laboratory-collection-date]").should("be.visible");
@@ -51,12 +47,20 @@ describe("Laboratory Orders", () => {
                                 cy.log(result);
                                 cy.log(status);
 
-                                if (status === "Partial") {
-                                    expect(result).equal("Pending");
+                                if (status === "Completed") {
+                                    expect([
+                                        "Out of Range",
+                                        "In Range",
+                                    ]).to.include(result);
                                 }
 
-                                if (result === "Out of Range") {
-                                    expect(status).equal("Final");
+                                if (status === "Cancelled") {
+                                    expect(result).equal("Cancelled");
+                                }
+
+                                if (result === "Pending") {
+                                    // PHSA stattus is Actuve but has been converted to Pending for user readability
+                                    expect(status).equal("Pending");
                                 }
                             });
                     });

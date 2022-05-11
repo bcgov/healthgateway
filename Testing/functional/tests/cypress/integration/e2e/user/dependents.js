@@ -2,13 +2,14 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("dependents", () => {
     const validDependent = {
-        firstName: "Sam",
-        lastName: "Testfive",
+        firstName: "Sam ", // Aooend space to ensure field is trimmed
+        lastName: "Testfive ", // Aooend space to ensure field is trimmed
         wrongLastName: "Testfive2",
         invalidDoB: "2007-Aug-05",
         doB: "2014-Mar-15",
         testDate: "2020-Mar-21",
         phn: "9874307168",
+        hdid: "645645767756756767",
     };
 
     const noHdidDependent = {
@@ -20,7 +21,13 @@ describe("dependents", () => {
     };
 
     beforeEach(() => {
-        cy.enableModules(["CovidLabResults", "Laboratory", "Dependent"]);
+        cy.enableModules([
+            "CovidLabResults",
+            "Immunization",
+            "Laboratory",
+            "Dependent",
+            "DependentImmunizationTab",
+        ]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -253,6 +260,76 @@ describe("dependents", () => {
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.get("[data-testid=genericMessageModal]").should("not.exist");
 
+        cy.log("Validating Immunization tab - module enabled");
+
+        cy.get(
+            "[data-testid=immunization-tab-title-" + validDependent.hdid + "]"
+        )
+            .parent()
+            .click();
+        cy.get(
+            "[data-testid=immunization-history-table-" +
+                validDependent.hdid +
+                "]"
+        ).should("be.visible");
+
+        // Clear download folder
+        cy.deleteDownloadsFolder();
+
+        // Click download dropdown under History tab
+        cy.get(
+            "[data-testid=download-immunization-history-report-btn-" +
+                validDependent.hdid +
+                "]"
+        ).click();
+
+        // Click PDF
+        cy.get(
+            "[data-testid=download-immunization-history-report-pdf-btn-" +
+                validDependent.hdid +
+                "]"
+        ).click();
+
+        // Confirmation modal
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf");
+
+        // Clear download folder for next round of verifications
+        cy.deleteDownloadsFolder();
+
+        cy.get(
+            "[data-testid=immunization-tab-div-" + validDependent.hdid + "]"
+        ).within(() => {
+            cy.contains("a", "Forecasts").click();
+        });
+        cy.get(
+            "[data-testid=immunization-forecast-table-" +
+                validDependent.hdid +
+                "]"
+        ).should("be.visible");
+
+        // Click download dropdown under Forecast tab
+        cy.get(
+            "[data-testid=download-immunization-forecast-report-btn-" +
+                validDependent.hdid +
+                "]"
+        ).click();
+
+        // Click PDF
+        cy.get(
+            "[data-testid=download-immunization-forecast-report-pdf-btn-" +
+                validDependent.hdid +
+                "]"
+        ).click();
+
+        // Confirmation modal
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf");
+
         cy.log("Adding same dependent as another user");
 
         cy.login(
@@ -297,6 +374,7 @@ describe("dependents", () => {
 
         cy.log("Removing dependent from original user");
 
+        cy.enableModules(["CovidLabResults", "Laboratory", "Dependent"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -314,5 +392,10 @@ describe("dependents", () => {
         cy.get("[data-testid=dependentMenuBtn]").last().click();
         cy.get("[data-testid=deleteDependentMenuBtn]").last().click();
         cy.get("[data-testid=confirmDeleteBtn]").click();
+
+        cy.log("Validating Immunization tab - module disabled");
+        cy.get(
+            "[data-testid=immunization-tab-" + validDependent.hdid + "]"
+        ).should("not.exist");
     });
 });

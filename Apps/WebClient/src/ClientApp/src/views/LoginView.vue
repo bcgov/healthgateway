@@ -7,7 +7,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
-import VueRouter from "vue-router";
 import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
@@ -15,8 +14,6 @@ import type { WebClientConfiguration } from "@/models/configData";
 import { IdentityProviderConfiguration } from "@/models/configData";
 
 library.add(faAddressCard, faUser, faUserSecret); // icons listed in config
-
-const namespace = "auth";
 
 @Component({
     components: {
@@ -26,14 +23,18 @@ const namespace = "auth";
 export default class LoginView extends Vue {
     @Prop() isRetry?: boolean;
 
-    @Action("authenticateOidc", { namespace }) authenticateOidc!: (params: {
-        idpHint: string;
+    @Action("signIn", { namespace: "auth" })
+    signIn!: (params: {
         redirectPath: string;
+        idpHint?: string;
     }) => Promise<void>;
 
-    @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated!: boolean;
+    @Getter("oidcIsAuthenticated", { namespace: "auth" })
+    oidcIsAuthenticated!: boolean;
+
     @Getter("userIsRegistered", { namespace: "user" })
     userIsRegistered!: boolean;
+
     @Getter("identityProviders", { namespace: "config" })
     identityProviders!: IdentityProviderConfiguration[];
 
@@ -42,7 +43,6 @@ export default class LoginView extends Vue {
 
     private isLoading = true;
     private redirectPath = "";
-    private routeHandler!: VueRouter;
 
     private mounted() {
         if (this.$route.query.redirect && this.$route.query.redirect !== "") {
@@ -51,17 +51,16 @@ export default class LoginView extends Vue {
             this.redirectPath = "/home";
         }
 
-        this.routeHandler = this.$router;
         if (this.oidcIsAuthenticated && this.userIsRegistered) {
-            this.routeHandler.push({ path: this.redirectPath });
+            this.$router.push({ path: this.redirectPath });
         } else if (this.oidcIsAuthenticated) {
             this.redirectPath = "/registrationInfo";
-            this.routeHandler.push({ path: this.redirectPath });
+            this.$router.push({ path: this.redirectPath });
         } else if (
             !this.oidcIsAuthenticated &&
             this.identityProviders.length == 1
         ) {
-            this.oidcLogin(this.identityProviders[0].hint);
+            this.signInAndRedirect(this.identityProviders[0].hint);
         } else {
             this.isLoading = false;
         }
@@ -71,15 +70,13 @@ export default class LoginView extends Vue {
         return this.identityProviders.length > 1;
     }
 
-    private oidcLogin(hint: string) {
-        // if the login action returns it means that the user already had credentials.
-        this.authenticateOidc({
-            idpHint: hint,
+    private signInAndRedirect(hint: string): void {
+        this.signIn({
             redirectPath: this.redirectPath,
+            idpHint: hint,
         }).then(() => {
-            if (this.oidcIsAuthenticated) {
-                this.routeHandler.push({ path: this.redirectPath });
-            }
+            // if this code is reached, the user was already signed in
+            this.$router.push({ path: this.redirectPath });
         });
     }
 }
@@ -130,7 +127,9 @@ export default class LoginView extends Vue {
                                         :disabled="provider.disabled"
                                         variant="primary"
                                         block
-                                        @click="oidcLogin(provider.hint)"
+                                        @click="
+                                            signInAndRedirect(provider.hint)
+                                        "
                                     >
                                         <b-row>
                                             <b-col class="col-2">

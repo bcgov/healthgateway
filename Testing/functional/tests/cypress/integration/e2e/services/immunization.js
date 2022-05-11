@@ -1,5 +1,3 @@
-const { AuthMethod, localDevUri } = require("../../../support/constants");
-
 describe("Immunization Service", () => {
     beforeEach(() => {
         cy.readConfig().as("config");

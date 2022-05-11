@@ -370,7 +370,7 @@ const routes = [
     }, // Not found; Will catch all other paths not covered previously
 ];
 
-export const beforeEachGuard: NavigationGuard = (
+export const beforeEachGuard: NavigationGuard = async (
     to: Route,
     from: Route,
     next: NavigationGuardNext<Vue>
@@ -397,39 +397,34 @@ export const beforeEachGuard: NavigationGuard = (
         return;
     }
 
+    await store.dispatch("auth/checkStatus");
+
     // Make sure that the route accepts the current state
-    store.dispatch("auth/oidcCheckUser").then((isValid: boolean) => {
-        logger.info("User is valid: " + isValid);
+    const currentUserState = calculateUserState();
+    logger.debug(`current state: ${currentUserState}`);
 
-        const currentUserState = calculateUserState();
-        logger.debug(`current state: ${currentUserState}`);
-
-        const isValidState = meta.validStates.includes(currentUserState);
-        const availableModules = getAvailableModules();
-        const hasRequiredModules =
-            meta.requiredModules === undefined ||
-            meta.requiredModules.every((val: string) =>
-                availableModules.includes(val)
-            );
-
-        if (isValidState && hasRequiredModules) {
-            next();
-            return;
-        }
-
-        // If the route does not accept the state, go to one of the default locations
-        const defaultPath = getDefaultPath(
-            currentUserState,
-            hasRequiredModules
+    const isValidState = meta.validStates.includes(currentUserState);
+    const availableModules = getAvailableModules();
+    const hasRequiredModules =
+        meta.requiredModules === undefined ||
+        meta.requiredModules.every((val: string) =>
+            availableModules.includes(val)
         );
 
-        if (defaultPath === LOGIN_PATH) {
-            next({ path: defaultPath, query: { redirect: to.path } });
-            return;
-        }
+    if (isValidState && hasRequiredModules) {
+        next();
+        return;
+    }
 
-        next({ path: defaultPath });
-    });
+    // If the route does not accept the state, go to one of the default locations
+    const defaultPath = getDefaultPath(currentUserState, hasRequiredModules);
+
+    if (defaultPath === LOGIN_PATH) {
+        next({ path: defaultPath, query: { redirect: to.path } });
+        return;
+    }
+
+    next({ path: defaultPath });
 };
 
 function getDefaultPath(
@@ -455,8 +450,8 @@ function getDefaultPath(
 }
 
 function scrollBehaviour(
-    to: Route,
-    from: Route,
+    _to: Route,
+    _from: Route,
     savedPosition: void | Position
 ): PositionResult {
     if (savedPosition) {

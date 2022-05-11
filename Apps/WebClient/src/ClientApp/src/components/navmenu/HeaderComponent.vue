@@ -12,10 +12,10 @@ import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import RatingComponent from "@/components/modal/RatingComponent.vue";
-import User, { OidcUserProfile } from "@/models/user";
+import User, { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { IAuthenticationService, ILogger } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
 
 library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUserCircle);
 
@@ -55,21 +55,22 @@ export default class HeaderComponent extends Vue {
     @Getter("user", { namespace: "user" })
     user!: User;
 
+    @Getter("oidcUserInfo", { namespace: "user" })
+    oidcUserInfo!: OidcUserInfo | undefined;
+
     @Ref("ratingComponent")
     readonly ratingComponent!: RatingComponent;
 
-    private oidcUser: OidcUserProfile | null = null;
-
     private logger!: ILogger;
-    private authenticationService!: IAuthenticationService;
 
     private lastScrollTop = 0;
     private static minimunScrollChange = 2;
 
-    private get userName(): string {
-        return this.oidcUser
-            ? this.oidcUser.given_name + " " + this.oidcUser.family_name
-            : "";
+    private get fullName(): string {
+        if (this.oidcUserInfo === undefined) {
+            return "";
+        }
+        return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
     }
 
     @Watch("isMobileWidth")
@@ -79,30 +80,14 @@ export default class HeaderComponent extends Vue {
         }
     }
 
-    @Watch("oidcIsAuthenticated")
-    private loadOidcUserOnChange() {
-        // If there is no name in the scope, retrieve it from the service.
-        if (this.oidcIsAuthenticated) {
-            this.loadOidcUser();
-        }
-    }
-
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        // Load the user name and current email
-        this.authenticationService = container.get<IAuthenticationService>(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
         this.$nextTick(() => {
             window.addEventListener("scroll", this.onScroll);
             if (!this.isMobileWidth) {
                 this.setHeaderState(false);
             }
         });
-    }
-
-    private mounted() {
-        this.loadOidcUserOnChange();
     }
 
     private destroyed() {
@@ -130,7 +115,7 @@ export default class HeaderComponent extends Vue {
     }
 
     private onScroll() {
-        var st = window.pageYOffset || document.documentElement.scrollTop;
+        var st = window.scrollY || document.documentElement.scrollTop;
         if (
             Math.abs(st - this.lastScrollTop) >
                 HeaderComponent.minimunScrollChange &&
@@ -158,14 +143,6 @@ export default class HeaderComponent extends Vue {
 
     private toggleMenu() {
         this.toggleSidebar();
-    }
-
-    private loadOidcUser(): void {
-        this.authenticationService.getOidcUserProfile().then((oidcUser) => {
-            if (oidcUser) {
-                this.oidcUser = oidcUser;
-            }
-        });
     }
 
     private handleLogoutClick() {
@@ -259,7 +236,7 @@ export default class HeaderComponent extends Vue {
                             </b-col>
                             <b-col v-if="!isMobileWidth" class="p-0 m-0 ml-2">
                                 <span data-testid="profileButtonUserName">
-                                    {{ userName }}
+                                    {{ fullName }}
                                 </span>
                             </b-col>
                         </b-row>
@@ -267,7 +244,7 @@ export default class HeaderComponent extends Vue {
                     <span v-if="isMobileWidth">
                         <b-dropdown-item class="text-center">
                             <span data-testid="profileUserNameMobileOnly">
-                                {{ userName }}
+                                {{ fullName }}
                             </span>
                         </b-dropdown-item>
                         <b-dropdown-divider />

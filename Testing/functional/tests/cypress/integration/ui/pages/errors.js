@@ -1,5 +1,7 @@
 describe("Error Pages", () => {
-    beforeEach(() => {});
+    beforeEach(() => {
+        cy.logout();
+    });
 
     it("HTTP 401", () => {
         cy.visit("/unauthorized");

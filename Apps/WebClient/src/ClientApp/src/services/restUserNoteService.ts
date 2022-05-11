@@ -19,9 +19,10 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 @injectable()
 export class RestUserNoteService implements IUserNoteService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly USER_NOTE_BASE_URI: string = "/v1/api/Note";
+    private readonly USER_NOTE_BASE_URI: string = "v1/api/Note";
     private http!: IHttpDelegate;
     private isEnabled = false;
+    private baseUri = "";
 
     public initialize(
         config: ExternalConfiguration,
@@ -29,6 +30,7 @@ export class RestUserNoteService implements IUserNoteService {
     ): void {
         this.http = http;
         this.isEnabled = config.webClient.modules["Note"];
+        this.baseUri = config.serviceEndpoints["GatewayApi"];
     }
 
     public getNotes(hdid: string): Promise<RequestResult<UserNote[]>> {
@@ -46,7 +48,7 @@ export class RestUserNoteService implements IUserNoteService {
 
             this.http
                 .getWithCors<RequestResult<UserNote[]>>(
-                    `${this.USER_NOTE_BASE_URI}/${hdid}`
+                    `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`
                 )
                 .then((requestResult) => {
                     return resolve(requestResult);
@@ -79,7 +81,7 @@ export class RestUserNoteService implements IUserNoteService {
 
             this.http
                 .post<RequestResult<UserNote>>(
-                    `${this.USER_NOTE_BASE_URI}/${hdid}`,
+                    `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`,
                     note
                 )
                 .then((requestResult) =>
@@ -105,7 +107,7 @@ export class RestUserNoteService implements IUserNoteService {
         return new Promise((resolve, reject) => {
             this.http
                 .put<RequestResult<UserNote>>(
-                    `${this.USER_NOTE_BASE_URI}/${hdid}`,
+                    `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`,
                     note
                 )
                 .then((requestResult) => {
@@ -135,7 +137,7 @@ export class RestUserNoteService implements IUserNoteService {
 
             this.http
                 .delete<RequestResult<void>>(
-                    `${this.USER_NOTE_BASE_URI}/${hdid}`,
+                    `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`,
                     JSON.stringify(note),
                     headers
                 )

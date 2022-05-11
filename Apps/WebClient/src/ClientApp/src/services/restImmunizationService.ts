@@ -34,6 +34,7 @@ export class RestImmunizationService implements IImmunizationService {
     public getPatientImmunizations(
         hdid: string
     ): Promise<RequestResult<ImmunizationResult>> {
+        this.logger.debug(`Get patient inmmunization for hdid::  ${hdid}`);
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
                 return resolve({

@@ -1,0 +1,119 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-kong-to-encounter
+spec:
+  podSelector:
+    matchLabels:
+      app: encounter
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              environment: test
+              name: 264e6f
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              environment: prod
+              name: 264e6f
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-kong-to-gatewayapi
+spec:
+  podSelector:
+    matchLabels:
+      app: gatewayapi
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              environment: test
+              name: 264e6f
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              environment: prod
+              name: 264e6f
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-kong-to-immunization
+spec:
+  podSelector:
+    matchLabels:
+      app: immunization
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              environment: test
+              name: 264e6f
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              environment: prod
+              name: 264e6f
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-kong-to-laboratory
+spec:
+  podSelector:
+    matchLabels:
+      app: laboratory
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              environment: test
+              name: 264e6f
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              environment: prod
+              name: 264e6f
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-kong-to-medication
+spec:
+  podSelector:
+    matchLabels:
+      app: medication
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              environment: test
+              name: 264e6f
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              environment: prod
+              name: 264e6f
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-kong-to-patient
+spec:
+  podSelector:
+    matchLabels:
+      app: patient
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              environment: test
+              name: 264e6f
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              environment: prod
+              name: 264e6f

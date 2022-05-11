@@ -1,16 +1,12 @@
 const { AuthMethod } = require("../../../../support/constants");
 
-beforeEach(() => {
-    cy.viewport("iphone-6");
-    cy.restoreAuthCookies();
-    cy.enableModules("AllLaboratory");
-});
-
 describe("Laboratory Orders", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrders.json",
         });
+        cy.enableModules("AllLaboratory");
+        cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -28,7 +24,7 @@ describe("Laboratory Orders", () => {
 
         cy.get("[data-testid=backBtn]").should("be.visible");
         cy.get("[data-testid=entryCardDetailsTitle]").should("be.visible");
-        cy.get("[data-testid=laboratory-header-result-count").should(
+        cy.get("[data-testid=laboratory-header-order-status").should(
             "be.visible"
         );
         cy.get("[data-testid=laboratory-collection-date]").should("be.visible");
@@ -61,7 +57,7 @@ describe("Laboratory Orders", () => {
                     cy.get("td:nth-child(3)").then(($status) => {
                         const status = $status.text().trim();
                         cy.log(status);
-                        expect(status).equal("Active");
+                        expect(status).equal("Pending");
                     });
                 });
 
@@ -190,7 +186,8 @@ describe("Laboratory Orders Refresh", () => {
                 isLoading = !isLoading;
             });
         });
-
+        cy.enableModules("AllLaboratory");
+        cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -231,7 +228,8 @@ describe("Laboratory Orders Queued", () => {
         cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrdersQueued.json",
         });
-
+        cy.enableModules("AllLaboratory");
+        cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

@@ -2,10 +2,10 @@ const { AuthMethod } = require("../../../../support/constants");
 
 describe("Immunization", () => {
     beforeEach(() => {
-        cy.enableModules("Immunization");
         cy.intercept("GET", "**/v1/api/Immunization?*", {
             fixture: "ImmunizationService/immunization.json",
         });
+        cy.enableModules("Immunization");
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),

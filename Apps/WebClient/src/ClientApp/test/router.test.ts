@@ -27,8 +27,8 @@ function flushPromises() {
     return new Promise((resolve) => setImmediate(resolve));
 }
 
-function setOidcCheckUser(options: GatewayStoreOptions, value: boolean): void {
-    options.modules.auth.actions.oidcCheckUser = (): Promise<boolean> => {
+function setCheckStatus(options: GatewayStoreOptions, value: boolean): void {
+    options.modules.auth.actions.checkStatus = (): Promise<boolean> => {
         return new Promise<boolean>((resolve) => {
             resolve(value);
         });
@@ -159,7 +159,7 @@ describe("Router", () => {
 
         // Config store
         const options = new StoreOptionsStub();
-        setOidcCheckUser(options, true);
+        setCheckStatus(options, true);
         webclientConfig.modules = { [ClientModule.Dependent]: true };
         options.modules.config.getters.webClient = (): WebClientConfiguration =>
             webclientConfig;
@@ -177,7 +177,7 @@ describe("Router", () => {
     it("Offline Default Path", async () => {
         // Config store
         const options = new StoreOptionsStub();
-        setOidcCheckUser(options, true);
+        setCheckStatus(options, false);
         options.modules.config.getters.isOffline = (): boolean => {
             return true;
         };
@@ -201,7 +201,7 @@ describe("Router", () => {
     it("PendingDeletion Default Path", async () => {
         // Config store
         const options = new StoreOptionsStub();
-        setOidcCheckUser(options, true);
+        setCheckStatus(options, true);
         options.modules.config.getters.isOffline = (): boolean => false;
         options.modules.user.getters.userIsActive = (): boolean => false;
 
@@ -225,7 +225,7 @@ describe("Router", () => {
     it("Registered Default Path", async () => {
         // Config store
         const options = new StoreOptionsStub();
-        setOidcCheckUser(options, true);
+        setCheckStatus(options, true);
         options.modules.config.getters.isOffline = (): boolean => false;
         options.modules.user.getters.userIsActive = (): boolean => true;
         container
@@ -248,7 +248,7 @@ describe("Router", () => {
     it("Unregistered Default Path", async () => {
         // Config store
         const options = new StoreOptionsStub();
-        setOidcCheckUser(options, true);
+        setCheckStatus(options, true);
         options.modules.config.getters.isOffline = (): boolean => false;
         options.modules.auth.getters.oidcIsAuthenticated = (): boolean => true;
         options.modules.auth.getters.isValidIdentityProvider = (): boolean =>
@@ -274,7 +274,7 @@ describe("Router", () => {
     it("Bad idp Default Path", async () => {
         // Config store
         const options = new StoreOptionsStub();
-        setOidcCheckUser(options, true);
+        setCheckStatus(options, true);
         options.modules.config.getters.isOffline = (): boolean => false;
         options.modules.auth.getters.oidcIsAuthenticated = (): boolean => true;
         options.modules.auth.getters.isValidIdentityProvider = (): boolean =>
@@ -300,7 +300,7 @@ describe("Router", () => {
     it("Not authenticated Default Path", async () => {
         // Config store
         const options = new StoreOptionsStub();
-        setOidcCheckUser(options, true);
+        setCheckStatus(options, false);
         options.modules.config.getters.isOffline = (): boolean => false;
         options.modules.auth.getters.oidcIsAuthenticated = (): boolean => false;
         container

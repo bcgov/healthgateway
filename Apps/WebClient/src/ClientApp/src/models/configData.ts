@@ -31,19 +31,11 @@ export interface IdentityProviderConfiguration {
     disabled: boolean;
 }
 
-// Configuration to be used by external clients for authentication.
+// Configuration to be used for OpenID Connect authentication.
 export interface OpenIdConnectConfiguration {
-    // Gets or sets the OpenIDConnect Authority.
     authority: string;
-    // Gets or sets the Audience.
-    audience: string;
-    // Gets or sets the OpenIdConnect Client ID.
     clientId: string;
-    // Gets or sets the OpenIDConnect Response types.
-    responseType: string;
-    // Gets or sets the OpenIDConnect Scopes.
     scope: string;
-    // Gets or sets the Callback URIs.
     callbacks: Dictionary<string>;
 }
 

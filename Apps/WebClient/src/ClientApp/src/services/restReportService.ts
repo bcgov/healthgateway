@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
 
+import { ExternalConfiguration } from "@/models/configData";
 import { ServiceName } from "@/models/errorInterfaces";
 import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
@@ -12,11 +13,16 @@ import ErrorTranslator from "@/utility/errorTranslator";
 @injectable()
 export class RestReportService implements IReportService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly BASE_URI: string = "/v1/api/Report";
+    private readonly REPORT_BASE_URI: string = "v1/api/Report";
     private http!: IHttpDelegate;
+    private baseUri = "";
 
-    public initialize(http: IHttpDelegate): void {
+    public initialize(
+        config: ExternalConfiguration,
+        http: IHttpDelegate
+    ): void {
         this.http = http;
+        this.baseUri = config.serviceEndpoints["GatewayApi"];
     }
 
     public generateReport(
@@ -24,7 +30,10 @@ export class RestReportService implements IReportService {
     ): Promise<RequestResult<Report>> {
         return new Promise((resolve, reject) => {
             this.http
-                .post<RequestResult<Report>>(this.BASE_URI, reportRequest)
+                .post<RequestResult<Report>>(
+                    `${this.baseUri}${this.REPORT_BASE_URI}`,
+                    reportRequest
+                )
                 .then((result) => {
                     return resolve(result);
                 })

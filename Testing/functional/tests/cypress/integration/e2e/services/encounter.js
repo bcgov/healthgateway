@@ -1,5 +1,3 @@
-const { AuthMethod } = require("../../../support/constants");
-
 describe("Encounter Service", () => {
     beforeEach(() => {
         cy.readConfig().as("config");

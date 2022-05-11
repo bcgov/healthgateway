@@ -35,6 +35,96 @@ namespace HealthGateway.CommonTests.Delegates
     public class ClientRegistriesDelegateTests
     {
         /// <summary>
+        /// Lookup by PHN but no HDID found.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task LookyUpbyPHNNoHDID()
+        {
+            // Setup
+            string expectedResponseCode = "BCHCIM.GD.0.0013";
+            string expectedPhn = "0009735353315";
+            string expectedFirstName = "Jane";
+            string expectedLastName = "Doe";
+            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
+            {
+                identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
+                {
+                    id = new II[]
+                    {
+                        new II()
+                        {
+                            root = "2.16.840.1.113883.3.51.1.1.6.1",
+                            extension = expectedPhn,
+                        },
+                    },
+                    name = new PN[]
+                    {
+                        new PN()
+                        {
+                            Items = new ENXP[]
+                            {
+                                new engiven()
+                                {
+                                    Text = new string[] { expectedFirstName },
+                                },
+                                new enfamily()
+                                {
+                                    Text = new string[] { expectedLastName },
+                                },
+                            },
+                            use = new cs_EntityNameUse[] { cs_EntityNameUse.C },
+                        },
+                    },
+                    birthTime = new TS()
+                    {
+                        value = "20001231",
+                    },
+                    administrativeGenderCode = new CE()
+                    {
+                        code = "F",
+                    },
+                },
+            };
+
+            Mock<QUPA_AR101102_PortType> clientMock = new();
+            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
+                new HCIM_IN_GetDemographicsResponse1()
+                {
+                    HCIM_IN_GetDemographicsResponse = new HCIM_IN_GetDemographicsResponse()
+                    {
+                        controlActProcess = new HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess()
+                        {
+                            queryAck = new HCIM_MT_QueryResponseQueryAck()
+                            {
+                                queryResponseCode = new CS()
+                                {
+                                    code = expectedResponseCode,
+                                },
+                            },
+                            subject = new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2[]
+                              {
+                                  new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2()
+                                  {
+                                      target = subjectTarget,
+                                  },
+                              },
+                        },
+                    },
+                });
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
+                loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
+                clientMock.Object);
+
+            // Act
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPHNAsync("9875023209").ConfigureAwait(true);
+
+            // Verify
+            Assert.True(actual.ResultStatus == ResultType.ActionRequired);
+        }
+
+        /// <summary>
         /// GetDemographicsByHDID - Happy Path.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -74,6 +164,7 @@ namespace HealthGateway.CommonTests.Delegates
                         {
                             root = "2.16.840.1.113883.3.51.1.1.6",
                             extension = expectedHdId,
+                            displayable = true,
                         },
                     },
                 addr = new AD[]
@@ -382,6 +473,7 @@ namespace HealthGateway.CommonTests.Delegates
                         {
                             root = "2.16.840.1.113883.3.51.1.1.6",
                             extension = expectedHdId,
+                            displayable = true,
                         },
                     },
                 identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
@@ -505,6 +597,7 @@ namespace HealthGateway.CommonTests.Delegates
                         {
                             root = "2.16.840.1.113883.3.51.1.1.6",
                             extension = expectedHdId,
+                            displayable = true,
                         },
                     },
                 identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()

@@ -7,10 +7,11 @@ const namespace = "auth";
 
 @Component
 export default class LogoutView extends Vue {
-    @Action("signOutOidc", { namespace }) logout!: () => void;
+    @Action("signOut", { namespace })
+    signOut!: () => void;
 
     private mounted() {
-        this.logout();
+        this.signOut();
     }
 }
 </script>

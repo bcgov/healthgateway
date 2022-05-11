@@ -6,6 +6,7 @@ describe("Communication", () => {
     });
 
     it("Landing Banner", () => {
+        cy.logout();
         cy.visit("/");
         cy.get("[data-testid=communicationBanner]")
             .should("exist")

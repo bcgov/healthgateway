@@ -4,7 +4,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
 import { QuickLink } from "@/models/quickLink";
 import { LoadStatus } from "@/models/storeOperations";
-import User from "@/models/user";
+import User, { OidcUserInfo } from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
 import {
     UserActions,
@@ -17,6 +17,7 @@ import {
 const userState: UserState = {
     statusMessage: "",
     user: new User(),
+    oidcUserInfo: undefined,
     patientData: new PatientData(),
     error: false,
     status: LoadStatus.NONE,
@@ -38,6 +39,9 @@ const userActions: UserActions = {
 const userGetters: UserGetters = {
     user: (): User => {
         return new User();
+    },
+    oidcUserInfo: (): OidcUserInfo | undefined => {
+        return undefined;
     },
     userIsRegistered(): boolean {
         return true;
@@ -63,7 +67,7 @@ const userGetters: UserGetters = {
 };
 
 const userMutations: UserMutation = {
-    setOidcUserData: voidMethod,
+    setOidcUserInfo: voidMethod,
     setProfileUserData: voidMethod,
     setSMSResendDateTime: voidMethod,
     setUserPreference: voidMethod,

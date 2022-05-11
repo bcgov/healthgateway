@@ -41,6 +41,7 @@ function clickCovidTestEnterButton() {
 describe("Public COVID-19 Test Form", () => {
     beforeEach(() => {
         cy.enableModules([laboratoryModule, publicLaboratoryResultModule]);
+        cy.logout();
         cy.visit(covidTestUrl);
     });
 
@@ -215,6 +216,7 @@ describe("Public COVID-19 Test Form", () => {
 describe("Public COVID-19 Test Results", () => {
     beforeEach(() => {
         cy.enableModules([laboratoryModule, publicLaboratoryResultModule]);
+        cy.logout();
         cy.visit(covidTestUrl);
     });
 

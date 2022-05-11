@@ -66,9 +66,9 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<ImmunizationResult>> GetImmunizations(int pageIndex = 0)
+        public async Task<RequestResult<ImmunizationResult>> GetImmunizations(string hdid)
         {
-            RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizations(pageIndex).ConfigureAwait(true);
+            RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizations(hdid).ConfigureAwait(true);
             if (delegateResult.ResultStatus == ResultType.Success)
             {
                 return new RequestResult<ImmunizationResult>()

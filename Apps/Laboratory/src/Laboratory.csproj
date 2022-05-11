@@ -5,7 +5,7 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Hl7.Fhir.R4" Version="3.8.2" />
+    <PackageReference Include="Hl7.Fhir.R4" Version="4.0.0" />
     <PackageReference Include="Refit" Version="6.3.2" />
     <PackageReference Include="Refit.HttpClientFactory" Version="6.3.2" />
   </ItemGroup>

@@ -59,7 +59,7 @@ export default class ErrorCardComponent extends Vue {
         let result: string[] = [];
         let isoNow = new DateWrapper().format("yyyy-MMM-dd");
         let hdid = this.user.hdid !== undefined ? this.user.hdid : "";
-        for (var error of this.errors) {
+        for (const error of this.errors) {
             let source = error.source !== undefined ? error.source.trim() : "";
             let traceId =
                 error.traceId !== undefined && error.traceId.length > 0

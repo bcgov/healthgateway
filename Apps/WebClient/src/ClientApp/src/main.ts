@@ -36,7 +36,6 @@ import HgIconComponent from "@/components/shared/HgIconComponent.vue";
 import PageTitleComponent from "@/components/shared/PageTitleComponent.vue";
 import StatusLabelComponent from "@/components/shared/StatusLabelComponent.vue";
 
-import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import {
     DELEGATE_IDENTIFIER,
@@ -103,7 +102,7 @@ const configService: IConfigService = container.get(
 configService.initialize(httpDelegate);
 
 // Retrieve configuration and initialize services
-configService.getConfiguration().then((config: ExternalConfiguration) => {
+configService.getConfiguration().then((config) => {
     // Retrieve service interfaces
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     const authService: IAuthenticationService = container.get(
@@ -164,45 +163,50 @@ configService.getConfiguration().then((config: ExternalConfiguration) => {
     logger.initialize(config.webClient.logLevel);
 
     // Initialize services
-    authService.initialize(config.openIdConnect, httpDelegate);
+    const authInitializePromise = authService.initialize(config.openIdConnect);
     immunizationService.initialize(config, httpDelegate);
     patientService.initialize(config, httpDelegate);
     medicationService.initialize(config, httpDelegate);
     laboratoryService.initialize(config, httpDelegate);
     encounterService.initialize(config, httpDelegate);
-    userProfileService.initialize(httpDelegate);
-    userFeedbackService.initialize(httpDelegate);
+    userProfileService.initialize(config, httpDelegate);
+    userFeedbackService.initialize(config, httpDelegate);
     userNoteService.initialize(config, httpDelegate);
-    communicationService.initialize(httpDelegate);
+    communicationService.initialize(config, httpDelegate);
     userCommentService.initialize(config, httpDelegate);
-    userRatingService.initialize(httpDelegate);
+    userRatingService.initialize(config, httpDelegate);
     dependentService.initialize(config, httpDelegate);
     pcrTestKitService.initialize(config, httpDelegate);
-    reportService.initialize(httpDelegate);
+    reportService.initialize(config, httpDelegate);
     vaccinationStatusService.initialize(config, httpDelegate);
 
-    Vue.use(IdleVue, {
-        eventEmitter: new Vue(),
-        idleTime: config.webClient.timeouts.idle,
-        store,
-        startAtIdle: false,
-    });
-    if (window.location.pathname === "/loginCallback") {
-        initializeVue(store);
-    } else {
-        store.dispatch("auth/getOidcUser").then(() => {
-            const isValid: boolean =
+    authInitializePromise.then(async () => {
+        Vue.use(IdleVue, {
+            eventEmitter: new Vue(),
+            idleTime: config.webClient.timeouts.idle,
+            store,
+            startAtIdle: false,
+        });
+
+        if (window.location.pathname !== "/loginCallback") {
+            const signedIn = await store.dispatch("auth/checkStatus");
+            if (signedIn) {
+                logger.verbose("User is signed in");
+            } else {
+                logger.verbose("User is not signed in");
+            }
+
+            const isValidIdentityProvider: boolean =
                 store.getters["auth/isValidIdentityProvider"];
             const user: User = store.getters["user/user"];
-            if (user.hdid && isValid) {
-                store.dispatch("user/checkRegistration").then(() => {
-                    initializeVue(store);
-                });
-            } else {
-                initializeVue(store);
+
+            if (user.hdid && isValidIdentityProvider) {
+                await store.dispatch("user/checkRegistration");
             }
-        });
-    }
+        }
+
+        initializeVue(store);
+    });
 });
 
 const App = () => import(/* webpackChunkName: "entry" */ "./app.vue");

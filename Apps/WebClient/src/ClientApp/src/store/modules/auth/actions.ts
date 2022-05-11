@@ -1,3 +1,4 @@
+import { OidcTokenDetails } from "@/models/user";
 import container from "@/plugins/container";
 import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
@@ -8,183 +9,142 @@ import {
 
 import { AuthActions } from "./types";
 
+/** Timeout that fires the "refreshToken" action. */
+let refreshTimeout: NodeJS.Timeout | undefined = undefined;
+
 export const actions: AuthActions = {
-    oidcCheckUser(context): Promise<boolean> {
-        return new Promise<boolean>((resolve) => {
-            const isAuthenticatedInStore =
-                context.state.authentication.idToken !== undefined;
+    async checkStatus(context): Promise<boolean> {
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const authService = container.get<IAuthenticationService>(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
 
-            const authService: IAuthenticationService =
-                container.get<IAuthenticationService>(
-                    SERVICE_IDENTIFIER.AuthenticationService
-                );
-            const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const tokenDetails = authService.getOidcTokenDetails();
+        if (!tokenDetails || tokenDetails.expired) {
+            if (context.getters["oidcIsAuthenticated"]) {
+                logger.verbose("Authentication status was not in sync");
+                context.dispatch("clearStorage");
+            }
+            return false;
+        }
+        const userInfo = await authService.getOidcUserInfo();
 
-            return authService.getUser().then((oidcUser) => {
-                if (!oidcUser || oidcUser.expired) {
-                    logger.warn("Could not get the user!");
-                    context.dispatch("clearStorage");
-                    resolve(false);
-                } else {
-                    context.dispatch("oidcWasAuthenticated", oidcUser);
-                    if (!isAuthenticatedInStore) {
-                        // We can add events when the user wasnt authenticated and now it is.
-                        logger.debug(
-                            "The user was previously unauthenticated, now it is!"
-                        );
-                    }
-                    resolve(true);
-                }
-            });
-        });
+        context.commit("user/setOidcUserInfo", userInfo, { root: true });
+        context.dispatch("handleSuccessfulAuthentication", tokenDetails);
+
+        return true;
     },
-    authenticateOidc(
+    async signIn(
         context,
         params: { idpHint: string; redirectPath: string }
     ): Promise<void> {
-        return new Promise((resolve, reject) => {
-            const authService: IAuthenticationService =
-                container.get<IAuthenticationService>(
-                    SERVICE_IDENTIFIER.AuthenticationService
-                );
-            const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
-            authService
-                .signinRedirect(params.idpHint, params.redirectPath)
-                .then(() => {
-                    logger.debug("signinRedirect done");
-                    resolve();
-                })
-                .catch((err) => {
-                    context.commit("setOidcError", err);
-                    logger.error(`setOidcError: ${err}`);
-                    reject();
-                });
-        });
-    },
-    oidcSignInCallback(context): Promise<string> {
-        const authService: IAuthenticationService =
-            container.get<IAuthenticationService>(
-                SERVICE_IDENTIFIER.AuthenticationService
-            );
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
-        return new Promise((resolve, reject) => {
-            authService
-                .signinRedirectCallback()
-                .then((oidcUser) => {
-                    // Verify that the user info retrieved by the auth service is not large enough than a cookie can store.
-                    const cookieToStoreSize =
-                        authService.checkOidcUserSize(oidcUser);
-                    if (cookieToStoreSize > 4000) {
-                        logger.warn(
-                            `Warning: User info is too big: ${cookieToStoreSize}`
-                        );
-                    }
-
-                    context
-                        .dispatch("oidcWasAuthenticated", oidcUser)
-                        .then(() => {
-                            resolve(
-                                sessionStorage.getItem(
-                                    "vuex_oidc_active_route"
-                                ) || "/"
-                            );
-                        });
-                })
-                .catch((err) => {
-                    context.commit("setOidcError", err);
-                    context.commit("setOidcAuthIsChecked");
-                    reject(err);
-                });
-        });
-    },
-    authenticateOidcSilent(context): Promise<void> {
         const authService: IAuthenticationService =
             container.get<IAuthenticationService>(
                 SERVICE_IDENTIFIER.AuthenticationService
             );
 
-        return authService
-            .signinSilent()
-            .then((oidcUser) => {
-                context.dispatch("oidcWasAuthenticated", oidcUser);
-            })
-            .catch((err) => {
-                context.commit("setOidcError", err);
-                context.commit("setOidcAuthIsChecked");
-            });
+        try {
+            const tokenDetails = await authService.signIn(
+                params.redirectPath,
+                params.idpHint
+            );
+            const userInfo = await authService.getOidcUserInfo();
+
+            context.commit("user/setOidcUserInfo", userInfo, { root: true });
+            context.dispatch("handleSuccessfulAuthentication", tokenDetails);
+
+            logger.verbose("Successfully signed in");
+        } catch (err) {
+            context.commit("setError", err);
+
+            logger.verbose("Failed to sign in");
+            logger.error(`setError: ${err}`);
+
+            throw err;
+        }
     },
-    oidcWasAuthenticated(context, oidcUser): void {
-        const httpDelegate: IHttpDelegate = container.get<IHttpDelegate>(
+    signOut(): void {
+        const authService = container.get<IAuthenticationService>(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
+
+        if (refreshTimeout !== undefined) {
+            clearTimeout(refreshTimeout);
+            refreshTimeout = undefined;
+        }
+
+        authService.signOut();
+    },
+    async refreshToken(context): Promise<void> {
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const authService = container.get<IAuthenticationService>(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
+
+        logger.info("Refreshing access token");
+
+        try {
+            const refreshed = await authService.refreshToken();
+            if (refreshed) {
+                logger.verbose("Refreshed access token");
+
+                const tokenDetails = authService.getOidcTokenDetails();
+                if (tokenDetails !== null) {
+                    context.dispatch(
+                        "handleSuccessfulAuthentication",
+                        tokenDetails
+                    );
+                }
+            } else {
+                logger.verbose("Access token refresh not required");
+            }
+        } catch (err) {
+            logger.warn("Access token expired unexpectedly");
+            context.dispatch("clearStorage");
+        }
+    },
+    handleSuccessfulAuthentication(
+        context,
+        tokenDetails: OidcTokenDetails
+    ): void {
+        const httpDelegate = container.get<IHttpDelegate>(
             DELEGATE_IDENTIFIER.HttpDelegate
         );
 
-        httpDelegate.setAuthorizationHeader(oidcUser.access_token);
-        context.commit("setOidcAuth", oidcUser);
-        context.commit("user/setOidcUserData", oidcUser, { root: true });
-        context.commit("setOidcAuthIsChecked");
-    },
-    getOidcUser(context): Promise<void> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        httpDelegate.setAuthorizationHeader(tokenDetails.accessToken);
+        context.commit("setAuthenticated", tokenDetails);
 
-        const authService: IAuthenticationService =
-            container.get<IAuthenticationService>(
-                SERVICE_IDENTIFIER.AuthenticationService
-            );
+        const refreshTimeMilliseconds = tokenDetails.refreshTokenTime * 1000;
+        const currentTimeMilliseconds = new Date().getTime();
+        const accessTokenDuration =
+            refreshTimeMilliseconds - currentTimeMilliseconds;
 
-        return authService
-            .getUser()
-            .then((oidcUser) => {
-                if (!oidcUser || oidcUser.expired) {
-                    logger.warn(`User is invalid`);
-                    context.dispatch("clearStorage");
-                } else {
-                    context.dispatch("oidcWasAuthenticated", oidcUser);
-                }
-            })
-            .finally(() => {
-                // Clear any stale information from previous login attempts
-                authService.clearStaleState();
-            });
-    },
-    signOutOidc(): void {
-        const authService: IAuthenticationService =
-            container.get<IAuthenticationService>(
-                SERVICE_IDENTIFIER.AuthenticationService
-            );
-        authService.logout();
-    },
-    signOutOidcCallback(context): Promise<string> {
-        const authService: IAuthenticationService =
-            container.get<IAuthenticationService>(
-                SERVICE_IDENTIFIER.AuthenticationService
-            );
-        return new Promise((resolve, reject) => {
-            authService
-                .signoutRedirectCallback()
-                .then(() => {
-                    context.dispatch("clearStorage");
-                })
-                .catch((err) => {
-                    context.commit("setOidcError", err);
-                    reject(err);
-                });
-        });
+        if (accessTokenDuration > 0) {
+            if (refreshTimeout !== undefined) {
+                clearTimeout(refreshTimeout);
+            }
+            refreshTimeout = setTimeout(() => {
+                context.dispatch("refreshToken");
+            }, accessTokenDuration);
+        }
     },
     clearStorage(context): void {
-        const authService: IAuthenticationService =
-            container.get<IAuthenticationService>(
-                SERVICE_IDENTIFIER.AuthenticationService
-            );
-        const httpDelegate: IHttpDelegate = container.get<IHttpDelegate>(
+        const authService = container.get<IAuthenticationService>(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
+        const httpDelegate = container.get<IHttpDelegate>(
             DELEGATE_IDENTIFIER.HttpDelegate
         );
-        authService.clearStaleState();
-        authService.removeUser().finally(() => {
-            httpDelegate.unsetAuthorizationHeader();
-            context.commit("unsetOidcAuth");
-            context.commit("user/clearUserData", null, { root: true });
-        });
+
+        if (refreshTimeout !== undefined) {
+            clearTimeout(refreshTimeout);
+            refreshTimeout = undefined;
+        }
+
+        authService.clearState();
+        httpDelegate.unsetAuthorizationHeader();
+        context.commit("setUnauthenticated");
+        context.commit("user/clearUserData", null, { root: true });
     },
 };

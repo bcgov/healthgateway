@@ -616,8 +616,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("ParentEntryId")
                         .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("character varying(36)");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Text")
                         .HasMaxLength(1344)
