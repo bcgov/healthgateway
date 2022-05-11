@@ -542,6 +542,17 @@ services:
         tags:
           - OAS3_import
           - ns.hg-dev
+      - name: medication-hg-dev-public
+        methods:
+          - GET
+        hosts:
+          - hg-dev.api.gov.bc.ca
+        paths:
+          - /api/medicationservice/v1/api/Medication/
+        strip_path: false
+        tags:
+          - OAS3_import
+          - ns.hg-dev
     tags:
       - OAS3_import
       - ns.hg-dev
