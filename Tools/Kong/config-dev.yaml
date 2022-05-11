@@ -195,23 +195,13 @@ services:
         tags:
           - OAS3_import
           - ns.hg-dev
-      - name: gatewayapi-hg-dev-communication
+      - name: gatewayapi-hg-dev-public
         methods:
           - GET
         hosts:
           - hg-dev.api.gov.bc.ca
         paths:
           - /api/gatewayapiservice/v1/api/Communication
-        strip_path: false
-        tags:
-          - OAS3_import
-          - ns.hg-dev
-      - name: gatewayapi-hg-dev-termsofservice
-        methods:
-          - GET
-        hosts:
-          - hg-dev.api.gov.bc.ca
-        paths:
           - /api/gatewayapiservice/v1/api/UserProfile/termsofservice
         strip_path: false
         tags:
