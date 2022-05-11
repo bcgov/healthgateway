@@ -56,18 +56,6 @@ oc process -f ./commonSecrets.yaml -p CR_CERT_PASSWORD=[THE PASSWORD] | oc apply
 oc process -f ./salesforceSecrets.yaml -p ENDPOINT=[] -p TOKENURI=[] -p CLIENTID=[] -p USERNAME=[] -p CLIENTSECRET=[] -p PASSWORD=[] | oc apply -f -
 ```
 
-### Aca-Py secrets
-
-```console
-  oc process -f ./acaPySecrets.yaml --parameters
-```
-
-Create the config
-
-```console
-oc process -f ./acaPySecrets.yaml -p AGENT_URL=[AGENT URL] -p AGENT_KEY=[AGENT KEY] -p WEBHOOK_KEY=[Webhook Key] | oc apply -f -
-```
-
 ### Certificates
 
 The Client Registry backing service requires a certificate for system to system authentication
