@@ -175,13 +175,6 @@ export default class Covid19View extends Vue {
         );
     }
 
-    private get saveWalletShown(): boolean {
-        return (
-            this.config.modules["WalletExport"] &&
-            this.bcWalletAppLink !== undefined
-        );
-    }
-
     private get saveExportPdfShown(): boolean {
         return this.config.modules["VaccinationExportPdf"];
     }
@@ -203,18 +196,6 @@ export default class Covid19View extends Vue {
         );
     }
 
-    private get bcWalletAppLink(): string | undefined {
-        const data = this.vaccinationStatus?.qrCode?.data;
-        if (!data) {
-            return undefined;
-        }
-        return `bcwallet://healthgateway.gov.bc.ca?data=${data}`;
-    }
-
-    private displayBcWalletAppLink() {
-        window.open(this.bcWalletAppLink, "_self");
-    }
-
     private get patientName(): string | undefined {
         if (this.vaccinationStatus) {
             return `${this.vaccinationStatus.firstname} ${this.vaccinationStatus.lastname}`;
@@ -226,13 +207,6 @@ export default class Covid19View extends Vue {
         return this.formatDate(this.vaccinationStatus?.birthdate ?? undefined);
     }
 
-    private get saveDropdownShown(): boolean {
-        return this.saveWalletShown || this.saveExportPdfShown;
-    }
-
-    private get saveCopyButtonShown(): boolean {
-        return !this.saveExportPdfShown && !this.saveWalletShown;
-    }
     private formatDate(date: string | undefined): string {
         return date === undefined
             ? ""
@@ -371,7 +345,7 @@ export default class Covid19View extends Vue {
                     class="actions p-3 d-flex d-print-none justify-content-center"
                 >
                     <hg-button
-                        v-if="saveCopyButtonShown"
+                        v-if="!saveExportPdfShown"
                         data-testid="save-card-btn"
                         aria-label="Save a Copy"
                         variant="primary"
@@ -380,13 +354,12 @@ export default class Covid19View extends Vue {
                         Save a Copy
                     </hg-button>
                     <hg-dropdown
-                        v-if="saveDropdownShown"
+                        v-if="saveExportPdfShown"
                         text="Save as"
                         variant="primary"
                         data-testid="save-dropdown-btn"
                     >
                         <b-dropdown-item
-                            v-if="saveExportPdfShown"
                             data-testid="save-as-pdf-dropdown-item"
                             @click="showConfirmationModal()"
                             >PDF</b-dropdown-item
@@ -395,12 +368,6 @@ export default class Covid19View extends Vue {
                             data-testid="save-as-image-dropdown-item"
                             @click="showVaccineCardMessageModal()"
                             >Image</b-dropdown-item
-                        >
-                        <b-dropdown-item
-                            v-if="saveWalletShown"
-                            data-testid="save-to-wallet-dropdown-item"
-                            @click="displayBcWalletAppLink"
-                            >Save to BC Wallet App</b-dropdown-item
                         >
                     </hg-dropdown>
                 </div>
