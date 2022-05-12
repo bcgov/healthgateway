@@ -17,7 +17,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 @injectable()
 export class RestImmunizationService implements IImmunizationService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly IMMS_BASE_URI: string = "v1/api/Immunization";
+    private readonly IMMS_BASE_URI: string = "Immunization";
     private baseUri = "";
     private http!: IHttpDelegate;
     private isEnabled = false;

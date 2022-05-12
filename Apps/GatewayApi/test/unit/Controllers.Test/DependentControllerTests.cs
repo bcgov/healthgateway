@@ -60,7 +60,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             dependentServiceMock.Setup(s => s.GetDependents(this.hdid, 0, 500)).Returns(expectedResult);
 
             DependentController dependentController = new(
-                new Mock<ILogger<UserProfileController>>().Object,
+                new Mock<ILogger<DependentController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
             RequestResult<IEnumerable<DependentModel>> actualResult = dependentController.GetAll(this.hdid);
@@ -97,7 +97,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             dependentServiceMock.Setup(s => s.AddDependent(this.hdid, It.IsAny<AddDependentRequest>())).Returns(expectedResult);
 
             DependentController dependentController = new(
-                new Mock<ILogger<UserProfileController>>().Object,
+                new Mock<ILogger<DependentController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
             RequestResult<DependentModel> actualResult = dependentController.AddDependent(new AddDependentRequest());
@@ -127,7 +127,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
             DependentController dependentController = new(
-                new Mock<ILogger<UserProfileController>>().Object,
+                new Mock<ILogger<DependentController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
             ActionResult<RequestResult<DependentModel>> actualResult = dependentController.Delete(delegateId, dependentId, dependentModel);
@@ -156,7 +156,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, delegateId);
 
             DependentController dependentController = new(
-                new Mock<ILogger<UserProfileController>>().Object,
+                new Mock<ILogger<DependentController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
 

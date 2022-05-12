@@ -16,7 +16,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 @injectable()
 export class RestCommunicationService implements ICommunicationService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly BASE_URI: string = "v1/api/Communication";
+    private readonly BASE_URI: string = "Communication";
     private http!: IHttpDelegate;
     private baseUri = "";
 

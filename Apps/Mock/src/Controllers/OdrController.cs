@@ -29,6 +29,7 @@ namespace HealthGateway.Mock.Controllers
     /// <summary>
     /// The Odr Mock controller.
     /// </summary>
+    [Route("[controller]")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Mocked Controller methods.")]

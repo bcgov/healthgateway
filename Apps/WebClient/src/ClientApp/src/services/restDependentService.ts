@@ -18,7 +18,7 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 @injectable()
 export class RestDependentService implements IDependentService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly DEPENDENT_BASE_URI: string = "v1/api";
+    private readonly DEPENDENT_BASE_URI: string = "UserProfile";
     private http!: IHttpDelegate;
     private isEnabled = false;
     private baseUri = "";
@@ -44,7 +44,7 @@ export class RestDependentService implements IDependentService {
                 }
                 this.http
                     .post<RequestResult<AddDependentRequest>>(
-                        `${this.baseUri}${this.DEPENDENT_BASE_URI}/UserProfile/${hdid}/Dependent`,
+                        `${this.baseUri}${this.DEPENDENT_BASE_URI}/${hdid}/Dependent`,
                         dependent
                     )
                     .then((requestResult) => {
@@ -76,7 +76,7 @@ export class RestDependentService implements IDependentService {
         return new Promise((resolve, reject) => {
             this.http
                 .getWithCors<RequestResult<Dependent[]>>(
-                    `${this.baseUri}${this.DEPENDENT_BASE_URI}/UserProfile/${hdid}/Dependent`
+                    `${this.baseUri}${this.DEPENDENT_BASE_URI}/${hdid}/Dependent`
                 )
                 .then((requestResult) => {
                     this.logger.verbose(
@@ -106,7 +106,7 @@ export class RestDependentService implements IDependentService {
         return new Promise((resolve, reject) => {
             this.http
                 .delete<RequestResult<void>>(
-                    `${this.baseUri}${this.DEPENDENT_BASE_URI}/UserProfile/${hdid}/Dependent/${dependent.ownerId}`,
+                    `${this.baseUri}${this.DEPENDENT_BASE_URI}/${hdid}/Dependent/${dependent.ownerId}`,
                     dependent
                 )
                 .then((requestResult) => {

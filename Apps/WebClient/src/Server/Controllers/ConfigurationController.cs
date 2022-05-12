@@ -23,6 +23,7 @@ namespace HealthGateway.WebClient.Controllers
     /// </summary>
     [ApiController]
     [ApiVersion("1.0")]
+    [Route("[controller]")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     public class ConfigurationController : Controller
@@ -55,6 +56,7 @@ namespace HealthGateway.WebClient.Controllers
         /// </summary>
         /// <returns>The Health Gateway Mobile Configuration.</returns>
         [HttpGet]
+        [Route("~/MobileConfiguration")]
         [Route("~/v{version:apiVersion}/api/MobileConfiguration")]
         public Models.MobileConfiguration MobileConfiguration()
         {

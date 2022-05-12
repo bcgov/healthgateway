@@ -13,7 +13,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 @injectable()
 export class RestReportService implements IReportService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly REPORT_BASE_URI: string = "v1/api/Report";
+    private readonly REPORT_BASE_URI: string = "Report";
     private http!: IHttpDelegate;
     private baseUri = "";
 
