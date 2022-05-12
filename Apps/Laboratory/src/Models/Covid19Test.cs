@@ -74,10 +74,22 @@ public class Covid19Test
     public string? TestStatus { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the test result is ready.
+    /// </summary>
+    [JsonPropertyName("testResultReady")]
+    public bool ResultReady { get; set; }
+
+    /// <summary>
     /// Gets or sets the lab result outcome.
     /// </summary>
     [JsonPropertyName("labResultOutcome")]
     public string LabResultOutcome { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the filtered lab result outcome.
+    /// </summary>
+    [JsonPropertyName("filteredLabResultOutcome")]
+    public string FilteredLabResultOutcome { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the result description.
@@ -122,6 +134,12 @@ public class Covid19Test
     /// <returns>The newly created COVID-19 test object.</returns>
     public static Covid19Test FromPhsaModel(PhsaCovid19Test model)
     {
+        bool resultReady = model.TestStatus switch
+        {
+            "Final" or "Corrected" or "Amended" => true,
+            _ => false,
+        };
+
         return new Covid19Test(model.ResultDescription)
         {
             Id = model.Id,
@@ -129,7 +147,9 @@ public class Covid19Test
             OutOfRange = model.OutOfRange,
             CollectedDateTime = model.CollectedDateTime,
             TestStatus = model.TestStatus,
+            ResultReady = resultReady,
             LabResultOutcome = model.LabResultOutcome,
+            FilteredLabResultOutcome = resultReady ? model.LabResultOutcome : string.Empty,
             ResultLink = model.ResultLink,
             ReceivedDateTime = model.ReceivedDateTime,
             ResultDateTime = model.ResultDateTime,

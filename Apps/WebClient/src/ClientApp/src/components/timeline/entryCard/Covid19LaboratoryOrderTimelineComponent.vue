@@ -120,7 +120,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
     >
         <div v-if="entry.tests.length === 1" slot="header-description">
             <strong
-                v-show="entry.isTestResultReady"
+                v-show="entry.resultReady"
                 data-testid="laboratoryHeaderDescription"
             >
                 <span>Result:</span>
@@ -141,7 +141,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
                         Report:
                     </strong>
                     <hg-button
-                        v-if="entry.isTestResultReady"
+                        v-if="entry.resultReady"
                         variant="link"
                         class="p-1 ml-1"
                         @click="showConfirmationModal()"
@@ -169,7 +169,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
                 <hr />
                 <div data-testid="laboratoryTestType" class="my-2">
                     <strong
-                        v-if="test.isTestResultReady && entry.tests.length > 1"
+                        v-if="test.resultReady && entry.tests.length > 1"
                         data-testid="laboratoryTestResult"
                     >
                         <span>Result:</span>

@@ -4,7 +4,7 @@ import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import { DateWrapper } from "@/models/dateWrapper";
-import { Covid19LaboratoryOrder, LaboratoryUtil } from "@/models/laboratory";
+import { Covid19LaboratoryOrder } from "@/models/laboratory";
 import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
@@ -82,11 +82,9 @@ export default class Covid19ReportComponent extends Vue {
             const labResult = x.labResults[0];
             return {
                 date: DateWrapper.format(labResult.collectedDateTime),
-                test_type: labResult.testType || "",
+                test_type: labResult.testType,
                 test_location: x.location || "",
-                result: this.checkResultReady(labResult.testStatus)
-                    ? labResult.labResultOutcome || ""
-                    : "",
+                result: labResult.filteredLabResultOutcome,
             };
         });
     }
@@ -114,10 +112,6 @@ export default class Covid19ReportComponent extends Vue {
 
     private mounted() {
         this.onIsEmptyChanged();
-    }
-
-    private checkResultReady(testStatus: string | null): boolean {
-        return LaboratoryUtil.isTestResultReady(testStatus);
     }
 
     public generateReport(
