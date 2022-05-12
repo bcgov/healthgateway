@@ -106,12 +106,12 @@ namespace HealthGateway.Laboratory.Models.PHSA
         /// Gets or sets the LOINC code.
         /// </summary>
         [JsonPropertyName("loinc")]
-        public string? LOINC { get; set; }
+        public string? Loinc { get; set; }
 
         /// <summary>
         /// Gets or sets the LOINC Name/Description.
         /// </summary>
         [JsonPropertyName("loincName")]
-        public string? LOINCName { get; set; }
+        public string? LoincName { get; set; }
     }
 }
