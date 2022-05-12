@@ -19,7 +19,7 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 @injectable()
 export class RestUserNoteService implements IUserNoteService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly USER_NOTE_BASE_URI: string = "v1/api/Note";
+    private readonly USER_NOTE_BASE_URI: string = "Note";
     private http!: IHttpDelegate;
     private isEnabled = false;
     private baseUri = "";

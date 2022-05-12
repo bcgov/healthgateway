@@ -17,7 +17,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 @injectable()
 export class RestEncounterService implements IEncounterService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly ENCOUNTER_BASE_URI: string = "v1/api/Encounter";
+    private readonly ENCOUNTER_BASE_URI: string = "Encounter";
     private baseUri = "";
     private http!: IHttpDelegate;
     private isEnabled = false;

@@ -23,6 +23,7 @@ namespace HealthGateway.Mock.Controllers
     /// <summary>
     /// The PHSA mock controller.
     /// </summary>
+    [Route("[controller]")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
     [SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Method signatures match mocked endpoints.")]

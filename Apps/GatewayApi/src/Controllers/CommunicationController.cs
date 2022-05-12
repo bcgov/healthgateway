@@ -25,7 +25,7 @@ namespace HealthGateway.GatewayApi.Controllers
     /// Web API to handle system communications.
     /// </summary>
     [ApiVersion("1.0")]
-    [Route("v{version:apiVersion}/api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class CommunicationController
     {

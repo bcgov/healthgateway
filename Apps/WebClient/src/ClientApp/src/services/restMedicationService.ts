@@ -20,9 +20,8 @@ import ErrorTranslator from "@/utility/errorTranslator";
 export class RestMedicationService implements IMedicationService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly MEDICATION_STATEMENT_BASE_URI: string =
-        "v1/api/MedicationStatement";
-    private readonly MEDICATION_REQUEST_BASE_URI: string =
-        "v1/api/MedicationRequest";
+        "MedicationStatement";
+    private readonly MEDICATION_REQUEST_BASE_URI: string = "MedicationRequest";
     private baseUri = "";
     private http!: IHttpDelegate;
     private isMedicationEnabled = false;

@@ -28,6 +28,7 @@ namespace HealthGateway.Medication.Controllers
     /// Controller that handles requests for medication statements.
     /// </summary>
     [ApiVersion("1.0")]
+    [Route("[controller]")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
     [Authorize]

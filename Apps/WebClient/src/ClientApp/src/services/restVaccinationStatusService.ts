@@ -20,9 +20,9 @@ import ErrorTranslator from "@/utility/errorTranslator";
 export class RestVaccinationStatusService implements IVaccinationStatusService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly PUBLIC_VACCINATION_STATUS_BASE_URI: string =
-        "v1/api/PublicVaccineStatus";
+        "PublicVaccineStatus";
     private readonly AUTHENTICATED_VACCINATION_STATUS_BASE_URI: string =
-        "v1/api/AuthenticatedVaccineStatus";
+        "AuthenticatedVaccineStatus";
     private baseUri = "";
     private http!: IHttpDelegate;
     private isEnabled = false;
