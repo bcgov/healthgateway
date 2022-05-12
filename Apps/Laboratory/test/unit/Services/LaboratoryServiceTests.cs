@@ -66,18 +66,18 @@ namespace HealthGateway.LaboratoryTests.Services
                 {
                     Id = Guid.NewGuid(),
                     Location = "Vancouver",
-                    PHN = "001",
+                    Phn = "001",
                     MessageDateTime = DateTime.Now,
-                    MessageID = MockedMessageID + "1",
+                    MessageId = MockedMessageID + "1",
                     ReportAvailable = true,
                 },
                 new PhsaCovid19Order()
                 {
                     Id = Guid.NewGuid(),
                     Location = "Vancouver",
-                    PHN = "002",
+                    Phn = "002",
                     MessageDateTime = DateTime.Now,
-                    MessageID = MockedMessageID + "2",
+                    MessageId = MockedMessageID + "2",
                     ReportAvailable = false,
                 },
             };
@@ -101,7 +101,7 @@ namespace HealthGateway.LaboratoryTests.Services
                 foreach (Covid19Order model in actualResult.Result.ResourcePayload!.Covid19Orders)
                 {
                     count++;
-                    Assert.True(model.MessageID.Equals(MockedMessageID + count, StringComparison.Ordinal));
+                    Assert.True(model.MessageId.Equals(MockedMessageID + count, StringComparison.Ordinal));
                 }
 
                 Assert.Equal(2, count);

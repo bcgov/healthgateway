@@ -15,8 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Models;
 
-using HealthGateway.Laboratory.Models.PHSA;
 using System.Text.Json.Serialization;
+using HealthGateway.Laboratory.Models.PHSA;
 
 /// <summary>
 /// An instance of a Laboratory Test.
@@ -42,7 +42,7 @@ public class LaboratoryTest
     public bool OutOfRange { get; set; }
 
     /// <summary>
-    /// Gets or sets a value for loinc.
+    /// Gets or sets a value for LOINC.
     /// </summary>
     [JsonPropertyName("loinc")]
     public string Loinc { get; set; } = string.Empty;

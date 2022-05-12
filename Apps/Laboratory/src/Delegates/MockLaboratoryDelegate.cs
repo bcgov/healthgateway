@@ -45,14 +45,14 @@ namespace HealthGateway.Laboratory.Delegates
                 new PhsaCovid19Order()
                 {
                     Id = Guid.Parse("612d31e5-12e1-451f-a475-58d6b0a8f007"),
-                    PHN = "9735352542",
-                    OrderProviderIDs = string.Empty,
+                    Phn = "9735352542",
+                    OrderProviderIds = string.Empty,
                     OrderingProviders = "Davidson, Jana-Lea",
                     ReportingLab = string.Empty,
                     Location = "VCHA",
                     LabType = "ORU",
                     MessageDateTime = DateTime.Now.AddDays(-1),
-                    MessageID = "20200770000196",
+                    MessageId = "20200770000196",
                     AdditionalData = string.Empty,
                     ReportAvailable = true,
                     Covid19Tests = new PhsaCovid19Test[]
@@ -67,8 +67,8 @@ namespace HealthGateway.Laboratory.Delegates
                             LabResultOutcome = "Positive",
                             ReceivedDateTime = DateTime.Now.AddDays(-1),
                             ResultDateTime = DateTime.Now.AddHours(-1),
-                            LOINC = "XXX-3286",
-                            LOINCName = "COVID-19 n-Coronavirus  NAT",
+                            Loinc = "XXX-3286",
+                            LoincName = "COVID-19 n-Coronavirus  NAT",
                         },
                     },
                 },
