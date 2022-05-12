@@ -3,7 +3,6 @@ import { DateWrapper } from "@/models/dateWrapper";
 import {
     Covid19LaboratoryOrder,
     Covid19LaboratoryTest,
-    LaboratoryUtil,
 } from "@/models/laboratory";
 import TimelineEntry from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";
@@ -17,7 +16,7 @@ export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
     public labResultOutcome: string | null;
     public displayDate: DateWrapper;
     public reportAvailable: boolean;
-    public isTestResultReady: boolean;
+    public resultReady: boolean;
 
     public summaryTitle: string;
     public summaryDescription: string;
@@ -58,9 +57,7 @@ export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
         this.summaryTitle = firstResult.loincName || "";
         this.summaryDescription = firstResult.testType || "";
         this.summaryStatus = firstResult.testStatus || "";
-        this.isTestResultReady = LaboratoryUtil.isTestResultReady(
-            this.summaryStatus
-        );
+        this.resultReady = firstResult.resultReady;
         this.labResultOutcome = firstResult.labResultOutcome;
 
         this.getComments = getComments;
@@ -91,18 +88,19 @@ export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
 
 export class Covid19LaboratoryTestViewModel {
     public id: string;
-    public testType: string | null;
+    public testType: string;
     public outOfRange: string;
     public collectedDateTime: DateWrapper;
-    public testStatus: string | null;
-    public isTestResultReady: boolean;
+    public testStatus: string;
+    public resultReady: boolean;
     public resultDescription: string[];
-    public resultLink: string | null;
-    public labResultOutcome: string | null;
+    public resultLink: string;
+    public labResultOutcome: string;
+    public filteredLabResultOutcome: string;
     public receivedDateTime: DateWrapper;
     public resultDateTime: DateWrapper;
-    public loinc: string | null;
-    public loincName: string | null;
+    public loinc: string;
+    public loincName: string;
 
     constructor(model: Covid19LaboratoryTest) {
         this.id = model.id;
@@ -112,12 +110,11 @@ export class Covid19LaboratoryTestViewModel {
             hasTime: true,
         });
         this.testStatus = model.testStatus;
-        this.isTestResultReady = LaboratoryUtil.isTestResultReady(
-            this.testStatus
-        );
+        this.resultReady = model.resultReady;
         this.resultDescription = model.resultDescription;
         this.resultLink = model.resultLink;
         this.labResultOutcome = model.labResultOutcome;
+        this.filteredLabResultOutcome = model.filteredLabResultOutcome;
         this.receivedDateTime = new DateWrapper(model.receivedDateTime, {
             hasTime: true,
         });

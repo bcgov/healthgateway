@@ -77,8 +77,8 @@ export default class LaboratoryReportComponent extends Vue {
                 return {
                     date: timelineDateTime,
                     test: y.batteryType || "",
-                    result: this.getResult(y.testStatus, y.outOfRange),
-                    status: this.getStatus(y.testStatus),
+                    result: y.result,
+                    status: y.filteredTestStatus,
                 };
             });
         });
@@ -105,28 +105,6 @@ export default class LaboratoryReportComponent extends Vue {
 
     private mounted() {
         this.onIsEmptyChanged();
-    }
-
-    private checkResultPending(testStatus: string | null): boolean {
-        if (testStatus == null) {
-            return false;
-        } else {
-            return ["Partial", "Pending"].includes(testStatus);
-        }
-    }
-
-    private getResult(testStatus: string | null, outOfRange: boolean): string {
-        if (this.checkResultPending(testStatus)) {
-            return "Pending";
-        }
-        return outOfRange ? "Out of Range" : "In Range";
-    }
-
-    private getStatus(testStatus: string | null): string {
-        if (testStatus) {
-            return testStatus === "Active" ? "Pending" : testStatus;
-        }
-        return "";
     }
 
     public generateReport(

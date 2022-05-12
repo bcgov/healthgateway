@@ -83,7 +83,7 @@ namespace HealthGateway.Laboratory.Models
         /// <summary>
         /// Gets or sets if this is an Order or Result.
         /// </summary>
-        [JsonPropertyName("ormOrOru")]
+        [JsonPropertyName("labType")]
         public string LabType { get; set; } = string.Empty;
 
         /// <summary>

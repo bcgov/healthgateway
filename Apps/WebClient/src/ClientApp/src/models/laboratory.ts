@@ -10,15 +10,15 @@ export interface Covid19LaboratoryOrderResult {
 // COVID-19 lab order model
 export interface Covid19LaboratoryOrder {
     id: string;
-    phn: string | null;
-    orderingProviderIds: string | null;
-    orderingProviders: string | null;
-    reportingLab: string | null;
-    location: string | null;
-    ormOrOru: string | null;
+    phn: string;
+    orderingProviderIds: string;
+    orderingProviders: string;
+    reportingLab: string;
+    location: string;
+    labType: string;
     messageDateTime: StringISODateTime;
-    messageId: string | null;
-    additionalData: string | null;
+    messageId: string;
+    additionalData: string;
     reportAvailable: boolean;
     labResults: Covid19LaboratoryTest[];
 }
@@ -26,17 +26,19 @@ export interface Covid19LaboratoryOrder {
 // COVID-19 lab test model
 export interface Covid19LaboratoryTest {
     id: string;
-    testType: string | null;
+    testType: string;
     outOfRange: boolean;
     collectedDateTime: StringISODateTime;
-    testStatus: string | null;
+    testStatus: string;
+    resultReady: boolean;
     resultDescription: string[];
-    resultLink: string | null;
-    labResultOutcome: string | null;
+    resultLink: string;
+    labResultOutcome: string;
+    filteredLabResultOutcome: string;
     receivedDateTime: StringISODateTime;
     resultDateTime: StringISODateTime;
-    loinc: string | null;
-    loincName: string | null;
+    loinc: string;
+    loincName: string;
 }
 
 // result model for retrieving lab orders
@@ -57,6 +59,8 @@ export interface LaboratoryOrder {
     commonName: string;
     orderingProvider: string;
     testStatus: string;
+    orderStatus: string;
+    downloadLabel: string;
     reportAvailable: boolean;
     laboratoryTests: LaboratoryTest[];
 }
@@ -68,6 +72,8 @@ export interface LaboratoryTest {
     outOfRange: boolean;
     loinc: string;
     testStatus: string;
+    filteredTestStatus: string;
+    result: string;
 }
 
 export interface LaboratoryReport {
@@ -95,14 +101,4 @@ export interface PublicCovidTestResponseResult {
     loaded: boolean;
     retryin: number;
     records: PublicCovidTestRecord[];
-}
-
-export abstract class LaboratoryUtil {
-    public static isTestResultReady(testStatus: string | null): boolean {
-        if (testStatus == null) {
-            return false;
-        } else {
-            return ["Final", "Corrected", "Amended"].includes(testStatus);
-        }
-    }
 }
