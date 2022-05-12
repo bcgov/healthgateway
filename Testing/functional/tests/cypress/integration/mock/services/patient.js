@@ -20,7 +20,7 @@ describe("Patient Service", () => {
                     `Patient Service Endpoint: ${config.serviceEndpoints.Patient}`
                 );
                 cy.request({
-                    url: `${config.serviceEndpoints.Patient}v1/api/Patient/${HDID}`,
+                    url: `${config.serviceEndpoints.Patient}Patient/${HDID}`,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token,

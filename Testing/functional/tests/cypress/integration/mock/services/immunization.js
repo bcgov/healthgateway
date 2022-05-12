@@ -18,7 +18,7 @@ describe("Immunization Service", () => {
                     `Immunization Service Endpoint: ${config.serviceEndpoints.Immunization}`
                 );
                 cy.request({
-                    url: `${config.serviceEndpoints.Immunization}v1/api/Immunization?hdid=${HDID}`,
+                    url: `${config.serviceEndpoints.Immunization}Immunization?hdid=${HDID}`,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token,

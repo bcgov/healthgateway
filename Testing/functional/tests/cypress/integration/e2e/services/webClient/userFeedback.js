@@ -1,5 +1,5 @@
 describe("WebClient UserFeedback Service", () => {
-    const BASEURL = "/v1/api/UserFeedback/";
+    const BASEURL = "/UserFeedback/";
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
     beforeEach(() => {
         cy.getTokens(

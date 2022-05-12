@@ -21,7 +21,7 @@ describe("Patient Service", () => {
                     `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
                 );
                 cy.request({
-                    url: `${config.serviceEndpoints.Laboratory}v1/api/Laboratory/Covid19Orders?hdid=${HDID}`,
+                    url: `${config.serviceEndpoints.Laboratory}Laboratory/Covid19Orders?hdid=${HDID}`,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token,

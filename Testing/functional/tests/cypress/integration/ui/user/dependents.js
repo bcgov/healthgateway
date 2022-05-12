@@ -5,10 +5,10 @@ const sensitiveDocMessage =
 
 describe("COVID-19", () => {
     beforeEach(() => {
-        cy.intercept("GET", "**/v1/api/Laboratory/Covid19Orders*", {
+        cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             fixture: "LaboratoryService/covid19Orders.json",
         });
-        cy.intercept("GET", "**/v1/api/UserProfile/*/Dependent", {
+        cy.intercept("GET", "**/UserProfile/*/Dependent", {
             fixture: "UserProfileService/dependent.json",
         });
         cy.enableModules(["CovidLabResults", "Laboratory", "Dependent"]);
@@ -84,7 +84,7 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
     const dependentHdid = "645645767756756767";
     beforeEach(() => {
         cy.deleteDownloadsFolder();
-        cy.intercept("GET", "**/v1/api/UserProfile/*/Dependent", {
+        cy.intercept("GET", "**/UserProfile/*/Dependent", {
             fixture: "UserProfileService/dependent.json",
         });
 
@@ -102,7 +102,7 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
     });
 
     it("Immunization Tab - Configuration Enabled", () => {
-        cy.intercept("GET", "**/v1/api/Immunization?hdid=*", {
+        cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/dependentImmunization.json",
         });
 
@@ -252,7 +252,7 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
     });
 
     it("Immunization tab - No Data Found", () => {
-        cy.intercept("GET", "**/v1/api/Immunization?hdid=*", {
+        cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunizationNoRecords.json",
         });
 

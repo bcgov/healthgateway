@@ -222,7 +222,7 @@ Cypress.Commands.add("getTokens", (username, password) => {
 Cypress.Commands.add("readConfig", () => {
     cy.log(`Reading Environment Configuration`);
     return cy
-        .request(`${Cypress.config("baseUrl")}/v1/api/configuration`)
+        .request(`${Cypress.config("baseUrl")}/configuration`)
         .should((response) => {
             expect(response.status).to.eq(200);
         })
@@ -251,7 +251,7 @@ Cypress.Commands.add("enableModules", (modules) => {
                     config.webClient.modules[key] = modules === key;
                 }
             });
-            cy.intercept("GET", "**/v1/api/configuration/", {
+            cy.intercept("GET", "**/configuration/", {
                 statusCode: 200,
                 body: config,
             });

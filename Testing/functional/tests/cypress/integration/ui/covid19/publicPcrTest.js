@@ -169,7 +169,7 @@ describe("Public PcrTest Registration Submission with Valid PHN", () => {
         cy.enableModules("PcrTest");
         cy.logout();
         cy.visit(pcrTestUrl);
-        cy.intercept("POST", "**/v1/api/PublicLaboratory/LabTestKit", {
+        cy.intercept("POST", "**/PublicLaboratory/LabTestKit", {
             fixture: "LaboratoryService/publicPcrTestValidPhn.json",
         });
     });
@@ -216,7 +216,7 @@ describe("Public PcrTest Registration Submission with no valid PHN", () => {
         cy.enableModules("PcrTest");
         cy.logout();
         cy.visit(pcrTestUrl);
-        cy.intercept("POST", "**/v1/api/PublicLaboratory/LabTestKit", {
+        cy.intercept("POST", "**/PublicLaboratory/LabTestKit", {
             fixture: "LaboratoryService/publicPcrTestNoValidPhn.json",
         });
     });

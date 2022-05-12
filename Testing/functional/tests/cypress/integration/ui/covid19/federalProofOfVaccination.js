@@ -7,7 +7,7 @@ describe("Federal Proof of Vaccination", () => {
         let isLoading = false;
         cy.intercept(
             "GET",
-            "**/v1/api/AuthenticatedVaccineStatus/pdf?hdid*",
+            "**/AuthenticatedVaccineStatus/pdf?hdid*",
             (req) => {
                 if (!isLoading) {
                     req.reply({

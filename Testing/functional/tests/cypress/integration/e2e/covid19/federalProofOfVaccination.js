@@ -14,7 +14,7 @@ describe("Federal Proof of Vaccination", () => {
             homeUrl
         );
 
-        cy.intercept("GET", "**/v1/api/AuthenticatedVaccineStatus/pdf?hdid=*");
+        cy.intercept("GET", "**/AuthenticatedVaccineStatus/pdf?hdid=*");
 
         cy.get("[data-testid=proof-vaccination-card-btn]")
             .should("be.visible", "be.enabled")

@@ -2,12 +2,12 @@ const { AuthMethod } = require("../../../../support/constants");
 
 describe("Laboratory Orders - Report", () => {
     beforeEach(() => {
-        cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
+        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrders.json",
         });
         cy.intercept(
             "GET",
-            "**/v1/api/Laboratory/*/Report?hdid=P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A&isCovid19=false",
+            "**/Laboratory/*/Report?hdid=P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A&isCovid19=false",
             {
                 fixture: "LaboratoryService/laboratoryReportPdf.json",
             }

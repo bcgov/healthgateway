@@ -26,7 +26,7 @@ describe("Encounter Service", () => {
                 `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
             );
             cy.request({
-                url: `${config.serviceEndpoints.Encounter}v1/api/Encounter/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
+                url: `${config.serviceEndpoints.Encounter}Encounter/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -44,7 +44,7 @@ describe("Encounter Service", () => {
                     `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
                 );
                 cy.request({
-                    url: `${config.serviceEndpoints.Encounter}v1/api/Encounter/${HDID}`,
+                    url: `${config.serviceEndpoints.Encounter}Encounter/${HDID}`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -69,7 +69,7 @@ describe("Encounter Service", () => {
                     `Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`
                 );
                 cy.request({
-                    url: `${config.serviceEndpoints.Encounter}v1/api/Encounter/${HDID}`,
+                    url: `${config.serviceEndpoints.Encounter}Encounter/${HDID}`,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token,

@@ -229,7 +229,7 @@ describe("Public COVID-19 Test Results", () => {
         const collectionDateMonth = "January";
         const collectionDateDay = "20";
 
-        cy.intercept("GET", "**/v1/api/PublicLaboratory/CovidTests", (req) => {
+        cy.intercept("GET", "**/PublicLaboratory/CovidTests", (req) => {
             req.reply({
                 fixture: "LaboratoryService/covidTest.json",
             });
@@ -280,7 +280,7 @@ describe("Public COVID-19 Test Results", () => {
         const collectionDateMonth = "January";
         const collectionDateDay = "20";
 
-        cy.intercept("GET", "**/v1/api/PublicLaboratory/CovidTests", (req) => {
+        cy.intercept("GET", "**/PublicLaboratory/CovidTests", (req) => {
             req.reply({
                 fixture: "LaboratoryService/emptyCovidTest.json",
             });
@@ -311,7 +311,7 @@ describe("Public COVID-19 Test Results", () => {
         const collectionDateMonth = "January";
         const collectionDateDay = "20";
 
-        cy.intercept("GET", "**/v1/api/PublicLaboratory/CovidTests", (req) => {
+        cy.intercept("GET", "**/PublicLaboratory/CovidTests", (req) => {
             req.reply({
                 fixture: "LaboratoryService/dataMismatchCovidTest.json",
             });
@@ -337,7 +337,7 @@ describe("Public COVID-19 Test Results", () => {
         const collectionDateMonth = "January";
         const collectionDateDay = "20";
 
-        cy.intercept("GET", "**/v1/api/PublicLaboratory/CovidTests", (req) => {
+        cy.intercept("GET", "**/PublicLaboratory/CovidTests", (req) => {
             req.reply({
                 fixture: "LaboratoryService/invalidCovidTest.json",
             });
@@ -363,7 +363,7 @@ describe("Public COVID-19 Test Results", () => {
         const collectionDateMonth = "January";
         const collectionDateDay = "20";
 
-        cy.intercept("GET", "**/v1/api/PublicLaboratory/CovidTests", (req) => {
+        cy.intercept("GET", "**/PublicLaboratory/CovidTests", (req) => {
             req.reply({
                 fixture: "LaboratoryService/emptyCovidTest.json",
             });

@@ -27,7 +27,7 @@ describe("Patient Service", () => {
                 `Patient Service Endpoint: ${config.serviceEndpoints.Patient}`
             );
             cy.request({
-                url: `${config.serviceEndpoints.Patient}v1/api/Patient/${HDID}`,
+                url: `${config.serviceEndpoints.Patient}Patient/${HDID}`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -44,7 +44,7 @@ describe("Patient Service", () => {
                     `Patient Service Endpoint: ${config.serviceEndpoints.Patient}`
                 );
                 cy.request({
-                    url: `${config.serviceEndpoints.Patient}v1/api/Patient/${BOGUSHDID}`,
+                    url: `${config.serviceEndpoints.Patient}Patient/${BOGUSHDID}`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -68,7 +68,7 @@ describe("Patient Service", () => {
                     `Patient Service Endpoint: ${config.serviceEndpoints.Patient}`
                 );
                 cy.request({
-                    url: `${config.serviceEndpoints.Patient}v1/api/Patient/${HDID}`,
+                    url: `${config.serviceEndpoints.Patient}Patient/${HDID}`,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token,

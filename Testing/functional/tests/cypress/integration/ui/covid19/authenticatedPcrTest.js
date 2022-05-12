@@ -39,7 +39,7 @@ describe("Authenticated Pcr Test Registration", () => {
             "/home"
         );
         cy.visit(pcrTestUrl);
-        cy.intercept("POST", `**/v1/api/Laboratory/${HDID}/LabTestKit`, {
+        cy.intercept("POST", `**/Laboratory/${HDID}/LabTestKit`, {
             fixture: "LaboratoryService/authenticatedPcrTest.json",
         });
     });
@@ -103,7 +103,7 @@ describe("Authenticated Pcr Test Registration with Error", () => {
             "/home"
         );
         cy.visit(pcrTestUrl);
-        cy.intercept("POST", `**/v1/api/Laboratory/${HDID}/LabTestKit`, {
+        cy.intercept("POST", `**/Laboratory/${HDID}/LabTestKit`, {
             fixture: "LaboratoryService/authenticatedPcrTestError.json",
         });
     });
@@ -139,7 +139,7 @@ describe("Authenticated Pcr Test Registration Previously Processed", () => {
             "/home"
         );
         cy.visit(pcrTestUrl);
-        cy.intercept("POST", `**/v1/api/Laboratory/${HDID}/LabTestKit`, {
+        cy.intercept("POST", `**/Laboratory/${HDID}/LabTestKit`, {
             fixture: "LaboratoryService/authenticatedPcrTestDuplicate.json",
         });
     });
