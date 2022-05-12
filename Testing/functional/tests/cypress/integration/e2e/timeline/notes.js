@@ -13,7 +13,7 @@ describe("Notes", () => {
 
     it("Validate Add - Edit - Delete", () => {
         // Add Note
-        cy.intercept("POST", "**/v1/api/Note/*").as("createNote");
+        cy.intercept("POST", "**/Note/*").as("createNote");
         cy.log("Adding Note.");
         cy.get("[data-testid=addNoteBtn]").click();
         cy.get("[data-testid=noteTitleInput]").type("Note Title!");
@@ -34,7 +34,7 @@ describe("Notes", () => {
             .should("have.text", "Note Title!");
 
         // Edit Note
-        cy.intercept("PUT", "**/v1/api/Note/*").as("updateNote");
+        cy.intercept("PUT", "**/Note/*").as("updateNote");
         cy.log("Editing Note.");
         cy.get("[data-testid=noteMenuBtn]").first().click();
         cy.get("[data-testid=editNoteMenuBtn]").first().click();
@@ -48,7 +48,7 @@ describe("Notes", () => {
             .should("have.text", "Test Edit");
 
         // Delete Note
-        cy.intercept("DELETE", "**/v1/api/Note/*").as("deleteNote");
+        cy.intercept("DELETE", "**/Note/*").as("deleteNote");
         cy.log("Deleting Note.");
         cy.get("[data-testid=noteMenuBtn]").last().click();
         cy.on("window:confirm", (str) => {

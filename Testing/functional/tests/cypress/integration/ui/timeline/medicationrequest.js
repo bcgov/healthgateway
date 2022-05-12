@@ -3,7 +3,7 @@ const { AuthMethod } = require("../../../support/constants");
 describe("Medication Request", () => {
     beforeEach(() => {
         cy.enableModules("MedicationRequest");
-        cy.intercept("GET", "**/v1/api/MedicationRequest/*", {
+        cy.intercept("GET", "**/MedicationRequest/*", {
             fixture: "MedicationService/medicationRequest.json",
         });
         cy.login(

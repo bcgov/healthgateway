@@ -2,7 +2,7 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Tutorial", () => {
     it("Validate Add Note Popover", () => {
-        cy.intercept("GET", "**/v1/api/UserProfile/*", (req) => {
+        cy.intercept("GET", "**/UserProfile/*", (req) => {
             req.reply((res) => {
                 res.body.resourcePayload.preferences.tutorialMenuNote.value =
                     "true";
@@ -19,7 +19,7 @@ describe("Tutorial", () => {
     });
 
     it("Validate Export Records Popover", () => {
-        cy.intercept("GET", "**/v1/api/UserProfile/*", (req) => {
+        cy.intercept("GET", "**/UserProfile/*", (req) => {
             req.reply((res) => {
                 res.body.resourcePayload.preferences.tutorialMenuExport.value =
                     "true";

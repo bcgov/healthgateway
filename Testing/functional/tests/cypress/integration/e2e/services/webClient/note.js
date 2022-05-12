@@ -1,5 +1,5 @@
 describe("WebClient Note Service", () => {
-    const BASEURL = "/v1/api/Note/";
+    const BASEURL = "/Note/";
     const HDID = "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA";
     const BOGUSHDID = "BOGUSHDID";
     beforeEach(() => {

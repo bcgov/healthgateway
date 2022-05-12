@@ -12,7 +12,7 @@ describe("User Profile Login History", () => {
             "/profile"
         );
 
-        cy.intercept("GET", `**/v1/api/UserProfile/${HDID}`, (req) => {
+        cy.intercept("GET", `**/UserProfile/${HDID}`, (req) => {
             req.reply({
                 fixture: "UserProfileService/userProfile.json",
             });
@@ -65,7 +65,7 @@ describe("User Profile", () => {
     });
 
     it("Edit email address", () => {
-        cy.intercept("PUT", `**/v1/api/UserProfile/${HDID}/email`, {
+        cy.intercept("PUT", `**/UserProfile/${HDID}/email`, {
             statusCode: 200,
             body: true,
         });
@@ -77,7 +77,7 @@ describe("User Profile", () => {
     });
 
     it("Invalid email address", () => {
-        cy.intercept("PUT", `**/v1/api/UserProfile/${HDID}/email`, {
+        cy.intercept("PUT", `**/UserProfile/${HDID}/email`, {
             statusCode: 200,
             body: true,
         });
@@ -91,7 +91,7 @@ describe("User Profile", () => {
     });
 
     it("Clear/OptOut email address", () => {
-        cy.intercept("PUT", `**/v1/api/UserProfile/${HDID}/email`, {
+        cy.intercept("PUT", `**/UserProfile/${HDID}/email`, {
             statusCode: 200,
             body: true,
         });
@@ -124,7 +124,7 @@ describe("User Profile", () => {
     });
 
     it("Edit sms number", () => {
-        cy.intercept("PUT", `**/v1/api/UserProfile/${HDID}/sms`, {
+        cy.intercept("PUT", `**/UserProfile/${HDID}/sms`, {
             statusCode: 200,
             body: true,
         });
@@ -155,7 +155,7 @@ describe("User Profile", () => {
     });
 
     it("Clear/OptOut sms number", () => {
-        cy.intercept("PUT", `**/v1/api/UserProfile/${HDID}/sms`, {
+        cy.intercept("PUT", `**/UserProfile/${HDID}/sms`, {
             statusCode: 200,
             body: true,
         });

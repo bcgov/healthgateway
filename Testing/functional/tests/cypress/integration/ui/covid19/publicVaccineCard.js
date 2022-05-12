@@ -224,7 +224,7 @@ describe("Public Vaccine Card Downloads", () => {
             "PublicVaccineDownloadPdf",
         ]);
         cy.logout();
-        cy.intercept("GET", "**/v1/api/PublicVaccineStatus", {
+        cy.intercept("GET", "**/PublicVaccineStatus", {
             fixture: "ImmunizationService/publicVaccineStatusLoaded.json",
         });
         cy.visit(vaccineCardUrl);
@@ -241,7 +241,7 @@ describe("Public Vaccine Card Downloads", () => {
     });
 
     it("Error Displayed When PDF Unavailable", () => {
-        cy.intercept("GET", "**/v1/api/PublicVaccineStatus/pdf", (req) => {
+        cy.intercept("GET", "**/PublicVaccineStatus/pdf", (req) => {
             req.reply({
                 fixture: "ImmunizationService/vaccineProofLoadedNoPdf.json",
             });
@@ -260,7 +260,7 @@ describe("Public Vaccine Card Downloads", () => {
 
     it("Save PDF with Retry", () => {
         let isLoading = false;
-        cy.intercept("GET", "**/v1/api/PublicVaccineStatus/pdf", (req) => {
+        cy.intercept("GET", "**/PublicVaccineStatus/pdf", (req) => {
             if (!isLoading) {
                 req.reply({
                     fixture: "ImmunizationService/vaccineProofNotLoaded.json",
@@ -315,7 +315,7 @@ describe("Public Vaccine Card Downloads When PublicVaccineDownloadPdf Disabled",
             "VaccinationStatusPdf",
         ]);
         cy.logout();
-        cy.intercept("GET", "**/v1/api/PublicVaccineStatus", {
+        cy.intercept("GET", "**/PublicVaccineStatus", {
             fixture: "ImmunizationService/publicVaccineStatusLoaded.json",
         });
         cy.visit(vaccineCardUrl);

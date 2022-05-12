@@ -3,7 +3,7 @@ const { AuthMethod } = require("../../../support/constants");
 describe("User Email Verification", () => {
     beforeEach(() => {
         const baseUrl =
-            "**/v1/api/UserProfile/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
+            "**/UserProfile/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
         cy.intercept("GET", `${baseUrl}/email/validate/valid`, {
             fixture: "WebClientService/EmailValidation/valid.json",
         });
@@ -13,7 +13,7 @@ describe("User Email Verification", () => {
         cy.intercept("GET", `${baseUrl}/email/validate/expired`, {
             fixture: "WebClientService/EmailValidation/expired.json",
         });
-        cy.intercept("GET", "**/v1/api/UserProfile/*").as("getUserProfile");
+        cy.intercept("GET", "**/UserProfile/*").as("getUserProfile");
         cy.enableModules([]);
     });
 

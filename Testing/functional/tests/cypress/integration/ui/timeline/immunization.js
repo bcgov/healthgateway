@@ -3,7 +3,7 @@ const { AuthMethod } = require("../../../support/constants");
 describe("Immunization - With Refresh", () => {
     beforeEach(() => {
         let isLoading = false;
-        cy.intercept("GET", "**/v1/api/Immunization?*", (req) => {
+        cy.intercept("GET", "**/Immunization?*", (req) => {
             req.reply((res) => {
                 if (!isLoading) {
                     res.send({
@@ -74,7 +74,7 @@ describe("Immunization - With Refresh", () => {
 
 describe("Immunization", () => {
     it("Validate Empty Title", () => {
-        cy.intercept("GET", "**/v1/api/Immunization?*", {
+        cy.intercept("GET", "**/Immunization?*", {
             fixture: "ImmunizationService/immunizationEmptyName.json",
         });
         cy.enableModules("Immunization");
@@ -91,7 +91,7 @@ describe("Immunization", () => {
     });
 
     it("Validate Disabled Header Covid Card", () => {
-        cy.intercept("GET", "**/v1/api/Immunization?*", (req) => {
+        cy.intercept("GET", "**/Immunization?*", (req) => {
             req.reply((res) => {
                 res.send({
                     fixture: "ImmunizationService/immunizationNoRecords.json",
@@ -112,7 +112,7 @@ describe("Immunization", () => {
     });
 
     it("Validate Provincial VaccineProof Buttons", () => {
-        cy.intercept("GET", "**/v1/api/Immunization?*", {
+        cy.intercept("GET", "**/Immunization?*", {
             fixture: "ImmunizationService/immunization.json",
         });
         cy.enableModules([

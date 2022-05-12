@@ -13,7 +13,7 @@ describe("User Profile", () => {
     });
 
     it("Validate Login History Sorted Descending", () => {
-        cy.intercept("GET", `**/v1/api/UserProfile/${HDID}`, (req) => {
+        cy.intercept("GET", `**/UserProfile/${HDID}`, (req) => {
             req.reply({
                 fixture: "UserProfileService/userProfile.json",
             });
@@ -45,7 +45,7 @@ describe("User Profile", () => {
     });
 
     it("Email address", () => {
-        cy.intercept("PUT", `**/v1/api/UserProfile/${HDID}/email`, {
+        cy.intercept("PUT", `**/UserProfile/${HDID}/email`, {
             statusCode: 200,
             body: true,
         });
@@ -75,11 +75,11 @@ describe("User Profile", () => {
     });
 
     it("Verify SMS number", () => {
-        cy.intercept("PUT", `**/v1/api/UserProfile/${HDID}/sms`, {
+        cy.intercept("PUT", `**/UserProfile/${HDID}/sms`, {
             statusCode: 200,
             body: true,
         });
-        cy.intercept("GET", `**/v1/api/UserProfile/${HDID}/sms/validate/*`, {
+        cy.intercept("GET", `**/UserProfile/${HDID}/sms/validate/*`, {
             statusCode: 200,
             body: {
                 resultStatus: 1,
@@ -88,7 +88,7 @@ describe("User Profile", () => {
         });
 
         cy.log("Verify SMS number");
-        cy.intercept("GET", `**/v1/api/UserProfile/${HDID}`, (req) => {
+        cy.intercept("GET", `**/UserProfile/${HDID}`, (req) => {
             req.reply({
                 fixture: "UserProfileService/userProfile.json",
             });
