@@ -24,8 +24,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 export class RestLaboratoryService implements ILaboratoryService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly LABORATORY_BASE_URI: string = "Laboratory";
-    private readonly PUBLIC_LABORATORY_BASE_URI: string =
-        "v1/api/PublicLaboratory";
+    private readonly PUBLIC_LABORATORY_BASE_URI: string = "PublicLaboratory";
     private baseUri = "";
     private http!: IHttpDelegate;
     private isEnabled = false;
