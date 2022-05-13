@@ -266,7 +266,7 @@ export default class FaqView extends Vue {
                                 eligible to receive a second booster dose,
                                 please visit
                                 <a
-                                    href="www.gov.bc.ca/booster"
+                                    href="https://www.gov.bc.ca/booster"
                                     target="_blank"
                                     rel="noopener"
                                     >www.gov.bc.ca/booster</a
@@ -300,7 +300,7 @@ export default class FaqView extends Vue {
                             <p>
                                 Complete the online form at:
                                 <a
-                                    href="www.immunizationrecord.gov.bc.ca"
+                                    href="https://www.immunizationrecord.gov.bc.ca"
                                     target="_blank"
                                     rel="noopener"
                                     >www.immunizationrecord.gov.bc.ca</a
@@ -312,7 +312,7 @@ export default class FaqView extends Vue {
                                 your local public health unit. You can find one
                                 near you at:
                                 <a
-                                    href="www.immunizebc.ca/finder"
+                                    href="https://www.immunizebc.ca/finder"
                                     target="_blank"
                                     rel="noopener"
                                     >www.immunizebc.ca/finder</a
@@ -346,7 +346,7 @@ export default class FaqView extends Vue {
                             <p>
                                 Complete the online form at:
                                 <a
-                                    href="www.immunizationrecord.gov.bc.ca"
+                                    href="https://www.immunizationrecord.gov.bc.ca"
                                     target="_blank"
                                     rel="noopener"
                                     >www.immunizationrecord.gov.bc.ca</a
