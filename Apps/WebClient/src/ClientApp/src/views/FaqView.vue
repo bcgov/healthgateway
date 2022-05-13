@@ -241,7 +241,7 @@ export default class FaqView extends Vue {
                 </b-card-body>
             </b-collapse>
         </b-card>
-        <b-row class="m-0 pt-1"><H3>COVID-19 information</H3></b-row>
+        <b-row class="m-0 pt-3"><H3>COVID-19 information</H3></b-row>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
@@ -357,7 +357,7 @@ export default class FaqView extends Vue {
                 </b-card-body>
             </b-collapse>
         </b-card>
-        <b-row class="m-0 pt-1"><H3>Other health records</H3></b-row>
+        <b-row class="m-0 pt-3"><H3>Other health records</H3></b-row>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
@@ -471,7 +471,7 @@ export default class FaqView extends Vue {
                 </b-card-body>
             </b-collapse>
         </b-card>
-        <b-row class="m-0 pt-1"><H3>Adding a dependent</H3></b-row>
+        <b-row class="m-0 pt-3"><H3>Adding a dependent</H3></b-row>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
@@ -565,7 +565,7 @@ export default class FaqView extends Vue {
                 </b-card-body>
             </b-collapse>
         </b-card>
-        <b-row class="m-0 pt-1"><H3>Learn more about Health Gateway</H3></b-row>
+        <b-row class="m-0 pt-3"><H3>Learn more about Health Gateway</H3></b-row>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
