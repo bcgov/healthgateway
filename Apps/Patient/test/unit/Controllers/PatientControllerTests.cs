@@ -80,8 +80,8 @@ namespace HealthGateway.Patient.Test.Controllers
                     Gender = mockResult.ResourcePayload.Gender,
                     HdId = mockResult.ResourcePayload.HdId,
                     PersonalHealthNumber = mockResult.ResourcePayload.PersonalHealthNumber,
-                    PhysicalAddress = new Models.Address(mockResult.ResourcePayload.PhysicalAddress),
-                    PostalAddress = new Models.Address(mockResult.ResourcePayload.PostalAddress),
+                    PhysicalAddress = mockResult.ResourcePayload.PhysicalAddress,
+                    PostalAddress = mockResult.ResourcePayload.PostalAddress,
                 },
             };
             patientService.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.HDID, false)).ReturnsAsync(mockResult);

@@ -18,6 +18,7 @@ namespace HealthGateway.Patient.Models
 {
     using System;
     using System.Text.Json.Serialization;
+    using HealthGateway.Common.Models;
 
     /// <summary>
     /// The patient data model.
@@ -48,16 +49,8 @@ namespace HealthGateway.Patient.Models
             this.LastName = patient.LastName;
             this.Gender = patient.Gender;
             this.Birthdate = patient.Birthdate;
-
-            if (patient.PhysicalAddress != null)
-            {
-                this.PhysicalAddress = new Address(patient.PhysicalAddress);
-            }
-
-            if (patient.PostalAddress != null)
-            {
-                this.PostalAddress = new Address(patient.PostalAddress);
-            }
+            this.PhysicalAddress = patient.PhysicalAddress;
+            this.PostalAddress = patient.PostalAddress;
         }
 
         /// <summary>
