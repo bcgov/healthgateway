@@ -679,8 +679,8 @@ export default class FaqView extends Vue {
                                 suggestions:
                                 <a href="mailto:HealthGateway@gov.bc.ca"
                                     >HealthGateway@gov.bc.ca</a
-                                >.
-                            </p>
+                                >                            
+                                </p>
                         </div></b-card-text
                     >
                 </b-card-body>
