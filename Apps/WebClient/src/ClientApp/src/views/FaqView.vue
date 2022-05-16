@@ -410,7 +410,7 @@ export default class FaqView extends Vue {
                 </b-card-body>
             </b-collapse>
         </b-card>
-                <b-card no-body class="mb-1 border-0">
+        <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
                 class="p-1 faq-header"
@@ -431,19 +431,23 @@ export default class FaqView extends Vue {
                     <b-card-text
                         ><div data-testid="answerTxt">
                             <p>
-                                Health Gateway shows your health visits billed to the BC Medical 
-                                Services Plan (MSP). Sometimes different information for a health 
-                                care provider is shown because of the way billing is done. For example:
+                                Health Gateway shows your health visits billed
+                                to the BC Medical Services Plan (MSP). Sometimes
+                                different information for a health care provider
+                                is shown because of the way billing is done. For
+                                example:
                             </p>
                             <ul>
                                 <li>
                                     <div>
-                                        Health visits are billed to a different health care provider
+                                        Health visits are billed to a different
+                                        health care provider
                                     </div>
                                 </li>
                                 <li>
                                     <div>
-                                        The billing address is used instead of the clinic address
+                                        The billing address is used instead of
+                                        the clinic address
                                     </div>
                                 </li>
                             </ul>
@@ -464,7 +468,8 @@ export default class FaqView extends Vue {
                     block
                     variant="info"
                     class="text-left"
-                    >Why can’t I see all my Special Authority requests in Health Gateway?</b-button
+                    >Why can’t I see all my Special Authority requests in Health
+                    Gateway?</b-button
                 >
             </b-card-header>
             <b-collapse id="accordion-faqAnswer10" role="tabpanel">
