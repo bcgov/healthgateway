@@ -557,7 +557,11 @@ export default class ProfileView extends Vue {
         const isStateSame =
             this.postalAddress.state === this.physicalAddress.state;
 
-        const result = isStreetLineSame && isCitySame && isStateSame;
+        const isPostalCodeSame =
+            this.postalAddress.postalCode === this.physicalAddress.postalCode;
+
+        const result =
+            isStreetLineSame && isCitySame && isStateSame && isPostalCodeSame;
 
         this.logger.debug(
             `Physical Address and Postal Address same: ${result}`
@@ -968,12 +972,11 @@ export default class ProfileView extends Vue {
                                         v-if="isNoPostalAddressShown"
                                         id="no-postal-address-text-div"
                                     >
-                                        <p
-                                            class="font-italic mb-0"
+                                        <em
                                             data-testid="no-postal-address-text"
                                         >
                                             No address on record
-                                        </p>
+                                        </em>
                                     </div>
                                     <div
                                         v-if="isPostalAddressShown"
@@ -1017,12 +1020,11 @@ export default class ProfileView extends Vue {
                                         v-if="isNoPhysicalAddressShown"
                                         id="no-physical-address-text-div"
                                     >
-                                        <p
-                                            class="font-italic mb-0"
+                                        <em
                                             data-testid="no-physical-address-text"
                                         >
                                             No address on record
-                                        </p>
+                                        </em>
                                     </div>
                                     <div
                                         v-if="isPhysicalAddressShown"
