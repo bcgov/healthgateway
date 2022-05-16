@@ -92,13 +92,13 @@ namespace HealthGateway.Patient.Models
         /// <summary>
         /// Gets or sets the physical address for the patient.
         /// </summary>
-        /// [JsonPropertyName("physicalAddress")]
+        [JsonPropertyName("physicalAddress")]
         public Address? PhysicalAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the postal address for the patient.
         /// </summary>
-        /// [JsonPropertyName("postalAddress")]
+        [JsonPropertyName("postalAddress")]
         public Address? PostalAddress { get; set; }
     }
 }
