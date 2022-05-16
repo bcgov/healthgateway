@@ -15,8 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Mvc;

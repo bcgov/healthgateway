@@ -4,6 +4,9 @@
         <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
+
+        <TrimMode>link</TrimMode>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(RunConfiguration)' == 'Admin' ">
@@ -31,12 +34,8 @@
 
     <ItemGroup>
         <ProjectReference Include="../Common/Admin.Common.csproj" />
-        <ProjectReference Include="..\..\CommonUi\src\Common.Ui.csproj">
-            <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-        </ProjectReference>
-        <ProjectReference Include="..\..\CommonData\src\Common.Data.csproj">
-            <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-        </ProjectReference>
+        <ProjectReference Include="..\..\CommonUi\src\Common.Ui.csproj" />
+        <ProjectReference Include="..\..\CommonData\src\Common.Data.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -61,7 +60,7 @@
       </Content>
       <Content Update="wwwroot\appsettings.Development.json">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>  
+      </Content>
       <Content Update="wwwroot\appsettings.hgdev.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
