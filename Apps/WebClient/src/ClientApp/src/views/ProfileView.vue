@@ -22,7 +22,7 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
-import PatientData from "@/models/patientData";
+import PatientData, { Address } from "@/models/patientData";
 import User, { OidcUserInfo } from "@/models/user";
 import UserProfile from "@/models/userProfile";
 import container from "@/plugins/container";
@@ -115,6 +115,8 @@ export default class ProfileView extends Vue {
     private logger!: ILogger;
     private userProfileService!: IUserProfileService;
     private userProfile!: UserProfile;
+    private physicalAddress = new Address();
+    private postalAddress = new Address();
 
     private loginDateTimes: string[] | undefined = [];
 
@@ -148,6 +150,66 @@ export default class ProfileView extends Vue {
         return (
             this.email === null || this.email === undefined || this.email === ""
         );
+    }
+
+    private get isUpdateAddressCombinedTextShown(): boolean {
+        return (
+            this.isSameAddress() &&
+            this.patientData.physicalAddress !== null &&
+            this.patientData.postalAddress !== null
+        );
+    }
+
+    private get isUpdateAddressDifferentTextShown(): boolean {
+        return !this.isSameAddress();
+    }
+
+    private get isAddAddressTextShown(): boolean {
+        return (
+            this.patientData.physicalAddress === null &&
+            this.patientData.postalAddress === null
+        );
+    }
+
+    private get isPhysicalAddressShown(): boolean {
+        return (
+            this.patientData.physicalAddress !== null && !this.isSameAddress()
+        );
+    }
+
+    private get isPhysicalAddressSectionShown(): boolean {
+        return !this.isSameAddress();
+    }
+
+    private get isPostalAddressShown(): boolean {
+        return this.patientData.postalAddress !== null;
+    }
+
+    private get isNoPhysicalAddressShown(): boolean {
+        return (
+            this.patientData.postalAddress !== null &&
+            this.patientData.physicalAddress === null
+        );
+    }
+
+    private get isNoPostalAddressShown(): boolean {
+        return (
+            (this.patientData.physicalAddress !== null &&
+                this.patientData.postalAddress === null) ||
+            (this.patientData.physicalAddress === null &&
+                this.patientData.postalAddress === null)
+        );
+    }
+
+    private get postalAddressLabel(): string {
+        if (
+            !this.isSameAddress() ||
+            (this.patientData.physicalAddress !== null &&
+                this.patientData.postalAddress === null)
+        ) {
+            return "Mailing Address";
+        }
+        return "Address";
     }
 
     private get timeForDeletionString(): string {
@@ -223,6 +285,7 @@ export default class ProfileView extends Vue {
                     this.smsVerified = this.userProfile.isSMSNumberVerified;
                 }
 
+                this.setAddresses();
                 this.checkToVerifyPhone();
                 this.checkToVerifyEmail();
 
@@ -477,6 +540,45 @@ export default class ProfileView extends Vue {
             .finally(() => {
                 this.isLoading = false;
             });
+    }
+
+    private isSameAddress(): boolean {
+        const equals = (a: string[], b: string[]) =>
+            a.length === b.length && a.every((v, i) => v === b[i]);
+
+        const a = this.postalAddress.streetLines;
+        const b = this.physicalAddress.streetLines;
+
+        const result = equals(a, b);
+
+        this.logger.debug(`Postal Address Street Lines: ${JSON.stringify(a)}`);
+        this.logger.debug(
+            `Physical Address Street Lines: ${JSON.stringify(b)}`
+        );
+        this.logger.debug(
+            `Physical Address and Postal Address same: ${result}`
+        );
+        return result;
+    }
+
+    private setAddresses(): void {
+        // Physical Address
+        this.physicalAddress.streetLines =
+            this.patientData.physicalAddress?.streetLines ?? [];
+        this.physicalAddress.city =
+            this.patientData.physicalAddress?.city ?? "";
+        this.physicalAddress.postalCode =
+            this.patientData.physicalAddress?.postalCode ?? "";
+        this.physicalAddress.state =
+            this.patientData.physicalAddress?.state ?? "";
+
+        // Postal Address
+        this.postalAddress.streetLines =
+            this.patientData.postalAddress?.streetLines ?? [];
+        this.postalAddress.city = this.patientData.postalAddress?.city ?? "";
+        this.postalAddress.postalCode =
+            this.patientData.postalAddress?.postalCode ?? "";
+        this.postalAddress.state = this.patientData.postalAddress?.state ?? "";
     }
 }
 </script>
@@ -840,6 +942,142 @@ export default class ProfileView extends Vue {
                                 >
                                     Save
                                 </hg-button>
+                            </b-col>
+                        </b-row>
+                        <b-row class="mb-3">
+                            <b-col>
+                                <label
+                                    for="postal-address-section"
+                                    class="hg-label"
+                                    data-testid="postal-address-label"
+                                >
+                                    {{ postalAddressLabel }}
+                                </label>
+                                <div id="postal-address-section">
+                                    <div
+                                        v-if="isNoPostalAddressShown"
+                                        id="no-postal-address-div"
+                                    >
+                                        <p
+                                            class="font-italic mb-0"
+                                            data-testid="no-postal-address-text"
+                                        >
+                                            No address on record
+                                        </p>
+                                    </div>
+                                    <div
+                                        v-if="isPostalAddressShown"
+                                        id="postal-address-div"
+                                        data-testid="postal-address-div"
+                                    >
+                                        <b-row
+                                            v-for="(
+                                                item, index
+                                            ) in postalAddress.streetLines"
+                                            :key="index"
+                                            ><b-col>{{ item }} </b-col></b-row
+                                        >
+                                        <b-row
+                                            ><b-col
+                                                >{{ postalAddress.city }},
+                                                {{ postalAddress.state }},
+                                                {{ postalAddress.postalCode }}
+                                            </b-col>
+                                        </b-row>
+                                    </div>
+                                </div>
+                            </b-col>
+                        </b-row>
+                        <b-row
+                            v-if="isPhysicalAddressSectionShown"
+                            class="mb-3"
+                        >
+                            <b-col>
+                                <label
+                                    for="physical-address-section"
+                                    class="hg-label"
+                                    data-testid="physical-address-label"
+                                    >Physical Address
+                                </label>
+                                <div
+                                    id="physical-address-section"
+                                    data-testid="physical-address-section"
+                                >
+                                    <div
+                                        v-if="isNoPhysicalAddressShown"
+                                        id="no-physical-address-div"
+                                    >
+                                        <p
+                                            class="font-italic mb-0"
+                                            data-testid="no-physical-address-text"
+                                        >
+                                            No address on record
+                                        </p>
+                                    </div>
+                                    <div
+                                        v-if="isPhysicalAddressShown"
+                                        id="physical-address-div"
+                                        data-testid="physical-address-div"
+                                    >
+                                        <b-row
+                                            v-for="(
+                                                item, index
+                                            ) in physicalAddress.streetLines"
+                                            :key="index"
+                                            ><b-col>{{ item }} </b-col></b-row
+                                        >
+                                        <b-row
+                                            ><b-col
+                                                >{{ physicalAddress.city }},
+                                                {{ physicalAddress.state }},
+                                                {{ physicalAddress.postalCode }}
+                                            </b-col>
+                                        </b-row>
+                                    </div>
+                                </div>
+                            </b-col>
+                        </b-row>
+                        <b-row
+                            v-if="isUpdateAddressCombinedTextShown"
+                            class="mb-3"
+                        >
+                            <b-col>
+                                If this address is incorrect, update it
+                                <a
+                                    href="https://www.addresschange.gov.bc.ca/"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >here</a
+                                >
+                                <span>.</span>
+                            </b-col>
+                        </b-row>
+                        <b-row
+                            v-if="isUpdateAddressDifferentTextShown"
+                            class="mb-3"
+                        >
+                            <b-col>
+                                If either of these addresses is incorrect,
+                                update them
+                                <a
+                                    href="https://www.addresschange.gov.bc.ca/"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >here</a
+                                >
+                                <span>.</span>
+                            </b-col>
+                        </b-row>
+                        <b-row v-if="isAddAddressTextShown" class="mb-3">
+                            <b-col>
+                                To add an address, visit
+                                <a
+                                    href="https://www.addresschange.gov.bc.ca/"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >this page</a
+                                >
+                                <span>.</span>
                             </b-col>
                         </b-row>
                         <b-row class="mb-3">

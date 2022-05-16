@@ -61,6 +61,12 @@ namespace HealthGateway.Patient.Test.Controllers
                         State = "BC",
                         Country = "CA",
                     },
+                    PostalAddress = new Address()
+                    {
+                        City = "Vancouver",
+                        State = "BC",
+                        Country = "CA",
+                    },
                 },
             };
             RequestResult<Models.PatientModel> expectedResult = new()
@@ -74,6 +80,8 @@ namespace HealthGateway.Patient.Test.Controllers
                     Gender = mockResult.ResourcePayload.Gender,
                     HdId = mockResult.ResourcePayload.HdId,
                     PersonalHealthNumber = mockResult.ResourcePayload.PersonalHealthNumber,
+                    PhysicalAddress = new Models.Address(mockResult.ResourcePayload.PhysicalAddress),
+                    PostalAddress = new Models.Address(mockResult.ResourcePayload.PostalAddress),
                 },
             };
             patientService.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.HDID, false)).ReturnsAsync(mockResult);
