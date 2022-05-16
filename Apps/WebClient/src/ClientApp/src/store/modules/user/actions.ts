@@ -258,6 +258,11 @@ export const actions: UserActions = {
                             });
                             reject(result.resultError);
                         } else {
+                            logger.debug(
+                                `retrievePatientData User Profile: ${JSON.stringify(
+                                    result
+                                )}`
+                            );
                             context.commit(
                                 "setPatientData",
                                 result.resourcePayload

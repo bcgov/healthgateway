@@ -48,6 +48,16 @@ namespace HealthGateway.Patient.Models
             this.LastName = patient.LastName;
             this.Gender = patient.Gender;
             this.Birthdate = patient.Birthdate;
+
+            if (patient.PhysicalAddress != null)
+            {
+                this.PhysicalAddress = new Address(patient.PhysicalAddress);
+            }
+
+            if (patient.PostalAddress != null)
+            {
+                this.PostalAddress = new Address(patient.PostalAddress);
+            }
         }
 
         /// <summary>
@@ -85,5 +95,17 @@ namespace HealthGateway.Patient.Models
         /// </summary>
         [JsonPropertyName("gender")]
         public string Gender { get; set; }
+
+        /// <summary>
+        /// Gets or sets the physical address for the patient.
+        /// </summary>
+        /// [JsonPropertyName("physicalAddress")]
+        public Address? PhysicalAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets the postal address for the patient.
+        /// </summary>
+        /// [JsonPropertyName("postalAddress")]
+        public Address? PostalAddress { get; set; }
     }
 }
