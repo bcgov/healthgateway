@@ -167,7 +167,7 @@ export default class DependentCardComponent extends Vue {
         );
     }
 
-    private get immunizationTabShown(): boolean {
+    private get isImmunizationTabShown(): boolean {
         return this.webClientConfig.modules["DependentImmunizationTab"];
     }
 
@@ -800,7 +800,7 @@ export default class DependentCardComponent extends Vue {
                     </table>
                 </b-tab>
                 <b-tab
-                    v-if="immunizationTabShown"
+                    v-if="isImmunizationTabShown"
                     :disabled="isExpired"
                     :data-testid="`immunization-tab-${dependent.ownerId}`"
                     class="tableTab mt-2"
