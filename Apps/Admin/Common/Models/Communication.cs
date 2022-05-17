@@ -16,45 +16,14 @@
 namespace HealthGateway.Admin.Common.Models
 {
     using System;
-    using System.Collections.Generic;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// A system communication.
     /// </summary>
     public class Communication
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Communication"/> class.
-        /// </summary>
-        public Communication()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Communication"/> class.
-        /// </summary>
-        /// <param name="communication">The DB Communication to copy into this object.</param>
-        public Communication(Database.Models.Communication communication)
-        {
-            this.Id = communication.Id;
-            this.Text = communication.Text;
-            this.Subject = communication.Subject;
-            this.EffectiveDateTime = communication.EffectiveDateTime;
-            this.ExpiryDateTime = communication.ExpiryDateTime;
-            this.ScheduledDateTime = communication.ScheduledDateTime;
-            this.CommunicationTypeCode = communication.CommunicationTypeCode;
-            this.CommunicationStatusCode = communication.CommunicationStatusCode;
-            this.Priority = communication.Priority;
-            this.CreatedBy = communication.CreatedBy;
-            this.CreatedDateTime = communication.CreatedDateTime;
-            this.UpdatedBy = communication.UpdatedBy;
-            this.UpdatedDateTime = communication.UpdatedDateTime;
-            this.Version = communication.Version;
-        }
-
         /// <summary>
         /// Gets or sets the id.
         /// </summary>
@@ -131,50 +100,5 @@ namespace HealthGateway.Admin.Common.Models
         /// Gets or sets the version number to be used for backend locking.
         /// </summary>
         public uint Version { get; set; }
-
-        /// <summary>
-        /// Converts a list of DB Communications into a list of View Model Communications.
-        /// </summary>
-        /// <param name="communications">The list of DB Communications to convert.</param>
-        /// <returns>A converted list or null if inbound is null.</returns>
-        public static IEnumerable<Communication>? FromDbModelIEnumerable(IEnumerable<Database.Models.Communication> communications)
-        {
-            List<Communication>? retList = null;
-            if (communications != null)
-            {
-                retList = new List<Communication>();
-                foreach (Database.Models.Communication communication in communications)
-                {
-                    retList.Add(new Communication(communication));
-                }
-            }
-
-            return retList;
-        }
-
-        /// <summary>
-        /// Converts this view model into a DB model object.
-        /// </summary>
-        /// <returns>The DB model object.</returns>
-        public Database.Models.Communication ToDbModel()
-        {
-            return new Database.Models.Communication()
-            {
-                Id = this.Id,
-                Text = this.Text,
-                Subject = this.Subject,
-                EffectiveDateTime = this.EffectiveDateTime,
-                ExpiryDateTime = this.ExpiryDateTime,
-                ScheduledDateTime = this.ScheduledDateTime,
-                CommunicationTypeCode = this.CommunicationTypeCode,
-                CommunicationStatusCode = this.CommunicationStatusCode,
-                Priority = this.Priority,
-                CreatedBy = this.CreatedBy,
-                CreatedDateTime = this.CreatedDateTime,
-                UpdatedBy = this.UpdatedBy,
-                UpdatedDateTime = this.UpdatedDateTime,
-                Version = this.Version,
-            };
-        }
     }
 }

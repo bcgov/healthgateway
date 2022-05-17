@@ -64,10 +64,10 @@ namespace HealthGateway.Admin.Server.Services
             if (communication.EffectiveDateTime < communication.ExpiryDateTime)
             {
                 this.logger.LogTrace($"Adding communication... {JsonSerializer.Serialize(communication)}");
-                DBResult<HealthGateway.Database.Models.Communication> dbResult = this.communicationDelegate.Add(communication.ToDbModel());
+                DBResult<HealthGateway.Database.Models.Communication> dbResult = this.communicationDelegate.Add(CommunicationConverter.ToDbModel(communication));
                 return new RequestResult<Communication>()
                 {
-                    ResourcePayload = new Communication(dbResult.Payload),
+                    ResourcePayload = CommunicationConverter.ToUiModel(dbResult.Payload),
                     ResultStatus = dbResult.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
                     ResultError = dbResult.Status == DBStatusCode.Created ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
                 };
@@ -90,10 +90,10 @@ namespace HealthGateway.Admin.Server.Services
             {
                 this.logger.LogTrace($"Updating communication... {JsonSerializer.Serialize(communication)}");
 
-                DBResult<HealthGateway.Database.Models.Communication> dbResult = this.communicationDelegate.Update(communication.ToDbModel());
+                DBResult<HealthGateway.Database.Models.Communication> dbResult = this.communicationDelegate.Update(CommunicationConverter.ToDbModel(communication));
                 return new RequestResult<Communication>()
                 {
-                    ResourcePayload = new Communication(dbResult.Payload),
+                    ResourcePayload = CommunicationConverter.ToUiModel(dbResult.Payload),
                     ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
                     ResultError = dbResult.Status == DBStatusCode.Updated ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
                 };
@@ -116,7 +116,7 @@ namespace HealthGateway.Admin.Server.Services
             DBResult<IEnumerable<HealthGateway.Database.Models.Communication>> dbResult = this.communicationDelegate.GetAll();
             RequestResult<IEnumerable<Communication>> requestResult = new RequestResult<IEnumerable<Communication>>()
             {
-                ResourcePayload = Communication.FromDbModelIEnumerable(dbResult.Payload),
+                ResourcePayload = CommunicationConverter.ToUiModel(dbResult.Payload),
                 ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
                 ResultError = dbResult.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
@@ -136,10 +136,10 @@ namespace HealthGateway.Admin.Server.Services
                 };
             }
 
-            DBResult<HealthGateway.Database.Models.Communication> dbResult = this.communicationDelegate.Delete(communication.ToDbModel());
+            DBResult<HealthGateway.Database.Models.Communication> dbResult = this.communicationDelegate.Delete(CommunicationConverter.ToDbModel(communication));
             RequestResult<Communication> result = new RequestResult<Communication>()
             {
-                ResourcePayload = new Communication(dbResult.Payload),
+                ResourcePayload = CommunicationConverter.ToUiModel(dbResult.Payload),
                 ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
                 ResultError = dbResult.Status == DBStatusCode.Deleted ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
