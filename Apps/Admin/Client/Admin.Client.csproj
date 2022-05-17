@@ -4,8 +4,6 @@
         <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
-
-        <TrimMode>link</TrimMode>
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>
 
