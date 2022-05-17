@@ -5,6 +5,7 @@
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+        <RunAOTCompilation>true</RunAOTCompilation>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(RunConfiguration)' == 'Admin' ">
