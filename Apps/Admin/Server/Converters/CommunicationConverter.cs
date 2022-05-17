@@ -13,80 +13,80 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Common.Models
+namespace HealthGateway.Admin.Server.Converters;
+
+using System.Collections.Generic;
+using System.Linq;
+using HealthGateway.Admin.Common.Models;
+
+/// <summary>
+/// Converts between DB and UI models.
+/// </summary>
+public static class CommunicationConverter
 {
-    using System.Collections.Generic;
-    using System.Linq;
+    /// <summary>
+    /// Creates a UI model from a DB model.
+    /// </summary>
+    /// <param name="model">The DB model to convert.</param>
+    /// <returns>The created UI model.</returns>
+    public static Communication ToUiModel(this Database.Models.Communication model)
+    {
+        Communication retVal = new()
+        {
+            Id = model.Id,
+            Text = model.Text,
+            Subject = model.Subject,
+            EffectiveDateTime = model.EffectiveDateTime,
+            ExpiryDateTime = model.ExpiryDateTime,
+            ScheduledDateTime = model.ScheduledDateTime,
+            CommunicationTypeCode = model.CommunicationTypeCode,
+            CommunicationStatusCode = model.CommunicationStatusCode,
+            Priority = model.Priority,
+            CreatedBy = model.CreatedBy,
+            CreatedDateTime = model.CreatedDateTime,
+            UpdatedBy = model.UpdatedBy,
+            UpdatedDateTime = model.UpdatedDateTime,
+            Version = model.Version,
+        };
+
+        return retVal;
+    }
 
     /// <summary>
-    /// Converts Communication model from DB to UI and back.
+    /// Creates a list of UI models from a collection of DB models.
     /// </summary>
-    public static class CommunicationConverter
+    /// <param name="models">The collection of DB models to convert.</param>
+    /// <returns>The created list of UI models.</returns>
+    public static IList<Communication> ToUiModel(this IEnumerable<Database.Models.Communication> models)
     {
-        /// <summary>
-        /// Gets a UI model from a DB model.
-        /// </summary>
-        /// <param name="communication">The DB Communication to copy into this object.</param>
-        /// <returns>The Db model converted to Ui model.</returns>
-        public static Communication ToUiModel(Database.Models.Communication communication)
+        return models.Select(ToUiModel).ToList();
+    }
+
+    /// <summary>
+    /// Creates a DB model from a UI model.
+    /// </summary>
+    /// <param name="model">The UI model to convert.</param>
+    /// <returns>The created DB model.</returns>
+    public static Database.Models.Communication ToDbModel(this Communication model)
+    {
+        Database.Models.Communication retVal = new()
         {
-            Communication retComm = new()
-            {
-                Id = communication.Id,
-                Text = communication.Text,
-                Subject = communication.Subject,
-                EffectiveDateTime = communication.EffectiveDateTime,
-                ExpiryDateTime = communication.ExpiryDateTime,
-                ScheduledDateTime = communication.ScheduledDateTime,
-                CommunicationTypeCode = communication.CommunicationTypeCode,
-                CommunicationStatusCode = communication.CommunicationStatusCode,
-                Priority = communication.Priority,
-                CreatedBy = communication.CreatedBy,
-                CreatedDateTime = communication.CreatedDateTime,
-                UpdatedBy = communication.UpdatedBy,
-                UpdatedDateTime = communication.UpdatedDateTime,
-                Version = communication.Version,
-            };
+            Id = model.Id,
+            Text = model.Text,
+            Subject = model.Subject,
+            EffectiveDateTime = model.EffectiveDateTime,
+            ExpiryDateTime = model.ExpiryDateTime,
+            ScheduledDateTime = model.ScheduledDateTime,
+            CommunicationTypeCode = model.CommunicationTypeCode,
+            CommunicationStatusCode = model.CommunicationStatusCode,
+            Priority = model.Priority,
+            CreatedBy = model.CreatedBy,
+            CreatedDateTime = model.CreatedDateTime,
+            UpdatedBy = model.UpdatedBy,
+            UpdatedDateTime = model.UpdatedDateTime,
+            Version = model.Version,
+        };
 
-            return retComm;
-        }
-
-        /// <summary>
-        /// Converts a list of DB Communications into a list of UI Model Communications.
-        /// </summary>
-        /// <param name="communications">The list of DB Communications to convert.</param>
-        /// <returns>A converted list.</returns>
-        public static IEnumerable<Communication> ToUiModel(IEnumerable<Database.Models.Communication> communications)
-        {
-            return communications.Select(CommunicationConverter.ToUiModel).ToList();
-        }
-
-        /// <summary>
-        /// Gets a DB model from a UI model.
-        /// </summary>
-        /// <param name="communication">The DB Communication to copy into this object.</param>
-        /// <returns>The Ui model converted to Db model.</returns>
-        public static Database.Models.Communication ToDbModel(Communication communication)
-        {
-            Database.Models.Communication retComm = new()
-            {
-                Id = communication.Id,
-                Text = communication.Text,
-                Subject = communication.Subject,
-                EffectiveDateTime = communication.EffectiveDateTime,
-                ExpiryDateTime = communication.ExpiryDateTime,
-                ScheduledDateTime = communication.ScheduledDateTime,
-                CommunicationTypeCode = communication.CommunicationTypeCode,
-                CommunicationStatusCode = communication.CommunicationStatusCode,
-                Priority = communication.Priority,
-                CreatedBy = communication.CreatedBy,
-                CreatedDateTime = communication.CreatedDateTime,
-                UpdatedBy = communication.UpdatedBy,
-                UpdatedDateTime = communication.UpdatedDateTime,
-                Version = communication.Version,
-            };
-
-            return retComm;
-        }
+        return retVal;
     }
 }
