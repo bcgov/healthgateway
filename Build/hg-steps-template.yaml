@@ -37,6 +37,14 @@ steps:
       workingDir: "$(App.Home)/src/ClientApp"
 
   - task: DotNetCoreCLI@2
+    displayName: 'Workload Restore for $(App.Name)'
+    condition: and(succeeded(), eq(variables['WASMBuild'], true))
+    inputs:
+      command: custom
+      projects: "$(App.Home)"
+      custom: "workload restore"
+
+  - task: DotNetCoreCLI@2
     displayName: "Compiling code for $(App.Name)"
     condition: and(succeeded(), eq(variables['WASMBuild'], false))
     inputs:
