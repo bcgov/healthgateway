@@ -115,8 +115,8 @@ export default class ProfileView extends Vue {
     private logger!: ILogger;
     private userProfileService!: IUserProfileService;
     private userProfile!: UserProfile;
-    private physicalAddress = new Address();
-    private postalAddress = new Address();
+    private physicalAddress!: Address;
+    private postalAddress!: Address;
 
     private loginDateTimes: string[] | undefined = [];
 
@@ -183,22 +183,6 @@ export default class ProfileView extends Vue {
 
     private get isPostalAddressShown(): boolean {
         return this.patientData.postalAddress !== null;
-    }
-
-    private get isNoPhysicalAddressShown(): boolean {
-        return (
-            this.patientData.postalAddress !== null &&
-            this.patientData.physicalAddress === null
-        );
-    }
-
-    private get isNoPostalAddressShown(): boolean {
-        return (
-            (this.patientData.physicalAddress !== null &&
-                this.patientData.postalAddress === null) ||
-            (this.patientData.physicalAddress === null &&
-                this.patientData.postalAddress === null)
-        );
     }
 
     private get postalAddressLabel(): string {
@@ -571,28 +555,27 @@ export default class ProfileView extends Vue {
 
     private setAddresses(): void {
         // Physical Address
-        this.physicalAddress.streetLines =
-            this.patientData.physicalAddress?.streetLines ?? [];
-        this.physicalAddress.city =
-            this.patientData.physicalAddress?.city ?? "";
-        this.physicalAddress.postalCode =
-            this.patientData.physicalAddress?.postalCode ?? "";
-        this.physicalAddress.state =
-            this.patientData.physicalAddress?.state ?? "";
+        this.physicalAddress = this.getNewAddress(
+            this.patientData.physicalAddress
+        );
         this.logger.debug(
             `Physical Address: ${JSON.stringify(this.physicalAddress)}`
         );
 
         // Postal Address
-        this.postalAddress.streetLines =
-            this.patientData.postalAddress?.streetLines ?? [];
-        this.postalAddress.city = this.patientData.postalAddress?.city ?? "";
-        this.postalAddress.postalCode =
-            this.patientData.postalAddress?.postalCode ?? "";
-        this.postalAddress.state = this.patientData.postalAddress?.state ?? "";
+        this.postalAddress = this.getNewAddress(this.patientData.postalAddress);
         this.logger.debug(
             `Postal Address: ${JSON.stringify(this.postalAddress)}`
         );
+    }
+
+    private getNewAddress(address: Address | undefined): Address {
+        let newAddress = new Address();
+        newAddress.streetLines = address?.streetLines ?? [];
+        newAddress.city = address?.city ?? "";
+        newAddress.postalCode = address?.postalCode ?? "";
+        newAddress.state = address?.state ?? "";
+        return newAddress;
     }
 }
 </script>
@@ -969,7 +952,7 @@ export default class ProfileView extends Vue {
                                 </label>
                                 <div id="postal-address-section">
                                     <div
-                                        v-if="isNoPostalAddressShown"
+                                        v-if="!isPostalAddressShown"
                                         id="no-postal-address-text-div"
                                     >
                                         <em
@@ -1017,7 +1000,7 @@ export default class ProfileView extends Vue {
                                     data-testid="physical-address-section"
                                 >
                                     <div
-                                        v-if="isNoPhysicalAddressShown"
+                                        v-if="!isPhysicalAddressShown"
                                         id="no-physical-address-text-div"
                                     >
                                         <em
