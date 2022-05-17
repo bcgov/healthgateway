@@ -37,7 +37,7 @@ steps:
       workingDir: "$(App.Home)/src/ClientApp"
 
   - script: |
-      dotnet workload restore
+      sudo dotnet workload restore
     workingDirectory: '$(App.Home)'
     displayName: 'Workload Restore for $(App.Name)'
     condition: and(succeeded(), eq(variables['WASMBuild'], true))
