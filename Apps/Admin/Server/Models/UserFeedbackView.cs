@@ -18,7 +18,6 @@ namespace HealthGateway.Admin.Server.Models
     using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Model that provides a user representation of a user feedback.
@@ -37,8 +36,7 @@ namespace HealthGateway.Admin.Server.Models
         /// </summary>
         /// <param name="tags">The list of user feedback tags.</param>
         [JsonConstructor]
-        public UserFeedbackView(
-            IList<UserFeedbackTagView> tags)
+        public UserFeedbackView(IList<UserFeedbackTagView> tags)
         {
             this.Tags = tags;
         }
@@ -87,67 +85,5 @@ namespace HealthGateway.Admin.Server.Models
         /// Gets the feedback admin tags.
         /// </summary>
         public IList<UserFeedbackTagView> Tags { get; } = new List<UserFeedbackTagView>();
-
-        /// <summary>
-        /// Constructs a UserFeedbackView from a UserFeedback model.
-        /// </summary>
-        /// <param name="model">A user feedback request models.</param>
-        /// <returns>A new UserFeedbackView.</returns>
-        public static UserFeedbackView CreateFromDbModel(UserFeedbackAdmin model)
-        {
-            UserFeedbackView userFeedbackView = new()
-            {
-                Id = model.Id,
-                UserProfileId = model.UserProfileId,
-                Comment = model.Comment,
-                CreatedDateTime = model.CreatedDateTime,
-                IsReviewed = model.IsReviewed,
-                IsSatisfied = model.IsSatisfied,
-                Version = model.Version,
-                Email = model.Email,
-            };
-
-            IList<UserFeedbackTagView> viewTags = UserFeedbackTagView.FromDbModelCollection(model.Tags);
-
-            foreach (UserFeedbackTagView viewTag in viewTags)
-            {
-                userFeedbackView.Tags.Add(viewTag);
-            }
-
-            return userFeedbackView;
-        }
-
-        /// <summary>
-        /// Constructs a List of UserFeedbackView from a list of UserFeedback models.
-        /// </summary>
-        /// <param name="models">List of user feedback models.</param>
-        /// <returns>A list of UserFeedbackView.</returns>
-        public static IList<UserFeedbackView> CreateListFromDbModel(IList<UserFeedbackAdmin> models)
-        {
-            IList<UserFeedbackView> newList = new List<UserFeedbackView>();
-            foreach (UserFeedbackAdmin model in models)
-            {
-                newList.Add(CreateFromDbModel(model));
-            }
-
-            return newList;
-        }
-
-        /// <summary>
-        /// Convers this view model into a DB model object.
-        /// </summary>
-        /// <returns>The DB model object.</returns>
-        public UserFeedback ToDbModel()
-        {
-            return new UserFeedback()
-            {
-                Id = this.Id,
-                Comment = this.Comment,
-                CreatedDateTime = this.CreatedDateTime,
-                IsReviewed = this.IsReviewed,
-                IsSatisfied = this.IsSatisfied,
-                Version = this.Version,
-            };
-        }
     }
 }

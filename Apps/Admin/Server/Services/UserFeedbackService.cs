@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
+    using HealthGateway.Admin.Server.Converters;
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -39,7 +40,7 @@ namespace HealthGateway.Admin.Server.Services
         /// Initializes a new instance of the <see cref="UserFeedbackService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="feedbackDelegate">The feedeback delegate to interact with the DB.</param>
+        /// <param name="feedbackDelegate">The feedback delegate to interact with the DB.</param>
         /// <param name="adminTagDelegate">The admin tag delegate to interact with the DB.</param>
         /// <param name="feedbackTagDelegate">The feedback tag delegate to interact with the DB.</param>
         public UserFeedbackService(ILogger<UserFeedbackService> logger, IFeedbackDelegate feedbackDelegate, IAdminTagDelegate adminTagDelegate, IFeedbackTagDelegate feedbackTagDelegate)
@@ -54,9 +55,9 @@ namespace HealthGateway.Admin.Server.Services
         public RequestResult<IList<UserFeedbackView>> GetUserFeedback()
         {
             this.logger.LogTrace($"Retrieving pending beta requests");
-            DBResult<IList<UserFeedbackAdmin>> userfeedbackResult = this.feedbackDelegate.GetAllUserFeedbackEntries();
-            this.logger.LogDebug($"Finished retrieving user feedback: {JsonConvert.SerializeObject(userfeedbackResult)}");
-            IList<UserFeedbackView> userFeedback = UserFeedbackView.CreateListFromDbModel(userfeedbackResult.Payload);
+            DBResult<IList<UserFeedbackAdmin>> userFeedbackResult = this.feedbackDelegate.GetAllUserFeedbackEntries();
+            this.logger.LogDebug($"Finished retrieving user feedback: {JsonConvert.SerializeObject(userFeedbackResult)}");
+            IList<UserFeedbackView> userFeedback = userFeedbackResult.Payload.ToUiModel();
             return new RequestResult<IList<UserFeedbackView>>()
             {
                 ResourcePayload = userFeedback,
@@ -70,7 +71,6 @@ namespace HealthGateway.Admin.Server.Services
         {
             this.logger.LogTrace($"Updating user feedback... {JsonConvert.SerializeObject(feedback)}");
 
-            // Get the requets that still need to be invited
             this.feedbackDelegate.UpdateUserFeedback(feedback.ToDbModel());
             return true;
         }
@@ -82,7 +82,7 @@ namespace HealthGateway.Admin.Server.Services
             DBResult<IEnumerable<AdminTag>> adminTags = this.adminTagDelegate.GetAll();
 
             this.logger.LogDebug($"Finished retrieving admin tags: {JsonConvert.SerializeObject(adminTags)}");
-            IList<AdminTagView> adminTagViews = AdminTagView.FromDbModelCollection(adminTags.Payload);
+            IList<AdminTagView> adminTagViews = adminTags.Payload.ToUiModel();
             return new RequestResult<IList<AdminTagView>>()
             {
                 ResourcePayload = adminTagViews,
@@ -96,7 +96,6 @@ namespace HealthGateway.Admin.Server.Services
         {
             this.logger.LogTrace($"Creating new feedback tag... {tagName}");
 
-            // Get the requets that still need to be invited
             DBResult<AdminTag> tagResult = this.adminTagDelegate.Add(new AdminTag() { Name = tagName }, false);
             if (tagResult.Status != DBStatusCode.Error)
             {
@@ -111,7 +110,7 @@ namespace HealthGateway.Admin.Server.Services
                 {
                     return new RequestResult<UserFeedbackTagView>()
                     {
-                        ResourcePayload = UserFeedbackTagView.FromDbModel(feedbackTagResult.Payload),
+                        ResourcePayload = feedbackTagResult.Payload.ToUiModel(),
                         ResultStatus = ResultType.Success,
                     };
                 }
@@ -148,7 +147,7 @@ namespace HealthGateway.Admin.Server.Services
 
             if (feedbackTagResult.Status == DBStatusCode.Created)
             {
-                UserFeedbackTagView newFeedbackTag = UserFeedbackTagView.FromDbModel(feedbackTagResult.Payload);
+                UserFeedbackTagView newFeedbackTag = feedbackTagResult.Payload.ToUiModel();
                 newFeedbackTag.Tag = tag;
                 return new RequestResult<UserFeedbackTagView>()
                 {
