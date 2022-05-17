@@ -57,12 +57,17 @@ describe("Calendar View", () => {
         cy.get("[data-testid=monthBtnApr]").click();
         cy.get("#currentDate").should("have.text", " April 2019 ");
         cy.get("[data-testid=event-monthday-9]").click();
+
         cy.location("hash").should("eq", "#linear");
-        cy.get("[data-testid=entryCardDetailsTitle]")
+        cy.contains("[data-testid=entryCardDate]", "2019-Apr-09")
             .first()
-            .should("have.text", "Methadone (Maintenance) 1mg/Ml");
-        cy.contains("[data-testid=entryCardDate]", "2019-Aug-05").should(
-            "be.visible"
-        );
+            .should("be.visible")
+            .parents("[data-testid=timelineCard]")
+            .within(() => {
+                cy.get("[data-testid=entryCardDetailsTitle]").should(
+                    "have.text",
+                    "TEVA-MORPHINE SR"
+                );
+            });
     });
 });
