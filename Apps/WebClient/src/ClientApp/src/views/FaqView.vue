@@ -169,7 +169,7 @@ export default class FaqView extends Vue {
                     <b-card-text
                         ><div data-testid="answerTxt">
                             <p>
-                                Most lab results are available about 48 hours
+                                Most lab results are available about 2-3 days
                                 after your test. Pathology tests, like a tissue
                                 biopsy, are available about 7-10 days after your
                                 test. This ensures that your family doctor or
@@ -431,6 +431,52 @@ export default class FaqView extends Vue {
                     <b-card-text
                         ><div data-testid="answerTxt">
                             <p>
+                                Health Gateway shows your health visits billed
+                                to the BC Medical Services Plan (MSP). Sometimes
+                                different information for a health care provider
+                                is shown because of the way billing is done. For
+                                example:
+                            </p>
+                            <ul>
+                                <li>
+                                    <div>
+                                        Health visits are billed to a different
+                                        health care provider
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        The billing address is used instead of
+                                        the clinic address
+                                    </div>
+                                </li>
+                            </ul>
+                        </div></b-card-text
+                    >
+                </b-card-body>
+            </b-collapse>
+        </b-card>
+        <b-card no-body class="mb-1 border-0">
+            <b-card-header
+                header-tag="header"
+                class="p-1 faq-header"
+                role="tab"
+            >
+                <b-button
+                    v-b-toggle.accordion-faqAnswer10
+                    data-testid="questionBtn"
+                    block
+                    variant="info"
+                    class="text-left"
+                    >Why can’t I see all my Special Authority requests in Health
+                    Gateway?</b-button
+                >
+            </b-card-header>
+            <b-collapse id="accordion-faqAnswer10" role="tabpanel">
+                <b-card-body>
+                    <b-card-text
+                        ><div data-testid="answerTxt">
+                            <p>
                                 Current processing times for
                                 <a
                                     href="https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/prescribers/special-authority "
@@ -479,7 +525,7 @@ export default class FaqView extends Vue {
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer10
+                    v-b-toggle.accordion-faqAnswer11
                     data-testid="questionBtn"
                     block
                     variant="info"
@@ -488,7 +534,7 @@ export default class FaqView extends Vue {
                     Gateway account. What should I do?</b-button
                 >
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer10" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer11" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -540,7 +586,7 @@ export default class FaqView extends Vue {
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer11
+                    v-b-toggle.accordion-faqAnswer12
                     data-testid="questionBtn"
                     block
                     variant="info"
@@ -549,7 +595,7 @@ export default class FaqView extends Vue {
                     their information in Health Gateway?</b-button
                 >
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer11" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer12" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -573,7 +619,7 @@ export default class FaqView extends Vue {
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer12
+                    v-b-toggle.accordion-faqAnswer13
                     data-testid="questionBtn"
                     block
                     variant="info"
@@ -582,7 +628,7 @@ export default class FaqView extends Vue {
                     health portals, such as My Health?</b-button
                 >
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer12" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer13" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -614,7 +660,7 @@ export default class FaqView extends Vue {
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer13
+                    v-b-toggle.accordion-faqAnswer14
                     data-testid="questionBtn"
                     block
                     variant="info"
@@ -622,7 +668,7 @@ export default class FaqView extends Vue {
                     >How frequently do you add new features?</b-button
                 >
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer13" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer14" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -633,7 +679,7 @@ export default class FaqView extends Vue {
                                 suggestions:
                                 <a href="mailto:HealthGateway@gov.bc.ca"
                                     >HealthGateway@gov.bc.ca</a
-                                >.
+                                >
                             </p>
                         </div></b-card-text
                     >
