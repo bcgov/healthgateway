@@ -55,8 +55,8 @@ namespace HealthGateway.Admin.Common.Models
         /// Converts a list of DB Communications into a list of UI Model Communications.
         /// </summary>
         /// <param name="communications">The list of DB Communications to convert.</param>
-        /// <returns>A converted list or null if inbound is null.</returns>
-        public static IEnumerable<Communication>? ToUiModel(IEnumerable<Database.Models.Communication> communications)
+        /// <returns>A converted list.</returns>
+        public static IEnumerable<Communication> ToUiModel(IEnumerable<Database.Models.Communication> communications)
         {
             return communications.Select(CommunicationConverter.ToUiModel).ToList();
         }
