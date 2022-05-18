@@ -13,28 +13,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models
+
+namespace HealthGateway.Admin.Common.Models;
+
+using System;
+
+/// <summary>
+/// Model that provides a representation of an AdminTag.
+/// </summary>
+public class AdminTagView
 {
-    using System;
+    /// <summary>
+    /// Gets or sets the tag id.
+    /// </summary>
+    public Guid Id { get; set; }
 
     /// <summary>
-    /// Model that provides a representation of an AdminTag.
+    /// Gets or sets the tag name.
     /// </summary>
-    public class AdminTagView
-    {
-        /// <summary>
-        /// Gets or sets the tag id.
-        /// </summary>
-        public Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Gets or sets the tag name.
-        /// </summary>
-        public string Name { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the tag version.
-        /// </summary>
-        public uint Version { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the tag version.
+    /// </summary>
+    public uint Version { get; set; }
 }

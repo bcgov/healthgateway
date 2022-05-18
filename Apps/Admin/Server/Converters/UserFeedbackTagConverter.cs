@@ -17,7 +17,7 @@ namespace HealthGateway.Admin.Server.Converters;
 
 using System.Collections.Generic;
 using System.Linq;
-using HealthGateway.Admin.Server.Models;
+using HealthGateway.Admin.Common.Models;
 
 /// <summary>
 /// Converts between DB and UI models.
