@@ -54,7 +54,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc />
         public RequestResult<IList<UserFeedbackView>> GetUserFeedback()
         {
-            this.logger.LogTrace($"Retrieving pending beta requests");
+            this.logger.LogTrace("Retrieving user feedback:");
             DBResult<IList<UserFeedbackAdmin>> userFeedbackResult = this.feedbackDelegate.GetAllUserFeedbackEntries();
             this.logger.LogDebug($"Finished retrieving user feedback: {JsonConvert.SerializeObject(userFeedbackResult)}");
             IList<UserFeedbackView> userFeedback = userFeedbackResult.Payload.ToUiModel();
@@ -76,7 +76,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<IList<AdminTagView>> GetAllAdminTags()
+        public RequestResult<IList<AdminTagView>> GetAllTags()
         {
             this.logger.LogTrace($"Retrieving admin tags");
             DBResult<IEnumerable<AdminTag>> adminTags = this.adminTagDelegate.GetAll();
@@ -92,45 +92,26 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserFeedbackTagView> CreateFeedbackTag(Guid userFeedbackId, string tagName)
+        public RequestResult<AdminTagView> CreateTag(string tagName)
         {
-            this.logger.LogTrace($"Creating new feedback tag... {tagName}");
-
-            DBResult<AdminTag> tagResult = this.adminTagDelegate.Add(new AdminTag() { Name = tagName }, false);
-            if (tagResult.Status != DBStatusCode.Error)
+            RequestResult<AdminTagView> retVal = new()
             {
-                DBResult<UserFeedbackTag> feedbackTagResult = this.feedbackTagDelegate.Add(
-                    new UserFeedbackTag()
-                    {
-                        UserFeedbackId = userFeedbackId,
-                        AdminTagId = tagResult.Payload.AdminTagId,
-                    });
+                ResultStatus = ResultType.Error,
+            };
 
-                if (feedbackTagResult.Status == DBStatusCode.Created)
-                {
-                    return new RequestResult<UserFeedbackTagView>()
-                    {
-                        ResourcePayload = feedbackTagResult.Payload.ToUiModel(),
-                        ResultStatus = ResultType.Success,
-                    };
-                }
-                else
-                {
-                    return new RequestResult<UserFeedbackTagView>()
-                    {
-                        ResultStatus = ResultType.Error,
-                        ResultError = new RequestResultError() { ResultMessage = feedbackTagResult.Message },
-                    };
-                }
+            this.logger.LogTrace($"Creating new admin tag... {tagName}");
+            DBResult<AdminTag> tagResult = this.adminTagDelegate.Add(new() { Name = tagName }, false);
+            if (tagResult.Status == DBStatusCode.Created)
+            {
+                retVal.ResultStatus = ResultType.Success;
+                retVal.ResourcePayload = tagResult.Payload.ToUiModel();
             }
             else
             {
-                return new RequestResult<UserFeedbackTagView>()
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = tagResult.Message },
-                };
+                retVal.ResultError = new() { ResultMessage = tagResult.Message };
             }
+
+            return retVal;
         }
 
         /// <inheritdoc />
