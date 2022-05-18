@@ -13,28 +13,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models
+
+namespace HealthGateway.Admin.Common.Models;
+
+using System;
+
+/// <summary>
+/// Model that provides a representation of UserFeedbackTagView.
+/// </summary>
+public class UserFeedbackTagView
 {
-    using System;
+    /// <summary>
+    /// Gets or sets the user feedback tag id.
+    /// </summary>
+    public Guid Id { get; set; }
 
     /// <summary>
-    /// Model that provides a representation of UserFeedbackTagView.
+    /// Gets or sets the admin tag.
     /// </summary>
-    public class UserFeedbackTagView
-    {
-        /// <summary>
-        /// Gets or sets the user feedback tag id.
-        /// </summary>
-        public Guid Id { get; set; }
+    public AdminTagView Tag { get; set; } = new();
 
-        /// <summary>
-        /// Gets or sets the admin tag.
-        /// </summary>
-        public AdminTagView Tag { get; set; } = new();
-
-        /// <summary>
-        /// Gets or sets the tag version.
-        /// </summary>
-        public uint Version { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the tag version.
+    /// </summary>
+    public uint Version { get; set; }
 }
