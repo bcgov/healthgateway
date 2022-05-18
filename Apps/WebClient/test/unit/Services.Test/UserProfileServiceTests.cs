@@ -44,6 +44,7 @@ namespace HealthGateway.WebClient.Test.Services
         private readonly string hdid = Guid.NewGuid().ToString();
         private readonly Mock<IConfigurationService> emptyConfigServiceMock = new();
         private readonly IConfiguration configuration;
+        private readonly Guid termsOfServiceGuid = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd");
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileServiceTests"/> class.
@@ -76,7 +77,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserProfile userProfile = new()
             {
                 HdId = this.hdid,
-                AcceptedTermsOfService = true,
+                TermsOfServiceId = this.termsOfServiceGuid,
                 LastLoginDateTime = DateTime.Today,
             };
 
@@ -184,7 +185,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserProfile userProfile = new()
             {
                 HdId = this.hdid,
-                AcceptedTermsOfService = true,
+                TermsOfServiceId = this.termsOfServiceGuid,
                 Email = "unit.test@hgw.ca",
             };
 
@@ -224,7 +225,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserProfile userProfile = new()
             {
                 HdId = this.hdid,
-                AcceptedTermsOfService = true,
+                TermsOfServiceId = this.termsOfServiceGuid,
                 Email = string.Empty,
             };
 
@@ -284,7 +285,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserProfile userProfile = new()
             {
                 HdId = this.hdid,
-                AcceptedTermsOfService = true,
+                TermsOfServiceId = this.termsOfServiceGuid,
             };
 
             DBResult<UserProfile> userProfileDBResult = new()
@@ -429,7 +430,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserProfile userProfile = new()
             {
                 HdId = this.hdid,
-                AcceptedTermsOfService = true,
+                TermsOfServiceId = this.termsOfServiceGuid,
             };
 
             DBResult<UserProfile> userProfileDBResult = new()
@@ -463,7 +464,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserProfile userProfile = new()
             {
                 HdId = this.hdid,
-                AcceptedTermsOfService = true,
+                TermsOfServiceId = this.termsOfServiceGuid,
                 ClosedDateTime = DateTime.Today,
             };
             DBResult<UserProfile> userProfileDBResult = new()
@@ -497,7 +498,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserProfile userProfile = new()
             {
                 HdId = this.hdid,
-                AcceptedTermsOfService = true,
+                TermsOfServiceId = this.termsOfServiceGuid,
                 Email = "unit.test@hgw.ca",
             };
 
@@ -532,7 +533,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserProfile userProfile = new()
             {
                 HdId = this.hdid,
-                AcceptedTermsOfService = true,
+                TermsOfServiceId = this.termsOfServiceGuid,
                 ClosedDateTime = DateTime.Today,
                 Email = "unit.test@hgw.ca",
             };
@@ -568,7 +569,7 @@ namespace HealthGateway.WebClient.Test.Services
             UserProfile userProfile = new()
             {
                 HdId = this.hdid,
-                AcceptedTermsOfService = true,
+                TermsOfServiceId = this.termsOfServiceGuid,
                 ClosedDateTime = null,
             };
 

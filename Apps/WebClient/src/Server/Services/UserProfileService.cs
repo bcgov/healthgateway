@@ -144,7 +144,7 @@ namespace HealthGateway.WebClient.Services
                 userProfile.LastLoginDateTimes.Add(userProfileHistory.LastLoginDateTime);
             }
 
-            userProfile.HasTermsOfServiceUpdated = termsOfServiceResult.ResourcePayload?.EffectiveDate > previousLastLogin;
+            userProfile.HasTermsOfServiceUpdated = retVal.Payload?.TermsOfServiceId != termsOfServiceResult.ResourcePayload?.Id;
 
             if (!userProfile.IsEmailVerified)
             {
@@ -221,7 +221,7 @@ namespace HealthGateway.WebClient.Services
             {
                 HdId = hdid,
                 IdentityManagementId = createProfileRequest.Profile.IdentityManagementId,
-                AcceptedTermsOfService = createProfileRequest.Profile.AcceptedTermsOfService,
+                TermsOfServiceId = createProfileRequest.Profile.TermsOfServiceId,
                 Email = string.Empty,
                 SMSNumber = null,
                 CreatedBy = hdid,

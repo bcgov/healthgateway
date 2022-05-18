@@ -53,7 +53,12 @@ namespace HealthGateway.GatewayApi.Models
         /// <summary>
         /// Gets or sets a value indicating whether the user accepted the terms of service.
         /// </summary>
-        public bool AcceptedTermsOfService { get; set; }
+        public bool AcceptedTermsOfService { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating the ToS Id the user has accepted.
+        /// </summary>
+        public Guid TermsOfServiceId { get; set; }
 
         /// <summary>
         /// Gets or sets the user email.
@@ -111,7 +116,7 @@ namespace HealthGateway.GatewayApi.Models
             return new UserProfileModel()
             {
                 HdId = model.HdId,
-                AcceptedTermsOfService = model.AcceptedTermsOfService,
+                TermsOfServiceId = model.TermsOfServiceId,
                 Email = model.Email,
                 IsEmailVerified = !string.IsNullOrEmpty(model.Email),
                 SMSNumber = model.SMSNumber,
