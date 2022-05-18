@@ -76,6 +76,22 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
+        /// Deletes an admin tag.
+        /// </summary>
+        /// <returns>The deleted tag wrapped in a request result.</returns>
+        /// <param name="tag">The admin tag.</param>
+        /// <response code="200">Returns the list of dependents.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpDelete]
+        [Route("[controller]")]
+        public RequestResult<AdminTagView> DeleteTag([FromBody] AdminTagView tag)
+        {
+            RequestResult<AdminTagView> result = this.feedbackService.DeleteTag(tag);
+            return result;
+        }
+
+        /// <summary>
         /// Associate an existing admin tag to the feedback with matching id.
         /// </summary>
         /// <returns>The added tag model wrapped in a request result.</returns>

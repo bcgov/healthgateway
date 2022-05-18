@@ -76,6 +76,34 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
+        public DBResult<AdminTag> Delete(AdminTag tag, bool commit = true)
+        {
+            this.logger.LogTrace($"Deleting AdminTag from DB...");
+            DBResult<AdminTag> result = new DBResult<AdminTag>()
+            {
+                Payload = tag,
+                Status = DBStatusCode.Deferred,
+            };
+            this.dbContext.AdminTag.Remove(tag);
+            if (commit)
+            {
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Deleted;
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    result.Status = DBStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+            }
+
+            this.logger.LogDebug($"Finished deleting AdminTag in DB");
+            return result;
+        }
+
+        /// <inheritdoc />
         public DBResult<IEnumerable<AdminTag>> GetAll()
         {
             this.logger.LogTrace($"Getting all AdminTag from DB...");

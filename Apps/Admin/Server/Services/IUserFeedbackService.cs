@@ -52,6 +52,13 @@ namespace HealthGateway.Admin.Server.Services
         RequestResult<AdminTagView> CreateTag(string tagName);
 
         /// <summary>
+        /// Deletes an admin tag.
+        /// </summary>
+        /// <param name="tag">The admin tag.</param>
+        /// <returns>The deleted admin tag wrapped in a request result.</returns>
+        RequestResult<AdminTagView> DeleteTag(AdminTagView tag);
+
+        /// <summary>
         /// Associates an admin tag to a feedback.
         /// </summary>
         /// <param name="userFeedbackId">The user feedback id to be associated to the tag.</param>

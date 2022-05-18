@@ -115,6 +115,29 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc />
+        public RequestResult<AdminTagView> DeleteTag(AdminTagView tag)
+        {
+            RequestResult<AdminTagView> retVal = new()
+            {
+                ResultStatus = ResultType.Error,
+            };
+
+            this.logger.LogTrace($"Deleting admin tag... {tag.Name}");
+            DBResult<AdminTag> tagResult = this.adminTagDelegate.Delete(tag.ToDbModel(), false);
+            if (tagResult.Status == DBStatusCode.Deleted)
+            {
+                retVal.ResultStatus = ResultType.Success;
+                retVal.ResourcePayload = tagResult.Payload.ToUiModel();
+            }
+            else
+            {
+                retVal.ResultError = new() { ResultMessage = tagResult.Message };
+            }
+
+            return retVal;
+        }
+
+        /// <inheritdoc />
         public RequestResult<UserFeedbackTagView> AssociateFeedbackTag(Guid userFeedbackId, AdminTagView tag)
         {
             this.logger.LogTrace($"Adding admin tag to feedback... {tag}");
