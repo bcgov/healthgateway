@@ -11,7 +11,9 @@ describe("User Profile", () => {
         );
     });
 
-    it("PHN Visible and Correct", () => {
+    it("Verify PHN and address label are visible", () => {
         cy.get("[data-testid=PHN]").should("be.visible").contains("9735353315");
+
+        cy.get("[data-testid=postal-address-label]").should("be.visible");
     });
 });

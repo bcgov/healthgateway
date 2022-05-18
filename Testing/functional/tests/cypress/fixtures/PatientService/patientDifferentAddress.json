@@ -1,0 +1,29 @@
+{
+    "resourcePayload": {
+        "hdid": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+        "personalhealthnumber": "9735353315",
+        "firstname": "BONNET",
+        "lastname": "PROTERVITY",
+        "birthdate": "1967-06-02T00:00:00",
+        "gender": "Female",
+        "physicalAddress": {
+            "streetLines": ["1234 LEE AVENUE"],
+            "city": "VICTORIA",
+            "state": "BC",
+            "postalCode": "V9C6P1",
+            "country": "CA"
+        },
+        "postalAddress": {
+            "streetLines": ["8128 WILD CREEK DRIVE"],
+            "city": "HOLBORN",
+            "state": "BC",
+            "postalCode": "V3A3P1",
+            "country": "CA"
+        }
+    },
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 1,
+    "resultError": null
+}

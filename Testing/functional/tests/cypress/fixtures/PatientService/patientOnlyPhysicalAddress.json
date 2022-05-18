@@ -1,0 +1,23 @@
+{
+    "resourcePayload": {
+        "hdid": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+        "personalhealthnumber": "9735353315",
+        "firstname": "CRYOPHORUS",
+        "lastname": "FOGEYDOM",
+        "birthdate": "1961-09-25T00:00:00",
+        "gender": "Female",
+        "physicalAddress": {
+            "streetLines": ["4790 RAD CLOSE"],
+            "city": "HYTHE ",
+            "state": "BC",
+            "postalCode": "V5K 2X0",
+            "country": "CA"
+        },
+        "postalAddress": null
+    },
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 1,
+    "resultError": null
+}

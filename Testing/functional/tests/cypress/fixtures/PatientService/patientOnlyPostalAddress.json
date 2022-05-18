@@ -1,0 +1,23 @@
+{
+    "resourcePayload": {
+        "hdid": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+        "personalhealthnumber": "9735353315",
+        "firstname": "MIKES",
+        "lastname": "ORDINATE",
+        "birthdate": "1955-04-06T00:00:00",
+        "gender": "Male",
+        "physicalAddress": null,
+        "postalAddress": {
+            "streetLines": ["7826 UPPER AUSTIN LODGE L"],
+            "city": "AXBRIDGE",
+            "state": "BC",
+            "postalCode": "T8C 8G7",
+            "country": "CA"
+        }
+    },
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 1,
+    "resultError": null
+}
