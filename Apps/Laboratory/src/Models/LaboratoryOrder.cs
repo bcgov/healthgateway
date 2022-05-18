@@ -141,7 +141,11 @@ public class LaboratoryOrder
                 "Held" or "Partial" or "Pending" => "Pending",
                 _ => model.PlisTestStatus,
             },
-            DownloadLabel = model.PlisTestStatus == "Completed" ? "Final" : "Incomplete",
+            DownloadLabel = model.PlisTestStatus switch
+            {
+                "Completed" or "Corrected" => "Final",
+                _ => "Incomplete",
+            },
             ReportAvailable = model.PdfReportAvailable,
         };
     }
