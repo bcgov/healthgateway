@@ -16,8 +16,6 @@
 namespace HealthGateway.Admin.Server.Models
 {
     using System;
-    using System.Collections.Generic;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Model that provides a representation of an AdminTag.
@@ -38,50 +36,5 @@ namespace HealthGateway.Admin.Server.Models
         /// Gets or sets the tag version.
         /// </summary>
         public uint Version { get; set; }
-
-        /// <summary>
-        /// Converts a list of DB AdminTag into a list of AdminTagView.
-        /// </summary>
-        /// <param name="adminTags">The list of DB models.</param>
-        /// <returns>A converted list or null if inbound is null.</returns>
-        public static IList<AdminTagView> FromDbModelCollection(IEnumerable<AdminTag> adminTags)
-        {
-            List<AdminTagView> retList = new();
-            foreach (AdminTag tag in adminTags)
-            {
-                retList.Add(FromDbModel(tag));
-            }
-
-            return retList;
-        }
-
-        /// <summary>
-        /// Constructs a AdminTagView from an AdminTag model.
-        /// </summary>
-        /// <param name="model">The database model.</param>
-        /// <returns>A new AdminTagView.</returns>
-        public static AdminTagView FromDbModel(AdminTag model)
-        {
-            return new AdminTagView()
-            {
-                Id = model.AdminTagId,
-                Name = model.Name,
-                Version = model.Version,
-            };
-        }
-
-        /// <summary>
-        /// Constructs an AdminTag from the object.
-        /// </summary>
-        /// <returns>A new AdminTag.</returns>
-        public AdminTag ToDbModel()
-        {
-            return new AdminTag()
-            {
-                AdminTagId = this.Id,
-                Name = this.Name,
-                Version = this.Version,
-            };
-        }
     }
 }
