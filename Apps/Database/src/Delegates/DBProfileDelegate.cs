@@ -78,7 +78,7 @@ namespace HealthGateway.Database.Delegates
             {
                 // Copy certain attributes into the fetched User Profile
                 result.Payload!.Email = profile.Email;
-                result.Payload.AcceptedTermsOfService = profile.AcceptedTermsOfService;
+                result.Payload.TermsOfServiceId = profile.TermsOfServiceId;
                 result.Payload.UpdatedBy = profile.UpdatedBy;
                 result.Payload.Version = profile.Version;
                 result.Status = DBStatusCode.Deferred;
@@ -165,7 +165,6 @@ namespace HealthGateway.Database.Delegates
         public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(TimeSpan offset)
         {
             Dictionary<DateTime, int> dateCount = this.dbContext.UserProfile
-                            .Where(x => x.AcceptedTermsOfService)
                             .Select(x => new { x.HdId, createdDate = GatewayDbContext.DateTrunc("days", x.CreatedDateTime.AddMinutes(offset.TotalMinutes)) })
                             .GroupBy(x => x.createdDate).Select(x => new { createdDate = x.Key, count = x.Count() })
                             .OrderBy(x => x.createdDate)

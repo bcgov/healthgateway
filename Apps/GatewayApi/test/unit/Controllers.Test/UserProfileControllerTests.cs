@@ -82,7 +82,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             UserProfile userProfile = new()
             {
                 HdId = this.hdid,
-                AcceptedTermsOfService = true,
+                TermsOfServiceId = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd"),
             };
 
             CreateUserRequest createUserRequest = new()
@@ -486,7 +486,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             UserProfile userProfile = new()
             {
                 HdId = this.hdid,
-                AcceptedTermsOfService = true,
+                TermsOfServiceId = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd"),
             };
 
             return new RequestResult<UserProfileModel>
