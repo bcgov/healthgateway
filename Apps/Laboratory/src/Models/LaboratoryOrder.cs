@@ -143,7 +143,7 @@ public class LaboratoryOrder
             },
             DownloadLabel = model.PlisTestStatus switch
             {
-                "Completed" or "Corrected" => "Final",
+                "Completed" or "Corrected" or "Completed w/Modification" => "Final",
                 _ => "Incomplete",
             },
             ReportAvailable = model.PdfReportAvailable,
