@@ -100,7 +100,7 @@ namespace HealthGateway.Admin.Server.Services
             };
 
             this.logger.LogTrace($"Creating new admin tag... {tagName}");
-            DBResult<AdminTag> tagResult = this.adminTagDelegate.Add(new() { Name = tagName }, false);
+            DBResult<AdminTag> tagResult = this.adminTagDelegate.Add(new() { Name = tagName });
             if (tagResult.Status == DBStatusCode.Created)
             {
                 retVal.ResultStatus = ResultType.Success;
@@ -123,7 +123,7 @@ namespace HealthGateway.Admin.Server.Services
             };
 
             this.logger.LogTrace($"Deleting admin tag... {tag.Name}");
-            DBResult<AdminTag> tagResult = this.adminTagDelegate.Delete(tag.ToDbModel(), false);
+            DBResult<AdminTag> tagResult = this.adminTagDelegate.Delete(tag.ToDbModel());
             if (tagResult.Status == DBStatusCode.Deleted)
             {
                 retVal.ResultStatus = ResultType.Success;

@@ -1,0 +1,40 @@
+﻿@page "/feedback"
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@using HealthGateway.Admin.Client.Store.Tag
+
+<PageTitle>Feedback Review</PageTitle>
+<HgPageHeading>Feedback Review</HgPageHeading>
+
+@foreach (RequestError error in TagErrors)
+{
+    <HgBannerFeedback Severity="@Severity.Error" TResetAction="@TagActions.ResetStateAction">
+        @error.Message
+    </HgBannerFeedback>
+}
+
+<MudGrid>
+    <MudItem xs="12" Class="d-flex">
+        <MudAutocomplete T="string"
+                         Label="Tag Editor"
+                         @bind-Value="@ActiveTag"
+                         SearchFunc="@FilterTagsAsync"
+                         Disabled="@(TagState.Value.Add.IsLoading || TagState.Value.Delete.IsLoading)"
+                         ResetValueOnEmptyText="@true"
+                         CoerceValue="@true"
+                         Dense="@true"
+                         Class="flex-grow-1"/>
+        @if (ActiveTag?.Length > 0)
+        {
+            @if (ActiveTagExists)
+            {
+                <HgButton TopMargin="@Breakpoint.Always" LeftMargin="@Breakpoint.Always" Class="flex-grow-0" EndIcon="@Icons.Material.Filled.Delete" Variant="@Variant.Filled" Color="@Color.Error" Loading="@TagState.Value.Delete.IsLoading" @onclick="@RemoveTagAsync">Remove Tag</HgButton>
+            }
+            else
+            {
+                <HgButton TopMargin="@Breakpoint.Always" LeftMargin="@Breakpoint.Always" Class="flex-grow-0" EndIcon="@Icons.Material.Filled.Add" Variant="@Variant.Filled" Color="@Color.Success" Loading="@TagState.Value.Add.IsLoading" @onclick="@AddTagAsync">Add Tag</HgButton>
+            }
+        }
+    </MudItem>
+</MudGrid>

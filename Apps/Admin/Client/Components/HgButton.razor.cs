@@ -50,4 +50,16 @@ public partial class HgButton : HgComponentBase
     /// </summary>
     [Parameter]
     public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to disable the button and display the loading spinner.
+    /// </summary>
+    [Parameter]
+    public bool Loading { get; set; }
+
+    /// <summary>
+    /// Gets or sets the content that should be displayed on the button when Loading is true.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? LoadingContent { get; set; }
 }

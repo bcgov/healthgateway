@@ -32,7 +32,7 @@ public interface ITagApi
     /// <param name="tagName">The tag name.</param>
     /// <returns>The wrapped model.</returns>
     [Post("/")]
-    Task<ApiResponse<RequestResult<AdminTagView>>> Add([Body] string tagName);
+    Task<ApiResponse<RequestResult<AdminTagView>>> Add([Body(BodySerializationMethod.Serialized)] string tagName);
 
     /// <summary>
     /// Gets all tags.

@@ -226,6 +226,7 @@ public static class TagReducers
             Add = new(),
             Load = new(),
             Delete = new(),
+            Data = null,
         };
     }
 }
