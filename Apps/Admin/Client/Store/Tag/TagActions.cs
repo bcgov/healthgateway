@@ -176,24 +176,4 @@ public static class TagActions
     public class ResetStateAction
     {
     }
-
-    /// <summary>
-    /// The action that toggles whether a particular tag is expanded.
-    /// </summary>
-    public class ToggleIsExpandedAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ToggleIsExpandedAction"/> class.
-        /// </summary>
-        /// <param name="id">Represents the ID of the tag.</param>
-        public ToggleIsExpandedAction(Guid id)
-        {
-            this.Id = id;
-        }
-
-        /// <summary>
-        /// Gets or sets the ID of the tag.
-        /// </summary>
-        public Guid Id { get; set; }
-    }
 }
