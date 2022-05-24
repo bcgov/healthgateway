@@ -41,18 +41,6 @@ export default class ReleaseNotesView extends Vue {
             </ul>
         </release-note>
         <release-note
-            date="April 5, 2022"
-            version="v1.5.7"
-            title="Timeline Card Update"
-        >
-            <ul>
-                <li>
-                    We updated the timeline cards in the desktop view so it is
-                    clear that they can be clicked to show more details.
-                </li>
-            </ul>
-        </release-note>
-        <release-note
             date="April 25, 2022"
             version="v1.5.8"
             title="Landing Page Update"
