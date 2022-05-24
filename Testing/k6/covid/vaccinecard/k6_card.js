@@ -24,7 +24,7 @@ export let environment = __ENV.HG_ENV  ? __ENV.HG_ENV : "test"; // default to te
 export let specialHeaderKey = __ENV.HG_KEY ? __ENV.HG_KEY : "nokey"; // special key 
 
 export let baseSiteUrl = "https://" + environment + ".healthgateway.gov.bc.ca";
-export let cardUrl = baseSiteUrl + "/api/immunizationservice/v1/api/VaccineStatus";
+export let cardUrl = baseSiteUrl + "/api/immunizationservice/v1/api/PublicVaccineStatus";
 export let entryPageUrl  = baseSiteUrl + "/vaccinecard";
 export let vendorChunkJsUrl = baseSiteUrl + "/js/chunk-vendors.c61f122d.js";
 export let siteChunkJsUrl = baseSiteUrl + "/js/app.8136e1c8.js";
@@ -173,11 +173,12 @@ export default function () {
         }
         let res2 = http.get(cardUrl, params);
 
- /*       for (var p in res2.headers) {
+       /* for (var p in res2.headers) {
             if (res2.headers.hasOwnProperty(p)) {
               console.log(p + ' : ' + res2.headers[p]);
             }
-          } */
+          } 
+          */
 
         check(res2, {"API Status 200": (r) => r.status === 200})
         check(res2, {
