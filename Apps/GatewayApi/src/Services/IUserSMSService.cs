@@ -16,7 +16,7 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// The User SMS service.

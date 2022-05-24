@@ -16,7 +16,7 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// The User Email service.
