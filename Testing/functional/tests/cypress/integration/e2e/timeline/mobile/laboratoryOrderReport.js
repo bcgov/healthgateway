@@ -34,7 +34,7 @@ describe("Laboratory Orders - Download Report", () => {
             .click({ force: true });
 
         cy.wait("@getLaboratoryReport");
-        cy.verifyDownload("Laboratory_Report_2021_07_04-08_43.pdf");
+        cy.verifyDownload("Laboratory_Report_2021_07_04-11_45.pdf");
 
         cy.get("[data-testid=backBtn]").click({ force: true });
     });
