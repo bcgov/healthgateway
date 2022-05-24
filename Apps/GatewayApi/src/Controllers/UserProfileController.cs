@@ -39,7 +39,7 @@ namespace HealthGateway.GatewayApi.Controllers
     /// </summary>
     [Authorize]
     [ApiVersion("1.0")]
-    [Route("v{version:apiVersion}/api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class UserProfileController : ControllerBase
     {

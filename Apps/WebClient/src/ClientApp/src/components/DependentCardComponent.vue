@@ -25,11 +25,7 @@ import {
     ImmunizationEvent,
     Recommendation,
 } from "@/models/immunizationModel";
-import {
-    Covid19LaboratoryTest,
-    LaboratoryReport,
-    LaboratoryUtil,
-} from "@/models/laboratory";
+import { Covid19LaboratoryTest, LaboratoryReport } from "@/models/laboratory";
 import Report from "@/models/report";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
@@ -171,7 +167,7 @@ export default class DependentCardComponent extends Vue {
         );
     }
 
-    private get immunizationTabShown(): boolean {
+    private get isImmunizationTabShown(): boolean {
         return this.webClientConfig.modules["DependentImmunizationTab"];
     }
 
@@ -203,10 +199,6 @@ export default class DependentCardComponent extends Vue {
                 status: x.status || "",
             };
         });
-    }
-
-    private checkResultReady(test: Covid19LaboratoryTest): boolean {
-        return LaboratoryUtil.isTestResultReady(test.testStatus);
     }
 
     private created() {
@@ -314,14 +306,6 @@ export default class DependentCardComponent extends Vue {
 
     private formatDate(date: StringISODate): string {
         return new DateWrapper(date).format();
-    }
-
-    private formatResult(test: Covid19LaboratoryTest): string {
-        if (this.checkResultReady(test)) {
-            return test?.labResultOutcome ?? "";
-        } else {
-            return "";
-        }
     }
 
     private fetchCovid19LaboratoryTests() {
@@ -751,9 +735,9 @@ export default class DependentCardComponent extends Vue {
                                         )
                                     "
                                 >
-                                    {{ formatResult(row.test) }}
+                                    {{ row.test.filteredLabResultOutcome }}
                                 </span>
-                                <span v-if="checkResultReady(row.test)">
+                                <span v-if="row.test.resultReady">
                                     <hg-button
                                         :id="
                                             'dependent-covid-test-info-button-' +
@@ -793,7 +777,7 @@ export default class DependentCardComponent extends Vue {
                                 <hg-button
                                     v-if="
                                         row.reportAvailable &&
-                                        checkResultReady(row.test)
+                                        row.test.resultReady
                                     "
                                     data-testid="dependentCovidReportDownloadBtn"
                                     variant="link"
@@ -816,7 +800,7 @@ export default class DependentCardComponent extends Vue {
                     </table>
                 </b-tab>
                 <b-tab
-                    v-if="immunizationTabShown"
+                    v-if="isImmunizationTabShown"
                     :disabled="isExpired"
                     :data-testid="`immunization-tab-${dependent.ownerId}`"
                     class="tableTab mt-2"

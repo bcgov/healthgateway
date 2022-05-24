@@ -26,7 +26,7 @@ namespace HealthGateway.GatewayApi.Controllers
     /// Web API to handle reports.
     /// </summary>
     [ApiVersion("1.0")]
-    [Route("v{version:apiVersion}/api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     [Authorize]
     public class ReportController

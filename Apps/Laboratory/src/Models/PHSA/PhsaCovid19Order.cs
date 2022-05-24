@@ -40,13 +40,13 @@ namespace HealthGateway.Laboratory.Models.PHSA
         /// Gets or sets the PHN the order is for.
         /// </summary>
         [JsonPropertyName("phn")]
-        public string PHN { get; set; } = string.Empty;
+        public string Phn { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Provider IDs for the Order.
         /// </summary>
         [JsonPropertyName("orderingProviderIds")]
-        public string OrderProviderIDs { get; set; } = string.Empty;
+        public string OrderProviderIds { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the providers' names.
@@ -79,10 +79,10 @@ namespace HealthGateway.Laboratory.Models.PHSA
         public DateTime MessageDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the message id.
+        /// Gets or sets the message ID.
         /// </summary>
         [JsonPropertyName("messageId")]
-        public string MessageID { get; set; } = string.Empty;
+        public string MessageId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets additional related data.
@@ -94,7 +94,7 @@ namespace HealthGateway.Laboratory.Models.PHSA
         /// Gets or sets a value indicating whether a report is available.
         /// </summary>
         [JsonPropertyName("reportAvailable")]
-        public bool ReportAvailable { get; set; } = false;
+        public bool ReportAvailable { get; set; }
 
         /// <summary>
         /// Gets or sets the list of COVID-19 tests.

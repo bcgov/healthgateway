@@ -3,7 +3,7 @@ const covid19Url = "/covid19";
 
 describe("Authenticated Vaccine Card", () => {
     it("Partially Vaccinated with 1 Valid Dose", () => {
-        cy.intercept("GET", "**/v1/api/AuthenticatedVaccineStatus?hdid=*").as(
+        cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*").as(
             "getVaccinationStatus"
         );
 
@@ -24,7 +24,7 @@ describe("Authenticated Vaccine Card", () => {
         );
         cy.get("[data-testid=statusPartiallyVaccinated]").should("be.visible");
 
-        cy.intercept("GET", "**/v1/api/Immunization?hdid=*").as(
+        cy.intercept("GET", "**/Immunization?hdid=*").as(
             "getImmunization"
         );
 
@@ -67,7 +67,7 @@ describe("Authenticated Vaccine Card", () => {
     });
 
     it("Save Button Absent When Status Is Not Found", () => {
-        cy.intercept("GET", "**/v1/api/AuthenticatedVaccineStatus?hdid=*").as(
+        cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*").as(
             "getVaccinationStatus"
         );
 
@@ -92,12 +92,12 @@ describe("Authenticated Vaccine Card", () => {
     it("Save As PDF", () => {
         cy.deleteDownloadsFolder();
 
-        cy.intercept("GET", "**/v1/api/AuthenticatedVaccineStatus?hdid=*").as(
+        cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*").as(
             "getVaccinationStatus"
         );
         cy.intercept(
             "GET",
-            "**/v1/api/AuthenticatedVaccineStatus/pdf?hdid=*"
+            "**/AuthenticatedVaccineStatus/pdf?hdid=*"
         ).as("getVaccineProof");
 
         cy.enableModules([

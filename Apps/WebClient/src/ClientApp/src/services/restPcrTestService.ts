@@ -15,9 +15,8 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 export class RestPcrTestService implements IPcrTestService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-    private readonly LABORATORY_BASE_URI: string = "v1/api/Laboratory";
-    private readonly PUBLIC_LABORATORY_BASE_URI: string =
-        "v1/api/PublicLaboratory";
+    private readonly LABORATORY_BASE_URI: string = "Laboratory";
+    private readonly PUBLIC_LABORATORY_BASE_URI: string = "PublicLaboratory";
 
     private http!: IHttpDelegate;
     private isEnabled = false;

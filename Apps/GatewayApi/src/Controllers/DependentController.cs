@@ -31,7 +31,7 @@ namespace HealthGateway.GatewayApi.Controllers
     /// </summary>
     [Authorize]
     [ApiVersion("1.0")]
-    [Route("v{version:apiVersion}/api/UserProfile/")]
+    [Route("UserProfile")]
     [ApiController]
     public class DependentController
     {
@@ -46,7 +46,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="dependentService">The injected user feedback service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         public DependentController(
-            ILogger<UserProfileController> logger,
+            ILogger<DependentController> logger,
             IDependentService dependentService,
             IHttpContextAccessor httpContextAccessor)
         {
@@ -96,7 +96,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The http status.</returns>
         /// <param name="hdid">The Delegate hdid.</param>
         /// <param name="dependentHdid">The Dependent hdid.</param>
-        /// <param name="dependent">The dependent model object to be delted.</param>
+        /// <param name="dependent">The dependent model object to be deleted.</param>
         /// <response code="200">The Dependent record was deleted.</response>
         /// <response code="400">The request is invalid.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>

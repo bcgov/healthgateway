@@ -1,5 +1,5 @@
 describe("WebClient UserProfile Service", () => {
-    const BASEURL = "/v1/api/UserProfile/";
+    const BASEURL = "/UserProfile/";
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
     const BOGUSHDID = "BOGUSHDID";
     beforeEach(() => {

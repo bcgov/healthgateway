@@ -201,8 +201,8 @@ services:
         hosts:
           - hg-dev.api.gov.bc.ca
         paths:
-          - /api/gatewayapiservice/v1/api/Communication
-          - /api/gatewayapiservice/v1/api/UserProfile/termsofservice
+          - /api/gatewayapiservice/Communication
+          - /api/gatewayapiservice/UserProfile/termsofservice
         strip_path: false
         tags:
           - OAS3_import
@@ -315,7 +315,7 @@ services:
         hosts:
           - hg-dev.api.gov.bc.ca
         paths:
-          - /api/immunizationservice/v1/api/PublicVaccineStatus
+          - /api/immunizationservice/PublicVaccineStatus
         strip_path: false
         tags:
           - OAS3_import
@@ -428,7 +428,7 @@ services:
         hosts:
           - hg-dev.api.gov.bc.ca
         paths:
-          - /api/laboratoryservice/v1/api/PublicLaboratory
+          - /api/laboratoryservice/PublicLaboratory
         strip_path: false
         tags:
           - OAS3_import
@@ -538,7 +538,7 @@ services:
         hosts:
           - hg-dev.api.gov.bc.ca
         paths:
-          - /api/medicationservice/v1/api/Medication/
+          - /api/medicationservice/Medication/
         strip_path: false
         tags:
           - OAS3_import

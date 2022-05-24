@@ -93,7 +93,7 @@ variables:
 jobs:
   - job: "Azure_OpenShiftSilver"
     pool:
-      vmImage: "ubuntu-20.04"
+      vmImage: "ubuntu-latest"
     displayName: "Build ${{ parameters.Application }} in Azure Cloud"
     condition: eq(variables['EnableAzure'], true)
     steps:

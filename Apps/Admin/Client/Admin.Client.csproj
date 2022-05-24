@@ -4,6 +4,7 @@
         <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(RunConfiguration)' == 'Admin' ">
@@ -12,9 +13,9 @@
     <ItemGroup>
         <PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
         <PackageReference Include="Blazored.TextEditor" Version="1.0.8" />
-        <PackageReference Include="Fluxor" Version="5.3.0" />
-        <PackageReference Include="Fluxor.Blazor.Web" Version="5.3.0" />
-        <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.3.0" />
+        <PackageReference Include="Fluxor" Version="5.4.0" />
+        <PackageReference Include="Fluxor.Blazor.Web" Version="5.4.0" />
+        <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.4.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.5" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.5" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="6.0.5" />
@@ -31,12 +32,8 @@
 
     <ItemGroup>
         <ProjectReference Include="../Common/Admin.Common.csproj" />
-        <ProjectReference Include="..\..\CommonUi\src\Common.Ui.csproj">
-            <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-        </ProjectReference>
-        <ProjectReference Include="..\..\CommonData\src\Common.Data.csproj">
-            <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-        </ProjectReference>
+        <ProjectReference Include="..\..\CommonUi\src\Common.Ui.csproj" />
+        <ProjectReference Include="..\..\CommonData\src\Common.Data.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -61,7 +58,7 @@
       </Content>
       <Content Update="wwwroot\appsettings.Development.json">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>  
+      </Content>
       <Content Update="wwwroot\appsettings.hgdev.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>

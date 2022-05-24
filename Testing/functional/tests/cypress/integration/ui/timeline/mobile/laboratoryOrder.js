@@ -2,7 +2,7 @@ const { AuthMethod } = require("../../../../support/constants");
 
 describe("Laboratory Orders", () => {
     beforeEach(() => {
-        cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
+        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrders.json",
         });
         cy.enableModules("AllLaboratory");
@@ -171,7 +171,7 @@ describe("Laboratory Orders", () => {
 describe("Laboratory Orders Refresh", () => {
     beforeEach(() => {
         let isLoading = false;
-        cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", (req) => {
+        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", (req) => {
             req.reply((res) => {
                 if (!isLoading) {
                     res.send({
@@ -225,7 +225,7 @@ describe("Laboratory Orders Refresh", () => {
 
 describe("Laboratory Orders Queued", () => {
     beforeEach(() => {
-        cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
+        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrdersQueued.json",
         });
         cy.enableModules("AllLaboratory");

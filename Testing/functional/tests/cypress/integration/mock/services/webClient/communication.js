@@ -1,5 +1,5 @@
 describe("WebClient Communication Service", () => {
-    const BASEURL = "/v1/api/Communication/";
+    const BASEURL = "/Communication/";
 
     it("Verify Get Communication", () => {
         cy.request({

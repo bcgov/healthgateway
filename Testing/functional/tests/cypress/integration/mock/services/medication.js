@@ -31,7 +31,7 @@ describe("Medication Service", () => {
                 `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
             );
             cy.request({
-                url: `${config.serviceEndpoints.Medication}v1/api/Medication/?${drugIdentifiersQueryString}`,
+                url: `${config.serviceEndpoints.Medication}Medication/?${drugIdentifiersQueryString}`,
                 followRedirect: false,
                 headers: {
                     accept: "application/json",
@@ -58,7 +58,7 @@ describe("Medication Service", () => {
                 `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
             );
             cy.request({
-                url: `${config.serviceEndpoints.Medication}v1/api/Medication/${drugIdentifier}`,
+                url: `${config.serviceEndpoints.Medication}Medication/${drugIdentifier}`,
                 followRedirect: false,
                 headers: {
                     accept: "application/json",
@@ -79,7 +79,7 @@ describe("Medication Service", () => {
                 `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
             );
             cy.request({
-                url: `${config.serviceEndpoints.Medication}v1/api/Medication/${drugIdentifier}`,
+                url: `${config.serviceEndpoints.Medication}Medication/${drugIdentifier}`,
                 followRedirect: false,
                 headers: {
                     accept: "application/json",
@@ -100,7 +100,7 @@ describe("Medication Service", () => {
                 `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
             );
             cy.request({
-                url: `${config.serviceEndpoints.Medication}v1/api/MedicationStatement/${HDID}`,
+                url: `${config.serviceEndpoints.Medication}MedicationStatement/${HDID}`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -118,7 +118,7 @@ describe("Medication Service", () => {
                     `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
                 );
                 cy.request({
-                    url: `${config.serviceEndpoints.Medication}v1/api/MedicationStatement/${HDID}`,
+                    url: `${config.serviceEndpoints.Medication}MedicationStatement/${HDID}`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -143,7 +143,7 @@ describe("Medication Service", () => {
                     `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
                 );
                 cy.request({
-                    url: `${config.serviceEndpoints.Medication}v1/api/MedicationStatement/${HDID}`,
+                    url: `${config.serviceEndpoints.Medication}MedicationStatement/${HDID}`,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token,
@@ -174,7 +174,7 @@ describe("Medication Service", () => {
                 `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
             );
             cy.request({
-                url: `${config.serviceEndpoints.Medication}v1/api/MedicationRequest/${HDID}`,
+                url: `${config.serviceEndpoints.Medication}MedicationRequest/${HDID}`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -192,7 +192,7 @@ describe("Medication Service", () => {
                     `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
                 );
                 cy.request({
-                    url: `${config.serviceEndpoints.Medication}v1/api/MedicationRequest/${HDID}`,
+                    url: `${config.serviceEndpoints.Medication}MedicationRequest/${HDID}`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -217,7 +217,7 @@ describe("Medication Service", () => {
                     `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
                 );
                 cy.request({
-                    url: `${config.serviceEndpoints.Medication}v1/api/MedicationRequest/${HDID}`,
+                    url: `${config.serviceEndpoints.Medication}MedicationRequest/${HDID}`,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token,

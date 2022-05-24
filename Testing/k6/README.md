@@ -25,7 +25,7 @@ The Smoke Test's role is to verify that your System can handle minimal load, wit
 Any errors here are an indication of functionality not working under basic load.
 
 ```bash
-cd run
+cd application/smoke
 HG_PASSWORD=<loadtestusers_password> smoke.sh
 ```
 
@@ -34,8 +34,8 @@ HG_PASSWORD=<loadtestusers_password> smoke.sh
 You can smoke and load test the individual services. To smoke test an individual service use the HG_TEST environment variable set to 'smoke' and use the bash script run.sh that takes the argument of the test JavaScript file.
 
 ```bash
-cd run
-HG_PASSWORD=<loadtestusers_password> HG_TEST=smoke run.sh src/services\k6_<service>.js
+cd services/<service>
+HG_PASSWORD==<loadtestusers_password> HG_TEST=smoke docker compose up
 ```
 
 ### When to run the smoke test
@@ -47,15 +47,17 @@ Run this test often, after each system change/release. This ensures that functio
 Load testing is primarily concerned with assessing the systems performance, the purpose of stress testing is to assess the availability and stability of the system under heavy load.
 
 ```bash
-cd run
-HG_PASSWORD=<loadtestusers_password> load.sh
+cd application/load
+HG_ENV=test HG_KEY=apikey HG_PASSWORD=pwd docker compose up
 ```
 
 ### Load Testing Individual Services
 
+Load testing each of the individual backend services. Use 
+
 ```bash
-cd run
-HG_PASSWORD=<loadtestusers_password> run.sh src/services\k6_<service>.js
+cd services/<servicname>
+HG_ENV=test HG_KEY=apikey HG_TYPE=type HG_PASSWORD=pwd docker compose up
 ```
 
 ## Stress Testing
@@ -63,8 +65,8 @@ HG_PASSWORD=<loadtestusers_password> run.sh src/services\k6_<service>.js
 Stress Testing is a type of load testing used to determine the limits of the system. The purpose of this test is to verify the stability and reliability of the system under extreme conditions.
 
 ```bash
-cd run
-HG_PASSWORD=<loadtestusers_password> stress.sh
+cd application/stress
+HG_PASSWORD=<loadtestusers_password> docker compose up
 ```
 
 ## Spike Testing
@@ -72,8 +74,8 @@ HG_PASSWORD=<loadtestusers_password> stress.sh
 Spike testing is a type of stress testing that immediately overwhelms the system with an extreme surge of load.
 
 ```bash
-cd run
-HG_PASSWORD=<loadtestusers_password> spike.sh
+cd application/spike
+HG_PASSWORD=<loadtestusers_password> docker compose up
 ```
 
 ## Soak Testing
@@ -81,8 +83,8 @@ HG_PASSWORD=<loadtestusers_password> spike.sh
 While load testing is primarily concerned with performance assessment, and stress testing is concerned with system stability under extreme conditions, soak testing is concerned with reliability over a long time. The soak test uncovers performance and reliability issues stemming from a system being under pressure for an extended period.
 
 ```bash
-cd run
-HG_PASSWORD=<loadtestusers_password> soak.sh
+cd application/soak
+HG_PASSWORD=<loadtestusers_password> docker compose up
 ```
 
 ### When to run the soak test

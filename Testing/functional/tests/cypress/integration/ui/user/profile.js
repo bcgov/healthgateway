@@ -13,7 +13,7 @@ describe("User Profile", () => {
     });
 
     it("Validate Login History Sorted Descending", () => {
-        cy.intercept("GET", `**/v1/api/UserProfile/${HDID}`, (req) => {
+        cy.intercept("GET", `**/UserProfile/${HDID}`, (req) => {
             req.reply({
                 fixture: "UserProfileService/userProfile.json",
             });
@@ -45,7 +45,7 @@ describe("User Profile", () => {
     });
 
     it("Email address", () => {
-        cy.intercept("PUT", `**/v1/api/UserProfile/${HDID}/email`, {
+        cy.intercept("PUT", `**/UserProfile/${HDID}/email`, {
             statusCode: 200,
             body: true,
         });
@@ -75,11 +75,11 @@ describe("User Profile", () => {
     });
 
     it("Verify SMS number", () => {
-        cy.intercept("PUT", `**/v1/api/UserProfile/${HDID}/sms`, {
+        cy.intercept("PUT", `**/UserProfile/${HDID}/sms`, {
             statusCode: 200,
             body: true,
         });
-        cy.intercept("GET", `**/v1/api/UserProfile/${HDID}/sms/validate/*`, {
+        cy.intercept("GET", `**/UserProfile/${HDID}/sms/validate/*`, {
             statusCode: 200,
             body: {
                 resultStatus: 1,
@@ -88,7 +88,7 @@ describe("User Profile", () => {
         });
 
         cy.log("Verify SMS number");
-        cy.intercept("GET", `**/v1/api/UserProfile/${HDID}`, (req) => {
+        cy.intercept("GET", `**/UserProfile/${HDID}`, (req) => {
             req.reply({
                 fixture: "UserProfileService/userProfile.json",
             });
@@ -126,5 +126,151 @@ describe("User Profile", () => {
         cy.get("[data-testid=smsOptOutMessage]").should("be.visible");
         cy.get("[data-testid=saveSMSEditBtn]").click();
         cy.get("[data-testid=smsStatusOptedOut]").should("be.visible");
+    });
+});
+
+describe("User Profile - Validate Address", () => {
+    beforeEach(() => {
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/home"
+        );
+    });
+
+    it("Verify user has combined address", () => {
+        cy.intercept(
+            "GET",
+            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
+            (req) => {
+                req.reply({
+                    fixture: "PatientService/patientCombinedAddress.json",
+                });
+            }
+        );
+        cy.visit("/profile");
+        cy.get("[data-testid=postal-address-label]")
+            .should("be.visible")
+            .contains("Address");
+        cy.get("[data-testid=postal-address-div]")
+            .should("be.visible")
+            .contains("3815 HILLSPOINT STREET");
+        cy.get("[data-testid=postal-address-div]")
+            .should("be.visible")
+            .contains("CHATHAM, BC, V0G8B8");
+
+        cy.get("[data-testid=physical-address-section").should("not.exist");
+    });
+
+    it("Verify user has different addresses", () => {
+        cy.intercept(
+            "GET",
+            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
+            (req) => {
+                req.reply({
+                    fixture: "PatientService/patientDifferentAddress.json",
+                });
+            }
+        );
+        cy.visit("/profile");
+
+        // Postal Address
+        cy.get("[data-testid=postal-address-label]")
+            .should("be.visible")
+            .contains("Mailing Address");
+        cy.get("[data-testid=postal-address-div]")
+            .should("be.visible")
+            .contains("8128 WILD CREEK DRIVE");
+        cy.get("[data-testid=postal-address-div]")
+            .should("be.visible")
+            .contains("HOLBORN, BC, V3A3P1");
+
+        // Physical Address
+        cy.get("[data-testid=physical-address-label]").should("be.visible");
+        cy.get("[data-testid=physical-address-div]")
+            .should("be.visible")
+            .contains("1234 LEE AVENUE");
+        cy.get("[data-testid=physical-address-div]")
+            .should("be.visible")
+            .contains("VICTORIA, BC, V9C6P1");
+    });
+
+    it("Verify user has no addresse", () => {
+        cy.intercept(
+            "GET",
+            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
+            (req) => {
+                req.reply({
+                    fixture: "PatientService/patientNoAddress.json",
+                });
+            }
+        );
+        cy.visit("/profile");
+
+        // Postal Address
+        cy.get("[data-testid=postal-address-label]")
+            .should("be.visible")
+            .contains("Address");
+        cy.get("[data-testid=no-postal-address-text]").should("be.visible");
+
+        // Physical Address
+        cy.get("[data-testid=physical-address-section").should("not.exist");
+    });
+
+    it("Verify user has only physical address", () => {
+        cy.intercept(
+            "GET",
+            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
+            (req) => {
+                req.reply({
+                    fixture: "PatientService/patientOnlyPhysicalAddress.json",
+                });
+            }
+        );
+        cy.visit("/profile");
+
+        // Postal Address
+        cy.get("[data-testid=postal-address-label]")
+            .should("be.visible")
+            .contains("Mailing Address");
+        cy.get("[data-testid=no-postal-address-text]").should("be.visible");
+
+        // Phsyical Address
+        cy.get("[data-testid=physical-address-label]").should("be.visible");
+        cy.get("[data-testid=physical-address-div]")
+            .should("be.visible")
+            .contains("4790 RAD CLOSE");
+        cy.get("[data-testid=physical-address-div]")
+            .should("be.visible")
+            .contains("HYTHE , BC, V5K 2X0");
+    });
+
+    it("Verify user has only postal address", () => {
+        cy.intercept(
+            "GET",
+            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
+            (req) => {
+                req.reply({
+                    fixture: "PatientService/patientOnlyPostalAddress.json",
+                });
+            }
+        );
+        cy.visit("/profile");
+
+        // Postal Address
+        cy.get("[data-testid=postal-address-label]")
+            .should("be.visible")
+            .contains("Mailing Address");
+        cy.get("[data-testid=postal-address-div]")
+            .should("be.visible")
+            .contains("7826 UPPER AUSTIN LODGE L");
+        cy.get("[data-testid=postal-address-div]")
+            .should("be.visible")
+            .contains("AXBRIDGE, BC, T8C 8G7");
+
+        // Physical Address
+        cy.get("[data-testid=physical-address-label]").should("be.visible");
+        cy.get("[data-testid=no-physical-address-text]").should("be.visible");
     });
 });

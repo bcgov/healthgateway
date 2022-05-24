@@ -82,7 +82,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(string.Empty, string.Empty).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.Equal("9735352542", actualResult.ResourcePayload!.Result.First().PHN);
+            Assert.Equal("9735352542", actualResult.ResourcePayload!.Result.First().Phn);
         }
 
         /// <summary>

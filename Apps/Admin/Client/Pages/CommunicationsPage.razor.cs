@@ -24,7 +24,7 @@ using HealthGateway.Admin.Client.Components;
 using HealthGateway.Admin.Client.Models;
 using HealthGateway.Admin.Client.Store.Communications;
 using HealthGateway.Admin.Common.Models;
-using HealthGateway.Database.Constants;
+using HealthGateway.Common.Data.Constants;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 

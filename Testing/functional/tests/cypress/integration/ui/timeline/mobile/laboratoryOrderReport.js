@@ -2,12 +2,12 @@ const { AuthMethod } = require("../../../../support/constants");
 
 describe("Laboratory Orders - Report", () => {
     beforeEach(() => {
-        cy.intercept("GET", "**/v1/api/Laboratory/LaboratoryOrders*", {
+        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrders.json",
         });
         cy.intercept(
             "GET",
-            "**/v1/api/Laboratory/*/Report?hdid=P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A&isCovid19=false",
+            "**/Laboratory/*/Report?hdid=P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A&isCovid19=false",
             {
                 fixture: "LaboratoryService/laboratoryReportPdf.json",
             }
@@ -35,7 +35,7 @@ describe("Laboratory Orders - Report", () => {
         cy.get("[data-testid=genericMessageSubmitBtn]")
             .should("be.visible")
             .click({ force: true });
-        cy.verifyDownload("Laboratory_Report_YYYY_04_Apr 4, 2021-08_43.pdf");
+        cy.verifyDownload("Laboratory_Report_2021_04_04-08_43.pdf");
         cy.get("[data-testid=backBtn]").click({ force: true });
     });
 });

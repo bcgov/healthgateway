@@ -15,8 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Controllers
 {
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Mvc;
@@ -25,7 +25,7 @@ namespace HealthGateway.GatewayApi.Controllers
     /// Web API to handle system communications.
     /// </summary>
     [ApiVersion("1.0")]
-    [Route("v{version:apiVersion}/api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class CommunicationController
     {

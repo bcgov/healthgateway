@@ -11,9 +11,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\CommonData\src\Common.Data.csproj" />
-    <ProjectReference Include="..\..\Database\src\Database.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>

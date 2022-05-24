@@ -1,0 +1,13 @@
+version: '3.4'
+services:
+  k6:
+    image: loadimpact/k6:latest
+    command: run /webapp_api/communication/k6_communication.js
+    volumes:
+      - ../../../src/webapp_api/communication:/webapp_api/communication
+      - ../../../src/inc:/inc
+    environment: 
+      - "HG_TYPE=${HG_TYPE}"
+      - "HG_ENV=${HG_ENV}"
+      - "HG_KEY=${HG_KEY}"
+      - "HG_PASSWORD=${HG_PASSWORD}"

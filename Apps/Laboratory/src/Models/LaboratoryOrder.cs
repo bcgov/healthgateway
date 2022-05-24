@@ -93,6 +93,18 @@ public class LaboratoryOrder
     public string TestStatus { get; set; } = string.Empty;
 
     /// <summary>
+    /// Gets or sets a value for the order status.
+    /// </summary>
+    [JsonPropertyName("orderStatus")]
+    public string OrderStatus { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets a value for the download label.
+    /// </summary>
+    [JsonPropertyName("downloadLabel")]
+    public string DownloadLabel { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets a value indicating whether report is available.
     /// </summary>
     [JsonPropertyName("reportAvailable")]
@@ -124,6 +136,16 @@ public class LaboratoryOrder
             CommonName = model.CommonName,
             OrderingProvider = model.OrderingProvider,
             TestStatus = model.PlisTestStatus,
+            OrderStatus = model.PlisTestStatus switch
+            {
+                "Held" or "Partial" or "Pending" => "Pending",
+                _ => model.PlisTestStatus,
+            },
+            DownloadLabel = model.PlisTestStatus switch
+            {
+                "Completed" or "Corrected" or "Completed w/Modification" => "Final",
+                _ => "Incomplete",
+            },
             ReportAvailable = model.PdfReportAvailable,
         };
     }

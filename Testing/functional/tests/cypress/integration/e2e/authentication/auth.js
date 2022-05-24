@@ -100,7 +100,7 @@ describe("Authentication", () => {
     //     cy.fixture('AllDisabledConfig').then((config) => {
     //         config.webClient.timeouts.idle = 1000
     //     }).as('config')
-    //     cy.route('GET', '/v1/api/configuration/', '@config')
+    //     cy.route('GET', '/configuration/', '@config')
     //     cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
     //     const now = Date.now()
     //     cy.clock(now)
