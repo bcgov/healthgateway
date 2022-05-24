@@ -29,6 +29,18 @@ export default class ReleaseNotesView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
         <release-note
+            date="May 24, 2022"
+            version="v1.5.10"
+            title="Profile Page Address"
+        >
+            <ul>
+                <li>
+                    We added available addresses to the profile page, so you can
+                    confirm that we have the most current information.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
             date="April 25, 2022"
             version="v1.5.8"
             title="Landing Page Update"
