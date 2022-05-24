@@ -76,7 +76,7 @@ public class Covid19Test
     /// <summary>
     /// Gets or sets a value indicating whether the test result is ready.
     /// </summary>
-    [JsonPropertyName("testResultReady")]
+    [JsonPropertyName("resultReady")]
     public bool ResultReady { get; set; }
 
     /// <summary>
