@@ -101,7 +101,6 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
             services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
             services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
-            services.AddTransient<ICommunicationEmailDelegate, DBCommunicationEmailDelegate>();
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
             services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
@@ -118,7 +117,6 @@ namespace HealthGateway.JobScheduler
             // Add Jobs
             services.AddTransient<FedDrugJob>();
             services.AddTransient<ProvincialDrugJob>();
-            services.AddTransient<ICommunicationJob, CommunicationJob>();
             services.AddTransient<IEmailJob, EmailJob>();
             services.AddTransient<INotificationSettingsJob, NotificationSettingsJob>();
             services.AddTransient<IAdminFeedbackJob, AdminFeedbackJob>();
@@ -165,7 +163,6 @@ namespace HealthGateway.JobScheduler
 
             // Schedule Health Gateway Jobs
             BackgroundJob.Enqueue<DBMigrationsJob>(j => j.Migrate());
-            SchedulerHelper.ScheduleJob<ICommunicationJob>(this.configuration, "CreateCommEmailsForNewCommunications", j => j.CreateCommunicationEmailsForNewCommunications());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendLowPriorityEmail", j => j.SendLowPriorityEmails());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendStandardPriorityEmail", j => j.SendStandardPriorityEmails());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendHighPriorityEmail", j => j.SendHighPriorityEmails());

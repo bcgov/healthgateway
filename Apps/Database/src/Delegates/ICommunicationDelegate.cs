@@ -55,12 +55,6 @@ namespace HealthGateway.Database.Delegates
         DBResult<Communication> Update(Communication communication, bool commit = true);
 
         /// <summary>
-        /// Gets the email communications which are in New or Processing from the DB.
-        /// </summary>
-        /// <returns>The list of communications.</returns>
-        IList<Communication> GetEmailCommunicationsToSend();
-
-        /// <summary>
         /// Deletes the given communication from the database.
         /// </summary>
         /// <param name="communication">The communication to be deleted from the database.</param>
