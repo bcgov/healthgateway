@@ -1,4 +1,4 @@
-describe("Patient Service", () => {
+describe("Laboratory Service", () => {
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
     const EXPIREDELEGATEDHDID = "232434345442257";
     const DELEGATEDHDID = "162346565465464564565463257";
@@ -22,7 +22,7 @@ describe("Patient Service", () => {
         });
     });
 
-    it("Verify Laboratory Unauthorized", () => {
+    it("Verify Laboratory Orders Unauthorized", () => {
         cy.get("@config").then((config) => {
             cy.log(
                 `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
@@ -37,7 +37,7 @@ describe("Patient Service", () => {
         });
     });
 
-    it("Verify Laboratory Expired Delegate Forbidden", () => {
+    it("Verify Laboratory Orders Expired Delegate Forbidden", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
@@ -61,7 +61,7 @@ describe("Patient Service", () => {
         });
     });
 
-    it("Verify Laboratory Authorized", () => {
+    it("Verify Laboratory Orders Authorized", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
@@ -86,7 +86,7 @@ describe("Patient Service", () => {
         });
     });
 
-    it("Verify Laboratory Delegate Authorized", () => {
+    it("Verify Laboratory Orders Delegate Authorized", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
@@ -95,6 +95,95 @@ describe("Patient Service", () => {
                 );
                 cy.request({
                     url: `${config.serviceEndpoints.Laboratory}Laboratory/LaboratoryOrders?hdid=${DELEGATEDHDID}`,
+                    followRedirect: false,
+                    failOnStatusCode: false,
+                    auth: {
+                        bearer: tokens.access_token,
+                    },
+                    headers: {
+                        accept: "application/json",
+                    },
+                }).should((response) => {
+                    expect(response.status).to.eq(200);
+                    expect(response.body).to.not.be.null;
+                });
+            });
+        });
+    });
+
+    it("Verify COVID-19 Tests Unauthorized", () => {
+        cy.get("@config").then((config) => {
+            cy.log(
+                `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
+            );
+            cy.request({
+                url: `${config.serviceEndpoints.Laboratory}Laboratory/Covid19Orders?hdid=${HDID}`,
+                followRedirect: false,
+                failOnStatusCode: false,
+            }).should((response) => {
+                expect(response.status).to.eq(401);
+            });
+        });
+    });
+
+    it("Verify COVID-19 Tests Expired Delegate Forbidden", () => {
+        cy.get("@tokens").then((tokens) => {
+            cy.log("Tokens", tokens);
+            cy.get("@config").then((config) => {
+                cy.log(
+                    `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
+                );
+                cy.request({
+                    url: `${config.serviceEndpoints.Laboratory}Laboratory/Covid19Orders?hdid=${EXPIREDELEGATEDHDID}`,
+                    followRedirect: false,
+                    failOnStatusCode: false,
+                    auth: {
+                        bearer: tokens.access_token,
+                    },
+                    headers: {
+                        accept: "application/json",
+                    },
+                }).should((response) => {
+                    expect(response.status).to.eq(403);
+                });
+            });
+        });
+    });
+
+    it("Verify COVID-19 Tests Authorized", () => {
+        cy.get("@tokens").then((tokens) => {
+            cy.log("Tokens", tokens);
+            cy.get("@config").then((config) => {
+                cy.log(
+                    `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
+                );
+                cy.request({
+                    url: `${config.serviceEndpoints.Laboratory}Laboratory/Covid19Orders?hdid=${HDID}`,
+                    followRedirect: false,
+                    auth: {
+                        bearer: tokens.access_token,
+                    },
+                    headers: {
+                        accept: "application/json",
+                    },
+                }).should((response) => {
+                    expect(response.status).to.eq(200);
+                    expect(response.body).to.not.be.null;
+                    expect(response.body.resourcePayload).to.not.be.null;
+                });
+            });
+        });
+    });
+
+    it("Verify COVID-19 Tests Delegate Authorized", () => {
+        cy.get("@tokens").then((tokens) => {
+            cy.log("Tokens", tokens);
+            cy.get("@config").then((config) => {
+                cy.log(
+                    `Laboratory Service Endpoint: ${config.serviceEndpoints.Laboratory}`
+                );
+                cy.request({
+                    url: `${config.serviceEndpoints.Laboratory}Laboratory/Covid19Orders?hdid=${DELEGATEDHDID}`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
