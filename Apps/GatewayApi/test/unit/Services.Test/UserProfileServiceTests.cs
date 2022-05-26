@@ -21,9 +21,12 @@ namespace HealthGateway.GatewayApi.Test.Services
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
+    using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Constants;
@@ -33,6 +36,7 @@ namespace HealthGateway.GatewayApi.Test.Services
     using HealthGateway.GatewayApiTests.Services.Test.Mock;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -167,6 +171,63 @@ namespace HealthGateway.GatewayApi.Test.Services
             {
                 Assert.Equal(ResultType.Success, actualResult?.ResultStatus);
                 Assert.Null(actualResult?.ResourcePayload?.HdId);
+            }
+        }
+
+        /// <summary>
+        /// Validates the Update Accepted Terms of Service.
+        /// </summary>
+        /// <param name="dbStatus"> the status to return from the mock db delegate.</param>
+        [Theory]
+        [InlineData(DBStatusCode.Read, DBStatusCode.Updated, ResultType.Success)]
+        [InlineData(DBStatusCode.NotFound, DBStatusCode.Error, ResultType.Error)]
+        [InlineData(DBStatusCode.Read, DBStatusCode.Error, ResultType.Error)]
+        public void ShouldUpdateTerms(DBStatusCode readStatus, DBStatusCode updatedStatus, ResultType resultStatus)
+        {
+            UserProfile userProfile = new()
+            {
+                HdId = this.hdid,
+                TermsOfServiceId = this.termsOfServiceGuid,
+                Email = "unit.test@hgw.ca",
+            };
+
+            DBResult<UserProfile> readProfileDBResult = new()
+            {
+                Payload = userProfile,
+                Status = readStatus,
+            };
+
+            DBResult<UserProfile> updatedProfileDBResult = new()
+            {
+                Payload = userProfile,
+                Status = updatedStatus,
+            };
+
+
+            Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
+            mockUserProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(readProfileDBResult);
+            mockUserProfileDelegate.Setup(s => s.UpdateComplete(It.IsAny<UserProfile>(), true)).Returns(updatedProfileDBResult);
+            IUserProfileService service = new UserProfileService(
+                                                        new Mock<ILogger<UserProfileService>>().Object,
+                                                        new Mock<IPatientService>().Object,
+                                                        new Mock<IUserEmailService>().Object,
+                                                        new Mock<IUserSMSService>().Object,
+                                                        new Mock<IConfigurationService>().Object,
+                                                        new Mock<IEmailQueueService>().Object,
+                                                        new Mock<INotificationSettingsService>().Object,
+                                                        mockUserProfileDelegate.Object,
+                                                        new Mock<IUserPreferenceDelegate>().Object,
+                                                        new Mock<ILegalAgreementDelegate>().Object,
+                                                        new Mock<IMessagingVerificationDelegate>().Object,
+                                                        new Mock<ICryptoDelegate>().Object,
+                                                        new Mock<IHttpContextAccessor>().Object,
+                                                        this.configuration);
+            RequestResult<UserProfileModel> actualResult = service.UpdateAcceptedTerms(this.hdid, Guid.Empty);
+
+            Assert.True(actualResult.ResultStatus == resultStatus);
+            if (actualResult.ResultStatus == ResultType.Success)
+            {
+                Assert.True(actualResult.ResourcePayload?.TermsOfServiceId == Guid.Empty);
             }
         }
 

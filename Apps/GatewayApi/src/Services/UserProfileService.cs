@@ -17,7 +17,6 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
@@ -482,6 +481,45 @@ namespace HealthGateway.GatewayApi.Services
                     ResourcePayload = birthDate.AddYears(minAge.Value) < DateTime.Now,
                 };
             }
+        }
+
+        /// <inheritdoc />
+        public RequestResult<UserProfileModel> UpdateAcceptedTerms(string hdid, Guid termsOfServiceId)
+        {
+            RequestResult<UserProfileModel> requestResult = new RequestResult<UserProfileModel>()
+            {
+                ResultStatus = ResultType.Error,
+            };
+
+            DBResult<UserProfile> profileResult = this.userProfileDelegate.GetUserProfile(hdid);
+            if (profileResult.Status == DBStatusCode.Read && profileResult.Payload != null)
+            {
+                profileResult.Payload.TermsOfServiceId = termsOfServiceId;
+                profileResult = this.userProfileDelegate.UpdateComplete(profileResult.Payload);
+                if (profileResult.Status == DBStatusCode.Updated)
+                {
+                    requestResult.ResultStatus = ResultType.Success;
+                    requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(profileResult.Payload);
+                }
+                else
+                {
+                    requestResult.ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Unable to update the terms of service: DB Error",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    };
+                }
+            }
+            else
+            {
+                requestResult.ResultError = new RequestResultError()
+                {
+                    ResultMessage = "Unable to retrieve user profile",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                };
+            }
+
+            return requestResult;
         }
 
         private void QueueEmail(string toEmail, string templateName)

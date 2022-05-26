@@ -94,5 +94,13 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="hdid">The requested user hdid.</param>
         /// <returns>A boolean result.</returns>
         Task<PrimitiveRequestResult<bool>> ValidateMinimumAge(string hdid);
+
+        /// <summary>
+        /// Updates the user profile and sets the acceepted terms of service to the supplied value.
+        /// </summary>
+        /// <param name="hdid">The users hdid.</param>
+        /// <param name="termsOfServiceId">The terms of service id accepted.</param>
+        /// <returns>A user profile model wrapped in a RequestResult.</returns>
+        RequestResult<UserProfileModel> UpdateAcceptedTerms(string hdid, Guid termsOfServiceId);
     }
 }
