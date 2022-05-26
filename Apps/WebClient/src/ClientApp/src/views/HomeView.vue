@@ -130,10 +130,6 @@ export default class HomeView extends Vue {
         return !this.user.verifiedSMS && this.user.hasSMS;
     }
 
-    private get hasNewTermsOfService(): boolean {
-        return this.user.hasTermsOfServiceUpdated;
-    }
-
     private get isPacificTime(): boolean {
         const isDaylightSavings = new DateWrapper().isInDST();
 
@@ -302,26 +298,6 @@ export default class HomeView extends Vue {
             :is-loading="isLoading"
             :text="loadingStatusMessage"
         />
-        <b-alert
-            v-if="hasNewTermsOfService"
-            show
-            dismissible
-            variant="info"
-            class="no-print"
-        >
-            <h4>Updated Terms of Service</h4>
-            <span>
-                The Terms of Service have been updated since your last login.
-                You can review them
-                <router-link
-                    id="termsOfServiceLink"
-                    variant="primary"
-                    to="/termsOfService"
-                >
-                    here</router-link
-                >.
-            </span>
-        </b-alert>
         <b-alert
             v-if="unverifiedEmail || unverifiedSMS"
             id="incomplete-profile-banner"
