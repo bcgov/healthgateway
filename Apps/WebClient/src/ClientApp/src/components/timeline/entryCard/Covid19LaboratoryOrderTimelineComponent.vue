@@ -142,6 +142,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
                     </strong>
                     <hg-button
                         v-if="entry.resultReady"
+                        data-testid="covid-result-download-btn"
                         variant="link"
                         class="p-1 ml-1"
                         @click="showConfirmationModal()"
