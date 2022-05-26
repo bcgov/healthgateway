@@ -46,7 +46,7 @@ public class ClaimsPrincipalReaderTests
         DateTime jwtAuthDateTime = ClaimsPrincipalReader.GetAuthDateTime(principal);
 
         // Assert
-        Assert.Equal(expected, jwtAuthDateTime.ToString(CultureInfo.CurrentCulture));
+        Assert.Equal(expected, jwtAuthDateTime.ToString(CultureInfo.InvariantCulture));
     }
 
     /// <summary>
@@ -69,7 +69,7 @@ public class ClaimsPrincipalReaderTests
         DateTime jwtAuthDateTime = ClaimsPrincipalReader.GetAuthDateTime(principal);
 
         // Assert
-        Assert.Equal(expected, jwtAuthDateTime.ToString(CultureInfo.CurrentCulture));
+        Assert.Equal(expected, jwtAuthDateTime.ToString(CultureInfo.InvariantCulture));
     }
 
     /// <summary>
