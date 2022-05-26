@@ -530,10 +530,10 @@ export default class ProfileView extends Vue {
         const equals = (a: string[], b: string[]) =>
             a.length === b.length && a.every((v, i) => v === b[i]);
 
-        const a = this.postalAddress.streetLines;
-        const b = this.physicalAddress.streetLines;
-
-        const isStreetLineSame = equals(a, b);
+        const isStreetLineSame = equals(
+            this.postalAddress.streetLines,
+            this.physicalAddress.streetLines
+        );
 
         const isCitySame =
             this.postalAddress.city === this.physicalAddress.city;
@@ -550,6 +550,7 @@ export default class ProfileView extends Vue {
         this.logger.debug(
             `Physical Address and Postal Address same: ${result}`
         );
+
         return result;
     }
 
