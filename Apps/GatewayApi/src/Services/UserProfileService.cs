@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
@@ -145,6 +146,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             userProfile.HasTermsOfServiceUpdated = retVal.Payload?.TermsOfServiceId != termsOfServiceResult.ResourcePayload?.Id;
+            userProfile.AcceptedTermsOfService = retVal.Payload?.TermsOfServiceId != Guid.Empty;
 
             if (!userProfile.IsEmailVerified)
             {

@@ -53,7 +53,7 @@ namespace HealthGateway.GatewayApi.Models
         /// <summary>
         /// Gets or sets a value indicating whether the user accepted the terms of service.
         /// </summary>
-        public bool AcceptedTermsOfService { get; set; } = true;
+        public bool AcceptedTermsOfService { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the ToS Id the user has accepted.
