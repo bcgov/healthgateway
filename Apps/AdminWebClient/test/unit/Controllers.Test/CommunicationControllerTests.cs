@@ -38,7 +38,6 @@ namespace HealthGateway.AdminWebClientTests.Controllers.Test
         /// </summary>
         /// <param name="communicationType">different types of communication.</param>
         [Theory]
-        [InlineData(CommunicationType.Email)]
         [InlineData(CommunicationType.Banner)]
         [InlineData(CommunicationType.InApp)]
         public void ShouldAddCommunication(CommunicationType communicationType)
