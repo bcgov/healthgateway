@@ -109,6 +109,41 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
+        public DBResult<UserProfile> UpdateComplete(UserProfile profile, bool commit = true)
+        {
+            DBResult<UserProfile> result = new()
+            {
+                Status = DBStatusCode.Error,
+                Payload = profile,
+            };
+
+            this.logger.LogTrace($"Updating user profile in DB... {JsonSerializer.Serialize(profile)}");
+            this.dbContext.UserProfile.Update(profile);
+            if (commit)
+            {
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Updated;
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    result.Status = DBStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+                catch (DbUpdateException e)
+                {
+                    this.logger.LogError($"Unable to update UserProfile to DB {e}");
+                    result.Status = DBStatusCode.Error;
+                    result.Message = e.Message;
+                }
+            }
+
+            this.logger.LogDebug($"Finished updating user profile in DB. {JsonSerializer.Serialize(result)}");
+            return result;
+        }
+
+        /// <inheritdoc />
         public DBResult<UserProfile> GetUserProfile(string hdId)
         {
             this.logger.LogTrace($"Getting user profile from DB... {hdId}");
