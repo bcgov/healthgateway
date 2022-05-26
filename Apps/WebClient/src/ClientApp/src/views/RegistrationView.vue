@@ -75,6 +75,7 @@ export default class RegistrationView extends Vue {
     private isValidAge = false;
     private minimumAge!: number;
 
+    private termsOfServiceId = "";
     private termsOfService = "";
 
     private get isLoading(): boolean {
@@ -191,6 +192,7 @@ export default class RegistrationView extends Vue {
                 this.logger.debug(
                     `getTermsOfService result: ${JSON.stringify(result)}`
                 );
+                this.termsOfServiceId = result.id;
                 this.termsOfService = result.content;
             })
             .catch((err) => {
@@ -227,6 +229,7 @@ export default class RegistrationView extends Vue {
             .createProfile({
                 profile: {
                     hdid: this.oidcUserInfo.hdid,
+                    termsOfServiceId: this.termsOfServiceId,
                     acceptedTermsOfService: this.accepted,
                     email: this.email || "",
                     isEmailVerified: false,

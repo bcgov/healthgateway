@@ -12,6 +12,9 @@ export default interface UserProfile {
     // The user email.
     email: string;
 
+    // The ToS ID that the user has accepted.
+    termsOfServiceId: string;
+
     // Indicates whether the email was verified.
     isEmailVerified: boolean;
 
