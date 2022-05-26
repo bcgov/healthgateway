@@ -147,7 +147,7 @@ describe("COVID-19 Orders", () => {
 
         cy.get("[data-testid=filterTextInput]").should("be.visible");
 
-        cy.log("Verifying ammended state");
+        cy.log("Verifying amended state");
         cy.get("[data-testid=timelineCard]")
             .eq(3)
             .within(() => {
@@ -187,5 +187,39 @@ describe("COVID-19 Orders", () => {
                 cy.get("[data-testid=backBtn]").click({ force: true });
             });
         cy.get("[data-testid=filterTextInput]").should("be.visible");
+    });
+
+    it("Validate Download", () => {
+        cy.deleteDownloadsFolder();
+        cy.intercept(
+            "GET",
+            "**/Laboratory/*/Report?hdid=P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A&isCovid19=true",
+            {
+                fixture: "LaboratoryService/covid19ReportPdf.json",
+            }
+        );
+
+        cy.contains("[data-testid=entryCardDate]", "2020-Dec-03")
+            .first()
+            .scrollIntoView()
+            .should("be.visible")
+            .parents("[data-testid=timelineCard]")
+            .click();
+
+        cy.get("[id=entry-details-modal]")
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=covid-result-download-btn]")
+                    .should("be.visible")
+                    .click({ force: true });
+            });
+
+        cy.get("[data-testid=genericMessageSubmitBtn]")
+            .should("be.visible")
+            .click({ force: true });
+
+        cy.verifyDownload("COVID_Result_2020_12_03-02_00.pdf");
+
+        cy.get("[data-testid=backBtn]").click({ force: true });
     });
 });
