@@ -238,7 +238,6 @@ export function authorizeUser(user) {
     }
     refreshTokenIfNeeded(user);
 }
-ß
 
 export function authenticateUser(user) {
     let auth_form_data = {
