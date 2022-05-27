@@ -123,6 +123,7 @@ namespace HealthGateway.GatewayApi.Models
                 IsSMSNumberVerified = !string.IsNullOrEmpty(model.SMSNumber),
                 LastLoginDateTime = model.LastLoginDateTime,
                 ClosedDateTime = model.ClosedDateTime,
+                AcceptedTermsOfService = model.TermsOfServiceId != Guid.Empty,
             };
         }
     }

@@ -142,6 +142,10 @@ export interface IUserProfileService {
         hdid: string,
         userPreference: UserPreference
     ): Promise<UserPreference>;
+    updateAcceptedTerms(
+        hdid: string,
+        termsOfServiceId: string
+    ): Promise<UserProfile>;
 }
 
 export interface IUserFeedbackService {
