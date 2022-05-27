@@ -8,6 +8,7 @@ TRUNCATE gateway."UserPreference" CASCADE;
 TRUNCATE gateway."Comment" CASCADE;
 TRUNCATE gateway."MessagingVerification" CASCADE;
 TRUNCATE gateway."Note" CASCADE;
+TRUNCATE gateway."GenericCache" CASCADE;
 
 /* Registered HealthGateway User */
 INSERT INTO gateway."UserProfile"(
@@ -29,7 +30,7 @@ VALUES (
 	current_timestamp, 
 	'System', 
 	current_timestamp, 
-	'c99fd839-b4a2-40f9-b103-529efccd0dcd', 
+	'eafeee76-8a64-49ee-81ba-ddfe2c01deb8', 
 	null,
 	null,
 	null,
@@ -58,7 +59,7 @@ VALUES (
 	current_timestamp, 
 	'System', 
 	current_timestamp, 
-	'c99fd839-b4a2-40f9-b103-529efccd0dcd', 
+	'eafeee76-8a64-49ee-81ba-ddfe2c01deb8', 
 	null,
 	null,
 	null,
@@ -87,7 +88,7 @@ VALUES (
 	current_timestamp, 
 	'System', 
 	current_timestamp, 
-	'c99fd839-b4a2-40f9-b103-529efccd0dcd', 
+	'eafeee76-8a64-49ee-81ba-ddfe2c01deb8', 
 	null,
 	null,
 	null,
@@ -116,7 +117,7 @@ VALUES (
 	current_timestamp, 
 	'System', 
 	current_timestamp, 
-	'c99fd839-b4a2-40f9-b103-529efccd0dcd', 
+	'eafeee76-8a64-49ee-81ba-ddfe2c01deb8', 
 	null,
 	null,
 	null,
@@ -145,7 +146,7 @@ VALUES (
 	current_timestamp, 
 	'System', 
 	current_timestamp, 
-	'c99fd839-b4a2-40f9-b103-529efccd0dcd', 
+	'eafeee76-8a64-49ee-81ba-ddfe2c01deb8', 
 	null,
 	null,
 	null,
