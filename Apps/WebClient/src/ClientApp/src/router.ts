@@ -73,9 +73,9 @@ const HealthInsightsView = () =>
     import(
         /* webpackChunkName: "healthInsights" */ "@/views/HealthInsightsView.vue"
     );
-const ConfirmTermsOfServiceView = () =>
+const AcceptTermsOfServiceView = () =>
     import(
-        /* webpackChunkName: "confirmTermsOfService" */ "@/views/ConfirmTermsOfService.vue"
+        /* webpackChunkName: "acceptTermsOfService" */ "@/views/AcceptTermsOfService.vue"
     );
 const ReportsView = () =>
     import(/* webpackChunkName: "reports" */ "@/views/ReportsView.vue");
@@ -99,7 +99,7 @@ export enum UserState {
     pendingDeletion = "pendingDeletion",
     invalidLogin = "invalidLogin",
     offline = "offline",
-    confirmTermsOfService = "confirmTermsOfService",
+    acceptTermsOfService = "acceptTermsOfService",
 }
 
 function calculateUserState() {
@@ -126,7 +126,7 @@ function calculateUserState() {
     } else if (!userIsActive) {
         return UserState.pendingDeletion;
     } else if (hasTermsOfServiceUpdated) {
-        return UserState.confirmTermsOfService;
+        return UserState.acceptTermsOfService;
     } else {
         return UserState.registered;
     }
@@ -158,7 +158,7 @@ const REGISTRATION_INFO_PATH = "/registrationInfo";
 const ROOT_PATH = "/";
 const TIMELINE_PATH = "/timeline";
 const UNAUTHORIZED_PATH = "/unauthorized";
-const CONFIRM_TERMS_OF_SERVICE_PATH = "/confirmTermsOfService";
+const ACCEPT_TERMS_OF_SERVICE_PATH = "/acceptTermsOfService";
 
 const routes = [
     {
@@ -195,13 +195,10 @@ const routes = [
         },
     },
     {
-        path: CONFIRM_TERMS_OF_SERVICE_PATH,
-        component: ConfirmTermsOfServiceView,
+        path: ACCEPT_TERMS_OF_SERVICE_PATH,
+        component: AcceptTermsOfServiceView,
         meta: {
-            validStates: [
-                UserState.confirmTermsOfService,
-                UserState.registered,
-            ],
+            validStates: [UserState.acceptTermsOfService],
         },
     },
     {
@@ -217,7 +214,7 @@ const routes = [
             validStates: [
                 UserState.registered,
                 UserState.pendingDeletion,
-                UserState.confirmTermsOfService,
+                UserState.acceptTermsOfService,
             ],
         },
     },
@@ -476,8 +473,8 @@ function getDefaultPath(
             return IDIR_LOGGED_IN_PATH;
         case UserState.unauthenticated:
             return hasRequiredModules ? LOGIN_PATH : UNAUTHORIZED_PATH;
-        case UserState.confirmTermsOfService:
-            return CONFIRM_TERMS_OF_SERVICE_PATH;
+        case UserState.acceptTermsOfService:
+            return ACCEPT_TERMS_OF_SERVICE_PATH;
         default:
             return UNAUTHORIZED_PATH;
     }

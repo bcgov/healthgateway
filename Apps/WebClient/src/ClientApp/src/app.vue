@@ -110,7 +110,7 @@ export default class App extends Vue {
     private loginCallbackPath = "/logincallback";
     private registrationPath = "/registration";
     private pcrTestPath = "/pcrtest";
-    private confirmTermsOfServicePath = "/confirmTermsOfService";
+    private acceptTermsOfServicePath = "/acceptTermsOfService";
 
     constructor() {
         super();
@@ -180,10 +180,10 @@ export default class App extends Vue {
         return this.$route.path.toLowerCase().startsWith(this.pcrTestPath);
     }
 
-    private get isConfirmTermsOfServicePath(): boolean {
+    private get isAcceptTermsOfServicePath(): boolean {
         return (
             this.$route.path.toLowerCase() ===
-            this.confirmTermsOfServicePath.toLowerCase()
+            this.acceptTermsOfServicePath.toLowerCase()
         );
     }
 
@@ -204,7 +204,7 @@ export default class App extends Vue {
             !this.isLoginCallbackPath &&
             !this.isRegistrationPath &&
             !this.isPcrTestPath &&
-            !this.isConfirmTermsOfServicePath &&
+            !this.isAcceptTermsOfServicePath &&
             !this.hasTermsOfServiceUpdated
         );
     }

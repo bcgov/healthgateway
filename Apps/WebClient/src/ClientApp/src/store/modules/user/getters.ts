@@ -33,10 +33,6 @@ export const getters: UserGetters = {
         const { user } = state;
         return user === undefined ? false : user.hasTermsOfServiceUpdated;
     },
-    acceptedTermsOfService(state: UserState): boolean {
-        const { user } = state;
-        return user === undefined ? false : user.acceptedTermsOfService;
-    },
     getPreference:
         (state: UserState) =>
         (preferenceName: string): UserPreference | undefined => {

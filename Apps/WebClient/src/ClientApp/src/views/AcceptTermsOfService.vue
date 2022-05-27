@@ -25,7 +25,7 @@ library.add(faExclamationTriangle);
         HtmlTextAreaComponent,
     },
 })
-export default class ConfirmTermsOfServiceView extends Vue {
+export default class AcceptTermsOfServiceView extends Vue {
     @Action("checkRegistration", { namespace: "user" })
     checkRegistration!: () => Promise<boolean>;
 
@@ -142,11 +142,8 @@ export default class ConfirmTermsOfServiceView extends Vue {
     }
 
     private redirect(): void {
-        this.logger.debug("Redirecting to /profile");
-
-        this.checkRegistration().then(() => {
-            this.$router.push({ path: "/profile" });
-        });
+        this.logger.debug("Redirecting to /home");
+        this.$router.push({ path: "/home" });
     }
 }
 </script>
