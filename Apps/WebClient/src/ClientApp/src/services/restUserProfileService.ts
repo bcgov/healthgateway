@@ -21,7 +21,11 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 @injectable()
 export class RestUserProfileService implements IUserProfileService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private readonly APPLICATION_JSON: string =
+        "application/json; charset=utf-8";
+    private readonly CONTENT_TYPE: string = "Content-Type";
     private readonly FETCH_ERROR: string = "Fetch error:";
+    private readonly UPDATE_ERROR: string = "Update error:";
     private readonly USER_PROFILE_BASE_URI: string = "UserProfile";
     private http!: IHttpDelegate;
     private baseUri = "";
@@ -255,7 +259,7 @@ export class RestUserProfileService implements IUserProfileService {
     public updateEmail(hdid: string, email: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             const headers: Dictionary<string> = {};
-            headers["Content-Type"] = "application/json; charset=utf-8";
+            headers[this.CONTENT_TYPE] = this.APPLICATION_JSON;
 
             this.http
                 .put<void>(
@@ -283,7 +287,7 @@ export class RestUserProfileService implements IUserProfileService {
     public updateSMSNumber(hdid: string, smsNumber: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             const headers: Dictionary<string> = {};
-            headers["Content-Type"] = "application/json; charset=utf-8";
+            headers[this.CONTENT_TYPE] = this.APPLICATION_JSON;
 
             this.http
                 .put<void>(
@@ -332,6 +336,45 @@ export class RestUserProfileService implements IUserProfileService {
                 })
                 .catch((err) => {
                     this.logger.error(`${this.FETCH_ERROR}: ${err}`);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
+                });
+        });
+    }
+
+    public updateAcceptedTerms(
+        hdid: string,
+        termsOfServiceId: string
+    ): Promise<UserProfile> {
+        return new Promise<UserProfile>((resolve, reject) => {
+            const headers: Dictionary<string> = {};
+            headers[this.CONTENT_TYPE] = this.APPLICATION_JSON;
+            this.http
+                .put<RequestResult<UserProfile>>(
+                    `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/acceptedterms`,
+                    JSON.stringify(termsOfServiceId),
+                    headers
+                )
+                .then((requestResult) => {
+                    this.logger.verbose(
+                        `update user accepted terms result: ${JSON.stringify(
+                            requestResult
+                        )}`
+                    );
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
+                })
+                .catch((err) => {
+                    this.logger.error(
+                        ` updateAcceptedTerms  ${this.UPDATE_ERROR}: ${err}`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,

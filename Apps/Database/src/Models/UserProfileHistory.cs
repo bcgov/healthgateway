@@ -37,8 +37,13 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets a value indicating whether the user accepted the terms of service.
         /// </summary>
-        [Required]
-        public bool AcceptedTermsOfService { get; set; }
+        public bool? AcceptedTermsOfService { get; set; }
+
+        /// <summary>
+        /// Gets or sets the LegalAgreement ToS Id.
+        /// This is not maintained as a foreign key unlike UserProfile.
+        /// </summary>
+        public Guid? TermsOfServiceId { get; set; }
 
         /// <summary>
         /// Gets or sets the user email.

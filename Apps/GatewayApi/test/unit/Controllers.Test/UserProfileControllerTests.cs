@@ -82,7 +82,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             UserProfile userProfile = new()
             {
                 HdId = this.hdid,
-                AcceptedTermsOfService = true,
+                TermsOfServiceId = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd"),
             };
 
             CreateUserRequest createUserRequest = new()
@@ -439,6 +439,31 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             Assert.Equal(false, result?.ResourcePayload);
         }
 
+        /// <summary>
+        /// Validates the controller update terms of service method.
+        /// </summary>
+        [Fact]
+        public void ShouldUpdateTerms()
+        {
+            RequestResult<UserProfileModel> expected = new()
+            {
+                ResultStatus = ResultType.Success,
+            };
+            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
+            Mock<IUserProfileService> userProfileServiceMock = new();
+            userProfileServiceMock.Setup(s => s.UpdateAcceptedTerms(this.hdid, It.IsAny<Guid>())).Returns(expected);
+
+            UserProfileController controller = new(
+                new Mock<ILogger<UserProfileController>>().Object,
+                userProfileServiceMock.Object,
+                httpContextAccessorMock.Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object);
+
+            RequestResult<UserProfileModel> actualResult = controller.UpdateAcceptedTerms(this.hdid, Guid.Empty);
+            expected.ShouldDeepEqual(actualResult);
+        }
+
         private static Mock<IHttpContextAccessor> CreateValidHttpContext(string token, string userId, string hdid)
         {
             IHeaderDictionary headerDictionary = new HeaderDictionary
@@ -486,7 +511,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             UserProfile userProfile = new()
             {
                 HdId = this.hdid,
-                AcceptedTermsOfService = true,
+                TermsOfServiceId = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd"),
             };
 
             return new RequestResult<UserProfileModel>

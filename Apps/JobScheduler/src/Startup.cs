@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler
 {
-    using System;
     using System.Collections.Generic;
     using Hangfire;
     using Hangfire.Dashboard;
@@ -23,12 +22,10 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.DrugMaintainer;
     using Healthgateway.JobScheduler.Jobs;
@@ -36,7 +33,6 @@ namespace HealthGateway.JobScheduler
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
@@ -98,7 +94,6 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
             services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
             services.AddTransient<IApplicationSettingsDelegate, DBApplicationSettingsDelegate>();
-            services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
             services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
             services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
@@ -172,7 +167,6 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedCancelledDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedDormantDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<ProvincialDrugJob>(this.configuration, "PharmaCareDrugFile");
-            SchedulerHelper.ScheduleJob<NotifyUpdatedLegalAgreementsJob>(this.configuration, "NotifyUpdatedLegalAgreements", j => j.Process());
             SchedulerHelper.ScheduleJob<CloseAccountJob>(this.configuration, "CloseAccounts", j => j.Process());
             SchedulerHelper.ScheduleJob<OneTimeJob>(this.configuration, "OneTime", j => j.Process());
             SchedulerHelper.ScheduleJob<CleanCacheJob>(this.configuration, "CleanCache", j => j.Process());

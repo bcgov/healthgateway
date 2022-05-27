@@ -13,6 +13,7 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
 import { ResultError } from "@/models/requestResult";
+import { TermsOfService } from "@/models/termsOfService";
 import type { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -75,7 +76,7 @@ export default class RegistrationView extends Vue {
     private isValidAge = false;
     private minimumAge!: number;
 
-    private termsOfService = "";
+    private termsOfService?: TermsOfService;
 
     private get isLoading(): boolean {
         return this.loadingTermsOfService || this.loadingUserData;
@@ -191,7 +192,7 @@ export default class RegistrationView extends Vue {
                 this.logger.debug(
                     `getTermsOfService result: ${JSON.stringify(result)}`
                 );
-                this.termsOfService = result.content;
+                this.termsOfService = result;
             })
             .catch((err) => {
                 this.logger.error(err);
@@ -227,6 +228,7 @@ export default class RegistrationView extends Vue {
             .createProfile({
                 profile: {
                     hdid: this.oidcUserInfo.hdid,
+                    termsOfServiceId: this.termsOfService?.id || "",
                     acceptedTermsOfService: this.accepted,
                     email: this.email || "",
                     isEmailVerified: false,
@@ -298,13 +300,17 @@ export default class RegistrationView extends Vue {
             this.smsNumber = "";
         }
     }
+
+    private get termsOfServiceLoaded(): boolean {
+        return !this.isLoading && Boolean(this.termsOfService?.content);
+    }
 }
 </script>
 
 <template>
     <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
         <LoadingComponent :is-loading="isLoading" />
-        <b-container v-if="!isLoading && termsOfService !== ''">
+        <b-container v-if="termsOfServiceLoaded">
             <div v-if="isRegistrationClosed">
                 <page-title title="Closed Registration" />
                 <div id="Description">
@@ -444,7 +450,7 @@ export default class RegistrationView extends Vue {
                         <b-col>
                             <HtmlTextAreaComponent
                                 class="termsOfService"
-                                :input="termsOfService"
+                                :input="termsOfService.content"
                             />
                         </b-col>
                     </b-row>
