@@ -82,6 +82,37 @@ export const actions: UserActions = {
                 });
         });
     },
+    updateAcceptedTerms(
+        context,
+        params: { termsOfServiceId: string }
+    ): Promise<void> {
+        const userProfileService: IUserProfileService =
+            container.get<IUserProfileService>(
+                SERVICE_IDENTIFIER.UserProfileService
+            );
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
+        return new Promise((resolve, reject) => {
+            userProfileService
+                .updateAcceptedTerms(
+                    context.state.user.hdid,
+                    params.termsOfServiceId
+                )
+                .then((userProfile) => {
+                    logger.debug(
+                        `Update accepted terms of service result: ${JSON.stringify(
+                            userProfile
+                        )}`
+                    );
+                    context.commit("setProfileUserData", userProfile);
+                    resolve();
+                })
+                .catch((error) => {
+                    handleError(context.commit, error);
+                    reject(error);
+                });
+        });
+    },
     updateUserEmail(context, params: { emailAddress: string }): Promise<void> {
         const userProfileService: IUserProfileService =
             container.get<IUserProfileService>(

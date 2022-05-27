@@ -73,6 +73,10 @@ const HealthInsightsView = () =>
     import(
         /* webpackChunkName: "healthInsights" */ "@/views/HealthInsightsView.vue"
     );
+const ConfirmTermsOfServiceView = () =>
+    import(
+        /* webpackChunkName: "confirmTermsOfService" */ "@/views/ConfirmTermsOfService.vue"
+    );
 const ReportsView = () =>
     import(/* webpackChunkName: "reports" */ "@/views/ReportsView.vue");
 const ReleaseNotesView = () =>
@@ -95,6 +99,7 @@ export enum UserState {
     pendingDeletion = "pendingDeletion",
     invalidLogin = "invalidLogin",
     offline = "offline",
+    confirmTermsOfService = "confirmTermsOfService",
 }
 
 function calculateUserState() {
@@ -107,6 +112,8 @@ function calculateUserState() {
     const isValid: boolean = store.getters["auth/isValidIdentityProvider"];
     const isRegistered: boolean = store.getters["user/userIsRegistered"];
     const userIsActive: boolean = store.getters["user/userIsActive"];
+    const hasTermsOfServiceUpdated: boolean =
+        store.getters["user/hasTermsOfServiceUpdated"];
 
     if (isOffline) {
         return UserState.offline;
@@ -118,6 +125,8 @@ function calculateUserState() {
         return UserState.notRegistered;
     } else if (!userIsActive) {
         return UserState.pendingDeletion;
+    } else if (hasTermsOfServiceUpdated) {
+        return UserState.confirmTermsOfService;
     } else {
         return UserState.registered;
     }
@@ -149,6 +158,7 @@ const REGISTRATION_INFO_PATH = "/registrationInfo";
 const ROOT_PATH = "/";
 const TIMELINE_PATH = "/timeline";
 const UNAUTHORIZED_PATH = "/unauthorized";
+const CONFIRM_TERMS_OF_SERVICE_PATH = "/confirmTermsOfService";
 
 const routes = [
     {
@@ -180,7 +190,19 @@ const routes = [
             inviteKey: route.query.inviteKey,
             inviteEmail: route.query.email,
         }),
-        meta: { validStates: [UserState.notRegistered] },
+        meta: {
+            validStates: [UserState.notRegistered],
+        },
+    },
+    {
+        path: CONFIRM_TERMS_OF_SERVICE_PATH,
+        component: ConfirmTermsOfServiceView,
+        meta: {
+            validStates: [
+                UserState.confirmTermsOfService,
+                UserState.registered,
+            ],
+        },
     },
     {
         path: "/validateEmail/:inviteKey",
@@ -192,7 +214,11 @@ const routes = [
         path: PROFILE_PATH,
         component: ProfileView,
         meta: {
-            validStates: [UserState.registered, UserState.pendingDeletion],
+            validStates: [
+                UserState.registered,
+                UserState.pendingDeletion,
+                UserState.confirmTermsOfService,
+            ],
         },
     },
     {
@@ -321,7 +347,13 @@ const routes = [
     {
         path: "/faq",
         component: FAQView,
-        meta: { stateless: true },
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.registered,
+                UserState.pendingDeletion,
+            ],
+        },
     },
     {
         path: LOGIN_PATH,
@@ -444,6 +476,8 @@ function getDefaultPath(
             return IDIR_LOGGED_IN_PATH;
         case UserState.unauthenticated:
             return hasRequiredModules ? LOGIN_PATH : UNAUTHORIZED_PATH;
+        case UserState.confirmTermsOfService:
+            return CONFIRM_TERMS_OF_SERVICE_PATH;
         default:
             return UNAUTHORIZED_PATH;
     }
