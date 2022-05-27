@@ -41,38 +41,6 @@ export const actions: UserActions = {
                     logger.verbose(
                         `User Profile: ${JSON.stringify(userProfile)}`
                     );
-                    if (userProfile) {
-                        const notePreference =
-                            UserPreferenceType.TutorialMenuNote;
-                        // If there are no preferences, set the default popover state
-                        if (
-                            userProfile.preferences[notePreference] ===
-                            undefined
-                        ) {
-                            userProfile.preferences[notePreference] = {
-                                hdId: userProfile.hdid,
-                                preference: notePreference,
-                                value: "true",
-                                version: 0,
-                                createdDateTime: new DateWrapper().toISO(),
-                            };
-                        }
-                        const exportPreference =
-                            UserPreferenceType.TutorialMenuExport;
-                        if (
-                            userProfile.preferences[exportPreference] ===
-                            undefined
-                        ) {
-                            userProfile.preferences[exportPreference] = {
-                                hdId: userProfile.hdid,
-                                preference: exportPreference,
-                                value: "true",
-                                version: 0,
-                                createdDateTime: new DateWrapper().toISO(),
-                            };
-                        }
-                    }
-
                     context.commit("setProfileUserData", userProfile);
                     resolve(userProfile.acceptedTermsOfService);
                 })
