@@ -177,7 +177,9 @@ namespace HealthGateway.GatewayApi.Test.Services
         /// <summary>
         /// Validates the Update Accepted Terms of Service.
         /// </summary>
-        /// <param name="dbStatus"> the status to return from the mock db delegate.</param>
+        /// <param name="readStatus"> the status to return from the mock db delegate on get user.</param>
+        /// <param name="updatedStatus"> the status to return from the mock db delegate after the update.</param>
+        /// <param name="resultStatus"> The expected RequestResult status.</param>
         [Theory]
         [InlineData(DBStatusCode.Read, DBStatusCode.Updated, ResultType.Success)]
         [InlineData(DBStatusCode.NotFound, DBStatusCode.Error, ResultType.Error)]
@@ -202,7 +204,6 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Payload = userProfile,
                 Status = updatedStatus,
             };
-
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(readProfileDBResult);
