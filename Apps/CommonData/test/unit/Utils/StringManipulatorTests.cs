@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.CommonTests.Utils
+namespace HealthGateway.Common.Data.Tests.Utils
 {
     using System.Collections.Generic;
     using HealthGateway.Common.Data.Utils;
@@ -73,6 +73,27 @@ namespace HealthGateway.CommonTests.Utils
             string? result = StringManipulator.Replace(null, "KEY", "VALUE");
 
             Assert.True(result is null);
+        }
+
+        /// <summary>
+        /// Strip - Whitespace, validates white space removed.
+        /// </summary>
+        [Fact]
+        public void ShouldStripWhitespace()
+        {
+            string clean = " e m p t y  s t r i n g ";
+            string expected = "emptystring";
+            string? actual = StringManipulator.StripWhitespace(clean);
+            Assert.Equal(actual, expected);
+        }
+
+        /// <summary>
+        /// Strip - Whitespace, validates null is returned if null passed in.
+        /// </summary>
+        [Fact]
+        public void ShouldStripWhitespaceNull()
+        {
+            Assert.True(StringManipulator.StripWhitespace(null) is null);
         }
     }
 }

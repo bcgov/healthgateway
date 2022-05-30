@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Data.ViewModels
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Data.Constants;
 
@@ -22,6 +23,7 @@ namespace HealthGateway.Common.Data.ViewModels
     /// Class that represents the result of a request. Contains members for handling pagination and error resolution.
     /// </summary>
     /// <typeparam name="T">The payload type.</typeparam>
+    [ExcludeFromCodeCoverage]
     public class RequestResult<T>
         where T : class
     {
