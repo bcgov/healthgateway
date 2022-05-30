@@ -19,6 +19,7 @@
         "bcsc.password": "",
         "keycloak.username": "healthgateway",
         "keycloak.password": "",
+        "keycloak.accept.tos.username": "hthgtwy04",
         "keycloak.accountclosure.username": "AccountClosure",
         "keycloak.healthgateway12.username": "healthgateway12",
         "keycloak.hlthgw401.username": "hlthgw401",
