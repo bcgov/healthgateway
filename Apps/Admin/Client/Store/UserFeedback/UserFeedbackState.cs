@@ -30,14 +30,14 @@ using HealthGateway.Common.Data.ViewModels;
 public record UserFeedbackState
 {
     /// <summary>
-    /// Gets the request state for associate tag to user feedback.
+    /// Gets the request state for associating tag to user feedback.
     /// </summary>
     public BaseRequestState<RequestResult<UserFeedbackTagView>> AssociateTag { get; init; } = new();
 
     /// <summary>
-    /// Gets the request state for disassociate tag from user feedback tag.
+    /// Gets the request state for dissociating tag from user feedback tag.
     /// </summary>
-    public BaseRequestState<PrimitiveRequestResult<bool>> DisassociateTag { get; init; } = new();
+    public BaseRequestState<PrimitiveRequestResult<bool>> DissociateTag { get; init; } = new();
 
     /// <summary>
     /// Gets the request state for loading user feedback.
@@ -48,9 +48,4 @@ public record UserFeedbackState
     /// Gets the collection of user feedback data.
     /// </summary>
     public IImmutableDictionary<Guid, UserFeedbackView>? FeedbackData { get; init; }
-
-    /// <summary>
-    /// Gets the collection of user feedback tag data.
-    /// </summary>
-    public IImmutableDictionary<Guid, UserFeedbackTagView>? FeedbackTagData { get; init; }
 }

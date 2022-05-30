@@ -42,6 +42,11 @@ public static class UserFeedbackTagConverter
             retVal.Tag = model.AdminTag.ToUiModel();
         }
 
+        if (model.UserFeedback != null)
+        {
+            retVal.Feedback = model.UserFeedback.ToUiModel();
+        }
+
         return retVal;
     }
 

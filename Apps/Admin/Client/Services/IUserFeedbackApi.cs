@@ -44,11 +44,11 @@ public interface IUserFeedbackApi
     Task<ApiResponse<RequestResult<UserFeedbackTagView>>> AssociateTag([Body] AdminTagView tag, Guid feedbackId);
 
     /// <summary>
-    /// Disassociate an existing admin tag from the feedback.
+    /// Dissociate an existing admin tag from the feedback.
     /// </summary>
-    /// <returns>A boolean indicating success or failure of disassociation of tag.</returns>
+    /// <returns>A boolean indicating success or failure of dissociation of tag.</returns>
     /// <param name="feedbackTag">The user feedback tag model.</param>
     /// <param name="feedbackId">The feedback id.</param>
     [Delete("/{feedbackId}/Tag")]
-    Task<ApiResponse<PrimitiveRequestResult<bool>>> DisassociateTag([Body] UserFeedbackTagView feedbackTag, Guid feedbackId);
+    Task<ApiResponse<PrimitiveRequestResult<bool>>> DissociateTag([Body] UserFeedbackTagView feedbackTag, Guid feedbackId);
 }

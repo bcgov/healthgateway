@@ -80,20 +80,20 @@ public class UserFeedbackViewEffects
     /// <param name="dispatcher">The injected dispatcher.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
-    public async Task HandleDisassociateTagAction(UserFeedbackActions.DisassociateTagAction action, IDispatcher dispatcher)
+    public async Task HandleDissociateTagAction(UserFeedbackActions.DissociateTagAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Disassociating tag with feedback!");
+        this.Logger.LogInformation("Dissociating tag with feedback!");
 
-        ApiResponse<PrimitiveRequestResult<bool>> response = await this.Api.DisassociateTag(action.FeedbackTag, action.FeedbackId).ConfigureAwait(true);
+        ApiResponse<PrimitiveRequestResult<bool>> response = await this.Api.DissociateTag(action.FeedbackTag, action.FeedbackId).ConfigureAwait(true);
         if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
         {
             this.Logger.LogInformation("Tag was disassociated from user feedback successfully!");
-            dispatcher.Dispatch(new UserFeedbackActions.DisassociateTagSuccessAction(response.Content, action.FeedbackId));
+            dispatcher.Dispatch(new UserFeedbackActions.DissociateTagSuccessAction(response.Content, action.FeedbackTag, action.FeedbackId));
             return;
         }
 
         RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError("Error disassociating tag from user feedback, reason: {ErrorMessage}", error.Message);
+        this.Logger.LogError("Error dissociating tag from user feedback, reason: {ErrorMessage}", error.Message);
         dispatcher.Dispatch(new UserFeedbackActions.AssociateTagFailAction(error));
     }
 

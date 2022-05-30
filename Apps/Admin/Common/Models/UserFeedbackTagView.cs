@@ -34,6 +34,11 @@ public class UserFeedbackTagView
     public AdminTagView Tag { get; set; } = new();
 
     /// <summary>
+    /// Gets or sets the user feedback.
+    /// </summary>
+    public UserFeedbackView Feedback { get; set; } = new();
+
+    /// <summary>
     /// Gets or sets the tag version.
     /// </summary>
     public uint Version { get; set; }

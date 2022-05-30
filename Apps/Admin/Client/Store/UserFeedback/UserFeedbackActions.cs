@@ -85,16 +85,16 @@ public static class UserFeedbackActions
     }
 
     /// <summary>
-    /// The action representing the initiation of a disassociated tag.
+    /// The action representing the initiation of a dissociated tag.
     /// </summary>
-    public class DisassociateTagAction
+    public class DissociateTagAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DisassociateTagAction"/> class.
+        /// Initializes a new instance of the <see cref="DissociateTagAction"/> class.
         /// </summary>
         /// <param name="feedbackTag">Represents the user feedback tag view model.</param>
         /// <param name="feedbackId">The feedback id.</param>
-        public DisassociateTagAction(UserFeedbackTagView feedbackTag, Guid feedbackId)
+        public DissociateTagAction(UserFeedbackTagView feedbackTag, Guid feedbackId)
         {
             this.FeedbackTag = feedbackTag;
             this.FeedbackId = feedbackId;
@@ -112,34 +112,36 @@ public static class UserFeedbackActions
     }
 
     /// <summary>
-    /// The action representing a failed disassociated tag.
+    /// The action representing a failed dissociated tag.
     /// </summary>
-    public class DisassociateTagFailAction : BaseFailAction
+    public class DissociateTagFailAction : BaseFailAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DisassociateTagFailAction"/> class.
+        /// Initializes a new instance of the <see cref="DissociateTagFailAction"/> class.
         /// </summary>
         /// <param name="error">The request error.</param>
-        public DisassociateTagFailAction(RequestError error)
+        public DissociateTagFailAction(RequestError error)
             : base(error)
         {
         }
     }
 
     /// <summary>
-    /// The action representing a successful disassociated tag.
+    /// The action representing a successful dissociated tag.
     /// </summary>
-    public class DisassociateTagSuccessAction
+    public class DissociateTagSuccessAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DisassociateTagSuccessAction"/> class.
+        /// Initializes a new instance of the <see cref="DissociateTagSuccessAction"/> class.
         /// </summary>
-        /// <param name="result">True if the disassociation was successful.</param>
-        /// <param name="id">The id for user feedback tag to delete.</param>
-        public DisassociateTagSuccessAction(PrimitiveRequestResult<bool> result, Guid id)
+        /// <param name="result">True if the dissociation was successful.</param>
+        /// <param name="feedbackTag">The feedback tag that is being dissociated.</param>
+        /// <param name="feedbackId">The id for the feedback that the tag is being dissociated from.</param>
+        public DissociateTagSuccessAction(PrimitiveRequestResult<bool> result, UserFeedbackTagView feedbackTag, Guid feedbackId)
         {
             this.Result = result;
-            this.Id = id;
+            this.FeedbackTag = feedbackTag;
+            this.FeedbackId = feedbackId;
         }
 
         /// <summary>
@@ -148,9 +150,14 @@ public static class UserFeedbackActions
         public PrimitiveRequestResult<bool> Result { get; set; }
 
         /// <summary>
-        /// Gets or sets the id.
+        /// Gets or sets the user feedback tag view.
         /// </summary>
-        public Guid Id { get; set; }
+        public UserFeedbackTagView FeedbackTag { get; set; }
+
+        /// <summary>
+        /// Gets or sets the feedback id.
+        /// </summary>
+        public Guid FeedbackId { get; set; }
     }
 
     /// <summary>

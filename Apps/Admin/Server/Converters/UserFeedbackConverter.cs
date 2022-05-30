@@ -29,6 +29,27 @@ public static class UserFeedbackConverter
     /// </summary>
     /// <param name="model">The DB model to convert.</param>
     /// <returns>The created UI model.</returns>
+    public static UserFeedbackView ToUiModel(this Database.Models.UserFeedback model)
+    {
+        UserFeedbackView retVal = new(model.Tags.ToUiModel())
+        {
+            Id = model.Id,
+            UserProfileId = model.UserProfileId,
+            Comment = model.Comment,
+            CreatedDateTime = model.CreatedDateTime,
+            IsReviewed = model.IsReviewed,
+            IsSatisfied = model.IsSatisfied,
+            Version = model.Version,
+        };
+
+        return retVal;
+    }
+
+    /// <summary>
+    /// Creates a UI model from a DB model.
+    /// </summary>
+    /// <param name="model">The DB model to convert.</param>
+    /// <returns>The created UI model.</returns>
     public static UserFeedbackView ToUiModel(this Database.Models.UserFeedbackAdmin model)
     {
         UserFeedbackView retVal = new(model.Tags.ToUiModel())

@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Client.Store.UserFeedback;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Fluxor;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.ViewModels;
@@ -53,12 +54,12 @@ public static class UserFeedbackReducers
     [ReducerMethod]
     public static UserFeedbackState ReduceAssociateTagSuccessAction(UserFeedbackState state, UserFeedbackActions.AssociateTagSuccessAction action)
     {
-        IImmutableDictionary<Guid, UserFeedbackTagView> data = state.FeedbackTagData ?? new Dictionary<Guid, UserFeedbackTagView>().ToImmutableDictionary();
+        IImmutableDictionary<Guid, UserFeedbackView> data = state.FeedbackData ?? new Dictionary<Guid, UserFeedbackView>().ToImmutableDictionary();
 
         UserFeedbackTagView? tag = action.Data.ResourcePayload;
-        if (tag != null)
+        if (tag != null && data.TryGetValue(tag.Id, out UserFeedbackView? feedback))
         {
-            data = data.Remove(tag.Id).Add(tag.Id, tag);
+            feedback?.Tags.Add(tag);
         }
 
         return state with
@@ -69,7 +70,7 @@ public static class UserFeedbackReducers
                 Error = null,
                 Result = action.Data,
             },
-            FeedbackTagData = data,
+            FeedbackData = data,
         };
     }
 
@@ -93,16 +94,16 @@ public static class UserFeedbackReducers
     }
 
     /// <summary>
-    /// The reducer for disassociating tag from user feedback.
+    /// The reducer for dissociating tag from user feedback.
     /// </summary>
     /// <param name="state">The user feedback state.</param>
     /// <returns>The new state.</returns>
-    [ReducerMethod(typeof(UserFeedbackActions.DisassociateTagAction))]
-    public static UserFeedbackState ReduceDisassociateTagAction(UserFeedbackState state)
+    [ReducerMethod(typeof(UserFeedbackActions.DissociateTagAction))]
+    public static UserFeedbackState ReduceDissociateTagAction(UserFeedbackState state)
     {
         return state with
         {
-            DisassociateTag = state.DisassociateTag with
+            DissociateTag = state.DissociateTag with
             {
                 IsLoading = true,
             },
@@ -116,24 +117,24 @@ public static class UserFeedbackReducers
     /// <param name="action">The load success action.</param>
     /// <returns>The new state.</returns>
     [ReducerMethod]
-    public static UserFeedbackState ReduceDisassociateTagSuccessAction(UserFeedbackState state, UserFeedbackActions.DisassociateTagSuccessAction action)
+    public static UserFeedbackState ReduceDissociateTagSuccessAction(UserFeedbackState state, UserFeedbackActions.DissociateTagSuccessAction action)
     {
-        IImmutableDictionary<Guid, UserFeedbackTagView> data = state.FeedbackTagData ?? new Dictionary<Guid, UserFeedbackTagView>().ToImmutableDictionary();
+        IImmutableDictionary<Guid, UserFeedbackView> data = state.FeedbackData ?? new Dictionary<Guid, UserFeedbackView>().ToImmutableDictionary();
 
-        if (action.Result.ResourcePayload)
+        if (action.Result.ResourcePayload && data.TryGetValue(action.FeedbackId, out UserFeedbackView? feedback))
         {
-            data = data.Remove(action.Id);
+            feedback?.Tags.Remove(action.FeedbackTag);
         }
 
         return state with
         {
-            DisassociateTag = state.DisassociateTag with
+            DissociateTag = state.DissociateTag with
             {
                 IsLoading = true,
                 Error = null,
                 Result = action.Result,
             },
-            FeedbackTagData = data,
+            FeedbackData = data,
         };
     }
 
