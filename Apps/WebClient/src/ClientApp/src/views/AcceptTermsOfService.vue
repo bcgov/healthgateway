@@ -154,12 +154,16 @@ export default class AcceptTermsOfServiceView extends Vue {
         <b-container v-if="!isLoading && termsOfService !== ''">
             <div>
                 <b-form ref="termsOfServiceForm" @submit.prevent="onSubmit">
-                    <page-title title="Update to our Terms of Service" />
+                    <page-title
+                        title="Update to our Terms of Service"
+                        data-testid="tos-page-title"
+                    />
                     <b-row class="mb-3">
                         <b-col>
                             <HtmlTextAreaComponent
                                 class="termsOfService"
                                 :input="termsOfService"
+                                data-testid="tos-text-area-component"
                             />
                         </b-col>
                     </b-row>
