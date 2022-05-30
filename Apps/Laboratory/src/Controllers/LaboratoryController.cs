@@ -16,6 +16,7 @@
 namespace HealthGateway.Laboratory.Controllers
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
@@ -36,6 +37,7 @@ namespace HealthGateway.Laboratory.Controllers
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
     [TypeFilter(typeof(AvailabilityFilter))]
+    [ExcludeFromCodeCoverage]
     public class LaboratoryController : ControllerBase
     {
         private readonly ILogger logger;
