@@ -72,12 +72,7 @@ namespace HealthGateway.Common.Data.Utils
         /// <returns>The string with whitespace removed.</returns>
         public static string? StripWhitespace(string? target)
         {
-            if (target is null)
-            {
-                return target;
-            }
-
-            return WhitespaceRegex.Replace(target, string.Empty);
+            return target is null ? target : WhitespaceRegex.Replace(target, string.Empty);
         }
     }
 }

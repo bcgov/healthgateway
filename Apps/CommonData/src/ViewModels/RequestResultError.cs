@@ -16,12 +16,14 @@
 namespace HealthGateway.Common.Data.ViewModels
 {
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Data.Models.ErrorHandling;
 
     /// <summary>
     /// The RequestResultError model.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class RequestResultError
     {
         /// <summary>
