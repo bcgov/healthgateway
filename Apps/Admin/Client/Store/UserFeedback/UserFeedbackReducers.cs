@@ -123,7 +123,11 @@ public static class UserFeedbackReducers
 
         if (action.Result.ResourcePayload && data.TryGetValue(action.FeedbackId, out UserFeedbackView? feedback))
         {
-            feedback?.Tags.Remove(action.FeedbackTag);
+            UserFeedbackTagView? tag = feedback.Tags.SingleOrDefault(t => t.Tag.Id == action.FeedbackTag.Id);
+            if (tag != null)
+            {
+                feedback.Tags.Remove(tag);
+            }
         }
 
         return state with
