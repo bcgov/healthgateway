@@ -95,7 +95,7 @@ public class Covid19Test
     /// Gets the result description.
     /// </summary>
     [JsonPropertyName("resultDescription")]
-    public IList<string> ResultDescription { get; }
+    public IList<string> ResultDescription { get; init; }
 
     /// <summary>
     /// Gets or sets the result link.
