@@ -115,6 +115,48 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         }
 
         /// <summary>
+        /// CreateUserProfile - Create User HDID doesn't match Token HDID.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldCreateUserProfileBadRequest()
+        {
+            UserProfile userProfile = new()
+            {
+                HdId = "badhdid",
+                TermsOfServiceId = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd"),
+            };
+
+            CreateUserRequest createUserRequest = new()
+            {
+                Profile = userProfile,
+            };
+
+            RequestResult<UserProfileModel> expected = new()
+            {
+                ResourcePayload = UserProfileModel.CreateFromDbModel(userProfile),
+                ResultStatus = ResultType.Success,
+            };
+
+            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
+
+            Mock<IUserProfileService> userProfileServiceMock = new();
+            userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<DateTime>(), It.IsAny<string>())).ReturnsAsync(expected);
+            Mock<IUserEmailService> emailServiceMock = new();
+            Mock<IUserSMSService> smsServiceMock = new();
+
+            UserProfileController service = new(
+                new Mock<ILogger<UserProfileController>>().Object,
+                userProfileServiceMock.Object,
+                httpContextAccessorMock.Object,
+                emailServiceMock.Object,
+                smsServiceMock.Object);
+
+            ActionResult<RequestResult<UserProfileModel>> actualResult = await service.CreateUserProfile(this.hdid, createUserRequest).ConfigureAwait(true);
+            Assert.IsType<BadRequestResult>(actualResult.Result);
+        }
+
+        /// <summary>
         /// ValidateAge - Happy Path.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>

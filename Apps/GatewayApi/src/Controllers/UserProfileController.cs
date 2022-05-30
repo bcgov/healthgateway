@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -164,6 +165,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpDelete]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
+        [ExcludeFromCodeCoverage]
         public RequestResult<UserProfileModel> CloseUserProfile(string hdid)
         {
             // Retrieve the user identity id from the claims
@@ -184,6 +186,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Route("{hdid}/recover")]
         [Authorize(Policy = UserProfilePolicy.Write)]
+        [ExcludeFromCodeCoverage]
         public RequestResult<UserProfileModel> RecoverUserProfile(string hdid)
         {
             return this.userProfileService.RecoverUserProfile(hdid);
