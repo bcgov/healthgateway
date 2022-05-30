@@ -155,6 +155,35 @@ VALUES (
 	null
 );
 
+/* User (hthgtwy04) without the latest accepted terms of service */
+INSERT INTO gateway."UserProfile"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"TermsOfServiceId", 
+	"Email", 
+	"ClosedDateTime", 
+	"IdentityManagementId", 
+	"LastLoginDateTime", 
+	"EncryptionKey", 
+	"SMSNumber")
+VALUES (
+	'K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'c99fd839-b4a2-40f9-b103-529efccd0dcd', 
+	null,
+	null,
+	null,
+	current_timestamp, 
+	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
+	null
+);
+
 /* Communication Banner */
 INSERT INTO gateway."Communication"(
 	"CommunicationId", 
