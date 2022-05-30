@@ -52,6 +52,9 @@ const userGetters: UserGetters = {
     smsResendDateTime(): DateWrapper | undefined {
         return undefined;
     },
+    hasTermsOfServiceUpdated(): boolean {
+        return false;
+    },
     getPreference: () => (): UserPreference | undefined => {
         return undefined;
     },
