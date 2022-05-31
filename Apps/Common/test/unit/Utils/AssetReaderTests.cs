@@ -45,7 +45,7 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldReadMockAssetNotEncoded()
         {
-            string mockAssetContent = "Mock Data";
+            string mockAssetContent = "Mock Data\n";
 
             string? actualResult = AssetReader.Read("HealthGateway.CommonTests.MockAsset.txt");
 
@@ -58,7 +58,7 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldReadMockAssetEncoded()
         {
-            string mockAssetContent = "Mock Data";
+            string mockAssetContent = "Mock Data\n";
             byte[] mockAssetBytes = Encoding.ASCII.GetBytes(mockAssetContent);
             string mockAssetContentEncoded = Convert.ToBase64String(mockAssetBytes);
 
