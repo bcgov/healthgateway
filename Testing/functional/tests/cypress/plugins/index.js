@@ -24,16 +24,18 @@ module.exports = (on, config) => {
         isFileExist,
 
         deleteFolder(folderName) {
-            return new Promise((resolve, reject) => {
-                rmdir(folderName, { recursive: true }, (error) => {
-                    if (error) {
-                        console.log(
-                            `Cypress downloads folder does not exist so there is nothing to remove: ${error}`
-                        );
-                    }
-                    resolve(null);
-                });
-            });
+            //return new Promise((resolve, reject) => {
+            //    rmdir(folderName, { recursive: true }, (error) => {
+            //        if (error) {
+            //            console.log(
+            //                `Cypress downloads folder does not exist so there is nothing to remove: ${error}`
+            //            );
+            //        }
+            //        resolve(null);
+            //    });
+            //});
+            console.log("Delete download folder called.");
+            return null;
         },
     });
 };
