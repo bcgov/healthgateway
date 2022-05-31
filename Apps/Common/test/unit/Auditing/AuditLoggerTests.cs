@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.CommonTests.Auditing
 {
+    using System;
+    using System.IO;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Database.Constants;
@@ -56,6 +58,136 @@ namespace HealthGateway.CommonTests.Auditing
             auditLogger.PopulateWithHttpContext(ctx, actual);
 
             expected.ShouldDeepEqual(actual);
+        }
+
+        /// <summary>
+        /// PopulateWithHttpContext - handle http status 401.
+        /// </summary>
+        [Fact]
+        public void ShouldPopulateWithHttpContextHandleStatus401()
+        {
+            DefaultHttpContext ctx = new();
+            ctx.Connection.RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 });
+            ctx.Response.StatusCode = 401;
+            AuditEvent expected = new()
+            {
+                ApplicationType = ApplicationType.Configuration,
+                ClientIP = "127.0.0.1",
+                Trace = ctx.TraceIdentifier,
+                TransactionName = @"\",
+                TransactionResultCode = AuditTransactionResult.Unauthorized,
+                TransactionVersion = string.Empty,
+            };
+
+            Mock<ILogger<IAuditLogger>> logger = new();
+            Mock<IWriteAuditEventDelegate> dbContext = new();
+            AuditLogger auditLogger = new(logger.Object, dbContext.Object);
+
+            AuditEvent actual = new();
+            auditLogger.PopulateWithHttpContext(ctx, actual);
+
+            Assert.True(actual.TransactionResultCode == AuditTransactionResult.Unauthorized);
+            expected.IsDeepEqual(actual);
+        }
+
+        /// <summary>
+        /// PopulateWithHttpContext - handle http 400 status other than 401 and 403.
+        /// </summary>
+        [Fact]
+        public void ShouldPopulateWithHttpContextHandleOtherStatus400()
+        {
+            DefaultHttpContext ctx = new();
+            ctx.Connection.RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 });
+            ctx.Response.StatusCode = 405;
+            AuditEvent expected = new()
+            {
+                ApplicationType = ApplicationType.Configuration,
+                ClientIP = "127.0.0.1",
+                Trace = ctx.TraceIdentifier,
+                TransactionName = @"\",
+                TransactionResultCode = AuditTransactionResult.Failure,
+                TransactionVersion = string.Empty,
+            };
+
+            Mock<ILogger<IAuditLogger>> logger = new();
+            Mock<IWriteAuditEventDelegate> dbContext = new();
+            AuditLogger auditLogger = new(logger.Object, dbContext.Object);
+
+            AuditEvent actual = new();
+            auditLogger.PopulateWithHttpContext(ctx, actual);
+
+            Assert.True(actual.TransactionResultCode == AuditTransactionResult.Failure);
+            expected.IsDeepEqual(actual);
+        }
+
+        /// <summary>
+        /// WriteAuditEvent - Happy path.
+        /// </summary>
+        [Fact]
+        public void ShouldWriteAuditEvent()
+        {
+            DefaultHttpContext ctx = new();
+            ctx.Connection.RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 });
+            AuditEvent expected = new()
+            {
+                ApplicationType = ApplicationType.Configuration,
+                ClientIP = "127.0.0.1",
+                Trace = ctx.TraceIdentifier,
+                TransactionName = @"\",
+                TransactionResultCode = AuditTransactionResult.Success,
+                TransactionVersion = string.Empty,
+            };
+
+            Mock<ILogger<IAuditLogger>> logger = new();
+            Mock<IWriteAuditEventDelegate> dbContext = new();
+            AuditLogger auditLogger = new(logger.Object, dbContext.Object);
+
+            auditLogger.WriteAuditEvent(expected);
+
+            Assert.True(expected.TransactionResultCode == AuditTransactionResult.Success);
+            logger.Verify(
+                m => m.Log(
+                    LogLevel.Debug,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((o, t) => string.Equals(@"Saved AuditEvent", o.ToString(), StringComparison.OrdinalIgnoreCase)),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+                Times.Once);
+        }
+
+        /// <summary>
+        /// WriteAuditEvent - handle exception.
+        /// </summary>
+        [Fact]
+        public void ShouldWriteAuditEventHandleException()
+        {
+            DefaultHttpContext ctx = new();
+            ctx.Connection.RemoteIpAddress = new System.Net.IPAddress(new byte[] { 127, 0, 0, 1 });
+            AuditEvent expected = new()
+            {
+                ApplicationType = ApplicationType.Configuration,
+                ClientIP = "127.0.0.1",
+                Trace = ctx.TraceIdentifier,
+                TransactionName = @"\",
+                TransactionResultCode = AuditTransactionResult.Success,
+                TransactionVersion = string.Empty,
+            };
+
+            Mock<ILogger<IAuditLogger>> logger = new();
+            Mock<IWriteAuditEventDelegate> dbContext = new();
+            dbContext.Setup(e => e.WriteAuditEvent(It.IsAny<AuditEvent>())).Throws(new IOException());
+            AuditLogger auditLogger = new(logger.Object, dbContext.Object);
+
+            auditLogger.WriteAuditEvent(expected);
+
+            logger.Verify(
+                m => m.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => string.Equals(@"In WriteAuditEvent", o.ToString(), StringComparison.OrdinalIgnoreCase)),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+                Times.Once);
         }
     }
 }

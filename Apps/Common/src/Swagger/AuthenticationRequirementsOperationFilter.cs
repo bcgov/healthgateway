@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Swagger
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
@@ -35,6 +36,7 @@ namespace HealthGateway.Common.Swagger
         /// </summary>
         /// <param name="operation">The swagger operation.</param>
         /// <param name="context">The filter context.</param>
+        [ExcludeFromCodeCoverage]
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             if (operation.Security == null)

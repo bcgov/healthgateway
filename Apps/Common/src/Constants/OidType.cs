@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Constants
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// A class with constants representing the various OID values.
@@ -54,6 +55,7 @@ namespace HealthGateway.Common.Constants
         /// <returns>True if the value of a is equal from the value of b; otherwise, false.</returns>
         /// <param name="lhs">The first type to compare, or null.</param>
         /// <param name="rhs">The second type to compare, or null.</param>
+        [ExcludeFromCodeCoverage]
         public static bool operator ==(OidType lhs, OidType rhs)
         {
             // Check for null on left side.
@@ -79,6 +81,7 @@ namespace HealthGateway.Common.Constants
         /// <returns>True if the value of a is different from the value b; otherwise, false.</returns>
         /// <param name="lhs">The first type to compare, or null.</param>
         /// <param name="rhs">The second type to compare, or null.</param>
+        [ExcludeFromCodeCoverage]
         public static bool operator !=(OidType lhs, OidType rhs)
         {
             return !(lhs == rhs);
@@ -88,6 +91,7 @@ namespace HealthGateway.Common.Constants
         /// Gets the hash code for this OidType.
         /// </summary>
         /// <returns>The computed hash code.</returns>
+        [ExcludeFromCodeCoverage]
         public override int GetHashCode()
         {
             return this.value.GetHashCode(System.StringComparison.InvariantCulture);
@@ -97,6 +101,7 @@ namespace HealthGateway.Common.Constants
         /// Gets string representation of this type.
         /// </summary>
         /// <returns>The string representation.</returns>
+        [ExcludeFromCodeCoverage]
         public override string ToString()
         {
             return this.value;
@@ -107,6 +112,7 @@ namespace HealthGateway.Common.Constants
         /// </summary>
         /// <returns>True if the value of a is equal; otherwise, false.</returns>
         /// <param name="obj">The object to compare against for equality.</param>
+        [ExcludeFromCodeCoverage]
         public override bool Equals(object? obj)
         {
             // Check for null and compare run-time types.
@@ -125,6 +131,7 @@ namespace HealthGateway.Common.Constants
         /// </summary>
         /// <returns>True if the value of a is equal; otherwise, false.</returns>
         /// <param name="other">The object to compare against for equality.</param>
+        [ExcludeFromCodeCoverage]
         public bool Equals(OidType? other)
         {
             return this.value == other?.value;
