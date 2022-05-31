@@ -22,20 +22,5 @@ module.exports = (on, config) => {
     // `config` is the resolved Cypress config
     on("task", {
         isFileExist,
-
-        deleteFolder(folderName) {
-            //return new Promise((resolve, reject) => {
-            //    rmdir(folderName, { recursive: true }, (error) => {
-            //        if (error) {
-            //            console.log(
-            //                `Cypress downloads folder does not exist so there is nothing to remove: ${error}`
-            //            );
-            //        }
-            //        resolve(null);
-            //    });
-            //});
-            console.log("Delete download folder called.");
-            return null;
-        },
     });
 };
