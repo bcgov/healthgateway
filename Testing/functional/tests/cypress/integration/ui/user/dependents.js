@@ -112,7 +112,7 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
             .click();
 
         // History tab
-        cy.log("Validating history tab");
+        cy.log("Validating History Tab");
         cy.get(
             "[data-testid=immunization-tab-div-" + dependentHdid + "]"
         ).within(() => {
@@ -195,7 +195,7 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
             .click();
 
         // Click download dropdown under Forecasts tab
-        cy.log("Validating forecasts tab");
+        cy.log("Validating Forecasts Tab");
         cy.get(
             "[data-testid=download-immunization-forecast-report-btn-" +
                 dependentHdid +
