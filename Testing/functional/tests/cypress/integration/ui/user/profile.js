@@ -4,6 +4,12 @@ const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("User Profile", () => {
     beforeEach(() => {
+        cy.intercept("GET", `**/UserProfile/${HDID}`, (req) => {
+            req.reply({
+                fixture: "UserProfileService/userProfile.json",
+            });
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -13,12 +19,6 @@ describe("User Profile", () => {
     });
 
     it("Validate Login History Sorted Descending", () => {
-        cy.intercept("GET", `**/UserProfile/${HDID}`, (req) => {
-            req.reply({
-                fixture: "UserProfileService/userProfile.json",
-            });
-        });
-
         cy.get("[data-testid=lastLoginDateItem]")
             .first()
             .then(($dateItem) => {
