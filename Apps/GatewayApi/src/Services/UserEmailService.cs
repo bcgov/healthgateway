@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
@@ -159,6 +160,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc />
+        [ExcludeFromCodeCoverage]
         public bool CreateUserEmail(string hdid, string emailAddress, bool isVerified)
         {
             this.logger.LogTrace($"Creating user email...");
@@ -168,6 +170,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc />
+        [ExcludeFromCodeCoverage]
         public bool UpdateUserEmail(string hdid, string emailAddress)
         {
             this.logger.LogTrace($"Updating user email...");
@@ -211,6 +214,7 @@ namespace HealthGateway.GatewayApi.Services
             return true;
         }
 
+        [ExcludeFromCodeCoverage]
         private void AddVerificationEmail(string hdid, string toEmail, Guid inviteKey, bool isVerified = false)
         {
             float verificationExpiryHours = (float)this.emailVerificationExpirySeconds / 3600;
