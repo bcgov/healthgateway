@@ -83,7 +83,6 @@ describe("COVID-19", () => {
 describe("Dependents - Immuniazation Tab - Enabled", () => {
     const dependentHdid = "645645767756756767";
     beforeEach(() => {
-        cy.deleteDownloadsFolder();
         cy.intercept("GET", "**/UserProfile/*/Dependent", {
             fixture: "UserProfileService/dependent.json",
         });
@@ -176,9 +175,6 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx");
-
-        // Clear download folder for next round of verifications
-        cy.deleteDownloadsFolder();
 
         // Forecast tab
         cy.get(

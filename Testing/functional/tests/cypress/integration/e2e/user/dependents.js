@@ -273,9 +273,6 @@ describe("dependents", () => {
                 "]"
         ).should("be.visible");
 
-        // Clear download folder
-        cy.deleteDownloadsFolder();
-
         // Click download dropdown under History tab
         cy.get(
             "[data-testid=download-immunization-history-report-btn-" +
@@ -295,9 +292,6 @@ describe("dependents", () => {
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf");
-
-        // Clear download folder for next round of verifications
-        cy.deleteDownloadsFolder();
 
         cy.get(
             "[data-testid=immunization-tab-div-" + validDependent.hdid + "]"

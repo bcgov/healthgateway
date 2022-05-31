@@ -24,9 +24,7 @@ describe("Authenticated Vaccine Card", () => {
         );
         cy.get("[data-testid=statusPartiallyVaccinated]").should("be.visible");
 
-        cy.intercept("GET", "**/Immunization?hdid=*").as(
-            "getImmunization"
-        );
+        cy.intercept("GET", "**/Immunization?hdid=*").as("getImmunization");
 
         // Navigate Left
         cy.get("[data-testid=vc-chevron-left-btn]")
@@ -90,15 +88,12 @@ describe("Authenticated Vaccine Card", () => {
     });
 
     it("Save As PDF", () => {
-        cy.deleteDownloadsFolder();
-
         cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*").as(
             "getVaccinationStatus"
         );
-        cy.intercept(
-            "GET",
-            "**/AuthenticatedVaccineStatus/pdf?hdid=*"
-        ).as("getVaccineProof");
+        cy.intercept("GET", "**/AuthenticatedVaccineStatus/pdf?hdid=*").as(
+            "getVaccineProof"
+        );
 
         cy.enableModules([
             "Immunization",
