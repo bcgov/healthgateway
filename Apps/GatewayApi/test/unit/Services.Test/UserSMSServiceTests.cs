@@ -113,6 +113,42 @@ namespace HealthGateway.GatewayApi.Test.Services
         }
 
         /// <summary>
+        /// ValidateSMS - Update SMS Happy Path.
+        /// </summary>
+        [Fact]
+        public void ShouldValidateUpdate()
+        {
+            string sms = "2501234567";
+            MessagingVerification expectedResult = new()
+            {
+                UserProfileId = HdIdMock,
+                VerificationAttempts = 0,
+                SMSValidationCode = "1234561234",
+                ExpireDate = DateTime.Now.AddDays(1),
+            };
+
+            Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new();
+            messagingVerificationDelegate.Setup(s => s.GetLastForUser(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
+
+            Mock<IUserProfileDelegate> userProfileDelegate = new();
+            DBResult<UserProfile> userProfileMock = new()
+            {
+                Payload = new UserProfile(),
+                Status = DBStatusCode.Read,
+            };
+            userProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(userProfileMock);
+            userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new DBResult<UserProfile>());
+
+            IUserSMSService service = new UserSMSService(
+                new Mock<ILogger<UserSMSService>>().Object,
+                messagingVerificationDelegate.Object,
+                userProfileDelegate.Object,
+                new Mock<INotificationSettingsService>().Object);
+
+            Assert.True(service.UpdateUserSMS(HdIdMock, sms));
+        }
+
+        /// <summary>
         /// ValidateSMS - Happy path scenario.
         /// </summary>
         [Fact]

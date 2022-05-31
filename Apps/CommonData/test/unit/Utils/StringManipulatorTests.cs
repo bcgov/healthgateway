@@ -84,7 +84,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
             string clean = " e m p t y  s t r i n g ";
             string expected = "emptystring";
             string? actual = StringManipulator.StripWhitespace(clean);
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         /// <summary>

@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApi.Controllers
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.GatewayApi.Models;
@@ -150,6 +151,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Route("{hdid}/[controller]")]
         [Authorize(Policy = UserProfilePolicy.Read)]
+        [ExcludeFromCodeCoverage]
         public RequestResult<IDictionary<string, IEnumerable<UserComment>>> GetAll(string hdid)
         {
             return this.commentService.GetProfileComments(hdid);
