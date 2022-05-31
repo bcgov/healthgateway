@@ -291,7 +291,10 @@ describe("dependents", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
+            timeout: 60000,
+            interval: 5000,
+        });
 
         cy.get(
             "[data-testid=immunization-tab-div-" + validDependent.hdid + "]"
@@ -322,7 +325,10 @@ describe("dependents", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
+            timeout: 60000,
+            interval: 5000,
+        });
 
         cy.log("Adding same dependent as another user");
 
