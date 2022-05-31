@@ -20,7 +20,7 @@ describe("dependents", () => {
         phn: "9879187222",
     };
 
-    const jenniferDependentHdid = "162346565465464564565463257";
+    const validDependentHdid = "162346565465464564565463257";
 
     beforeEach(() => {
         cy.enableModules([
@@ -180,7 +180,7 @@ describe("dependents", () => {
         cy.log("Validating Immunization Tab");
 
         cy.get(
-            "[data-testid=immunization-tab-title-" + jenniferDependentHdid + "]"
+            "[data-testid=immunization-tab-title-" + validDependentHdid + "]"
         )
             .parent()
             .click();
@@ -188,27 +188,27 @@ describe("dependents", () => {
         // History tab
         cy.log("Validating history tab");
         cy.get(
-            "[data-testid=immunization-tab-div-" + jenniferDependentHdid + "]"
+            "[data-testid=immunization-tab-div-" + validDependentHdid + "]"
         ).within(() => {
             cy.contains("a", "History").click();
         });
         cy.get(
             "[data-testid=immunization-history-table-" +
-                jenniferDependentHdid +
+                validDependentHdid +
                 "]"
         ).should("be.visible");
 
         // Click download dropdown under History tab
         cy.get(
             "[data-testid=download-immunization-history-report-btn-" +
-                jenniferDependentHdid +
+                validDependentHdid +
                 "]"
         ).click();
 
         // Click PDF
         cy.get(
             "[data-testid=download-immunization-history-report-pdf-btn-" +
-                jenniferDependentHdid +
+                validDependentHdid +
                 "]"
         ).click();
 
@@ -216,19 +216,22 @@ describe("dependents", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
+            timeout: 60000,
+            interval: 5000,
+        });
 
         // Click download dropdown
         cy.get(
             "[data-testid=download-immunization-history-report-btn-" +
-                jenniferDependentHdid +
+                validDependentHdid +
                 "]"
         ).click();
 
         // Click CSV
         cy.get(
             "[data-testid=download-immunization-history-report-csv-btn-" +
-                jenniferDependentHdid +
+                validDependentHdid +
                 "]"
         ).click();
 
@@ -236,19 +239,22 @@ describe("dependents", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
+            timeout: 60000,
+            interval: 5000,
+        });
 
         // Click download dropdown
         cy.get(
             "[data-testid=download-immunization-history-report-btn-" +
-                jenniferDependentHdid +
+                validDependentHdid +
                 "]"
         ).click();
 
         // Click XLSX
         cy.get(
             "[data-testid=download-immunization-history-report-xlsx-btn-" +
-                jenniferDependentHdid +
+                validDependentHdid +
                 "]"
         ).click();
 
@@ -256,14 +262,17 @@ describe("dependents", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
+            timeout: 60000,
+            interval: 5000,
+        });
     });
 
     it("Validate Immunization - Forecast - Tab", () => {
         cy.log("Validating Immunization Tab - configuration enabled");
 
         cy.get(
-            "[data-testid=immunization-tab-title-" + jenniferDependentHdid + "]"
+            "[data-testid=immunization-tab-title-" + validDependentHdid + "]"
         )
             .parent()
             .click();
@@ -272,14 +281,14 @@ describe("dependents", () => {
         cy.log("Validating forecasts tab");
         cy.get(
             "[data-testid=download-immunization-forecast-report-btn-" +
-                jenniferDependentHdid +
+                validDependentHdid +
                 "]"
         ).click({ force: true });
 
         // Click PDF
         cy.get(
             "[data-testid=download-immunization-forecast-report-pdf-btn-" +
-                jenniferDependentHdid +
+                validDependentHdid +
                 "]"
         ).click({ force: true });
 
@@ -287,19 +296,22 @@ describe("dependents", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
+            timeout: 60000,
+            interval: 5000,
+        });
 
         // Click download dropdown
         cy.get(
             "[data-testid=download-immunization-forecast-report-btn-" +
-                jenniferDependentHdid +
+                validDependentHdid +
                 "]"
         ).click({ force: true });
 
         // Click CSV
         cy.get(
             "[data-testid=download-immunization-forecast-report-csv-btn-" +
-                jenniferDependentHdid +
+                validDependentHdid +
                 "]"
         ).click({ force: true });
 
@@ -307,19 +319,22 @@ describe("dependents", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
+            timeout: 60000,
+            interval: 5000,
+        });
 
         // Click download dropdown
         cy.get(
             "[data-testid=download-immunization-forecast-report-btn-" +
-                jenniferDependentHdid +
+                validDependentHdid +
                 "]"
         ).click({ force: true });
 
         // Click XLSX
         cy.get(
             "[data-testid=download-immunization-forecast-report-xlsx-btn-" +
-                jenniferDependentHdid +
+                validDependentHdid +
                 "]"
         ).click({ force: true });
 
@@ -327,7 +342,10 @@ describe("dependents", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
+            timeout: 60000,
+            interval: 5000,
+        });
     });
 
     it("Validate Adding, Viewing, and Removing Dependents", () => {
