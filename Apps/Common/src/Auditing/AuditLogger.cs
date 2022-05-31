@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Auditing
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Reflection;
     using System.Security.Claims;
@@ -131,6 +132,7 @@ namespace HealthGateway.Common.Auditing
         /// Gets the current audit application type from the assembly name.
         /// </summary>
         /// <returns>The mapped application type.</returns>
+        [ExcludeFromCodeCoverage]
         private static string GetApplicationType()
         {
             AssemblyName assemblyName = Assembly.GetEntryAssembly()!.GetName();

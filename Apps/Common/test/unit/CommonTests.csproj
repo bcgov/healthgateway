@@ -31,4 +31,8 @@
   <ItemGroup>
     <Folder Include="Swagger\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="MockAsset.txt" />
+    <EmbeddedResource Include="MockAsset.txt" />
+  </ItemGroup>
 </Project>
