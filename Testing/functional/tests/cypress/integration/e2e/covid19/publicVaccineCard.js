@@ -91,8 +91,6 @@ describe("Public Vaccine Card Result", () => {
 
 describe("Public Vaccine Card Downloads", () => {
     beforeEach(() => {
-        cy.deleteDownloadsFolder();
-
         cy.enableModules([
             "Immunization",
             "VaccinationStatus",

@@ -12,7 +12,6 @@ describe("Laboratory Orders - Report", () => {
                 fixture: "LaboratoryService/laboratoryReportPdf.json",
             }
         );
-        cy.deleteDownloadsFolder();
         cy.enableModules("AllLaboratory");
         cy.viewport("iphone-6");
         cy.login(

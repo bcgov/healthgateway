@@ -34,5 +34,6 @@
         "emailAddress": "fakeemail@healthgateway.gov.bc.ca",
         "phn": "9735353315"
     },
-    "projectId": "ofnepc"
+    "projectId": "ofnepc",
+    "trashAssetsBeforeRuns": true
 }

@@ -13,8 +13,6 @@ describe("COVID-19 Orders", () => {
     });
 
     it("Validate Download", () => {
-        cy.deleteDownloadsFolder();
-
         cy.contains("[data-testid=entryCardDate]", "2020-Dec-03")
             .first()
             .scrollIntoView()

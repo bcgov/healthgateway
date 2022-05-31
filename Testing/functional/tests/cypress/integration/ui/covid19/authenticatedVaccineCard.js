@@ -3,7 +3,6 @@ const covid19Url = "/covid19";
 
 describe("Authenticated Vaccine Card Downloads", () => {
     beforeEach(() => {
-        cy.deleteDownloadsFolder();
         cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*", {
             fixture:
                 "ImmunizationService/authenticatedVaccinationStatusLoaded.json",

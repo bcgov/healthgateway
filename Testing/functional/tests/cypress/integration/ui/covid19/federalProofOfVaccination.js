@@ -3,7 +3,6 @@ const homeUrl = "/home";
 
 describe("Federal Proof of Vaccination", () => {
     it("Save Federal Proof of Vaccination with Retry", () => {
-        cy.deleteDownloadsFolder();
         let isLoading = false;
         cy.intercept(
             "GET",

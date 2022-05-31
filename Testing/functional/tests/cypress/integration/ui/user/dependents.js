@@ -83,7 +83,6 @@ describe("COVID-19", () => {
 describe("Dependents - Immuniazation Tab - Enabled", () => {
     const dependentHdid = "645645767756756767";
     beforeEach(() => {
-        cy.deleteDownloadsFolder();
         cy.intercept("GET", "**/UserProfile/*/Dependent", {
             fixture: "UserProfileService/dependent.json",
         });
@@ -101,7 +100,7 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         );
     });
 
-    it("Immunization Tab - Configuration Enabled", () => {
+    it("Immunization - History - Tab - Configuration Enabled", () => {
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/dependentImmunization.json",
         });
@@ -113,6 +112,12 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
             .click();
 
         // History tab
+        cy.log("Validating History Tab");
+        cy.get(
+            "[data-testid=immunization-tab-div-" + dependentHdid + "]"
+        ).within(() => {
+            cy.contains("a", "History").click();
+        });
         cy.get(
             "[data-testid=immunization-history-table-" + dependentHdid + "]"
         ).should("be.visible");
@@ -176,33 +181,33 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx");
+    });
 
-        // Clear download folder for next round of verifications
-        cy.deleteDownloadsFolder();
-
-        // Forecast tab
-        cy.get(
-            "[data-testid=immunization-tab-div-" + dependentHdid + "]"
-        ).within(() => {
-            cy.contains("a", "Forecasts").click();
+    it("Immunization - Forecast - Tab - Configuration Enabled", () => {
+        cy.intercept("GET", "**/Immunization?hdid=*", {
+            fixture: "ImmunizationService/dependentImmunization.json",
         });
-        cy.get(
-            "[data-testid=immunization-forecast-table-" + dependentHdid + "]"
-        ).should("be.visible");
 
-        // Click download dropdown under Forecast tab
+        cy.log("Validating Immunization Tab - configuration enabled");
+
+        cy.get("[data-testid=immunization-tab-title-" + dependentHdid + "]")
+            .parent()
+            .click();
+
+        // Click download dropdown under Forecasts tab
+        cy.log("Validating Forecasts Tab");
         cy.get(
             "[data-testid=download-immunization-forecast-report-btn-" +
                 dependentHdid +
                 "]"
-        ).click();
+        ).click({ force: true });
 
         // Click PDF
         cy.get(
             "[data-testid=download-immunization-forecast-report-pdf-btn-" +
                 dependentHdid +
                 "]"
-        ).click();
+        ).click({ force: true });
 
         // Confirmation modal
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
@@ -215,14 +220,14 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
             "[data-testid=download-immunization-forecast-report-btn-" +
                 dependentHdid +
                 "]"
-        ).click();
+        ).click({ force: true });
 
         // Click CSV
         cy.get(
             "[data-testid=download-immunization-forecast-report-csv-btn-" +
                 dependentHdid +
                 "]"
-        ).click();
+        ).click({ force: true });
 
         // Confirmation modal
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
@@ -235,14 +240,14 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
             "[data-testid=download-immunization-forecast-report-btn-" +
                 dependentHdid +
                 "]"
-        ).click();
+        ).click({ force: true });
 
         // Click XLSX
         cy.get(
             "[data-testid=download-immunization-forecast-report-xlsx-btn-" +
                 dependentHdid +
                 "]"
-        ).click();
+        ).click({ force: true });
 
         // Confirmation modal
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
