@@ -146,7 +146,6 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<INotificationSettingsService>().Object);
 
             Assert.True(service.UpdateUserSMS(HdIdMock, sms));
-
         }
 
         /// <summary>

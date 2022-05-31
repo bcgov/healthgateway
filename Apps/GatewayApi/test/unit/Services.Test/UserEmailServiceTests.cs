@@ -27,6 +27,7 @@ namespace HealthGateway.GatewayApi.Test.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Services;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -80,7 +81,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 GetIConfigurationRoot(),
-                null);
+                new Mock<IHttpContextAccessor>().Object);
 
             PrimitiveRequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
             Assert.True(actual.ResultStatus == ResultType.Success);
@@ -123,7 +124,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 GetIConfigurationRoot(),
-                null);
+                new Mock<IHttpContextAccessor>().Object);
 
             PrimitiveRequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
             Assert.True(actual.ResultStatus == ResultType.ActionRequired);
@@ -167,7 +168,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 GetIConfigurationRoot(),
-                null);
+                new Mock<IHttpContextAccessor>().Object);
 
             PrimitiveRequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
             Assert.True(actual.ResultStatus == ResultType.Error);
@@ -197,7 +198,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 GetIConfigurationRoot(),
-                null);
+                new Mock<IHttpContextAccessor>().Object);
 
             PrimitiveRequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
             Assert.True(actual.ResultStatus == ResultType.Error);
@@ -228,12 +229,11 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 GetIConfigurationRoot(),
-                null);
+                new Mock<IHttpContextAccessor>().Object);
 
             PrimitiveRequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
             Assert.True(actual.ResultStatus == ResultType.Error);
         }
-
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
