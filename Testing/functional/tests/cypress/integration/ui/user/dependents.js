@@ -111,26 +111,27 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
             .parent()
             .click();
 
-        // Forecast tab
+        // History tab
+        cy.log("Validating history tab");
         cy.get(
             "[data-testid=immunization-tab-div-" + dependentHdid + "]"
         ).within(() => {
-            cy.contains("a", "Forecasts").click();
+            cy.contains("a", "History").click();
         });
         cy.get(
-            "[data-testid=immunization-forecast-table-" + dependentHdid + "]"
+            "[data-testid=immunization-history-table-" + dependentHdid + "]"
         ).should("be.visible");
 
-        // Click download dropdown under Forecast tab
+        // Click download dropdown under History tab
         cy.get(
-            "[data-testid=download-immunization-forecast-report-btn-" +
+            "[data-testid=download-immunization-history-report-btn-" +
                 dependentHdid +
                 "]"
         ).click();
 
         // Click PDF
         cy.get(
-            "[data-testid=download-immunization-forecast-report-pdf-btn-" +
+            "[data-testid=download-immunization-history-report-pdf-btn-" +
                 dependentHdid +
                 "]"
         ).click();
@@ -143,14 +144,14 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
 
         // Click download dropdown
         cy.get(
-            "[data-testid=download-immunization-forecast-report-btn-" +
+            "[data-testid=download-immunization-history-report-btn-" +
                 dependentHdid +
                 "]"
         ).click();
 
         // Click CSV
         cy.get(
-            "[data-testid=download-immunization-forecast-report-csv-btn-" +
+            "[data-testid=download-immunization-history-report-csv-btn-" +
                 dependentHdid +
                 "]"
         ).click();
@@ -163,14 +164,14 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
 
         // Click download dropdown
         cy.get(
-            "[data-testid=download-immunization-forecast-report-btn-" +
+            "[data-testid=download-immunization-history-report-btn-" +
                 dependentHdid +
                 "]"
         ).click();
 
         // Click XLSX
         cy.get(
-            "[data-testid=download-immunization-forecast-report-xlsx-btn-" +
+            "[data-testid=download-immunization-history-report-xlsx-btn-" +
                 dependentHdid +
                 "]"
         ).click();
@@ -193,7 +194,8 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
             .parent()
             .click();
 
-        // Click download dropdown under Forecast tab
+        // Click download dropdown under Forecasts tab
+        cy.log("Validating forecasts tab");
         cy.get(
             "[data-testid=download-immunization-forecast-report-btn-" +
                 dependentHdid +
