@@ -12,15 +12,14 @@
         "sourceMap": true,
         "isolatedModules": true,
         "baseUrl": ".",
-        "types": ["reflect-metadata", "webpack-env", "jest"],
+        "types": ["reflect-metadata", "webpack-env"],
         "typeRoots": ["node_modules/@types", "src/@types"],
         "emitDecoratorMetadata": true,
         "paths": {
-            "@/*": ["src/*"],
-            "@test/*": ["test/*"]
+            "@/*": ["src/*"]
         },
         "lib": ["esnext", "dom", "dom.iterable", "scripthost", "es2018.promise"]
     },
-    "include": ["./src/**/*.ts", "./src/**/*.vue", "./test/**/*.ts"],
+    "include": ["./src/**/*.ts", "./src/**/*.vue"],
     "exclude": ["node_modules"]
 }
