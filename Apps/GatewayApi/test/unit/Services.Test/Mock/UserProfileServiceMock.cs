@@ -37,7 +37,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     public class UserProfileServiceMock : Mock<IUserProfileService>
     {
         private readonly UserProfileService userProfileService;
-        private readonly Mock<IConfigurationService> emptyConfigServiceMock = new();
         private readonly string webClientConfigSection = "WebClient";
         private readonly string userProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
 
@@ -61,7 +60,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<IPatientService>().Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
-                this.emptyConfigServiceMock.Object,
                 new Mock<IEmailQueueService>().Object,
                 new NotificationSettingsServiceMock().Object,
                 new UserProfileDelegateMock(userProfileData, userProfileDbResult, hdId, userProfileHistoryDbResult, limit).Object,
@@ -83,21 +81,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="configuration">configuration.</param>
         public UserProfileServiceMock(string message, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, string registrationStatus, IConfiguration configuration)
         {
-            ExternalConfiguration externalConfiguration = new()
-            {
-                WebClient = new WebClientConfiguration()
-                {
-                    RegistrationStatus = registrationStatus,
-                },
-            };
-            this.emptyConfigServiceMock.Setup(s => s.GetConfiguration()).Returns(externalConfiguration);
-
             this.userProfileService = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 new Mock<IPatientService>().Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
-                this.emptyConfigServiceMock.Object,
                 new Mock<IEmailQueueService>().Object,
                 new NotificationSettingsServiceMock().Object,
                 new UserProfileDelegateMock(userProfileData, userProfileDbResult).Object,
@@ -114,16 +102,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// </summary>
         /// <param name="hdid">hdid.</param>
         /// <param name="patientModel">patient model.</param>
-        /// <param name="minPatientAge">minimum patient age.</param>
         /// <param name="configuration">configuration.</param>
-        public UserProfileServiceMock(string hdid, PatientModel patientModel, int minPatientAge, IConfiguration configuration)
+        public UserProfileServiceMock(string hdid, PatientModel patientModel, IConfiguration configuration)
         {
             this.userProfileService = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 new PatientServiceMock(hdid, patientModel).Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
-                new ConfigServiceMock(minPatientAge).Object,
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 new Mock<IUserProfileDelegate>().Object,
@@ -153,7 +139,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<IPatientService>().Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
-                this.emptyConfigServiceMock.Object,
                 new Mock<IEmailQueueService>().Object,
                 new NotificationSettingsServiceMock().Object,
                 new UserProfileDelegateMock(hdId, userProfileData, userProfileDbResult, commit).Object,
@@ -178,7 +163,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<IPatientService>().Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
-                new Mock<IConfigurationService>().Object,
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 new Mock<IUserProfileDelegate>().Object,
@@ -207,7 +191,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<IPatientService>().Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
-                new Mock<IConfigurationService>().Object,
                 new EmailQueueServiceMock(shouldEmailCommit).Object,
                 new Mock<INotificationSettingsService>().Object,
                 new UserProfileDelegateMock(hdId, userProfileData, userProfileDbResult, shouldProfileCommit).Object,

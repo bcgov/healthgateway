@@ -34,7 +34,6 @@ namespace HealthGateway.Laboratory.Controllers
     [Authorize]
     [ApiVersion("1.0")]
     [Route("[controller]")]
-    [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
     [TypeFilter(typeof(AvailabilityFilter))]
     [ExcludeFromCodeCoverage]

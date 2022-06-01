@@ -51,22 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Server\Assets\Robots.txt" />
-    <EmbeddedResource Include="Server\Assets\Templates\CovidReport.docx" />
-    <EmbeddedResource Include="Server\Assets\Templates\CovidReport.xlsx" />
-    <EmbeddedResource Include="Server\Assets\Templates\EncounterReport.xlsx" />
-    <EmbeddedResource Include="Server\Assets\Templates\ImmunizationReport.docx" />
-    <EmbeddedResource Include="Server\Assets\Templates\EncounterReport.docx" />
-    <EmbeddedResource Include="Server\Assets\Templates\ImmunizationReport.xlsx" />
-    <EmbeddedResource Include="Server\Assets\Templates\MedicationReport.docx" />
-    <EmbeddedResource Include="Server\Assets\Templates\MedicationReport.xlsx" />
-    <EmbeddedResource Include="Server\Assets\Templates\MedicationRequestReport.docx" />
-    <EmbeddedResource Include="Server\Assets\Templates\MedicationRequestReport.xlsx" />
-    <EmbeddedResource Include="Server\Assets\Templates\NotesReport.docx" />
-    <EmbeddedResource Include="Server\Assets\Templates\NotesReport.xlsx" />
-    <EmbeddedResource Include="Server\Assets\Templates\LaboratoryReport.docx" />
-    <EmbeddedResource Include="Server\Assets\Templates\LaboratoryReport.xlsx" />
-    <EmbeddedResource Include="Server\Assets\Templates\DependentImmunizationReport.docx" />
-    <EmbeddedResource Include="Server\Assets\Templates\DependentImmunizationReport.xlsx" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
@@ -87,7 +71,7 @@
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
       <DistFiles Include="$(SpaRoot)dist\**" />
-      <ResolvedFileToPublish Include="@(DistFiles-&gt;'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
         <RelativePath>%(DistFiles.Identity)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </ResolvedFileToPublish>

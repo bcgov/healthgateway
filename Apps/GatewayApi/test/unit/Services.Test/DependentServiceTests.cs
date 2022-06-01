@@ -31,6 +31,7 @@ namespace HealthGateway.GatewayApi.Test.Services
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -243,35 +244,43 @@ namespace HealthGateway.GatewayApi.Test.Services
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdId)).Returns(new DBResult<UserProfile>() { Payload = new UserProfile() });
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
             mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
-            Mock<IConfigurationService> configServiceMock = new();
-            configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
             IDependentService service = new DependentService(
+                GetIConfigurationRoot(null),
                 new Mock<ILogger<DependentService>>().Object,
                 mockUserProfileDelegate.Object,
                 new Mock<IPatientService>().Object,
                 mockNotificationSettingsService.Object,
-                mockDependentDelegate.Object,
-                configServiceMock.Object);
+                mockDependentDelegate.Object);
 
             RequestResult<DependentModel> actualResult = service.Remove(delegateModel);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
 
+        private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string>? localConfig)
+        {
+            Dictionary<string, string> myConfiguration = localConfig ?? new();
+
+            return new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true)
+                .AddJsonFile("appsettings.Development.json", optional: true)
+                .AddJsonFile("appsettings.local.json", optional: true)
+                .AddInMemoryCollection(myConfiguration)
+                .Build();
+        }
+
         private static IDependentService SetupCommonMocks(Mock<IResourceDelegateDelegate> mockDependentDelegate, Mock<IPatientService> mockPatientService)
         {
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
-            Mock<IConfigurationService> configServiceMock = new();
-            configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
 
             return new DependentService(
+                GetIConfigurationRoot(null),
                 new Mock<ILogger<DependentService>>().Object,
                 mockUserProfileDelegate.Object,
                 mockPatientService.Object,
                 mockNotificationSettingsService.Object,
-                mockDependentDelegate.Object,
-                configServiceMock.Object);
+                mockDependentDelegate.Object);
         }
 
         private IEnumerable<ResourceDelegate> GenerateMockResourceDelegatesList()
@@ -390,15 +399,13 @@ namespace HealthGateway.GatewayApi.Test.Services
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdId)).Returns(new DBResult<UserProfile>() { Payload = new UserProfile() });
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
             mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
-            Mock<IConfigurationService> configServiceMock = new();
-            configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
             return new DependentService(
+                GetIConfigurationRoot(null),
                 new Mock<ILogger<DependentService>>().Object,
                 mockUserProfileDelegate.Object,
                 mockPatientService.Object,
                 mockNotificationSettingsService.Object,
-                mockDependentDelegate.Object,
-                configServiceMock.Object);
+                mockDependentDelegate.Object);
         }
 
         private AddDependentRequest SetupMockInput()

@@ -30,7 +30,6 @@ namespace HealthGateway.Medication.Controllers
     [EnableCors("allowAny")]
     [ApiVersion("1.0")]
     [Route("[controller]")]
-    [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
     public class MedicationController : ControllerBase
     {

@@ -19,14 +19,8 @@ namespace HealthGateway.WebClient
     using System;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
-    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Delegates.PHSA;
-    using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils;
-    using HealthGateway.Database.Delegates;
-    using HealthGateway.WebClient.Listeners;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -37,7 +31,6 @@ namespace HealthGateway.WebClient
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.IdentityModel.Tokens;
     using VueCliMiddleware;
 
     /// <summary>
@@ -67,53 +60,14 @@ namespace HealthGateway.WebClient
         public void ConfigureServices(IServiceCollection services)
         {
             this.startupConfig.ConfigureForwardHeaders(services);
-            this.startupConfig.ConfigureDatabaseServices(services);
-            this.startupConfig.ConfigureHttpServices(services);
-            this.startupConfig.ConfigureAuditServices(services);
-            this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
-            this.startupConfig.ConfigureAuthorizationServices(services);
+            this.startupConfig.ConfigureHttpServices(services, false);
             this.startupConfig.ConfigureSwaggerServices(services);
-            this.startupConfig.ConfigureHangfireQueue(services);
-            this.startupConfig.ConfigurePatientAccess(services);
             this.startupConfig.ConfigureTracing(services);
-            this.startupConfig.ConfigureAccessControl(services);
 
             // Add services
-            services.AddMemoryCache();
             services.AddTransient<IConfigurationService, ConfigurationService>();
-            services.AddTransient<IUserProfileService, UserProfileService>();
-            services.AddTransient<IUserEmailService, UserEmailService>();
-            services.AddTransient<IEmailQueueService, EmailQueueService>();
-            services.AddTransient<IUserFeedbackService, UserFeedbackService>();
-            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<INoteService, NoteService>();
-            services.AddTransient<ICommentService, CommentService>();
-            services.AddTransient<ICommunicationService, CommunicationService>();
-            services.AddTransient<IUserSMSService, UserSMSService>();
-            services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
-            services.AddTransient<IDependentService, DependentService>();
-            services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
-            services.AddTransient<IReportService, ReportService>();
-
-            // Add delegates
-            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
-            services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
-            services.AddTransient<IEmailDelegate, DBEmailDelegate>();
-            services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
-            services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
-            services.AddTransient<IRatingDelegate, DBRatingDelegate>();
-            services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
-            services.AddTransient<INoteDelegate, DBNoteDelegate>();
-            services.AddTransient<ICommentDelegate, DBCommentDelegate>();
-            services.AddTransient<ICryptoDelegate, AesCryptoDelegate>();
-            services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
-            services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
-            services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
-            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
-            services.AddTransient<ICDogsDelegate, CDogsDelegate>();
 
             // Add Background Services
-            services.AddHostedService<BannerListener>();
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
@@ -145,7 +99,6 @@ namespace HealthGateway.WebClient
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
-            this.startupConfig.UseAuth(app);
 
             DisableTraceMethod(app);
 

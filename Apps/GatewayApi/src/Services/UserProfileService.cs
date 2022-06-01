@@ -41,14 +41,17 @@ namespace HealthGateway.GatewayApi.Services
     /// <inheritdoc />
     public class UserProfileService : IUserProfileService
     {
-        private readonly string webClientConfigSection = "WebClient";
-        private readonly string userProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
+        private const string WebClientConfigSection = "WebClient";
+        private const string UserProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
+        private const string RegistrationStatusKey = "RegistrationStatus";
+        private const string MinPatientAgeKey = "MinPatientAge";
         private readonly int userProfileHistoryRecordLimit;
+        private readonly string registrationStatus;
+        private readonly int minPatientAge;
         private readonly ILogger logger;
         private readonly IPatientService patientService;
         private readonly IUserEmailService userEmailService;
         private readonly IUserSMSService userSMSService;
-        private readonly IConfigurationService configurationService;
         private readonly IEmailQueueService emailQueueService;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate userProfileDelegate;
@@ -65,7 +68,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="patientService">The patient service.</param>
         /// <param name="userEmailService">The User Email service.</param>
         /// <param name="userSMSService">The User SMS service.</param>
-        /// <param name="configurationService">The configuration service.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
         /// <param name="notificationSettingsService">The Notifications Settings service.</param>
         /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
@@ -74,13 +76,12 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="messageVerificationDelegate">The message verification delegate.</param>
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        /// <param name="configuration">Configuration settings.</param>
+        /// <param name="configuration">The injected configuration provider.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IPatientService patientService,
             IUserEmailService userEmailService,
             IUserSMSService userSMSService,
-            IConfigurationService configurationService,
             IEmailQueueService emailQueueService,
             INotificationSettingsService notificationSettingsService,
             IUserProfileDelegate userProfileDelegate,
@@ -95,7 +96,6 @@ namespace HealthGateway.GatewayApi.Services
             this.patientService = patientService;
             this.userEmailService = userEmailService;
             this.userSMSService = userSMSService;
-            this.configurationService = configurationService;
             this.emailQueueService = emailQueueService;
             this.notificationSettingsService = notificationSettingsService;
             this.userProfileDelegate = userProfileDelegate;
@@ -104,7 +104,9 @@ namespace HealthGateway.GatewayApi.Services
             this.messageVerificationDelegate = messageVerificationDelegate;
             this.cryptoDelegate = cryptoDelegate;
             this.httpContextAccessor = httpContextAccessor;
-            this.userProfileHistoryRecordLimit = configuration.GetSection(this.webClientConfigSection).GetValue<int>(this.userProfileHistoryRecordLimitKey, 4);
+            this.userProfileHistoryRecordLimit = configuration.GetSection(WebClientConfigSection).GetValue(UserProfileHistoryRecordLimitKey, 4);
+            this.registrationStatus = configuration.GetSection(WebClientConfigSection).GetValue(RegistrationStatusKey, RegistrationStatus.Open);
+            this.minPatientAge = configuration.GetSection(WebClientConfigSection).GetValue(MinPatientAgeKey, 12);
         }
 
         /// <inheritdoc />
@@ -175,9 +177,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
 
-            string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
-
-            if (registrationStatus == RegistrationStatus.Closed)
+            if (this.registrationStatus == RegistrationStatus.Closed)
             {
                 this.logger.LogWarning($"Registration is closed. {JsonSerializer.Serialize(createProfileRequest)}");
                 return new RequestResult<UserProfileModel>()
@@ -452,9 +452,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc />
         public async Task<PrimitiveRequestResult<bool>> ValidateMinimumAge(string hdid)
         {
-            int? minAge = this.configurationService.GetConfiguration().WebClient.MinPatientAge;
-
-            if (!minAge.HasValue || minAge.Value == 0)
+            if (this.minPatientAge == 0)
             {
                 return new PrimitiveRequestResult<bool>() { ResourcePayload = true, ResultStatus = ResultType.Success };
             }
@@ -477,7 +475,7 @@ namespace HealthGateway.GatewayApi.Services
                 return new PrimitiveRequestResult<bool>()
                 {
                     ResultStatus = patientResult.ResultStatus,
-                    ResourcePayload = birthDate.AddYears(minAge.Value) < DateTime.Now,
+                    ResourcePayload = birthDate.AddYears(this.minPatientAge) < DateTime.Now,
                 };
             }
         }
