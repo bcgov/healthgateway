@@ -21,7 +21,6 @@ namespace HealthGateway.WebClient.Controllers
     /// <summary>
     /// HomeController for Vue WebClient app.
     /// </summary>
-    [IgnoreAudit]
     [TypeFilter(typeof(AvailabilityFilter))]
     public class DumpHeadersController : Controller
     {

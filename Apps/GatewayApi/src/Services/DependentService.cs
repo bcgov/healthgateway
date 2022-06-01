@@ -33,41 +33,44 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
     public class DependentService : IDependentService
     {
+        private const string WebClientConfigSection = "WebClient";
+        private const string MaxDependentAgeKey = "MaxDependentAge";
+        private readonly int maxDependentAge;
         private readonly ILogger logger;
         private readonly IPatientService patientService;
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate userProfileDelegate;
-        private readonly IConfigurationService configurationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentService"/> class.
         /// </summary>
+        /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="notificationSettingsService">Notification settings service.</param>
         /// <param name="resourceDelegateDelegate">The ResourceDelegate delegate to interact with the DB.</param>
-        /// <param name="configuration">The configuration service.</param>
         public DependentService(
+            IConfiguration configuration,
             ILogger<DependentService> logger,
             IUserProfileDelegate userProfileDelegate,
             IPatientService patientService,
             INotificationSettingsService notificationSettingsService,
-            IResourceDelegateDelegate resourceDelegateDelegate,
-            IConfigurationService configuration)
+            IResourceDelegateDelegate resourceDelegateDelegate)
         {
             this.logger = logger;
             this.patientService = patientService;
             this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.notificationSettingsService = notificationSettingsService;
             this.userProfileDelegate = userProfileDelegate;
-            this.configurationService = configuration;
+            this.maxDependentAge = configuration.GetSection(WebClientConfigSection).GetValue(MaxDependentAgeKey, 12);
         }
 
         /// <inheritdoc />
@@ -75,18 +78,14 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace($"Delegate hdid: {delegateHdId}");
 
-            int? maxDependentAge = this.configurationService.GetConfiguration().WebClient.MaxDependentAge;
-            if (maxDependentAge.HasValue)
+            DateTime minimumBirthDate = DateTime.UtcNow.AddYears(this.maxDependentAge * -1);
+            if (addDependentRequest.DateOfBirth < minimumBirthDate)
             {
-                DateTime minimumBirthDate = DateTime.UtcNow.AddYears(maxDependentAge.Value * -1);
-                if (addDependentRequest.DateOfBirth < minimumBirthDate)
+                return new RequestResult<DependentModel>()
                 {
-                    return new RequestResult<DependentModel>()
-                    {
-                        ResultStatus = ResultType.Error,
-                        ResultError = new RequestResultError() { ResultMessage = "Dependent age exceeds the maximum limit", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient) },
-                    };
-                }
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Dependent age exceeds the maximum limit", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient) },
+                };
             }
 
             this.logger.LogTrace("Getting dependent details...");
