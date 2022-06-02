@@ -32,10 +32,6 @@ parameters:
     type: boolean
     default: false
 
-  - name: NPMTests
-    type: boolean
-    default: false
-
   - name: Library
     type: boolean
     default: false
@@ -61,8 +57,6 @@ variables:
     value: ${{ parameters.WASMBuild }}
   - name: NPMInstall
     value: ${{ parameters.NPMInstall }}
-  - name: NPMTests
-    value: ${{ parameters.NPMTests }}
   - name: UnitTests
     value: ${{ parameters.DotNetTests }}
   - name: Library

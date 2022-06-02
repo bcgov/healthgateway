@@ -28,14 +28,6 @@ steps:
       command: "install"
       workingDir: "$(App.Home)/src/ClientApp"
 
-  - task: Npm@1
-    displayName: "Running NPM Tests for $(App.Name)"
-    condition: and(succeeded(), eq(variables['NPMTests'], true))
-    inputs:
-      command: "custom"
-      customCommand: "test"
-      workingDir: "$(App.Home)/src/ClientApp"
-
   - script: |
       sudo dotnet workload restore
     workingDirectory: "$(App.Home)"
