@@ -14,13 +14,13 @@
             <Authorized>
                 <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
                     <ActivatorContent>
-                        <MudIcon Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Edge="Edge.End"/>
+                        <MudIcon Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Edge="Edge.End" data-testid="user-account-circle"/>
                     </ActivatorContent>
                     <ChildContent>
-                        <MudNavLink href="user-info" Typo="Typo.h6" Underline="Underline.None" align="center" Disabled="@UserInfoDisabled">
+                        <MudNavLink href="user-info" Typo="Typo.h6" Underline="Underline.None" align="center" Disabled="@UserInfoDisabled" data-testid="user-info-link">
                             @(context.User.Identity?.Name ?? "Unknown")
                         </MudNavLink>
-                        <MudNavLink Icon="@Icons.Material.Outlined.Login" OnClick="BeginSignOut">Logout</MudNavLink>
+                        <MudNavLink Icon="@Icons.Material.Outlined.Login" OnClick="BeginSignOut" data-testid="logout-text-link" >Logout</MudNavLink>
                     </ChildContent>
                 </MudMenu>
             </Authorized>
