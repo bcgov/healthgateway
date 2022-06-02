@@ -122,8 +122,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Status = DBStatusCode.Read,
             };
 
-            UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
-            expected.HasTermsOfServiceUpdated = true;
+            UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile, Guid.Empty);
 
             IUserProfileService service = new UserProfileServiceMock(this.hdid, dBStatus, userProfile, userProfileDBResult, readResult, termsOfService, GetIConfigurationRoot(null), userProfileHistoryDBResult).UserProfileServiceMockInstance();
 
@@ -281,7 +280,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Status = DBStatusCode.Created,
             };
 
-            UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
+            UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId);
 
             Dictionary<string, string> localConfig = new()
             {

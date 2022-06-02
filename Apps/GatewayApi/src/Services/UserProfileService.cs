@@ -135,8 +135,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
-
-            UserProfileModel userProfile = UserProfileModel.CreateFromDbModel(retVal.Payload);
+            UserProfileModel userProfile = UserProfileModel.CreateFromDbModel(retVal.Payload, termsOfServiceResult.ResourcePayload?.Id);
             DBResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult = this.userProfileDelegate.GetUserProfileHistories(hdid, this.userProfileHistoryRecordLimit);
 
             // Populate most recent login date time
@@ -145,8 +144,6 @@ namespace HealthGateway.GatewayApi.Services
             {
                 userProfile.LastLoginDateTimes.Add(userProfileHistory.LastLoginDateTime);
             }
-
-            userProfile.HasTermsOfServiceUpdated = retVal.Payload?.TermsOfServiceId != termsOfServiceResult.ResourcePayload?.Id;
 
             if (!userProfile.IsEmailVerified)
             {
@@ -254,10 +251,12 @@ namespace HealthGateway.GatewayApi.Services
 
                 this.notificationSettingsService.QueueNotificationSettings(notificationRequest);
 
+                RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
+
                 this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
                 return new RequestResult<UserProfileModel>()
                 {
-                    ResourcePayload = UserProfileModel.CreateFromDbModel(insertResult.Payload),
+                    ResourcePayload = UserProfileModel.CreateFromDbModel(insertResult.Payload, termsOfServiceResult.ResourcePayload?.Id),
                     ResultStatus = ResultType.Success,
                 };
             }
@@ -286,13 +285,15 @@ namespace HealthGateway.GatewayApi.Services
 
             if (retrieveResult.Status == DBStatusCode.Read)
             {
+                RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
+
                 UserProfile profile = retrieveResult.Payload;
                 if (profile.ClosedDateTime != null)
                 {
                     this.logger.LogTrace("Finished. Profile already Closed");
                     return new RequestResult<UserProfileModel>()
                     {
-                        ResourcePayload = UserProfileModel.CreateFromDbModel(profile),
+                        ResourcePayload = UserProfileModel.CreateFromDbModel(profile, termsOfServiceResult.ResourcePayload?.Id),
                         ResultStatus = ResultType.Success,
                     };
                 }
@@ -308,7 +309,7 @@ namespace HealthGateway.GatewayApi.Services
                 this.logger.LogDebug($"Finished closing user profile. {JsonSerializer.Serialize(updateResult)}");
                 return new RequestResult<UserProfileModel>()
                 {
-                    ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload),
+                    ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id),
                     ResultStatus = ResultType.Success,
                 };
             }
@@ -332,13 +333,14 @@ namespace HealthGateway.GatewayApi.Services
 
             if (retrieveResult.Status == DBStatusCode.Read)
             {
+                RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
                 UserProfile profile = retrieveResult.Payload;
                 if (profile.ClosedDateTime == null)
                 {
                     this.logger.LogTrace("Finished. Profile already is active, recover not needed.");
                     return new RequestResult<UserProfileModel>()
                     {
-                        ResourcePayload = UserProfileModel.CreateFromDbModel(profile),
+                        ResourcePayload = UserProfileModel.CreateFromDbModel(profile, termsOfServiceResult.ResourcePayload?.Id),
                         ResultStatus = ResultType.Success,
                     };
                 }
@@ -355,7 +357,7 @@ namespace HealthGateway.GatewayApi.Services
                 this.logger.LogDebug($"Finished recovering user profile. {JsonSerializer.Serialize(updateResult)}");
                 return new RequestResult<UserProfileModel>()
                 {
-                    ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload),
+                    ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id),
                     ResultStatus = ResultType.Success,
                 };
             }
@@ -495,8 +497,10 @@ namespace HealthGateway.GatewayApi.Services
                 profileResult = this.userProfileDelegate.UpdateComplete(profileResult.Payload);
                 if (profileResult.Status == DBStatusCode.Updated)
                 {
+                    RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
+
                     requestResult.ResultStatus = ResultType.Success;
-                    requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(profileResult.Payload);
+                    requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(profileResult.Payload, termsOfServiceResult.ResourcePayload?.Id);
                 }
                 else
                 {

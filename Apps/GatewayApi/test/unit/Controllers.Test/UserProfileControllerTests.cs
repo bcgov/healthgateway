@@ -92,7 +92,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             RequestResult<UserProfileModel> expected = new()
             {
-                ResourcePayload = UserProfileModel.CreateFromDbModel(userProfile),
+                ResourcePayload = UserProfileModel.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId),
                 ResultStatus = ResultType.Success,
             };
 
@@ -134,7 +134,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             RequestResult<UserProfileModel> expected = new()
             {
-                ResourcePayload = UserProfileModel.CreateFromDbModel(userProfile),
+                ResourcePayload = UserProfileModel.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId),
                 ResultStatus = ResultType.Success,
             };
 
@@ -558,7 +558,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             return new RequestResult<UserProfileModel>
             {
-                ResourcePayload = UserProfileModel.CreateFromDbModel(userProfile),
+                ResourcePayload = UserProfileModel.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId),
                 ResultStatus = resultType,
             };
         }
