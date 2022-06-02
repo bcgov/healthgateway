@@ -110,8 +110,9 @@ namespace HealthGateway.GatewayApi.Models
         /// Constructs a UserProfile model from a UserProfile database model.
         /// </summary>
         /// <param name="model">The user profile database model.</param>
+        /// <param name="latestTermsOfServiceId">The GUID corresponding to the most recent terms of service.</param>
         /// <returns>The user profile model.</returns>
-        public static UserProfileModel CreateFromDbModel(UserProfile model)
+        public static UserProfileModel CreateFromDbModel(UserProfile model, Guid? latestTermsOfServiceId)
         {
             return new UserProfileModel()
             {
@@ -124,6 +125,7 @@ namespace HealthGateway.GatewayApi.Models
                 LastLoginDateTime = model.LastLoginDateTime,
                 ClosedDateTime = model.ClosedDateTime,
                 AcceptedTermsOfService = model.TermsOfServiceId != Guid.Empty,
+                HasTermsOfServiceUpdated = model.TermsOfServiceId != latestTermsOfServiceId,
             };
         }
     }
