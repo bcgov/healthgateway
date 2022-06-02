@@ -17,6 +17,8 @@ import http from "k6/http";
 import { b64decode } from "k6/encoding";
 import { check, group, sleep } from "k6";
 import { Rate, Trend } from "k6/metrics";
+import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+
 
 
 export let passwd = __ENV.HG_PASSWORD;
@@ -41,6 +43,10 @@ export let TokenEndpointUrl =
     "https://" +
     environment +
     ".oidc.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
+export let AuthorizationEndpointUrl = 
+    "https://" +
+    environment +
+    ".oidc.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/authorize";
 export let MedicationServiceUrl =
     baseUrl + "/api/medicationservice/v1/api/MedicationStatement";
 export let LaboratoryServiceUrl =
@@ -233,7 +239,7 @@ export function authorizeUser(user) {
     refreshTokenIfNeeded(user);
 }
 
-function authenticateUser(user) {
+export function authenticateUser(user) {
     let auth_form_data = {
         grant_type: "password",
         client_id: ClientId,
