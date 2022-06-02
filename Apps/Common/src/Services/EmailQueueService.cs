@@ -27,7 +27,6 @@ namespace HealthGateway.Common.Services
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// A simple service to queue and send email.
@@ -85,7 +84,7 @@ namespace HealthGateway.Common.Services
                 throw new ArgumentNullException(nameof(email), "Email To cannot be null or whitespace");
             }
 
-            this.logger.LogTrace($"Queueing email... {JsonConvert.SerializeObject(email)}");
+            this.logger.LogTrace($"Queueing email...");
             if (email.Id == Guid.Empty)
             {
                 this.emailDelegate.InsertEmail(email, shouldCommit);
@@ -127,7 +126,7 @@ namespace HealthGateway.Common.Services
         {
             this.logger.LogTrace($"Getting email template... {templateName}");
             EmailTemplate retVal = this.emailDelegate.GetEmailTemplate(templateName);
-            this.logger.LogDebug($"Finished getting email template. {JsonConvert.SerializeObject(retVal)}");
+            this.logger.LogDebug($"Finished getting email template.");
             return retVal;
         }
 
@@ -143,7 +142,7 @@ namespace HealthGateway.Common.Services
             this.logger.LogTrace($"Processing template... {emailTemplate.Name}");
             Email email = this.ParseTemplate(emailTemplate, keyValues);
             email.To = toEmail;
-            this.logger.LogDebug($"Finished processing template. {JsonConvert.SerializeObject(email)}");
+            this.logger.LogDebug($"Finished processing template.");
             return email;
         }
 
