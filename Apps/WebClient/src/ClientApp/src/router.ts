@@ -75,7 +75,7 @@ const HealthInsightsView = () =>
     );
 const AcceptTermsOfServiceView = () =>
     import(
-        /* webpackChunkName: "acceptTermsOfService" */ "@/views/AcceptTermsOfService.vue"
+        /* webpackChunkName: "acceptTermsOfService" */ "@/views/AcceptTermsOfServiceView.vue"
     );
 const ReportsView = () =>
     import(/* webpackChunkName: "reports" */ "@/views/ReportsView.vue");

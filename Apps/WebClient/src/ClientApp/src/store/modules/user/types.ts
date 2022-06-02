@@ -33,6 +33,7 @@ export interface UserGetters extends GetterTree<UserState, RootState> {
     userIsRegistered(state: UserState): boolean;
     userIsActive(state: UserState): boolean;
     smsResendDateTime(state: UserState): DateWrapper | undefined;
+    hasTermsOfServiceUpdated(state: UserState): boolean;
     getPreference: (
         state: UserState
     ) => (preferenceName: string) => UserPreference | undefined;
