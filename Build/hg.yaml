@@ -47,7 +47,7 @@ parameters:
   - name: EnableAzure
     type: boolean
     default: true
-    
+
   - name: WASMBuild
     type: boolean
     default: false
@@ -69,20 +69,20 @@ variables:
     value: ${{ parameters.Library }}
   - name: EnableOpenShift
     value: ${{ parameters.EnableOpenShift }}
-  - name: EnableAzure 
-    value: ${{ parameters.EnableAzure }}   
-  - name: App.Home 
+  - name: EnableAzure
+    value: ${{ parameters.EnableAzure }}
+  - name: App.Home
     value: $(Build.SourcesDirectory)/Apps/$(App.Name)
-  - name: Image.Name 
+  - name: Image.Name
     ${{ if parameters.ImageName }}:
       value: $[lower('${{ parameters.ImageName }}')]
-    ${{ if not(parameters.ImageName) }}: 
+    ${{ if not(parameters.ImageName) }}:
       value: $[lower(variables['App.Name'])]
   - name: App.UnitTests
     value: $(App.Home)/test/unit
-  - name: PullRequest 
+  - name: PullRequest
     value: $[eq(variables['Build.Reason'], 'PullRequest')]
-  - name: CreateImage 
+  - name: CreateImage
     value: $[and(eq(variables['Library'],false), eq(variables['PullRequest'],false))]
   - name: BuildPrefix
     ${{ if eq(variables['PullRequest'], true) }}:

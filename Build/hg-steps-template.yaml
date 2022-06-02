@@ -3,9 +3,9 @@ parameters:
     type: string
     default: 0bd5ad
     values:
-      - c8055e  #Gold Cluster Namespace
-      - 0bd5ad  #Silver Cluster Namespace
-      - azure   #Azure
+      - c8055e #Gold Cluster Namespace
+      - 0bd5ad #Silver Cluster Namespace
+      - azure #Azure
 
   - name: publish
     type: boolean
@@ -13,12 +13,12 @@ parameters:
 
 steps:
   - task: Cache@2
-    displayName: 'Fetch NPM Cache'
+    displayName: "Fetch NPM Cache"
     condition: eq(variables['NPMInstall'], true)
     inputs:
       key: 'npm | "$(Agent.OS)" | $(App.Home)/src/ClientApp/package-lock.json'
-      path: '$(App.Home)/src/ClientApp/node_modules'
-      cacheHitVar: 'CACHE_RESTORED'
+      path: "$(App.Home)/src/ClientApp/node_modules"
+      cacheHitVar: "CACHE_RESTORED"
       restoreKeys: 'npm | "$(Agent.OS)"'
 
   - task: Npm@1
@@ -38,8 +38,8 @@ steps:
 
   - script: |
       sudo dotnet workload restore
-    workingDirectory: '$(App.Home)'
-    displayName: 'Workload Restore for $(App.Name)'
+    workingDirectory: "$(App.Home)"
+    displayName: "Workload Restore for $(App.Name)"
     condition: and(succeeded(), eq(variables['WASMBuild'], true))
 
   - task: DotNetCoreCLI@2
@@ -130,13 +130,13 @@ steps:
       zipAfterPublish: false
 
   - task: Docker@2
-    displayName: 'Building Image for $(App.Name) and pushing to Docker Hub'
+    displayName: "Building Image for $(App.Name) and pushing to Docker Hub"
     inputs:
-      containerRegistry: 'docker-health'
+      containerRegistry: "docker-health"
       repository: $(DockerRepo)/$(Image.Name)
-      Dockerfile: '$(App.Home)/Dockerfile'
-      buildContext: '$(Build.BinariesDirectory)'
-      tags: '$(Build.BuildNumber)'
+      Dockerfile: "$(App.Home)/Dockerfile"
+      buildContext: "$(Build.BinariesDirectory)"
+      tags: "$(Build.BuildNumber)"
     condition: and(succeeded(), and(eq(variables['CreateImage'], true),ne(variables['EnableOpenShift'], true)))
 
   - script: |
