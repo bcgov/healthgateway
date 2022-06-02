@@ -18,7 +18,6 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Admin.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Provides external configuration data.
@@ -48,7 +47,6 @@ namespace HealthGateway.Admin.Services
         /// <returns>The external configuration data.</returns>
         public ExternalConfiguration GetConfiguration()
         {
-            this.logger.LogTrace($"Getting configuration data... {JsonConvert.SerializeObject(this.config)}");
             return this.config;
         }
     }
