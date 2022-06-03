@@ -7,11 +7,19 @@
 <HgPageHeading>Dashboard</HgPageHeading>
 
 <HgBannerFeedback Severity="Severity.Error" IsEnabled="@HasError" TResetAction="DashboardActions.ResetStateAction">
-  @foreach(var error in ErrorList)
+    @foreach(var error in ErrorList)
     {
         <li>@error</li>
     }
 </HgBannerFeedback>
+
+<MudGrid>
+    <MudItem xs="12" lg="12">
+        <MudPaper Class="my-2 pa-4 d-flex justify-end" Elevation="0">
+            <HgButton EndIcon="@Icons.Material.Filled.Refresh" @onclick="ReloadDispatchActions">Refresh</HgButton>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
 
 <MudGrid>
     <MudItem xs="6" lg="6">
@@ -59,7 +67,7 @@
 <MudGrid>
     <MudItem xs="12" lg="12">
         <MudText Class="mt-3" Typo="Typo.subtitle1"><strong>Daily Data</strong></MudText>
-        <MudTable Class="mt-3" Items="@TableData" HorizontalScrollbar="true" Striped="true" Dense="true">
+        <MudTable Class="mt-3" Items="@TableData" HorizontalScrollbar="true" Striped="true" Dense="true" RowsPerPage="25">
             <HeaderContent>
                 <MudTh>Date</MudTh>
                 <MudTh>Registered</MudTh>
