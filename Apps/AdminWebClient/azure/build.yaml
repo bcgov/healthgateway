@@ -25,4 +25,3 @@ extends:
     Application: AdminWebClient
     DotNetTests: true
     NPMInstall: true
-    NPMTests: false

@@ -25,5 +25,4 @@ extends:
     Application: Common
     DotNetTests: true
     NPMInstall: false
-    NPMTests: false
     Library: true

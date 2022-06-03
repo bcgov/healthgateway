@@ -25,4 +25,3 @@ extends:
     Application: Patient
     DotNetTests: true
     NPMInstall: false
-    NPMTests: false
