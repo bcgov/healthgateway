@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "launch": "cypress open",
-        "e2e": "cypress run",
+        "e2e": "cypress run --headless --browser chrome",
         "lint": "eslint cypress --ext .js --max-warnings 0",
         "lintfix": "eslint cypress --ext .js --fix"
     },
