@@ -187,7 +187,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="shouldProfileCommit">should profile commit.</param>
         public UserProfileServiceMock(string hdId, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, IHeaderDictionary headerDictionary, IConfiguration configuration, bool shouldEmailCommit, bool shouldProfileCommit = true)
         {
-
             this.userProfileService = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 new Mock<IPatientService>().Object,
