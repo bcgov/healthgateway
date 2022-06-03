@@ -25,5 +25,5 @@
   <Property Name="sonar.sources">**/src/**</Property>
   <Property Name="sonar.test.inclusions">**/*.test.ts</Property>
   <Property Name="sonar.scm.disabled">true</Property>
-  <Property Name="sonar.exclusions">WebClient/src/ClientApp/**, WebClient/src/Views/**, WebClient/src/Properties/**, WebClient/src/wwwroot/**, Common/src/Models/**, **/node_modules/**, AdminWebClient/**, Database/**, DBMaintainer/**, JobScheduler/**, Admin/**, Mock/**</Property>
+  <Property Name="sonar.exclusions">**/Startup.cs, Common/src/Models/**, Admin/**, AdminWebClient/**, Database/**, DBMaintainer/**, JobScheduler/**, Mock/**, WebClient/**</Property>
 </SonarQubeAnalysisProperties>
