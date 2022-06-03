@@ -23,6 +23,6 @@
   <Property Name="sonar.cs.xunit.reportsPaths">**/TestResults/results.xml</Property>
   <Property Name="sonar.sources">**/src/**</Property>
   <Property Name="sonar.scm.disabled">true</Property>
-  <Property Name="sonar.coverage.exclusions">**/*Controller.cs, Common/src/Models/**, Admin/**, AdminWebClient/**, Database/**, DBMaintainer/**, JobScheduler/**, WebClient/**</Property>
-  <Property Name="sonar.exclusions">**/node_modules/**, **/wwwroot/**, WebClient/src/ClientApp/public/**, **/Startup.cs, Mock/**</Property>
+  <Property Name="sonar.coverage.exclusions">**/*Controller.cs, Common/src/Models/**, Admin/**, Database/**, DBMaintainer/**, JobScheduler/**, WebClient/**</Property>
+  <Property Name="sonar.exclusions">**/node_modules/**, **/wwwroot/**, **/ClientApp/public/**, **/Startup.cs, Mock/**, AdminWebClient/**</Property>
 </SonarQubeAnalysisProperties>
