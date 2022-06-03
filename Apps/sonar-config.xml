@@ -20,8 +20,6 @@
 
   <Property Name="sonar.verbose">false</Property>
   <Property Name="sonar.host.url">https://sonarcloud.io</Property>
-  <Property Name="sonar.testExecutionReportPaths">WebClient/sonar_reports/jest.out/test-report.xml</Property>
-  <Property Name="sonar.javascript.lcov.reportPaths">../sonar_reports/jest.out/lcov.info</Property>
   <Property Name="sonar.cs.opencover.reportsPaths">**/coverage.opencover.xml</Property>
   <Property Name="sonar.cs.xunit.reportsPaths">**/TestResults/results.xml</Property>
   <Property Name="sonar.sources">**/src/**</Property>
