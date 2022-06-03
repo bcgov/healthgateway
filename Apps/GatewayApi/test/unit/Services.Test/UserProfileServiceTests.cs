@@ -185,6 +185,22 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Status = updatedStatus,
             };
 
+            DBResult<LegalAgreement> tosDbResult = new()
+            {
+                Status = DBStatusCode.Read,
+                Payload = new LegalAgreement()
+                {
+                    Id = Guid.Empty,
+                    CreatedBy = "MockData",
+                    CreatedDateTime = DateTime.UtcNow,
+                    EffectiveDate = DateTime.UtcNow,
+                    LegalAgreementCode = LegalAgreementType.TermsofService,
+                    LegalText = "Mock Terms of Service",
+                },
+            };
+
+            Mock<ILegalAgreementDelegate> mockLegalAgreementDelegate = new Mock<ILegalAgreementDelegate>();
+            mockLegalAgreementDelegate.Setup(s => s.GetActiveByAgreementType(LegalAgreementType.TermsofService)).Returns(tosDbResult);
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(readProfileDBResult);
             mockUserProfileDelegate.Setup(s => s.UpdateComplete(It.IsAny<UserProfile>(), true)).Returns(updatedProfileDBResult);
@@ -197,7 +213,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                                                         new Mock<INotificationSettingsService>().Object,
                                                         mockUserProfileDelegate.Object,
                                                         new Mock<IUserPreferenceDelegate>().Object,
-                                                        new Mock<ILegalAgreementDelegate>().Object,
+                                                        mockLegalAgreementDelegate.Object,
                                                         new Mock<IMessagingVerificationDelegate>().Object,
                                                         new Mock<ICryptoDelegate>().Object,
                                                         new Mock<IHttpContextAccessor>().Object,
