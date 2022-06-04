@@ -247,8 +247,8 @@ export default class ProfileView extends Vue {
         );
 
         this.isLoading = true;
-        var patientPromise = this.retrievePatientData();
-        var userProfilePromise = this.userProfileService.getProfile(
+        let patientPromise = this.retrievePatientData();
+        let userProfilePromise = this.userProfileService.getProfile(
             this.user.hdid
         );
 

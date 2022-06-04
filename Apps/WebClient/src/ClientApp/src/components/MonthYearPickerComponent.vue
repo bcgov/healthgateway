@@ -42,12 +42,12 @@ export default class MonthYearPickerComponent extends Vue {
     @Watch("availableMonths")
     public onAvailableMonths(): void {
         this.availableMonths.forEach((date) => {
-            var year: number = date.year();
+            let year: number = date.year();
             if (!this.years.some((y) => y == year)) {
                 this.years.push(year);
             }
         });
-        var currentYear: number = this.selectedDate.year();
+        let currentYear: number = this.selectedDate.year();
         if (!this.years.some((y) => y == currentYear)) {
             this.years.push(currentYear);
         }

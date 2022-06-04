@@ -130,9 +130,9 @@ export default class ReportsView extends Vue {
     }
 
     private get medicationOptions(): SelectOption[] {
-        var medications = this.medicationStatements.reduce<MedicationSummary[]>(
+        let medications = this.medicationStatements.reduce<MedicationSummary[]>(
             (acumulator: MedicationSummary[], current) => {
-                var med = current.medicationSummary;
+                let med = current.medicationSummary;
                 if (
                     acumulator.findIndex((x) => x.brandName === med.brandName) <
                     0
@@ -237,7 +237,7 @@ export default class ReportsView extends Vue {
     }
 
     private clearFilterMedication(medicationName: string) {
-        var index = this.selectedMedicationOptions.indexOf(medicationName);
+        let index = this.selectedMedicationOptions.indexOf(medicationName);
         if (index >= 0) {
             this.selectedMedicationOptions.splice(index, 1);
             this.updateFilter();

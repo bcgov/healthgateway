@@ -71,7 +71,7 @@ export default class ErrorCardComponent extends Vue {
     }
 
     private get errorDetailsCopyToClipboard(): string {
-        var errorDetails = "";
+        let errorDetails = "";
         if (this.haveError) {
             errorDetails = this.errorDetails.join("\n");
         }
