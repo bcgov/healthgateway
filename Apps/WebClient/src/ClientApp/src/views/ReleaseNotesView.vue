@@ -38,8 +38,9 @@ export default class ReleaseNotesView extends Vue {
                     We added a feature that allows you to review and accept the
                     terms of service when they have been updated.
                 </li>
-            </ul> </release-note
-        ><release-note
+            </ul>
+        </release-note>
+        <release-note
             date="May 26, 2022"
             version="v1.5.10.1"
             title="Lab Result Access"
