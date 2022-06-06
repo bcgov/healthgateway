@@ -155,7 +155,7 @@ public partial class DashboardPage : FluxorComponent
         }
     }
 
-    private int TimeOffset { get; set; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalMinutes * -1;
+    private int TimeOffset { get; set; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalMinutes;
 
     private int TotalRegisteredUsers => this.RegisteredUsersResult?.Result?.Sum(r => r.Value) ?? 0;
 

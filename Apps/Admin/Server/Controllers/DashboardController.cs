@@ -45,7 +45,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Retrieves the count of registered users.
         /// </summary>
-        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <returns>The count of registered users.</returns>
         /// <response code="200">Returns the count of registered users.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -60,7 +60,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Retrieves the count of logged in user in the last day.
         /// </summary>
-        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <returns>The count of logged in users in the current day.</returns>
         /// <response code="200">Returns the list of user feedbacks.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -75,7 +75,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Retrieves the count of dependents.
         /// </summary>
-        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <returns>The count of logged in users in the current day.</returns>
         /// <response code="200">Returns the list of user feedbacks.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -93,7 +93,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <param name="days">The number of unique days for evaluating a user.</param>
         /// <param name="startPeriod">The period start over which to evaluate the user.</param>
         /// <param name="endPeriod">The period end over which to evaluate the user.</param>
-        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <returns>The count of recurrent users.</returns>
         /// <response code="200">Returns the list of user feedbacks.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -110,7 +110,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </summary>
         /// <param name="startPeriod">The period start to calculate the summary.</param>
         /// <param name="endPeriod">The period end to calculate the summary.</param>
-        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <returns>A dictionary pairing the ratings with the counts.</returns>
         /// <response code="200">Returns the ratings summary.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
