@@ -5,6 +5,7 @@
         <LangVersion>10.0</LangVersion>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
      	<WarningLevel>4</WarningLevel>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
       <NoWarn>CA1848,CA2253,CA2254</NoWarn>
     </PropertyGroup>
     <ItemGroup>
@@ -17,9 +18,5 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Include="$(MSBuildThisFileDirectory)\..\.editorconfig" />
     </ItemGroup>
 </Project>
