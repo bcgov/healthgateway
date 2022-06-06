@@ -304,8 +304,8 @@ export default class NewDependentComponent extends Vue {
                                             By providing the child’s name, date
                                             of birth, personal health number and
                                             date of COVID-19 test, I declare
-                                            that I am the child’s guardian
-                                            and am attesting that I have the
+                                            that I am the child’s guardian and
+                                            am attesting that I have the
                                             authority to request and receive
                                             health information respecting the
                                             child from third parties.
