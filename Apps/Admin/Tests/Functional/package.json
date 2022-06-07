@@ -14,7 +14,7 @@
     "license": "ISC",
     "devDependencies": {
         "cy-verify-downloads": "^0.1.8",
-        "cypress": "^10.0.2",
+        "cypress": "^10.0.3",
         "cypress-xpath": "^1.6.2",
         "eslint": "^8.16.0",
         "eslint-plugin-chai-friendly": "^0.7.2",
