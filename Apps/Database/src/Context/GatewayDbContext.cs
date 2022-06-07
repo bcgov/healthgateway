@@ -77,7 +77,6 @@ namespace HealthGateway.Database.Context
         public DbSet<GenericCache> GenericCache { get; set; } = null!;
         public DbSet<Comment> Comment { get; set; } = null!;
         public DbSet<Communication> Communication { get; set; } = null!;
-        public DbSet<CommunicationEmail> CommunicationEmail { get; set; } = null!;
         public DbSet<Rating> Rating { get; set; } = null!;
         public DbSet<ResourceDelegate> ResourceDelegate { get; set; } = null!;
         public DbSet<EventLog> EventLog { get; set; } = null!;
@@ -810,15 +809,6 @@ namespace HealthGateway.Database.Context
                 {
                     StatusCode = CommunicationType.Banner,
                     Description = "Banner communication type",
-                    CreatedBy = UserId.DefaultUser,
-                    CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = UserId.DefaultUser,
-                    UpdatedDateTime = this.DefaultSeedDate,
-                },
-                new CommunicationTypeCode
-                {
-                    StatusCode = CommunicationType.Email,
-                    Description = "Email communication type",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
