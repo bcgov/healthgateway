@@ -13,7 +13,7 @@ Cypress.Commands.add("logout", () => {
     cy.log(`Logging out of Admin.`);
     cy.get("[data-testid=user-account-icon]").click();
     cy.get("[data-testid=logout-text-link]").within(() => {
-        cy.get("div").contains("Logout").click();
+        cy.get(".mud-nav-link").click();
     });
     cy.url().should("include", "/authentication/logged-out");
     cy.log(`Successfully logged out of Admin.`);

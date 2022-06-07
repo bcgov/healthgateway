@@ -1,10 +1,9 @@
 {
     "compilerOptions": {
-        "target": "es5",
-        "lib": ["es5", "dom"],
+        "allowJs": true,
         "baseUrl": "../node_modules",
         "types": ["cypress", "cy-verify-downloads"],
         "noEmit": true
     },
-    "include": ["**/*.ts"]
+    "include": ["**/*.*"]
 }
