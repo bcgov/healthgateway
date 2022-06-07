@@ -497,10 +497,8 @@ namespace HealthGateway.GatewayApi.Services
                 profileResult = this.userProfileDelegate.UpdateComplete(profileResult.Payload);
                 if (profileResult.Status == DBStatusCode.Updated)
                 {
-                    RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
-
                     requestResult.ResultStatus = ResultType.Success;
-                    requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(profileResult.Payload, termsOfServiceResult.ResourcePayload?.Id);
+                    requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(profileResult.Payload, termsOfServiceId);
                 }
                 else
                 {
