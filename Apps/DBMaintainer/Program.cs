@@ -81,6 +81,8 @@ namespace HealthGateway.DrugMaintainer
                            config.SetBasePath(Directory.GetCurrentDirectory());
                            config.AddJsonFile($"appsettings.json", true, true);
                            config.AddJsonFile($"appsettings.{environment}.json", true, true);
+                           config.AddUserSecrets(typeof(Program).Assembly);
+                           config.AddJsonFile($"appsettings.local.json", true, true);
                        })
                        .ConfigureServices((hostContext, services) =>
                        {
