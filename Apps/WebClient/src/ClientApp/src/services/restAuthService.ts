@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import Keycloak, { KeycloakConfig, KeycloakInstance } from "keycloak-js";
+import Keycloak, { KeycloakConfig } from "keycloak-js";
 
 import { OpenIdConnectConfiguration } from "@/models/configData";
 import { OidcTokenDetails, OidcUserInfo } from "@/models/user";
@@ -14,7 +14,7 @@ const REFRESH_CUSHION = 30;
 export class RestAuthenticationService implements IAuthenticationService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-    private keycloak!: KeycloakInstance;
+    private keycloak!: Keycloak;
     private scope!: string;
     private logonCallback!: string;
     private logoutCallback!: string;
@@ -30,7 +30,7 @@ export class RestAuthenticationService implements IAuthenticationService {
             realm,
             clientId: config.clientId,
         };
-        this.keycloak = Keycloak(keycloakConfig);
+        this.keycloak = new Keycloak(keycloakConfig);
 
         this.keycloak.onReady = () => {
             this.logger.verbose("Keycloak: onReady");

@@ -27,7 +27,6 @@ namespace HealthGateway.Immunization.Delegates
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Api;
-    using HealthGateway.Immunization.Models.PHSA;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Refit;

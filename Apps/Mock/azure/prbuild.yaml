@@ -16,4 +16,3 @@ extends:
     Application: Mock
     DotNetTests: false
     NPMInstall: false
-    NPMTests: false

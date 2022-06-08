@@ -22,15 +22,12 @@ namespace Healthgateway.JobScheduler.Jobs
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Jobs;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models;
     using MailKit.Net.Smtp;
     using MailKit.Security;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using MimeKit;
-    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class EmailJob : IEmailJob
@@ -76,7 +73,7 @@ namespace Healthgateway.JobScheduler.Jobs
                 this.logger.LogInformation($"Email {emailId} was not returned from DB, skipping.");
             }
 
-            this.logger.LogDebug($"Finished sending email. {JsonConvert.SerializeObject(email)}");
+            this.logger.LogDebug($"Finished sending email.");
         }
 
         /// <inheritdoc />
@@ -86,7 +83,7 @@ namespace Healthgateway.JobScheduler.Jobs
             this.logger.LogDebug($"Sending low priority emails... Looking for up to {this.retryFetchSize} emails to send");
             IList<Email> resendEmails = this.emailDelegate.GetLowPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
-            this.logger.LogDebug($"Finished sending low priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+            this.logger.LogDebug($"Finished sending low priority emails.");
         }
 
         /// <inheritdoc />
@@ -96,7 +93,7 @@ namespace Healthgateway.JobScheduler.Jobs
             this.logger.LogDebug($"Sending standard priority emails... Looking for up to {this.retryFetchSize} emails to send");
             IList<Email> resendEmails = this.emailDelegate.GetStandardPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
-            this.logger.LogDebug($"Finished sending standard priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+            this.logger.LogDebug($"Finished sending standard priority emails.");
         }
 
         /// <inheritdoc />
@@ -106,7 +103,7 @@ namespace Healthgateway.JobScheduler.Jobs
             this.logger.LogDebug($"Sending high priority emails... Looking for up to {this.retryFetchSize} emails to send");
             IList<Email> resendEmails = this.emailDelegate.GetHighPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
-            this.logger.LogDebug($"Finished sending high priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+            this.logger.LogDebug($"Finished sending high priority emails");
         }
 
         /// <inheritdoc />
@@ -116,7 +113,7 @@ namespace Healthgateway.JobScheduler.Jobs
             this.logger.LogDebug($"Sending urgent priority emails... Looking for up to {this.retryFetchSize} emails to send");
             IList<Email> resendEmails = this.emailDelegate.GetUrgentPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
-            this.logger.LogDebug($"Finished sending urgent priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+            this.logger.LogDebug($"Finished sending urgent priority emails.");
         }
 
         private static MimeMessage PrepareMessage(Email email)

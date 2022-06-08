@@ -47,19 +47,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc />
         public RequestResult<Communication> Add(Communication communication)
         {
-            this.logger.LogTrace($"Communication recieved:  {JsonSerializer.Serialize(communication)}");
-            if (communication.CommunicationTypeCode == CommunicationType.Email)
-            {
-                if (communication.Text.Length == 0 || communication.Subject.Length == 0)
-                {
-                    throw new ArgumentException("One of: Email Subject, Email Content is invalid.");
-                }
-
-                communication.EffectiveDateTime = DateTime.UtcNow;
-                communication.ExpiryDateTime = DateTime.UtcNow;
-            }
-
-            this.logger.LogTrace($"Adding communication... {JsonSerializer.Serialize(communication)}");
+            this.logger.LogTrace($"Communication received:  {JsonSerializer.Serialize(communication)}");
 
             if (communication.EffectiveDateTime < communication.ExpiryDateTime)
             {

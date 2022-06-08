@@ -15,9 +15,12 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Data.Models.ErrorHandling
 {
+    using System.Diagnostics.CodeAnalysis;
+
     /// <summary>
     /// Enumerator that defines the different types of required actions.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class ActionType
     {
         private ActionType(string value)

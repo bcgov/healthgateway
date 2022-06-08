@@ -41,40 +41,39 @@ export const actions: UserActions = {
                     logger.verbose(
                         `User Profile: ${JSON.stringify(userProfile)}`
                     );
-                    if (userProfile) {
-                        const notePreference =
-                            UserPreferenceType.TutorialMenuNote;
-                        // If there are no preferences, set the default popover state
-                        if (
-                            userProfile.preferences[notePreference] ===
-                            undefined
-                        ) {
-                            userProfile.preferences[notePreference] = {
-                                hdId: userProfile.hdid,
-                                preference: notePreference,
-                                value: "true",
-                                version: 0,
-                                createdDateTime: new DateWrapper().toISO(),
-                            };
-                        }
-                        const exportPreference =
-                            UserPreferenceType.TutorialMenuExport;
-                        if (
-                            userProfile.preferences[exportPreference] ===
-                            undefined
-                        ) {
-                            userProfile.preferences[exportPreference] = {
-                                hdId: userProfile.hdid,
-                                preference: exportPreference,
-                                value: "true",
-                                version: 0,
-                                createdDateTime: new DateWrapper().toISO(),
-                            };
-                        }
-                    }
-
                     context.commit("setProfileUserData", userProfile);
                     resolve(userProfile.acceptedTermsOfService);
+                })
+                .catch((error) => {
+                    handleError(context.commit, error);
+                    reject(error);
+                });
+        });
+    },
+    updateAcceptedTerms(
+        context,
+        params: { termsOfServiceId: string }
+    ): Promise<void> {
+        const userProfileService: IUserProfileService =
+            container.get<IUserProfileService>(
+                SERVICE_IDENTIFIER.UserProfileService
+            );
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
+        return new Promise((resolve, reject) => {
+            userProfileService
+                .updateAcceptedTerms(
+                    context.state.user.hdid,
+                    params.termsOfServiceId
+                )
+                .then((userProfile) => {
+                    logger.debug(
+                        `Update accepted terms of service result: ${JSON.stringify(
+                            userProfile
+                        )}`
+                    );
+                    context.commit("setProfileUserData", userProfile);
+                    resolve();
                 })
                 .catch((error) => {
                     handleError(context.commit, error);

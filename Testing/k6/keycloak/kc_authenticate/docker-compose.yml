@@ -1,0 +1,14 @@
+version: '3.4'
+services:
+  k6:
+    image: loadimpact/k6:latest
+    command: run /keycloak/kc_authenticate/k6_authenticate.js
+    volumes:
+      - ../../keycloak/kc_authenticate:/keycloak/kc_authenticate
+      - ../../inc:/inc
+    environment: 
+      - "HG_ENV=${HG_ENV}"
+      - "HG_KEY=${HG_KEY}"
+      - "HG_TYPE=${HG_TYPE}"
+      - "HG_PASSWORD=${HG_PASSWORD}"
+

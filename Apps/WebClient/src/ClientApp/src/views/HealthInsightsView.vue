@@ -132,8 +132,8 @@ export default class HealthInsightsView extends Vue {
             throw Error("End date must be greater than start date.");
         }
 
-        var currentMonth = startDate.startOf("month");
-        var result: string[] = [];
+        let currentMonth = startDate.startOf("month");
+        let result: string[] = [];
         while (currentMonth.isBeforeOrSame(endDate)) {
             result.push(currentMonth.format("yyyy-LL-01"));
             currentMonth = currentMonth.add({ months: 1 });

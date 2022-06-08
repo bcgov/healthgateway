@@ -1,0 +1,25 @@
+{
+    "resourcePayload": {
+        "hdId": "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A",
+        "acceptedTermsOfService": true,
+        "termsOfServiceId": "c99fd839-b4a2-40f9-b103-529efccd0dcd",
+        "email": null,
+        "isEmailVerified": false,
+        "smsNumber": null,
+        "isSMSNumberVerified": false,
+        "hasTermsOfServiceUpdated": true,
+        "lastLoginDateTime": "2022-05-30T19:14:43Z",
+        "lastLoginDateTimes": [
+            "2022-05-30T19:14:43Z",
+            "2022-05-30T19:13:19Z",
+            "2022-05-30T18:25:14.052602Z"
+        ],
+        "closedDateTime": null,
+        "preferences": {}
+    },
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 1,
+    "resultError": null
+}

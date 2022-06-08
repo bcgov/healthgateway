@@ -26,7 +26,6 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class UserFeedbackService : IUserFeedbackService
@@ -57,7 +56,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc />
         public DBResult<UserFeedback> CreateUserFeedback(UserFeedback userFeedback)
         {
-            this.logger.LogTrace($"Creating user feedback... {JsonConvert.SerializeObject(userFeedback)}");
+            this.logger.LogTrace($"Creating user feedback...");
             DBResult<UserFeedback> retVal = this.feedbackDelegate.InsertUserFeedback(userFeedback);
             DBResult<UserProfile> dbResult = this.profileDelegate.GetUserProfile(userFeedback.UserProfileId);
             if (dbResult.Status == DBStatusCode.Read)
@@ -75,16 +74,16 @@ namespace HealthGateway.GatewayApi.Services
                 }
             }
 
-            this.logger.LogDebug($"Finished creating user feedback. {JsonConvert.SerializeObject(retVal)}");
+            this.logger.LogDebug($"Finished creating user feedback.");
             return retVal;
         }
 
         /// <inheritdoc />
         public RequestResult<Rating> CreateRating(Rating rating)
         {
-            this.logger.LogTrace($"Creating rating... {JsonConvert.SerializeObject(rating)}");
+            this.logger.LogTrace($"Creating rating...");
             DBResult<Rating> dbRating = this.ratingDelegate.InsertRating(rating);
-            this.logger.LogDebug($"Finished creating user feedback. {JsonConvert.SerializeObject(dbRating)}");
+            this.logger.LogDebug($"Finished creating user feedback.");
 
             RequestResult<Rating> result = new RequestResult<Rating>()
             {

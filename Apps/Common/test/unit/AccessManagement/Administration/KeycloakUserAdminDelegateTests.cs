@@ -20,6 +20,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
     using System.Net;
     using System.Net.Http;
     using System.Text;
+    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Administration;
@@ -33,7 +34,6 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
     using Microsoft.Extensions.Logging;
     using Moq;
     using Moq.Protected;
-    using Newtonsoft.Json;
     using Xunit;
 
     /// <summary>
@@ -92,7 +92,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonConvert.SerializeObject(response), Encoding.UTF8, "application/json"),
+                Content = new StringContent(JsonSerializer.Serialize(response), Encoding.UTF8, "application/json"),
             };
             IUserAdminDelegate keycloakDelegate = GetKeycloakUserAdminDelegate(this.configuration, logger, httpResponseMessage);
 
@@ -127,7 +127,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonConvert.SerializeObject(response), Encoding.UTF8, "application/json"),
+                Content = new StringContent(JsonSerializer.Serialize(response), Encoding.UTF8, "application/json"),
             };
             IUserAdminDelegate keycloakDelegate = GetKeycloakUserAdminDelegate(this.configuration, logger, httpResponseMessage);
 

@@ -150,35 +150,6 @@ namespace HealthGateway.Common.Delegates
             }
         }
 
-        private static bool SetNames(PN? nameSection, PatientModel patient)
-        {
-            if (nameSection == null)
-            {
-                return false;
-            }
-
-            // Extract the subject names
-            List<string> givenNameList = new List<string>();
-            List<string> lastNameList = new List<string>();
-            for (int i = 0; i < nameSection.Items.Length; i++)
-            {
-                ENXP name = nameSection.Items[i];
-                if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
-                {
-                    givenNameList.Add(name.Text[0]);
-                }
-                else if (name.GetType() == typeof(enfamily) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
-                {
-                    lastNameList.Add(name.Text[0]);
-                }
-            }
-
-            string delimiter = " ";
-            patient.FirstName = givenNameList.Aggregate((i, j) => i + delimiter + j);
-            patient.LastName = lastNameList.Aggregate((i, j) => i + delimiter + j);
-            return true;
-        }
-
         private static Address? MapAddress(AD? address)
         {
             Address? retAddress = null;
@@ -259,7 +230,7 @@ namespace HealthGateway.Common.Delegates
             };
         }
 
-        private RequestResult<PatientModel> ParseResponse(HCIM_IN_GetDemographicsResponse1 reply, bool disableIDValidation)
+        private RequestResult<PatientModel> ParseResponse(HCIM_IN_GetDemographicsResponse1 reply, bool disableIdValidation)
         {
             using (Source.StartActivity("ParsePatientResponse"))
             {
@@ -278,88 +249,61 @@ namespace HealthGateway.Common.Delegates
                 bool deceasedInd = retrievedPerson.identifiedPerson.deceasedInd?.value ?? false;
                 if (deceasedInd)
                 {
-                    PatientModel emptyPatient = new PatientModel();
-                    this.logger.LogWarning($"Client Registry returned a person with the deceasedIndicator set to true. No PHN was populated. {deceasedInd}");
+                    PatientModel emptyPatient = new();
+                    this.logger.LogWarning("Client Registry returned a person with the deceased indicator set to true. No PHN was populated.");
                     this.logger.LogDebug($"Finished getting patient. {JsonSerializer.Serialize(emptyPatient)}");
-                    return new RequestResult<PatientModel>()
+                    return new RequestResult<PatientModel>
                     {
                         ResultStatus = ResultType.Error,
-                        ResultError = new RequestResultError() { ResultMessage = "Client Registry returned a person with the deceasedIndicator set to true", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
+                        ResultError = new RequestResultError
+                        {
+                            ResultMessage = "Client Registry returned a person with the deceased indicator set to true",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries),
+                        },
                     };
                 }
 
+                // Initialize model
                 string? dobStr = retrievedPerson.identifiedPerson.birthTime.value; // yyyyMMdd
                 DateTime dob = DateTime.ParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture);
-                string genderCode = retrievedPerson.identifiedPerson.administrativeGenderCode.code;
-                string gender = "NotSpecified";
-                gender = genderCode == "F" ? "Female" : gender;
-                gender = genderCode == "M" ? "Male" : gender;
-                PatientModel patient = new PatientModel()
+                PatientModel patient = new()
                 {
                     Birthdate = dob,
-                    Gender = gender,
+                    Gender = retrievedPerson.identifiedPerson.administrativeGenderCode.code switch
+                    {
+                        "F" => "Female",
+                        "M" => "Male",
+                        _ => "NotSpecified",
+                    },
                 };
 
-                PN? nameSection = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.C));
-                if (!ClientRegistriesDelegate.SetNames(nameSection, patient))
+                // Populate names
+                if (!this.PopulateNames(retrievedPerson, patient))
                 {
-                    this.logger.LogWarning($"Client Registry returned a person without a Documented Name, attempting Legal...");
-                    nameSection = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.L));
-                    if (!ClientRegistriesDelegate.SetNames(nameSection, patient))
+                    return new RequestResult<PatientModel>()
                     {
-                        this.logger.LogWarning($"Client Registry returned a person without a Legal Name.");
-                        return new RequestResult<PatientModel>()
-                        {
-                            ResultStatus = ResultType.ActionRequired,
-                            ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.InvalidName),
-                        };
-                    }
+                        ResultStatus = ResultType.ActionRequired,
+                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.InvalidName),
+                    };
                 }
 
-                // Populates the PHN
-                II? identifiedPersonId = retrievedPerson.identifiedPerson?.id?.FirstOrDefault(x => x.root == OidType.PHN.ToString());
-                if (identifiedPersonId != null)
+                // Populate the PHN and HDID
+                this.logger.LogDebug($"ID Validation is set to {disableIdValidation}");
+                if (!this.PopulateIdentifiers(retrievedPerson, patient) && !disableIdValidation)
                 {
-                    patient.PersonalHealthNumber = identifiedPersonId.extension;
-                }
-                else
-                {
-                    this.logger.LogWarning($"Client Registry returned a person without a PHN and ID Validation is set to {disableIDValidation}");
-                    if (!disableIDValidation)
+                    return new RequestResult<PatientModel>
                     {
-                        return new RequestResult<PatientModel>()
-                        {
-                            ResultStatus = ResultType.ActionRequired,
-                            ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
-                        };
-                    }
+                        ResultStatus = ResultType.ActionRequired,
+                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
+                    };
                 }
 
-                // Populates the HDID
-                II? subjectId = retrievedPerson.id?.FirstOrDefault(x => x.displayable && x.root == OidType.HDID.ToString());
-                if (subjectId != null)
-                {
-                    patient.HdId = subjectId.extension;
-                }
-                else
-                {
-                    this.logger.LogWarning($"Client Registry returned a person without an HDID and ID Validation is set to {disableIDValidation}");
-                    if (!disableIDValidation)
-                    {
-                        return new RequestResult<PatientModel>()
-                        {
-                            ResultStatus = ResultType.ActionRequired,
-                            ResultError =
-                                ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
-                        };
-                    }
-                }
-
+                // Populate addresses
                 AD[] addresses = retrievedPerson.addr;
                 if (addresses != null)
                 {
-                    patient.PhysicalAddress = MapAddress(addresses.FirstOrDefault(addr => addr.use.Any(u => u == cs_PostalAddressUse.PHYS)));
-                    patient.PostalAddress = MapAddress(addresses.FirstOrDefault(addr => addr.use.Any(u => u == cs_PostalAddressUse.PST)));
+                    patient.PhysicalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PHYS)));
+                    patient.PostalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PST)));
                 }
 
                 return new RequestResult<PatientModel>()
@@ -368,6 +312,70 @@ namespace HealthGateway.Common.Delegates
                     ResourcePayload = patient,
                 };
             }
+        }
+
+        private bool PopulateNames(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModel patient)
+        {
+            PN? documentedName = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.C));
+            PN? legalName = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.L));
+
+            if (documentedName == null)
+            {
+                this.logger.LogWarning("Client Registry returned a person without a Documented Name, attempting Legal Name...");
+                if (legalName == null)
+                {
+                    this.logger.LogWarning("Client Registry returned a person without a Legal Name.");
+                    return false;
+                }
+            }
+
+            PN nameSection = (documentedName ?? legalName)!;
+
+            // Extract the subject names
+            List<string> givenNameList = new();
+            List<string> lastNameList = new();
+            foreach (ENXP name in nameSection.Items)
+            {
+                if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
+                {
+                    givenNameList.Add(name.Text[0]);
+                }
+                else if (name.GetType() == typeof(enfamily) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
+                {
+                    lastNameList.Add(name.Text[0]);
+                }
+            }
+
+            const string delimiter = " ";
+            patient.FirstName = givenNameList.Aggregate((i, j) => i + delimiter + j);
+            patient.LastName = lastNameList.Aggregate((i, j) => i + delimiter + j);
+
+            return true;
+        }
+
+        private bool PopulateIdentifiers(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModel patient)
+        {
+            II? identifiedPersonId = retrievedPerson.identifiedPerson?.id?.FirstOrDefault(x => x.root == OidType.PHN.ToString());
+            if (identifiedPersonId == null)
+            {
+                this.logger.LogWarning("Client Registry returned a person without a PHN");
+            }
+            else
+            {
+                patient.PersonalHealthNumber = identifiedPersonId.extension;
+            }
+
+            II? subjectId = retrievedPerson.id?.FirstOrDefault(x => x.displayable && x.root == OidType.HDID.ToString());
+            if (subjectId == null)
+            {
+                this.logger.LogWarning("Client Registry returned a person without an HDID");
+            }
+            else
+            {
+                patient.HdId = subjectId.extension;
+            }
+
+            return identifiedPersonId != null && subjectId != null;
         }
     }
 }

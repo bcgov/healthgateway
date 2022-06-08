@@ -1,0 +1,31 @@
+{
+    "name": "functional",
+    "version": "1.0.0",
+    "description": "Health Gateway Admin functional tests",
+    "main": "index.js",
+    "scripts": {
+        "launch": "cypress open",
+        "e2e": "cypress run --headless --browser chrome",
+        "lint": "eslint cypress --ext .js --max-warnings 0",
+        "lintfix": "eslint cypress --ext .js --fix"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "cy-verify-downloads": "^0.1.8",
+        "cypress": "^10.0.3",
+        "cypress-xpath": "^1.6.2",
+        "eslint": "^8.16.0",
+        "eslint-plugin-chai-friendly": "^0.7.2",
+        "eslint-plugin-cypress": "^2.12.1",
+        "eslint-plugin-node": "^11.1.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "eslint-plugin-promise": "^6.0.0",
+        "prettier": "2.6.2"
+    },
+    "dependencies": {
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-config-standard": "^17.0.0"
+    }
+}

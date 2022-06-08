@@ -20,7 +20,6 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// The Medication data service.
@@ -46,7 +45,7 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public IDictionary<string, MedicationInformation> GetMedications(IList<string> medicationDinList)
         {
-            this.logger.LogTrace($"Getting list of medications... {JsonConvert.SerializeObject(medicationDinList)}");
+            this.logger.LogTrace($"Getting list of medications...");
             IDictionary<string, MedicationInformation> result = new Dictionary<string, MedicationInformation>();
 
             // Retrieve drug information from the Federal soruce
@@ -81,7 +80,7 @@ namespace HealthGateway.Medication.Services
                 }
             }
 
-            this.logger.LogDebug($"Finished getting list of medications. {JsonConvert.SerializeObject(result)}");
+            this.logger.LogDebug($"Finished getting list of medications.");
             return result;
         }
     }

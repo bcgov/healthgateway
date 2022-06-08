@@ -11,7 +11,7 @@ services:
         protocols:
           - http
           - https
-      - name: rate-limiting
+      - name: rate-limiting_902
         tags: [ns.hg-dev]
         enabled: true
         config:
@@ -53,9 +53,9 @@ services:
               uri_param_names:
                 - jwt
               roles: null
-              consumer_match: false
+              consumer_match: true
               well_known_template: https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f/.well-known/openid-configuration
-              consumer_match_ignore_not_found: false
+              consumer_match_ignore_not_found: true
               anonymous: null
               algorithm: RS256
               realm_roles: null
@@ -66,8 +66,8 @@ services:
             config:
               fault_tolerant: true
               hide_client_headers: false
-              limit_by: consumer
-              minute: 100
+              limit_by: credential
+              minute: 10
             protocols:
               - http
               - https
@@ -110,7 +110,7 @@ services:
         protocols:
           - http
           - https
-      - name: rate-limiting
+      - name: rate-limiting_902
         tags: [ns.hg-dev]
         enabled: true
         config:
@@ -152,9 +152,9 @@ services:
               uri_param_names:
                 - jwt
               roles: null
-              consumer_match: false
+              consumer_match: true
               well_known_template: https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f/.well-known/openid-configuration
-              consumer_match_ignore_not_found: false
+              consumer_match_ignore_not_found: true
               anonymous: null
               algorithm: RS256
               realm_roles: null
@@ -165,8 +165,8 @@ services:
             config:
               fault_tolerant: true
               hide_client_headers: false
-              limit_by: consumer
-              minute: 100
+              limit_by: credential
+              minute: 10
             protocols:
               - http
               - https
@@ -221,7 +221,7 @@ services:
         protocols:
           - http
           - https
-      - name: rate-limiting
+      - name: rate-limiting_902
         tags: [ns.hg-dev]
         enabled: true
         config:
@@ -263,9 +263,9 @@ services:
               uri_param_names:
                 - jwt
               roles: null
-              consumer_match: false
+              consumer_match: true
               well_known_template: https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f/.well-known/openid-configuration
-              consumer_match_ignore_not_found: false
+              consumer_match_ignore_not_found: true
               anonymous: null
               algorithm: RS256
               realm_roles: null
@@ -276,8 +276,8 @@ services:
             config:
               fault_tolerant: true
               hide_client_headers: false
-              limit_by: consumer
-              minute: 100
+              limit_by: credential
+              minute: 10
             protocols:
               - http
               - https
@@ -334,7 +334,7 @@ services:
         protocols:
           - http
           - https
-      - name: rate-limiting
+      - name: rate-limiting_902
         tags: [ns.hg-dev]
         enabled: true
         config:
@@ -376,9 +376,9 @@ services:
               uri_param_names:
                 - jwt
               roles: null
-              consumer_match: false
+              consumer_match: true
               well_known_template: https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f/.well-known/openid-configuration
-              consumer_match_ignore_not_found: false
+              consumer_match_ignore_not_found: true
               anonymous: null
               algorithm: RS256
               realm_roles: null
@@ -389,8 +389,8 @@ services:
             config:
               fault_tolerant: true
               hide_client_headers: false
-              limit_by: consumer
-              minute: 100
+              limit_by: credential
+              minute: 10
             protocols:
               - http
               - https
@@ -447,7 +447,7 @@ services:
         protocols:
           - http
           - https
-      - name: rate-limiting
+      - name: rate-limiting_902
         tags: [ns.hg-dev]
         enabled: true
         config:
@@ -489,9 +489,9 @@ services:
               uri_param_names:
                 - jwt
               roles: null
-              consumer_match: false
+              consumer_match: true
               well_known_template: https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f/.well-known/openid-configuration
-              consumer_match_ignore_not_found: false
+              consumer_match_ignore_not_found: true
               anonymous: null
               algorithm: RS256
               realm_roles: null
@@ -502,8 +502,8 @@ services:
             config:
               fault_tolerant: true
               hide_client_headers: false
-              limit_by: consumer
-              minute: 100
+              limit_by: credential
+              minute: 10
             protocols:
               - http
               - https
@@ -557,7 +557,7 @@ services:
         protocols:
           - http
           - https
-      - name: rate-limiting
+      - name: rate-limiting_902
         tags: [ns.hg-dev]
         enabled: true
         config:
@@ -599,9 +599,9 @@ services:
               uri_param_names:
                 - jwt
               roles: null
-              consumer_match: false
+              consumer_match: true
               well_known_template: https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f/.well-known/openid-configuration
-              consumer_match_ignore_not_found: false
+              consumer_match_ignore_not_found: true
               anonymous: null
               algorithm: RS256
               realm_roles: null
@@ -612,8 +612,8 @@ services:
             config:
               fault_tolerant: true
               hide_client_headers: false
-              limit_by: consumer
-              minute: 100
+              limit_by: credential
+              minute: 10
             protocols:
               - http
               - https

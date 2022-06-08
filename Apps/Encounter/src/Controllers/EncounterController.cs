@@ -31,7 +31,6 @@ namespace HealthGateway.Encounter.Controllers
     /// </summary>
     [Authorize]
     [ApiVersion("1.0")]
-    [Route("v{version:apiVersion}/api/[controller]")]
     [Route("[controller]")]
     [ApiController]
     [TypeFilter(typeof(AvailabilityFilter))]

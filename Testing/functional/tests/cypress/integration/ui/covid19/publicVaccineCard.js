@@ -216,7 +216,6 @@ describe("Public Vaccine Card Form", () => {
 
 describe("Public Vaccine Card Downloads", () => {
     beforeEach(() => {
-        cy.deleteDownloadsFolder();
         cy.enableModules([
             "Immunization",
             "VaccinationStatus",
@@ -308,7 +307,6 @@ describe("Public Vaccine Card Downloads", () => {
 
 describe("Public Vaccine Card Downloads When PublicVaccineDownloadPdf Disabled", () => {
     it("Save Image When PublicVaccineDownloadPdf Disabled", () => {
-        cy.deleteDownloadsFolder();
         cy.enableModules([
             "Immunization",
             "VaccinationStatus",

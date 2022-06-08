@@ -1,0 +1,5 @@
+Functional/node_modules/
+Functional/cypress/screenshots/
+Functional/cypress/videos/
+Functional/cypress/downloads/
+Functional/cypress.env.json

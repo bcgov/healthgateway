@@ -29,14 +29,20 @@ export const getters: UserGetters = {
     smsResendDateTime(state: UserState): DateWrapper | undefined {
         return state.smsResendDateTime;
     },
+    hasTermsOfServiceUpdated(state: UserState): boolean {
+        const { user } = state;
+        return user === undefined ? false : user.hasTermsOfServiceUpdated;
+    },
     getPreference:
         (state: UserState) =>
         (preferenceName: string): UserPreference | undefined => {
             return state.user.preferences[preferenceName];
         },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    quickLinks(_state: UserState, getters: any): QuickLink[] | undefined {
-        const preference = getters.getPreference(UserPreferenceType.QuickLinks);
+    quickLinks(_state: UserState, userGetters: any): QuickLink[] | undefined {
+        const preference = userGetters.getPreference(
+            UserPreferenceType.QuickLinks
+        );
         if (preference === undefined) {
             return undefined;
         }

@@ -12,7 +12,6 @@ declare namespace Cypress {
         checkTimelineHasLoaded(): void;
         enableModules(modules: string[]): Chainable<any>;
         setupDownloads(): void;
-        deleteDownloadsFolder(): void;
         restoreAuthCookies(): void;
         /**
          * Select an `<option>` with specific text, value, or index within a `<select>`.

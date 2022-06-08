@@ -26,4 +26,3 @@ extends:
     WASMBuild: true
     DotNetTests: false
     NPMInstall: false
-    NPMTests: false

@@ -29,7 +29,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobScheduler", "JobSchedule
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C8C17BF5-0961-4BEC-BC89-73D79D6B1C96}"
 	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
+		.editorconfig = ../.editorconfig
+		stylecop.json = stylecop.json
+		sonar-config.xml = sonar-config.xml
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Laboratory", "Laboratory\src\Laboratory.csproj", "{A23D2835-87F7-4521-B10F-8E78DAD02929}"

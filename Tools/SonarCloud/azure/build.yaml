@@ -17,13 +17,13 @@ jobs:
   - job: AnalyzeProjects
     timeoutInMinutes: 120
     steps:
-      - script: |
-          npm --prefix WebClient/src/ClientApp install --only=dev
-          npm --prefix WebClient/src/ClientApp test
-        displayName: "Run npm Tests"
-        continueOnError: true
-        workingDirectory: $(Build.SourcesDirectory)/Apps/
-        enabled: true
+      # - script: |
+      #     npm --prefix WebClient/src/ClientApp install --only=dev
+      #     npm --prefix WebClient/src/ClientApp test
+      #   displayName: "Run npm Tests"
+      #   continueOnError: true
+      #   workingDirectory: $(Build.SourcesDirectory)/Apps/
+      #   enabled: true
 
       - script: |
           dotnet tool install --global dotnet-sonarscanner --version $(SONARSCANNER_VERSION)

@@ -18,10 +18,12 @@ namespace HealthGateway.Common.Data.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.Data.Constants;
 
 #pragma warning disable CS1591 // self explanatory simple model
 #pragma warning disable SA1600 // self explanatory simple model
+    [ExcludeFromCodeCoverage]
     public class MessagingVerification : AuditableEntity
     {
         /// <summary>

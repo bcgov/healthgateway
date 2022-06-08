@@ -25,4 +25,3 @@ extends:
     Application: Medication
     DotNetTests: true
     NPMInstall: false
-    NPMTests: false

@@ -13,15 +13,16 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
 namespace HealthGateway.Common.Data.Utils;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 /// <summary>
 /// Formats dates and times for display.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class DateFormatter
 {
     /// <summary>

@@ -3,8 +3,6 @@ const homeUrl = "/home";
 
 describe("Federal Proof of Vaccination", () => {
     it("Save Federal Proof of Vaccination", () => {
-        cy.deleteDownloadsFolder();
-
         cy.enableModules(["Immunization", "FederalCardButton"]);
 
         cy.login(

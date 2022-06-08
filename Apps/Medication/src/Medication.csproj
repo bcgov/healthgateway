@@ -4,6 +4,7 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <RootNamespace>HealthGateway.Medication</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
+    <UserSecretsId>84e2fe9a-a1f5-4de7-bef6-4518a33fa8b9</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Database\**" />
@@ -27,11 +28,11 @@
   <ItemGroup>
     <Content Remove="wwwroot\dist\vendor-manifest.json" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" />
   </ItemGroup>
-    
+
   <ItemGroup>
     <Folder Include="Constants\" />
     <Folder Include="Models\ODR\" />

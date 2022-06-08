@@ -121,7 +121,7 @@ namespace HealthGateway.CommonTests.Delegates
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPHNAsync("9875023209").ConfigureAwait(true);
 
             // Verify
-            Assert.True(actual.ResultStatus == ResultType.ActionRequired);
+            Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
         }
 
         /// <summary>
