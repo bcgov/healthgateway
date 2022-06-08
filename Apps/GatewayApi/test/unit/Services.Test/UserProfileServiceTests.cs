@@ -203,7 +203,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             mockLegalAgreementDelegate.Setup(s => s.GetActiveByAgreementType(LegalAgreementType.TermsofService)).Returns(tosDbResult);
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(readProfileDBResult);
-            mockUserProfileDelegate.Setup(s => s.UpdateComplete(It.IsAny<UserProfile>(), true)).Returns(updatedProfileDBResult);
+            mockUserProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), true)).Returns(updatedProfileDBResult);
             IUserProfileService service = new UserProfileService(
                                                         new Mock<ILogger<UserProfileService>>().Object,
                                                         new Mock<IPatientService>().Object,
