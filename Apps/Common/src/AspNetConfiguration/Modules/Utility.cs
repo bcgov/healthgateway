@@ -22,6 +22,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Npgsql;
     using OpenTelemetry.Resources;
     using OpenTelemetry.Trace;
 
@@ -55,6 +56,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                                };
                            })
                            .AddHttpClientInstrumentation()
+                           .AddNpgsql()
                            .AddSource(config.Sources);
                     if (config.ZipkinEnabled)
                     {
