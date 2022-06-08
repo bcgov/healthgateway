@@ -494,7 +494,7 @@ namespace HealthGateway.GatewayApi.Services
             if (profileResult.Status == DBStatusCode.Read && profileResult.Payload != null)
             {
                 profileResult.Payload.TermsOfServiceId = termsOfServiceId;
-                profileResult = this.userProfileDelegate.UpdateComplete(profileResult.Payload);
+                profileResult = this.userProfileDelegate.Update(profileResult.Payload);
                 if (profileResult.Status == DBStatusCode.Updated)
                 {
                     RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
