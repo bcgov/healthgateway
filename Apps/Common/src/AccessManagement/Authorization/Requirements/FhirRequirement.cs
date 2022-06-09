@@ -36,6 +36,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Requirements
             string fhirAccessType,
             FhirResourceLookup fhirLookup = FhirResourceLookup.Route,
             bool supportsSystemDelegation = true,
+            bool supportsUserManagedAccess = true,
             bool supportsUserDelegation = false)
         {
             this.Resource = fhirResource;
@@ -43,6 +44,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Requirements
             this.Lookup = fhirLookup;
             this.SupportsSystemDelegation = supportsSystemDelegation;
             this.SupportsUserDelegation = supportsUserDelegation;
+            this.SupportsUserManagedAccess = supportsUserManagedAccess;
         }
 
         /// <summary>
@@ -71,5 +73,10 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Requirements
         /// Gets a value indicating whether user delegation is supported for this requirement.
         /// </summary>
         public bool SupportsUserDelegation { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether user managed access is supported for this requirement.
+        /// </summary>
+        public bool SupportsUserManagedAccess { get; }
     }
 }
