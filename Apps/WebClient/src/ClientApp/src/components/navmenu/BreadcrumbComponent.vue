@@ -13,6 +13,9 @@ export default class BreadcrumbComponent extends Vue {
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     isAuthenticated!: boolean;
 
+    @Getter("isValidIdentityProvider", { namespace: "auth" })
+    isValidIdentityProvider!: boolean;
+
     private logger!: ILogger;
 
     @Prop({ required: false, default: [] }) items!: BreadcrumbItem[];
@@ -31,6 +34,10 @@ export default class BreadcrumbComponent extends Vue {
         return [this.baseBreadcrumbItem, ...this.items];
     }
 
+    private get displayBreadcrumbs(): boolean {
+        return this.isAuthenticated && this.isValidIdentityProvider;
+    }
+
     private visitLink(link: string) {
         window.open(link, "_self");
     }
@@ -38,7 +45,11 @@ export default class BreadcrumbComponent extends Vue {
 </script>
 
 <template>
-    <b-breadcrumb v-if="isAuthenticated" data-testid="breadcrumbs" class="pt-0">
+    <b-breadcrumb
+        v-if="displayBreadcrumbs"
+        data-testid="breadcrumbs"
+        class="pt-0"
+    >
         <b-breadcrumb-item
             v-for="item in allBreadcrumbItems"
             :key="item.text"

@@ -250,6 +250,7 @@ export default class HeaderComponent extends Vue {
                         <b-dropdown-divider />
                     </span>
                     <b-dropdown-item
+                        v-if="isValidIdentityProvider"
                         id="menuBtnProfile"
                         data-testid="profileBtn"
                         to="/profile"
