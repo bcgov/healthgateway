@@ -24,7 +24,7 @@ describe("Dashboard", () => {
             .within(() => {
                 cy.get(
                     "[data-testid=daily-data-total-registered-users]"
-                ).contains("4");
+                ).contains("2");
                 cy.get(
                     "[data-testid=daily-data-total-logged-in-users]"
                 ).contains("6");
