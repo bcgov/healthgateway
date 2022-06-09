@@ -30,7 +30,7 @@ VALUES (
 	'System', 
 	current_timestamp - INTERVAL '2 day',  
 	'System', 
-	current_timestamp, 
+	current_timestamp,  
 	'2fab66e7-37c9-4b03-ba25-e8fad604dc7f', 
 	null,
 	null,
@@ -86,9 +86,9 @@ INSERT INTO gateway."UserProfile"(
 VALUES (
 	'DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA',	
 	'System', 
-	current_timestamp - INTERVAL '60 day', 
+	current_timestamp - INTERVAL '120 day', 
 	'System', 
-	current_timestamp - INTERVAL '60 day',
+	current_timestamp,
 	'2fab66e7-37c9-4b03-ba25-e8fad604dc7f', 
 	null,
 	null,
@@ -146,7 +146,7 @@ VALUES (
 	'System', 
 	current_timestamp - INTERVAL '2 day',  
 	'System', 
-	current_timestamp - INTERVAL '2 day', 
+	current_timestamp, 
 	'2fab66e7-37c9-4b03-ba25-e8fad604dc7f', 
 	null,
 	null,
@@ -175,12 +175,12 @@ VALUES (
 	'System', 
 	current_timestamp - INTERVAL '3 day',  
 	'System', 
-	current_timestamp, 
+	current_timestamp,  
 	'c99fd839-b4a2-40f9-b103-529efccd0dcd', 
 	null,
 	null,
 	null,
-	current_timestamp, 
+	current_timestamp,  
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null
 );
@@ -370,7 +370,7 @@ VALUES (
     'eafeee76-8a64-49ee-81ba-ddfe2c01deb8'
 );
 
-/* Notfound - Keycloak User - Last logged in 3 days ago */
+/* Notfound - Keycloak User - Last logged in 2 days ago */
 INSERT INTO gateway."UserProfileHistory"(
 	"UserProfileHistoryId", 
 	"CreatedBy", 
@@ -399,7 +399,7 @@ VALUES (
     null,
 	null,
 	null,
-	current_timestamp - INTERVAL '1 day',  
+	current_timestamp - INTERVAL '2 day',  
     'UPDATE_LOGIN',
     current_timestamp,
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
@@ -407,7 +407,7 @@ VALUES (
     'eafeee76-8a64-49ee-81ba-ddfe2c01deb8'
 );
 
-/* Invaliddoses - Keycloak User - Last logged in 60 days ago */
+/* Invaliddoses - Keycloak User - Last logged in 120 days ago */
 INSERT INTO gateway."UserProfileHistory"(
 	"UserProfileHistoryId", 
 	"CreatedBy", 
@@ -428,15 +428,15 @@ INSERT INTO gateway."UserProfileHistory"(
 VALUES (
 	uuid_generate_v4(),	
 	'System', 
-	current_timestamp - INTERVAL '60 day',  
+	current_timestamp - INTERVAL '120 day',  
 	'System', 
-	current_timestamp - INTERVAL '60 day',  
+	current_timestamp - INTERVAL '120 day',  
 	'DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA', 
 	null,
     null,
 	null,
 	null,
-	current_timestamp - INTERVAL '60 day',  
+	current_timestamp - INTERVAL '120 day',  
     'UPDATE_LOGIN',
     current_timestamp,
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
