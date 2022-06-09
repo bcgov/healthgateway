@@ -335,10 +335,6 @@ export default class TimelineView extends Vue {
         });
     }
 
-    private getTotalCount(): number {
-        return this.timelineEntries.length;
-    }
-
     private sortEntries(timelineEntries: TimelineEntry[]): TimelineEntry[] {
         return timelineEntries.sort((a, b) => {
             if (a.date.isBefore(b.date)) {
@@ -453,7 +449,6 @@ export default class TimelineView extends Vue {
                 <LinearTimeline
                     v-show="isLinearView && showTimelineEntries"
                     :timeline-entries="filteredTimelineEntries"
-                    :total-entries="getTotalCount()"
                 >
                     <template #add-note>
                         <b-col
@@ -470,7 +465,6 @@ export default class TimelineView extends Vue {
                 <CalendarTimeline
                     v-show="!isLinearView && showTimelineEntries"
                     :timeline-entries="filteredTimelineEntries"
-                    :total-entries="getTotalCount()"
                 >
                     <template #add-note>
                         <b-col

@@ -41,9 +41,11 @@ export default class LinearTimelineComponent extends Vue {
     @Getter("selectedDate", { namespace: "timeline" })
     selectedDate!: DateWrapper | null;
 
-    @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
+    @Getter("isHeaderShown", { namespace: "navbar" })
+    isHeaderShown!: boolean;
 
-    @Getter("filter", { namespace: "timeline" }) filter!: TimelineFilter;
+    @Getter("filter", { namespace: "timeline" })
+    filter!: TimelineFilter;
 
     @Getter("isLinearView", { namespace: "timeline" })
     isLinearView!: TimelineFilter;
@@ -51,9 +53,8 @@ export default class LinearTimelineComponent extends Vue {
     @Getter("hasActiveFilter", { namespace: "timeline" })
     hasActiveFilter!: boolean;
 
-    @Prop() private timelineEntries!: TimelineEntry[];
-
-    @Prop({ default: 0 }) private totalEntries!: number;
+    @Prop()
+    private timelineEntries!: TimelineEntry[];
 
     private currentPage = 1;
 
@@ -135,7 +136,11 @@ export default class LinearTimelineComponent extends Vue {
         this.setPageFromDate(this.linearDate);
     }
 
-    private getVisibleCount(): number {
+    private get timelineEntryCount(): number {
+        return this.timelineEntries.length;
+    }
+
+    private get visibleTimelineEntryCount(): number {
         return this.visibleTimelineEntries.length;
     }
 
@@ -199,8 +204,8 @@ export default class LinearTimelineComponent extends Vue {
             data-testid="displayCountText"
         >
             <b-col class="p-2">
-                Displaying {{ getVisibleCount() }} out of
-                {{ totalEntries }} records
+                Displaying {{ visibleTimelineEntryCount }} out of
+                {{ timelineEntryCount }} records
             </b-col>
         </b-row>
         <div id="timeData" data-testid="linearTimelineData">
