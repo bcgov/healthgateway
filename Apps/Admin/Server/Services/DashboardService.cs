@@ -97,6 +97,7 @@ namespace HealthGateway.Admin.Server.Services
 
             TimeSpan ts = new(0, offset, 0);
             this.logger.LogDebug("Timespan: {Timespan}", ts.ToString());
+
             DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
             startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
             DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
