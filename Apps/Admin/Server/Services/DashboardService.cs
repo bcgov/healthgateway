@@ -29,7 +29,6 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Wrapper;
-    using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
