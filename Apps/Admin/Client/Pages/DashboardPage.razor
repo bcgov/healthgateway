@@ -75,10 +75,10 @@
                 <MudTh>Dependents</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Date">@context.DailyDateTime.ToString("yyyy-MM-dd")</MudTd>
-                <MudTd DataLabel="Registered">@context.TotalRegisteredUsers</MudTd>
-                <MudTd DataLabel="Logged In">@context.TotalLoggedInUsers</MudTd>
-                <MudTd DataLabel="Dependents">@context.TotalDependents</MudTd>
+                <MudTd data-testid="daily-data-date" DataLabel="Date">@context.DailyDateTime.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd data-testid="daily-data-total-registered-users" DataLabel="Registered">@context.TotalRegisteredUsers</MudTd>
+                <MudTd data-testid="daily-data-total-logged-in-users" DataLabel="Logged In">@context.TotalLoggedInUsers</MudTd>
+                <MudTd data-testid="daily-data-dependents" DataLabel="Dependents">@context.TotalDependents</MudTd>
             </RowTemplate>
             <PagerContent>
                 <MudTablePager />
