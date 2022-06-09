@@ -203,7 +203,7 @@ export default class LinearTimelineComponent extends Vue {
             class="no-print"
             data-testid="displayCountText"
         >
-            <b-col class="p-2">
+            <b-col class="p-2" data-testid="timeline-record-count">
                 Displaying {{ visibleTimelineEntryCount }} out of
                 {{ timelineEntryCount }} records
             </b-col>
