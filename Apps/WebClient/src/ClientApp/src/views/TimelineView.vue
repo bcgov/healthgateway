@@ -18,7 +18,6 @@ import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
-import CovidTestModalComponent from "@/components/modal/CovidTestModalComponent.vue";
 import NoteEditComponent from "@/components/modal/NoteEditComponent.vue";
 import ProtectiveWordComponent from "@/components/modal/ProtectiveWordComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
@@ -69,7 +68,6 @@ library.add(
         BToast,
         BreadcrumbComponent,
         ProtectiveWordComponent,
-        CovidTestModalComponent,
         NoteEditComponent,
         EntryDetailsComponent,
         LinearTimeline: LinearTimelineComponent,
@@ -497,7 +495,6 @@ export default class TimelineView extends Vue {
             </b-col>
         </b-row>
         <resource-centre />
-        <CovidTestModalComponent :is-loading="isCovid19LaboratoryLoading" />
         <ProtectiveWordComponent :is-loading="isMedicationStatementLoading" />
         <NoteEditComponent :is-loading="isNoteLoading" />
         <EntryDetailsComponent />
