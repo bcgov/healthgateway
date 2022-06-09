@@ -95,12 +95,14 @@ namespace HealthGateway.Admin.Server.Services
             // If timeOffset is a positive value, then it means current timezone is [n] minutes ahead of UTC so we need to change this value to a negative when creating DateTime object in UTC.
             // If timeOffset is 0, then it means current timezone is UTC.
             int offset = timeOffset * -1;
+
             TimeSpan ts = new(0, offset, 0);
             this.logger.LogDebug("Timespan: {Timespan}", ts.ToString());
             DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
             startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
             DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
             endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+
             this.logger.LogDebug(
                 "Start Period (Local): {StartPeriod} - End Period (Local): {EndPeriod} - StartDate (UTC): {StartDate} - End Date (UTC): {EndDate} - Timespan: {Timespan} - TimeOffset (UI): {TimeOffset} - Offset: {Offset}",
                 startPeriod,
@@ -110,6 +112,7 @@ namespace HealthGateway.Admin.Server.Services
                 ts.ToString(),
                 timeOffset.ToString(CultureInfo.InvariantCulture),
                 offset.ToString(CultureInfo.InvariantCulture));
+
             return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
         }
 
