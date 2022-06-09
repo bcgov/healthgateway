@@ -1,0 +1,216 @@
+{
+    "resourcePayload": [
+        {
+            "id": "f57bcb39-64ca-0a17-5477-92ea7f084fbf",
+            "encounterDate": "2020-07-15T00:00:00",
+            "specialtyDescription": "FAMILY MEDICINE",
+            "practitionerName": "ILCVAPPOJ CLPXWG",
+            "clinic": {
+                "name": "FRANCIS N WER WERASDF"
+            }
+        },
+        {
+            "id": "72c2d6c0-b370-24e6-0b5c-04e42b6511c8",
+            "encounterDate": "2020-07-14T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "TFWBLV GBXIK LRNSOII",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "5ba67647-1463-8efb-7da7-62a5cb984f71",
+            "encounterDate": "2020-07-14T00:00:00",
+            "specialtyDescription": "FAMILY MEDICINE",
+            "practitionerName": "SHERRI LYNN DSFGHRIO",
+            "clinic": {
+                "name": "ERIC SDFN WER WERASDF"
+            }
+        },
+        {
+            "id": "338cf9fd-8bbe-962c-9510-3440d7310835",
+            "encounterDate": "2020-07-13T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "TFWBLV GBXIK LRNSOII",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "a8473758-da84-b4bf-41bc-1e83243c07cd",
+            "encounterDate": "2020-07-12T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "TFWBLV GBXIK LRNSOII",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "2a6c0146-d1fd-3d05-1790-7562f556df14",
+            "encounterDate": "2020-07-11T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "TFWBLV GBXIK LRNSOII",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "7c713166-ce55-e937-a066-38d1b3903964",
+            "encounterDate": "2020-07-10T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "PBVEH IRVILHW JTANCN",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "9629526c-0fd4-1e68-93c1-669b29fab66b",
+            "encounterDate": "2020-07-09T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "PBVEH IRVILHW JTANCN",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "89545700-8049-958e-5e3b-c2bec5ef81a4",
+            "encounterDate": "2020-07-08T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "PBVEH IRVILHW JTANCN",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "7b95330c-90e3-27a2-7591-fe85af926fa4",
+            "encounterDate": "2020-07-08T00:00:00",
+            "specialtyDescription": "FAMILY MEDICINE",
+            "practitionerName": "FRED FLINSTONE SDFA F",
+            "clinic": {
+                "name": "FRED FLINSTONE SDFA F"
+            }
+        },
+        {
+            "id": "76a03f18-67a8-de79-19e8-5251f13a2755",
+            "encounterDate": "2020-07-07T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "PBVEH IRVILHW JTANCN",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "6c0e5845-12da-b76b-1891-afb3ec640f98",
+            "encounterDate": "2020-07-06T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "PBVEH IRVILHW JTANCN",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "08d9c06a-26eb-b6bd-82aa-ff5bee1930a3",
+            "encounterDate": "2020-07-05T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "PBVEH IRVILHW JTANCN",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "ae9428f5-9094-68f0-0bb1-ed67c5852f13",
+            "encounterDate": "2020-07-04T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "PBVEH IRVILHW JTANCN",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "656f1e86-29ac-e054-6650-34b2e4e543c4",
+            "encounterDate": "2020-07-03T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "PBVEH IRVILHW JTANCN",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "b3f224ac-1487-4409-3108-c6bf6233972d",
+            "encounterDate": "2020-07-02T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "LPCMN ODTQN W P",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "96c07e69-1464-b6f6-9f18-753fad892321",
+            "encounterDate": "2020-07-01T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "LPCMN ODTQN W P",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "5a41bebb-ba05-7cbb-7927-0367048f74a0",
+            "encounterDate": "2020-06-30T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "LPCMN ODTQN W P",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "1867aa25-6d88-b96b-0f23-af65fe45bad4",
+            "encounterDate": "2020-06-29T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "LPCMN ODTQN W P",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "2448fb13-3773-e3c4-281e-e014581fa838",
+            "encounterDate": "2020-06-29T00:00:00",
+            "specialtyDescription": "OBSTETRICS & GYNAECOLOGY",
+            "practitionerName": "AMANDA XFXEU SXWNRIO",
+            "clinic": {
+                "name": "INGRID FN WER WERASDF"
+            }
+        },
+        {
+            "id": "caec46f7-5d1b-23c9-7f28-148d7e36f81b",
+            "encounterDate": "2020-06-28T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "LPCMN ODTQN W P",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "9b2b78af-01b9-832e-b92e-22762f38bf27",
+            "encounterDate": "2020-06-27T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "LPCMN ODTQN W P",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        },
+        {
+            "id": "d99b9c15-e54e-461b-5a6e-df75bb42e940",
+            "encounterDate": "2020-06-26T00:00:00",
+            "specialtyDescription": "LABORATORY MEDICINE",
+            "practitionerName": "LPCMN ODTQN W P",
+            "clinic": {
+                "name": "DAVID WRN WER WERASDF"
+            }
+        }
+    ],
+    "totalResultCount": 23,
+    "pageIndex": 1,
+    "pageSize": 20000,
+    "resultStatus": 1,
+    "resultError": null
+}
