@@ -26,7 +26,7 @@ export default class CommunicationComponent extends Vue {
     @Getter("isOffline", { namespace: "config" })
     isOffline!: boolean;
 
-    private get isInApp(): boolean {
+    private get displayInAppBanner(): boolean {
         return (
             this.oidcIsAuthenticated &&
             this.userIsRegistered &&
@@ -36,7 +36,7 @@ export default class CommunicationComponent extends Vue {
     }
 
     private get hasCommunication(): boolean {
-        if (this.isInApp) {
+        if (this.displayInAppBanner) {
             return this.inAppCommunication != null;
         } else {
             return this.bannerCommunication != null;
@@ -44,7 +44,7 @@ export default class CommunicationComponent extends Vue {
     }
 
     private get text(): string {
-        if (this.isInApp) {
+        if (this.displayInAppBanner) {
             return this.inAppCommunication ? this.inAppCommunication.text : "";
         } else {
             return this.bannerCommunication

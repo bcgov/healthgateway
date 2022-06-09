@@ -97,7 +97,7 @@ export enum UserState {
     notRegistered = "notRegistered",
     registered = "registered",
     pendingDeletion = "pendingDeletion",
-    invalidLogin = "invalidLogin",
+    invalidIdentityProvider = "invalidIdentityProvider",
     offline = "offline",
     acceptTermsOfService = "acceptTermsOfService",
 }
@@ -109,7 +109,8 @@ function calculateUserState() {
     const store = storeWrapper.getStore();
     const isOffline = store.getters["config/isOffline"];
     const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
-    const isValid: boolean = store.getters["auth/isValidIdentityProvider"];
+    const isValidIdentityProvider: boolean =
+        store.getters["auth/isValidIdentityProvider"];
     const isRegistered: boolean = store.getters["user/userIsRegistered"];
     const userIsActive: boolean = store.getters["user/userIsActive"];
     const hasTermsOfServiceUpdated: boolean =
@@ -119,8 +120,8 @@ function calculateUserState() {
         return UserState.offline;
     } else if (!isAuthenticated) {
         return UserState.unauthenticated;
-    } else if (!isValid) {
-        return UserState.invalidLogin;
+    } else if (!isValidIdentityProvider) {
+        return UserState.invalidIdentityProvider;
     } else if (!isRegistered) {
         return UserState.notRegistered;
     } else if (!userIsActive) {
@@ -167,6 +168,7 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.offline,
             ],
@@ -180,7 +182,11 @@ const routes = [
             email: route.query.email,
         }),
         meta: {
-            validStates: [UserState.unauthenticated, UserState.notRegistered],
+            validStates: [
+                UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
+                UserState.notRegistered,
+            ],
         },
     },
     {
@@ -262,6 +268,7 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -289,6 +296,7 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.notRegistered,
                 UserState.pendingDeletion,
@@ -302,6 +310,7 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -314,6 +323,7 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -325,6 +335,7 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -336,6 +347,7 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -347,6 +359,7 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -381,7 +394,7 @@ const routes = [
     {
         path: IDIR_LOGGED_IN_PATH,
         component: IdirLoggedInView,
-        meta: { validStates: [UserState.invalidLogin] },
+        meta: { validStates: [UserState.invalidIdentityProvider] },
     },
     {
         path: UNAUTHORIZED_PATH,
@@ -469,7 +482,7 @@ function getDefaultPath(
             return hasRequiredModules ? HOME_PATH : UNAUTHORIZED_PATH;
         case UserState.notRegistered:
             return REGISTRATION_PATH;
-        case UserState.invalidLogin:
+        case UserState.invalidIdentityProvider:
             return IDIR_LOGGED_IN_PATH;
         case UserState.unauthenticated:
             return hasRequiredModules ? LOGIN_PATH : UNAUTHORIZED_PATH;
