@@ -29,10 +29,13 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Wrapper;
+    using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
     public class DashboardService : IDashboardService
     {
+        private readonly ILogger logger;
         private readonly IResourceDelegateDelegate dependentDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly IMessagingVerificationDelegate messagingVerificationDelegate;
@@ -42,18 +45,21 @@ namespace HealthGateway.Admin.Server.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
         /// <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
         /// <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
         /// <param name="ratingDelegate">The rating delegate.</param>
         public DashboardService(
+            ILogger<DashboardService> logger,
             IResourceDelegateDelegate dependentDelegate,
             IUserProfileDelegate userProfileDelegate,
             IMessagingVerificationDelegate messagingVerificationDelegate,
             IPatientService patientService,
             IRatingDelegate ratingDelegate)
         {
+            this.logger = logger;
             this.dependentDelegate = dependentDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.messagingVerificationDelegate = messagingVerificationDelegate;
@@ -85,11 +91,25 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc />
         public int GetRecurrentUserCount(int dayCount, string startPeriod, string endPeriod, int timeOffset)
         {
-            TimeSpan ts = new(0, timeOffset, 0);
+            // If timeOffset is a negative value, then it means current timezone is [n] minutes behind UTC so we need to change this value to a positive when creating DateTime object in UTC.
+            // If timeOffset is a positive value, then it means current timezone is [n] minutes ahead of UTC so we need to change this value to a negative when creating DateTime object in UTC.
+            // If timeOffset is 0, then it means current timezone is UTC.
+            int offset = timeOffset * -1;
+            TimeSpan ts = new(0, offset, 0);
+            this.logger.LogDebug("Timespan: {Timespan}", ts.ToString());
             DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
             startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
             DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
             endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+            this.logger.LogDebug(
+                "Start Period (Local): {StartPeriod} - End Period (Local): {EndPeriod} - StartDate (UTC): {StartDate} - End Date (UTC): {EndDate} - Timespan: {Timespan} - TimeOffset (UI): {TimeOffset} - Offset: {Offset}",
+                startPeriod,
+                endPeriod,
+                startDate,
+                endDate,
+                ts.ToString(),
+                timeOffset.ToString(CultureInfo.InvariantCulture),
+                offset.ToString(CultureInfo.InvariantCulture));
             return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
         }
 
