@@ -88,8 +88,7 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc />
         public int GetRecurrentUserCount(int dayCount, string startPeriod, string endPeriod, int timeOffset)
         {
-            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new(0, timeOffset, 0);
+            TimeSpan ts = new(0, GetOffset(timeOffset), 0);
             DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
             startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
             DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
@@ -170,13 +169,25 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc />
         public IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset)
         {
-            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new(0, timeOffset, 0);
+            TimeSpan ts = new(0, GetOffset(timeOffset), 0);
             DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
             startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
             DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
             endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
             return this.ratingDelegate.GetSummary(startDate, endDate);
+        }
+
+        /// <summary>
+        /// Returns an offset value that can be used to create a date in UTC.
+        /// </summary>
+        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        /// <returns>The offset value used to create UTC.</returns>
+        private static int GetOffset(int timeOffset)
+        {
+            // If timeOffset is a negative value, then it means current timezone is [n] minutes behind UTC so we need to change this value to a positive when creating TimeSpan for DateTime object in UTC.
+            // If timeOffset is a positive value, then it means current timezone is [n] minutes ahead of UTC so we need to change this value to a negative when creating TimeSpan for DateTime object in UTC.
+            // If timeOffset is 0, then it means current timezone is UTC.
+            return timeOffset * -1;
         }
     }
 }
