@@ -75,9 +75,7 @@ export class DashboardService implements IDashboardService {
                 .get<number>(
                     `${
                         this.BASE_URI
-                    }/RecurringUsers?days=${days}&startPeriod=${startPeriodDate}&endPeriod=${endPeriodDate}&timeOffset=${
-                        new Date().getTimezoneOffset() * -1
-                    }`
+                    }/RecurringUsers?days=${days}&startPeriod=${startPeriodDate}&endPeriod=${endPeriodDate}&timeOffset=${new Date().getTimezoneOffset()}`
                 )
                 .then((requestResult) => {
                     resolve(requestResult);
@@ -98,9 +96,7 @@ export class DashboardService implements IDashboardService {
                 .get<Promise<{ [key: string]: number }>>(
                     `${
                         this.BASE_URI
-                    }/Ratings/Summary?startPeriod=${startPeriodDate}&endPeriod=${endPeriodDate}&timeOffset=${
-                        new Date().getTimezoneOffset() * -1
-                    }`
+                    }/Ratings/Summary?startPeriod=${startPeriodDate}&endPeriod=${endPeriodDate}&timeOffset=${new Date().getTimezoneOffset()}`
                 )
                 .then((requestResult) => {
                     resolve(requestResult);
