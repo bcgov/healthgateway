@@ -8,6 +8,7 @@ services:
       - ../../inc:/inc
     environment: 
       - "HG_TYPE=${HG_TYPE}"
+      - "HG_VUS=${HG_VUS}"
       - "HG_ENV=${HG_ENV}"
       - "HG_KEY=${HG_KEY}"
       - "HG_PASSWORD=${HG_PASSWORD}"

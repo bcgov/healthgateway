@@ -23,10 +23,10 @@ import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
 export let passwd = __ENV.HG_PASSWORD;
 
-export let maxVus = __ENV.HG_VUS ? __ENV.HG_VUS : 300;
-maxVus = maxVus < 1 ? 1 : maxVus;
+export let maxVus = __ENV.HG_VUS ? parseInt(__ENV.HG_VUS) : 500;
+maxVus = (maxVus < 1) ? 1 : maxVus;
 export let rampVus = (maxVus / 4).toFixed(0);
-rampVus = rampVus < 1 ? 1 : rampVus;
+rampVus = (rampVus < 1) ? 1 : rampVus;
 
 export let authSuccess = new Rate("authentication_successful");
 export let errorRate = new Rate("errors");
@@ -86,8 +86,8 @@ export let smokeOptions = {
 export let soakOptions = {
     stages: [
         { duration: "1m", target: 10 }, // below normal load
-        { duration: "2m", target: 250 },
-        { duration: "3h56m", target: 250 }, // stay at high users for hours 'soaking' the system
+        { duration: "2m", target: maxVus },
+        { duration: "3h56m", target: maxVus }, // stay at high users for hours 'soaking' the system
         { duration: "2m", target: 0 }, // drop back down
     ],
 };
@@ -95,23 +95,25 @@ export let spikeOptions = {
     stages: [
         { duration: "20s", target: 10 }, // below normal load
         { duration: "1m", target: 10 },
-        { duration: "1m", target: 400 }, // spike to super high users
-        { duration: "5m", target: 400 }, // stay there
-        { duration: "1m", target: 200 }, // scale down
+        { duration: "1m", target: maxVus }, // spike to super high users
+        { duration: "5m", target: maxVus }, // stay there
+        { duration: "1m", target: rampVus }, // scale down
         { duration: "3m", target: 10 },
         { duration: "10s", target: 0 }, //
     ],
 };
+
+let stressVus = maxVus + 50;
+let stressMaxVus = maxVus + 150;
+
 export let stressOptions = {
     stages: [
-        { duration: "2m", target: 50 }, // below normal load
-        { duration: "5m", target: 100 },
-        { duration: "2m", target: 200 }, // normal load
-        { duration: "5m", target: 200 },
-        { duration: "2m", target: 400 }, // around the breaking point
-        { duration: "4m", target: 400 },
-        { duration: "2m", target: 500 }, // beyond the breaking point
-        { duration: "5m", target: 550 },
+        { duration: "2m", target: 10 }, // below normal load
+        { duration: "5m", target: 50 },
+        { duration: "5m", target: rampVus },
+        { duration: "5m", target: maxVus }, // around the breaking point
+        { duration: "2m", target: stressVus }, // beyond the breaking point
+        { duration: "5m", target: stressMaxVus },
         { duration: "5m", target: 0 }, // scale down. Recovery stage.
     ],
 };
