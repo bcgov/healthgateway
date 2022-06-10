@@ -2,10 +2,10 @@ version: '3.4'
 services:
   k6:
     image: loadimpact/k6:latest
-    command: run /application/load/k6_webapp.js
+    command: run /webapp/webapp/k6_webapp.js
     volumes:
-      - ../../../src/application/load:/application/load
-      - ../../../src/inc:/inc
+      - ../../webapp/webapp:/webapp/webapp
+      - ../../inc:/inc
     environment: 
       - "HG_ENV=${HG_ENV}"
       - "HG_KEY=${HG_KEY}"

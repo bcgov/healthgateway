@@ -4,8 +4,8 @@ services:
     image: loadimpact/k6:latest
     command: run /services/patient/k6_patient.js
     volumes:
-      - ../../../src/services/patient:/services/patient
-      - ../../../src/inc:/inc
+      - ../../services/patient:/services/patient
+      - ../../inc:/inc
     environment: 
       - "HG_TYPE=${HG_TYPE}"
       - "HG_ENV=${HG_ENV}"

@@ -33,30 +33,30 @@ export let errorRate = new Rate("errors");
 
 export let refreshTokenSuccess = new Rate("auth_refresh_successful");
 
-export let environment = __ENV.HG_ENV ? __ENV.HG_ENV : "test"; // default to test environment. choice of dev, test
+export let environment = __ENV.HG_ENV ? __ENV.HG_ENV : "test"; // default to test environment. choice of dev, test (never prod)
 export let OptionsType = __ENV.HG_TYPE ? __ENV.HG_TYPE : "smoke"; // choice of load, smoke, soak, spike, stress
 
 export let groupDuration = Trend("batch");
 
 export let baseUrl = "https://" + environment + ".healthgateway.gov.bc.ca"; // with this, we can be confident that production can't be hit.
+export let servicesBaseUrl = "https://hg-" + environment + ".api.gov.bc.ca";
 export let TokenEndpointUrl =
     "https://" +
     environment +
     ".oidc.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
+
 export let AuthorizationEndpointUrl = 
     "https://" +
     environment +
     ".oidc.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/authorize";
-export let MedicationServiceUrl =
-    baseUrl + "/api/medicationservice/v1/api/MedicationStatement";
-export let LaboratoryServiceUrl =
-    baseUrl + "/api/laboratoryservice/v1/api/Laboratory/LaboratoryOrders";
-export let PatientServiceUrl = baseUrl + "/api/PatientService/v1/api/Patient";
+export let MedicationServiceUrl = servicesBaseUrl + "/MedicationStatement";
+export let LaboratoryServiceUrl = servicesBaseUrl + "/Laboratory/LaboratoryOrders";
+export let PatientServiceUrl = servicesBaseUrl + "/Patient";
 
 // Health Gateway WebClient app APIs:
 export let CommentUrl = baseUrl + "/v1/api/Comment";
 export let CommunicationUrl = baseUrl + "/v1/api/Communication";
-export let ConfigurationUrl = baseUrl + "/v1/api/Configuration";
+export let ConfigurationUrl = baseUrl + "/configuration";
 export let NoteUrl = baseUrl + "/v1/api/Note";
 export let UserProfileUrl = baseUrl + "/v1/api/UserProfile";
 
@@ -391,8 +391,7 @@ export function webClientRequests(user) {
         },
         configuration: {
             method: "GET",
-            url: common.ConfigurationUrl + "/" + user.hdid,
-            params: params(user),
+            url: common.ConfigurationUrl,
         },
         profile: {
             method: "GET",
