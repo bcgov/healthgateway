@@ -255,7 +255,7 @@ public partial class DashboardPage : FluxorComponent
 
     private void ReloadDispatchActions()
     {
-        this.LoadDispatchActions(this.UniqueDays, StartDate, EndDate, this.TimeOffset, false);
+        this.LoadDispatchActions(this.UniqueDays, this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.TimeOffset, false);
     }
 
     private void DispatchRatingSummaryAction(string startPeriod, string endPeriod, int timeOffset)
