@@ -18,7 +18,6 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
     public orderingProvider: string;
     public orderStatus: string;
     public reportAvailable: boolean;
-    public downloadLabel: string;
 
     public tests: LaboratoryTestViewModel[];
 
@@ -57,7 +56,6 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
 
         this.reportId = model.reportId;
         this.orderStatus = model.orderStatus;
-        this.downloadLabel = model.downloadLabel;
 
         this.tests = [];
         model.laboratoryTests.forEach((test) => {

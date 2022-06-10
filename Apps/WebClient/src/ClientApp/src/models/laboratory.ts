@@ -60,7 +60,6 @@ export interface LaboratoryOrder {
     orderingProvider: string;
     testStatus: string;
     orderStatus: string;
-    downloadLabel: string;
     reportAvailable: boolean;
     laboratoryTests: LaboratoryTest[];
 }

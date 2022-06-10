@@ -119,33 +119,6 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
             </strong>
         </div>
         <div slot="details-body">
-            <div
-                v-if="entry.reportAvailable"
-                data-testid="laboratory-report-available"
-                class="mt-2 mb-n1"
-            >
-                <b-spinner v-if="isLoadingDocument" class="mb-1" />
-                <span v-else data-testid="laboratoryReport">
-                    <strong class="align-bottom d-inline-block pb-1">
-                        Detailed Report:
-                    </strong>
-                    <hg-button
-                        data-testid="laboratory-report-download-btn"
-                        variant="link"
-                        class="p-1 ml-1"
-                        @click="showConfirmationModal()"
-                    >
-                        <hg-icon
-                            icon="download"
-                            size="medium"
-                            square
-                            aria-hidden="true"
-                            class="mr-1"
-                        />
-                        <span>{{ entry.downloadLabel }}</span>
-                    </hg-button>
-                </span>
-            </div>
             <div class="my-2">
                 <div data-testid="laboratory-collection-date">
                     <strong>Collection Date: </strong>
@@ -169,7 +142,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                     <span>{{ entry.reportingLab }}</span>
                 </div>
             </div>
-            <div class="my-2 mb-2">
+            <div class="my-2">
                 <div data-testid="reporting-lab-information-text">
                     <span
                         ><router-link to="/faq">Find resources</router-link> to
@@ -178,11 +151,41 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                     >
                 </div>
             </div>
+            <b-row class="my-3">
+                <b-col />
+                <b-col
+                    v-if="entry.reportAvailable"
+                    data-testid="laboratory-report-available"
+                    cols="auto"
+                >
+                    <hg-button
+                        data-testid="laboratory-report-download-btn"
+                        variant="secondary"
+                        :disabled="isLoadingDocument"
+                        @click="showConfirmationModal()"
+                    >
+                        <b-spinner
+                            v-if="isLoadingDocument"
+                            class="mr-1"
+                            small
+                        />
+                        <hg-icon
+                            v-else
+                            icon="download"
+                            size="medium"
+                            square
+                            aria-hidden="true"
+                            class="mr-1"
+                        />
+                        <span>Download Full Report</span>
+                    </hg-button>
+                </b-col>
+            </b-row>
             <b-table-lite
                 :items="entry.tests"
                 sticky-header
                 head-variant="light"
-                class="mt-4 mb-2"
+                class="my-2"
                 data-testid="laboratoryResultTable"
             >
                 <template #cell(result)="data">
