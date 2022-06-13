@@ -4,10 +4,11 @@ services:
     image: loadimpact/k6:latest
     command: run /services/profile/k6_profile.js
     volumes:
-      - ../../../src/services/profile:/services/profile
-      - ../../../src/inc:/inc
+      - ../../services/profile:/services/profile
+      - ../../inc:/inc
     environment: 
       - "HG_TYPE=${HG_TYPE}"
       - "HG_ENV=${HG_ENV}"
+      - "HG_VUS=${HG_VUS}"
       - "HG_KEY=${HG_KEY}"
       - "HG_PASSWORD=${HG_PASSWORD}"

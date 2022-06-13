@@ -2,13 +2,14 @@ version: '3.4'
 services:
   k6:
     image: loadimpact/k6:latest
-    command: run /services/medications/k6_meds.js
+    command: run /webapp/spa/k6_spa.js
     volumes:
-      - ../../services/medications:/services/medications
+      - ../../webapp/spa:/webapp/spa
       - ../../inc:/inc
     environment: 
-      - "HG_TYPE=${HG_TYPE}"
       - "HG_ENV=${HG_ENV}"
-      - "HG_VUS=${HG_VUS}"
       - "HG_KEY=${HG_KEY}"
+      - "HG_VUS=${HG_VUS}"
+      - "HG_TYPE=${HG_TYPE}"
       - "HG_PASSWORD=${HG_PASSWORD}"
+
