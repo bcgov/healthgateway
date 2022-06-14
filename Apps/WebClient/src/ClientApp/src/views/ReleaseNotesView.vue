@@ -29,6 +29,42 @@ export default class ReleaseNotesView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
         <release-note
+            date="June 7, 2022"
+            version="v2022.6.0"
+            title="Updated Terms of Service"
+        >
+            <ul>
+                <li>
+                    We added a feature that allows you to review and accept the
+                    terms of service when they have been updated.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
+            date="May 26, 2022"
+            version="v1.5.10.1"
+            title="Lab Result Access"
+        >
+            <ul>
+                <li>
+                    We added access to lab results for blood tests and other lab
+                    tests done in B.C.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
+            date="May 24, 2022"
+            version="v1.5.10"
+            title="Profile Page Address"
+        >
+            <ul>
+                <li>
+                    We added available addresses to the profile page, so you can
+                    confirm that we have the most current information.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
             date="April 25, 2022"
             version="v1.5.8"
             title="Landing Page Update"

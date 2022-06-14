@@ -18,12 +18,14 @@ namespace HealthGateway.Common.Data.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.Serialization;
     using HealthGateway.Common.Data.Constants;
 
     /// <summary>
     /// Base class for all DB entities to ensure audit data is saved.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public abstract class AuditableEntity : IAuditable, IConcurrencyGuard
     {
         /// <summary>

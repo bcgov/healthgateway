@@ -1,5 +1,6 @@
 import Vue from "vue";
 
+import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
@@ -25,6 +26,30 @@ export const mutations: UserMutation = {
     },
     setProfileUserData(state: UserState, userProfile: UserProfile) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
+        if (userProfile) {
+            const notePreference = UserPreferenceType.TutorialMenuNote;
+            // If there are no preferences, set the default popover state
+            if (userProfile.preferences[notePreference] === undefined) {
+                userProfile.preferences[notePreference] = {
+                    hdId: userProfile.hdid,
+                    preference: notePreference,
+                    value: "true",
+                    version: 0,
+                    createdDateTime: new DateWrapper().toISO(),
+                };
+            }
+            const exportPreference = UserPreferenceType.TutorialMenuExport;
+            if (userProfile.preferences[exportPreference] === undefined) {
+                userProfile.preferences[exportPreference] = {
+                    hdId: userProfile.hdid,
+                    preference: exportPreference,
+                    value: "true",
+                    version: 0,
+                    createdDateTime: new DateWrapper().toISO(),
+                };
+            }
+        }
 
         Vue.set(
             state.user,

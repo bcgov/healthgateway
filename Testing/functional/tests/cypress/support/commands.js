@@ -275,11 +275,6 @@ Cypress.Commands.add("setupDownloads", () => {
     }
 });
 
-Cypress.Commands.add("deleteDownloadsFolder", () => {
-    const downloadsFolder = Cypress.config("downloadsFolder");
-    cy.task("deleteFolder", downloadsFolder);
-});
-
 Cypress.Commands.add("restoreAuthCookies", () => {
     globalStorage.authCookies.forEach((cookie) => {
         cy.setCookie(cookie.name, cookie.value);

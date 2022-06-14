@@ -19,7 +19,7 @@ namespace HealthGateway.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gateway")
-                .HasAnnotation("ProductVersion", "6.0.4")
+                .HasAnnotation("ProductVersion", "6.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -421,21 +421,6 @@ namespace HealthGateway.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("ApplicationSetting", "gateway");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("5f279ba2-8e7b-4b1d-8c69-467d94dcb7fb"),
-                            Application = "JOBS",
-                            Component = "NotifyUpdatedLegalAgreementsJob",
-                            CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Key = "ToS-Last-Checked",
-                            UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Value = "05/01/2019",
-                            Version = 0u
-                        });
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.AuditEvent", b =>
@@ -821,57 +806,6 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("Communication", "gateway");
                 });
 
-            modelBuilder.Entity("HealthGateway.Database.Models.CommunicationEmail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("CommunicationEmailId");
-
-                    b.Property<Guid>("CommunicationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("EmailId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UserProfileHdId")
-                        .IsRequired()
-                        .HasMaxLength(52)
-                        .HasColumnType("character varying(52)");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommunicationId");
-
-                    b.HasIndex("EmailId");
-
-                    b.HasIndex("UserProfileHdId");
-
-                    b.ToTable("CommunicationEmail", "gateway");
-                });
-
             modelBuilder.Entity("HealthGateway.Database.Models.CommunicationStatusCode", b =>
                 {
                     b.Property<string>("StatusCode")
@@ -1016,16 +950,6 @@ namespace HealthGateway.Database.Migrations
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Banner communication type",
-                            UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Version = 0u
-                        },
-                        new
-                        {
-                            StatusCode = "Email",
-                            CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Email communication type",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -1466,22 +1390,6 @@ namespace HealthGateway.Database.Migrations
                         },
                         new
                         {
-                            Id = new Guid("eb695050-e2fb-4933-8815-3d4656e4541d"),
-                            Body = "<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n        <title>Updated Terms of Service</title>\n    </head>\n    <body style=\"margin: 0\">\n        <table\n            style=\"\n                width: 100%;\n                border-spacing: 0px;\n                margin: 0;\n                color: #707070;\n                font-family: Helvetica, Arial, Verdana, Tahoma, sans-serif;\n                font-size: 12px;\n            \"\n            aria-describedby=\"Layout Table\"\n        >\n            <tr style=\"background: #036\">\n                <th scope=\"col\" style=\"width:45px;\"></th>\n                <th\n                    scope=\"col\"\n                    style=\"text-align: left; width:350px;\"\n                >\n                    <div role=\"img\" aria-label=\"Health Gateway Logo\">\n                        <img src=\"${host}/Logo.png\" alt=\"Health Gateway Logo\" />\n                    </div>\n                </th>\n                <th scope=\"col\"></th>\n            </tr>\n            <tr>\n                <td colspan=\"3\" style=\"height:20px;\"></td>\n            </tr>\n            <tr>\n                <td></td>\n                <td>\n                    <h1 style=\"font-size: 18px\">Hi,</h1>\n                    <p>\n                        You are receiving this email as a user of the Health\n                        Gateway. We have updated our Terms of Service, effective\n                        ${effectivedate}.\n                    </p>\n                    <p>\n                        For more information, we encourage you to review the\n                        full <a href=\"${host}/${path}\">Terms of Service</a> and\n                        check out the\n                        <a href=\"${host}/release-notes\">release notes</a> for a\n                        summary of new features.\n                    </p>\n                    <p>\n                        If you have any questions or wish to provide any\n                        feedback, please contact\n                        <a href=\"mailto:${contactemail}\">${contactemail}</a>.\n                    </p>\n                    <p>Regards,</p>\n                    <p>Health Gateway Team</p>\n                </td>\n                <td></td>\n            </tr>\n        </table>\n    </body>\n</html>\n",
-                            CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            FormatCode = "HTML",
-                            From = "HG_Donotreply@gov.bc.ca",
-                            Name = "TermsOfService",
-                            Priority = 1,
-                            Subject = "Health Gateway Updated Terms of Service ",
-                            UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Version = 0u
-                        },
-                        new
-                        {
                             Id = new Guid("79503a38-c14a-4992-b2fe-5586629f552e"),
                             Body = "<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n        <title>Account Closed</title>\n    </head>\n    <body style=\"margin: 0\">\n        <table\n            style=\"\n                width: 100%;\n                border-spacing: 0px;\n                margin: 0;\n                color: #707070;\n                font-family: Helvetica, Arial, Verdana, Tahoma, sans-serif;\n                font-size: 12px;\n            \"\n            aria-describedby=\"Layout Table\"\n        >\n            <tr style=\"background: #036\">\n                <th scope=\"col\" style=\"width:45px;\"></th>\n                <th\n                    scope=\"col\"\n                    style=\"text-align: left; width:350px;\"\n                >\n                    <div role=\"img\" aria-label=\"Health Gateway Logo\">\n                        <img src=\"${host}/Logo.png\" alt=\"Health Gateway Logo\" />\n                    </div>\n                </th>\n                <th scope=\"col\"></th>\n            </tr>\n            <tr>\n                <td colspan=\"3\" style=\"height:20px;\"></td>\n            </tr>\n            <tr>\n                <td></td>\n                <td>\n                    <h1 style=\"font-size: 18px\">Hi,</h1>\n                    <p>\n                        You have closed your Health Gateway account. If you\n                        would like to recover your account, please login to\n                        Health Gateway within the next 30 days and click\n                        “Recover Account”. No further action is required if you\n                        want your account and personally entered information to\n                        be removed from the Health Gateway after this time\n                        period.\n                    </p>\n                    <p>Thanks,</p>\n                    <p>Health Gateway Team</p>\n                </td>\n                <td></td>\n            </tr>\n        </table>\n    </body>\n</html>\n",
                             CreatedBy = "System",
@@ -1855,6 +1763,30 @@ namespace HealthGateway.Database.Migrations
                             LegalText = "<p><strong>HealthGateway Terms of Service</strong></p>\n<p>\n    Use of the Health Gateway service (the <strong>\"Service\"</strong>) is\n    governed by the following terms and conditions. Please read these terms and\n    conditions carefully, as by using the Service you will be deemed to have\n    agreed to them. If you do not agree with these terms and conditions, please\n    do not use the Service.\n</p>\n<p><strong>1. The Health Gateway Service</strong></p>\n<p>\n    The Service provides residents of British Columbia with access to their\n    health information (<strong>\"Health Information\"</strong>). It allows users\n    to, in one place, view their Health Information from various Provincial\n    health information systems, empowering patients and their families to manage\n    their health care.\n</p>\n<p><strong>2. Your use of the Service</strong></p>\n<p>You may only access your own Health Information using the Service.</p>\n<p>\n    If you choose to share the Health Information accessed through this Service\n    with others (e.g. with a family member or caregiver), you are responsible\n    for all the actions they take with respect to the use of your Health\n    Information.\n</p>\n<p>\n    You must follow any additional terms and conditions made available to you in\n    relation to the Service.\n</p>\n<p>\n    Do not misuse the Service, for example by trying to access or use it using a\n    method other than the interface and instructions we provide. You may use the\n    Service only as permitted by law. We may suspend or stop providing the\n    Service to you if you do not comply with these terms and conditions, or if\n    we are investigating a suspected misuse of the Service.\n</p>\n<p>\n    Using the Service does not give you ownership of any intellectual property\n    rights in the Service or the content you access. Don’t remove, obscure, or\n    alter any legal notices displayed in connection with the Service.\n</p>\n<p>\n    We may stop providing the Service to you, or may add or create new limits on\n    the Service, for any reason and at any time.\n</p>\n<p>\n    <strong\n        >3. Service is not a comprehensive health record or medical\n        advice</strong\n    >\n</p>\n<p>\n    The Health Information accessed through this Service is not a comprehensive\n    record of your health care in BC.\n</p>\n<p>\n    This Service is not intended to provide you with medical advice or replace\n    the care provided by qualified health care professionals. If you have\n    questions or concerns about your health, please contact your care provider.\n</p>\n<p><strong>4. Privacy Notice</strong></p>\n<p>\n    Your personal information will be collected by the Health Gateway (Ministry\n    of Health) and Service BC under the authority of section 26(c) of the\n    Freedom of Information and Protection of Privacy Act for the purpose of\n    providing access to your health records. Your personal information such as\n    name, email and cell phone number will be shared with other public health\n    service agencies to query your health information and notify you of updates.\n    Your personal information will not be used or disclosed for any other\n    purposes.\n</p>\n<p>\n    The Service’s notes and comments features allow you to enter your own notes\n    to provide more information related to your health care. Use of these\n    features is entirely voluntary. Any notes will be stored in the Health\n    Gateway until you choose to delete your account or remove specific notes.\n    Any notes that you create can only be accessed by you securely using your BC\n    Services Card.\n</p>\n<p>\n    If you have any questions about our collection or use of personal\n    information, please direct your inquiries to the Health Gateway team:\n</p>\n<p>\n    <em>\n        Nino Samson\n        <br />\n        Product Owner, Health Gateway\n        <br />\n        Telephone: <a href=\"tel:778-974-2712\">778-974-2712</a>\n        <br />\n        Email: <a href=\"mailto:nino.samson@gov.bc.ca\">nino.samson@gov.bc.ca</a>\n        <br />\n        Address: 1483 Douglas Street; PO BOX 9635 STN PROV GOVT, Victoria BC\n        <br />\n    </em>\n</p>\n<p><strong>5. Privacy Protection Guidance for Minors</strong></p>\n<p>\n    Health Gateway takes the protection of your privacy very seriously and will\n    make sure that your information is secure in the Health Gateway portal,\n    however you will also need to take steps to protect your information. There\n    may be consequences to sharing your device with others, for example people\n    may be able to open your Health Gateway account and see whether you are\n    taking any prescriptions, such as birth control medication or whether you\n    have a positive COVID-19 test result.\n</p>\n<p>Protect your privacy by doing the following:</p>\n<p>\n    It is not recommended that you download the BC Services Card app and set up\n    a Health Gateway account if you cannot fully control who has access to your\n    device. If you are unable to control who has access to your device, for\n    example you do not own your phone or you share your phone or password with\n    others, then the security of your information could be at risk. If this is a\n    shared device, or one you do not fully control, there are other options to\n    access your information. For example, to access your COVID-19 test results,\n    please visit the BC Centre for Disease Control (BCCDC) website.\n</p>\n<p>\n    Before downloading the BC Services Card app and setting up a Health Gateway\n    account, make sure you have a secure password on your device that no one but\n    you knows. For tips on how to create a secure password and password\n    protection, please go to\n    <a\n        href=\"https://www.getcybersafe.gc.ca/en/secure-your-accounts/passphrases-passwords-and-pins\"\n        >https://www.getcybersafe.gc.ca/en/secure-your-accounts/passphrases-passwords-and-pins</a\n    >.\n</p>\n<p>\n    Make sure to log out of your account and close out of the screen once you\n    are finished using the Health Gateway portal and lock and store your device\n    securely when it is not in use.\n</p>\n<p>\n    If you suspect your personal information has been viewed without your\n    permission, please reach out to a trusted adult for help on what to do next.\n    For more information, adults may go to\n    <a\n        href=\"https://www.priv.gc.ca/en/privacy-topics/information-and-advice-for-individuals/privacy-and-kids/\"\n        >https://www.priv.gc.ca/en/privacy-topics/information-and-advice-for-individuals/privacy-and-kids/</a\n    >.\n</p>\n<p>\n    Be suspicious of any unusual requests for your information. For example,\n    Health Gateway will never ask you for any of your personal health\n    information such as medical diagnosis.\n</p>\n<p>\n    For more tips on how to protect your privacy go to\n    <a href=\"https://www.getcybersafe.gc.ca/en/home\"\n        >https://www.getcybersafe.gc.ca/en/home</a\n    >.\n</p>\n<p>\n    If you notice anything unusual in your account or have any privacy\n    questions, please contact the Health Gateway team below for help.\n</p>\n<p>\n    Email: <a href=\"mailto:HealthGateway@gov.bc.ca\">HealthGateway@gov.bc.ca</a>\n</p>\n<p><strong>6. Warranty Disclaimer</strong></p>\n<p>\n    The Service and all of the information it contains are provided \"as is\"\n    without warranty of any kind, whether express or implied. All implied\n    warranties, including, without limitation, implied warranties of\n    merchantability, fitness for a particular purpose, and non-infringement, are\n    hereby expressly disclaimed.\n</p>\n<p><strong>7. Attestation of Guardianship</strong></p>\n<p>\n    By providing the child’s name, date of birth, personal health number and\n    date of COVID-19 test, I declare that I am the child’s legal guardian as per\n    the Family Law Act, the Adoption Act and/or the Child, Family and Community\n    Services Act, and am attesting that I have the authority to request and\n    receive health information respecting the child from third parties.\n</p>\n<p>\n    If I either: (a) cease to be guardian of this child; (b) or lose the right\n    to request or receive health information from third parties respecting this\n    child, I will remove them as a dependent under my Health Gateway account\n    immediately.\n</p>\n<p>\n    I understand that I will no longer be able to access my child’s COVID-19\n    test results once they are 12 years of age. I understand it is a legal\n    offence to falsely claim guardianship or access another individual’s\n    personal health information without legal authority or consent.\n</p>\n<p><strong>8. Limitation of Liabilities</strong></p>\n<p>\n    Under no circumstances will the Government of British Columbia be liable to\n    any person or business entity for any direct, indirect, special, incidental,\n    consequential, or other damages based on any use of the Service or any\n    website or system to which this Service may be linked, including, without\n    limitation, any lost profits, business interruption, or loss of programs or\n    information, even if the Government of British Columbia has been\n    specifically advised of the possibility of such damages.\n</p>\n<p><strong>9. About these Terms and Conditions</strong></p>\n<p>\n    We may modify these terms of service, or any additional terms that apply to\n    the Service, at any time, for example to reflect changes to the law or\n    changes to the Service. You should review these terms of service regularly.\n    Changes to these terms of service will be effective immediately after they\n    are posted. If you do not agree to any changes to these terms, you should\n    discontinue your use of the Service immediately.\n</p>\n<p>\n    If there is any conflict between these terms of service and any additional\n    terms of service, the additional terms of service will prevail.\n</p>\n<p>\n    These terms of service are governed by and to be construed in accordance\n    with the laws of British Columbia and the federal laws of Canada applicable\n    therein.\n</p>\n",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2021, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            Id = new Guid("eafeee76-8a64-49ee-81ba-ddfe2c01deb8"),
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2022, 5, 19, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EffectiveDate = new DateTime(2022, 5, 19, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LegalAgreementCode = "ToS",
+                            LegalText = "<p><strong>HealthGateway Terms of Service</strong></p>\n<p>\n    Use of the Health Gateway service (the <strong>\"Service\"</strong>) is\n    governed by the following terms and conditions. Please read these terms and\n    conditions carefully, as by using the Service you will be deemed to have\n    agreed to them. If you do not agree with these terms and conditions, please\n    do not use the Service.\n</p>\n<p><strong>1. The Health Gateway Service</strong></p>\n<p>\n    The Service provides residents of British Columbia with access to their\n    health information (<strong>\"Health Information\"</strong>). It allows users\n    to, in one place, view their Health Information from various Provincial\n    health information systems, empowering patients and their families to manage\n    their health care.\n</p>\n<p><strong>2. Your use of the Service</strong></p>\n<p>You may only access your own Health Information using the Service.</p>\n<p>\n    If you choose to share the Health Information accessed through this Service\n    with others (e.g. with a family member or caregiver), you are responsible\n    for all the actions they take with respect to the use of your Health\n    Information.\n</p>\n<p>\n    You must follow any additional terms and conditions made available to you in\n    relation to the Service.\n</p>\n<p>\n    Do not misuse the Service, for example by trying to access or use it using a\n    method other than the interface and instructions we provide. You may use the\n    Service only as permitted by law. We may suspend or stop providing the\n    Service to you if you do not comply with these terms and conditions, or if\n    we are investigating a suspected misuse of the Service.\n</p>\n<p>\n    Using the Service does not give you ownership of any intellectual property\n    rights in the Service or the content you access. Don’t remove, obscure, or\n    alter any legal notices displayed in connection with the Service.\n</p>\n<p>\n    We may stop providing the Service to you, or may add or create new limits on\n    the Service, for any reason and at any time.\n</p>\n<p>\n    <strong\n        >3. Service is not a comprehensive health record or medical\n        advice</strong\n    >\n</p>\n<p>\n    The Health Information accessed through this Service is not a comprehensive\n    record of your health care in BC.\n</p>\n<p>\n    This Service is not intended to provide you with medical advice or replace\n    the care provided by qualified health care professionals. If you have\n    questions or concerns about your health, please contact your care provider.\n</p>\n<p><strong>4. Privacy Notice</strong></p>\n<p>\n    Your personal information will be collected by the Health Gateway (Ministry\n    of Health) and Service BC under the authority of section 26(c) of the\n    Freedom of Information and Protection of Privacy Act for the purpose of\n    providing access to your health records. Your personal information such as\n    name, email and cell phone number will be shared with other public health\n    service agencies to query your health information and notify you of updates.\n    Your personal information will not be used or disclosed for any other\n    purposes.\n</p>\n<p>\n    The Service’s notes and comments features allow you to enter your own notes\n    to provide more information related to your health care. Use of these\n    features is entirely voluntary. Any notes will be stored in the Health\n    Gateway until you choose to delete your account or remove specific notes.\n    Any notes that you create can only be accessed by you securely using your BC\n    Services Card.\n</p>\n<p>\n    If you have any questions about our collection or use of personal\n    information, please direct your inquiries to the Health Gateway team:\n</p>\n<p>\n    <em>\n        Ministry of Health Privacy Officer\n        <br />\n        Telephone: <a href=\"tel:778-698-5849\">778-698-5849</a>\n        <br />\n        Email: <a href=\"mailto:MOH.Privacy.Officer@gov.bc.ca\">MOH.Privacy.Officer@gov.bc.ca</a>\n        <br />\n    </em>\n</p>\n<p><strong>5. Privacy Protection Guidance for Minors</strong></p>\n<p>\n    Health Gateway takes the protection of your privacy very seriously and will\n    make sure that your information is secure in the Health Gateway portal,\n    however you will also need to take steps to protect your information. There\n    may be consequences to sharing your device with others, for example people\n    may be able to open your Health Gateway account and see whether you are\n    taking any prescriptions, such as birth control medication or whether you\n    have a positive COVID-19 test result.\n</p>\n<p>Protect your privacy by doing the following:</p>\n<p>\n    It is not recommended that you download the BC Services Card app and set up\n    a Health Gateway account if you cannot fully control who has access to your\n    device. If you are unable to control who has access to your device, for\n    example you do not own your phone or you share your phone or password with\n    others, then the security of your information could be at risk. If this is a\n    shared device, or one you do not fully control, there are other options to\n    access your information. For example, to access your COVID-19 test results,\n    please visit the BC Centre for Disease Control (BCCDC) website.\n</p>\n<p>\n    Before downloading the BC Services Card app and setting up a Health Gateway\n    account, make sure you have a secure password on your device that no one but\n    you knows. For tips on how to create a secure password and password\n    protection, please go to\n    <a\n        href=\"https://www.getcybersafe.gc.ca/en/secure-your-accounts/passphrases-passwords-and-pins\"\n        >https://www.getcybersafe.gc.ca/en/secure-your-accounts/passphrases-passwords-and-pins</a\n    >.\n</p>\n<p>\n    Make sure to log out of your account and close out of the screen once you\n    are finished using the Health Gateway portal and lock and store your device\n    securely when it is not in use.\n</p>\n<p>\n    If you suspect your personal information has been viewed without your\n    permission, please reach out to a trusted adult for help on what to do next.\n    For more information, adults may go to\n    <a\n        href=\"https://www.priv.gc.ca/en/privacy-topics/information-and-advice-for-individuals/privacy-and-kids/\"\n        >https://www.priv.gc.ca/en/privacy-topics/information-and-advice-for-individuals/privacy-and-kids/</a\n    >.\n</p>\n<p>\n    Be suspicious of any unusual requests for your information. For example,\n    Health Gateway will never ask you for any of your personal health\n    information such as medical diagnosis.\n</p>\n<p>\n    For more tips on how to protect your privacy go to\n    <a href=\"https://www.getcybersafe.gc.ca/en/home\"\n        >https://www.getcybersafe.gc.ca/en/home</a\n    >.\n</p>\n<p>\n    If you notice anything unusual in your account or have any privacy\n    questions, please contact the Health Gateway team below for help.\n</p>\n<p>\n    Email: <a href=\"mailto:HealthGateway@gov.bc.ca\">HealthGateway@gov.bc.ca</a>\n</p>\n<p><strong>6. Warranty Disclaimer</strong></p>\n<p>\n    The Service and all of the information it contains are provided \"as is\"\n    without warranty of any kind, whether express or implied. All implied\n    warranties, including, without limitation, implied warranties of\n    merchantability, fitness for a particular purpose, and non-infringement, are\n    hereby expressly disclaimed.\n</p>\n<p><strong>7. Attestation of Guardianship</strong></p>\n<p>\n    By providing the child’s name, date of birth, personal health number and\n    date of COVID-19 test, I declare that I am the child’s legal guardian as per\n    the Family Law Act, the Adoption Act and/or the Child, Family and Community\n    Services Act, and am attesting that I have the authority to request and\n    receive health information respecting the child from third parties.\n</p>\n<p>\n    If I either: (a) cease to be guardian of this child; (b) or lose the right\n    to request or receive health information from third parties respecting this\n    child, I will remove them as a dependent under my Health Gateway account\n    immediately.\n</p>\n<p>\n    I understand that I will no longer be able to access my child’s COVID-19\n    test results once they are 12 years of age. I understand it is a legal\n    offence to falsely claim guardianship or access another individual’s\n    personal health information without legal authority or consent.\n</p>\n<p><strong>8. Limitation of Liabilities</strong></p>\n<p>\n    Under no circumstances will the Government of British Columbia be liable to\n    any person or business entity for any direct, indirect, special, incidental,\n    consequential, or other damages based on any use of the Service or any\n    website or system to which this Service may be linked, including, without\n    limitation, any lost profits, business interruption, or loss of programs or\n    information, even if the Government of British Columbia has been\n    specifically advised of the possibility of such damages.\n</p>\n<p><strong>9. About these Terms and Conditions</strong></p>\n<p>\n    We may modify these terms of service, or any additional terms that apply to\n    the Service, at any time, for example to reflect changes to the law or\n    changes to the Service. You should review these terms of service regularly.\n    Changes to these terms of service will be effective immediately after they\n    are posted. If you do not agree to any changes to these terms, you should\n    discontinue your use of the Service immediately.\n</p>\n<p>\n    If there is any conflict between these terms of service and any additional\n    terms of service, the additional terms of service will prevail.\n</p>\n<p>\n    These terms of service are governed by and to be construed in accordance\n    with the laws of British Columbia and the federal laws of Canada applicable\n    therein.\n</p>\n",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2022, 5, 19, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            Id = new Guid("2fab66e7-37c9-4b03-ba25-e8fad604dc7f"),
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2022, 6, 7, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EffectiveDate = new DateTime(2022, 6, 7, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LegalAgreementCode = "ToS",
+                            LegalText = "<p><strong>Health Gateway Terms of Service</strong></p>\n<p><strong>Last updated: June 7, 2022</strong></p>\n<p>\n    Health Gateway service (the <strong>\"Service\"</strong>) is governed by the\n    following terms and conditions. Please read them carefully.\n</p>\n<p>\n    By using Health Gateway, you are agreeing to follow and be bound by the\n    Terms of Service.\n</p>\n<p>\n    We may modify these terms of service at any time. You should review these\n    terms of service regularly. Changes to these terms of service are effective\n    immediately upon publication. If you do not agree to any changes to these\n    terms, you should discontinue your use of Health Gateway right away.\n</p>\n<p>\n    If there is any conflict between these terms of service and any new or\n    additional terms of service, the additional terms of service will prevail.\n</p>\n<p>\n    These terms of service are governed by and to be interpreted in accordance\n    with the laws of British Columbia and the federal laws of Canada applicable\n    therein.\n</p>\n<p><strong>What’s covered in these terms:</strong></p>\n<ol>\n    <li><a href=\"#tos-1\">The Health Gateway Service</a></li>\n    <li><a href=\"#tos-2\">Your use of the Service</a></li>\n    <li><a href=\"#tos-3\">Service Limitations</a></li>\n    <li><a href=\"#tos-4\">Privacy Notice</a></li>\n    <li><a href=\"#tos-5\">Privacy Protection Guidance for Minors</a></li>\n    <li><a href=\"#tos-6\">Attestation of Guardianship</a></li>\n    <li><a href=\"#tos-7\">Warranty Disclaimer</a></li>\n    <li><a href=\"#tos-8\">Limitation of Liabilities</a></li>\n</ol>\n\n<p id=\"tos-1\"><strong>1. The Health Gateway Service</strong></p>\n<p>\n    The Service provides you with online access to your B.C. health information\n    (<strong>\"Health Information\"</strong>). It allows you to view your Health\n    Information from various Provincial health information systems in one place.\n</p>\n\n<p id=\"tos-2\"><strong>2. Your use of the Service</strong></p>\n<p>\n    You may only access your own or your dependents’ Health Information using\n    the Service.\n</p>\n<p>\n    If you choose to share the Health Information accessed through the Service\n    with others (e.g., with a family member, caregiver or healthcare provider),\n    Health Gateway cannot be held responsible for any actions they take with\n    your Health Information.\n</p>\n<p>\n    Do not misuse the Service. Do not try to access or use it in any way other\n    than through the interface and instructions we provide. You may use the\n    Service only as permitted by law.\n</p>\n<p>We may suspend or stop providing the Service to you if:</p>\n<ul>\n    <li>you do not comply with these terms and conditions, or</li>\n    <li>we are investigating a suspected misuse of the Service.</li>\n</ul>\n<p>\n    We have the right to stop providing the Service to you or to create new\n    Terms of Service for any reason and at any time. You must follow any\n    additional terms and conditions made available to you in relation to the\n    Service.\n</p>\n<p>\n    Using the Service does not give you ownership of any intellectual property\n    rights in the Service or the content you access. Don’t remove, obscure, or\n    alter any legal notices displayed in connection with the Service.\n</p>\n\n<p id=\"tos-3\"><strong>3. Service Limitations</strong></p>\n<p>\n    The Health Information accessed through this Service is not a complete\n    record of all your health care in BC.\n</p>\n<p>\n    This Service is not intended to provide you with medical advice and does not\n    replace care from qualified health professionals. If you have questions or\n    concerns about your health, please contact your doctor or care provider.\n</p>\n\n<p id=\"tos-4\"><strong>4. Privacy Notice</strong></p>\n<p>\n    Your personal information will be collected by Health Gateway (Ministry of\n    Health) and Service BC under the authority of section 26(c) of the Freedom\n    of Information and Protection of Privacy Act for the purpose of providing\n    access to your health records. Your personal information such as name, email\n    and mobile phone number will be shared with other public health service\n    agencies to query your health information and notify you of updates.\n</p>\n<p>\n    The Service’s notes and comments features allow you to enter your own\n    private notes to record more information related to your health care. Use of\n    this feature is voluntary. Any notes will be stored in Health Gateway until\n    you choose to remove them or delete your account. Any notes that you create\n    can only be accessed by you.\n</p>\n<p>\n    If you have any questions about our collection or use of personal\n    information, please contact:\n</p>\n<p>\n    <em>\n        Ministry of Health Privacy Officer\n        <br />\n        Telephone: <a href=\"tel:778-698-5849\">778-698-5849</a>\n        <br />\n        Email:\n        <a href=\"mailto:MOH.Privacy.Officer@gov.bc.ca\"\n            >MOH.Privacy.Officer@gov.bc.ca</a\n        >\n    </em>\n</p>\n\n<p id=\"tos-5\"><strong>5. Privacy Protection Guidance for Minors</strong></p>\n<p>The below guidance is recommended for anyone under the age of 19.</p>\n<p>\n    Health Gateway takes your privacy seriously. Although Health Gateway\n    includes security features, you must also take steps to protect your\n    privacy:\n</p>\n<ol type=\"a\">\n    <li>\n        <p>\n            Do not set up a Health Gateway account if you cannot fully control\n            who has access to your device. If you share your phone or password\n            with others, the security of your information is at risk. Anyone who\n            has access to your device may be able to open your Health Gateway\n            account and see your:\n        </p>\n        <ul>\n            <li><p>prescriptions, such as birth control medication,</p></li>\n            <li><p>health visit and procedure details,</p></li>\n            <li><p>vaccination status, and</p></li>\n            <li>\n                <p>\n                    blood test results, including sexually transmitted infection\n                    testing.\n                </p>\n            </li>\n        </ul>\n    </li>\n    <li>\n        <p>\n            If you can’t use Health Gateway because you don’t have your own\n            secure device, we can tell you about other ways to access the health\n            information you need. Email us at:\n            <a href=\"mailto:HealthGateway@gov.bc.ca\">HealthGateway@gov.bc.ca</a>\n        </p>\n    </li>\n    <li>\n        <p>\n            Before setting up a Health Gateway account, make sure you have a\n            password on your device that only you know. For tips on how to\n            create a secure password, visit\n            <a\n                href=\"https://www.getcybersafe.gc.ca/en/secure-your-accounts/passphrases-passwords-and-pins\"\n            >\n                https://www.getcybersafe.gc.ca/en/secure-your-accounts/passphrases-passwords-and-pins</a\n            >. Or you can secure your device with facial recognition or\n            fingerprint identification.\n        </p>\n    </li>\n    <li>\n        <p>\n            Make sure to log out of your account and close the screen once you\n            are finished using Health Gateway. Lock and store your device\n            securely when not in use.\n        </p>\n    </li>\n    <li>\n        <p>\n            If you suspect your personal information has been viewed without\n            your permission, please reach out to a trusted adult for help on\n            what to do next. For more information, adults may go to\n            <a\n                href=\"https://www.priv.gc.ca/en/privacy-topics/information-and-advice-for-individuals/privacy-and-kids/\"\n                >https://www.priv.gc.ca/en/privacy-topics/information-and-advice-for-individuals/privacy-and-kids/</a\n            >.\n        </p>\n    </li>\n</ol>\n<p>\n    For more tips on how to protect your privacy, visit:\n    <a href=\"https://www.getcybersafe.gc.ca/\">https://www.getcybersafe.gc.ca</a>\n</p>\n<p>\n    If you notice anything unusual in your account or if you have any privacy\n    questions, contact the Health Gateway team for help:\n    <a href=\"mailto:HealthGateway@gov.bc.ca\">HealthGateway@gov.bc.ca</a>\n</p>\n\n<p id=\"tos-6\">\n    <strong\n        >6. Attestation of Guardianship (Child under 12 years of age)</strong\n    >\n</p>\n<p>\n    By providing the child’s name, date of birth, personal health number and\n    date of COVID-19 test, I declare that I am the child’s guardian and that I\n    have the authority to request and receive health information respecting the\n    child from third parties.\n</p>\n<p>\n    If I either: (a) cease to be guardian of this child; (b) or lose the right\n    to request or receive health information from third parties respecting this\n    child, I will remove them as a dependent under my Health Gateway account\n    immediately.\n</p>\n<p>\n    I understand that I will no longer be able to access my child’s COVID-19\n    test results once they are 12 years of age.\n</p>\n\n<p id=\"tos-7\"><strong>7. Warranty Disclaimer</strong></p>\n<p>\n    The Service and the information contained therein are provided \"as is\"\n    without warranty of any kind, whether express or implied. All implied\n    warranties, including, without limitation, implied warranties of\n    merchantability, fitness for a particular purpose, and non-infringement, are\n    hereby expressly disclaimed.\n</p>\n\n<p id=\"tos-8\"><strong>8. Limitation of Liabilities</strong></p>\n<p>\n    Under no circumstances will the Government of British Columbia be liable to\n    any person or business entity for any direct, indirect, special, incidental,\n    consequential, or other damages based on any use of the Service or any\n    website or system to which this Service may be linked, including, without\n    limitation, any lost profits, business interruption, or loss of programs or\n    information, even if the Government of British Columbia has been\n    specifically advised of the possibility of such damages.\n</p>\n",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2022, 6, 7, 0, 0, 0, 0, DateTimeKind.Utc),
                             Version = 0u
                         });
                 });
@@ -3009,9 +2941,6 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(52)")
                         .HasColumnName("UserProfileId");
 
-                    b.Property<bool>("AcceptedTermsOfService")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime?>("ClosedDateTime")
                         .HasColumnType("timestamp with time zone");
 
@@ -3041,6 +2970,9 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
 
+                    b.Property<Guid>("TermsOfServiceId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
                         .HasMaxLength(60)
@@ -3057,6 +2989,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("HdId");
 
+                    b.HasIndex("TermsOfServiceId");
+
                     b.ToTable("UserProfile", "gateway");
                 });
 
@@ -3067,7 +3001,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("UserProfileHistoryId");
 
-                    b.Property<bool>("AcceptedTermsOfService")
+                    b.Property<bool?>("AcceptedTermsOfService")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("ClosedDateTime")
@@ -3111,6 +3045,9 @@ namespace HealthGateway.Database.Migrations
                     b.Property<string>("SMSNumber")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
+
+                    b.Property<Guid?>("TermsOfServiceId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -3286,33 +3223,6 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("HealthGateway.Database.Models.CommunicationEmail", b =>
-                {
-                    b.HasOne("HealthGateway.Database.Models.Communication", "Communication")
-                        .WithMany()
-                        .HasForeignKey("CommunicationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HealthGateway.Common.Data.Models.Email", "Email")
-                        .WithMany()
-                        .HasForeignKey("EmailId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HealthGateway.Database.Models.UserProfile", "UserProfile")
-                        .WithMany()
-                        .HasForeignKey("UserProfileHdId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Communication");
-
-                    b.Navigation("Email");
-
-                    b.Navigation("UserProfile");
-                });
-
             modelBuilder.Entity("HealthGateway.Database.Models.Company", b =>
                 {
                     b.HasOne("HealthGateway.Database.Models.DrugProduct", null)
@@ -3468,6 +3378,17 @@ namespace HealthGateway.Database.Migrations
                     b.Navigation("AdminTag");
 
                     b.Navigation("UserFeedback");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.UserProfile", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.LegalAgreement", "TermsOfService")
+                        .WithMany()
+                        .HasForeignKey("TermsOfServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TermsOfService");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.VeterinarySpecies", b =>

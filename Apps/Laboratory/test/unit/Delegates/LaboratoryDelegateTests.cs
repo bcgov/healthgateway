@@ -24,6 +24,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using DeepEqual.Syntax;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -336,6 +337,138 @@ namespace HealthGateway.LaboratoryTests.Delegates
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.EndsWith("-CE-PHSA", actualResult.ResultError?.ErrorCode, StringComparison.InvariantCulture);
+        }
+
+        /// <summary>
+        /// GetLaboratorySummary - Valid response.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ValidateGetLaboratorySummary()
+        {
+            PhsaResult<PhsaLaboratorySummary> phsaResponse = new()
+            {
+                LoadState = new()
+                {
+                    RefreshInProgress = false,
+                    BackOffMilliseconds = 0,
+                },
+                Result = new PhsaLaboratorySummary()
+                {
+                },
+            };
+
+            string json = JsonSerializer.Serialize(phsaResponse);
+
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using HttpResponseMessage httpResponseMessage = new()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(json),
+            };
+            IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
+            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), httpClientService, CreateValidHttpContext().Object, this.configuration);
+
+            RequestResult<PhsaResult<PhsaLaboratorySummary>> actualResult = await labDelegate.GetLaboratorySummary("testhdid", this.accessToken).ConfigureAwait(true);
+
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResourcePayload);
+        }
+
+        /// <summary>
+        /// GetLaboratorySummary - Unexpected Http Error.
+        /// </summary>
+        /// <param name="statusCode">The http status code to return from the delegate.</param>
+        /// <param name="resultCode">The Result status from the delegate.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(HttpStatusCode.Forbidden, ResultType.Error)]
+        [InlineData(HttpStatusCode.NoContent, ResultType.Success)]
+        [InlineData(HttpStatusCode.Ambiguous, ResultType.Error)]
+        public async Task ErrorGetLaboratorySummary(HttpStatusCode statusCode, ResultType resultCode)
+        {
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using HttpResponseMessage httpResponseMessage = new()
+            {
+                StatusCode = statusCode,
+            };
+            IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
+            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), httpClientService, CreateValidHttpContext().Object, this.configuration);
+
+            RequestResult<PhsaResult<PhsaLaboratorySummary>> actualResult = await labDelegate.GetLaboratorySummary("testhdid", this.accessToken).ConfigureAwait(true);
+            Assert.True(actualResult.ResultStatus == resultCode);
+        }
+
+        /// <summary>
+        /// GetLaboratorySummary - Exception Thrown.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ExceptionGetLaboratorySummary()
+        {
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using HttpResponseMessage httpResponseMessage = new()
+            {
+                StatusCode = HttpStatusCode.OK,
+            };
+            Mock<HttpMessageHandler> handlerMock = new();
+            handlerMock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ThrowsAsync(new HttpRequestException())
+                .Verifiable();
+            Mock<IHttpClientService> mockHttpClientService = new();
+            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, CreateValidHttpContext().Object, this.configuration);
+
+            RequestResult<PhsaResult<PhsaLaboratorySummary>> actualResult = await labDelegate.GetLaboratorySummary("testhdid", this.accessToken).ConfigureAwait(true);
+            Assert.True(actualResult.ResultStatus == ResultType.Error);
+        }
+
+        /// <summary>
+        /// Tests the mapping from PHSA Covid19 Test to Health Gateway model.
+        /// </summary>
+        /// <param name="testStatus">The test status.</param>
+        /// <param name="result">What ResultReady should be set to based on the test status.</param>
+        [Theory]
+        [InlineData("Final", true)]
+        [InlineData("Corrected", true)]
+        [InlineData("Amended", true)]
+        [InlineData("", false)]
+        public void Covid19TestConverter(string testStatus, bool result)
+        {
+            PhsaCovid19Test phsaData = new()
+            {
+                Id = Guid.NewGuid(),
+                TestType = "testtype",
+                OutOfRange = true,
+                CollectedDateTime = DateTime.Now,
+                TestStatus = testStatus,
+                ResultDescription = { "Description" },
+                Loinc = "loinc",
+                LoincName = "loincname",
+                ReceivedDateTime = DateTime.Now,
+                ResultDateTime = DateTime.Now,
+            };
+            Covid19Test expected = new()
+            {
+                Id = phsaData.Id,
+                TestType = phsaData.TestType,
+                OutOfRange = phsaData.OutOfRange,
+                CollectedDateTime = phsaData.CollectedDateTime,
+                TestStatus = phsaData.TestStatus,
+                ResultDescription = phsaData.ResultDescription,
+                Loinc = phsaData.Loinc,
+                LoincName = phsaData.LoincName,
+                ReceivedDateTime = phsaData.ReceivedDateTime,
+                ResultDateTime = phsaData.ResultDateTime,
+                ResultReady = result,
+            };
+            Covid19Test actual = Covid19Test.FromPhsaModel(phsaData);
+            expected.ShouldDeepEqual(actual);
         }
 
         private static IHttpClientService GetHttpClientService(HttpResponseMessage httpResponseMessage)

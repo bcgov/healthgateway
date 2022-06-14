@@ -7,26 +7,27 @@
     <SpaRoot>ClientApp\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
+    <UserSecretsId>84e2fe9a-a1f5-4de7-bef6-4518a33fa8b9</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Listeners\**" />
     <Content Remove="Listeners\**" />
     <EmbeddedResource Remove="Listeners\**" />
     <None Remove="Listeners\**" />
-  </ItemGroup>  
+  </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.8" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="VueCliMiddleware" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" />
   </ItemGroup>
-    
+
   <ItemGroup>
     <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
       <Value>$(MSBuildProjectFullPath)/Server</Value>
@@ -51,22 +52,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Server\Assets\Robots.txt" />
-    <EmbeddedResource Include="Server\Assets\Templates\CovidReport.docx" />
-    <EmbeddedResource Include="Server\Assets\Templates\CovidReport.xlsx" />
-    <EmbeddedResource Include="Server\Assets\Templates\EncounterReport.xlsx" />
-    <EmbeddedResource Include="Server\Assets\Templates\ImmunizationReport.docx" />
-    <EmbeddedResource Include="Server\Assets\Templates\EncounterReport.docx" />
-    <EmbeddedResource Include="Server\Assets\Templates\ImmunizationReport.xlsx" />
-    <EmbeddedResource Include="Server\Assets\Templates\MedicationReport.docx" />
-    <EmbeddedResource Include="Server\Assets\Templates\MedicationReport.xlsx" />
-    <EmbeddedResource Include="Server\Assets\Templates\MedicationRequestReport.docx" />
-    <EmbeddedResource Include="Server\Assets\Templates\MedicationRequestReport.xlsx" />
-    <EmbeddedResource Include="Server\Assets\Templates\NotesReport.docx" />
-    <EmbeddedResource Include="Server\Assets\Templates\NotesReport.xlsx" />
-    <EmbeddedResource Include="Server\Assets\Templates\LaboratoryReport.docx" />
-    <EmbeddedResource Include="Server\Assets\Templates\LaboratoryReport.xlsx" />
-    <EmbeddedResource Include="Server\Assets\Templates\DependentImmunizationReport.docx" />
-    <EmbeddedResource Include="Server\Assets\Templates\DependentImmunizationReport.xlsx" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
@@ -87,7 +72,7 @@
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
       <DistFiles Include="$(SpaRoot)dist\**" />
-      <ResolvedFileToPublish Include="@(DistFiles-&gt;'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
         <RelativePath>%(DistFiles.Identity)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </ResolvedFileToPublish>

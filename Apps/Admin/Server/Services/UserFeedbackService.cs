@@ -26,7 +26,6 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class UserFeedbackService : IUserFeedbackService
@@ -56,7 +55,7 @@ namespace HealthGateway.Admin.Server.Services
         {
             this.logger.LogTrace("Retrieving user feedback:");
             DBResult<IList<UserFeedbackAdmin>> userFeedbackResult = this.feedbackDelegate.GetAllUserFeedbackEntries();
-            this.logger.LogDebug($"Finished retrieving user feedback: {JsonConvert.SerializeObject(userFeedbackResult)}");
+            this.logger.LogDebug($"Finished retrieving user feedback");
             IList<UserFeedbackView> userFeedback = userFeedbackResult.Payload.ToUiModel();
             return new RequestResult<IList<UserFeedbackView>>()
             {
@@ -69,7 +68,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc />
         public bool UpdateFeedbackReview(UserFeedbackView feedback)
         {
-            this.logger.LogTrace($"Updating user feedback... {JsonConvert.SerializeObject(feedback)}");
+            this.logger.LogTrace($"Updating user feedback...");
 
             this.feedbackDelegate.UpdateUserFeedback(feedback.ToDbModel());
             return true;
@@ -81,7 +80,7 @@ namespace HealthGateway.Admin.Server.Services
             this.logger.LogTrace($"Retrieving admin tags");
             DBResult<IEnumerable<AdminTag>> adminTags = this.adminTagDelegate.GetAll();
 
-            this.logger.LogDebug($"Finished retrieving admin tags: {JsonConvert.SerializeObject(adminTags)}");
+            this.logger.LogDebug($"Finished retrieving admin tags");
             IList<AdminTagView> adminTagViews = adminTags.Payload.ToUiModel();
             return new RequestResult<IList<AdminTagView>>()
             {

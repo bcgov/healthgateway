@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Listeners
 {
     using System;
     using System.Data;
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using System.Threading;
@@ -36,6 +37,7 @@ namespace HealthGateway.GatewayApi.Listeners
     /// Implements the abstract DB Listener and listens on the BannerChange channel.
     /// Actions that may come are DELETE, UPDATE, and INSERT.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class BannerListener : BackgroundService
     {
         private const string Channel = "BannerChange";

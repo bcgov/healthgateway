@@ -1,0 +1,14 @@
+version: '3.4'
+services:
+  k6:
+    image: loadimpact/k6:latest
+    command: run /services/patient/k6_patient.js
+    volumes:
+      - ../../services/patient:/services/patient
+      - ../../inc:/inc
+    environment: 
+      - "HG_TYPE=${HG_TYPE}"
+      - "HG_ENV=${HG_ENV}"
+      - "HG_VUS=${HG_VUS}"
+      - "HG_KEY=${HG_KEY}"
+      - "HG_PASSWORD=${HG_PASSWORD}"

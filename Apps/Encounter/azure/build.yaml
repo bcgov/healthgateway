@@ -25,4 +25,4 @@ extends:
     Application: Encounter
     DotNetTests: true
     NPMInstall: false
-    NPMTests: false
+    

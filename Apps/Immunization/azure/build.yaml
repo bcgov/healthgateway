@@ -25,4 +25,3 @@ extends:
     Application: Immunization
     DotNetTests: true
     NPMInstall: false
-    NPMTests: false

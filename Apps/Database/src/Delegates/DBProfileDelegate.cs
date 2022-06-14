@@ -78,7 +78,7 @@ namespace HealthGateway.Database.Delegates
             {
                 // Copy certain attributes into the fetched User Profile
                 result.Payload!.Email = profile.Email;
-                result.Payload.AcceptedTermsOfService = profile.AcceptedTermsOfService;
+                result.Payload.TermsOfServiceId = profile.TermsOfServiceId;
                 result.Payload.UpdatedBy = profile.UpdatedBy;
                 result.Payload.Version = profile.Version;
                 result.Status = DBStatusCode.Deferred;
@@ -101,6 +101,41 @@ namespace HealthGateway.Database.Delegates
                         result.Status = DBStatusCode.Error;
                         result.Message = e.Message;
                     }
+                }
+            }
+
+            this.logger.LogDebug($"Finished updating user profile in DB. {JsonSerializer.Serialize(result)}");
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<UserProfile> UpdateComplete(UserProfile profile, bool commit = true)
+        {
+            DBResult<UserProfile> result = new()
+            {
+                Status = DBStatusCode.Error,
+                Payload = profile,
+            };
+
+            this.logger.LogTrace($"Updating user profile in DB... {JsonSerializer.Serialize(profile)}");
+            this.dbContext.UserProfile.Update(profile);
+            if (commit)
+            {
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Updated;
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    result.Status = DBStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+                catch (DbUpdateException e)
+                {
+                    this.logger.LogError($"Unable to update UserProfile to DB {e}");
+                    result.Status = DBStatusCode.Error;
+                    result.Message = e.Message;
                 }
             }
 
@@ -165,7 +200,6 @@ namespace HealthGateway.Database.Delegates
         public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(TimeSpan offset)
         {
             Dictionary<DateTime, int> dateCount = this.dbContext.UserProfile
-                            .Where(x => x.AcceptedTermsOfService)
                             .Select(x => new { x.HdId, createdDate = GatewayDbContext.DateTrunc("days", x.CreatedDateTime.AddMinutes(offset.TotalMinutes)) })
                             .GroupBy(x => x.createdDate).Select(x => new { createdDate = x.Key, count = x.Count() })
                             .OrderBy(x => x.createdDate)

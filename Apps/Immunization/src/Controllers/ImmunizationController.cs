@@ -32,7 +32,6 @@ namespace HealthGateway.Immunization.Controllers
     [Authorize]
     [ApiVersion("1.0")]
     [Route("[controller]")]
-    [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
     [TypeFilter(typeof(AvailabilityFilter))]
     public class ImmunizationController : ControllerBase

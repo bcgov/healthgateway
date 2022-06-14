@@ -254,7 +254,7 @@ export default class PcrTestView extends Vue {
             `Data Source: ${this.dataSource}, PHN: ${this.noPhn}`
         );
         if (this.dataSource === this.DSMANUAL && !this.noPhn) {
-            var phn = value.replace(/\D/g, "");
+            let phn = value.replace(/\D/g, "");
             return PHNValidator.IsValid(phn);
         } else {
             return true;
@@ -345,7 +345,7 @@ export default class PcrTestView extends Vue {
         switch (this.dataSource) {
             // ### Submitted through OIDC
             case this.DSKEYCLOAK:
-                var testKitRequest: RegisterTestKitRequest = {
+                let testKitRequest: RegisterTestKitRequest = {
                     hdid: this.oidcUserInfo?.hdid,
                     testTakenMinutesAgo: this.pcrTest.testTakenMinutesAgo,
                     testKitCid: this.pcrTest.testKitCid,
@@ -374,7 +374,7 @@ export default class PcrTestView extends Vue {
             case this.DSMANUAL:
                 const phnDigits = this.pcrTest.phn;
                 const phoneDigits = this.pcrTest.contactPhoneNumber;
-                var testKitPublicRequest: RegisterTestKitPublicRequest = {
+                let testKitPublicRequest: RegisterTestKitPublicRequest = {
                     firstName: this.pcrTest.firstName,
                     lastName: this.pcrTest.lastName,
                     phn: phnDigits ? phnDigits.replace(/\D/g, "") : "",

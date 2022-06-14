@@ -607,7 +607,10 @@ export default class DependentCardComponent extends Vue {
 
 <template>
     <div>
-        <b-card no-body>
+        <b-card
+            no-body
+            :data-testid="`dependent-card-${dependent.dependentInformation.PHN}`"
+        >
             <b-tabs v-model="dependentTab" card>
                 <b-tab active data-testid="dependentTab">
                     <template #title>
@@ -728,6 +731,7 @@ export default class DependentCardComponent extends Vue {
                             </td>
                             <td data-testid="dependentCovidTestLabResult">
                                 <span
+                                    v-if="row.test.filteredLabResultOutcome"
                                     class="font-weight-bold"
                                     :class="
                                         getOutcomeClasses(

@@ -15,8 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Data.Models
 {
-    using System;
-
     /// <summary>
     /// Interface representing standard optimistic locking for all DB entities.
     /// </summary>

@@ -12,8 +12,7 @@ import PatientData from "@/models/patientData";
 import { QuickLink } from "@/models/quickLink";
 import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
-import { OidcUserInfo } from "@/models/user";
-import User from "@/models/user";
+import User, { OidcUserInfo } from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
 import UserProfile from "@/models/userProfile";
 import { RootState } from "@/store/types";
@@ -34,6 +33,7 @@ export interface UserGetters extends GetterTree<UserState, RootState> {
     userIsRegistered(state: UserState): boolean;
     userIsActive(state: UserState): boolean;
     smsResendDateTime(state: UserState): DateWrapper | undefined;
+    hasTermsOfServiceUpdated(state: UserState): boolean;
     getPreference: (
         state: UserState
     ) => (preferenceName: string) => UserPreference | undefined;

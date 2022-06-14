@@ -155,7 +155,7 @@ public partial class DashboardPage : FluxorComponent
         }
     }
 
-    private int TimeOffset { get; set; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalMinutes * -1;
+    private int TimeOffset { get; set; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalMinutes;
 
     private int TotalRegisteredUsers => this.RegisteredUsersResult?.Result?.Sum(r => r.Value) ?? 0;
 
@@ -228,7 +228,8 @@ public partial class DashboardPage : FluxorComponent
                     TotalRegisteredUsers = grp.Sum(s => s.TotalRegisteredUsers),
                     TotalDependents = grp.Sum(d => d.TotalDependents),
                     TotalLoggedInUsers = grp.Sum(l => l.TotalLoggedInUsers),
-                });
+                })
+                .OrderByDescending(grp => grp.DailyDateTime);
         }
     }
 
@@ -250,6 +251,11 @@ public partial class DashboardPage : FluxorComponent
         this.Dispatcher.Dispatch(new DashboardActions.LoadDependentsAction(timeOffset));
         this.Dispatcher.Dispatch(new DashboardActions.LoadRecurringUsersAction(days, startPeriod, endPeriod, timeOffset));
         this.DispatchRatingSummaryAction(startPeriod, endDate, timeOffset);
+    }
+
+    private void ReloadDispatchActions()
+    {
+        this.LoadDispatchActions(this.UniqueDays, this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.TimeOffset, false);
     }
 
     private void DispatchRatingSummaryAction(string startPeriod, string endPeriod, int timeOffset)

@@ -77,7 +77,6 @@ namespace HealthGateway.Database.Context
         public DbSet<GenericCache> GenericCache { get; set; } = null!;
         public DbSet<Comment> Comment { get; set; } = null!;
         public DbSet<Communication> Communication { get; set; } = null!;
-        public DbSet<CommunicationEmail> CommunicationEmail { get; set; } = null!;
         public DbSet<Rating> Rating { get; set; } = null!;
         public DbSet<ResourceDelegate> ResourceDelegate { get; set; } = null!;
         public DbSet<EventLog> EventLog { get; set; } = null!;
@@ -358,7 +357,6 @@ namespace HealthGateway.Database.Context
             this.SeedEmail(modelBuilder);
             this.SeedAuditTransactionResults(modelBuilder);
             this.SeedLegalAgreements(modelBuilder);
-            this.SeedApplicationSettings(modelBuilder);
             this.SeedMessagingVerifications(modelBuilder);
             this.SeedCommunication(modelBuilder);
             this.SeedResourceDelegateReason(modelBuilder);
@@ -628,21 +626,6 @@ namespace HealthGateway.Database.Context
                 },
                 new EmailTemplate
                 {
-                    Id = Guid.Parse("eb695050-e2fb-4933-8815-3d4656e4541d"),
-                    Name = "TermsOfService",
-                    From = "HG_Donotreply@gov.bc.ca",
-                    Subject = "Health Gateway Updated Terms of Service ",
-                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailUpdatedTermsofService.html"),
-                    Priority = EmailPriority.Low,
-                    EffectiveDate = this.DefaultSeedDate,
-                    FormatCode = EmailFormat.HTML,
-                    CreatedBy = UserId.DefaultUser,
-                    CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = UserId.DefaultUser,
-                    UpdatedDateTime = this.DefaultSeedDate,
-                },
-                new EmailTemplate
-                {
                     Id = Guid.Parse("79503a38-c14a-4992-b2fe-5586629f552e"),
                     Name = "AccountClosed",
                     From = "HG_Donotreply@gov.bc.ca",
@@ -763,27 +746,28 @@ namespace HealthGateway.Database.Context
                     CreatedDateTime = DateTime.ParseExact("12/24/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
                     UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = DateTime.ParseExact("01/06/2021", "MM/dd/yyyy", CultureInfo.InvariantCulture),
-                });
-        }
-
-        /// <summary>
-        /// Seeds the Application settings.
-        /// </summary>
-        /// <param name="modelBuilder">The passed in model builder.</param>
-        private void SeedApplicationSettings(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<ApplicationSetting>().HasData(
-                new ApplicationSetting
+                },
+                new LegalAgreement // Updated Terms of Service Fix Contact
                 {
-                    Id = Guid.Parse("5f279ba2-8e7b-4b1d-8c69-467d94dcb7fb"),
-                    Application = ApplicationType.JobScheduler,
-                    Component = "NotifyUpdatedLegalAgreementsJob",
-                    Key = "ToS-Last-Checked",
-                    Value = this.DefaultSeedDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
+                    Id = Guid.Parse("eafeee76-8a64-49ee-81ba-ddfe2c01deb8"),
+                    LegalAgreementCode = LegalAgreementType.TermsofService,
+                    LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20220519.html"),
+                    EffectiveDate = DateTime.ParseExact("05/19/2022 Z", "MM/dd/yyyy K", CultureInfo.InvariantCulture).ToUniversalTime(),
                     CreatedBy = UserId.DefaultUser,
-                    CreatedDateTime = this.DefaultSeedDate,
+                    CreatedDateTime = DateTime.ParseExact("05/19/2022 Z", "MM/dd/yyyy K", CultureInfo.InvariantCulture).ToUniversalTime(),
                     UpdatedBy = UserId.DefaultUser,
-                    UpdatedDateTime = this.DefaultSeedDate,
+                    UpdatedDateTime = DateTime.ParseExact("05/19/2022 Z", "MM/dd/yyyy K", CultureInfo.InvariantCulture).ToUniversalTime(),
+                },
+                new LegalAgreement // Revamped Terms of Service
+                {
+                    Id = Guid.Parse("2fab66e7-37c9-4b03-ba25-e8fad604dc7f"),
+                    LegalAgreementCode = LegalAgreementType.TermsofService,
+                    LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20220607.html"),
+                    EffectiveDate = DateTime.ParseExact("06/07/2022 Z", "MM/dd/yyyy K", CultureInfo.InvariantCulture).ToUniversalTime(),
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = DateTime.ParseExact("06/07/2022 Z", "MM/dd/yyyy K", CultureInfo.InvariantCulture).ToUniversalTime(),
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = DateTime.ParseExact("06/07/2022 Z", "MM/dd/yyyy K", CultureInfo.InvariantCulture).ToUniversalTime(),
                 });
         }
 
@@ -825,15 +809,6 @@ namespace HealthGateway.Database.Context
                 {
                     StatusCode = CommunicationType.Banner,
                     Description = "Banner communication type",
-                    CreatedBy = UserId.DefaultUser,
-                    CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = UserId.DefaultUser,
-                    UpdatedDateTime = this.DefaultSeedDate,
-                },
-                new CommunicationTypeCode
-                {
-                    StatusCode = CommunicationType.Email,
-                    Description = "Email communication type",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,

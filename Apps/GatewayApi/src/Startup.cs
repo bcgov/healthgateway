@@ -72,7 +72,6 @@ namespace HealthGateway.GatewayApi
 
             // Add services
             services.AddMemoryCache();
-            services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserProfileService, UserProfileService>();
             services.AddTransient<IUserEmailService, UserEmailService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();

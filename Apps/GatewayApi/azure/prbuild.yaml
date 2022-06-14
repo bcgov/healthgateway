@@ -16,4 +16,4 @@ extends:
     Application: GatewayApi
     DotNetTests: true
     NPMInstall: false
-    NPMTests: false
+    

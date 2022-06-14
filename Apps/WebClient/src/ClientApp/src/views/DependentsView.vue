@@ -13,6 +13,7 @@ import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
+import { DateWrapper } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
 import { ResultError } from "@/models/requestResult";
 import User from "@/models/user";
@@ -78,7 +79,7 @@ export default class DependentsView extends Vue {
         this.dependentService
             .getAll(this.user.hdid)
             .then((results) => {
-                this.dependents = results;
+                this.setDependents(results);
             })
             .catch((error: ResultError) => {
                 this.logger.error(error.resultMessage);
@@ -91,6 +92,28 @@ export default class DependentsView extends Vue {
             .finally(() => {
                 this.isLoading = false;
             });
+    }
+
+    private setDependents(dependents: Dependent[]): void {
+        this.dependents = dependents;
+        this.dependents.sort((a, b) => {
+            const firstDate = new DateWrapper(
+                a.dependentInformation.dateOfBirth
+            );
+            const secondDate = new DateWrapper(
+                b.dependentInformation.dateOfBirth
+            );
+
+            if (firstDate.isBefore(secondDate)) {
+                return 1;
+            }
+
+            if (firstDate.isAfter(secondDate)) {
+                return -1;
+            }
+
+            return 0;
+        });
     }
 
     private showModal() {

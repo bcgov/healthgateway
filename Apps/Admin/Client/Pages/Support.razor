@@ -35,6 +35,7 @@
     <MudTable Class="mt-3" Items="MessagingVerificationRows" Loading="MessagingVerificationsLoading" Breakpoint="Breakpoint.Md" HorizontalScrollbar="true" Striped="true" Dense="true">
         <HeaderContent>
             <MudTh><MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.Hdid)">HDID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.PersonalHealthNumber)">PHN</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.EmailOrSms)">Email or SMS</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.Verified)">Verified</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortBy="new Func<MessagingVerificationRow, object>(x => x.VerificationDate)">Verification Date</MudTableSortLabel></MudTh>
@@ -42,6 +43,7 @@
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="HDID">@context.Hdid</MudTd>
+            <MudTd DataLabel="PHN">@context.PersonalHealthNumber</MudTd>
             <MudTd DataLabel="Email or SMS">@context.EmailOrSms</MudTd>
             <MudTd DataLabel="Verified">@context.Verified</MudTd>
             <MudTd DataLabel="Verification Date">@context.VerificationDate</MudTd>

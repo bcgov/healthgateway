@@ -36,16 +36,6 @@
                 "createdBy": "System",
                 "updatedDateTime": "2021-11-24T01:41:30.124287Z",
                 "updatedBy": "System"
-            },
-            "actionedCovidModalAt": {
-                "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
-                "preference": "actionedCovidModalAt",
-                "value": "2021-11-24T01:46:17.944\u002B00:00",
-                "version": 17469227,
-                "createdDateTime": "2021-11-24T01:41:30.122385Z",
-                "createdBy": "System",
-                "updatedDateTime": "2021-11-24T01:46:18.047735Z",
-                "updatedBy": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A"
             }
         }
     },

@@ -17,5 +17,4 @@ extends:
     Application: Database
     DotNetTests: true
     NPMInstall: false
-    NPMTests: false
     Library: true

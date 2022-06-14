@@ -99,12 +99,6 @@ public class LaboratoryOrder
     public string OrderStatus { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets a value for the download label.
-    /// </summary>
-    [JsonPropertyName("downloadLabel")]
-    public string DownloadLabel { get; set; } = string.Empty;
-
-    /// <summary>
     /// Gets or sets a value indicating whether report is available.
     /// </summary>
     [JsonPropertyName("reportAvailable")]
@@ -141,7 +135,6 @@ public class LaboratoryOrder
                 "Held" or "Partial" or "Pending" => "Pending",
                 _ => model.PlisTestStatus,
             },
-            DownloadLabel = model.PlisTestStatus == "Completed" ? "Final" : "Incomplete",
             ReportAvailable = model.PdfReportAvailable,
         };
     }

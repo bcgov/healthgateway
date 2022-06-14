@@ -177,7 +177,6 @@ namespace HealthGateway.Database.Delegates
             IList<Email> oldIds = this.dbContext.Email
                                 .Where(email => email.EmailStatusCode == EmailStatus.Processed &&
                                                 email.CreatedDateTime <= GatewayDbContext.DateTrunc("days", DateTime.UtcNow.AddDays(daysAgo * -1)))
-                                .Where(email => !this.dbContext.CommunicationEmail.Any(commEmail => commEmail.EmailId == email.Id))
                                 .Where(email => !this.dbContext.MessagingVerification.Any(msgVerification => msgVerification.EmailId == email.Id))
                                 .Select(email => new Email { Id = email.Id, Version = email.Version })
                                 .Take(maxRows)

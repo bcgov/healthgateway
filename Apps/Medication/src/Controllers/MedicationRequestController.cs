@@ -29,7 +29,6 @@ namespace HealthGateway.Medication.Controllers
     /// </summary>
     [ApiVersion("1.0")]
     [Route("[controller]")]
-    [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
     [Authorize]
     public class MedicationRequestController : ControllerBase

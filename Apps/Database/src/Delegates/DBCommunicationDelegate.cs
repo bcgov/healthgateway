@@ -154,20 +154,6 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public IList<Communication> GetEmailCommunicationsToSend()
-        {
-            this.logger.LogTrace($"Getting Communications by Type and Status Code from DB...");
-            IList<Communication> retVal = this.dbContext.Communication.Where(c =>
-                c.CommunicationTypeCode == CommunicationType.Email &&
-                c.CommunicationStatusCode != CommunicationStatus.Draft &&
-                c.CommunicationStatusCode != CommunicationStatus.Processed &&
-                c.ScheduledDateTime <= DateTime.UtcNow)
-                .OrderByDescending(c => c.CreatedDateTime).ToList();
-            this.logger.LogDebug($"Finished getting list of New & Processing Email Communications from DB. {JsonSerializer.Serialize(retVal)}");
-            return retVal;
-        }
-
-        /// <inheritdoc />
         public DBResult<Communication> Delete(Communication communication, bool commit = true)
         {
             this.logger.LogTrace($"Deleting Communication from DB...");

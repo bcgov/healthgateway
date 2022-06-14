@@ -24,6 +24,8 @@ export const getters: AuthGetters = {
             rootGetters["user/oidcUserInfo"]
         );
 
-        return userInfo === undefined ? false : userInfo.idp !== "IDIR";
+        return userInfo === undefined
+            ? false
+            : userInfo.idp === "BCSC" || userInfo.idp === undefined;
     },
 };

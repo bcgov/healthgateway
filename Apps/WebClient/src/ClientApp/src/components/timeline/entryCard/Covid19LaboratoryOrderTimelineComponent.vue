@@ -89,7 +89,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
             .getReportDocument(this.entry.id, this.user.hdid, true)
             .then((result) => {
                 let dateString =
-                    this.entry.displayDate.format("YYYY_MM_DD-HH_mm");
+                    this.entry.displayDate.format("yyyy_MM_dd-HH_mm");
                 let report: LaboratoryReport = result.resourcePayload;
                 fetch(
                     `data:${report.mediaType};${report.encoding},${report.data}`
@@ -142,6 +142,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
                     </strong>
                     <hg-button
                         v-if="entry.resultReady"
+                        data-testid="covid-result-download-btn"
                         variant="link"
                         class="p-1 ml-1"
                         @click="showConfirmationModal()"

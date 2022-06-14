@@ -88,11 +88,23 @@ const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     },
 })
 export default class App extends Vue {
-    @Ref("idleModal") readonly idleModal!: IdleComponent;
-    @Action("setIsMobile") setIsMobile!: (isMobile: boolean) => void;
-    @Getter("isMobile") isMobile!: boolean;
+    @Ref("idleModal")
+    readonly idleModal!: IdleComponent;
+
+    @Action("setIsMobile")
+    setIsMobile!: (isMobile: boolean) => void;
+
+    @Getter("isMobile")
+    isMobile!: boolean;
+
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated?: boolean;
+
+    @Getter("isValidIdentityProvider", { namespace: "auth" })
+    isValidIdentityProvider?: boolean;
+
+    @Getter("hasTermsOfServiceUpdated", { namespace: "user" })
+    hasTermsOfServiceUpdated!: boolean;
 
     private readonly host: string =
         window.location.hostname.toLocaleUpperCase();
@@ -108,6 +120,7 @@ export default class App extends Vue {
     private loginCallbackPath = "/logincallback";
     private registrationPath = "/registration";
     private pcrTestPath = "/pcrtest";
+    private acceptTermsOfServicePath = "/acceptTermsOfService";
 
     constructor() {
         super();
@@ -125,7 +138,7 @@ export default class App extends Vue {
 
     @Watch("isAppIdle")
     private onIsAppIdleChanged(idle: boolean) {
-        if (idle && this.oidcIsAuthenticated) {
+        if (idle && this.oidcIsAuthenticated && this.isValidIdentityProvider) {
             this.idleModal.show();
         }
     }
@@ -177,6 +190,13 @@ export default class App extends Vue {
         return this.$route.path.toLowerCase().startsWith(this.pcrTestPath);
     }
 
+    private get isAcceptTermsOfServicePath(): boolean {
+        return (
+            this.$route.path.toLowerCase() ===
+            this.acceptTermsOfServicePath.toLowerCase()
+        );
+    }
+
     private get isHeaderVisible(): boolean {
         return !this.isPublicDestinationPath && !this.isLoginCallbackPath;
     }
@@ -193,7 +213,9 @@ export default class App extends Vue {
         return (
             !this.isLoginCallbackPath &&
             !this.isRegistrationPath &&
-            !this.isPcrTestPath
+            !this.isPcrTestPath &&
+            !this.isAcceptTermsOfServicePath &&
+            !this.hasTermsOfServiceUpdated
         );
     }
 

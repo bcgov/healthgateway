@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.GatewayApiTests.Services.Test.Mock
 {
+    using System;
     using System.Collections.Generic;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
@@ -37,7 +38,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     public class UserProfileServiceMock : Mock<IUserProfileService>
     {
         private readonly UserProfileService userProfileService;
-        private readonly Mock<IConfigurationService> emptyConfigServiceMock = new();
         private readonly string webClientConfigSection = "WebClient";
         private readonly string userProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
 
@@ -61,7 +61,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<IPatientService>().Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
-                this.emptyConfigServiceMock.Object,
                 new Mock<IEmailQueueService>().Object,
                 new NotificationSettingsServiceMock().Object,
                 new UserProfileDelegateMock(userProfileData, userProfileDbResult, hdId, userProfileHistoryDbResult, limit).Object,
@@ -83,26 +82,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="configuration">configuration.</param>
         public UserProfileServiceMock(string message, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, string registrationStatus, IConfiguration configuration)
         {
-            ExternalConfiguration externalConfiguration = new()
-            {
-                WebClient = new WebClientConfiguration()
-                {
-                    RegistrationStatus = registrationStatus,
-                },
-            };
-            this.emptyConfigServiceMock.Setup(s => s.GetConfiguration()).Returns(externalConfiguration);
-
             this.userProfileService = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 new Mock<IPatientService>().Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
-                this.emptyConfigServiceMock.Object,
                 new Mock<IEmailQueueService>().Object,
                 new NotificationSettingsServiceMock().Object,
                 new UserProfileDelegateMock(userProfileData, userProfileDbResult).Object,
                 new Mock<IUserPreferenceDelegate>().Object,
-                new Mock<ILegalAgreementDelegate>().Object,
+                GetMockLegalAgreement().Object,
                 new MessagingVerificationDelegateMock().Object,
                 new CryptoDelegateMock(message).Object,
                 new Mock<IHttpContextAccessor>().Object,
@@ -114,16 +103,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// </summary>
         /// <param name="hdid">hdid.</param>
         /// <param name="patientModel">patient model.</param>
-        /// <param name="minPatientAge">minimum patient age.</param>
         /// <param name="configuration">configuration.</param>
-        public UserProfileServiceMock(string hdid, PatientModel patientModel, int minPatientAge, IConfiguration configuration)
+        public UserProfileServiceMock(string hdid, PatientModel patientModel, IConfiguration configuration)
         {
             this.userProfileService = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 new PatientServiceMock(hdid, patientModel).Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
-                new ConfigServiceMock(minPatientAge).Object,
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 new Mock<IUserProfileDelegate>().Object,
@@ -153,7 +140,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<IPatientService>().Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
-                this.emptyConfigServiceMock.Object,
                 new Mock<IEmailQueueService>().Object,
                 new NotificationSettingsServiceMock().Object,
                 new UserProfileDelegateMock(hdId, userProfileData, userProfileDbResult, commit).Object,
@@ -178,7 +164,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<IPatientService>().Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
-                new Mock<IConfigurationService>().Object,
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 new Mock<IUserProfileDelegate>().Object,
@@ -207,12 +192,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<IPatientService>().Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
-                new Mock<IConfigurationService>().Object,
                 new EmailQueueServiceMock(shouldEmailCommit).Object,
                 new Mock<INotificationSettingsService>().Object,
                 new UserProfileDelegateMock(hdId, userProfileData, userProfileDbResult, shouldProfileCommit).Object,
                 new Mock<IUserPreferenceDelegate>().Object,
-                new Mock<ILegalAgreementDelegate>().Object,
+                GetMockLegalAgreement().Object,
                 new Mock<IMessagingVerificationDelegate>().Object,
                 new Mock<ICryptoDelegate>().Object,
                 new HttpContextAccessorMock(headerDictionary).Object,
@@ -226,6 +210,28 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         public UserProfileService UserProfileServiceMockInstance()
         {
             return this.userProfileService;
+        }
+
+        private static Mock<ILegalAgreementDelegate> GetMockLegalAgreement()
+        {
+            DBResult<LegalAgreement> tosDbResult = new()
+            {
+                Status = DBStatusCode.Read,
+                Payload = new LegalAgreement()
+                {
+                    Id = Guid.Empty,
+                    CreatedBy = "MockData",
+                    CreatedDateTime = DateTime.UtcNow,
+                    EffectiveDate = DateTime.UtcNow,
+                    LegalAgreementCode = LegalAgreementType.TermsofService,
+                    LegalText = "Mock Terms of Service",
+                },
+            };
+
+            Mock<ILegalAgreementDelegate> mockLegalAgreementDelegate = new();
+            mockLegalAgreementDelegate.Setup(x => x.GetActiveByAgreementType(LegalAgreementType.TermsofService)).Returns(tosDbResult);
+
+            return mockLegalAgreementDelegate;
         }
     }
 }

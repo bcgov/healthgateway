@@ -18,11 +18,13 @@ namespace HealthGateway.Common.Data.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.Data.Constants;
 
     /// <summary>
     /// Represents an Email to send from the system.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Email : AuditableEntity
     {
         /// <summary>

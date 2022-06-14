@@ -27,4 +27,3 @@ extends:
     ImageName: hangfire
     DotNetTests: false
     NPMInstall: false
-    NPMTests: false

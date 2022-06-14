@@ -56,6 +56,11 @@ namespace HealthGateway.GatewayApi.Models
         public bool AcceptedTermsOfService { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating the ToS Id the user has accepted.
+        /// </summary>
+        public Guid TermsOfServiceId { get; set; }
+
+        /// <summary>
         /// Gets or sets the user email.
         /// </summary>
         public string? Email { get; set; }
@@ -105,19 +110,22 @@ namespace HealthGateway.GatewayApi.Models
         /// Constructs a UserProfile model from a UserProfile database model.
         /// </summary>
         /// <param name="model">The user profile database model.</param>
+        /// <param name="latestTermsOfServiceId">The GUID corresponding to the most recent terms of service.</param>
         /// <returns>The user profile model.</returns>
-        public static UserProfileModel CreateFromDbModel(UserProfile model)
+        public static UserProfileModel CreateFromDbModel(UserProfile model, Guid? latestTermsOfServiceId)
         {
             return new UserProfileModel()
             {
                 HdId = model.HdId,
-                AcceptedTermsOfService = model.AcceptedTermsOfService,
+                TermsOfServiceId = model.TermsOfServiceId,
                 Email = model.Email,
                 IsEmailVerified = !string.IsNullOrEmpty(model.Email),
                 SMSNumber = model.SMSNumber,
                 IsSMSNumberVerified = !string.IsNullOrEmpty(model.SMSNumber),
                 LastLoginDateTime = model.LastLoginDateTime,
                 ClosedDateTime = model.ClosedDateTime,
+                AcceptedTermsOfService = model.TermsOfServiceId != Guid.Empty,
+                HasTermsOfServiceUpdated = model.TermsOfServiceId != latestTermsOfServiceId,
             };
         }
     }

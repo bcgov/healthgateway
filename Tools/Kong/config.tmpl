@@ -9,7 +9,7 @@
         protocols:
             - http
             - https
-      - name: rate-limiting
+      - name: rate-limiting_902
         tags: [ns.$KONG_NAMESPACE]
         enabled: true
         config:
@@ -51,9 +51,9 @@
                   uri_param_names:
                       - jwt
                   roles: null
-                  consumer_match: false
+                  consumer_match: true
                   well_known_template: $KEYCLOAK_URI/.well-known/openid-configuration
-                  consumer_match_ignore_not_found: false
+                  consumer_match_ignore_not_found: true
                   anonymous: null
                   algorithm: RS256
                   realm_roles: null
@@ -64,8 +64,8 @@
               config:
                   fault_tolerant: true
                   hide_client_headers: false
-                  limit_by: consumer
-                  minute: 100
+                  limit_by: credential
+                  minute: 10
               protocols:
                   - http
                   - https

@@ -24,17 +24,21 @@ describe("Laboratory Orders - Download Report", () => {
             .contains("2021-Jul-04")
             .click({ force: true });
 
-        cy.get("[data-testid=laboratory-report-download-btn]")
+        cy.get("[data-testid=entryDetailsModal]")
+            .children()
             .should("be.visible")
-            .contains("Final")
-            .click({ force: true });
+            .within(() => {
+                cy.get("[data-testid=laboratory-report-download-btn]")
+                    .should("be.visible")
+                    .click({ force: true });
+            });
 
         cy.get("[data-testid=genericMessageSubmitBtn]")
             .should("be.visible")
             .click({ force: true });
 
         cy.wait("@getLaboratoryReport");
-        cy.verifyDownload("Laboratory_Report_YYYY_07_Jul 4, 2021-08_43.pdf");
+        cy.verifyDownload("Laboratory_Report_2021_07_04-11_45.pdf");
 
         cy.get("[data-testid=backBtn]").click({ force: true });
     });

@@ -27,7 +27,6 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class UserSMSService : IUserSMSService
@@ -101,7 +100,7 @@ namespace HealthGateway.GatewayApi.Services
                 }
             }
 
-            this.logger.LogDebug($"Finished validating sms: {JsonConvert.SerializeObject(retVal)}");
+            this.logger.LogDebug($"Finished validating sms");
             return retVal;
         }
 
