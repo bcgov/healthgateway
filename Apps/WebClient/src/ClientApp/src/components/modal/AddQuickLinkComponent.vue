@@ -4,9 +4,11 @@ import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import { EntryType, entryTypeMap } from "@/constants/entryType";
+import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
 import { QuickLink } from "@/models/quickLink";
 import User from "@/models/user";
+import { UserPreference } from "@/models/userPreference";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
@@ -29,6 +31,11 @@ export default class AddQuickLinkComponent extends Vue {
     updateQuickLinks!: (params: {
         hdid: string;
         quickLinks: QuickLink[];
+    }) => Promise<void>;
+
+    @Action("updateUserPreference", { namespace: "user" })
+    updateUserPreference!: (params: {
+        userPreference: UserPreference;
     }) => Promise<void>;
 
     @Getter("quickLinks", { namespace: "user" }) quickLinks!:
@@ -61,9 +68,16 @@ export default class AddQuickLinkComponent extends Vue {
 
     private get isAddButtonEnabled(): boolean {
         return (
-            this.enabledQuickLinkFilter.length > 0 &&
-            this.selectedQuickLinks.length > 0
+            (this.enabledQuickLinkFilter.length > 0 &&
+                this.selectedQuickLinks.length > 0) ||
+            (this.showVaccineCard && this.selectedQuickLinks.length > 0)
         );
+    }
+
+    private get showVaccineCard(): boolean {
+        const preferenceName = UserPreferenceType.HideVaccineCardQuickLink;
+        let hideVaccineCard = this.user.preferences[preferenceName];
+        return hideVaccineCard?.value === "true";
     }
 
     private addQuickLink(submittedQuickLinks: QuickLink[]): Promise<void> {
@@ -97,7 +111,7 @@ export default class AddQuickLinkComponent extends Vue {
         // Clear selected quick links
         this.selectedQuickLinks = [];
 
-        // Force checkbox conponent to re-render
+        // Force checkbox component to re-render
         this.forceCheckboxComponentRerender();
 
         // Hide the modal manually
@@ -117,6 +131,9 @@ export default class AddQuickLinkComponent extends Vue {
         // Update quick link preferences in store
         const quickLinks: QuickLink[] = [];
         this.selectedQuickLinks.forEach((module) => {
+            if (module === "bc-vaccine-card") {
+                this.handleUpdateVaccineCardUserPreference();
+            }
             const details = entryTypeMap.get(module as EntryType);
             if (details) {
                 quickLinks.push({
@@ -128,7 +145,7 @@ export default class AddQuickLinkComponent extends Vue {
 
         this.addQuickLink(quickLinks);
 
-        // Force checkbox conponent to re-render
+        // Force checkbox component to re-render
         this.forceCheckboxComponentRerender();
 
         // Clear selected quick links
@@ -137,6 +154,14 @@ export default class AddQuickLinkComponent extends Vue {
         // Hide the modal manually
         this.$nextTick(() => {
             this.hideModal();
+        });
+    }
+
+    private handleUpdateVaccineCardUserPreference(): void {
+        const preferenceName = UserPreferenceType.HideVaccineCardQuickLink;
+        this.user.preferences[preferenceName].value = "false";
+        this.updateUserPreference({
+            userPreference: this.user.preferences[preferenceName],
         });
     }
 
@@ -165,8 +190,8 @@ export default class AddQuickLinkComponent extends Vue {
     >
         <form data-testid="quick-link-modal-text">
             <b-row
-                v-for="(quickLink, index) in enabledQuickLinkFilter"
-                :key="index"
+                v-for="quickLink in enabledQuickLinkFilter"
+                :key="quickLink.module"
             >
                 <b-col cols="8" align-self="start">
                     <b-form-checkbox
@@ -178,6 +203,20 @@ export default class AddQuickLinkComponent extends Vue {
                         :value="quickLink.module"
                     >
                         {{ quickLink.name }}
+                    </b-form-checkbox>
+                </b-col>
+            </b-row>
+            <b-row v-if="showVaccineCard">
+                <b-col cols="8" align-self="start">
+                    <b-form-checkbox
+                        id="bc-vaccine-card-filter"
+                        :key="checkboxComponentKey"
+                        v-model="selectedQuickLinks"
+                        data-testid="bc-vaccine-card-filter"
+                        name="bc-vaccine-card-filter"
+                        value="bc-vaccine-card"
+                    >
+                        BC Vaccine Card
                     </b-form-checkbox>
                 </b-col>
             </b-row>
