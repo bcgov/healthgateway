@@ -30,6 +30,7 @@ namespace HealthGateway.Admin.Client
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using MudBlazor;
     using MudBlazor.Services;
     using Refit;
 
@@ -63,7 +64,10 @@ namespace HealthGateway.Admin.Client
                         });
 
             // Enable Mud Blazor component services
-            builder.Services.AddMudServices();
+            builder.Services.AddMudServices(config =>
+            {
+                config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
+            });
 
             // Configure Authentication and Authorization
             builder.Services.AddOidcAuthentication(options =>

@@ -19,13 +19,14 @@ namespace HealthGateway.Admin.Client.Pages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Store;
 using HealthGateway.Admin.Client.Store.Tag;
+using HealthGateway.Admin.Client.Store.UserFeedback;
 using HealthGateway.Admin.Common.Models;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 
 /// <summary>
@@ -40,12 +41,15 @@ public partial class FeedbackPage : FluxorComponent
     private IActionSubscriber ActionSubscriber { get; set; } = default!;
 
     [Inject]
+    private IState<UserFeedbackState> UserFeedbackState { get; set; } = default!;
+
+    [Inject]
     private IState<TagState> TagState { get; set; } = default!;
 
     [Inject]
     private ISnackbar Snackbar { get; set; } = default!;
 
-    private string? ActiveTag { get; set; } = string.Empty;
+    private string ActiveTag { get; set; } = string.Empty;
 
     private bool TagsLoading => this.TagState.Value.Load.IsLoading;
 
@@ -58,7 +62,15 @@ public partial class FeedbackPage : FluxorComponent
         this.TagState.Value.Delete.Error,
     }.OfType<RequestError>().Where(e => e.Message.Length > 0);
 
-    private IEnumerable<AdminTagView> Tags => this.TagState.Value.Data?.Values ?? Enumerable.Empty<AdminTagView>();
+    private IEnumerable<AdminTagView> Tags => this.TagState.Value.Data?.Values.OrderBy(t => t.Name) ?? Enumerable.Empty<AdminTagView>();
+
+    private IEnumerable<UserFeedbackView> Feedback => this.UserFeedbackState.Value.FeedbackData?.Values ?? Enumerable.Empty<UserFeedbackView>();
+
+    private MudForm AddTagForm { get; set; } = default!;
+
+    private MudChip[] SelectedTagChips { get; set; } = Array.Empty<MudChip>();
+
+    private bool ActiveTagIsValid => this.ActiveTag.Trim().Length > 0;
 
     /// <inheritdoc/>
     protected override void OnInitialized()
@@ -89,20 +101,25 @@ public partial class FeedbackPage : FluxorComponent
         this.StateHasChanged();
     }
 
-    private async Task<IEnumerable<string>> FilterTagsAsync(string? text)
+    private void HandleKeyDownActiveTag(KeyboardEventArgs eventArgs)
     {
-        IEnumerable<AdminTagView> tags = this.Tags;
-        if (text != null)
+        if (eventArgs.Key == "Enter" && this.ActiveTagIsValid)
         {
-            tags = tags.Where(t => t.Name.StartsWith(text, StringComparison.InvariantCulture));
+            this.AddTag();
         }
-
-        return tags.Select(t => t.Name);
     }
 
-    private async Task AddTagAsync()
+    private void AddTag()
     {
-        if (this.ActiveTagExists || this.TagState.Value.Add.IsLoading || this.ActiveTag == null)
+        if (this.ActiveTagExists)
+        {
+            this.Snackbar.Add($"Tag \"{this.ActiveTag}\" already exists.", Severity.Warning);
+            this.ActiveTag = string.Empty;
+            this.StateHasChanged();
+            return;
+        }
+
+        if (this.TagState.Value.Add.IsLoading)
         {
             return;
         }
@@ -110,14 +127,20 @@ public partial class FeedbackPage : FluxorComponent
         this.Dispatcher.Dispatch(new TagActions.AddAction(this.ActiveTag));
     }
 
-    private async Task RemoveTagAsync()
+    private void RemoveTag(MudChip chip)
     {
-        if (this.TagState.Value.Delete.IsLoading)
+        if (this.TagState.Value.Delete.IsLoading || this.UserFeedbackState.Value.Load.IsLoading || this.UserFeedbackState.Value.AssociateTag.IsLoading)
         {
             return;
         }
 
-        IEnumerable<AdminTagView> tags = this.Tags.Where(t => t.Name == this.ActiveTag);
+        if (this.Feedback.Any(f => f.Tags.Any(t => t.Tag.Name == chip.Text)))
+        {
+            this.Snackbar.Add($"Tag \"{chip.Text}\" cannot be removed because it is currently associated with feedback.", Severity.Warning);
+            return;
+        }
+
+        IEnumerable<AdminTagView> tags = this.Tags.Where(t => t.Name == chip.Text);
         foreach (AdminTagView tag in tags)
         {
             this.Dispatcher.Dispatch(new TagActions.DeleteAction(tag));
