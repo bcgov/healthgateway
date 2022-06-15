@@ -3,6 +3,7 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @using HealthGateway.Admin.Client.Store.Tag
+@using HealthGateway.Admin.Common.Models
 
 <PageTitle>Feedback Review</PageTitle>
 <HgPageHeading>Feedback Review</HgPageHeading>
@@ -15,26 +16,43 @@
 }
 
 <MudGrid>
-    <MudItem xs="12" Class="d-flex">
-        <MudAutocomplete T="string"
-                         Label="Tag Editor"
-                         @bind-Value="@ActiveTag"
-                         SearchFunc="@FilterTagsAsync"
+    <MudItem xs="12">
+        <MudForm @ref="@AddTagForm" Class="d-flex">
+            <MudTextField T="string"
+                          @bind-Value="@ActiveTag"
+                          Immediate="true"
+                          MaxLength="20"
+                          Label="Tag Name"
+                          Class="flex-grow-1"
+                          @onkeydown="@HandleKeyDownActiveTag"/>
+            <HgButton TopMargin="@Breakpoint.Always"
+                      LeftMargin="@Breakpoint.Always"
+                      Class="flex-grow-0"
+                      EndIcon="@Icons.Material.Filled.Add"
+                      Variant="@Variant.Filled"
+                      Color="@Color.Success"
+                      Disabled="@(!ActiveTagIsValid)"
+                      Loading="@TagState.Value.Add.IsLoading"
+                      @onclick="@AddTag">
+                Add Tag
+            </HgButton>
+        </MudForm>
+    </MudItem>
+    <MudItem xs="12">
+        <MudChipSet @bind-SelectedChips="@SelectedTagChips"
+                    Class="pt-4"
+                    MultiSelection="true"
+                    Filter="true">
+            @foreach (AdminTagView tag in Tags)
+            {
+                <MudChip Text="@tag.Name"
+                         Class="my-2"
+                         Variant="@Variant.Text"
+                         Size="@Size.Small"
+                         Color="@Color.Tertiary"
                          Disabled="@(TagState.Value.Add.IsLoading || TagState.Value.Delete.IsLoading)"
-                         ResetValueOnEmptyText="@true"
-                         CoerceValue="@true"
-                         Dense="@true"
-                         Class="flex-grow-1"/>
-        @if (ActiveTag?.Length > 0)
-        {
-            @if (ActiveTagExists)
-            {
-                <HgButton TopMargin="@Breakpoint.Always" LeftMargin="@Breakpoint.Always" Class="flex-grow-0" EndIcon="@Icons.Material.Filled.Delete" Variant="@Variant.Filled" Color="@Color.Error" Loading="@TagState.Value.Delete.IsLoading" @onclick="@RemoveTagAsync">Remove Tag</HgButton>
+                         OnClose="@RemoveTag"/>
             }
-            else
-            {
-                <HgButton TopMargin="@Breakpoint.Always" LeftMargin="@Breakpoint.Always" Class="flex-grow-0" EndIcon="@Icons.Material.Filled.Add" Variant="@Variant.Filled" Color="@Color.Success" Loading="@TagState.Value.Add.IsLoading" @onclick="@AddTagAsync">Add Tag</HgButton>
-            }
-        }
+        </MudChipSet>
     </MudItem>
 </MudGrid>
