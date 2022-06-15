@@ -44,7 +44,7 @@ public static class UserFeedbackTagConverter
 
         if (model.UserFeedback != null)
         {
-            retVal.Feedback = model.UserFeedback.ToUiModel();
+            retVal.Feedback = model.UserFeedback.ToUiBaseModel();
         }
 
         return retVal;

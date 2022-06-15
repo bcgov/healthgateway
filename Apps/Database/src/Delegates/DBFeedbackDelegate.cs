@@ -81,6 +81,28 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
+        public DBResult<UserFeedback> UpdateUserFeedbackWithTagAssociations(UserFeedback feedback)
+        {
+            this.logger.LogTrace("Updating the user feedback id {UserFeedbackId} with {NumberOfAssociations} admin tag association in DB", feedback.Id, feedback.Tags.Count);
+            this.dbContext.Update<UserFeedback>(feedback);
+            DBResult<UserFeedback> result = new DBResult<UserFeedback>();
+
+            try
+            {
+                this.dbContext.SaveChanges();
+                result.Status = DBStatusCode.Updated;
+                result.Payload = feedback;
+            }
+            catch (DbUpdateException e)
+            {
+                result.Status = DBStatusCode.Error;
+                result.Message = e.Message;
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc />
         public DBResult<UserFeedback> GetUserFeedback(Guid feedbackId)
         {
             this.logger.LogTrace($"Getting user feedback from DB... {feedbackId}");
@@ -98,6 +120,28 @@ namespace HealthGateway.Database.Delegates
             }
 
             this.logger.LogDebug($"Finished getting user feedback from DB... {JsonSerializer.Serialize(result)}");
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<UserFeedback> GetUserFeedbackWithFeedbackTags(Guid feedbackId)
+        {
+            this.logger.LogTrace("Getting user feedback with associations from DB {FeedbackId}", feedbackId);
+            UserFeedback? feedback = this.dbContext.UserFeedback.Where(f => f.Id == feedbackId).Include(f => f.Tags).SingleOrDefault();
+
+            DBResult<UserFeedback> result = new DBResult<UserFeedback>();
+            if (feedback != null)
+            {
+                result.Payload = feedback;
+                result.Status = DBStatusCode.Read;
+            }
+            else
+            {
+                this.logger.LogInformation("Unable to find user feedback using ID: {FeedbackId}", feedbackId);
+                result.Message = $"Unable to find user feedback using ID: {feedbackId}";
+                result.Status = DBStatusCode.NotFound;
+            }
+
             return result;
         }
 

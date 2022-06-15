@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System;
     using System.Collections.Generic;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -45,5 +46,12 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <returns>An IEnumerable of AdminTag wrapped in a DBResult.</returns>
         DBResult<IEnumerable<AdminTag>> GetAll();
+
+        /// <summary>
+        /// Gets a list of admin tags by ids.
+        /// </summary>
+        /// <param name="adminTagIds">The admin tag ids to search on.</param>
+        /// <returns>An IEnumerable of AdminTag wrapped in a DBResult.</returns>
+        DBResult<IEnumerable<AdminTag>> GetAdminTags(ICollection<Guid> adminTagIds);
     }
 }

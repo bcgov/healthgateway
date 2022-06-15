@@ -17,6 +17,8 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Linq;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Converters;
     using HealthGateway.Common.Data.Constants;
@@ -137,35 +139,50 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserFeedbackTagView> AssociateFeedbackTag(Guid userFeedbackId, AdminTagView tag)
+        public RequestResult<UserFeedbackView> AssociateFeedbackTag(Guid userFeedbackId, Collection<Guid> adminTagIds)
         {
-            this.logger.LogTrace($"Adding admin tag to feedback... {tag}");
+            this.logger.LogTrace("Adding admin tags {AdminTagIds} to feedback {Feedback}", adminTagIds, userFeedbackId.ToString());
 
-            DBResult<UserFeedbackTag> feedbackTagResult = this.feedbackTagDelegate.Add(
-                new UserFeedbackTag()
-                {
-                    UserFeedbackId = userFeedbackId,
-                    AdminTagId = tag.Id,
-                });
-
-            if (feedbackTagResult.Status == DBStatusCode.Created)
+            RequestResult<UserFeedbackView> result = new()
             {
-                UserFeedbackTagView newFeedbackTag = feedbackTagResult.Payload.ToUiModel();
-                newFeedbackTag.Tag = tag;
-                return new RequestResult<UserFeedbackTagView>()
+                ResultStatus = ResultType.Error,
+            };
+
+            DBResult<UserFeedback> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(userFeedbackId);
+            DBResult<IEnumerable<AdminTag>> adminTagResult = this.adminTagDelegate.GetAdminTags(adminTagIds);
+
+            if (userFeedbackResult.Status == DBStatusCode.Read && adminTagResult.Status == DBStatusCode.Read)
+            {
+                UserFeedback userFeedback = userFeedbackResult.Payload;
+                IEnumerable<AdminTag> adminTags = adminTagResult.Payload;
+                List<UserFeedbackTag> feedbackTags = adminTags.Select(t => new UserFeedbackTag() { AdminTag = t, UserFeedback = userFeedback }).ToList();
+
+                userFeedback.Tags.Clear();
+                foreach (var userFeedbackTag in feedbackTags)
                 {
-                    ResourcePayload = newFeedbackTag,
-                    ResultStatus = ResultType.Success,
-                };
+                    userFeedback.Tags.Add(userFeedbackTag);
+                    this.logger.LogDebug("User feedback tag added for admin tag id: {AdminTagId} and user feedback id: {FeedbackTagExists}", userFeedbackTag.AdminTagId, userFeedbackTag.UserFeedbackId);
+                }
+
+                DBResult<UserFeedback> savedUserFeedbackResult = this.feedbackDelegate.UpdateUserFeedbackWithTagAssociations(userFeedback);
+
+                if (savedUserFeedbackResult.Status == DBStatusCode.Updated)
+                {
+                    List<UserFeedbackTagView> feedbackTagViews = userFeedback.Tags.Select(t => t.ToUiModel()).ToList();
+                    result.ResourcePayload = userFeedback.ToUiModel(feedbackTagViews);
+                    result.ResultStatus = ResultType.Success;
+                }
+                else
+                {
+                    result.ResultError = new RequestResultError() { ResultMessage = savedUserFeedbackResult.Message };
+                }
             }
             else
             {
-                return new RequestResult<UserFeedbackTagView>()
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = feedbackTagResult.Message },
-                };
+                result.ResultError = new RequestResultError() { ResultMessage = userFeedbackResult.Message };
             }
+
+            return result;
         }
 
         /// <inheritdoc />
