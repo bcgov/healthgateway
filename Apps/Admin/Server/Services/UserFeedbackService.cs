@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Linq;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Converters;
@@ -139,7 +138,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserFeedbackView> AssociateFeedbackTag(Guid userFeedbackId, Collection<Guid> adminTagIds)
+        public RequestResult<UserFeedbackView> AssociateFeedbackTag(Guid userFeedbackId, IList<Guid> adminTagIds)
         {
             this.logger.LogTrace("Adding admin tags {AdminTagIds} to feedback {Feedback}", adminTagIds, userFeedbackId.ToString());
 

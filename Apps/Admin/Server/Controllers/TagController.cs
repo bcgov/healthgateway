@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Server.Controllers
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Data.ViewModels;
@@ -95,7 +94,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Associate an existing admin tag to the feedback with matching id.
         /// </summary>
-        /// <returns>Returns the associated admin tag wrapped in a request result.</returns>
+        /// <returns>Returns the user feedback view with the associated admin tag(s) wrapped in a request result.</returns>
         /// <param name="feedbackId">The feedback id.</param>
         /// <param name="tagIds">A list of admin tag ids.</param>
         /// <response code="200">The user feedback containing the added tag model wrapped in a request result.</response>
@@ -103,7 +102,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
         [Route("UserFeedback/{feedbackId}/[controller]")]
-        public RequestResult<UserFeedbackView> AssociateTag(string feedbackId, [FromBody] Collection<Guid> tagIds)
+        public RequestResult<UserFeedbackView> AssociateTag(string feedbackId, [FromBody] IList<Guid> tagIds)
         {
             RequestResult<UserFeedbackView> result = this.feedbackService.AssociateFeedbackTag(Guid.Parse(feedbackId), tagIds);
             return result;

@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.ViewModels;
 
@@ -64,8 +63,8 @@ namespace HealthGateway.Admin.Server.Services
         /// </summary>
         /// <param name="userFeedbackId">The user feedback id to be associated to the tag.</param>
         /// <param name="adminTagIds">The admin tag ids.</param>
-        /// <returns>Returns the associated admin tag wrapped in a request result.</returns>
-        RequestResult<UserFeedbackView> AssociateFeedbackTag(Guid userFeedbackId, Collection<Guid> adminTagIds);
+        /// <returns>Returns the user feedback view with the associated admin tag(s) wrapped in a request result.</returns>
+        RequestResult<UserFeedbackView> AssociateFeedbackTag(Guid userFeedbackId, IList<Guid> adminTagIds);
 
         /// <summary>
         /// Dissociates an admin tag from a user feedback.
