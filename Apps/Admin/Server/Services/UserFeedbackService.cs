@@ -168,8 +168,7 @@ namespace HealthGateway.Admin.Server.Services
 
                 if (savedUserFeedbackResult.Status == DBStatusCode.Updated)
                 {
-                    List<UserFeedbackTagView> feedbackTagViews = userFeedback.Tags.Select(t => t.ToUiModel()).ToList();
-                    result.ResourcePayload = userFeedback.ToUiModel(feedbackTagViews);
+                    result.ResourcePayload = userFeedback.ToUiModel();
                     result.ResultStatus = ResultType.Success;
                 }
                 else

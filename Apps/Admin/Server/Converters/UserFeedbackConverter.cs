@@ -49,50 +49,6 @@ public static class UserFeedbackConverter
     /// Creates a UI model from a DB model.
     /// </summary>
     /// <param name="model">The DB model to convert.</param>
-    /// <param name="tagViews">List of converted user feedback tag view objects.</param>
-    /// <returns>The created UI model.</returns>
-    public static UserFeedbackView ToUiBaseModel(this Database.Models.UserFeedback model)
-    {
-        UserFeedbackView retVal = new()
-        {
-            Id = model.Id,
-            UserProfileId = model.UserProfileId,
-            Comment = model.Comment,
-            CreatedDateTime = model.CreatedDateTime,
-            IsReviewed = model.IsReviewed,
-            IsSatisfied = model.IsSatisfied,
-            Version = model.Version,
-        };
-
-        return retVal;
-    }
-
-    /// <summary>
-    /// Creates a UI model from a DB model.
-    /// </summary>
-    /// <param name="model">The DB model to convert.</param>
-    /// <param name="tagViews">List of converted user feedback tag view objects.</param>
-    /// <returns>The created UI model.</returns>
-    public static UserFeedbackView ToUiModel(this Database.Models.UserFeedback model, IList<UserFeedbackTagView> tagViews)
-    {
-        UserFeedbackView retVal = new(tagViews)
-        {
-            Id = model.Id,
-            UserProfileId = model.UserProfileId,
-            Comment = model.Comment,
-            CreatedDateTime = model.CreatedDateTime,
-            IsReviewed = model.IsReviewed,
-            IsSatisfied = model.IsSatisfied,
-            Version = model.Version,
-        };
-
-        return retVal;
-    }
-
-    /// <summary>
-    /// Creates a UI model from a DB model.
-    /// </summary>
-    /// <param name="model">The DB model to convert.</param>
     /// <returns>The created UI model.</returns>
     public static UserFeedbackView ToUiModel(this Database.Models.UserFeedbackAdmin model)
     {
@@ -119,6 +75,27 @@ public static class UserFeedbackConverter
     public static IList<UserFeedbackView> ToUiModel(this IEnumerable<Database.Models.UserFeedbackAdmin> models)
     {
         return models.Select(ToUiModel).ToList();
+    }
+
+    /// <summary>
+    /// Creates a UI model without children from a DB model.
+    /// </summary>
+    /// <param name="model">The DB model to convert.</param>
+    /// <returns>The created UI model.</returns>
+    public static UserFeedbackView ToUiBaseModel(this Database.Models.UserFeedback model)
+    {
+        UserFeedbackView retVal = new()
+        {
+            Id = model.Id,
+            UserProfileId = model.UserProfileId,
+            Comment = model.Comment,
+            CreatedDateTime = model.CreatedDateTime,
+            IsReviewed = model.IsReviewed,
+            IsSatisfied = model.IsSatisfied,
+            Version = model.Version,
+        };
+
+        return retVal;
     }
 
     /// <summary>
