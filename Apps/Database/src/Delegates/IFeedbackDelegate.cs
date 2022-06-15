@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -41,11 +42,27 @@ namespace HealthGateway.Database.Delegates
         void UpdateUserFeedback(UserFeedback feedback);
 
         /// <summary>
+        /// Updates the UserFeedback object including user feedback tag associations in the DB.
+        /// Version must be set or a Concurrency exception will occur.
+        /// UpdatedDateTime will overridden by our framework.
+        /// </summary>
+        /// <param name="feedback">The feedback to update.</param>
+        /// <returns>A DB result which encapsulates the return object and status.</returns>
+        DBResult<UserFeedback> UpdateUserFeedbackWithTagAssociations(UserFeedback feedback);
+
+        /// <summary>
         /// Fetches the UserFeedback from the database.
         /// </summary>
         /// <param name="feedbackId">The unique feedback id to find.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
         DBResult<UserFeedback> GetUserFeedback(Guid feedbackId);
+
+        /// <summary>
+        /// Fetches the UserFeedback with FeedbackTag associations from the database.
+        /// </summary>
+        /// <param name="feedbackId">The unique feedback id to find.</param>
+        /// <returns>A DB result which encapsulates the return object and status.</returns>
+        DBResult<UserFeedback> GetUserFeedbackWithFeedbackTags(Guid feedbackId);
 
         /// <summary>
         /// Fetches the UserFeedback from the database with email attached for administratie purposes.

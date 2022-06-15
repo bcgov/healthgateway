@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System;
     using System.Collections.Generic;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -39,5 +40,12 @@ namespace HealthGateway.Database.Delegates
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>The result DBResult.</returns>
         DBResult<UserFeedbackTag> Delete(UserFeedbackTag feedbackTag, bool commit = true);
+
+        /// <summary>
+        /// Gets a list of user feedback tags by feedback id.
+        /// </summary>
+        /// <param name="feedbackId">The feedback id to search on.</param>
+        /// <returns>An IEnumerable of UserFeedbackTag wrapped in a DBResult.</returns>
+        DBResult<IEnumerable<UserFeedbackTag>> GetUserFeedbackTagsByFeedbackId(Guid feedbackId);
     }
 }

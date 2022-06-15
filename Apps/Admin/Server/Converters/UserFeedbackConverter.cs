@@ -78,6 +78,27 @@ public static class UserFeedbackConverter
     }
 
     /// <summary>
+    /// Creates a UI model without children from a DB model.
+    /// </summary>
+    /// <param name="model">The DB model to convert.</param>
+    /// <returns>The created UI model.</returns>
+    public static UserFeedbackView ToUiBaseModel(this Database.Models.UserFeedback model)
+    {
+        UserFeedbackView retVal = new()
+        {
+            Id = model.Id,
+            UserProfileId = model.UserProfileId,
+            Comment = model.Comment,
+            CreatedDateTime = model.CreatedDateTime,
+            IsReviewed = model.IsReviewed,
+            IsSatisfied = model.IsSatisfied,
+            Version = model.Version,
+        };
+
+        return retVal;
+    }
+
+    /// <summary>
     /// Creates a DB model from a UI model.
     /// </summary>
     /// <param name="model">The UI model to convert.</param>

@@ -103,5 +103,15 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug($"Finished deleting UserFeedbackTag in DB");
             return result;
         }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<UserFeedbackTag>> GetUserFeedbackTagsByFeedbackId(Guid feedbackId)
+        {
+            this.logger.LogTrace("Getting user feedback tags from DB for Feedback Id: {FeedbackId}", feedbackId.ToString());
+            DBResult<IEnumerable<UserFeedbackTag>> result = new DBResult<IEnumerable<UserFeedbackTag>>();
+            result.Payload = this.dbContext.UserFeedbackTag.Where(t => t.UserFeedbackId == feedbackId).ToList();
+            result.Status = DBStatusCode.Read;
+            return result;
+        }
     }
 }
