@@ -13,10 +13,13 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
+
 namespace HealthGateway.Admin.Server.Controllers
 {
+    using System.Collections.Generic;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
+    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -36,8 +39,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Initializes a new instance of the <see cref="UserFeedbackController"/> class.
         /// </summary>
         /// <param name="feedbackService">The injected user feedback service.</param>
-        public UserFeedbackController(
-            IUserFeedbackService feedbackService)
+        public UserFeedbackController(IUserFeedbackService feedbackService)
         {
             this.feedbackService = feedbackService;
         }
@@ -50,13 +52,13 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
-        public IActionResult GetFeedbackList()
+        public RequestResult<IList<UserFeedbackView>> GetFeedbackList()
         {
-            return new JsonResult(this.feedbackService.GetUserFeedback());
+            return this.feedbackService.GetUserFeedback();
         }
 
         /// <summary>
-        /// Sends email invites to the beta requets with the given ids.
+        /// Sends email invites to the beta requests with the given ids.
         /// </summary>
         /// <returns>A list of ids of the beta requests that where successfully processed.</returns>
         /// <param name="feedback">user feedback to update.</param>
@@ -64,9 +66,9 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPatch]
-        public IActionResult UpdateUserFeedback(UserFeedbackView feedback)
+        public RequestResult<UserFeedbackView> UpdateUserFeedback(UserFeedbackView feedback)
         {
-            return new JsonResult(this.feedbackService.UpdateFeedbackReview(feedback));
+            return this.feedbackService.UpdateFeedbackReview(feedback);
         }
     }
 }

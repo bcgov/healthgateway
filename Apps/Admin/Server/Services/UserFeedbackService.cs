@@ -67,12 +67,25 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc />
-        public bool UpdateFeedbackReview(UserFeedbackView feedback)
+        public RequestResult<UserFeedbackView> UpdateFeedbackReview(UserFeedbackView feedback)
         {
             this.logger.LogTrace($"Updating user feedback...");
 
+            RequestResult<UserFeedbackView> result = new()
+            {
+                ResultStatus = ResultType.Error,
+            };
+
             this.feedbackDelegate.UpdateUserFeedback(feedback.ToDbModel());
-            return true;
+
+            DBResult<UserFeedback> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(feedback.Id);
+            if (userFeedbackResult.Status == DBStatusCode.Read)
+            {
+                result.ResourcePayload = userFeedbackResult.Payload.ToUiModel();
+                result.ResultStatus = ResultType.Success;
+            }
+
+            return result;
         }
 
         /// <inheritdoc />
@@ -138,7 +151,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserFeedbackView> AssociateFeedbackTag(Guid userFeedbackId, IList<Guid> adminTagIds)
+        public RequestResult<UserFeedbackView> AssociateFeedbackTags(Guid userFeedbackId, IList<Guid> adminTagIds)
         {
             this.logger.LogTrace("Adding admin tags {AdminTagIds} to feedback {Feedback}", adminTagIds, userFeedbackId.ToString());
 
@@ -181,16 +194,6 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             return result;
-        }
-
-        /// <inheritdoc />
-        public bool DissociateFeedbackTag(Guid userFeedbackId, UserFeedbackTagView tag)
-        {
-            this.logger.LogTrace($"Removing admin tag from feedback... {tag}");
-
-            DBResult<UserFeedbackTag> feedbackTagResult = this.feedbackTagDelegate.Delete(tag.ToDbModel());
-
-            return feedbackTagResult.Status == DBStatusCode.Deleted;
         }
     }
 }
