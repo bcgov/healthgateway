@@ -70,14 +70,27 @@ export default class AddQuickLinkComponent extends Vue {
         return (
             (this.enabledQuickLinkFilter.length > 0 &&
                 this.selectedQuickLinks.length > 0) ||
-            (this.showVaccineCard && this.selectedQuickLinks.length > 0)
+            (this.selectedQuickLinks.length > 0 &&
+                (!this.vaccinationStatusModuleEnabled ||
+                    this.preferenceVaccineCardHidden))
         );
     }
 
-    private get showVaccineCard(): boolean {
+    private get vaccinationStatusModuleEnabled(): boolean {
+        return this.webClientConfig.modules["VaccinationStatus"];
+    }
+
+    private get preferenceVaccineCardHidden(): boolean {
         const preferenceName = UserPreferenceType.HideVaccineCardQuickLink;
         let hideVaccineCard = this.user.preferences[preferenceName];
         return hideVaccineCard?.value === "true";
+    }
+
+    private get showVaccineCard(): boolean {
+        return (
+            this.preferenceVaccineCardHidden &&
+            this.vaccinationStatusModuleEnabled
+        );
     }
 
     private addQuickLink(submittedQuickLinks: QuickLink[]): Promise<void> {
