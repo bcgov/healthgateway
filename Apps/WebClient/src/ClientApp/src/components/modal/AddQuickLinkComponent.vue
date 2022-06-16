@@ -67,17 +67,16 @@ export default class AddQuickLinkComponent extends Vue {
     }
 
     private get isAddButtonEnabled(): boolean {
-        return (
-            (this.enabledQuickLinkFilter.length > 0 &&
-                this.selectedQuickLinks.length > 0) ||
-            (this.showVaccineCard && this.selectedQuickLinks.length > 0)
-        );
+        return this.selectedQuickLinks.length > 0;
     }
 
     private get showVaccineCard(): boolean {
         const preferenceName = UserPreferenceType.HideVaccineCardQuickLink;
         let hideVaccineCard = this.user.preferences[preferenceName];
-        return hideVaccineCard?.value === "true";
+        return (
+            hideVaccineCard?.value === "true" &&
+            this.webClientConfig.modules["VaccinationStatus"]
+        );
     }
 
     private addQuickLink(submittedQuickLinks: QuickLink[]): Promise<void> {

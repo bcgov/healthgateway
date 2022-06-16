@@ -157,14 +157,21 @@ export default class HomeView extends Vue {
         return this.config.modules["FederalCardButton"];
     }
 
-    private get showVaccineCardButton(): boolean {
+    private get vaccinationStatusModuleEnabled(): boolean {
+        return this.config.modules["VaccinationStatus"];
+    }
+
+    private get preferenceVaccineCardHidden(): boolean {
         const preferenceName = UserPreferenceType.HideVaccineCardQuickLink;
         let hideVaccineCard = this.user.preferences[preferenceName];
-        if (hideVaccineCard?.value === "true") {
-            return false;
-        } else {
-            return this.config.modules["VaccinationStatus"];
-        }
+        return hideVaccineCard?.value === "true";
+    }
+
+    private get showVaccineCardButton(): boolean {
+        return (
+            !this.preferenceVaccineCardHidden &&
+            this.vaccinationStatusModuleEnabled
+        );
     }
 
     private get enabledQuickLinks(): QuickLink[] {
@@ -209,7 +216,9 @@ export default class HomeView extends Vue {
                             existingLink.filter.modules.length === 1 &&
                             existingLink.filter.modules[0] === details.type
                     ) === undefined
-            ).length === 0 && this.showVaccineCardButton
+            ).length === 0 &&
+            (!this.vaccinationStatusModuleEnabled ||
+                !this.preferenceVaccineCardHidden)
         );
     }
 
