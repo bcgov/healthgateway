@@ -35,8 +35,8 @@ namespace HealthGateway.Admin.Server.Services
         /// Updates the user feedback.
         /// </summary>
         /// <param name="feedback">The user feedback to update.</param>
-        /// <returns>A value indicating if the call was successful.</returns>
-        bool UpdateFeedbackReview(UserFeedbackView feedback);
+        /// <returns>Returns the user feedback view with its associated admin tag(s) wrapped in a request result.</returns>
+        RequestResult<UserFeedbackView> UpdateFeedbackReview(UserFeedbackView feedback);
 
         /// <summary>
         /// Retrieves the admin tags.
@@ -59,19 +59,11 @@ namespace HealthGateway.Admin.Server.Services
         RequestResult<AdminTagView> DeleteTag(AdminTagView tag);
 
         /// <summary>
-        /// Associates an admin tag to a feedback.
+        /// Associates a collection of tags to a feedback item.
         /// </summary>
-        /// <param name="userFeedbackId">The user feedback id to be associated to the tag.</param>
+        /// <param name="userFeedbackId">The user feedback id to be associated to the tags.</param>
         /// <param name="adminTagIds">The admin tag ids.</param>
-        /// <returns>Returns the user feedback view with the associated admin tag(s) wrapped in a request result.</returns>
-        RequestResult<UserFeedbackView> AssociateFeedbackTag(Guid userFeedbackId, IList<Guid> adminTagIds);
-
-        /// <summary>
-        /// Dissociates an admin tag from a user feedback.
-        /// </summary>
-        /// <param name="userFeedbackId">The user feedback id to be dissociated to the tag.</param>
-        /// <param name="tag">The admin tag.</param>
-        /// <returns>returns the associated admin tag wrapped in a request result.</returns>
-        bool DissociateFeedbackTag(Guid userFeedbackId, UserFeedbackTagView tag);
+        /// <returns>Returns the user feedback view with its associated admin tag(s) wrapped in a request result.</returns>
+        RequestResult<UserFeedbackView> AssociateFeedbackTags(Guid userFeedbackId, IList<Guid> adminTagIds);
     }
 }

@@ -36,66 +36,23 @@ public class UserFeedbackViewEffects
     /// Initializes a new instance of the <see cref="UserFeedbackViewEffects"/> class.
     /// </summary>
     /// <param name="logger">The injected logger.</param>
-    /// <param name="api">The injected API.</param>
-    public UserFeedbackViewEffects(ILogger<UserFeedbackViewEffects> logger, IUserFeedbackApi api)
+    /// <param name="feedbackApi">The injected user feedback API.</param>
+    /// <param name="tagApi">The injected tag API.</param>
+    public UserFeedbackViewEffects(ILogger<UserFeedbackViewEffects> logger, IUserFeedbackApi feedbackApi, ITagApi tagApi)
     {
         this.Logger = logger;
-        this.Api = api;
+        this.FeedbackApi = feedbackApi;
+        this.TagApi = tagApi;
     }
 
     [Inject]
     private ILogger<UserFeedbackViewEffects> Logger { get; set; }
 
     [Inject]
-    private IUserFeedbackApi Api { get; set; }
+    private IUserFeedbackApi FeedbackApi { get; set; }
 
-    /// <summary>
-    /// Handler that calls the service and dispatches resulting actions.
-    /// </summary>
-    /// <param name="action">The triggering action.</param>
-    /// <param name="dispatcher">The injected dispatcher.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-    [EffectMethod]
-    public async Task HandleAssociateTagAction(UserFeedbackActions.AssociateTagAction action, IDispatcher dispatcher)
-    {
-        this.Logger.LogInformation("Associating tag with feedback!");
-
-        ApiResponse<RequestResult<UserFeedbackTagView>> response = await this.Api.AssociateTag(action.AdminTag, action.FeedbackId).ConfigureAwait(true);
-        if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
-        {
-            this.Logger.LogInformation("Tag associated to user feedback successfully!");
-            dispatcher.Dispatch(new UserFeedbackActions.AssociateTagSuccessAction(response.Content));
-            return;
-        }
-
-        RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError("Error associating tag to user feedback, reason: {ErrorMessage}", error.Message);
-        dispatcher.Dispatch(new UserFeedbackActions.AssociateTagFailAction(error));
-    }
-
-    /// <summary>
-    /// Handler that calls the service and dispatches resulting actions.
-    /// </summary>
-    /// <param name="action">The triggering action.</param>
-    /// <param name="dispatcher">The injected dispatcher.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-    [EffectMethod]
-    public async Task HandleDissociateTagAction(UserFeedbackActions.DissociateTagAction action, IDispatcher dispatcher)
-    {
-        this.Logger.LogInformation("Dissociating tag with feedback!");
-
-        ApiResponse<PrimitiveRequestResult<bool>> response = await this.Api.DissociateTag(action.FeedbackTag, action.FeedbackId).ConfigureAwait(true);
-        if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
-        {
-            this.Logger.LogInformation("Tag was disassociated from user feedback successfully!");
-            dispatcher.Dispatch(new UserFeedbackActions.DissociateTagSuccessAction(response.Content, action.FeedbackTag, action.FeedbackId));
-            return;
-        }
-
-        RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError("Error dissociating tag from user feedback, reason: {ErrorMessage}", error.Message);
-        dispatcher.Dispatch(new UserFeedbackActions.AssociateTagFailAction(error));
-    }
+    [Inject]
+    private ITagApi TagApi { get; set; }
 
     /// <summary>
     /// Handler that calls the service and dispatches resulting actions.
@@ -105,18 +62,66 @@ public class UserFeedbackViewEffects
     [EffectMethod(typeof(UserFeedbackActions.LoadAction))]
     public async Task HandleLoadAction(IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading UserFeedbackViews");
+        this.Logger.LogInformation("Loading user feedback");
 
-        ApiResponse<RequestResult<IEnumerable<UserFeedbackView>>> response = await this.Api.GetAll().ConfigureAwait(true);
+        ApiResponse<RequestResult<IEnumerable<UserFeedbackView>>> response = await this.FeedbackApi.GetAll().ConfigureAwait(true);
         if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
         {
-            this.Logger.LogInformation("User feedback views loaded successfully!");
+            this.Logger.LogInformation("User feedback loaded successfully!");
             dispatcher.Dispatch(new UserFeedbackActions.LoadSuccessAction(response.Content));
             return;
         }
 
         RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError("Error loading User feedback views, reason: {ErrorMessage}", error.Message);
+        this.Logger.LogError("Error loading user feedback, reason: {ErrorMessage}", error.Message);
         dispatcher.Dispatch(new UserFeedbackActions.LoadFailAction(error));
+    }
+
+    /// <summary>
+    /// Handler that calls the service and dispatches resulting actions.
+    /// </summary>
+    /// <param name="action">The triggering action.</param>
+    /// <param name="dispatcher">The injected dispatcher.</param>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    [EffectMethod]
+    public async Task HandleUpdateAction(UserFeedbackActions.UpdateAction action, IDispatcher dispatcher)
+    {
+        this.Logger.LogInformation("Updating user feedback");
+
+        ApiResponse<RequestResult<UserFeedbackView>> response = await this.FeedbackApi.Update(action.UserFeedbackView).ConfigureAwait(true);
+        if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
+        {
+            this.Logger.LogInformation("User feedback updated successfully!");
+            dispatcher.Dispatch(new UserFeedbackActions.UpdateSuccessAction(response.Content));
+            return;
+        }
+
+        RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
+        this.Logger.LogError("Error updating user feedback, reason: {ErrorMessage}", error.Message);
+        dispatcher.Dispatch(new UserFeedbackActions.UpdateFailAction(error));
+    }
+
+    /// <summary>
+    /// Handler that calls the service and dispatches resulting actions.
+    /// </summary>
+    /// <param name="action">The triggering action.</param>
+    /// <param name="dispatcher">The injected dispatcher.</param>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    [EffectMethod]
+    public async Task HandleAssociateTagsAction(UserFeedbackActions.AssociateTagsAction action, IDispatcher dispatcher)
+    {
+        this.Logger.LogInformation("Associating tags with user feedback!");
+
+        ApiResponse<RequestResult<UserFeedbackView>> response = await this.TagApi.AssociateTags(action.TagIds, action.FeedbackId).ConfigureAwait(true);
+        if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
+        {
+            this.Logger.LogInformation("Tags associated to user feedback successfully!");
+            dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsSuccessAction(response.Content));
+            return;
+        }
+
+        RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
+        this.Logger.LogError("Error associating tags to user feedback, reason: {ErrorMessage}", error.Message);
+        dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsFailAction(error));
     }
 }

@@ -28,139 +28,6 @@ using HealthGateway.Common.Data.ViewModels;
 public static class UserFeedbackActions
 {
     /// <summary>
-    /// The action representing the initiation of an associated tag.
-    /// </summary>
-    public class AssociateTagAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AssociateTagAction"/> class.
-        /// </summary>
-        /// <param name="adminTag">Represents the AdminTagView model.</param>
-        /// <param name="feedbackId">The feedback id.</param>
-        public AssociateTagAction(AdminTagView adminTag, Guid feedbackId)
-        {
-            this.AdminTag = adminTag;
-            this.FeedbackId = feedbackId;
-        }
-
-        /// <summary>
-        /// Gets or sets the admin tag view.
-        /// </summary>
-        public AdminTagView AdminTag { get; set; }
-
-        /// <summary>
-        /// Gets or sets feedback id.
-        /// </summary>
-        public Guid FeedbackId { get; set; }
-    }
-
-    /// <summary>
-    /// The action representing a failed associate tag.
-    /// </summary>
-    public class AssociateTagFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AssociateTagFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public AssociateTagFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing a successful associated tag.
-    /// </summary>
-    public class AssociateTagSuccessAction : BaseSuccessAction<RequestResult<UserFeedbackTagView>>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AssociateTagSuccessAction"/> class.
-        /// </summary>
-        /// <param name="data">User feedback view data.</param>
-        public AssociateTagSuccessAction(RequestResult<UserFeedbackTagView> data)
-            : base(data)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing the initiation of a dissociated tag.
-    /// </summary>
-    public class DissociateTagAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DissociateTagAction"/> class.
-        /// </summary>
-        /// <param name="feedbackTag">Represents the user feedback tag view model.</param>
-        /// <param name="feedbackId">The feedback id.</param>
-        public DissociateTagAction(UserFeedbackTagView feedbackTag, Guid feedbackId)
-        {
-            this.FeedbackTag = feedbackTag;
-            this.FeedbackId = feedbackId;
-        }
-
-        /// <summary>
-        /// Gets or sets the user feedback tag view.
-        /// </summary>
-        public UserFeedbackTagView FeedbackTag { get; set; }
-
-        /// <summary>
-        /// Gets or sets the feedback id.
-        /// </summary>
-        public Guid FeedbackId { get; set; }
-    }
-
-    /// <summary>
-    /// The action representing a failed dissociated tag.
-    /// </summary>
-    public class DissociateTagFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DissociateTagFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public DissociateTagFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing a successful dissociated tag.
-    /// </summary>
-    public class DissociateTagSuccessAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DissociateTagSuccessAction"/> class.
-        /// </summary>
-        /// <param name="result">True if the dissociation was successful.</param>
-        /// <param name="feedbackTag">The feedback tag that is being dissociated.</param>
-        /// <param name="feedbackId">The id for the feedback that the tag is being dissociated from.</param>
-        public DissociateTagSuccessAction(PrimitiveRequestResult<bool> result, UserFeedbackTagView feedbackTag, Guid feedbackId)
-        {
-            this.Result = result;
-            this.FeedbackTag = feedbackTag;
-            this.FeedbackId = feedbackId;
-        }
-
-        /// <summary>
-        /// Gets or sets the result.
-        /// </summary>
-        public PrimitiveRequestResult<bool> Result { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user feedback tag view.
-        /// </summary>
-        public UserFeedbackTagView FeedbackTag { get; set; }
-
-        /// <summary>
-        /// Gets or sets the feedback id.
-        /// </summary>
-        public Guid FeedbackId { get; set; }
-    }
-
-    /// <summary>
     /// The action representing the initiation of a load.
     /// </summary>
     public class LoadAction
@@ -199,6 +66,113 @@ public static class UserFeedbackActions
         /// <param name="requestResultModel">User feedback view data.</param>
         public LoadSuccessAction(RequestResult<IEnumerable<UserFeedbackView>> requestResultModel)
             : base(requestResultModel)
+        {
+        }
+    }
+
+    /// <summary>
+    /// The action representing the initiation of an update.
+    /// </summary>
+    public class UpdateAction
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdateAction"/> class.
+        /// </summary>
+        /// <param name="userFeedbackView">Represents the user feedback model.</param>
+        public UpdateAction(UserFeedbackView userFeedbackView)
+        {
+            this.UserFeedbackView = userFeedbackView;
+        }
+
+        /// <summary>
+        /// Gets or sets the user feedback view.
+        /// </summary>
+        public UserFeedbackView UserFeedbackView { get; set; }
+    }
+
+    /// <summary>
+    /// The action representing a failed update.
+    /// </summary>
+    public class UpdateFailAction : BaseFailAction
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdateFailAction"/> class.
+        /// </summary>
+        /// <param name="error">The request error.</param>
+        public UpdateFailAction(RequestError error)
+            : base(error)
+        {
+        }
+    }
+
+    /// <summary>
+    /// The action representing a successful update.
+    /// </summary>
+    public class UpdateSuccessAction : BaseSuccessAction<RequestResult<UserFeedbackView>>
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdateSuccessAction"/> class.
+        /// </summary>
+        /// <param name="requestResultModel">User feedback view data.</param>
+        public UpdateSuccessAction(RequestResult<UserFeedbackView> requestResultModel)
+            : base(requestResultModel)
+        {
+        }
+    }
+
+    /// <summary>
+    /// The action representing the initiation of an associated tag.
+    /// </summary>
+    public class AssociateTagsAction
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssociateTagsAction"/> class.
+        /// </summary>
+        /// <param name="tagIds">The tag IDs.</param>
+        /// <param name="feedbackId">The feedback ID.</param>
+        public AssociateTagsAction(IList<Guid> tagIds, Guid feedbackId)
+        {
+            this.TagIds = tagIds;
+            this.FeedbackId = feedbackId;
+        }
+
+        /// <summary>
+        /// Gets the tag IDs.
+        /// </summary>
+        public IList<Guid> TagIds { get; }
+
+        /// <summary>
+        /// Gets or sets the feedback ID.
+        /// </summary>
+        public Guid FeedbackId { get; set; }
+    }
+
+    /// <summary>
+    /// The action representing a failed tag association.
+    /// </summary>
+    public class AssociateTagsFailAction : BaseFailAction
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssociateTagsFailAction"/> class.
+        /// </summary>
+        /// <param name="error">The request error.</param>
+        public AssociateTagsFailAction(RequestError error)
+            : base(error)
+        {
+        }
+    }
+
+    /// <summary>
+    /// The action representing a successful tag association.
+    /// </summary>
+    public class AssociateTagsSuccessAction : BaseSuccessAction<RequestResult<UserFeedbackView>>
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssociateTagsSuccessAction"/> class.
+        /// </summary>
+        /// <param name="data">User feedback view data.</param>
+        public AssociateTagsSuccessAction(RequestResult<UserFeedbackView> data)
+            : base(data)
         {
         }
     }

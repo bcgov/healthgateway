@@ -51,9 +51,13 @@ public partial class FeedbackPage : FluxorComponent
 
     private string ActiveTag { get; set; } = string.Empty;
 
+    private bool FeedbackLoading => this.UserFeedbackState.Value.Load.IsLoading;
+
+    private bool FeedbackLoaded => this.UserFeedbackState.Value.Load.Loaded;
+
     private bool TagsLoading => this.TagState.Value.Load.IsLoading;
 
-    private bool ActiveTagExists => this.Tags.Any(t => t.Name == this.ActiveTag);
+    private bool ActiveTagExists => this.Tags.Any(t => t.Name == this.ActiveTag.Trim());
 
     private IEnumerable<RequestError> TagErrors => new[]
     {
@@ -66,20 +70,26 @@ public partial class FeedbackPage : FluxorComponent
 
     private IEnumerable<UserFeedbackView> Feedback => this.UserFeedbackState.Value.FeedbackData?.Values ?? Enumerable.Empty<UserFeedbackView>();
 
-    private MudForm AddTagForm { get; set; } = default!;
+    private IEnumerable<FeedbackRow> FeedbackRows => this.Feedback.Select(f => new FeedbackRow(f));
 
     private MudChip[] SelectedTagChips { get; set; } = Array.Empty<MudChip>();
 
     private bool ActiveTagIsValid => this.ActiveTag.Trim().Length > 0;
 
-    /// <inheritdoc/>
+    private bool FeedbackUpdating => this.UserFeedbackState.Value.Update.IsLoading ||
+                                     this.UserFeedbackState.Value.AssociateTags.IsLoading;
+
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         base.OnInitialized();
         this.ResetState();
         this.Dispatcher.Dispatch(new TagActions.LoadAction());
+        this.Dispatcher.Dispatch(new UserFeedbackActions.LoadAction());
         this.ActionSubscriber.SubscribeToAction<TagActions.AddSuccessAction>(this, this.DisplayAddSuccessful);
         this.ActionSubscriber.SubscribeToAction<TagActions.DeleteSuccessAction>(this, this.DisplayDeleteSuccessful);
+        this.ActionSubscriber.SubscribeToAction<UserFeedbackActions.UpdateSuccessAction>(this, this.DisplayUpdateSuccessful);
+        this.ActionSubscriber.SubscribeToAction<UserFeedbackActions.AssociateTagsSuccessAction>(this, this.DisplayAssociateSuccessful);
     }
 
     private void ResetState()
@@ -99,6 +109,16 @@ public partial class FeedbackPage : FluxorComponent
         this.Snackbar.Add($"Tag \"{action.Data.ResourcePayload?.Name}\" deleted.", Severity.Success);
         this.ActiveTag = string.Empty;
         this.StateHasChanged();
+    }
+
+    private void DisplayUpdateSuccessful(UserFeedbackActions.UpdateSuccessAction action)
+    {
+        this.Snackbar.Add("Feedback updated.", Severity.Success);
+    }
+
+    private void DisplayAssociateSuccessful(UserFeedbackActions.AssociateTagsSuccessAction action)
+    {
+        this.Snackbar.Add("Feedback tags updated.", Severity.Success);
     }
 
     private void HandleKeyDownActiveTag(KeyboardEventArgs eventArgs)
@@ -124,12 +144,12 @@ public partial class FeedbackPage : FluxorComponent
             return;
         }
 
-        this.Dispatcher.Dispatch(new TagActions.AddAction(this.ActiveTag));
+        this.Dispatcher.Dispatch(new TagActions.AddAction(this.ActiveTag.Trim()));
     }
 
     private void RemoveTag(MudChip chip)
     {
-        if (this.TagState.Value.Delete.IsLoading || this.UserFeedbackState.Value.Load.IsLoading || this.UserFeedbackState.Value.AssociateTag.IsLoading)
+        if (this.TagState.Value.Delete.IsLoading || this.UserFeedbackState.Value.Load.IsLoading || this.UserFeedbackState.Value.AssociateTags.IsLoading)
         {
             return;
         }
@@ -145,5 +165,49 @@ public partial class FeedbackPage : FluxorComponent
         {
             this.Dispatcher.Dispatch(new TagActions.DeleteAction(tag));
         }
+    }
+
+    private string DescribeTags(List<string> tagIds)
+    {
+        IEnumerable<AdminTagView> tags = this.Tags.Where(t => tagIds.Contains(t.Id.ToString()));
+        return string.Join(", ", tags.Select(t => t.Name).OrderBy(t => t));
+    }
+
+    private void ToggleIsReviewed(Guid feedbackId)
+    {
+        UserFeedbackView? feedback = this.Feedback.FirstOrDefault(f => f.Id == feedbackId);
+        if (feedback != null)
+        {
+            feedback.IsReviewed = !feedback.IsReviewed;
+            this.Dispatcher.Dispatch(new UserFeedbackActions.UpdateAction(feedback));
+        }
+    }
+
+    private sealed class FeedbackRow
+    {
+        public FeedbackRow(UserFeedbackView model)
+        {
+            this.Id = model.Id;
+            this.DateTime = model.CreatedDateTime;
+            this.Hdid = model.UserProfileId ?? string.Empty;
+            this.Email = model.Email;
+            this.Comments = model.Comment ?? string.Empty;
+            this.TagIds = model.Tags.Select(t => t.Tag.Id).ToHashSet();
+            this.IsReviewed = model.IsReviewed;
+        }
+
+        public Guid Id { get; }
+
+        public DateTime DateTime { get; }
+
+        public string Hdid { get; }
+
+        public string Email { get; }
+
+        public string Comments { get; }
+
+        public IEnumerable<Guid> TagIds { get; set; }
+
+        public bool IsReviewed { get; }
     }
 }

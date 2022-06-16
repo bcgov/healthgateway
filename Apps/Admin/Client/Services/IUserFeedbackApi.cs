@@ -35,20 +35,10 @@ public interface IUserFeedbackApi
     Task<ApiResponse<RequestResult<IEnumerable<UserFeedbackView>>>> GetAll();
 
     /// <summary>
-    /// Associate an existing admin tag to the feedback with matching id.
+    /// Updates a user feedback.
     /// </summary>
-    /// <returns>The added tag model wrapped in a request result.</returns>
-    /// <param name="tag">The tag model.</param>
-    /// <param name="feedbackId">The feedback id.</param>
-    [Put("/{feedbackId}/Tag")]
-    Task<ApiResponse<RequestResult<UserFeedbackTagView>>> AssociateTag([Body] AdminTagView tag, Guid feedbackId);
-
-    /// <summary>
-    /// Dissociate an existing admin tag from the feedback.
-    /// </summary>
-    /// <returns>A boolean indicating success or failure of dissociation of tag.</returns>
-    /// <param name="feedbackTag">The user feedback tag model.</param>
-    /// <param name="feedbackId">The feedback id.</param>
-    [Delete("/{feedbackId}/Tag")]
-    Task<ApiResponse<PrimitiveRequestResult<bool>>> DissociateTag([Body] UserFeedbackTagView feedbackTag, Guid feedbackId);
+    /// <param name="userFeedbackView">The model to update.</param>
+    /// <returns>The wrapped model.</returns>
+    [Patch("/")]
+    Task<ApiResponse<RequestResult<UserFeedbackView>>> Update([Body] UserFeedbackView userFeedbackView);
 }

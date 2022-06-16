@@ -29,121 +29,7 @@ using HealthGateway.Common.Data.ViewModels;
 public static class UserFeedbackReducers
 {
     /// <summary>
-    /// The reducer for associating tag to user feedback.
-    /// </summary>
-    /// <param name="state">The Tag state.</param>
-    /// <returns>The new state.</returns>
-    [ReducerMethod(typeof(UserFeedbackActions.AssociateTagAction))]
-    public static UserFeedbackState ReduceAssociateTagAction(UserFeedbackState state)
-    {
-        return state with
-        {
-            AssociateTag = state.AssociateTag with
-            {
-                IsLoading = true,
-            },
-        };
-    }
-
-    /// <summary>
-    /// The reducer for associating tag to user feedback success action.
-    /// </summary>
-    /// <param name="state">The user feedback state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new state.</returns>
-    [ReducerMethod]
-    public static UserFeedbackState ReduceAssociateTagSuccessAction(UserFeedbackState state, UserFeedbackActions.AssociateTagSuccessAction action)
-    {
-        IImmutableDictionary<Guid, UserFeedbackView> data = state.FeedbackData ?? new Dictionary<Guid, UserFeedbackView>().ToImmutableDictionary();
-
-        UserFeedbackTagView? tag = action.Data.ResourcePayload;
-        if (tag != null && data.TryGetValue(tag.Id, out UserFeedbackView? feedback))
-        {
-            feedback?.Tags.Add(tag);
-        }
-
-        return state with
-        {
-            AssociateTag = state.AssociateTag with
-            {
-                IsLoading = true,
-                Error = null,
-                Result = action.Data,
-            },
-            FeedbackData = data,
-        };
-    }
-
-    /// <summary>
-    /// The reducer for the associating tag to user fail action.
-    /// </summary>
-    /// <param name="state">The user feedback state.</param>
-    /// <param name="action">The add fail action.</param>
-    /// <returns>The new state.</returns>
-    [ReducerMethod]
-    public static UserFeedbackState ReduceAssociateTagFailAction(UserFeedbackState state, UserFeedbackActions.AssociateTagFailAction action)
-    {
-        return state with
-        {
-            AssociateTag = state.AssociateTag with
-            {
-                IsLoading = false,
-                Error = action.Error,
-            },
-        };
-    }
-
-    /// <summary>
-    /// The reducer for dissociating tag from user feedback.
-    /// </summary>
-    /// <param name="state">The user feedback state.</param>
-    /// <returns>The new state.</returns>
-    [ReducerMethod(typeof(UserFeedbackActions.DissociateTagAction))]
-    public static UserFeedbackState ReduceDissociateTagAction(UserFeedbackState state)
-    {
-        return state with
-        {
-            DissociateTag = state.DissociateTag with
-            {
-                IsLoading = true,
-            },
-        };
-    }
-
-    /// <summary>
-    /// The reducer for disassociating tag from user feedback success action.
-    /// </summary>
-    /// <param name="state">The user feedback state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new state.</returns>
-    [ReducerMethod]
-    public static UserFeedbackState ReduceDissociateTagSuccessAction(UserFeedbackState state, UserFeedbackActions.DissociateTagSuccessAction action)
-    {
-        IImmutableDictionary<Guid, UserFeedbackView> data = state.FeedbackData ?? new Dictionary<Guid, UserFeedbackView>().ToImmutableDictionary();
-
-        if (action.Result.ResourcePayload && data.TryGetValue(action.FeedbackId, out UserFeedbackView? feedback))
-        {
-            UserFeedbackTagView? tag = feedback.Tags.SingleOrDefault(t => t.Tag.Id == action.FeedbackTag.Id);
-            if (tag != null)
-            {
-                feedback.Tags.Remove(tag);
-            }
-        }
-
-        return state with
-        {
-            DissociateTag = state.DissociateTag with
-            {
-                IsLoading = true,
-                Error = null,
-                Result = action.Result,
-            },
-            FeedbackData = data,
-        };
-    }
-
-    /// <summary>
-    /// The reducer for loading User Feedback.
+    /// The reducer for loading user feedback.
     /// </summary>
     /// <param name="state">The user feedback state.</param>
     /// <returns>The new state.</returns>
@@ -200,6 +86,136 @@ public static class UserFeedbackReducers
     }
 
     /// <summary>
+    /// The reducer for updating user feedback.
+    /// </summary>
+    /// <param name="state">The user feedback state.</param>
+    /// <returns>The new state.</returns>
+    [ReducerMethod(typeof(UserFeedbackActions.UpdateAction))]
+    public static UserFeedbackState ReduceUpdateAction(UserFeedbackState state)
+    {
+        return state with
+        {
+            Update = state.Update with
+            {
+                IsLoading = true,
+            },
+        };
+    }
+
+    /// <summary>
+    /// The reducer for the update success action.
+    /// </summary>
+    /// <param name="state">The user feedback state.</param>
+    /// <param name="action">The update success action.</param>
+    /// <returns>The new state.</returns>
+    [ReducerMethod]
+    public static UserFeedbackState ReduceUpdateSuccessAction(UserFeedbackState state, UserFeedbackActions.UpdateSuccessAction action)
+    {
+        IImmutableDictionary<Guid, UserFeedbackView> data = state.FeedbackData ?? new Dictionary<Guid, UserFeedbackView>().ToImmutableDictionary();
+
+        UserFeedbackView? feedback = action.Data.ResourcePayload;
+        if (feedback != null)
+        {
+            data = data.Remove(feedback.Id).Add(feedback.Id, feedback);
+        }
+
+        return state with
+        {
+            Update = state.Update with
+            {
+                IsLoading = false,
+                Result = action.Data,
+                Error = null,
+            },
+            FeedbackData = data,
+        };
+    }
+
+    /// <summary>
+    /// The reducer for the update fail action.
+    /// </summary>
+    /// <param name="state">The user feedback state.</param>
+    /// <param name="action">The update fail action.</param>
+    /// <returns>The new state.</returns>
+    [ReducerMethod]
+    public static UserFeedbackState ReduceUpdateFailAction(UserFeedbackState state, UserFeedbackActions.UpdateFailAction action)
+    {
+        return state with
+        {
+            Update = state.Update with
+            {
+                IsLoading = false,
+                Error = action.Error,
+            },
+        };
+    }
+
+    /// <summary>
+    /// The reducer for initiating the association of tags to user feedback.
+    /// </summary>
+    /// <param name="state">The Tag state.</param>
+    /// <returns>The new state.</returns>
+    [ReducerMethod(typeof(UserFeedbackActions.AssociateTagsAction))]
+    public static UserFeedbackState ReduceAssociateTagsAction(UserFeedbackState state)
+    {
+        return state with
+        {
+            AssociateTags = state.AssociateTags with
+            {
+                IsLoading = true,
+            },
+        };
+    }
+
+    /// <summary>
+    /// The reducer for the successful association of tags to user feedback.
+    /// </summary>
+    /// <param name="state">The user feedback state.</param>
+    /// <param name="action">The load success action.</param>
+    /// <returns>The new state.</returns>
+    [ReducerMethod]
+    public static UserFeedbackState ReduceAssociateTagsSuccessAction(UserFeedbackState state, UserFeedbackActions.AssociateTagsSuccessAction action)
+    {
+        IImmutableDictionary<Guid, UserFeedbackView> data = state.FeedbackData ?? new Dictionary<Guid, UserFeedbackView>().ToImmutableDictionary();
+
+        UserFeedbackView? feedback = action.Data.ResourcePayload;
+        if (feedback != null)
+        {
+            data = data.Remove(feedback.Id).Add(feedback.Id, feedback);
+        }
+
+        return state with
+        {
+            AssociateTags = state.AssociateTags with
+            {
+                IsLoading = true,
+                Error = null,
+                Result = action.Data,
+            },
+            FeedbackData = data,
+        };
+    }
+
+    /// <summary>
+    /// The reducer for the failed association of tags to user feedback.
+    /// </summary>
+    /// <param name="state">The user feedback state.</param>
+    /// <param name="action">The add fail action.</param>
+    /// <returns>The new state.</returns>
+    [ReducerMethod]
+    public static UserFeedbackState ReduceAssociateTagsFailAction(UserFeedbackState state, UserFeedbackActions.AssociateTagsFailAction action)
+    {
+        return state with
+        {
+            AssociateTags = state.AssociateTags with
+            {
+                IsLoading = false,
+                Error = action.Error,
+            },
+        };
+    }
+
+    /// <summary>
     /// The reducer for the reset state action.
     /// </summary>
     /// <param name="state">The user feedback state.</param>
@@ -209,7 +225,7 @@ public static class UserFeedbackReducers
     {
         return state with
         {
-            AssociateTag = new(),
+            AssociateTags = new(),
             Load = new(),
         };
     }
