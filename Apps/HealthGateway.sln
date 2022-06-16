@@ -73,6 +73,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GatewayApi", "GatewayApi\sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GatewayApiTests", "GatewayApi\test\unit\GatewayApiTests.csproj", "{4C1B9864-FE24-4E58-B8A9-5554BF08AF0B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{11B7A6AA-39F8-407D-8817-2BF5A175F56A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -466,5 +468,20 @@ Global
 		Policies = $0
 		$0.StandardHeader = $1
 		$1.Text = @-------------------------------------------------------------------------\r\n Copyright © 2019 Province of British Columbia\r\n\r\n Licensed under the Apache License, Version 2.0 (the "License");\r\n you may not use this file except in compliance with the License.\r\n You may obtain a copy of the License at\r\n\r\n http://www.apache.org/licenses/LICENSE-2.0\r\n\r\n Unless required by applicable law or agreed to in writing, software\r\n distributed under the License is distributed on an "AS IS" BASIS,\r\n WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\r\n See the License for the specific language governing permissions and\r\n limitations under the License.\r\n-------------------------------------------------------------------------
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{33F20A22-6911-4BFF-99D8-F166C7D018BA} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{62D7B7CE-05C2-4997-A346-6088DD33A5E2} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{B197DE3E-9C29-4CA0-85D6-225D9D22E5A2} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{A339FDC0-7796-4F7C-A3A9-34261E83655B} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{AE9BCF9A-C2F8-4122-8C46-4FEF1EC4D676} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{4C1B9864-FE24-4E58-B8A9-5554BF08AF0B} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{30741500-8F59-45CF-B753-14EBE6EE275E} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{01C73638-BCE4-4336-9849-54D7CB6E7DF2} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{99BD4ECB-32B2-4429-95E3-3AFFAF89BD02} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{66487699-BD22-4707-99F8-CBDE347ECE94} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{622DA0CD-5DF2-4FF1-9BE6-524CA0549976} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{D55428F4-B07E-46AF-AB09-0F526701173F} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
 	EndGlobalSection
 EndGlobal

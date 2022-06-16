@@ -4,10 +4,11 @@ services:
     image: loadimpact/k6:latest
     command: run /webapp_api/configuration/k6_configuration.js
     volumes:
-      - ../../../src/webapp_api/configuration:/webapp_api/configuration
-      - ../../../src/inc:/inc
+      - ../../webapp_api/configuration:/webapp_api/configuration
+      - ../../inc:/inc
     environment: 
       - "HG_TYPE=${HG_TYPE}"
+      - "HG_VUS=${HG_VUS}"
       - "HG_ENV=${HG_ENV}"
       - "HG_KEY=${HG_KEY}"
       - "HG_PASSWORD=${HG_PASSWORD}"

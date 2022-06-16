@@ -22,9 +22,13 @@ export let options = common.OptionConfig();
 
 export default function () {
 
-    let response = http.get(
-        common.ConfigurationUrl
-     );
-    common.checkResponse(response);
+
+    common.groupWithDurationMetric("batch", function () {
+        let webClientBatchResponses = http.batch(
+            common.webClientRequests(user)
+        );
+        common.checkResponses(webClientBatchResponses);
+    });
+
     sleep(1);
 }

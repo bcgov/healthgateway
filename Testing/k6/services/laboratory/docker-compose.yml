@@ -9,5 +9,6 @@ services:
     environment: 
       - "HG_TYPE=${HG_TYPE}"
       - "HG_ENV=${HG_ENV}"
+      - "HG_VUS=${HG_VUS}"
       - "HG_KEY=${HG_KEY}"
       - "HG_PASSWORD=${HG_PASSWORD}"

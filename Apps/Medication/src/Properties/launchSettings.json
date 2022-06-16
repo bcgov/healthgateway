@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://0.0.0.0:3003",
+      "applicationUrl": "http://localhost:3003",
       "sslPort": 0
     }
   },
@@ -12,7 +12,7 @@
     "HealthGateway.Medication": {
       "commandName": "Project",
       "launchUrl": "swagger",
-      "applicationUrl": "http://0.0.0.0:3003;",
+      "applicationUrl": "http://localhost:3003;",
       "environmentVariables": {
         "ODRPROXY_SERVICE_PORT": "443",
         "ODRPROXY_SERVICE_HOST": "dev-odrproxy.pathfinder.gov.bc.ca",

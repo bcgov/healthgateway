@@ -23,40 +23,40 @@ import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
 export let passwd = __ENV.HG_PASSWORD;
 
-export let maxVus = __ENV.HG_VUS ? __ENV.HG_VUS : 300;
-maxVus = maxVus < 1 ? 1 : maxVus;
+export let maxVus = __ENV.HG_VUS ? parseInt(__ENV.HG_VUS) : 500;
+maxVus = (maxVus < 1) ? 1 : maxVus;
 export let rampVus = (maxVus / 4).toFixed(0);
-rampVus = rampVus < 1 ? 1 : rampVus;
+rampVus = (rampVus < 1) ? 1 : rampVus;
 
 export let authSuccess = new Rate("authentication_successful");
 export let errorRate = new Rate("errors");
 
 export let refreshTokenSuccess = new Rate("auth_refresh_successful");
 
-export let environment = __ENV.HG_ENV ? __ENV.HG_ENV : "test"; // default to test environment. choice of dev, test
+export let environment = __ENV.HG_ENV ? __ENV.HG_ENV : "test"; // default to test environment. choice of dev, test (never prod)
 export let OptionsType = __ENV.HG_TYPE ? __ENV.HG_TYPE : "smoke"; // choice of load, smoke, soak, spike, stress
 
 export let groupDuration = Trend("batch");
 
 export let baseUrl = "https://" + environment + ".healthgateway.gov.bc.ca"; // with this, we can be confident that production can't be hit.
+export let servicesBaseUrl = "https://hg-" + environment + ".api.gov.bc.ca";
 export let TokenEndpointUrl =
     "https://" +
     environment +
     ".oidc.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
+
 export let AuthorizationEndpointUrl = 
     "https://" +
     environment +
     ".oidc.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/authorize";
-export let MedicationServiceUrl =
-    baseUrl + "/api/medicationservice/v1/api/MedicationStatement";
-export let LaboratoryServiceUrl =
-    baseUrl + "/api/laboratoryservice/v1/api/Laboratory/LaboratoryOrders";
-export let PatientServiceUrl = baseUrl + "/api/PatientService/v1/api/Patient";
+export let MedicationServiceUrl = servicesBaseUrl + "/MedicationStatement";
+export let LaboratoryServiceUrl = servicesBaseUrl + "/Laboratory/LaboratoryOrders";
+export let PatientServiceUrl = servicesBaseUrl + "/Patient";
 
 // Health Gateway WebClient app APIs:
 export let CommentUrl = baseUrl + "/v1/api/Comment";
 export let CommunicationUrl = baseUrl + "/v1/api/Communication";
-export let ConfigurationUrl = baseUrl + "/v1/api/Configuration";
+export let ConfigurationUrl = baseUrl + "/configuration";
 export let NoteUrl = baseUrl + "/v1/api/Note";
 export let UserProfileUrl = baseUrl + "/v1/api/UserProfile";
 
@@ -86,8 +86,8 @@ export let smokeOptions = {
 export let soakOptions = {
     stages: [
         { duration: "1m", target: 10 }, // below normal load
-        { duration: "2m", target: 250 },
-        { duration: "3h56m", target: 250 }, // stay at high users for hours 'soaking' the system
+        { duration: "2m", target: maxVus },
+        { duration: "3h56m", target: maxVus }, // stay at high users for hours 'soaking' the system
         { duration: "2m", target: 0 }, // drop back down
     ],
 };
@@ -95,23 +95,25 @@ export let spikeOptions = {
     stages: [
         { duration: "20s", target: 10 }, // below normal load
         { duration: "1m", target: 10 },
-        { duration: "1m", target: 400 }, // spike to super high users
-        { duration: "5m", target: 400 }, // stay there
-        { duration: "1m", target: 200 }, // scale down
+        { duration: "1m", target: maxVus }, // spike to super high users
+        { duration: "5m", target: maxVus }, // stay there
+        { duration: "1m", target: rampVus }, // scale down
         { duration: "3m", target: 10 },
         { duration: "10s", target: 0 }, //
     ],
 };
+
+let stressVus = maxVus + 50;
+let stressMaxVus = maxVus + 150;
+
 export let stressOptions = {
     stages: [
-        { duration: "2m", target: 50 }, // below normal load
-        { duration: "5m", target: 100 },
-        { duration: "2m", target: 200 }, // normal load
-        { duration: "5m", target: 200 },
-        { duration: "2m", target: 400 }, // around the breaking point
-        { duration: "4m", target: 400 },
-        { duration: "2m", target: 500 }, // beyond the breaking point
-        { duration: "5m", target: 550 },
+        { duration: "2m", target: 10 }, // below normal load
+        { duration: "5m", target: 50 },
+        { duration: "5m", target: rampVus },
+        { duration: "5m", target: maxVus }, // around the breaking point
+        { duration: "2m", target: stressVus }, // beyond the breaking point
+        { duration: "5m", target: stressMaxVus },
         { duration: "5m", target: 0 }, // scale down. Recovery stage.
     ],
 };
@@ -391,8 +393,7 @@ export function webClientRequests(user) {
         },
         configuration: {
             method: "GET",
-            url: common.ConfigurationUrl + "/" + user.hdid,
-            params: params(user),
+            url: common.ConfigurationUrl,
         },
         profile: {
             method: "GET",
