@@ -244,7 +244,8 @@ namespace HealthGateway.Database.Delegates
                 .Select(x => new { x.HdId, x.LastLoginDateTime })
                 .Concat(
                     this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
-                .Where(x => GatewayDbContext.DateTrunc("days", x.LastLoginDateTime) >= startDate && GatewayDbContext.DateTrunc("days", x.LastLoginDateTime) <= endDate)
+                .Where(x => x.LastLoginDateTime >= startDate && x.LastLoginDateTime <= endDate)
+                .Select(x => new { x.HdId, lastLoginDate = GatewayDbContext.DateTrunc("days", x.LastLoginDateTime) })
                 .Distinct()
                 .GroupBy(x => x.HdId).Select(x => new { HdId = x.Key, count = x.Count() })
                 .Where(x => x.count >= dayCount).Count();
