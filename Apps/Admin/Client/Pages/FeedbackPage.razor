@@ -88,7 +88,7 @@
                 <MudTd DataLabel="Email">
                     @if (context.Hdid.Length > 0)
                     {
-                        <MudIconButton Icon="@Icons.Material.Filled.PersonSearch" Color="@Color.Dark" Size="Size.Small"/>
+                        <MudIconButton Icon="@Icons.Material.Filled.PersonSearch" Color="@Color.Dark" Size="Size.Small" OnClick="() => NavigateToSupport(context.Hdid)"/>
                     }
                     @if (context.Email.Length > 0)
                     {

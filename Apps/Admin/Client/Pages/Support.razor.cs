@@ -27,6 +27,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.WebUtilities;
     using MudBlazor;
 
     /// <summary>
@@ -41,6 +42,9 @@ namespace HealthGateway.Admin.Client.Pages
 
         [Inject]
         private IState<MessageVerificationState> MessageVerificationState { get; set; } = default!;
+
+        [Inject]
+        private NavigationManager NavigationManager { get; set; } = default!;
 
         private UserQueryType SelectedQueryType { get; set; } = UserQueryType.PHN;
 
@@ -79,6 +83,15 @@ namespace HealthGateway.Admin.Client.Pages
         {
             base.OnInitialized();
             this.ResetState();
+
+            Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
+
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(UserQueryType.HDID.ToString(), out var hdid))
+            {
+                this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(UserQueryType.HDID, StringManipulator.StripWhitespace(hdid)));
+                this.QueryParameter = hdid;
+                this.SelectedQueryType = UserQueryType.HDID;
+            }
         }
 
         /// <summary>
