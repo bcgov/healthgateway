@@ -19,11 +19,13 @@ namespace HealthGateway.Admin.Client.Pages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Store;
 using HealthGateway.Admin.Client.Store.Tag;
 using HealthGateway.Admin.Client.Store.UserFeedback;
+using HealthGateway.Admin.Common.Constants;
 using HealthGateway.Admin.Common.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -48,6 +50,9 @@ public partial class FeedbackPage : FluxorComponent
 
     [Inject]
     private ISnackbar Snackbar { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
 
     private string ActiveTag { get; set; } = string.Empty;
 
@@ -171,6 +176,11 @@ public partial class FeedbackPage : FluxorComponent
     {
         IEnumerable<AdminTagView> tags = this.Tags.Where(t => tagIds.Contains(t.Id.ToString()));
         return string.Join(", ", tags.Select(t => t.Name).OrderBy(t => t));
+    }
+
+    private void NavigateToSupport(string hdid)
+    {
+        this.NavigationManager.NavigateTo($"support?{UserQueryType.HDID}={hdid}");
     }
 
     private void ToggleIsReviewed(Guid feedbackId)
