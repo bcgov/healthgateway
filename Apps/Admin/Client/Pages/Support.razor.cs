@@ -28,6 +28,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.WebUtilities;
+    using Microsoft.Extensions.Primitives;
     using MudBlazor;
 
     /// <summary>
@@ -86,7 +87,7 @@ namespace HealthGateway.Admin.Client.Pages
 
             Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
 
-            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(UserQueryType.HDID.ToString(), out var hdid))
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(UserQueryType.HDID.ToString(), out StringValues hdid))
             {
                 this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(UserQueryType.HDID, StringManipulator.StripWhitespace(hdid)));
                 this.QueryParameter = hdid;
