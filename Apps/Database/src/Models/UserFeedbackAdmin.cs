@@ -41,6 +41,25 @@ namespace HealthGateway.Database.Models
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="UserFeedbackAdmin"/> class.
+        /// </summary>
+        /// <param name="feedback">The database model.</param>
+        public UserFeedbackAdmin(UserFeedback feedback)
+            : base(feedback.Tags)
+        {
+            this.Id = feedback.Id;
+            this.IsSatisfied = feedback.IsSatisfied;
+            this.IsReviewed = feedback.IsReviewed;
+            this.UpdatedBy = feedback.UpdatedBy;
+            this.Comment = feedback.Comment;
+            this.CreatedBy = feedback.CreatedBy;
+            this.CreatedDateTime = feedback.CreatedDateTime;
+            this.UserProfileId = feedback.UserProfileId;
+            this.UpdatedDateTime = feedback.UpdatedDateTime;
+            this.Version = feedback.Version;
+        }
+
+        /// <summary>
         /// Gets or sets the user email.
         /// </summary>
         [MaxLength(254)]

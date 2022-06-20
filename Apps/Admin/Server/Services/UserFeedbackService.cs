@@ -78,7 +78,7 @@ namespace HealthGateway.Admin.Server.Services
 
             this.feedbackDelegate.UpdateUserFeedback(feedback.ToDbModel());
 
-            DBResult<UserFeedback> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(feedback.Id);
+            DBResult<UserFeedbackAdmin> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(feedback.Id);
             if (userFeedbackResult.Status == DBStatusCode.Read)
             {
                 result.ResourcePayload = userFeedbackResult.Payload.ToUiModel();
@@ -160,17 +160,17 @@ namespace HealthGateway.Admin.Server.Services
                 ResultStatus = ResultType.Error,
             };
 
-            DBResult<UserFeedback> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(userFeedbackId);
+            DBResult<UserFeedbackAdmin> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(userFeedbackId);
             DBResult<IEnumerable<AdminTag>> adminTagResult = this.adminTagDelegate.GetAdminTags(adminTagIds);
 
             if (userFeedbackResult.Status == DBStatusCode.Read && adminTagResult.Status == DBStatusCode.Read)
             {
                 UserFeedback userFeedback = userFeedbackResult.Payload;
                 IEnumerable<AdminTag> adminTags = adminTagResult.Payload;
-                List<UserFeedbackTag> feedbackTags = adminTags.Select(t => new UserFeedbackTag() { AdminTag = t, UserFeedback = userFeedback }).ToList();
+                IEnumerable<UserFeedbackTag> feedbackTags = adminTags.Select(t => new UserFeedbackTag { AdminTag = t, UserFeedback = userFeedback });
 
                 userFeedback.Tags.Clear();
-                foreach (var userFeedbackTag in feedbackTags)
+                foreach (UserFeedbackTag userFeedbackTag in feedbackTags)
                 {
                     userFeedback.Tags.Add(userFeedbackTag);
                     this.logger.LogDebug("User feedback tag added for admin tag id: {AdminTagId} and user feedback id: {FeedbackTagExists}", userFeedbackTag.AdminTagId, userFeedbackTag.UserFeedbackId);
