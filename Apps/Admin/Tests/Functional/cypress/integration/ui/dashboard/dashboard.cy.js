@@ -41,11 +41,6 @@ describe("Dashboard", () => {
         cy.login(Cypress.env("idir_username"), Cypress.env("idir_password"));
     });
 
-    afterEach(() => {
-        cy.log("Logging out.");
-        cy.logout();
-    });
-
     it("Verify dashboards counts.", () => {
         cy.log("Dashboard test started.");
         cy.get("[data-testid=total-registered-users]").contains(6);
@@ -73,6 +68,7 @@ describe("Dashboard", () => {
             });
         });
 
+        cy.log("Updating unique days input value.");
         cy.get("[data-testid=unique-days]").clear().type(5);
         cy.get("[data-testid=total-unique-users]").click();
         cy.get("[data-testid=total-unique-users]").contains(0);
@@ -83,9 +79,39 @@ describe("Dashboard", () => {
             });
         });
 
+        cy.log("Updating unique days input value.");
         cy.get("[data-testid=unique-days]").clear().type(2);
         cy.get("[data-testid=total-unique-users]").click();
         cy.get("[data-testid=total-unique-users]").contains(3);
+
+        cy.intercept("GET", "**/Dashboard/RecurringUsers?days=2*", (req) => {
+            req.reply({
+                body: 10,
+            });
+        });
+
+        cy.log("Clicking refresh button.");
+        cy.get("[data-testid=refresh-btn]").click();
+
+        // Unique users
+        cy.get("[data-testid=total-unique-users]").contains(10);
+
+        // All other data remains same as fixtures were not changed
+        cy.get("[data-testid=total-registered-users]").contains(6);
+        cy.get("[data-testid=total-dependents]").contains(2);
+        cy.get("[data-testid=average-rating]").contains("4.00");
+
+        cy.get("[data-testid=daily-data-table]")
+            .first()
+            .within(() => {
+                cy.get(
+                    "[data-testid=daily-data-total-registered-users]"
+                ).contains("2");
+                cy.get(
+                    "[data-testid=daily-data-total-logged-in-users]"
+                ).contains("6");
+                cy.get("[data-testid=daily-data-dependents]").contains("2");
+            });
 
         cy.log("Dashboard test finished.");
     });

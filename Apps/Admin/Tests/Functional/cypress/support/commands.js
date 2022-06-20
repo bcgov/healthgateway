@@ -33,7 +33,6 @@ Cypress.Commands.add("login", (username, password) => {
         .should("not.be.disabled")
         .click();
     cy.log("Username: " + username);
-    cy.log("Password: " + password);
     cy.get("#user").should("be.visible").type(username);
     cy.get("#password").should("be.visible").type(password);
     cy.get('input[name="btnSubmit"]').should("be.visible").click();
