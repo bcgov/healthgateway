@@ -88,7 +88,7 @@
                 <MudTd DataLabel="Email">
                     @if (context.Hdid.Length > 0)
                     {
-                        <MudIconButton Icon="@Icons.Material.Filled.PersonSearch" Color="@Color.Dark" Size="Size.Small" OnClick="() => NavigateToSupport(context.Hdid)"/>
+                        <MudIconButton Icon="@Icons.Material.Filled.PersonSearch" Color="@Color.Dark" OnClick="() => NavigateToSupport(context.Hdid)"/>
                     }
                     @if (context.Email.Length > 0)
                     {
@@ -99,7 +99,8 @@
                 <MudTd DataLabel="Tags">
                     <MudSelect T="Guid"
                                MultiSelection="true"
-                               @bind-SelectedValues="@context.TagIds"
+                               SelectedValues="@context.TagIds"
+                               SelectedValuesChanged="@(tagIds => AssociateTags(tagIds, context.Id))"
                                MultiSelectionTextFunc="@DescribeTags"
                                Disabled="@FeedbackUpdating"
                                Variant="@Variant.Filled"
@@ -114,7 +115,6 @@
                 <MudTd DataLabel="Reviewed">
                     <MudIconButton Icon="@(context.IsReviewed ? Icons.Material.Filled.Check : Icons.Material.Filled.Close)"
                                    Color="@(context.IsReviewed ? Color.Success : Color.Error)"
-                                   Size="@Size.Small"
                                    Disabled="@FeedbackUpdating"
                                    @onclick="@(() => ToggleIsReviewed(context.Id))"/>
                 </MudTd>

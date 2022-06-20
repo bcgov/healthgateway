@@ -36,23 +36,18 @@ public class UserFeedbackViewEffects
     /// Initializes a new instance of the <see cref="UserFeedbackViewEffects"/> class.
     /// </summary>
     /// <param name="logger">The injected logger.</param>
-    /// <param name="feedbackApi">The injected user feedback API.</param>
-    /// <param name="tagApi">The injected tag API.</param>
-    public UserFeedbackViewEffects(ILogger<UserFeedbackViewEffects> logger, IUserFeedbackApi feedbackApi, ITagApi tagApi)
+    /// <param name="api">The injected user feedback API.</param>
+    public UserFeedbackViewEffects(ILogger<UserFeedbackViewEffects> logger, IUserFeedbackApi api)
     {
         this.Logger = logger;
-        this.FeedbackApi = feedbackApi;
-        this.TagApi = tagApi;
+        this.Api = api;
     }
 
     [Inject]
     private ILogger<UserFeedbackViewEffects> Logger { get; set; }
 
     [Inject]
-    private IUserFeedbackApi FeedbackApi { get; set; }
-
-    [Inject]
-    private ITagApi TagApi { get; set; }
+    private IUserFeedbackApi Api { get; set; }
 
     /// <summary>
     /// Handler that calls the service and dispatches resulting actions.
@@ -64,7 +59,7 @@ public class UserFeedbackViewEffects
     {
         this.Logger.LogInformation("Loading user feedback");
 
-        ApiResponse<RequestResult<IEnumerable<UserFeedbackView>>> response = await this.FeedbackApi.GetAll().ConfigureAwait(true);
+        ApiResponse<RequestResult<IEnumerable<UserFeedbackView>>> response = await this.Api.GetAll().ConfigureAwait(true);
         if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
         {
             this.Logger.LogInformation("User feedback loaded successfully!");
@@ -88,7 +83,7 @@ public class UserFeedbackViewEffects
     {
         this.Logger.LogInformation("Updating user feedback");
 
-        ApiResponse<RequestResult<UserFeedbackView>> response = await this.FeedbackApi.Update(action.UserFeedbackView).ConfigureAwait(true);
+        ApiResponse<RequestResult<UserFeedbackView>> response = await this.Api.Update(action.UserFeedbackView).ConfigureAwait(true);
         if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
         {
             this.Logger.LogInformation("User feedback updated successfully!");
@@ -112,7 +107,7 @@ public class UserFeedbackViewEffects
     {
         this.Logger.LogInformation("Associating tags with user feedback!");
 
-        ApiResponse<RequestResult<UserFeedbackView>> response = await this.TagApi.AssociateTags(action.TagIds, action.FeedbackId).ConfigureAwait(true);
+        ApiResponse<RequestResult<UserFeedbackView>> response = await this.Api.AssociateTags(action.TagIds, action.FeedbackId).ConfigureAwait(true);
         if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
         {
             this.Logger.LogInformation("Tags associated to user feedback successfully!");
