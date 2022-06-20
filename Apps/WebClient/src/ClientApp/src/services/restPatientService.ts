@@ -38,7 +38,7 @@ export class RestPatientService implements IPatientService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Immunization
+                            ServiceName.Patient
                         )
                     );
                 });

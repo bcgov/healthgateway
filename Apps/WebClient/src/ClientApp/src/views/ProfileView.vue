@@ -182,7 +182,7 @@ export default class ProfileView extends Vue {
     }
 
     private get isPostalAddressShown(): boolean {
-        return this.patientData.postalAddress !== null;
+        return this.patientData.postalAddress != null;
     }
 
     private get postalAddressLabel(): string {
@@ -527,25 +527,34 @@ export default class ProfileView extends Vue {
     }
 
     private isSameAddress(): boolean {
-        const equals = (a: string[], b: string[]) =>
-            a.length === b.length && a.every((v, i) => v === b[i]);
+        let result = false;
+        if (this.postalAddress != null && this.physicalAddress != null) {
+            const equals = (a: string[], b: string[]) =>
+                a.length === b.length && a.every((v, i) => v === b[i]);
 
-        const isStreetLineSame = equals(
-            this.postalAddress.streetLines,
-            this.physicalAddress.streetLines
-        );
+            const isStreetLineSame = equals(
+                this.postalAddress.streetLines,
+                this.physicalAddress.streetLines
+            );
 
-        const isCitySame =
-            this.postalAddress.city === this.physicalAddress.city;
+            const isCitySame =
+                this.postalAddress.city === this.physicalAddress.city;
 
-        const isStateSame =
-            this.postalAddress.state === this.physicalAddress.state;
+            const isStateSame =
+                this.postalAddress.state === this.physicalAddress.state;
 
-        const isPostalCodeSame =
-            this.postalAddress.postalCode === this.physicalAddress.postalCode;
+            const isPostalCodeSame =
+                this.postalAddress.postalCode ===
+                this.physicalAddress.postalCode;
 
-        const result =
-            isStreetLineSame && isCitySame && isStateSame && isPostalCodeSame;
+            result =
+                isStreetLineSame &&
+                isCitySame &&
+                isStateSame &&
+                isPostalCodeSame;
+        } else {
+            result = this.postalAddress == null && this.physicalAddress == null;
+        }
 
         this.logger.debug(
             `Physical Address and Postal Address same: ${result}`
