@@ -2,49 +2,17 @@ const { AuthMethod } = require("../../../support/constants");
 
 const homePath = "/home";
 
-const encounterModule = "Encounter";
-const immunizationModule = "Immunization";
-const laboratoryModule = "Laboratory";
-const allLaboratoryModule = "AllLaboratory";
-const medicationModule = "Medication";
-const medicationRequestModule = "MedicationRequest";
-const noteModule = "Note";
-const vaccinationStatusModule = "VaccinationStatus";
-
-const encounterTitle = "Health Visits";
-const immunizationTitle = "Immunizations";
-const laboratoryTitle = "COVID‑19 Tests";
-const vaccineCardTitle = "BC Vaccine Card";
-
 const addQuickLinkButtonSelector = "[data-testid=add-quick-link-button]";
-const addQuickLinkCheckboxSelector =
-    "[data-testid=quick-link-modal-text] input[type=checkbox]";
-const addQuickLinkCancelButtonSelector =
-    "[data-testid=cancel-add-quick-link-btn]";
 const addQuickLinkSubmitButtonSelector = "[data-testid=add-quick-link-btn]";
-const addQuickLinkModalTextSelector = "[data-testid=quick-link-modal-text]";
-const quickLinkCardSelector = "[data-testid=quick-link-card]";
-const cardButtonTitleSelector = "[data-testid=card-button-title]";
 const quickLinkMenuButtonSelector = "[data-testid=quick-link-menu-button]";
 const quickLinkRemoveButtonSelector = "[data-testid=remove-quick-link-button]";
 const vaccineCardQuickLinkCardSelector = "[data-testid=bc-vaccine-card-btn]";
 const vaccineCardAddQuickLinkCheckboxSelector =
     "[data-testid=bc-vaccine-card-filter]";
-const formTitleVaccineCard = "[data-testid=formTitleVaccineCard]";
-
-function getQuickLinkCheckbox(module) {
-    return cy.get(`${addQuickLinkCheckboxSelector}[value=${module}]`);
-}
-
-function getQuickLinkCard(title) {
-    return cy
-        .contains(cardButtonTitleSelector, title)
-        .parents(quickLinkCardSelector);
-}
 
 describe("Vaccine Card Quick Link", () => {
     it("Remove and Add Vaccine Card Quick Link", () => {
-        cy.enableModules([vaccinationStatusModule]);
+        cy.enableModules(["VaccinationStatus"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -102,7 +70,7 @@ describe("Vaccine Card Quick Link", () => {
     });
 
     it("Vaccine Card quick link not showing when module is disabled", () => {
-        cy.enableModules([noteModule]);
+        cy.enableModules(["Note"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
