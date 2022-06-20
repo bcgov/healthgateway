@@ -43,6 +43,7 @@
     @foreach (AdminTagView tag in Tags)
     {
         <MudChip Text="@tag.Name"
+                 Value="@tag.Id"
                  Class="my-2"
                  Variant="@Variant.Text"
                  Size="@Size.Small"

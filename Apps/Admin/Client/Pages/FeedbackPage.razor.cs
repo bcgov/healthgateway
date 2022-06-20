@@ -118,7 +118,7 @@ public partial class FeedbackPage : FluxorComponent
         this.ActiveTag = string.Empty;
         this.StateHasChanged();
     }
-    
+
     private void HandleFeedbackUpdateSuccessful(UserFeedbackActions.UpdateSuccessAction action)
     {
         this.Snackbar.Add("Feedback updated.", Severity.Success);
@@ -162,14 +162,16 @@ public partial class FeedbackPage : FluxorComponent
             return;
         }
 
-        if (this.Feedback.Any(f => f.Tags.Any(t => t.Tag.Name == chip.Text)))
+        Guid tagId = (Guid)chip.Value;
+
+        if (this.Feedback.Any(f => f.Tags.Any(t => t.TagId == tagId)))
         {
             this.Snackbar.Add($"Tag \"{chip.Text}\" cannot be removed because it is currently associated with feedback.", Severity.Warning);
             return;
         }
 
-        IEnumerable<AdminTagView> tags = this.Tags.Where(t => t.Name == chip.Text);
-        foreach (AdminTagView tag in tags)
+        AdminTagView? tag = this.Tags.SingleOrDefault(t => t.Id == tagId);
+        if (tag != null)
         {
             this.Dispatcher.Dispatch(new TagActions.DeleteAction(tag));
         }
@@ -211,7 +213,7 @@ public partial class FeedbackPage : FluxorComponent
             this.Hdid = model.UserProfileId ?? string.Empty;
             this.Email = model.Email;
             this.Comments = model.Comment ?? string.Empty;
-            this.TagIds = model.Tags.Select(t => t.Tag.Id).ToHashSet();
+            this.TagIds = model.Tags.Select(t => t.TagId);
             this.IsReviewed = model.IsReviewed;
         }
 
