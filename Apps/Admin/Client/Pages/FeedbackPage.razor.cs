@@ -193,11 +193,12 @@ public partial class FeedbackPage : FluxorComponent
 
     private void ToggleIsReviewed(Guid feedbackId)
     {
-        UserFeedbackView? feedback = this.Feedback.FirstOrDefault(f => f.Id == feedbackId);
-        if (feedback != null)
+        UserFeedbackView? currentFeedback = this.Feedback.FirstOrDefault(f => f.Id == feedbackId);
+        if (currentFeedback != null)
         {
-            feedback.IsReviewed = !feedback.IsReviewed;
-            this.Dispatcher.Dispatch(new UserFeedbackActions.UpdateAction(feedback));
+            UserFeedbackView updatedFeedback = currentFeedback.ShallowCopy();
+            updatedFeedback.IsReviewed = !updatedFeedback.IsReviewed;
+            this.Dispatcher.Dispatch(new UserFeedbackActions.UpdateAction(updatedFeedback));
         }
     }
 
