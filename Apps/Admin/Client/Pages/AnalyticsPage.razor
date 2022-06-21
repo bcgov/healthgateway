@@ -26,7 +26,7 @@
     </MudItem>
      <MudItem xs="6" lg="3">
           <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download"  FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetInactiveUsersData" data-testid="inactive-users-download-btn">Inactive Users</HgButton>
-          <HgTextField T="int" Label="Days Inactive" Required="@true" @bind-Value="InactiveDays" Disabled="@AnalyticsState.Value.IsLoading" />
+          <HgTextField T="int" Label="Days Inactive" Required="@true" @bind-Value="InactiveDays" Disabled="@AnalyticsState.Value.IsLoading" data-testid="days-inactive-input" />
      </MudItem>
 </MudGrid>
 
