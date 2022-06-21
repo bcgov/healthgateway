@@ -70,7 +70,13 @@ namespace HealthGateway.Admin.Server.Services
             {
                 ResourcePayload = userFeedbackResult.Payload.Select(p =>
                 {
-                    string email = profileEmails.TryGetValue(p.UserProfileId, out string? value) ? value ?? string.Empty : string.Empty;
+                    string? hdid = p.UserProfileId;
+                    string email = string.Empty;
+                    if (hdid != null && profileEmails.TryGetValue(hdid, out string? value))
+                    {
+                        email = value ?? string.Empty;
+                    }
+
                     return p.ToUiModel(email);
                 }).ToList(),
                 ResultStatus = ResultType.Success,
