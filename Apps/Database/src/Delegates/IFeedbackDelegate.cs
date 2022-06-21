@@ -62,12 +62,12 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="feedbackId">The unique feedback id to find.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<UserFeedbackAdmin> GetUserFeedbackWithFeedbackTags(Guid feedbackId);
+        DBResult<UserFeedback> GetUserFeedbackWithFeedbackTags(Guid feedbackId);
 
         /// <summary>
-        /// Fetches the UserFeedback from the database with email attached for administrative purposes.
+        /// Fetches the UserFeedback with FeedbackTag associations from the database.
         /// </summary>
         /// <returns>A DB result which encapsulates the return objects and status.</returns>
-        DBResult<IList<UserFeedbackAdmin>> GetAllUserFeedbackEntries();
+        DBResult<IList<UserFeedback>> GetAllUserFeedbackEntries();
     }
 }

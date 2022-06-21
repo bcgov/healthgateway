@@ -34,7 +34,7 @@ namespace HealthGateway.Admin.Server.Services
         private readonly ILogger logger;
         private readonly IFeedbackDelegate feedbackDelegate;
         private readonly IAdminTagDelegate adminTagDelegate;
-        private readonly IFeedbackTagDelegate feedbackTagDelegate;
+        private readonly IUserProfileDelegate userProfileDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserFeedbackService"/> class.
@@ -42,28 +42,42 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="feedbackDelegate">The feedback delegate to interact with the DB.</param>
         /// <param name="adminTagDelegate">The admin tag delegate to interact with the DB.</param>
-        /// <param name="feedbackTagDelegate">The feedback tag delegate to interact with the DB.</param>
-        public UserFeedbackService(ILogger<UserFeedbackService> logger, IFeedbackDelegate feedbackDelegate, IAdminTagDelegate adminTagDelegate, IFeedbackTagDelegate feedbackTagDelegate)
+        /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
+        public UserFeedbackService(ILogger<UserFeedbackService> logger, IFeedbackDelegate feedbackDelegate, IAdminTagDelegate adminTagDelegate, IUserProfileDelegate userProfileDelegate)
         {
             this.logger = logger;
             this.feedbackDelegate = feedbackDelegate;
             this.adminTagDelegate = adminTagDelegate;
-            this.feedbackTagDelegate = feedbackTagDelegate;
+            this.userProfileDelegate = userProfileDelegate;
         }
 
         /// <inheritdoc />
         public RequestResult<IList<UserFeedbackView>> GetUserFeedback()
         {
-            this.logger.LogTrace("Retrieving user feedback:");
-            DBResult<IList<UserFeedbackAdmin>> userFeedbackResult = this.feedbackDelegate.GetAllUserFeedbackEntries();
-            this.logger.LogDebug($"Finished retrieving user feedback");
-            IList<UserFeedbackView> userFeedback = userFeedbackResult.Payload.ToUiModel();
-            return new RequestResult<IList<UserFeedbackView>>()
+            this.logger.LogTrace("Retrieving user feedback...");
+            DBResult<IList<UserFeedback>> userFeedbackResult = this.feedbackDelegate.GetAllUserFeedbackEntries();
+
+            this.logger.LogTrace("Retrieving user emails...");
+            List<string> hdids = userFeedbackResult.Payload
+                .Where(f => f.UserProfileId != null)
+                .Select(f => f.UserProfileId!)
+                .Distinct()
+                .ToList();
+            DBResult<List<UserProfile>> userProfileResult = this.userProfileDelegate.GetUserProfiles(hdids);
+            Dictionary<string, string?> profileEmails = userProfileResult.Payload.ToDictionary(p => p.HdId, p => p.Email);
+
+            RequestResult<IList<UserFeedbackView>> result = new()
             {
-                ResourcePayload = userFeedback,
+                ResourcePayload = userFeedbackResult.Payload.Select(p =>
+                {
+                    string email = profileEmails.TryGetValue(p.UserProfileId, out string? value) ? value ?? string.Empty : string.Empty;
+                    return p.ToUiModel(email);
+                }).ToList(),
                 ResultStatus = ResultType.Success,
-                TotalResultCount = userFeedback.Count,
+                TotalResultCount = userFeedbackResult.Payload.Count,
             };
+
+            return result;
         }
 
         /// <inheritdoc />
@@ -78,10 +92,11 @@ namespace HealthGateway.Admin.Server.Services
 
             this.feedbackDelegate.UpdateUserFeedback(feedback.ToDbModel());
 
-            DBResult<UserFeedbackAdmin> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(feedback.Id);
+            DBResult<UserFeedback> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(feedback.Id);
             if (userFeedbackResult.Status == DBStatusCode.Read)
             {
-                result.ResourcePayload = userFeedbackResult.Payload.ToUiModel();
+                string email = this.GetUserEmail(userFeedbackResult.Payload.UserProfileId);
+                result.ResourcePayload = userFeedbackResult.Payload.ToUiModel(email);
                 result.ResultStatus = ResultType.Success;
             }
 
@@ -160,7 +175,7 @@ namespace HealthGateway.Admin.Server.Services
                 ResultStatus = ResultType.Error,
             };
 
-            DBResult<UserFeedbackAdmin> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(userFeedbackId);
+            DBResult<UserFeedback> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(userFeedbackId);
             DBResult<IEnumerable<AdminTag>> adminTagResult = this.adminTagDelegate.GetAdminTags(adminTagIds);
 
             if (userFeedbackResult.Status == DBStatusCode.Read && adminTagResult.Status == DBStatusCode.Read)
@@ -180,7 +195,8 @@ namespace HealthGateway.Admin.Server.Services
 
                 if (savedUserFeedbackResult.Status == DBStatusCode.Updated)
                 {
-                    result.ResourcePayload = userFeedback.ToUiModel();
+                    string email = this.GetUserEmail(userFeedback.UserProfileId);
+                    result.ResourcePayload = userFeedback.ToUiModel(email);
                     result.ResultStatus = ResultType.Success;
                 }
                 else
@@ -194,6 +210,21 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             return result;
+        }
+
+        private string GetUserEmail(string? hdid)
+        {
+            string email = string.Empty;
+            if (hdid != null)
+            {
+                DBResult<UserProfile> userProfileResult = this.userProfileDelegate.GetUserProfile(hdid);
+                if (userProfileResult.Status == DBStatusCode.Read)
+                {
+                    email = userProfileResult.Payload.Email ?? string.Empty;
+                }
+            }
+
+            return email;
         }
     }
 }

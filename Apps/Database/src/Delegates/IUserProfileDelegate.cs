@@ -61,6 +61,13 @@ namespace HealthGateway.Database.Delegates
         DBResult<UserProfile> GetUserProfile(string hdId);
 
         /// <summary>
+        /// Fetches UserProfiles from the database.
+        /// </summary>
+        /// <param name="hdIds">The unique profile keys to find.</param>
+        /// <returns>A DB result which encapsulates the return object and status.</returns>
+        DBResult<List<UserProfile>> GetUserProfiles(IList<string> hdIds);
+
+        /// <summary>
         /// Returns the list of all UserProfiles who have an email address and have
         /// logged in before the lastLoggedIn date.
         /// </summary>

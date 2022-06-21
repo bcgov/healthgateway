@@ -89,7 +89,8 @@ namespace HealthGateway.Database.Delegates
         public DBResult<UserFeedback> UpdateUserFeedbackWithTagAssociations(UserFeedback feedback)
         {
             this.logger.LogTrace("Updating the user feedback id {UserFeedbackId} with {NumberOfAssociations} admin tag association in DB", feedback.Id, feedback.Tags.Count);
-            DBResult<UserFeedback> result = new DBResult<UserFeedback>();
+            this.dbContext.Update(feedback);
+            DBResult<UserFeedback> result = new();
 
             try
             {
@@ -128,27 +129,18 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<UserFeedbackAdmin> GetUserFeedbackWithFeedbackTags(Guid feedbackId)
+        public DBResult<UserFeedback> GetUserFeedbackWithFeedbackTags(Guid feedbackId)
         {
             this.logger.LogTrace("Getting user feedback with associations from DB {FeedbackId}", feedbackId);
-            UserFeedbackAdmin? feedback = this.dbContext.UserFeedback
+            UserFeedback? feedback = this.dbContext.UserFeedback
                 .Where(f => f.Id == feedbackId)
                 .Include(f => f.Tags)
                 .ThenInclude(t => t.AdminTag)
-                .Select(f => new UserFeedbackAdmin(f))
                 .SingleOrDefault();
 
-            DBResult<UserFeedbackAdmin> result = new();
+            DBResult<UserFeedback> result = new();
             if (feedback != null)
             {
-                if (feedback.UserProfileId != null)
-                {
-                    feedback.Email = this.dbContext.UserProfile
-                        .Where(p => p.HdId == feedback.UserProfileId)
-                        .Select(p => p.Email)
-                        .SingleOrDefault() ?? string.Empty;
-                }
-
                 result.Payload = feedback;
                 result.Status = DBStatusCode.Read;
             }
@@ -163,29 +155,16 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<IList<UserFeedbackAdmin>> GetAllUserFeedbackEntries()
+        public DBResult<IList<UserFeedback>> GetAllUserFeedbackEntries()
         {
             this.logger.LogTrace($"Getting all user feedback entries");
-            IList<UserFeedbackAdmin> feedback = this.dbContext.UserFeedback
+            IList<UserFeedback> feedback = this.dbContext.UserFeedback
                 .Include(f => f.Tags)
                 .ThenInclude(t => t.AdminTag)
                 .OrderByDescending(f => f.CreatedDateTime)
-                .Select(f => new UserFeedbackAdmin(f))
                 .ToList();
 
-            Dictionary<string, string?> profileEmails = this.dbContext.UserProfile
-                .Where(p => feedback.Select(f => f.UserProfileId).Contains(p.HdId))
-                .ToDictionary(p => p.HdId, p => p.Email);
-
-            foreach (UserFeedbackAdmin entry in feedback.Where(f => !string.IsNullOrWhiteSpace(f.UserProfileId)))
-            {
-                if (profileEmails.TryGetValue(entry.UserProfileId, out string? email))
-                {
-                    entry.Email = email ?? string.Empty;
-                }
-            }
-
-            DBResult<IList<UserFeedbackAdmin>> result = new()
+            DBResult<IList<UserFeedback>> result = new()
             {
                 Payload = feedback,
                 Status = DBStatusCode.Read,

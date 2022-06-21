@@ -38,7 +38,7 @@ namespace HealthGateway.Admin.Services
         /// Initializes a new instance of the <see cref="UserFeedbackService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="feedbackDelegate">The feedeback delegate to interact with the DB.</param>
+        /// <param name="feedbackDelegate">The feedback delegate to interact with the DB.</param>
         /// <param name="adminTagDelegate">The admin tag delegate to interact with the DB.</param>
         /// <param name="feedbackTagDelegate">The feedback tag delegate to interact with the DB.</param>
         public UserFeedbackService(ILogger<UserFeedbackService> logger, IFeedbackDelegate feedbackDelegate, IAdminTagDelegate adminTagDelegate, IFeedbackTagDelegate feedbackTagDelegate)
@@ -53,9 +53,9 @@ namespace HealthGateway.Admin.Services
         public RequestResult<IList<UserFeedbackView>> GetUserFeedback()
         {
             this.logger.LogTrace($"Retrieving pending beta requests");
-            DBResult<IList<UserFeedbackAdmin>> userfeedbackResult = this.feedbackDelegate.GetAllUserFeedbackEntries();
+            DBResult<IList<UserFeedback>> userFeedbackResult = this.feedbackDelegate.GetAllUserFeedbackEntries();
             this.logger.LogDebug($"Finished retrieving user feedback");
-            IList<UserFeedbackView> userFeedback = UserFeedbackView.CreateListFromDbModel(userfeedbackResult.Payload);
+            IList<UserFeedbackView> userFeedback = UserFeedbackView.CreateListFromDbModel(userFeedbackResult.Payload);
             return new RequestResult<IList<UserFeedbackView>>()
             {
                 ResourcePayload = userFeedback,

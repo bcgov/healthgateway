@@ -15,8 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Converters;
 
-using System.Collections.Generic;
-using System.Linq;
 using HealthGateway.Admin.Common.Models;
 
 /// <summary>
@@ -28,8 +26,9 @@ public static class UserFeedbackConverter
     /// Creates a UI model from a DB model.
     /// </summary>
     /// <param name="model">The DB model to convert.</param>
+    /// <param name="email">The email address associated with the person who created the feedback.</param>
     /// <returns>The created UI model.</returns>
-    public static UserFeedbackView ToUiModel(this Database.Models.UserFeedback model)
+    public static UserFeedbackView ToUiModel(this Database.Models.UserFeedback model, string email)
     {
         UserFeedbackView retVal = new(model.Tags.ToUiModel())
         {
@@ -40,41 +39,10 @@ public static class UserFeedbackConverter
             IsReviewed = model.IsReviewed,
             IsSatisfied = model.IsSatisfied,
             Version = model.Version,
+            Email = email,
         };
 
         return retVal;
-    }
-
-    /// <summary>
-    /// Creates a UI model from a DB model.
-    /// </summary>
-    /// <param name="model">The DB model to convert.</param>
-    /// <returns>The created UI model.</returns>
-    public static UserFeedbackView ToUiModel(this Database.Models.UserFeedbackAdmin model)
-    {
-        UserFeedbackView retVal = new(model.Tags.ToUiModel())
-        {
-            Id = model.Id,
-            UserProfileId = model.UserProfileId,
-            Comment = model.Comment,
-            CreatedDateTime = model.CreatedDateTime,
-            IsReviewed = model.IsReviewed,
-            IsSatisfied = model.IsSatisfied,
-            Version = model.Version,
-            Email = model.Email,
-        };
-
-        return retVal;
-    }
-
-    /// <summary>
-    /// Creates a list of UI models from a collection of DB models.
-    /// </summary>
-    /// <param name="models">The collection of DB models to convert.</param>
-    /// <returns>The created list of UI models.</returns>
-    public static IList<UserFeedbackView> ToUiModel(this IEnumerable<Database.Models.UserFeedbackAdmin> models)
-    {
-        return models.Select(ToUiModel).ToList();
     }
 
     /// <summary>
@@ -82,9 +50,9 @@ public static class UserFeedbackConverter
     /// </summary>
     /// <param name="model">The UI model to convert.</param>
     /// <returns>The created DB model.</returns>
-    public static Database.Models.UserFeedbackAdmin ToDbModel(this UserFeedbackView model)
+    public static Database.Models.UserFeedback ToDbModel(this UserFeedbackView model)
     {
-        Database.Models.UserFeedbackAdmin retVal = new()
+        Database.Models.UserFeedback retVal = new()
         {
             Id = model.Id,
             Comment = model.Comment,
