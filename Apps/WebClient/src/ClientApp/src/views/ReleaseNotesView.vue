@@ -35,8 +35,8 @@ export default class ReleaseNotesView extends Vue {
         >
             <ul>
                 <li>
-                    We added a button for downloading lab reports so it is more
-                    easy to access.
+                    We added a button for downloading lab reports so they are
+                    easier to access.
                 </li>
                 <li>
                     We updated the filter counts to show an accurate count of the
