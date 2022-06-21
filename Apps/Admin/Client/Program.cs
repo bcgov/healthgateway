@@ -30,6 +30,7 @@ namespace HealthGateway.Admin.Client
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using MudBlazor;
     using MudBlazor.Services;
     using Refit;
 
@@ -63,7 +64,10 @@ namespace HealthGateway.Admin.Client
                         });
 
             // Enable Mud Blazor component services
-            builder.Services.AddMudServices();
+            builder.Services.AddMudServices(config =>
+            {
+                config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
+            });
 
             // Configure Authentication and Authorization
             builder.Services.AddOidcAuthentication(options =>
@@ -89,20 +93,21 @@ namespace HealthGateway.Admin.Client
 
         private static void RegisterRefitClients(this WebAssemblyHostBuilder builder)
         {
-            RegisterRefitClient<IAnalyticsApi>(builder, "CsvExport", true);
-            RegisterRefitClient<ICommunicationsApi>(builder, "Communication", true);
-            RegisterRefitClient<IConfigurationApi>(builder, "Configuration", false);
-            RegisterRefitClient<IDashboardApi>(builder, "Dashboard", true);
-            RegisterRefitClient<ISupportApi>(builder, "Support", true);
+            RegisterRefitClient<IAnalyticsApi>(builder, "v1/api/CsvExport", true);
+            RegisterRefitClient<ICommunicationsApi>(builder, "v1/api/Communication", true);
+            RegisterRefitClient<IConfigurationApi>(builder, "v1/api/Configuration", false);
+            RegisterRefitClient<IDashboardApi>(builder, "v1/api/Dashboard", true);
+            RegisterRefitClient<ISupportApi>(builder, "v1/api/Support", true);
+            RegisterRefitClient<ITagApi>(builder, "v1/api/Tag", true);
+            RegisterRefitClient<IUserFeedbackApi>(builder, "v1/api/UserFeedback", true);
         }
 
-        private static void RegisterRefitClient<T>(WebAssemblyHostBuilder builder, string configKey, bool isAuthorized)
+        private static void RegisterRefitClient<T>(WebAssemblyHostBuilder builder, string servicePath, bool isAuthorized)
             where T : class
         {
             Uri baseAddress = new(builder.HostEnvironment.BaseAddress);
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = baseAddress });
 
-            string servicePath = builder.Configuration.GetSection("Services").GetValue<string>(configKey);
             Uri address = new(baseAddress, servicePath);
 
             if (isAuthorized)

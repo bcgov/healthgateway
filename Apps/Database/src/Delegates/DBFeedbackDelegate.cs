@@ -51,8 +51,8 @@ namespace HealthGateway.Database.Delegates
         public DBResult<UserFeedback> InsertUserFeedback(UserFeedback feedback)
         {
             this.logger.LogTrace($"Inserting user feedback to DB... {JsonSerializer.Serialize(feedback)}");
-            DBResult<UserFeedback> result = new DBResult<UserFeedback>();
-            this.dbContext.Add<UserFeedback>(feedback);
+            DBResult<UserFeedback> result = new();
+            this.dbContext.Add(feedback);
             try
             {
                 this.dbContext.SaveChanges();
@@ -72,12 +72,39 @@ namespace HealthGateway.Database.Delegates
         public void UpdateUserFeedback(UserFeedback feedback)
         {
             this.logger.LogTrace($"Updating the user feedback in DB... {feedback}");
-            this.dbContext.Update<UserFeedback>(feedback);
+            this.dbContext.Update(feedback);
 
-            // Prevent updates to associated user profile id
+            // Disallow updates to UserProfileId
             this.dbContext.Entry(feedback).Property(p => p.UserProfileId).IsModified = false;
+
             this.dbContext.SaveChanges();
+
+            // Reload the entry after saving to retrieve the actual UserProfileId value
+            this.dbContext.Entry(feedback).Reload();
+
             this.logger.LogDebug($"Finished updating feedback in DB. {JsonSerializer.Serialize(feedback)}");
+        }
+
+        /// <inheritdoc />
+        public DBResult<UserFeedback> UpdateUserFeedbackWithTagAssociations(UserFeedback feedback)
+        {
+            this.logger.LogTrace("Updating the user feedback id {UserFeedbackId} with {NumberOfAssociations} admin tag association in DB", feedback.Id, feedback.Tags.Count);
+            this.dbContext.Update(feedback);
+            DBResult<UserFeedback> result = new();
+
+            try
+            {
+                this.dbContext.SaveChanges();
+                result.Status = DBStatusCode.Updated;
+                result.Payload = feedback;
+            }
+            catch (DbUpdateException e)
+            {
+                result.Status = DBStatusCode.Error;
+                result.Message = e.Message;
+            }
+
+            return result;
         }
 
         /// <inheritdoc />
@@ -85,7 +112,7 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace($"Getting user feedback from DB... {feedbackId}");
             UserFeedback? feedback = this.dbContext.UserFeedback.Find(feedbackId);
-            DBResult<UserFeedback> result = new DBResult<UserFeedback>();
+            DBResult<UserFeedback> result = new();
             if (feedback != null)
             {
                 result.Payload = feedback;
@@ -102,44 +129,47 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<IList<UserFeedbackAdmin>> GetAllUserFeedbackEntries()
+        public DBResult<UserFeedback> GetUserFeedbackWithFeedbackTags(Guid feedbackId)
         {
-            this.logger.LogTrace($"Getting all user feedback entries");
-            IList<UserFeedbackAdmin> feedback = this.dbContext.UserFeedback
-                .Include("Tags.AdminTag")
-                .Select(x => new UserFeedbackAdmin(x.Tags)
-                {
-                    Id = x.Id,
-                    IsSatisfied = x.IsSatisfied,
-                    IsReviewed = x.IsReviewed,
-                    UpdatedBy = x.UpdatedBy,
-                    Comment = x.Comment,
-                    CreatedBy = x.CreatedBy,
-                    CreatedDateTime = x.CreatedDateTime,
-                    UserProfileId = x.UserProfileId,
-                    UpdatedDateTime = x.UpdatedDateTime,
-                    Version = x.Version,
-                })
-                .OrderByDescending(f => f.CreatedDateTime).ToList();
+            this.logger.LogTrace("Getting user feedback with associations from DB {FeedbackId}", feedbackId);
+            UserFeedback? feedback = this.dbContext.UserFeedback
+                .Where(f => f.Id == feedbackId)
+                .Include(f => f.Tags)
+                .ThenInclude(t => t.AdminTag)
+                .SingleOrDefault();
 
-            Dictionary<string, string?> profileEmails = this.dbContext.UserProfile.Where(u => feedback.Select(f => f.UserProfileId).Contains(u.HdId)).ToDictionary(x => x.HdId, x => x.Email);
-
-            foreach (UserFeedbackAdmin feedbackAdmin in feedback)
+            DBResult<UserFeedback> result = new();
+            if (feedback != null)
             {
-                if (!string.IsNullOrWhiteSpace(feedbackAdmin.UserProfileId))
-                {
-                    string? email;
-                    if (profileEmails.TryGetValue(feedbackAdmin.UserProfileId, out email))
-                    {
-                        feedbackAdmin.Email = email != null ? email : string.Empty;
-                    }
-                }
+                result.Payload = feedback;
+                result.Status = DBStatusCode.Read;
+            }
+            else
+            {
+                this.logger.LogInformation("Unable to find user feedback using ID: {FeedbackId}", feedbackId);
+                result.Message = $"Unable to find user feedback using ID: {feedbackId}";
+                result.Status = DBStatusCode.NotFound;
             }
 
-            DBResult<IList<UserFeedbackAdmin>> result = new();
-            result.Payload = feedback;
-            result.Status = feedback != null ? DBStatusCode.Read : DBStatusCode.NotFound;
-            this.logger.LogDebug($"Finished getting user feedback from DB... {JsonSerializer.Serialize(result)}");
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<IList<UserFeedback>> GetAllUserFeedbackEntries()
+        {
+            this.logger.LogTrace($"Getting all user feedback entries");
+            IList<UserFeedback> feedback = this.dbContext.UserFeedback
+                .Include(f => f.Tags)
+                .ThenInclude(t => t.AdminTag)
+                .OrderByDescending(f => f.CreatedDateTime)
+                .ToList();
+
+            DBResult<IList<UserFeedback>> result = new()
+            {
+                Payload = feedback,
+                Status = DBStatusCode.Read,
+            };
+            this.logger.LogDebug($"Finished getting user feedback from DB...");
             return result;
         }
     }

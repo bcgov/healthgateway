@@ -22,30 +22,19 @@ using HealthGateway.Admin.Common.Models;
 /// <summary>
 /// Converts between DB and UI models.
 /// </summary>
-public static class CommunicationConverter
+public static class AdminTagConverter
 {
     /// <summary>
     /// Creates a UI model from a DB model.
     /// </summary>
     /// <param name="model">The DB model to convert.</param>
     /// <returns>The created UI model.</returns>
-    public static Communication ToUiModel(this Database.Models.Communication model)
+    public static AdminTagView ToUiModel(this Database.Models.AdminTag model)
     {
-        Communication retVal = new()
+        AdminTagView retVal = new()
         {
-            Id = model.Id,
-            Text = model.Text,
-            Subject = model.Subject,
-            EffectiveDateTime = model.EffectiveDateTime,
-            ExpiryDateTime = model.ExpiryDateTime,
-            ScheduledDateTime = model.ScheduledDateTime,
-            CommunicationTypeCode = model.CommunicationTypeCode,
-            CommunicationStatusCode = model.CommunicationStatusCode,
-            Priority = model.Priority,
-            CreatedBy = model.CreatedBy,
-            CreatedDateTime = model.CreatedDateTime,
-            UpdatedBy = model.UpdatedBy,
-            UpdatedDateTime = model.UpdatedDateTime,
+            Id = model.AdminTagId,
+            Name = model.Name,
             Version = model.Version,
         };
 
@@ -57,7 +46,7 @@ public static class CommunicationConverter
     /// </summary>
     /// <param name="models">The collection of DB models to convert.</param>
     /// <returns>The created list of UI models.</returns>
-    public static IList<Communication> ToUiModel(this IEnumerable<Database.Models.Communication> models)
+    public static IList<AdminTagView> ToUiModel(this IEnumerable<Database.Models.AdminTag> models)
     {
         return models.Select(ToUiModel).ToList();
     }
@@ -67,23 +56,12 @@ public static class CommunicationConverter
     /// </summary>
     /// <param name="model">The UI model to convert.</param>
     /// <returns>The created DB model.</returns>
-    public static Database.Models.Communication ToDbModel(this Communication model)
+    public static Database.Models.AdminTag ToDbModel(this AdminTagView model)
     {
-        Database.Models.Communication retVal = new()
+        Database.Models.AdminTag retVal = new()
         {
-            Id = model.Id,
-            Text = model.Text,
-            Subject = model.Subject,
-            EffectiveDateTime = model.EffectiveDateTime,
-            ExpiryDateTime = model.ExpiryDateTime,
-            ScheduledDateTime = model.ScheduledDateTime,
-            CommunicationTypeCode = model.CommunicationTypeCode,
-            CommunicationStatusCode = model.CommunicationStatusCode,
-            Priority = model.Priority,
-            CreatedBy = model.CreatedBy,
-            CreatedDateTime = model.CreatedDateTime,
-            UpdatedBy = model.UpdatedBy,
-            UpdatedDateTime = model.UpdatedDateTime,
+            AdminTagId = model.Id,
+            Name = model.Name,
             Version = model.Version,
         };
 

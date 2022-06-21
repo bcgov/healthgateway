@@ -65,7 +65,7 @@ namespace HealthGateway.Database.Models
         public DateTime? ClosedDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the External Identity Management identifer for the user.
+        /// Gets or sets the External Identity Management identifier for the user.
         /// </summary>
         public Guid? IdentityManagementId { get; set; }
 

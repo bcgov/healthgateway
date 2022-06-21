@@ -22,31 +22,21 @@ using HealthGateway.Admin.Common.Models;
 /// <summary>
 /// Converts between DB and UI models.
 /// </summary>
-public static class CommunicationConverter
+public static class UserFeedbackTagConverter
 {
     /// <summary>
     /// Creates a UI model from a DB model.
     /// </summary>
     /// <param name="model">The DB model to convert.</param>
     /// <returns>The created UI model.</returns>
-    public static Communication ToUiModel(this Database.Models.Communication model)
+    public static UserFeedbackTagView ToUiModel(this Database.Models.UserFeedbackTag model)
     {
-        Communication retVal = new()
+        UserFeedbackTagView retVal = new()
         {
-            Id = model.Id,
-            Text = model.Text,
-            Subject = model.Subject,
-            EffectiveDateTime = model.EffectiveDateTime,
-            ExpiryDateTime = model.ExpiryDateTime,
-            ScheduledDateTime = model.ScheduledDateTime,
-            CommunicationTypeCode = model.CommunicationTypeCode,
-            CommunicationStatusCode = model.CommunicationStatusCode,
-            Priority = model.Priority,
-            CreatedBy = model.CreatedBy,
-            CreatedDateTime = model.CreatedDateTime,
-            UpdatedBy = model.UpdatedBy,
-            UpdatedDateTime = model.UpdatedDateTime,
+            Id = model.UserFeedbackTagId,
             Version = model.Version,
+            TagId = model.AdminTagId,
+            FeedbackId = model.UserFeedbackId,
         };
 
         return retVal;
@@ -57,7 +47,7 @@ public static class CommunicationConverter
     /// </summary>
     /// <param name="models">The collection of DB models to convert.</param>
     /// <returns>The created list of UI models.</returns>
-    public static IList<Communication> ToUiModel(this IEnumerable<Database.Models.Communication> models)
+    public static IList<UserFeedbackTagView> ToUiModel(this IEnumerable<Database.Models.UserFeedbackTag> models)
     {
         return models.Select(ToUiModel).ToList();
     }
@@ -67,23 +57,11 @@ public static class CommunicationConverter
     /// </summary>
     /// <param name="model">The UI model to convert.</param>
     /// <returns>The created DB model.</returns>
-    public static Database.Models.Communication ToDbModel(this Communication model)
+    public static Database.Models.UserFeedbackTag ToDbModel(this UserFeedbackTagView model)
     {
-        Database.Models.Communication retVal = new()
+        Database.Models.UserFeedbackTag retVal = new()
         {
-            Id = model.Id,
-            Text = model.Text,
-            Subject = model.Subject,
-            EffectiveDateTime = model.EffectiveDateTime,
-            ExpiryDateTime = model.ExpiryDateTime,
-            ScheduledDateTime = model.ScheduledDateTime,
-            CommunicationTypeCode = model.CommunicationTypeCode,
-            CommunicationStatusCode = model.CommunicationStatusCode,
-            Priority = model.Priority,
-            CreatedBy = model.CreatedBy,
-            CreatedDateTime = model.CreatedDateTime,
-            UpdatedBy = model.UpdatedBy,
-            UpdatedDateTime = model.UpdatedDateTime,
+            UserFeedbackTagId = model.Id,
             Version = model.Version,
         };
 

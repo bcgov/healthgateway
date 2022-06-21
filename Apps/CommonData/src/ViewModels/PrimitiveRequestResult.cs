@@ -13,11 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Models
+namespace HealthGateway.Common.Data.ViewModels
 {
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// Class that represents the result of a request with a primitive values.
