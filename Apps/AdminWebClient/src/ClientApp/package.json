@@ -14,7 +14,7 @@
         "@fortawesome/free-solid-svg-icons": "^6.1.1",
         "@fortawesome/vue-fontawesome": "^2.0.8",
         "@types/file-saver": "^2.0.5",
-        "core-js": "^3.23.1",
+        "core-js": "^3.23.2",
         "file-saver": "^2.0.5",
         "inversify": "^6.0.1",
         "luxon": "^2.4.0",
@@ -63,6 +63,6 @@
         "vue-cli-plugin-vuetify": "^2.5.1",
         "vue-eslint-parser": "^8.3.0",
         "vue-template-compiler": "^2.6.12",
-        "vuetify-loader": "^1.7.2"
+        "vuetify-loader": "^1.8.0"
     }
 }

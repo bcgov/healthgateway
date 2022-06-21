@@ -59,7 +59,7 @@
         "browserify-zlib": "^0.2.0",
         "chart.js": "^2.9.4",
         "cookie-storage": "^6.1.0",
-        "core-js": "^3.23.1",
+        "core-js": "^3.23.2",
         "file-saver": "^2.0.5",
         "html2canvas": "^1.4.1",
         "https-browserify": "^1.0.0",
