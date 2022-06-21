@@ -13,19 +13,19 @@
 
 <MudGrid>
     <MudItem xs="6" lg="3">
-          <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetProfilesData">User Profiles</HgButton>
+          <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetProfilesData" data-testid="user-profile-download-btn">User Profiles</HgButton>
     </MudItem>
     <MudItem xs="6" lg="3">
-          <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetCommentsData">User Comments</HgButton>
+          <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetCommentsData" data-testid="user-comments-download-btn">User Comments</HgButton>
     </MudItem>
     <MudItem xs="6" lg="3">
-         <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetNotesData">User Notes</HgButton>
+         <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetNotesData" data-testid="user-notes-download-btn">User Notes</HgButton>
     </MudItem>
      <MudItem xs="6" lg="3">
-          <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetRatingsData">User Ratings</HgButton>
+          <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetRatingsData" data-testid="user-ratings-download-btn">User Ratings</HgButton>
     </MudItem>
-     <MudItem xs="6" lg="3">         
-          <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download"  FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetInactiveUsersData">Inactive Users</HgButton>
+     <MudItem xs="6" lg="3">
+          <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download"  FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetInactiveUsersData" data-testid="inactive-users-download-btn">Inactive Users</HgButton>
           <HgTextField T="int" Label="Days Inactive" Required="@true" @bind-Value="InactiveDays" Disabled="@AnalyticsState.Value.IsLoading" />
      </MudItem>
 </MudGrid>
