@@ -39,7 +39,7 @@ export default class ReleaseNotesView extends Vue {
                     easy to access.
                 </li>
                 <li>
-                    We updated the filter counts show an accurate count of the
+                    We updated the filter counts to show an accurate count of the
                     records when filters are applied.
                 </li>
                 <li>
