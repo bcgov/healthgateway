@@ -11,7 +11,7 @@ TRUNCATE gateway."Note" CASCADE;
 TRUNCATE gateway."GenericCache" CASCADE;
 TRUNCATE gateway."Rating" CASCADE;
 
-/* Registered HealthGateway User */
+/* Registered HealthGateway User - Keycloak User (healthgateway) */
 INSERT INTO gateway."UserProfile"(
 	"UserProfileId", 
 	"CreatedBy", 
@@ -40,7 +40,7 @@ VALUES (
 	null
 );
 
-/* Protected User */
+/* Protected User - Keycloak User (protected) */
 INSERT INTO gateway."UserProfile"(
 	"UserProfileId", 
 	"CreatedBy", 
@@ -69,7 +69,7 @@ VALUES (
 	null
 );
 
-/* Invaliddoses - Keycloak User */
+/* Invaliddoses - Keycloak User (hthgtwy20) */
 INSERT INTO gateway."UserProfile"(
 	"UserProfileId", 
 	"CreatedBy", 
@@ -98,7 +98,7 @@ VALUES (
 	null
 );
 
-/* Labratory Queued - Keycloak User */
+/* Labratory Queued - Keycloak User (hthgtwy09) */
 INSERT INTO gateway."UserProfile"(
 	"UserProfileId", 
 	"CreatedBy", 
@@ -127,7 +127,7 @@ VALUES (
 	null
 );
 
-/* Notfound - Keycloak User */
+/* Notfound - Keycloak User - Keycloak User (hthgtwy03) */
 INSERT INTO gateway."UserProfile"(
 	"UserProfileId", 
 	"CreatedBy", 
@@ -156,7 +156,7 @@ VALUES (
 	null
 );
 
-/* User (hthgtwy04) without the latest accepted terms of service */
+/* User without the latest accepted terms of service - Keycloak User - Keycloak User (hthgtwy04) */
 INSERT INTO gateway."UserProfile"(
 	"UserProfileId", 
 	"CreatedBy", 
