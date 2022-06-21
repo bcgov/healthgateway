@@ -39,8 +39,8 @@ export default class ReleaseNotesView extends Vue {
                     easier to access.
                 </li>
                 <li>
-                    We updated the filter counts to show an accurate count of the
-                    records when filters are applied.
+                    We updated the filter counts to show an accurate count of
+                    the records when filters are applied.
                 </li>
                 <li>
                     We updated the quick link for BC Vaccine Card so you can
