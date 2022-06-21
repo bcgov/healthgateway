@@ -63,6 +63,6 @@
         "vue-cli-plugin-vuetify": "^2.5.1",
         "vue-eslint-parser": "^8.3.0",
         "vue-template-compiler": "^2.6.12",
-        "vuetify-loader": "^1.7.2"
+        "vuetify-loader": "^1.8.0"
     }
 }
