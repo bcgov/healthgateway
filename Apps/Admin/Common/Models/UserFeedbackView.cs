@@ -86,4 +86,13 @@ public class UserFeedbackView
     /// Gets the feedback admin tags.
     /// </summary>
     public IList<UserFeedbackTagView> Tags { get; } = new List<UserFeedbackTagView>();
+
+    /// <summary>
+    /// Returns a shallow copy of the object.
+    /// </summary>
+    /// <returns>A new object containing the same values as the current object.</returns>
+    public UserFeedbackView ShallowCopy()
+    {
+        return (UserFeedbackView)this.MemberwiseClone();
+    }
 }

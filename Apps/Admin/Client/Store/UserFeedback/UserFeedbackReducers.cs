@@ -18,10 +18,8 @@ namespace HealthGateway.Admin.Client.Store.UserFeedback;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Fluxor;
 using HealthGateway.Admin.Common.Models;
-using HealthGateway.Common.Data.ViewModels;
 
 /// <summary>
 /// The effects for the feature.
@@ -188,7 +186,7 @@ public static class UserFeedbackReducers
         {
             AssociateTags = state.AssociateTags with
             {
-                IsLoading = true,
+                IsLoading = false,
                 Error = null,
                 Result = action.Data,
             },

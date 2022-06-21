@@ -65,9 +65,9 @@ namespace HealthGateway.Database.Delegates
         DBResult<UserFeedback> GetUserFeedbackWithFeedbackTags(Guid feedbackId);
 
         /// <summary>
-        /// Fetches the UserFeedback from the database with email attached for administratie purposes.
+        /// Fetches the UserFeedback with FeedbackTag associations from the database.
         /// </summary>
         /// <returns>A DB result which encapsulates the return objects and status.</returns>
-        DBResult<IList<UserFeedbackAdmin>> GetAllUserFeedbackEntries();
+        DBResult<IList<UserFeedback>> GetAllUserFeedbackEntries();
     }
 }

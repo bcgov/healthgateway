@@ -29,14 +29,14 @@ public class UserFeedbackTagView
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the admin tag.
+    /// Gets or sets the tag id.
     /// </summary>
-    public AdminTagView Tag { get; set; } = new();
+    public Guid TagId { get; set; }
 
     /// <summary>
-    /// Gets or sets the user feedback.
+    /// Gets or sets the feedback id.
     /// </summary>
-    public UserFeedbackView Feedback { get; set; } = new();
+    public Guid FeedbackId { get; set; }
 
     /// <summary>
     /// Gets or sets the tag version.

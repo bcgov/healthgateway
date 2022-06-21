@@ -49,13 +49,4 @@ public interface ITagApi
     /// <returns>The wrapped model.</returns>
     [Delete("/")]
     Task<ApiResponse<RequestResult<AdminTagView>>> Delete([Body] AdminTagView tag);
-
-    /// <summary>
-    /// Associate an existing admin tag to the feedback with matching id.
-    /// </summary>
-    /// <returns>The feedback model wrapped in a request result.</returns>
-    /// <param name="tagIds">The collection of tag IDs.</param>
-    /// <param name="feedbackId">The feedback ID.</param>
-    [Put("/{feedbackId}/Tag")]
-    Task<ApiResponse<RequestResult<UserFeedbackView>>> AssociateTags([Body] IEnumerable<Guid> tagIds, Guid feedbackId);
 }

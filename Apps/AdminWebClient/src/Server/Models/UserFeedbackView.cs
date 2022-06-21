@@ -37,8 +37,7 @@ namespace HealthGateway.Admin.Models
         /// </summary>
         /// <param name="tags">The list of user feedback tags.</param>
         [JsonConstructor]
-        public UserFeedbackView(
-            IList<UserFeedbackTagView> tags)
+        public UserFeedbackView(IList<UserFeedbackTagView> tags)
         {
             this.Tags = tags;
         }
@@ -93,7 +92,7 @@ namespace HealthGateway.Admin.Models
         /// </summary>
         /// <param name="model">A user feedback request models.</param>
         /// <returns>A new UserFeedbackView.</returns>
-        public static UserFeedbackView CreateFromDbModel(UserFeedbackAdmin model)
+        public static UserFeedbackView CreateFromDbModel(UserFeedback model)
         {
             UserFeedbackView userFeedbackView = new()
             {
@@ -104,7 +103,6 @@ namespace HealthGateway.Admin.Models
                 IsReviewed = model.IsReviewed,
                 IsSatisfied = model.IsSatisfied,
                 Version = model.Version,
-                Email = model.Email,
             };
 
             IList<UserFeedbackTagView> viewTags = UserFeedbackTagView.FromDbModelCollection(model.Tags);
@@ -122,10 +120,10 @@ namespace HealthGateway.Admin.Models
         /// </summary>
         /// <param name="models">List of user feedback models.</param>
         /// <returns>A list of UserFeedbackView.</returns>
-        public static IList<UserFeedbackView> CreateListFromDbModel(IList<UserFeedbackAdmin> models)
+        public static IList<UserFeedbackView> CreateListFromDbModel(IList<UserFeedback> models)
         {
             IList<UserFeedbackView> newList = new List<UserFeedbackView>();
-            foreach (UserFeedbackAdmin model in models)
+            foreach (UserFeedback model in models)
             {
                 newList.Add(CreateFromDbModel(model));
             }
@@ -134,7 +132,7 @@ namespace HealthGateway.Admin.Models
         }
 
         /// <summary>
-        /// Convers this view model into a DB model object.
+        /// Converts this view model into a DB model object.
         /// </summary>
         /// <returns>The DB model object.</returns>
         public UserFeedback ToDbModel()

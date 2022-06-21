@@ -165,9 +165,23 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
+        public DBResult<List<UserProfile>> GetUserProfiles(IList<string> hdIds)
+        {
+            this.logger.LogTrace($"Getting user profiles from DB... {JsonSerializer.Serialize(hdIds)}");
+            DBResult<List<UserProfile>> result = new();
+            result.Payload = this.dbContext.UserProfile
+                .Where(p => hdIds.Contains(p.HdId))
+                .ToList();
+
+            result.Status = DBStatusCode.Read;
+            this.logger.LogDebug($"Finished getting user profiles from DB. {JsonSerializer.Serialize(result)}");
+            return result;
+        }
+
+        /// <inheritdoc />
         public DBResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pagesize = 500)
         {
-            DBResult<List<UserProfile>> result = new DBResult<List<UserProfile>>();
+            DBResult<List<UserProfile>> result = new();
             int offset = page * pagesize;
             result.Payload = this.dbContext.UserProfile
                                 .Where(p => (p.LastLoginDateTime < filterDateTime) &&
@@ -177,14 +191,14 @@ namespace HealthGateway.Database.Delegates
                                 .Skip(offset)
                                 .Take(pagesize)
                                 .ToList();
-            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            result.Status = DBStatusCode.Read;
             return result;
         }
 
         /// <inheritdoc />
         public DBResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pagesize = 500)
         {
-            DBResult<List<UserProfile>> result = new DBResult<List<UserProfile>>();
+            DBResult<List<UserProfile>> result = new();
             int offset = page * pagesize;
             result.Payload = this.dbContext.UserProfile
                                 .Where(p => p.ClosedDateTime != null && p.ClosedDateTime < filterDateTime)
@@ -192,7 +206,7 @@ namespace HealthGateway.Database.Delegates
                                 .Skip(offset)
                                 .Take(pagesize)
                                 .ToList();
-            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            result.Status = DBStatusCode.Read;
             return result;
         }
 
@@ -247,7 +261,7 @@ namespace HealthGateway.Database.Delegates
                 .Where(x => GatewayDbContext.DateTrunc("days", x.LastLoginDateTime) >= startDate && GatewayDbContext.DateTrunc("days", x.LastLoginDateTime) <= endDate)
                 .Distinct()
                 .GroupBy(x => x.HdId).Select(x => new { HdId = x.Key, count = x.Count() })
-                .Where(x => x.count >= dayCount).Count();
+                .Count(x => x.count >= dayCount);
 
             return recurrentCount;
         }
@@ -255,11 +269,11 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public DBResult<IEnumerable<UserProfileHistory>> GetUserProfileHistories(string hdid, int limit)
         {
-            DBResult<IEnumerable<UserProfileHistory>> result = new DBResult<IEnumerable<UserProfileHistory>>();
+            DBResult<IEnumerable<UserProfileHistory>> result = new();
             result.Payload = this.dbContext.UserProfileHistory
-                                .Where(p => p.HdId == hdid)
-                                .OrderByDescending(p => p.LastLoginDateTime)
-                                .Take(limit);
+                .Where(p => p.HdId == hdid)
+                .OrderByDescending(p => p.LastLoginDateTime)
+                .Take(limit);
             result.Status = DBStatusCode.Read;
             return result;
         }

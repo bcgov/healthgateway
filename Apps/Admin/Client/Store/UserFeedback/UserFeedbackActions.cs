@@ -130,7 +130,7 @@ public static class UserFeedbackActions
         /// </summary>
         /// <param name="tagIds">The tag IDs.</param>
         /// <param name="feedbackId">The feedback ID.</param>
-        public AssociateTagsAction(IList<Guid> tagIds, Guid feedbackId)
+        public AssociateTagsAction(IEnumerable<Guid> tagIds, Guid feedbackId)
         {
             this.TagIds = tagIds;
             this.FeedbackId = feedbackId;
@@ -139,7 +139,7 @@ public static class UserFeedbackActions
         /// <summary>
         /// Gets the tag IDs.
         /// </summary>
-        public IList<Guid> TagIds { get; }
+        public IEnumerable<Guid> TagIds { get; }
 
         /// <summary>
         /// Gets or sets the feedback ID.

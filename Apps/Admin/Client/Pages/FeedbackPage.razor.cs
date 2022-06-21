@@ -60,8 +60,6 @@ public partial class FeedbackPage : FluxorComponent
 
     private bool FeedbackLoaded => this.UserFeedbackState.Value.Load.Loaded;
 
-    private bool TagsLoading => this.TagState.Value.Load.IsLoading;
-
     private bool ActiveTagExists => this.Tags.Any(t => t.Name == this.ActiveTag.Trim());
 
     private IEnumerable<RequestError> TagErrors => new[]
@@ -75,9 +73,14 @@ public partial class FeedbackPage : FluxorComponent
 
     private IEnumerable<UserFeedbackView> Feedback => this.UserFeedbackState.Value.FeedbackData?.Values ?? Enumerable.Empty<UserFeedbackView>();
 
-    private IEnumerable<FeedbackRow> FeedbackRows => this.Feedback.Select(f => new FeedbackRow(f));
+    private IEnumerable<FeedbackRow> FeedbackRows => this.Feedback
+        .Where(f => this.TagIdFilter.All(t => f.Tags.Any(ft => ft.TagId == t)))
+        .OrderByDescending(f => f.CreatedDateTime)
+        .Select(f => new FeedbackRow(f));
 
     private MudChip[] SelectedTagChips { get; set; } = Array.Empty<MudChip>();
+
+    private IEnumerable<Guid> TagIdFilter => this.SelectedTagChips.Select(c => c.Value).OfType<Guid>();
 
     private bool ActiveTagIsValid => this.ActiveTag.Trim().Length > 0;
 
@@ -89,12 +92,12 @@ public partial class FeedbackPage : FluxorComponent
     {
         base.OnInitialized();
         this.ResetState();
+        this.ActionSubscriber.SubscribeToAction<UserFeedbackActions.UpdateSuccessAction>(this, this.HandleFeedbackUpdateSuccessful);
+        this.ActionSubscriber.SubscribeToAction<UserFeedbackActions.AssociateTagsSuccessAction>(this, this.HandleFeedbackAssociateSuccessful);
+        this.ActionSubscriber.SubscribeToAction<TagActions.AddSuccessAction>(this, this.HandleTagAddSuccessful);
+        this.ActionSubscriber.SubscribeToAction<TagActions.DeleteSuccessAction>(this, this.HandleTagDeleteSuccessful);
         this.Dispatcher.Dispatch(new TagActions.LoadAction());
         this.Dispatcher.Dispatch(new UserFeedbackActions.LoadAction());
-        this.ActionSubscriber.SubscribeToAction<TagActions.AddSuccessAction>(this, this.DisplayAddSuccessful);
-        this.ActionSubscriber.SubscribeToAction<TagActions.DeleteSuccessAction>(this, this.DisplayDeleteSuccessful);
-        this.ActionSubscriber.SubscribeToAction<UserFeedbackActions.UpdateSuccessAction>(this, this.DisplayUpdateSuccessful);
-        this.ActionSubscriber.SubscribeToAction<UserFeedbackActions.AssociateTagsSuccessAction>(this, this.DisplayAssociateSuccessful);
     }
 
     private void ResetState()
@@ -102,26 +105,26 @@ public partial class FeedbackPage : FluxorComponent
         this.Dispatcher.Dispatch(new TagActions.ResetStateAction());
     }
 
-    private void DisplayAddSuccessful(TagActions.AddSuccessAction action)
+    private void HandleTagAddSuccessful(TagActions.AddSuccessAction action)
     {
         this.Snackbar.Add($"Tag \"{action.Data.ResourcePayload?.Name}\" added.", Severity.Success);
         this.ActiveTag = string.Empty;
         this.StateHasChanged();
     }
 
-    private void DisplayDeleteSuccessful(TagActions.DeleteSuccessAction action)
+    private void HandleTagDeleteSuccessful(TagActions.DeleteSuccessAction action)
     {
         this.Snackbar.Add($"Tag \"{action.Data.ResourcePayload?.Name}\" deleted.", Severity.Success);
         this.ActiveTag = string.Empty;
         this.StateHasChanged();
     }
 
-    private void DisplayUpdateSuccessful(UserFeedbackActions.UpdateSuccessAction action)
+    private void HandleFeedbackUpdateSuccessful(UserFeedbackActions.UpdateSuccessAction action)
     {
         this.Snackbar.Add("Feedback updated.", Severity.Success);
     }
 
-    private void DisplayAssociateSuccessful(UserFeedbackActions.AssociateTagsSuccessAction action)
+    private void HandleFeedbackAssociateSuccessful(UserFeedbackActions.AssociateTagsSuccessAction action)
     {
         this.Snackbar.Add("Feedback tags updated.", Severity.Success);
     }
@@ -159,17 +162,24 @@ public partial class FeedbackPage : FluxorComponent
             return;
         }
 
-        if (this.Feedback.Any(f => f.Tags.Any(t => t.Tag.Name == chip.Text)))
+        Guid tagId = (Guid)chip.Value;
+
+        if (this.Feedback.Any(f => f.Tags.Any(t => t.TagId == tagId)))
         {
             this.Snackbar.Add($"Tag \"{chip.Text}\" cannot be removed because it is currently associated with feedback.", Severity.Warning);
             return;
         }
 
-        IEnumerable<AdminTagView> tags = this.Tags.Where(t => t.Name == chip.Text);
-        foreach (AdminTagView tag in tags)
+        AdminTagView? tag = this.Tags.SingleOrDefault(t => t.Id == tagId);
+        if (tag != null)
         {
             this.Dispatcher.Dispatch(new TagActions.DeleteAction(tag));
         }
+    }
+
+    private void NavigateToSupport(string hdid)
+    {
+        this.NavigationManager.NavigateTo($"support?{UserQueryType.HDID}={hdid}");
     }
 
     private string DescribeTags(List<string> tagIds)
@@ -178,18 +188,19 @@ public partial class FeedbackPage : FluxorComponent
         return string.Join(", ", tags.Select(t => t.Name).OrderBy(t => t));
     }
 
-    private void NavigateToSupport(string hdid)
+    private void AssociateTags(IEnumerable<Guid> tagIds, Guid feedbackId)
     {
-        this.NavigationManager.NavigateTo($"support?{UserQueryType.HDID}={hdid}");
+        this.Dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsAction(tagIds, feedbackId));
     }
 
     private void ToggleIsReviewed(Guid feedbackId)
     {
-        UserFeedbackView? feedback = this.Feedback.FirstOrDefault(f => f.Id == feedbackId);
-        if (feedback != null)
+        UserFeedbackView? currentFeedback = this.Feedback.FirstOrDefault(f => f.Id == feedbackId);
+        if (currentFeedback != null)
         {
-            feedback.IsReviewed = !feedback.IsReviewed;
-            this.Dispatcher.Dispatch(new UserFeedbackActions.UpdateAction(feedback));
+            UserFeedbackView updatedFeedback = currentFeedback.ShallowCopy();
+            updatedFeedback.IsReviewed = !updatedFeedback.IsReviewed;
+            this.Dispatcher.Dispatch(new UserFeedbackActions.UpdateAction(updatedFeedback));
         }
     }
 
@@ -202,7 +213,7 @@ public partial class FeedbackPage : FluxorComponent
             this.Hdid = model.UserProfileId ?? string.Empty;
             this.Email = model.Email;
             this.Comments = model.Comment ?? string.Empty;
-            this.TagIds = model.Tags.Select(t => t.Tag.Id).ToHashSet();
+            this.TagIds = model.Tags.Select(t => t.TagId);
             this.IsReviewed = model.IsReviewed;
         }
 

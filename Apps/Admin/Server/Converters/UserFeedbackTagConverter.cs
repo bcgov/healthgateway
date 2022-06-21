@@ -35,17 +35,9 @@ public static class UserFeedbackTagConverter
         {
             Id = model.UserFeedbackTagId,
             Version = model.Version,
+            TagId = model.AdminTagId,
+            FeedbackId = model.UserFeedbackId,
         };
-
-        if (model.AdminTag != null)
-        {
-            retVal.Tag = model.AdminTag.ToUiModel();
-        }
-
-        if (model.UserFeedback != null)
-        {
-            retVal.Feedback = model.UserFeedback.ToUiBaseModel();
-        }
 
         return retVal;
     }
