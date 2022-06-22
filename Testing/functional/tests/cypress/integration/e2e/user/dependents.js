@@ -380,52 +380,43 @@ describe("dependents", () => {
         cy.log("Validating dependent tab");
 
         cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
-        // Validate the newly added dependent tab and elements are present
-        cy.get("[data-testid=dependentName]")
-            .last()
-            .contains(validDependent.firstName)
-            .contains(validDependent.lastName);
-        cy.get("[data-testid=dependentPHN]")
-            .last()
-            .invoke("val")
-            .then((phnNumber) =>
-                expect(phnNumber).to.equal(validDependent.phn)
-            );
-        cy.get("[data-testid=dependentDOB]")
-            .last()
-            .invoke("val")
-            .then((dateOfBirth) =>
-                expect(dateOfBirth).to.equal(validDependent.doB)
-            );
+        cy.get(`[data-testid=dependent-card-${validDependent.phn}]`)
+            .as("newDependentCard")
+            .within(() => {
+                // Validate the newly added dependent tab and elements are present
+                cy.get("[data-testid=dependentName]")
+                    .contains(validDependent.firstName)
+                    .contains(validDependent.lastName);
+
+                cy.get("[data-testid=dependentPHN]").should(
+                    "have.value",
+                    validDependent.phn
+                );
+
+                cy.get("[data-testid=dependentDOB]").should(
+                    "have.value",
+                    validDependent.doB
+                );
+            });
 
         cy.log("Validating COVID-19 tab");
 
-        cy.setupDownloads();
-        let sensitiveDocMessage =
-            " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
-        // Validate the tab and elements are present
-        cy.get("[data-testid=covid19TabTitle]").last().parent().click();
-        cy.get("[data-testid=dependentCovidTestDate]")
-            .first()
-            .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
-        cy.get("[data-testid=dependentCovidReportDownloadBtn]").first().click();
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageText]").should(
-            "have.text",
-            sensitiveDocMessage
-        );
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
-        cy.get("[data-testid=genericMessageModal]").should("not.exist");
+        cy.get("@newDependentCard").within(() => {
+            // Validate the tab and elements are present
+            cy.get("[data-testid=covid19TabTitle]").parent().click();
+            cy.get("[data-testid=dependentCovidTestDate]").each(($date) => {
+                cy.wrap($date).contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
+            });
+            cy.get("[data-testid=dependentCovidTestStatus]").each(($status) => {
+                cy.wrap($status).should("not.be.empty");
+            });
+        });
 
-        cy.get("[data-testid=covid19TabTitle]").last().parent().click();
-        cy.get("[data-testid=dependentCovidTestDate]")
-            .last()
-            .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
-        expect(cy.get("[data-testid=dependentCovidTestStatus]").last()).not.to
-            .be.empty;
-        expect(cy.get("[data-testid=dependentCovidTestLabResult]").last()).not
-            .to.be.empty;
-        cy.get("[data-testid=dependentCovidReportDownloadBtn]").last().click();
+        cy.setupDownloads();
+        const sensitiveDocMessage =
+            " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
+
+        cy.get("[data-testid=dependentCovidReportDownloadBtn]").first().click();
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageText]").should(
             "have.text",
@@ -470,9 +461,10 @@ describe("dependents", () => {
         cy.get("[data-testid=newDependentModal]").should("not.exist");
 
         cy.log("Removing dependent from other user");
-
-        cy.get("[data-testid=dependentMenuBtn]").last().click();
-        cy.get("[data-testid=deleteDependentMenuBtn]").last().click();
+        cy.get("@newDependentCard").within(() => {
+            cy.get("[data-testid=dependentMenuBtn]").click();
+            cy.get("[data-testid=deleteDependentMenuBtn]").click();
+        });
         // Now click the "Yes, I'm sure" to confirm deletion
         cy.get("[data-testid=confirmDeleteBtn]").click();
 
@@ -486,20 +478,24 @@ describe("dependents", () => {
             "/dependents"
         );
 
-        cy.get("[data-testid=dependentMenuBtn]").last().click();
-        cy.get("[data-testid=deleteDependentMenuBtn]").last().click();
+        cy.get("@newDependentCard").within(() => {
+            cy.get("[data-testid=dependentMenuBtn]").click();
+            cy.get("[data-testid=deleteDependentMenuBtn]").click();
+        });
         cy.get("[data-testid=confirmDeleteBtn]").should("be.visible");
         cy.get("[data-testid=cancelDeleteBtn]").should("be.visible");
         cy.get("[data-testid=cancelDeleteBtn]").click();
 
         // Now click the "Yes, I'm sure" to confirm deletion
-        cy.get("[data-testid=dependentMenuBtn]").last().click();
-        cy.get("[data-testid=deleteDependentMenuBtn]").last().click();
+        cy.get("@newDependentCard").within(() => {
+            cy.get("[data-testid=dependentMenuBtn]").click();
+            cy.get("[data-testid=deleteDependentMenuBtn]").click();
+        });
         cy.get("[data-testid=confirmDeleteBtn]").click();
 
         cy.log("Validating Immunization tab - module disabled");
-        cy.get(
-            "[data-testid=immunization-tab-" + validDependent.hdid + "]"
-        ).should("not.exist");
+        cy.get(`[data-testid=immunization-tab-${validDependent.hdid}]`).should(
+            "not.exist"
+        );
     });
 });

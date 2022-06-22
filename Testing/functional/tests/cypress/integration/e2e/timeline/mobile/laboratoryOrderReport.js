@@ -24,10 +24,14 @@ describe("Laboratory Orders - Download Report", () => {
             .contains("2021-Jul-04")
             .click({ force: true });
 
-        cy.get("[data-testid=laboratory-report-download-btn]")
+        cy.get("[data-testid=entryDetailsModal]")
+            .children()
             .should("be.visible")
-            .contains("Final")
-            .click({ force: true });
+            .within(() => {
+                cy.get("[data-testid=laboratory-report-download-btn]")
+                    .should("be.visible")
+                    .click({ force: true });
+            });
 
         cy.get("[data-testid=genericMessageSubmitBtn]")
             .should("be.visible")

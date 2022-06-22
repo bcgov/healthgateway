@@ -17,7 +17,7 @@ namespace HealthGateway.Admin.Server.Controllers
 {
     using System;
     using System.Collections.Generic;
-    using HealthGateway.Admin.Server.Models;
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Authorization;
@@ -39,8 +39,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Initializes a new instance of the <see cref="TagController"/> class.
         /// </summary>
         /// <param name="feedbackService">The injected user feedback service.</param>
-        public TagController(
-            IUserFeedbackService feedbackService)
+        public TagController(IUserFeedbackService feedbackService)
         {
             this.feedbackService = feedbackService;
         }
@@ -54,61 +53,59 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("[controller]")]
-        public IActionResult GetAll()
+        public RequestResult<IList<AdminTagView>> GetAll()
         {
-            RequestResult<IList<AdminTagView>> result = this.feedbackService.GetAllAdminTags();
-            return new JsonResult(result);
+            RequestResult<IList<AdminTagView>> result = this.feedbackService.GetAllTags();
+            return result;
         }
 
         /// <summary>
         /// Creates a new admin tag.
         /// </summary>
         /// <returns>The newly created tag model.</returns>
-        /// <param name="feedbackId">The feedback id.</param>
         /// <param name="tagName">The tag name.</param>
         /// <response code="200">Returns the list of dependents.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
-        [Route("UserFeedback/{feedbackId}/[controller]")]
-        public IActionResult CreateTag(string feedbackId, [FromBody] string tagName)
+        [Route("[controller]")]
+        public RequestResult<AdminTagView> CreateTag([FromBody] string tagName)
         {
-            RequestResult<UserFeedbackTagView> result = this.feedbackService.CreateFeedbackTag(Guid.Parse(feedbackId), tagName);
-            return new JsonResult(result);
+            RequestResult<AdminTagView> result = this.feedbackService.CreateTag(tagName);
+            return result;
         }
 
         /// <summary>
-        /// Associate an existing admin tag to the feedback with matching id.
+        /// Deletes an admin tag.
         /// </summary>
-        /// <returns>The added tag model wrapped in a request result.</returns>
-        /// <param name="feedbackId">The feedback id.</param>
-        /// <param name="tag">The tag model.</param>
-        /// <response code="200">Returns the list of dependents.</response>
-        /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpPut]
-        [Route("UserFeedback/{feedbackId}/[controller]")]
-        public IActionResult AssociateTag(string feedbackId, [FromBody] AdminTagView tag)
-        {
-            RequestResult<UserFeedbackTagView> result = this.feedbackService.AssociateFeedbackTag(Guid.Parse(feedbackId), tag);
-            return new JsonResult(result);
-        }
-
-        /// <summary>
-        /// Dissociates the tag from the given feedback id.
-        /// </summary>
-        /// <returns>True if the operation was successful.</returns>
-        /// <param name="feedbackId">The feedback id.</param>
-        /// <param name="tag">The tag model.</param>
+        /// <returns>The deleted tag wrapped in a request result.</returns>
+        /// <param name="tag">The admin tag.</param>
         /// <response code="200">Returns the list of dependents.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
-        [Route("UserFeedback/{feedbackId}/[controller]")]
-        public IActionResult DissociateTag(string feedbackId, [FromBody] UserFeedbackTagView tag)
+        [Route("[controller]")]
+        public RequestResult<AdminTagView> DeleteTag([FromBody] AdminTagView tag)
         {
-            bool result = this.feedbackService.DissociateFeedbackTag(Guid.Parse(feedbackId), tag);
-            return new JsonResult(result);
+            RequestResult<AdminTagView> result = this.feedbackService.DeleteTag(tag);
+            return result;
+        }
+
+        /// <summary>
+        /// Associate a collection of existing admin tags to the feedback with matching id.
+        /// </summary>
+        /// <returns>Returns the user feedback view with the associated admin tag(s) wrapped in a request result.</returns>
+        /// <param name="feedbackId">The feedback id.</param>
+        /// <param name="tagIds">A list of admin tag ids.</param>
+        /// <response code="200">The user feedback containing the added tag model wrapped in a request result.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpPut]
+        [Route("UserFeedback/{feedbackId}/[controller]")]
+        public RequestResult<UserFeedbackView> AssociateTags(Guid feedbackId, [FromBody] IList<Guid> tagIds)
+        {
+            RequestResult<UserFeedbackView> result = this.feedbackService.AssociateFeedbackTags(feedbackId, tagIds);
+            return result;
         }
     }
 }

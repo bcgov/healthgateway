@@ -29,6 +29,26 @@ export default class ReleaseNotesView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
         <release-note
+            date="June 21, 2022"
+            version="v2022.6.1"
+            title="Lab report download, Record filter counts, BC Vaccine Card quick link"
+        >
+            <ul>
+                <li>
+                    We added a button for downloading lab reports so they are
+                    easier to access.
+                </li>
+                <li>
+                    We updated the filter counts to show an accurate count of
+                    the records when filters are applied.
+                </li>
+                <li>
+                    We updated the quick link for BC Vaccine Card so you can
+                    remove it if you want.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
             date="June 7, 2022"
             version="v2022.6.0"
             title="Updated Terms of Service"

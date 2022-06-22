@@ -27,8 +27,9 @@ namespace HealthGateway.Common.Auditing
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Routing;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
 
-    #pragma warning disable CA1303 // Do not pass literals as localized parameters
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
 
     /// <summary>
     /// The Authorization service.
@@ -78,13 +79,17 @@ namespace HealthGateway.Common.Auditing
             string? idir = idirClaim?.Value;
 
             // Query PHN header for Admin WebClient CovidCard actions
-            context.Request.Headers.TryGetValue("phn", out var phnHeader);
+            context.Request.Headers.TryGetValue("phn", out StringValues phnHeader);
             string? subjectPhn = phnHeader.FirstOrDefault();
+
+            // Query Request Parameters for queryString for AdminWebClient Support actions
+            context.Request.Query.TryGetValue("queryString", out StringValues queryString);
+            string? subjectQuery = queryString.FirstOrDefault();
 
             auditEvent.ApplicationType = GetApplicationType();
             auditEvent.TransactionResultCode = GetTransactionResultType(context.Response.StatusCode);
 
-            auditEvent.ApplicationSubject = hdid ?? subjectPhn;
+            auditEvent.ApplicationSubject = hdid ?? subjectPhn ?? subjectQuery;
             auditEvent.CreatedBy = hdid ?? idir ?? UserId.DefaultUser;
 
             RouteValueDictionary routeValues = context.Request.RouteValues;

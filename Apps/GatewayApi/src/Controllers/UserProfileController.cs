@@ -119,18 +119,7 @@ namespace HealthGateway.GatewayApi.Controllers
             DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
 
             RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid, jwtAuthTime);
-
-            if (result.ResourcePayload != null)
-            {
-                RequestResult<Dictionary<string, UserPreferenceModel>> userPreferences = this.userProfileService.GetUserPreferences(hdid);
-                if (userPreferences.ResourcePayload != null)
-                {
-                    foreach (var preference in userPreferences.ResourcePayload)
-                    {
-                        result.ResourcePayload.Preferences.Add(preference);
-                    }
-                }
-            }
+            this.AddUserPreferences(result.ResourcePayload);
 
             return result;
         }
@@ -363,7 +352,25 @@ namespace HealthGateway.GatewayApi.Controllers
         [Authorize(Policy = UserProfilePolicy.Write)]
         public RequestResult<UserProfileModel> UpdateAcceptedTerms(string hdid, [FromBody] Guid termsOfServiceId)
         {
-            return this.userProfileService.UpdateAcceptedTerms(hdid, termsOfServiceId);
+            RequestResult<UserProfileModel> result = this.userProfileService.UpdateAcceptedTerms(hdid, termsOfServiceId);
+            this.AddUserPreferences(result.ResourcePayload);
+
+            return result;
+        }
+
+        private void AddUserPreferences(UserProfileModel profile)
+        {
+            if (profile != null)
+            {
+                RequestResult<Dictionary<string, UserPreferenceModel>> userPreferences = this.userProfileService.GetUserPreferences(profile.HdId);
+                if (userPreferences.ResourcePayload != null)
+                {
+                    foreach (KeyValuePair<string, UserPreferenceModel> preference in userPreferences.ResourcePayload)
+                    {
+                        profile.Preferences.Add(preference);
+                    }
+                }
+            }
         }
     }
 }

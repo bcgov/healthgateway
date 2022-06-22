@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -76,6 +77,34 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
+        public DBResult<AdminTag> Delete(AdminTag tag, bool commit = true)
+        {
+            this.logger.LogTrace($"Deleting AdminTag from DB...");
+            DBResult<AdminTag> result = new DBResult<AdminTag>()
+            {
+                Payload = tag,
+                Status = DBStatusCode.Deferred,
+            };
+            this.dbContext.AdminTag.Remove(tag);
+            if (commit)
+            {
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Deleted;
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    result.Status = DBStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+            }
+
+            this.logger.LogDebug($"Finished deleting AdminTag in DB");
+            return result;
+        }
+
+        /// <inheritdoc />
         public DBResult<IEnumerable<AdminTag>> GetAll()
         {
             this.logger.LogTrace($"Getting all AdminTag from DB...");
@@ -84,6 +113,16 @@ namespace HealthGateway.Database.Delegates
                     .OrderBy(o => o.Name)
                     .ToList();
             result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<AdminTag>> GetAdminTags(ICollection<Guid> adminTagIds)
+        {
+            this.logger.LogTrace("Getting admin tags from DB for Admin Tag Ids: {AdminTagId}", adminTagIds.ToString());
+            DBResult<IEnumerable<AdminTag>> result = new DBResult<IEnumerable<AdminTag>>();
+            result.Payload = this.dbContext.AdminTag.Where(t => adminTagIds.Contains(t.AdminTagId)).ToList();
+            result.Status = DBStatusCode.Read;
             return result;
         }
     }

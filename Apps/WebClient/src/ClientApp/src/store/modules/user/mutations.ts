@@ -99,11 +99,9 @@ export const mutations: UserMutation = {
                 userPreference.preference
             )}, preference.value: ${JSON.stringify(userPreference.value)}`
         );
-        Vue.set(
-            state.user.preferences,
-            userPreference.preference,
-            userPreference
-        );
+        state.user.preferences = Object.assign({}, state.user.preferences, {
+            [userPreference.preference]: userPreference,
+        });
         state.error = false;
         state.statusMessage = "success";
         state.status = LoadStatus.LOADED;

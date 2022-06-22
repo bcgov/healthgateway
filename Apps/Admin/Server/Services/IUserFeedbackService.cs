@@ -17,7 +17,7 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
-    using HealthGateway.Admin.Server.Models;
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
@@ -28,44 +28,42 @@ namespace HealthGateway.Admin.Server.Services
         /// <summary>
         /// Retrieves the user feedback.
         /// </summary>
-        /// <returns>returns a list of user feedbacks wrapped in a request result.</returns>
+        /// <returns>A list of user feedback wrapped in a request result.</returns>
         RequestResult<IList<UserFeedbackView>> GetUserFeedback();
 
         /// <summary>
         /// Updates the user feedback.
         /// </summary>
         /// <param name="feedback">The user feedback to update.</param>
-        /// <returns>True if the call was success.</returns>
-        bool UpdateFeedbackReview(UserFeedbackView feedback);
+        /// <returns>Returns the user feedback view with its associated admin tag(s) wrapped in a request result.</returns>
+        RequestResult<UserFeedbackView> UpdateFeedbackReview(UserFeedbackView feedback);
 
         /// <summary>
         /// Retrieves the admin tags.
         /// </summary>
-        /// <returns>returns a list of admin tags wrapped in a request result.</returns>
-        RequestResult<IList<AdminTagView>> GetAllAdminTags();
+        /// <returns>A list of admin tags wrapped in a request result.</returns>
+        RequestResult<IList<AdminTagView>> GetAllTags();
 
         /// <summary>
-        /// Creates a new feedback tag and associates it with the user feedback id.
+        /// Creates a new admin tag.
         /// </summary>
-        /// <param name="userFeedbackId">The user feedback id to be associated to the new tag.</param>
         /// <param name="tagName">The tag name.</param>
-        /// <returns>returns the newly created admin tag wrapped in a request result.</returns>
-        RequestResult<UserFeedbackTagView> CreateFeedbackTag(Guid userFeedbackId, string tagName);
+        /// <returns>The newly created admin tag wrapped in a request result.</returns>
+        RequestResult<AdminTagView> CreateTag(string tagName);
 
         /// <summary>
-        /// Associates an admin tag to a feedback.
+        /// Deletes an admin tag.
         /// </summary>
-        /// <param name="userFeedbackId">The user feedback id to be associated to the tag.</param>
         /// <param name="tag">The admin tag.</param>
-        /// <returns>returns the associated admin tag wrapped in a request result.</returns>
-        RequestResult<UserFeedbackTagView> AssociateFeedbackTag(Guid userFeedbackId, AdminTagView tag);
+        /// <returns>The deleted admin tag wrapped in a request result.</returns>
+        RequestResult<AdminTagView> DeleteTag(AdminTagView tag);
 
         /// <summary>
-        /// Dissociates an admin tag from a user feedback.
+        /// Associates a collection of tags to a feedback item.
         /// </summary>
-        /// <param name="userFeedbackId">The user feedback id to be dissociated to the tag.</param>
-        /// <param name="tag">The admin tag.</param>
-        /// <returns>returns the associated admin tag wrapped in a request result.</returns>
-        bool DissociateFeedbackTag(Guid userFeedbackId, UserFeedbackTagView tag);
+        /// <param name="userFeedbackId">The user feedback id to be associated to the tags.</param>
+        /// <param name="adminTagIds">The admin tag ids.</param>
+        /// <returns>Returns the user feedback view with its associated admin tag(s) wrapped in a request result.</returns>
+        RequestResult<UserFeedbackView> AssociateFeedbackTags(Guid userFeedbackId, IList<Guid> adminTagIds);
     }
 }

@@ -26,10 +26,14 @@ describe("Laboratory Orders - Report", () => {
         cy.log("Verifying Laboratory Report PDF download");
         cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
 
-        cy.get("[data-testid=laboratory-report-download-btn]")
+        cy.get("[data-testid=entryDetailsModal]")
+            .children()
             .should("be.visible")
-            .contains("Incomplete")
-            .click({ force: true });
+            .within(() => {
+                cy.get("[data-testid=laboratory-report-download-btn]")
+                    .should("be.visible")
+                    .click({ force: true });
+            });
 
         cy.get("[data-testid=genericMessageSubmitBtn]")
             .should("be.visible")

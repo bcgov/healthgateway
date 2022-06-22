@@ -22,12 +22,14 @@ import LoadingComponent from "@/components/LoadingComponent.vue";
 import AddQuickLinkComponent from "@/components/modal/AddQuickLinkComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
+import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
 import { QuickLink } from "@/models/quickLink";
 import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
+import { UserPreference } from "@/models/userPreference";
 import SnowPlow from "@/utility/snowPlow";
 
 library.add(
@@ -76,6 +78,16 @@ export default class HomeView extends Vue {
     updateQuickLinks!: (params: {
         hdid: string;
         quickLinks: QuickLink[];
+    }) => Promise<void>;
+
+    @Action("updateUserPreference", { namespace: "user" })
+    updateUserPreference!: (params: {
+        userPreference: UserPreference;
+    }) => Promise<void>;
+
+    @Action("createUserPreference", { namespace: "user" })
+    createUserPreference!: (params: {
+        userPreference: UserPreference;
     }) => Promise<void>;
 
     @Getter("authenticatedVaccineRecordIsLoading", {
@@ -145,8 +157,21 @@ export default class HomeView extends Vue {
         return this.config.modules["FederalCardButton"];
     }
 
-    private get showVaccineCardButton(): boolean {
+    private get vaccinationStatusModuleEnabled(): boolean {
         return this.config.modules["VaccinationStatus"];
+    }
+
+    private get preferenceVaccineCardHidden(): boolean {
+        const preferenceName = UserPreferenceType.HideVaccineCardQuickLink;
+        let hideVaccineCard = this.user.preferences[preferenceName];
+        return hideVaccineCard?.value === "true";
+    }
+
+    private get showVaccineCardButton(): boolean {
+        return (
+            !this.preferenceVaccineCardHidden &&
+            this.vaccinationStatusModuleEnabled
+        );
     }
 
     private get enabledQuickLinks(): QuickLink[] {
@@ -191,7 +216,9 @@ export default class HomeView extends Vue {
                             existingLink.filter.modules.length === 1 &&
                             existingLink.filter.modules[0] === details.type
                     ) === undefined
-            ).length === 0
+            ).length === 0 &&
+            (!this.vaccinationStatusModuleEnabled ||
+                !this.preferenceVaccineCardHidden)
         );
     }
 
@@ -237,6 +264,27 @@ export default class HomeView extends Vue {
     private handleClickRemoveQuickLink(index: number): void {
         const quickLink = this.enabledQuickLinks[index];
         this.removeQuickLink(quickLink);
+    }
+
+    private handleClickRemoveVaccineCardQuickLink(): void {
+        const preferenceName = UserPreferenceType.HideVaccineCardQuickLink;
+        if (this.user.preferences[preferenceName] != undefined) {
+            this.user.preferences[preferenceName].value = "true";
+            this.updateUserPreference({
+                userPreference: this.user.preferences[preferenceName],
+            });
+        } else {
+            this.user.preferences[preferenceName] = {
+                hdId: this.user.hdid,
+                preference: preferenceName,
+                value: "true",
+                version: 0,
+                createdDateTime: new DateWrapper().toISO(),
+            };
+            this.createUserPreference({
+                userPreference: this.user.preferences[preferenceName],
+            });
+        }
     }
 
     private handleClickQuickLink(index: number): void {
@@ -400,6 +448,33 @@ export default class HomeView extends Vue {
                             size="large"
                             square
                         />
+                    </template>
+                    <template #menu>
+                        <b-nav align="right">
+                            <b-nav-item-dropdown
+                                right
+                                text=""
+                                :no-caret="true"
+                                menu-class="quick-link-menu"
+                                toggle-class="quick-link-menu-button"
+                            >
+                                <template slot="button-content">
+                                    <hg-icon
+                                        icon="ellipsis-v"
+                                        size="medium"
+                                        data-testid="quick-link-menu-button"
+                                    />
+                                </template>
+                                <b-dropdown-item
+                                    data-testid="remove-quick-link-button"
+                                    @click.stop="
+                                        handleClickRemoveVaccineCardQuickLink()
+                                    "
+                                >
+                                    Remove
+                                </b-dropdown-item>
+                            </b-nav-item-dropdown>
+                        </b-nav>
                     </template>
                     <div>
                         View, download and print your BC Vaccine Card. Present

@@ -20,7 +20,7 @@ namespace HealthGateway.GatewayApi.Test.Services
     using System.Linq;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;

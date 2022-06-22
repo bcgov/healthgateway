@@ -88,11 +88,21 @@ const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     },
 })
 export default class App extends Vue {
-    @Ref("idleModal") readonly idleModal!: IdleComponent;
-    @Action("setIsMobile") setIsMobile!: (isMobile: boolean) => void;
-    @Getter("isMobile") isMobile!: boolean;
+    @Ref("idleModal")
+    readonly idleModal!: IdleComponent;
+
+    @Action("setIsMobile")
+    setIsMobile!: (isMobile: boolean) => void;
+
+    @Getter("isMobile")
+    isMobile!: boolean;
+
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated?: boolean;
+
+    @Getter("isValidIdentityProvider", { namespace: "auth" })
+    isValidIdentityProvider?: boolean;
+
     @Getter("hasTermsOfServiceUpdated", { namespace: "user" })
     hasTermsOfServiceUpdated!: boolean;
 
@@ -128,7 +138,7 @@ export default class App extends Vue {
 
     @Watch("isAppIdle")
     private onIsAppIdleChanged(idle: boolean) {
-        if (idle && this.oidcIsAuthenticated) {
+        if (idle && this.oidcIsAuthenticated && this.isValidIdentityProvider) {
             this.idleModal.show();
         }
     }

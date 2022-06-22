@@ -21,13 +21,10 @@ import * as common from "../../inc/common.js";
 export let options = common.OptionConfig();
 
 export default function () {
-    let user = common.users[__VU % common.users.length];
 
-    common.authorizeUser(user);
     let response = http.get(
-        common.ConfigurationUrl + "/" + user.hdid,
-        common.params(user)
-    );
+        common.ConfigurationUrl
+     );
     common.checkResponse(response);
     sleep(1);
 }

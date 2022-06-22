@@ -190,7 +190,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             UserPreferenceModel userPref = new()
             {
                 HdId = this.hdid,
-                Preference = "actionedCovidModalAt",
+                Preference = "tutorialMenuNote",
                 Value = "Body value",
             };
 
@@ -224,7 +224,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             UserPreferenceModel userPref = new()
             {
                 HdId = this.hdid,
-                Preference = "actionedCovidModalAt",
+                Preference = "tutorialMenuNote",
                 Value = "Body value",
             };
 

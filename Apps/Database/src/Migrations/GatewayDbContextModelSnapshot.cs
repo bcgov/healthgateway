@@ -806,57 +806,6 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("Communication", "gateway");
                 });
 
-            modelBuilder.Entity("HealthGateway.Database.Models.CommunicationEmail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("CommunicationEmailId");
-
-                    b.Property<Guid>("CommunicationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("EmailId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UserProfileHdId")
-                        .IsRequired()
-                        .HasMaxLength(52)
-                        .HasColumnType("character varying(52)");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommunicationId");
-
-                    b.HasIndex("EmailId");
-
-                    b.HasIndex("UserProfileHdId");
-
-                    b.ToTable("CommunicationEmail", "gateway");
-                });
-
             modelBuilder.Entity("HealthGateway.Database.Models.CommunicationStatusCode", b =>
                 {
                     b.Property<string>("StatusCode")
@@ -1001,16 +950,6 @@ namespace HealthGateway.Database.Migrations
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Banner communication type",
-                            UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Version = 0u
-                        },
-                        new
-                        {
-                            StatusCode = "Email",
-                            CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Email communication type",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -3282,33 +3221,6 @@ namespace HealthGateway.Database.Migrations
                         .HasForeignKey("CommunicationTypeCode")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("HealthGateway.Database.Models.CommunicationEmail", b =>
-                {
-                    b.HasOne("HealthGateway.Database.Models.Communication", "Communication")
-                        .WithMany()
-                        .HasForeignKey("CommunicationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HealthGateway.Common.Data.Models.Email", "Email")
-                        .WithMany()
-                        .HasForeignKey("EmailId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HealthGateway.Database.Models.UserProfile", "UserProfile")
-                        .WithMany()
-                        .HasForeignKey("UserProfileHdId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Communication");
-
-                    b.Navigation("Email");
-
-                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Company", b =>

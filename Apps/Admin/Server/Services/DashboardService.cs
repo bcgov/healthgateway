@@ -29,10 +29,12 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Wrapper;
+    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
     public class DashboardService : IDashboardService
     {
+        private readonly ILogger logger;
         private readonly IResourceDelegateDelegate dependentDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly IMessagingVerificationDelegate messagingVerificationDelegate;
@@ -42,18 +44,21 @@ namespace HealthGateway.Admin.Server.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
         /// <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
         /// <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
         /// <param name="ratingDelegate">The rating delegate.</param>
         public DashboardService(
+            ILogger<DashboardService> logger,
             IResourceDelegateDelegate dependentDelegate,
             IUserProfileDelegate userProfileDelegate,
             IMessagingVerificationDelegate messagingVerificationDelegate,
             IPatientService patientService,
             IRatingDelegate ratingDelegate)
         {
+            this.logger = logger;
             this.dependentDelegate = dependentDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.messagingVerificationDelegate = messagingVerificationDelegate;
@@ -85,11 +90,25 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc />
         public int GetRecurrentUserCount(int dayCount, string startPeriod, string endPeriod, int timeOffset)
         {
-            TimeSpan ts = new(0, timeOffset, 0);
+            int offset = GetOffset(timeOffset);
+            TimeSpan ts = new(0, offset, 0);
+            this.logger.LogDebug("Timespan: {Timespan}", ts.ToString());
+
             DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
             startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
             DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
             endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+
+            this.logger.LogDebug(
+                "Start Period (Local): {StartPeriod} - End Period (Local): {EndPeriod} - StartDate (UTC): {StartDate} - End Date (UTC): {EndDate} - Timespan: {Timespan} - TimeOffset (UI): {TimeOffset} - Offset: {Offset}",
+                startPeriod,
+                endPeriod,
+                startDate,
+                endDate,
+                ts.ToString(),
+                timeOffset.ToString(CultureInfo.InvariantCulture),
+                offset.ToString(CultureInfo.InvariantCulture));
+
             return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
         }
 
@@ -166,13 +185,25 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc />
         public IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset)
         {
-            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new(0, timeOffset, 0);
+            TimeSpan ts = new(0, GetOffset(timeOffset), 0);
             DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
             startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
             DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
             endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
             return this.ratingDelegate.GetSummary(startDate, endDate);
+        }
+
+        /// <summary>
+        /// Returns an offset value that can be used to create a date in UTC.
+        /// </summary>
+        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        /// <returns>The offset value used to create UTC.</returns>
+        private static int GetOffset(int timeOffset)
+        {
+            // If timeOffset is a negative value, then it means current timezone is [n] minutes behind UTC so we need to change this value to a positive when creating TimeSpan for DateTime object in UTC.
+            // If timeOffset is a positive value, then it means current timezone is [n] minutes ahead of UTC so we need to change this value to a negative when creating TimeSpan for DateTime object in UTC.
+            // If timeOffset is 0, then it means current timezone is UTC.
+            return timeOffset * -1;
         }
     }
 }

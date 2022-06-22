@@ -4,10 +4,11 @@ services:
     image: loadimpact/k6:latest
     command: run /services/medications/k6_meds.js
     volumes:
-      - ../../../src/services/medications:/services/medications
-      - ../../../src/inc:/inc
+      - ../../services/medications:/services/medications
+      - ../../inc:/inc
     environment: 
       - "HG_TYPE=${HG_TYPE}"
       - "HG_ENV=${HG_ENV}"
+      - "HG_VUS=${HG_VUS}"
       - "HG_KEY=${HG_KEY}"
       - "HG_PASSWORD=${HG_PASSWORD}"
