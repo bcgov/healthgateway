@@ -20,9 +20,10 @@ describe("System Analytics", () => {
 
         cy.intercept("GET", "**/CsvExport/GetRatings").as("getRatings");
 
-        cy.intercept("GET", "**/CsvExport/GetInactiveUsers*").as(
-            "getInactiveUsers"
-        );
+        cy.intercept(
+            "GET",
+            "**/CsvExport/GetInactiveUsers?timeOffset=420&inactiveDays=100"
+        ).as("getInactiveUsers");
 
         verifyTestingEnvironment();
         cy.log("Logging in.");
