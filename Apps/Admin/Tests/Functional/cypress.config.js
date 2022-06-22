@@ -3,7 +3,7 @@ const { isFileExist, findFiles } = require("cy-verify-downloads");
 
 module.exports = defineConfig({
     e2e: {
-        baseUrl: "https://mock-admin.healthgateway.gov.bc.ca",
+        baseUrl: "https://dev-admin.healthgateway.gov.bc.ca",
         defaultCommandTimeout: 30000,
         blockHosts: ["spt.apps.gov.bc.ca"],
         specPattern: "cypress/integration/**/*.cy.{js,jsx,ts,tsx}",
@@ -21,6 +21,5 @@ module.exports = defineConfig({
         setupNodeEvents(on, config) {
             on("task", { isFileExist, findFiles });
         },
-        video: false,
     },
 });
