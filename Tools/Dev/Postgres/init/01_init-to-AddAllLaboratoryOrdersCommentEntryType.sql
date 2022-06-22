@@ -1,5 +1,5 @@
-\c gateway
-SET ROLE gateway;
+\c hglocal
+SET ROLE hglocal;
 
 CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
     "MigrationId" character varying(150) NOT NULL,
