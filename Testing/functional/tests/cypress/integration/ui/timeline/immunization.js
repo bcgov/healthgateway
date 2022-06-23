@@ -90,27 +90,6 @@ describe("Immunization", () => {
             .should("have.text", "Immunization");
     });
 
-    it("Validate Disabled Header Covid Card", () => {
-        cy.intercept("GET", "**/Immunization?*", (req) => {
-            req.reply((res) => {
-                res.send({
-                    fixture: "ImmunizationService/immunizationNoRecords.json",
-                });
-            });
-        });
-        cy.enableModules("Immunization");
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.checkTimelineHasLoaded();
-
-        cy.get("[data-testid=covidcard-btn]")
-            .should("be.visible")
-            .should("not.be.enabled");
-    });
-
     it("Validate Provincial VaccineProof Buttons", () => {
         cy.intercept("GET", "**/Immunization?*", {
             fixture: "ImmunizationService/immunization.json",
