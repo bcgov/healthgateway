@@ -32,7 +32,7 @@ describe("System Analytics", () => {
         cy.visit("/analytics");
     });
 
-    it("Verify system anlytics stats downloads.", () => {
+    it("Verify system analytics stats downloads.", () => {
         cy.log("System Analytics stats download test started.");
 
         cy.get("[data-testid=user-profile-download-btn]")
