@@ -18,6 +18,7 @@
 
 <EditForm Model="@AddTagModel" OnValidSubmit="@AddTag" Class="d-flex">
     <MudTextField T="string"
+                  @ref="AddTagNameInput"
                   @bind-Value="@AddTagModel.Name"
                   Class="flex-grow-1"
                   MaxLength="20"

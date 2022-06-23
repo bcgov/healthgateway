@@ -59,6 +59,8 @@ public partial class FeedbackPage : FluxorComponent
 
     private AddTagFormModel AddTagModel { get; } = new();
 
+    private MudTextField<string> AddTagNameInput { get; set; } = default!;
+
     private IEnumerable<RequestError> TagErrors => new[]
     {
         this.TagState.Value.Load.Error,
@@ -105,6 +107,7 @@ public partial class FeedbackPage : FluxorComponent
         this.Snackbar.Add($"Tag \"{action.Data.ResourcePayload?.Name}\" added.", Severity.Success);
         this.AddTagModel.Clear();
         this.StateHasChanged();
+        Task.Run(async () => await this.AddTagNameInput.FocusAsync().ConfigureAwait(true));
     }
 
     private void HandleTagDeleteSuccessful(TagActions.DeleteSuccessAction action)
