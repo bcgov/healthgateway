@@ -35,22 +35,32 @@
         Add Tag
     </HgButton>
 </EditForm>
-<MudChipSet @bind-SelectedChips="@SelectedTagChips"
-            Class="my-4"
-            MultiSelection="true"
-            Filter="true">
-    @foreach (AdminTagView tag in Tags)
-    {
-        <MudChip Text="@tag.Name"
-                 Value="@tag.Id"
-                 Class="my-2"
-                 Variant="@Variant.Text"
-                 Size="@Size.Small"
-                 Color="@Color.Tertiary"
-                 Disabled="@(TagState.Value.Add.IsLoading || TagState.Value.Delete.IsLoading)"
-                 OnClose="@RemoveTag"/>
-    }
-</MudChipSet>
+
+@if (TagsUpdating)
+{
+    <MudProgressLinear Color="Color.Tertiary" Indeterminate="true" Class="mt-7 mb-8" />
+}
+else
+{
+    <MudChipSet @bind-SelectedChips="@SelectedTagChips"
+                Class="my-3"
+                MultiSelection="true"
+                Filter="true">
+        @foreach (AdminTagView tag in Tags)
+        {
+            <MudChip Text="@tag.Name"
+                     Value="@tag.Id"
+                     Default="@TagIdFilter.Any(tagId => tagId == tag.Id)"
+                     Class="my-2"
+                     Variant="@Variant.Text"
+                     Size="@Size.Small"
+                     Color="@Color.Tertiary"
+                     Disabled="@(TagState.Value.Add.IsLoading || TagState.Value.Delete.IsLoading)"
+                     OnClose="@RemoveTag"/>
+        }
+    </MudChipSet>
+}
+
 @if (FeedbackLoaded || FeedbackLoading)
 {
     <MudForm>

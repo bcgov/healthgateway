@@ -81,6 +81,10 @@ public partial class FeedbackPage : FluxorComponent
 
     private IEnumerable<Guid> TagIdFilter => this.SelectedTagChips.Select(c => c.Value).OfType<Guid>();
 
+    private bool TagsUpdating => this.TagState.Value.Load.IsLoading ||
+                                 this.TagState.Value.Add.IsLoading ||
+                                 this.TagState.Value.Delete.IsLoading;
+
     private bool FeedbackUpdating => this.UserFeedbackState.Value.Update.IsLoading ||
                                      this.UserFeedbackState.Value.AssociateTags.IsLoading;
 
