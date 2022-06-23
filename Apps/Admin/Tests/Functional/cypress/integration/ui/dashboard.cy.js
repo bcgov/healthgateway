@@ -1,5 +1,4 @@
-const { localDevUri } = require("../../../support/constants");
-import { verifyTestingEnvironment } from "../../../support/functions/environment";
+import { verifyTestingEnvironment } from "../../support/functions/environment";
 
 describe("Dashboard", () => {
     beforeEach(() => {
@@ -67,7 +66,7 @@ describe("Dashboard", () => {
             });
         });
         cy.log("Updating unique days input value.");
-        cy.get("[data-testid=unique-days]").clear().type(5);
+        cy.get("[data-testid=unique-days-input]").clear().type(5);
         cy.get("[data-testid=total-unique-users]").click().contains(0);
 
         cy.intercept("GET", "**/Dashboard/RecurringUsers?days=2*", (req) => {
@@ -76,7 +75,7 @@ describe("Dashboard", () => {
             });
         });
         cy.log("Updating unique days input value.");
-        cy.get("[data-testid=unique-days]").clear().type(2);
+        cy.get("[data-testid=unique-days-input]").clear().type(2);
         cy.get("[data-testid=total-unique-users]").click().contains(3);
 
         cy.log("Clicking refresh button.");

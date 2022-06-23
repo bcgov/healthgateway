@@ -7,25 +7,25 @@ Using PG Admin, connect to the Azure DB using the Azure DB Admin credentials.
 ### Create the gateway role
 
 ```console
-CREATE ROLE gateway WITH
+CREATE ROLE [ROLE NAME] WITH
   LOGIN
   INHERIT
   NOCREATEDB
   NOCREATEROLE
-  PASSWORD 'THE PASSWORD';
+  PASSWORD '[THE PASSWORD]';
 ```
 
 ### Grant gateway access to Azure DB Admin User
 
 ```console
-grant gateway to "Azure DB Admin UserId";
+grant [ROLE NAME] to "Azure DB Admin UserId";
 ```
 
 ### Create the database
 
 ```console
-CREATE DATABASE gateway WITH
-  OWNER = gateway
+CREATE DATABASE [DB NAME] WITH
+  OWNER = [ROLE NAME]
   ENCODING = 'UTF8'
   LC_COLLATE = 'en_US.UTF-8'
   LC_CTYPE = 'en_US.UTF-8'
