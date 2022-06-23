@@ -172,28 +172,6 @@ export default class LinearTimelineComponent extends Vue {
 <template>
     <div>
         <b-row
-            class="no-print sticky-top sticky-offset pt-2 px-2"
-            :class="{ 'header-offset': isHeaderShown }"
-        >
-            <b-col>
-                <b-pagination-nav
-                    v-if="!timelineIsEmpty"
-                    v-model="currentPage"
-                    :link-gen="linkGen"
-                    :number-of-pages="numberOfPages"
-                    data-testid="pagination"
-                    limit="4"
-                    first-number
-                    last-number
-                    next-text="Next"
-                    prev-text="Prev"
-                    use-router
-                    class="pb-0"
-                />
-            </b-col>
-            <slot name="add-note" />
-        </b-row>
-        <b-row
             v-if="!timelineIsEmpty"
             class="sticky-top sticky-line"
             :class="{ 'header-offset': isHeaderShown }"
@@ -225,6 +203,24 @@ export default class LinearTimelineComponent extends Vue {
                 />
             </div>
         </div>
+        <b-row align-h="center">
+            <b-col cols="auto">
+                <b-pagination-nav
+                    v-if="!timelineIsEmpty"
+                    v-model="currentPage"
+                    :link-gen="linkGen"
+                    :number-of-pages="numberOfPages"
+                    data-testid="pagination"
+                    limit="4"
+                    first-number
+                    last-number
+                    next-text="Next"
+                    prev-text="Prev"
+                    use-router
+                    class="mt-3"
+                />
+            </b-col>
+        </b-row>
         <div v-if="timelineIsEmpty" class="text-center pt-2">
             <b-row>
                 <b-col>
@@ -266,31 +262,22 @@ export default class LinearTimelineComponent extends Vue {
     margin: 0px;
     padding: 0px;
 }
+
 .sticky-top {
     transition: all 0.3s;
 }
 
-.sticky-offset {
-    top: $timeline-filter-height;
-    background-color: white;
-    z-index: 2;
-    &.header-offset {
-        top: $header-height + $timeline-filter-height;
-    }
-}
-
 .sticky-line {
-    top: $timeline-filter-height + $timeline-pagination-height;
+    top: $timeline-filter-height;
     background-color: white;
     border-bottom: solid $primary 2px;
     margin-top: -2px;
     z-index: 1;
     @media (max-width: 575px) {
-        top: 107px;
+        top: $timeline-filter-height - 1px;
     }
     &.header-offset {
-        top: $header-height + $timeline-filter-height +
-            $timeline-pagination-height;
+        top: $header-height + $timeline-filter-height;
     }
 }
 
