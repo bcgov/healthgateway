@@ -113,7 +113,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
             {
                 Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(GetRolesUrlKey));
                 HttpClient client = this.CreateHttpClient(baseUri, jwtModel.AccessToken);
-                string uri = $"{role}/users";
+                string uri = $"{role}/users?max=-1";
 
                 HttpResponseMessage response = await client.GetAsync(new Uri(uri, UriKind.Relative)).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
