@@ -17,6 +17,7 @@
 namespace HealthGateway.GatewayApi
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Reflection;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
@@ -25,6 +26,7 @@ namespace HealthGateway.GatewayApi
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.GatewayApi.Listeners;
+    using HealthGateway.GatewayApi.MapProfiles;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -114,6 +116,8 @@ namespace HealthGateway.GatewayApi
             {
                 options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
             });
+
+            services.AddAutoMapper(typeof(Startup));
         }
 
         /// <summary>

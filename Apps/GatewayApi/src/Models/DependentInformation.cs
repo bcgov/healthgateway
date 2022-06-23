@@ -57,25 +57,5 @@ namespace HealthGateway.GatewayApi.Models
         /// Gets or sets the gender.
         /// </summary>
         public string Gender { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Constructs a new DependentInformation based on a PatientModel.
-        /// </summary>
-        /// <param name="patientModel">The Patien Model to be converted.</param>
-        /// <returns>The Dependent Model.</returns>
-        public static DependentInformation FromPatientModel(PatientModel patientModel)
-        {
-            DependentInformation result = new DependentInformation()
-            {
-                HdId = patientModel.HdId,
-                FirstName = patientModel.FirstName,
-                LastName = patientModel.LastName,
-                PHN = patientModel.PersonalHealthNumber,
-                Gender = patientModel.Gender,
-                DateOfBirth = patientModel.Birthdate,
-            };
-
-            return result;
-        }
     }
 }
