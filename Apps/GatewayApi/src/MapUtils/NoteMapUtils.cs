@@ -15,8 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.MapUtils
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using AutoMapper;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Models;
@@ -39,7 +37,10 @@ namespace HealthGateway.GatewayApi.MapUtils
         {
             Note note = autoMapper.Map<UserNote, Note>(userNote, opts =>
                 opts.AfterMap((src, dest) =>
-                    dest.Text = !string.IsNullOrEmpty(src.Text) ? cryptoDelegate.Encrypt(key, src.Text) : string.Empty));
+                {
+                    dest.Title = !string.IsNullOrEmpty(src.Title) ? cryptoDelegate.Encrypt(key, src.Title) : string.Empty;
+                    dest.Text = !string.IsNullOrEmpty(src.Text) ? cryptoDelegate.Encrypt(key, src.Text) : string.Empty;
+                }));
             return note;
         }
 
@@ -55,7 +56,10 @@ namespace HealthGateway.GatewayApi.MapUtils
         {
             UserNote userNote = autoMapper.Map<Note, UserNote>(note, opts =>
                 opts.AfterMap((src, dest) =>
-                    dest.Text = !string.IsNullOrEmpty(src.Text) ? cryptoDelegate.Decrypt(key, src.Text) : string.Empty));
+                {
+                    dest.Title = !string.IsNullOrEmpty(src.Title) ? cryptoDelegate.Decrypt(key, src.Title) : string.Empty;
+                    dest.Text = !string.IsNullOrEmpty(src.Text) ? cryptoDelegate.Decrypt(key, src.Text) : string.Empty;
+                }));
 
             return userNote;
         }

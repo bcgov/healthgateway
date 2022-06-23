@@ -16,8 +16,6 @@
 
 namespace HealthGateway.GatewayApi.MapUtils
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using AutoMapper;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Models;
