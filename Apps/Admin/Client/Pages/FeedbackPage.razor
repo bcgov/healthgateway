@@ -16,26 +16,24 @@
     </HgBannerFeedback>
 }
 
-<MudForm Class="d-flex">
+<EditForm Model="@AddTagModel" OnValidSubmit="@AddTag" Class="d-flex">
     <MudTextField T="string"
-                  @bind-Value="@ActiveTag"
-                  Immediate="true"
+                  @bind-Value="@AddTagModel.Name"
+                  Class="flex-grow-1"
                   MaxLength="20"
                   Label="Tag Name"
-                  Class="flex-grow-1"
-                  @onkeydown="@HandleKeyDownActiveTag"/>
-    <HgButton TopMargin="@Breakpoint.Always"
+                  Disabled="@TagState.Value.Add.IsLoading" />
+    <HgButton ButtonType="@ButtonType.Submit"
+              TopMargin="@Breakpoint.Always"
               LeftMargin="@Breakpoint.Always"
               Class="flex-grow-0"
               EndIcon="@Icons.Material.Filled.Add"
               Variant="@Variant.Filled"
               Color="@Color.Success"
-              Disabled="@(!ActiveTagIsValid)"
-              Loading="@TagState.Value.Add.IsLoading"
-              @onclick="@AddTag">
+              Loading="@TagState.Value.Add.IsLoading">
         Add Tag
     </HgButton>
-</MudForm>
+</EditForm>
 <MudChipSet @bind-SelectedChips="@SelectedTagChips"
             Class="my-4"
             MultiSelection="true"
