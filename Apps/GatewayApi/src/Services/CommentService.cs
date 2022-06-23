@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System.Collections.Generic;
     using System.Linq;
+    using AutoMapper;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
@@ -25,6 +26,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using Microsoft.Extensions.Logging;
 
@@ -35,6 +37,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly ICommentDelegate commentDelegate;
         private readonly IUserProfileDelegate profileDelegate;
         private readonly ICryptoDelegate cryptoDelegate;
+        private readonly IMapper autoMapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommentService"/> class.
@@ -43,12 +46,14 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="commentDelegate">Injected Comment delegate.</param>
         /// <param name="profileDelegate">Injected Profile delegate.</param>
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
-        public CommentService(ILogger<CommentService> logger, ICommentDelegate commentDelegate, IUserProfileDelegate profileDelegate, ICryptoDelegate cryptoDelegate)
+        /// <param name="autoMapper">The inject automapper provider.</param>
+        public CommentService(ILogger<CommentService> logger, ICommentDelegate commentDelegate, IUserProfileDelegate profileDelegate, ICryptoDelegate cryptoDelegate, IMapper autoMapper)
         {
             this.logger = logger;
             this.commentDelegate = commentDelegate;
             this.profileDelegate = profileDelegate;
             this.cryptoDelegate = cryptoDelegate;
+            this.autoMapper = autoMapper;
         }
 
         /// <inheritdoc />
@@ -66,12 +71,11 @@ namespace HealthGateway.GatewayApi.Services
                 };
             }
 
-            Comment comment = userComment.ToDbModel(this.cryptoDelegate, key);
-
+            Comment comment = CommentMapUtils.ToDbModel(userComment, this.cryptoDelegate, key, this.autoMapper);
             DBResult<Comment> dbComment = this.commentDelegate.Add(comment);
             RequestResult<UserComment> result = new RequestResult<UserComment>()
             {
-                ResourcePayload = UserComment.CreateFromDbModel(dbComment.Payload, this.cryptoDelegate, key),
+                ResourcePayload = CommentMapUtils.CreateFromDbModel(dbComment.Payload, this.cryptoDelegate, key, this.autoMapper),
                 ResultStatus = dbComment.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = dbComment.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
@@ -98,7 +102,7 @@ namespace HealthGateway.GatewayApi.Services
             DBResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetByParentEntry(hdId, parentEntryId);
             RequestResult<IEnumerable<UserComment>> result = new RequestResult<IEnumerable<UserComment>>()
             {
-                ResourcePayload = UserComment.CreateListFromDbModel(dbComments.Payload, this.cryptoDelegate, key),
+                ResourcePayload = CommentMapUtils.CreateListFromDbModels(dbComments.Payload, this.cryptoDelegate, key, this.autoMapper),
                 TotalResultCount = dbComments.Payload.Count(),
                 PageIndex = 0,
                 PageSize = dbComments.Payload.Count(),
@@ -126,7 +130,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             DBResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetAll(hdId);
-            IEnumerable<UserComment> comments = UserComment.CreateListFromDbModel(dbComments.Payload, this.cryptoDelegate, key);
+            IEnumerable<UserComment> comments = CommentMapUtils.CreateListFromDbModels(dbComments.Payload, this.cryptoDelegate, key, this.autoMapper);
 
             IDictionary<string, IEnumerable<UserComment>> userCommentsByEntry = comments.GroupBy(x => x.ParentEntryId).ToDictionary(g => g.Key, g => g.AsEnumerable());
 
@@ -157,12 +161,12 @@ namespace HealthGateway.GatewayApi.Services
                 };
             }
 
-            Comment comment = userComment.ToDbModel(this.cryptoDelegate, key);
+            Comment comment = CommentMapUtils.ToDbModel(userComment, this.cryptoDelegate, key, this.autoMapper);
 
             DBResult<Comment> dbResult = this.commentDelegate.Update(comment);
             RequestResult<UserComment> result = new RequestResult<UserComment>()
             {
-                ResourcePayload = UserComment.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key),
+                ResourcePayload = CommentMapUtils.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key, this.autoMapper),
                 ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
                 ResultError = dbResult.Status != DBStatusCode.Updated ? new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) } : null,
             };
@@ -184,12 +188,12 @@ namespace HealthGateway.GatewayApi.Services
                 };
             }
 
-            Comment comment = userComment.ToDbModel(this.cryptoDelegate, key);
+            Comment comment = CommentMapUtils.ToDbModel(userComment, this.cryptoDelegate, key, this.autoMapper);
 
             DBResult<Comment> dbResult = this.commentDelegate.Delete(comment);
             RequestResult<UserComment> result = new RequestResult<UserComment>()
             {
-                ResourcePayload = UserComment.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key),
+                ResourcePayload = CommentMapUtils.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key, this.autoMapper),
                 ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
                 ResultError = dbResult.Status != DBStatusCode.Deleted ? new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) } : null,
             };

@@ -22,11 +22,12 @@ namespace HealthGateway.GatewayApi.Test.Controllers
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Controllers;
+    using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
+    using HealthGateway.GatewayApi.Test.Services.Utils;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Http;
@@ -92,7 +93,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             RequestResult<UserProfileModel> expected = new()
             {
-                ResourcePayload = UserProfileModel.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId),
+                ResourcePayload = UserProfileMapUtils.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId, MapperUtil.InitializeAutoMapper()),
                 ResultStatus = ResultType.Success,
             };
 
@@ -134,7 +135,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             RequestResult<UserProfileModel> expected = new()
             {
-                ResourcePayload = UserProfileModel.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId),
+                ResourcePayload = UserProfileMapUtils.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId, MapperUtil.InitializeAutoMapper()),
                 ResultStatus = ResultType.Success,
             };
 
@@ -558,7 +559,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             return new RequestResult<UserProfileModel>
             {
-                ResourcePayload = UserProfileModel.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId),
+                ResourcePayload = UserProfileMapUtils.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId, MapperUtil.InitializeAutoMapper()),
                 ResultStatus = resultType,
             };
         }

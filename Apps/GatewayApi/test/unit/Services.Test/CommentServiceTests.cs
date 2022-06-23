@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApi.Test.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -26,8 +27,10 @@ namespace HealthGateway.GatewayApi.Test.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
+    using HealthGateway.GatewayApi.Test.Services.Utils;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -155,7 +158,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ILogger<CommentService>>().Object,
                 new Mock<ICommentDelegate>().Object,
                 profileDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object);
+                new Mock<ICryptoDelegate>().Object,
+                Utils.MapperUtil.InitializeAutoMapper());
 
             RequestResult<IEnumerable<UserComment>> actualResult = service.GetEntryComments(this.hdid, this.parentEntryId);
 
@@ -190,7 +194,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ILogger<CommentService>>().Object,
                 new Mock<ICommentDelegate>().Object,
                 profileDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object);
+                new Mock<ICryptoDelegate>().Object,
+                Utils.MapperUtil.InitializeAutoMapper());
 
             RequestResult<UserComment> actualResult = service.Add(userComment);
 
@@ -225,7 +230,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ILogger<CommentService>>().Object,
                 new Mock<ICommentDelegate>().Object,
                 profileDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object);
+                new Mock<ICryptoDelegate>().Object,
+                Utils.MapperUtil.InitializeAutoMapper());
 
             RequestResult<UserComment> actualResult = service.Update(userComment);
 
@@ -260,7 +266,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ILogger<CommentService>>().Object,
                 new Mock<ICommentDelegate>().Object,
                 profileDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object);
+                new Mock<ICryptoDelegate>().Object,
+                Utils.MapperUtil.InitializeAutoMapper());
 
             RequestResult<UserComment> actualResult = service.Delete(userComment);
 
@@ -290,7 +297,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 EntryTypeCode = CommentEntryType.Medication,
                 CreatedDateTime = new DateTime(2020, 1, 1),
             };
-            Comment comment = userComment.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
+            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
+            Comment comment = CommentMapUtils.ToDbModel(userComment, cryptoDelegateMock.Object, encryptionKey, autoMapper);
 
             DBResult<Comment> deleteResult = new()
             {
@@ -305,7 +313,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ILogger<CommentService>>().Object,
                 commentDelegateMock.Object,
                 profileDelegateMock.Object,
-                cryptoDelegateMock.Object);
+                cryptoDelegateMock.Object,
+                autoMapper);
 
             RequestResult<UserComment> actualResult = service.Delete(userComment);
             return (actualResult, userComment);
@@ -335,7 +344,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 CreatedDateTime = new DateTime(2020, 1, 1),
             };
 
-            Comment comment = userComment.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
+            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
+            Comment comment = CommentMapUtils.ToDbModel(userComment, cryptoDelegateMock.Object, encryptionKey, autoMapper);
 
             DBResult<Comment> updateResult = new()
             {
@@ -350,7 +360,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ILogger<CommentService>>().Object,
                 commentDelegateMock.Object,
                 profileDelegateMock.Object,
-                cryptoDelegateMock.Object);
+                cryptoDelegateMock.Object,
+                autoMapper);
 
             RequestResult<UserComment> actualResult = service.Update(userComment);
             return (actualResult, userComment);
@@ -391,7 +402,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                     CreatedDateTime = new DateTime(2020, 2, 2),
                 },
             };
-            List<UserComment> userCommentList = UserComment.CreateListFromDbModel(commentList, cryptoDelegateMock.Object, encryptionKey).ToList();
+            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
+            List<UserComment> userCommentList = CommentMapUtils.CreateListFromDbModels(commentList, cryptoDelegateMock.Object, encryptionKey, autoMapper).ToList();
 
             DBResult<IEnumerable<Comment>> commentsDBResult = new()
             {
@@ -406,7 +418,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ILogger<CommentService>>().Object,
                 commentDelegateMock.Object,
                 profileDelegateMock.Object,
-                cryptoDelegateMock.Object);
+                cryptoDelegateMock.Object,
+                autoMapper);
 
             RequestResult<IEnumerable<UserComment>> actualResult = service.GetEntryComments(this.hdid, this.parentEntryId);
 
@@ -436,7 +449,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 EntryTypeCode = CommentEntryType.Medication,
                 CreatedDateTime = new DateTime(2020, 1, 1),
             };
-            Comment comment = userComment.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
+            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
+            Comment comment = CommentMapUtils.ToDbModel(userComment, cryptoDelegateMock.Object, encryptionKey, autoMapper);
 
             DBResult<Comment> insertResult = new()
             {
@@ -451,7 +465,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ILogger<CommentService>>().Object,
                 commentDelegateMock.Object,
                 profileDelegateMock.Object,
-                cryptoDelegateMock.Object);
+                cryptoDelegateMock.Object,
+                autoMapper);
 
             RequestResult<UserComment> actualResult = service.Add(userComment);
             return (actualResult, userComment);
