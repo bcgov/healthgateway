@@ -113,7 +113,7 @@ namespace HealthGateway.GatewayApi.Services
 
             RequestResult<IEnumerable<UserNote>> result = new RequestResult<IEnumerable<UserNote>>()
             {
-                ResourcePayload = NoteMapUtils.CreateListFromDbModels(dbNotes.Payload, this.cryptoDelegate, key, this.autoMapper),
+                ResourcePayload = dbNotes.Payload.Select(c => NoteMapUtils.CreateFromDbModel(c, this.cryptoDelegate, key, this.autoMapper)),
                 PageIndex = page,
                 PageSize = pageSize,
                 TotalResultCount = dbNotes.Payload.ToList().Count,

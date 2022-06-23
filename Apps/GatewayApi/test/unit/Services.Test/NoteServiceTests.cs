@@ -293,7 +293,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             IMapper autoMapper = MapperUtil.InitializeAutoMapper();
             if (encryptionKey != null)
             {
-                userNoteList = NoteMapUtils.CreateListFromDbModels(noteList, cryptoDelegateMock.Object, encryptionKey, autoMapper).ToList();
+                userNoteList = noteList.Select(c => NoteMapUtils.CreateFromDbModel(c, cryptoDelegateMock.Object, encryptionKey, autoMapper)).ToList();
             }
 
             DBResult<IEnumerable<Note>> notesDBResult = new()

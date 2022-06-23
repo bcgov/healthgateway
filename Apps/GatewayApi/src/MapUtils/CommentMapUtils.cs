@@ -60,28 +60,5 @@ namespace HealthGateway.GatewayApi.MapUtils
 
             return userComment;
         }
-
-        /// <summary>
-        /// Converts from an enumerable of Comments to an enumerable of UserComments.
-        /// </summary>
-        /// <param name="comments">The enumerable of comments to convert.</param>
-        /// <param name="cryptoDelegate">The Cryptographic delegate to use.</param>
-        /// <param name="key">The encryption key to use.</param>
-        /// <param name="autoMapper">The automapper to use.</param>
-        /// <returns>An Enumerable of UserComments.</returns>
-        public static IEnumerable<UserComment> CreateListFromDbModels(IEnumerable<Comment> comments, ICryptoDelegate cryptoDelegate, string key, IMapper autoMapper)
-        {
-            IEnumerable<UserComment> userComments = autoMapper.Map<IEnumerable<Comment>, IEnumerable<UserComment>>(
-                comments, opts =>
-                    opts.AfterMap((src, dest) =>
-                    {
-                        foreach ((Comment comment, UserComment userComment) in src.Zip(dest))
-                        {
-                            userComment.Text = !string.IsNullOrEmpty(comment.Text) ? cryptoDelegate.Decrypt(key, comment.Text) : string.Empty;
-                        }
-                    }));
-
-            return userComments;
-        }
     }
 }

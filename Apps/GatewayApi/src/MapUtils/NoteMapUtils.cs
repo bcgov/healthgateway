@@ -59,28 +59,5 @@ namespace HealthGateway.GatewayApi.MapUtils
 
             return userNote;
         }
-
-        /// <summary>
-        /// Converts from an enumerable of Notes to an enumerable of UserNotes.
-        /// </summary>
-        /// <param name="notes">The enumerable of Notes to convert.</param>
-        /// <param name="cryptoDelegate">The Cryptographic delegate to use.</param>
-        /// <param name="key">The encryption key to use.</param>
-        /// <param name="autoMapper">The automapper to use.</param>
-        /// <returns>An Enumerable of UserNotes.</returns>
-        public static IEnumerable<UserNote> CreateListFromDbModels(IEnumerable<Note> notes, ICryptoDelegate cryptoDelegate, string key, IMapper autoMapper)
-        {
-            IEnumerable<UserNote> userNotes = autoMapper.Map<IEnumerable<Note>, IEnumerable<UserNote>>(
-                notes, opts =>
-                    opts.AfterMap((src, dest) =>
-                    {
-                        foreach ((Note note, UserNote userNote) in src.Zip(dest))
-                        {
-                            userNote.Text = !string.IsNullOrEmpty(note.Text) ? cryptoDelegate.Decrypt(key, note.Text) : string.Empty;
-                        }
-                    }));
-
-            return userNotes;
-        }
     }
 }

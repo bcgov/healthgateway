@@ -102,7 +102,7 @@ namespace HealthGateway.GatewayApi.Services
             DBResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetByParentEntry(hdId, parentEntryId);
             RequestResult<IEnumerable<UserComment>> result = new RequestResult<IEnumerable<UserComment>>()
             {
-                ResourcePayload = CommentMapUtils.CreateListFromDbModels(dbComments.Payload, this.cryptoDelegate, key, this.autoMapper),
+                ResourcePayload = dbComments.Payload.Select(c => CommentMapUtils.CreateFromDbModel(c, this.cryptoDelegate, key, this.autoMapper)),
                 TotalResultCount = dbComments.Payload.Count(),
                 PageIndex = 0,
                 PageSize = dbComments.Payload.Count(),
@@ -130,8 +130,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             DBResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetAll(hdId);
-            IEnumerable<UserComment> comments = CommentMapUtils.CreateListFromDbModels(dbComments.Payload, this.cryptoDelegate, key, this.autoMapper);
-
+            IEnumerable<UserComment> comments = dbComments.Payload.Select(c => CommentMapUtils.CreateFromDbModel(c, this.cryptoDelegate, key, this.autoMapper));
             IDictionary<string, IEnumerable<UserComment>> userCommentsByEntry = comments.GroupBy(x => x.ParentEntryId).ToDictionary(g => g.Key, g => g.AsEnumerable());
 
             RequestResult<IDictionary<string, IEnumerable<UserComment>>> result = new RequestResult<IDictionary<string, IEnumerable<UserComment>>>()
