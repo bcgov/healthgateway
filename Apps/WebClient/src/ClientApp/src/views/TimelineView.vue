@@ -384,25 +384,17 @@ export default class TimelineView extends Vue {
         <b-row>
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
                 <page-title title="Timeline">
-                    <router-link to="/covid19">
-                        <hg-button
-                            :disabled="covidImmunizations.length === 0"
-                            data-testid="covidcard-btn"
-                            class="float-right"
-                            variant="primary"
-                        >
-                            <hg-icon
-                                icon="check-circle"
-                                size="medium"
-                                class="mr-2"
-                            />
-                            <span>BC Vaccine Card</span>
-                        </hg-button>
-                    </router-link>
+                    <div class="float-right">
+                        <add-note-button
+                            v-if="
+                                isNoteEnabled && isLinearView && !isNoteLoading
+                            "
+                        />
+                    </div>
                 </page-title>
                 <div
                     v-if="showTimelineEntries"
-                    class="sticky-top sticky-offset px-2"
+                    class="sticky-top sticky-offset px-2 pb-2"
                     :class="{ 'header-offset': isHeaderShown }"
                 >
                     <b-row class="no-print justify-content-between">
@@ -447,19 +439,7 @@ export default class TimelineView extends Vue {
                 <LinearTimeline
                     v-show="isLinearView && showTimelineEntries"
                     :timeline-entries="filteredTimelineEntries"
-                >
-                    <template #add-note>
-                        <b-col
-                            v-if="
-                                isNoteEnabled && isLinearView && !isNoteLoading
-                            "
-                            col
-                            cols="auto"
-                        >
-                            <add-note-button />
-                        </b-col>
-                    </template>
-                </LinearTimeline>
+                />
                 <CalendarTimeline
                     v-show="!isLinearView && showTimelineEntries"
                     :timeline-entries="filteredTimelineEntries"
