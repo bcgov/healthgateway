@@ -28,7 +28,6 @@ using HealthGateway.Admin.Client.Store.UserFeedback;
 using HealthGateway.Admin.Common.Constants;
 using HealthGateway.Admin.Common.Models;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 
 /// <summary>
@@ -54,13 +53,13 @@ public partial class FeedbackPage : FluxorComponent
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
 
-    private string ActiveTag { get; set; } = string.Empty;
-
     private bool FeedbackLoading => this.UserFeedbackState.Value.Load.IsLoading;
 
     private bool FeedbackLoaded => this.UserFeedbackState.Value.Load.Loaded;
 
-    private bool ActiveTagExists => this.Tags.Any(t => t.Name == this.ActiveTag.Trim());
+    private AddTagFormModel AddTagModel { get; } = new();
+
+    private MudTextField<string> AddTagNameInput { get; set; } = default!;
 
     private IEnumerable<RequestError> TagErrors => new[]
     {
@@ -82,7 +81,9 @@ public partial class FeedbackPage : FluxorComponent
 
     private IEnumerable<Guid> TagIdFilter => this.SelectedTagChips.Select(c => c.Value).OfType<Guid>();
 
-    private bool ActiveTagIsValid => this.ActiveTag.Trim().Length > 0;
+    private bool TagsUpdating => this.TagState.Value.Load.IsLoading ||
+                                 this.TagState.Value.Add.IsLoading ||
+                                 this.TagState.Value.Delete.IsLoading;
 
     private bool FeedbackUpdating => this.UserFeedbackState.Value.Update.IsLoading ||
                                      this.UserFeedbackState.Value.AssociateTags.IsLoading;
@@ -108,14 +109,15 @@ public partial class FeedbackPage : FluxorComponent
     private void HandleTagAddSuccessful(TagActions.AddSuccessAction action)
     {
         this.Snackbar.Add($"Tag \"{action.Data.ResourcePayload?.Name}\" added.", Severity.Success);
-        this.ActiveTag = string.Empty;
+        this.AddTagModel.Clear();
         this.StateHasChanged();
+        Task.Run(async () => await this.AddTagNameInput.FocusAsync().ConfigureAwait(true));
     }
 
     private void HandleTagDeleteSuccessful(TagActions.DeleteSuccessAction action)
     {
         this.Snackbar.Add($"Tag \"{action.Data.ResourcePayload?.Name}\" deleted.", Severity.Success);
-        this.ActiveTag = string.Empty;
+        this.AddTagModel.Clear();
         this.StateHasChanged();
     }
 
@@ -129,30 +131,31 @@ public partial class FeedbackPage : FluxorComponent
         this.Snackbar.Add("Feedback tags updated.", Severity.Success);
     }
 
-    private void HandleKeyDownActiveTag(KeyboardEventArgs eventArgs)
-    {
-        if (eventArgs.Key == "Enter" && this.ActiveTagIsValid)
-        {
-            this.AddTag();
-        }
-    }
-
     private void AddTag()
     {
-        if (this.ActiveTagExists)
-        {
-            this.Snackbar.Add($"Tag \"{this.ActiveTag}\" already exists.", Severity.Warning);
-            this.ActiveTag = string.Empty;
-            this.StateHasChanged();
-            return;
-        }
-
         if (this.TagState.Value.Add.IsLoading)
         {
             return;
         }
 
-        this.Dispatcher.Dispatch(new TagActions.AddAction(this.ActiveTag.Trim()));
+        string tagName = this.AddTagModel.Name.Trim();
+        if (tagName.Length == 0)
+        {
+            this.Snackbar.Add($"Tag is invalid.", Severity.Warning);
+            this.AddTagModel.Clear();
+            this.StateHasChanged();
+            return;
+        }
+
+        if (this.Tags.Any(t => t.Name == tagName))
+        {
+            this.Snackbar.Add($"Tag \"{tagName}\" already exists.", Severity.Warning);
+            this.AddTagModel.Clear();
+            this.StateHasChanged();
+            return;
+        }
+
+        this.Dispatcher.Dispatch(new TagActions.AddAction(tagName));
     }
 
     private void RemoveTag(MudChip chip)
@@ -202,6 +205,13 @@ public partial class FeedbackPage : FluxorComponent
             updatedFeedback.IsReviewed = !updatedFeedback.IsReviewed;
             this.Dispatcher.Dispatch(new UserFeedbackActions.UpdateAction(updatedFeedback));
         }
+    }
+
+    private sealed class AddTagFormModel
+    {
+        public string Name { get; set; } = string.Empty;
+
+        public void Clear() => this.Name = string.Empty;
     }
 
     private sealed class FeedbackRow
