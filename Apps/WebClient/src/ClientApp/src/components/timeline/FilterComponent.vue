@@ -288,7 +288,7 @@ export default class FilterComponent extends Vue {
                             />
                         </b-col>
                     </b-row>
-                    <b-row class="mt-1" align-h="end">
+                    <b-row class="mt-3" align-h="end">
                         <b-col cols="auto" class="pr-0">
                             <hg-button
                                 data-testid="btnFilterCancel"
