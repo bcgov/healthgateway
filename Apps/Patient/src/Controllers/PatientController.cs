@@ -18,6 +18,7 @@ namespace HealthGateway.Patient.Controllers
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -57,20 +58,9 @@ namespace HealthGateway.Patient.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = PatientPolicy.Read)]
-        public async Task<RequestResult<Models.PatientModel>> GetPatient(string hdid)
+        public async Task<RequestResult<PatientModel>> GetPatient(string hdid)
         {
-            RequestResult<Common.Models.PatientModel> patientResult = await this.service.GetPatient(hdid).ConfigureAwait(true);
-            RequestResult<Models.PatientModel> result = new()
-            {
-                PageIndex = patientResult.PageIndex,
-                PageSize = patientResult.PageSize,
-                ResourcePayload = new(patientResult.ResourcePayload),
-                ResultError = patientResult.ResultError,
-                ResultStatus = patientResult.ResultStatus,
-                TotalResultCount = patientResult.TotalResultCount,
-            };
-
-            return result;
+            return await this.service.GetPatient(hdid).ConfigureAwait(true);
         }
     }
 }
