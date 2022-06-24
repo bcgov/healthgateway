@@ -37,9 +37,6 @@ export default class FilterComponent extends Vue {
     @Action("setFilter", { namespace: "timeline" })
     setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
 
-    @Action("setLinearView", { namespace: "timeline" })
-    setLinearView!: (isLinearView: boolean) => void;
-
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -67,15 +64,12 @@ export default class FilterComponent extends Vue {
 
     @Getter("noteCount", { namespace: "note" }) noteCount!: number;
 
-    @Getter("isLinearView", { namespace: "timeline" }) isLinearView!: boolean;
-
     @Getter("filter", { namespace: "timeline" }) activeFilter!: TimelineFilter;
 
     private logger!: ILogger;
     private isModalVisible = false;
     private isMenuVisible = false;
 
-    private isListViewToggle = true;
     private startDate: StringISODate = "";
     private endDate: StringISODate = "";
     private selectedEntryTypes: EntryType[] = [];
@@ -113,12 +107,10 @@ export default class FilterComponent extends Vue {
     }
 
     @Watch("filter", { deep: true })
-    @Watch("isLinearView")
     private syncWithFilter() {
         this.startDate = this.activeFilter.startDate;
         this.endDate = this.activeFilter.endDate;
         this.selectedEntryTypes = Array.from(this.activeFilter.entryTypes);
-        this.isListViewToggle = this.isLinearView;
     }
 
     private toggleMenu() {
@@ -129,19 +121,10 @@ export default class FilterComponent extends Vue {
         this.isModalVisible = !this.isModalVisible;
     }
 
-    private toggleListView() {
-        this.isListViewToggle = true;
-    }
-
-    private toggleMonthView() {
-        this.isListViewToggle = false;
-    }
-
     private clearOptions(): void {
         this.startDate = "";
         this.endDate = "";
         this.selectedEntryTypes = [];
-        this.isListViewToggle = true;
     }
 
     private apply() {
@@ -151,7 +134,6 @@ export default class FilterComponent extends Vue {
             .withEntryTypes(this.selectedEntryTypes);
 
         this.setFilter(builder);
-        this.setLinearView(this.isListViewToggle);
 
         this.closeMenu();
     }
@@ -306,39 +288,7 @@ export default class FilterComponent extends Vue {
                             />
                         </b-col>
                     </b-row>
-                    <b-row class="mt-2">
-                        <b-col><strong>View</strong> </b-col>
-                        <b-col class="col-auto"></b-col>
-                    </b-row>
-
-                    <b-row class="view-selector mt-1">
-                        <b-col cols="auto" class="pr-0">
-                            <hg-button
-                                data-testid="listViewToggle"
-                                class="list-view-btn px-2 m-0"
-                                :variant="
-                                    isListViewToggle ? 'primary' : 'secondary'
-                                "
-                                @click.stop="toggleListView"
-                            >
-                                <hg-icon icon="bars" size="medium" />
-                            </hg-button>
-                        </b-col>
-                        <b-col cols="auto" class="pl-0">
-                            <hg-button
-                                data-testid="monthViewToggle"
-                                class="month-view-btn px-2 m-0"
-                                :variant="
-                                    !isListViewToggle ? 'primary' : 'secondary'
-                                "
-                                @click.stop="toggleMonthView"
-                            >
-                                <hg-icon icon="calendar-day" size="medium" />
-                            </hg-button>
-                        </b-col>
-                    </b-row>
-
-                    <b-row class="mt-1" align-h="end">
+                    <b-row class="mt-3" align-h="end">
                         <b-col cols="auto" class="pr-0">
                             <hg-button
                                 data-testid="btnFilterCancel"
@@ -448,39 +398,6 @@ export default class FilterComponent extends Vue {
                     </b-col>
                 </b-row>
             </div>
-
-            <div class="filter-section mb-3">
-                <strong>View Type</strong>
-                <b-row class="view-selector">
-                    <b-col cols="auto" class="pr-0">
-                        <hg-button
-                            data-testid="listViewToggle"
-                            class="list-view-btn"
-                            :class="{ active: isListViewToggle }"
-                            :variant="
-                                isListViewToggle ? 'primary' : 'secondary'
-                            "
-                            @click.stop="toggleListView"
-                        >
-                            <hg-icon icon="bars" size="medium" />
-                        </hg-button>
-                    </b-col>
-                    <b-col cols="auto" class="pl-0">
-                        <hg-button
-                            data-testid="monthViewToggle"
-                            class="month-view-btn"
-                            :class="{ active: !isListViewToggle }"
-                            :variant="
-                                !isListViewToggle ? 'primary' : 'secondary'
-                            "
-                            @click.stop="toggleMonthView"
-                        >
-                            <hg-icon icon="calendar-day" size="medium" />
-                        </hg-button>
-                    </b-col>
-                </b-row>
-            </div>
-
             <b-row class="mt-1" align-h="end">
                 <b-col cols="auto" class="pr-0">
                     <hg-button

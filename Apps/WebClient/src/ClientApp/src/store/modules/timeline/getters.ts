@@ -12,10 +12,6 @@ export const getters: TimelineGetters = {
         return state.filter.hasActiveFilter() || state.keyword !== "";
     },
 
-    isLinearView(state: TimelineState): boolean {
-        return state.isLinearView;
-    },
-
     keyword(state: TimelineState): string {
         return state.keyword;
     },
