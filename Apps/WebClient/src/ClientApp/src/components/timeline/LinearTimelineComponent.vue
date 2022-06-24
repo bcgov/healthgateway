@@ -47,9 +47,6 @@ export default class LinearTimelineComponent extends Vue {
     @Getter("filter", { namespace: "timeline" })
     filter!: TimelineFilter;
 
-    @Getter("isLinearView", { namespace: "timeline" })
-    isLinearView!: TimelineFilter;
-
     @Getter("hasActiveFilter", { namespace: "timeline" })
     hasActiveFilter!: boolean;
 
@@ -102,16 +99,9 @@ export default class LinearTimelineComponent extends Vue {
 
     @Watch("currentPage")
     private onCurrentPage() {
-        if (this.isLinearView && this.visibleTimelineEntries.length > 0) {
+        if (this.visibleTimelineEntries.length > 0) {
             // Update the store
             this.setLinearDate(this.visibleTimelineEntries[0].date);
-        }
-    }
-
-    @Watch("calendarDate")
-    private onCalendarDate() {
-        if (!this.isLinearView) {
-            this.setPageFromDate(this.calendarDate);
         }
     }
 
