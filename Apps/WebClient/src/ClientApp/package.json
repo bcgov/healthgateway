@@ -87,6 +87,6 @@
         "vue-the-mask": "^0.11.1",
         "vuelidate": "^0.7.7",
         "vuex": "^3.6.2",
-        "winston": "^3.7.2"
+        "winston": "^3.8.0"
     }
 }
