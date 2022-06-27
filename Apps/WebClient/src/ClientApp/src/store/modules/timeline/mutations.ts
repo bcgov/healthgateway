@@ -17,11 +17,6 @@ export const mutations: TimelineMutations = {
         logger.verbose(`TimelineState:setKeyword`);
         state.keyword = keyword;
     },
-    setLinearView(state: TimelineState, isLinearView: boolean) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        logger.verbose(`TimelineState:setLinearView`);
-        state.isLinearView = isLinearView;
-    },
     clearFilter(state: TimelineState) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         logger.verbose(`TimelineState:clearFilter`);

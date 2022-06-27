@@ -23,7 +23,6 @@ import ProtectiveWordComponent from "@/components/modal/ProtectiveWordComponent.
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import AddNoteButtonComponent from "@/components/timeline/AddNoteButtonComponent.vue";
-import CalendarTimelineComponent from "@/components/timeline/CalendarTimelineComponent.vue";
 import EntryDetailsComponent from "@/components/timeline/entryCard/EntryDetailsComponent.vue";
 import FilterComponent from "@/components/timeline/FilterComponent.vue";
 import LinearTimelineComponent from "@/components/timeline/LinearTimelineComponent.vue";
@@ -71,7 +70,6 @@ library.add(
         NoteEditComponent,
         EntryDetailsComponent,
         LinearTimeline: LinearTimelineComponent,
-        CalendarTimeline: CalendarTimelineComponent,
         ErrorCard: ErrorCardComponent,
         Filters: FilterComponent,
         "resource-centre": ResourceCentreComponent,
@@ -180,9 +178,6 @@ export default class TimelineView extends Vue {
     @Getter("keyword", { namespace: "timeline" })
     readonly keyword!: string;
 
-    @Getter("isLinearView", { namespace: "timeline" })
-    readonly isLinearView!: boolean;
-
     @Getter("user", { namespace: "user" }) user!: User;
 
     @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
@@ -202,15 +197,6 @@ export default class TimelineView extends Vue {
     @Watch("filterText")
     private onFilterTextChanged() {
         this.setKeyword(this.filterText);
-    }
-
-    @Watch("isLinearView")
-    private onIsLinearView() {
-        if (this.isLinearView) {
-            window.location.hash = "linear";
-        } else {
-            window.location.hash = "calendar";
-        }
     }
 
     private get timelineEntries(): TimelineEntry[] {
@@ -386,9 +372,7 @@ export default class TimelineView extends Vue {
                 <page-title title="Timeline">
                     <div class="float-right">
                         <add-note-button
-                            v-if="
-                                isNoteEnabled && isLinearView && !isNoteLoading
-                            "
+                            v-if="isNoteEnabled && !isNoteLoading"
                         />
                     </div>
                 </page-title>
@@ -437,25 +421,9 @@ export default class TimelineView extends Vue {
                     </b-row>
                 </div>
                 <LinearTimeline
-                    v-show="isLinearView && showTimelineEntries"
+                    v-show="showTimelineEntries"
                     :timeline-entries="filteredTimelineEntries"
                 />
-                <CalendarTimeline
-                    v-show="!isLinearView && showTimelineEntries"
-                    :timeline-entries="filteredTimelineEntries"
-                >
-                    <template #add-note>
-                        <b-col
-                            v-if="
-                                isNoteEnabled && !isLinearView && !isNoteLoading
-                            "
-                            col
-                            cols="auto"
-                        >
-                            <add-note-button class="p-2" />
-                        </b-col>
-                    </template>
-                </CalendarTimeline>
                 <b-row v-if="!showTimelineEntries">
                     <b-col>
                         <div class="px-2">

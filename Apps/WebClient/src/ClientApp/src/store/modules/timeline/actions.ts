@@ -12,10 +12,6 @@ export const actions: TimelineActions = {
         context.commit("setKeyword", keyword);
     },
 
-    setLinearView(context, isLinearView: boolean) {
-        context.commit("setLinearView", isLinearView);
-    },
-
     clearFilter(context) {
         context.commit("clearFilter");
     },

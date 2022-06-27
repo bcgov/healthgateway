@@ -69,10 +69,10 @@ namespace HealthGateway.Patient.Test.Controllers
                     },
                 },
             };
-            RequestResult<Models.PatientModel> expectedResult = new()
+            RequestResult<PatientModel> expectedResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new Models.PatientModel()
+                ResourcePayload = new PatientModel()
                 {
                     Birthdate = mockResult.ResourcePayload.Birthdate,
                     FirstName = mockResult.ResourcePayload.FirstName,
@@ -87,7 +87,7 @@ namespace HealthGateway.Patient.Test.Controllers
             patientService.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.HDID, false)).ReturnsAsync(mockResult);
 
             PatientController patientController = new(patientService.Object);
-            RequestResult<Models.PatientModel> actualResult = patientController.GetPatient("123").Result;
+            RequestResult<PatientModel> actualResult = patientController.GetPatient("123").Result;
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
