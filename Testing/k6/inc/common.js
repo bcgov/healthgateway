@@ -19,8 +19,6 @@ import { check, group, sleep } from "k6";
 import { Rate, Trend } from "k6/metrics";
 import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
-
-
 export let passwd = __ENV.HG_PASSWORD;
 
 export let maxVus = __ENV.HG_VUS ? parseInt(__ENV.HG_VUS) : 500;
@@ -28,39 +26,42 @@ maxVus = (maxVus < 1) ? 1 : maxVus;
 export let rampVus = (maxVus / 4).toFixed(0);
 rampVus = (rampVus < 1) ? 1 : rampVus;
 
-export let authSuccess = new Rate("authentication_successful");
-export let errorRate = new Rate("errors");
+export let AuthSuccess = new Rate("authentication_successful");
+export let ErrorRate = new Rate("errors");
 
-export let refreshTokenSuccess = new Rate("auth_refresh_successful");
+export let RefreshTokenSuccess = new Rate("auth_refresh_successful");
 
-export let environment = __ENV.HG_ENV ? __ENV.HG_ENV : "test"; // default to test environment. choice of dev, test (never prod)
+export let SpecialHeaderKey = __ENV.HG_KEY ? __ENV.HG_KEY : "nokey"; // special key 
+
+export let Environment = __ENV.HG_ENV ? __ENV.HG_ENV : "test"; // default to test environment. choice of dev, test (never prod)
 export let OptionsType = __ENV.HG_TYPE ? __ENV.HG_TYPE : "smoke"; // choice of load, smoke, soak, spike, stress
 
 export let groupDuration = Trend("batch");
 
-export let baseUrl = "https://" + environment + ".healthgateway.gov.bc.ca"; // with this, we can be confident that production can't be hit.
-export let servicesBaseUrl = "https://hg-" + environment + ".api.gov.bc.ca";
-export let TokenEndpointUrl =
-    "https://" +
-    environment +
-    ".oidc.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
+export let BaseSiteUrl = "https://" + Environment + ".healthgateway.gov.bc.ca/";
 
-export let AuthorizationEndpointUrl = 
-    "https://" +
-    environment +
-    ".oidc.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/authorize";
-export let MedicationServiceUrl = servicesBaseUrl + "/MedicationStatement";
-export let LaboratoryServiceUrl = servicesBaseUrl + "/Laboratory/LaboratoryOrders";
-export let PatientServiceUrl = servicesBaseUrl + "/Patient";
+// Service Endpoints Configuration
+export let ConfigurationUrl = BaseSiteUrl + "configuration";
 
-// Health Gateway WebClient app APIs:
-export let CommentUrl = baseUrl + "/v1/api/Comment";
-export let CommunicationUrl = baseUrl + "/v1/api/Communication";
-export let ConfigurationUrl = baseUrl + "/configuration";
-export let NoteUrl = baseUrl + "/v1/api/Note";
-export let UserProfileUrl = baseUrl + "/v1/api/UserProfile";
+// OpenID Connect Endpoints
+export let OpenIdConnect = {
+    AuthorityEndpoint: "",
+    TokenEndpoint: "",
+    AuthorizationEndpoint: "",
+    Audience: "healthgateway",
+    ClientId: "k6",
+    Scope: "openid patient/Laboratory.read patient/MedicationStatement.read patient/Immunization.read patient/Encounter.read patient/Patient.read",
+};
 
-export let ClientId = __ENV.HG_CLIENT ? __ENV.HG_CLIENT : "k6"; // default to k6 client id
+// Gateway Service Endpoints
+export let ServiceEndpoints = {
+    Encounter: "",
+    GatewayApi: "",
+    Immunization: "",
+    Laboratory: "",
+    Medication: "",
+    Patient: "",
+};
 //-------------------------------------------------------------------------
 export let loadOptions = {
     vus: maxVus,
@@ -231,6 +232,45 @@ export function getExpiresTime(seconds) {
     return Date.now() + seconds * 1000;
 }
 
+export function getConfigurations() {
+    if (__ITER == 0) {
+        let response = http.get(ConfigurationUrl);
+        if (response.status == 200) {
+            var responseJson = JSON.parse(response.body);
+            var endpoints = responseJson["serviceEndpoints"];
+            ServiceEndpoints.Encounter = endpoints["Encounter"];
+            ServiceEndpoints.GatewayApi = endpoints["GatewayApi"];
+            ServiceEndpoints.Immunization = endpoints["Immunization"];
+            ServiceEndpoints.Laboratory = endpoints["Laboratory"];
+            ServiceEndpoints.Medication = endpoints["Medication"];
+            ServiceEndpoints.Patient = endpoints["Patient"];
+
+            let openIdConnect = responseJson["openIdConnect"];
+            OpenIdConnect.AuthorityEndpoint = openIdConnect["authority"];
+            OpenIdConnect.Audience = openIdConnect["audience"];
+            OpenIdConnect.ClientId = openIdConnect["clientId"];
+        }
+
+        else {
+            console.warn("Failed to get HG configuration");
+        }
+    }
+}
+
+export function getOpenIdConfigurations() {
+    if (__ITER == 0) {
+        let response = http.get(OpenIdConnect.AuthorityEndpoint + "/.well-known/openid-configuration");
+        if (response.status == 200) {
+            var responseJson = JSON.parse(response.body);
+            OpenIdConnect.TokenEndpoint = responseJson["token_endpoint"];
+            OpenIdConnect.AuthorizationEndpoint = responseJson["authorization_endpoint"];
+        }
+        else {
+            console.warn("Failed to get OpenId Configuration ");
+        }
+    }
+}
+
 export function authorizeUser(user) {
     if ((__ITER == 0 && user.token == null) || user.hdid == null) {
         let loginRes = authenticateUser(user);
@@ -244,20 +284,17 @@ export function authorizeUser(user) {
 export function authenticateUser(user) {
     let auth_form_data = {
         grant_type: "password",
-        client_id: ClientId,
-        audience: "healthgateway",
-        scope:
-            "openid patient/Laboratory.read patient/MedicationStatement.read patient/Immunization.read",
+        client_id: OpenIdConnect.ClientId,
+        audience: OpenIdConnect.Audience,
+        scope: OpenIdConnect.Scope,
         username: user.username,
         password: user.password,
     };
-    console.log(
-        "Authenticating username: " +
-        auth_form_data.username +
-        ", KeyCloak client_id: " +
-        ClientId
-    );
-    var res = http.post(TokenEndpointUrl, auth_form_data);
+
+    var res = http.post(OpenIdConnect.TokenEndpoint, auth_form_data,
+        {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        });
     if (res.status == 200) {
         var res_json = JSON.parse(res.body);
         user.token = res_json["access_token"];
@@ -265,7 +302,7 @@ export function authenticateUser(user) {
         var seconds = res_json["expires_in"];
         user.expires = getExpiresTime(seconds);
         user.hdid = parseHdid(user.token);
-        authSuccess.add(1);
+        AuthSuccess.add(1);
     } else {
         console.log(
             "Authentication Error for user= " +
@@ -275,7 +312,7 @@ export function authenticateUser(user) {
             "] " +
             res.error
         );
-        authSuccess.add(0);
+        AuthSuccess.add(0);
         user.token = null;
         user.hdid = null;
     }
@@ -303,7 +340,7 @@ export function refreshUser(user) {
     };
 
     console.log("Getting Refresh Token for username: " + user.username);
-    let res = http.post(TokenEndpointUrl, refresh_form_data);
+    let res = http.post(OpenIdConnect.TokenEndpoint, refresh_form_data);
 
     if (res.status == 200) {
         var res_json = JSON.parse(res.body);
@@ -311,7 +348,7 @@ export function refreshUser(user) {
         user.refresh = res_json["refresh_token"];
         var seconds = res_json["expires_in"];
         user.expires = getExpiresTime(seconds);
-        refreshTokenSuccess.add(1);
+        RefreshTokenSuccess.add(1);
     } else {
         console.log(
             "Token Refresh Error for user= " +
@@ -321,7 +358,7 @@ export function refreshUser(user) {
             "] " +
             res.error
         );
-        refreshTokenSuccess.add(0);
+        RefreshTokenSuccess.add(0);
         user.token = null; // clear out the expiring token, forcing to re-authenticate.
         user.hdid = null;
         sleep(1);
@@ -342,10 +379,15 @@ export function getHdid(user) {
     return user.hdid;
 }
 
+export let HttpHeaders = {
+    'User-Agent': 'k6',
+    'X-API-KEY': SpecialHeaderKey,
+}
+
 export function params(user) {
     var params = {
         headers: {
-            "Content-Type": "application/json",
+            httpHeaders: HttpHeaders,
             Authorization: "Bearer " + user.token,
         },
     };
@@ -356,48 +398,89 @@ export function timelineRequests(user) {
     let timelineRequests = {
         comments: {
             method: "GET",
-            url: common.CommentUrl + "/" + user.hdid,
+            url: common.ServiceEndpoints.GatewayApi + "UserProfile/" + user.hdid + "/Comment",
+            params: params(user),
+        },
+        immz: {
+            method: "GET",
+            url: common.ServiceEndpoints.Immunization + "Immunization?hdid=" + user.hdid,
+            params: params(user),
+        },
+        labs: {
+            method: "GET",
+            url: common.ServiceEndpoints.Laboratory + "Laboratory/LaboratoryOrders?hdid=" + user.hdid,
+            params: params(user),
+        },
+
+        meds: {
+            method: "GET",
+            url: common.ServiceEndpoints.Medication + "MedicationStatement/" + user.hdid,
             params: params(user),
         },
         notes: {
             method: "GET",
-            url: common.NoteUrl + "/" + user.hdid,
-            params: params(user),
-        },
-        meds: {
-            method: "GET",
-            url: common.MedicationServiceUrl + "/" + user.hdid,
+            url: common.ServiceEndpoints.GatewayApi + "Note/" + user.hdid,
             params: params(user),
         },
 
-        labs: {
-            method: "GET",
-            url: common.LaboratoryServiceUrl + "?hdid=" + user.hdid,
-            params: params(user),
-        },
     };
     return timelineRequests;
+}
+
+export function getBaseWebApp() {
+    let baseWebAppRequest = {
+        baseSite: {
+            method: "GET",
+            url: BaseSiteUrl,
+            params: { headers: HttpHeaders }
+        }
+    };
+    return baseWebAppRequest
+}
+
+export function spaAssetRequests() {
+
+    let spaAssetRequests = {
+        baseSite: {
+            method: "GET",
+            url: BaseSiteUrl,
+            params: { headers: HttpHeaders }
+        },
+        vendorChunk: {
+            method: "GET",
+            url: BaseSiteUrl + "/js/chunk-vendors.c61f122d.js",
+            params: { headers: HttpHeaders }
+        },
+        siteChunk: {
+            method: "GET",
+            url: BaseSiteUrl + "/js/app.8136e1c8.js",
+            params: { headers: HttpHeaders }
+        },
+        css: {
+            method: "GET",
+            url: BaseSiteUrl + "/css/app.c90e9393.css",
+            params: { headers: HttpHeaders }
+        },
+        cssVendor: {
+            method: "GET",
+            url: BaseSiteUrl + "/css/chunk-vendors.21f4bba7.css",
+            params: { headers: HttpHeaders }
+        },
+
+    }
+    return spaAssetRequests;
 }
 
 export function webClientRequests(user) {
     let webClientRequests = {
         patient: {
             method: "GET",
-            url: common.PatientServiceUrl + "/" + user.hdid,
+            url: common.ServiceEndpoints.Patient + "Patient/" + user.hdid,
             params: params(user),
-        },
-        communication: {
-            method: "GET",
-            url: common.CommunicationUrl + "/" + user.hdid,
-            params: params(user),
-        },
-        configuration: {
-            method: "GET",
-            url: common.ConfigurationUrl,
         },
         profile: {
             method: "GET",
-            url: common.UserProfileUrl + "/" + user.hdid,
+            url: common.GatewayApi + "UserProfile/" + user.hdid,
             params: params(user),
         },
     };
@@ -458,7 +541,7 @@ export function checkResponse(response) {
                 "HttpStatusCode is NOT 5xx Server Error": (r) =>
                     !(r.status >= 500 && r.status <= 598),
                 "HttpStatusCode is NOT 0 (Timeout Error)": (r) => r.status != 0,
-            }) || errorRate.add(1);
+            }) || ErrorRate.add(1);
         return;
     }
 }
@@ -478,7 +561,7 @@ export function checkResponses(responses) {
                     !(r.status >= 500 && r.status <= 598),
                 "Beta HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
                     r.status != 0,
-            }) || errorRate.add(1);
+            }) || ErrorRate.add(1);
     }
     if (responses["comments"]) {
         check(responses["comments"], {
@@ -493,7 +576,7 @@ export function checkResponses(responses) {
                 !(r.status >= 500 && r.status <= 598),
             "Beta HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
                 r.status != 0,
-        }) || errorRate.add(1);
+        }) || ErrorRate.add(1);
     }
     if (responses["communication"]) {
         check(responses["communication"], {
@@ -508,7 +591,7 @@ export function checkResponses(responses) {
                 !(r.status >= 500 && r.status <= 598),
             "Communication HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
                 r.status != 0,
-        }) || errorRate.add(1);
+        }) || ErrorRate.add(1);
     }
     if (responses["configuration"]) {
         check(responses["configuration"], {
@@ -523,7 +606,7 @@ export function checkResponses(responses) {
                 !(r.status >= 500 && r.status <= 598),
             "Configuration HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
                 r.status != 0,
-        }) || errorRate.add(1);
+        }) || ErrorRate.add(1);
     }
     if (responses["labs"]) {
         check(responses["labs"], {
@@ -538,7 +621,7 @@ export function checkResponses(responses) {
                 !(r.status >= 500 && r.status <= 598),
             "LaboratoryService HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
                 r.status != 0,
-        }) || errorRate.add(1);
+        }) || ErrorRate.add(1);
     }
     if (responses["meds"]) {
         check(responses["meds"], {
@@ -553,7 +636,7 @@ export function checkResponses(responses) {
                 !(r.status >= 500 && r.status <= 598),
             "MedicationService HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
                 r.status != 0,
-        }) || errorRate.add(1);
+        }) || ErrorRate.add(1);
     }
     if (responses["notes"]) {
         check(responses["notes"], {
@@ -568,7 +651,7 @@ export function checkResponses(responses) {
                 !(r.status >= 500 && r.status <= 598),
             "Note HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
                 r.status != 0,
-        }) || errorRate.add(1);
+        }) || ErrorRate.add(1);
     }
     if (responses["patient"]) {
         check(responses["patient"], {
@@ -583,7 +666,7 @@ export function checkResponses(responses) {
                 !(r.status >= 500 && r.status <= 598),
             "PatientService HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
                 r.status != 0,
-        }) || errorRate.add(1);
+        }) || ErrorRate.add(1);
     }
     if (responses["profile"]) {
         check(responses["profile"], {
@@ -598,6 +681,6 @@ export function checkResponses(responses) {
                 !(r.status >= 500 && r.status <= 598),
             "UserProfile HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
                 r.status != 0,
-        }) || errorRate.add(1);
+        }) || ErrorRate.add(1);
     }
 }

@@ -1,10 +1,10 @@
 version: '3.4'
 services:
   k6:
-    image: loadimpact/k6:latest
-    command: run /services/medications/k6_meds.js
+    image: grafana/k6:latest
+    command: run /gateway_api/dependent/k6_dependent.js
     volumes:
-      - ../../services/medications:/services/medications
+      - ../../gateway_api/comments:/gateway_api/dependent
       - ../../inc:/inc
     environment: 
       - "HG_TYPE=${HG_TYPE}"

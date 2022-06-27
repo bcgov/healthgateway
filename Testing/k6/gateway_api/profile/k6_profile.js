@@ -14,7 +14,8 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-import { sleep, check } from "k6";
+import http from "k6/http";
+import { sleep } from "k6";
 import * as common from "../../inc/common.js";
 
 export let options = common.OptionConfig();
@@ -24,9 +25,11 @@ export default function () {
 
     common.getConfigurations();
     common.getOpenIdConfigurations();
-    let loginRes = common.authenticateUser(user);
-    check(loginRes, {
-        "Authenticated successfully": loginRes === 200,
-    });
+    common.authorizeUser(user);
+    let response = http.get(
+        common.ServiceEndpoints.GatewayApi + "UserProfile/" + user.hdid,
+        common.params(user)
+    );
+    common.checkResponse(response);
     sleep(1);
 }

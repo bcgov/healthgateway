@@ -1,11 +1,11 @@
 version: '3.4'
 services:
   k6:
-    image: loadimpact/k6:latest
-    command: run /webapp_api/communication/k6_communication.js
+    image: grafana/k6:latest
+    command: run /gateway_api/comments/k6_comments.js
     volumes:
-      - ../../../src/webapp_api/communication:/webapp_api/communication
-      - ../../../src/inc:/inc
+      - ../../gateway_api/comments:/gateway_api/comments
+      - ../../inc:/inc
     environment: 
       - "HG_TYPE=${HG_TYPE}"
       - "HG_ENV=${HG_ENV}"

@@ -21,11 +21,14 @@ import * as common from "../../inc/common.js";
 export let options = common.OptionConfig();
 
 export default function () {
+
     let user = common.users[__VU % common.users.length];
 
+    common.getConfigurations();
+    common.getOpenIdConfigurations();
     common.authorizeUser(user);
     let response = http.get(
-        common.NoteUrl + "/" + user.hdid,
+        common.ServiceEndpoints.GatewayApi + "/Communication/" + "Banner",
         common.params(user)
     );
     common.checkResponse(response);

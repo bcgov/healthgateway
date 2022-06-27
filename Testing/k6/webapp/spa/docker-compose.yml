@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   k6:
-    image: loadimpact/k6:latest
+    image: grafana/k6:latest
     command: run /webapp/spa/k6_spa.js
     volumes:
       - ../../webapp/spa:/webapp/spa

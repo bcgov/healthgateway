@@ -1,10 +1,10 @@
 version: '3.4'
 services:
   k6:
-    image: loadimpact/k6:latest
-    command: run /services/notes/k6_notes.js
+    image: grafana/k6:latest
+    command: run /gateway_api/notes/k6_notes.js
     volumes:
-      - ../../services/notes:/services/notes
+      - ../../gateway_api/notes:/gateway_api/notes
       - ../../inc:/inc
     environment: 
       - "HG_TYPE=${HG_TYPE}"

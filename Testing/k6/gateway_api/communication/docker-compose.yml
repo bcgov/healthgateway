@@ -2,14 +2,13 @@ version: '3.4'
 services:
   k6:
     image: grafana/k6:latest
-    command: run /keycloak/kc_authenticate/k6_authenticate.js
+    command: run /gateway_api/communication/k6_communication.js
     volumes:
-      - ../../keycloak/kc_authenticate:/keycloak/kc_authenticate
+      - ../../gateway_api/communication:/gateway_api/communication
       - ../../inc:/inc
     environment: 
+      - "HG_TYPE=${HG_TYPE}"
       - "HG_ENV=${HG_ENV}"
       - "HG_VUS=${HG_VUS}"
       - "HG_KEY=${HG_KEY}"
-      - "HG_TYPE=${HG_TYPE}"
       - "HG_PASSWORD=${HG_PASSWORD}"
-

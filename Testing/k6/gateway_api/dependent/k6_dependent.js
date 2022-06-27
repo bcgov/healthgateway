@@ -23,17 +23,13 @@ export let options = common.OptionConfig();
 export default function () {
     let user = common.users[__VU % common.users.length];
 
+    common.getConfigurations();
+    common.getOpenIdConfigurations();
     common.authorizeUser(user);
-
-    common.groupWithDurationMetric("batch", function () {
-        let webClientBatchResponses = http.batch(
-            common.webClientRequests(user)
-        );
-        let timelineBatchResponses = http.batch(common.timelineRequests(user));
-
-        common.checkResponses(webClientBatchResponses);
-        common.checkResponses(timelineBatchResponses);
-    });
-
+    let response = http.get(
+        common.ServiceEndpoints.GatewayApi + "UserProfile/" + user.hdid + "/Dependent",
+        common.params(user)
+    );
+    common.checkResponse(response);
     sleep(1);
 }

@@ -10,4 +10,6 @@ HG_ENV=test HG_KEY=apikey HG_PASSWORD=pwd docker compose up
 
 HG_KEY is the Akamai Queue-IT api key to bypass the queue.
 HG_ENV is a choice of dev, test, prod
+HG_TYPE is the text type to run.
+HG_VUS is the maximum number of virtual users to run. Not applicable to smoke test type.
 HG_PASSWORD is the password for the loadtest_0x keycloak accounts, where x is from 1 to 15.

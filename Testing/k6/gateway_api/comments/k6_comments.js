@@ -23,9 +23,11 @@ export let options = common.OptionConfig();
 export default function () {
     let user = common.users[__VU % common.users.length];
 
+    common.getConfigurations();
+    common.getOpenIdConfigurations();
     common.authorizeUser(user);
     let response = http.get(
-        common.CommunicationUrl + "/" + user.hdid,
+        common.ServiceEndpoints.GatewayApi + "UserProfile/" + user.hdid + "/Comment",
         common.params(user)
     );
     common.checkResponse(response);
