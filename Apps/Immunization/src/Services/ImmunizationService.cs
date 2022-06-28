@@ -76,7 +76,6 @@ namespace HealthGateway.Immunization.Services
             RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizations(hdid).ConfigureAwait(true);
             if (delegateResult.ResultStatus == ResultType.Success)
             {
-                IList<ImmunizationEvent> events = this.autoMapper.Map<IList<ImmunizationEvent>>(delegateResult.ResourcePayload!.Result!.ImmunizationViews);
                 return new RequestResult<ImmunizationResult>()
                 {
                     ResultStatus = delegateResult.ResultStatus,
