@@ -109,7 +109,7 @@ export default class EntrycardTimelineComponent extends Vue {
 
 <template>
     <b-row class="cardWrapper mb-1">
-        <b-col class="timelineCard ml-0 ml-md-2">
+        <b-col class="timelineCard">
             <b-row
                 class="entryHeading px-3 py-2"
                 :class="{

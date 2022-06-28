@@ -10,7 +10,6 @@ const state: TimelineState = {
     filter: TimelineFilterBuilder.buildEmpty(),
     keyword: "",
     linearDate: new DateWrapper(),
-    calendarDate: new DateWrapper(),
     selectedDate: null,
 };
 

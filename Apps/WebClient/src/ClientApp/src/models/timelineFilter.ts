@@ -3,6 +3,7 @@ import { StringISODate } from "@/models/dateWrapper";
 
 // Timeline filter model
 export default class TimelineFilter {
+    public readonly keyword: string;
     public readonly startDate: StringISODate;
     public readonly endDate: StringISODate;
     public readonly entryTypes: Set<EntryType>;
@@ -12,33 +13,45 @@ export default class TimelineFilter {
      * @param builder The builder to use when constructing a TimelineFilter
      */
     public constructor(builder: TimelineFilterBuilder) {
+        this.keyword = builder.keyword;
         this.entryTypes = builder.entryTypes;
         this.endDate = builder.endDate;
         this.startDate = builder.startDate;
     }
 
     public hasActiveFilter(): boolean {
-        return !!this.endDate || !!this.startDate || this.entryTypes.size > 0;
+        return (
+            this.keyword.length > 0 ||
+            !!this.endDate ||
+            !!this.startDate ||
+            this.entryTypes.size > 0
+        );
     }
 
     public getActiveFilterCount(): number {
         let count = 0;
-        count += this.startDate === "" ? 0 : 1;
-        count += this.endDate === "" ? 0 : 1;
+        count += this.keyword.length === 0 ? 0 : 1;
+        count += this.startDate === "" && this.endDate === "" ? 0 : 1;
         count += this.entryTypes.size;
         return count;
     }
 }
 
 export class TimelineFilterBuilder {
+    private _keyword: string;
     private _entryTypes: Set<EntryType>;
     private _startDate: StringISODate;
     private _endDate: StringISODate;
 
     private constructor() {
+        this._keyword = "";
         this._entryTypes = new Set();
         this._endDate = "";
         this._startDate = "";
+    }
+
+    public get keyword(): string {
+        return this._keyword;
     }
 
     public get entryTypes(): Set<EntryType> {
@@ -61,6 +74,7 @@ export class TimelineFilterBuilder {
         filter: TimelineFilter
     ): TimelineFilterBuilder {
         const builder = new TimelineFilterBuilder();
+        builder._keyword = filter.keyword;
         builder._startDate = filter.startDate;
         builder._endDate = filter.endDate;
         builder._entryTypes = filter.entryTypes;
@@ -69,6 +83,11 @@ export class TimelineFilterBuilder {
 
     public static buildEmpty(): TimelineFilter {
         return new TimelineFilter(new TimelineFilterBuilder());
+    }
+
+    public withKeyword(keyword: string): TimelineFilterBuilder {
+        this._keyword = keyword;
+        return this;
     }
 
     public withStartDate(dateString: StringISODate): TimelineFilterBuilder {

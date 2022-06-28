@@ -2,9 +2,8 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faBars,
-    faCalendarDay,
     faChevronDown,
-    faSlidersH,
+    faFilter,
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -20,7 +19,7 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
-library.add(faBars, faCalendarDay, faChevronDown, faSlidersH);
+library.add(faBars, faChevronDown, faFilter);
 
 // Entry filter model
 interface EntryTypeFilter {
@@ -40,9 +39,11 @@ export default class FilterComponent extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
-    @Getter("isMobile") isMobileView!: boolean;
+    @Getter("isMobile")
+    isMobileView!: boolean;
 
-    @Getter("isSidebarOpen", { namespace: "navbar" }) isSidebarOpen!: boolean;
+    @Getter("isSidebarOpen", { namespace: "navbar" })
+    isSidebarOpen!: boolean;
 
     @Getter("medicationStatementCount", { namespace: "medication" })
     medicationStatementCount!: number;
@@ -62,9 +63,11 @@ export default class FilterComponent extends Vue {
     @Getter("encounterCount", { namespace: "encounter" })
     encounterCount!: number;
 
-    @Getter("noteCount", { namespace: "note" }) noteCount!: number;
+    @Getter("noteCount", { namespace: "note" })
+    noteCount!: number;
 
-    @Getter("filter", { namespace: "timeline" }) activeFilter!: TimelineFilter;
+    @Getter("filter", { namespace: "timeline" })
+    activeFilter!: TimelineFilter;
 
     private logger!: ILogger;
     private isModalVisible = false;
@@ -73,6 +76,7 @@ export default class FilterComponent extends Vue {
     private startDate: StringISODate = "";
     private endDate: StringISODate = "";
     private selectedEntryTypes: EntryType[] = [];
+    private keywordInputText = "";
 
     private get enabledEntryTypes(): EntryTypeFilter[] {
         return [...entryTypeMap.values()]
@@ -83,12 +87,13 @@ export default class FilterComponent extends Vue {
             }));
     }
 
-    private get activeFilterCount(): number {
-        return this.activeFilter.getActiveFilterCount();
-    }
-
     private get hasFilterSelected(): boolean {
         return this.activeFilter.hasActiveFilter();
+    }
+
+    private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.syncWithFilter();
     }
 
     @Watch("isMobileView")
@@ -101,13 +106,9 @@ export default class FilterComponent extends Vue {
         this.isModalVisible = false;
     }
 
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.syncWithFilter();
-    }
-
-    @Watch("filter", { deep: true })
+    @Watch("activeFilter", { deep: true })
     private syncWithFilter() {
+        this.keywordInputText = this.activeFilter.keyword;
         this.startDate = this.activeFilter.startDate;
         this.endDate = this.activeFilter.endDate;
         this.selectedEntryTypes = Array.from(this.activeFilter.entryTypes);
@@ -121,14 +122,9 @@ export default class FilterComponent extends Vue {
         this.isModalVisible = !this.isModalVisible;
     }
 
-    private clearOptions(): void {
-        this.startDate = "";
-        this.endDate = "";
-        this.selectedEntryTypes = [];
-    }
-
     private apply() {
         let builder = TimelineFilterBuilder.create()
+            .withKeyword(this.keywordInputText)
             .withStartDate(this.startDate)
             .withEndDate(this.endDate)
             .withEntryTypes(this.selectedEntryTypes);
@@ -190,22 +186,20 @@ export default class FilterComponent extends Vue {
         <div class="filters-width d-none d-lg-block">
             <hg-button
                 id="filterBtn"
-                class="w-100"
                 data-testid="filterDropdown"
                 :class="{ selected: hasFilterSelected }"
                 variant="secondary"
                 tabindex="0"
                 @click="toggleMenu"
             >
-                <span>Options</span>
-                <b-badge
-                    v-show="hasFilterSelected"
-                    variant="light"
-                    class="badge-style ml-2"
-                >
-                    {{ activeFilterCount }}
-                    <span class="sr-only">filters applied</span>
-                </b-badge>
+                <hg-icon
+                    icon="filter"
+                    size="medium"
+                    square
+                    aria-hidden="true"
+                    class="mr-2"
+                />
+                <span>Filter</span>
                 <hg-icon
                     icon="chevron-down"
                     size="small"
@@ -224,23 +218,27 @@ export default class FilterComponent extends Vue {
                 fallback-placement="clockwise"
                 menu-class="z-index-large w-100"
             >
-                <b-row class="px-1">
-                    <b-col><strong>Filter</strong> </b-col>
-                    <b-col class="col-auto">
-                        <hg-button
-                            variant="link"
-                            class="btn-mobile"
-                            @click="clearOptions()"
-                        >
-                            Clear
-                        </hg-button>
-                    </b-col>
-                </b-row>
-
                 <div class="px-1">
                     <b-row class="mt-2">
-                        <b-col><strong>Type</strong> </b-col>
-                        <b-col class="col-auto"></b-col>
+                        <b-col><strong>Keywords</strong></b-col>
+                    </b-row>
+                    <div class="mt-1 has-filter">
+                        <hg-icon
+                            icon="search"
+                            size="medium"
+                            class="form-control-feedback"
+                        />
+                        <b-form-input
+                            v-model="keywordInputText"
+                            data-testid="filterTextInput"
+                            type="text"
+                            placeholder=""
+                            maxlength="50"
+                            debounce="250"
+                        />
+                    </div>
+                    <b-row class="mt-2 mb-1">
+                        <b-col><strong>Type</strong></b-col>
                     </b-row>
                     <b-row
                         v-for="(entryType, index) in enabledEntryTypes"
@@ -267,8 +265,7 @@ export default class FilterComponent extends Vue {
                         </b-col>
                     </b-row>
                     <b-row class="mt-2">
-                        <b-col><strong>Dates</strong> </b-col>
-                        <b-col class="col-auto"></b-col>
+                        <b-col><strong>Dates</strong></b-col>
                     </b-row>
                     <b-row class="mt-1">
                         <b-col>
@@ -288,21 +285,21 @@ export default class FilterComponent extends Vue {
                             />
                         </b-col>
                     </b-row>
-                    <b-row class="mt-3" align-h="end">
-                        <b-col cols="auto" class="pr-0">
+                    <b-row class="mt-3 mb-2" no-gutters align-h="end">
+                        <b-col cols="auto">
                             <hg-button
                                 data-testid="btnFilterCancel"
-                                class="px-2 m-0"
+                                class="px-2"
                                 variant="secondary"
                                 @click.stop="cancel"
                             >
                                 Cancel
                             </hg-button>
                         </b-col>
-                        <b-col cols="auto" class="pl-2">
+                        <b-col cols="auto" class="ml-2">
                             <hg-button
                                 data-testid="btnFilterApply"
-                                class="btn-primary px-2 m-0"
+                                class="btn-primary px-2"
                                 variant="primary"
                                 @click.stop="apply"
                             >
@@ -322,7 +319,7 @@ export default class FilterComponent extends Vue {
             variant="secondary"
             @click.stop="toggleMobileView"
         >
-            <hg-icon icon="sliders-h" size="medium" square aria-hidden="true" />
+            <hg-icon icon="filter" size="medium" square aria-hidden="true" />
         </hg-button>
         <b-modal
             id="generic-message"
@@ -337,25 +334,30 @@ export default class FilterComponent extends Vue {
             no-fade
         >
             <template #modal-header>
-                <h5 class="ml-auto mr-auto my-0">Options</h5>
+                <h5 class="ml-auto mr-auto my-0">Filter</h5>
             </template>
-            <div class="filter-section">
-                <b-row class="w-100 text-center" align-h="between">
-                    <b-col cols="auto"><h5>Filter</h5> </b-col>
-                    <b-col class="col-auto">
-                        <hg-button
-                            variant="link"
-                            class="btn-mobile"
-                            @click="clearOptions()"
-                        >
-                            Clear
-                        </hg-button>
-                    </b-col>
-                </b-row>
+
+            <div class="filter-section mb-3">
+                <div class="mb-1"><strong>Keywords</strong></div>
+                <div class="has-filter">
+                    <hg-icon
+                        icon="search"
+                        size="medium"
+                        class="form-control-feedback"
+                    />
+                    <b-form-input
+                        v-model="keywordInputText"
+                        data-testid="filterTextInput"
+                        type="text"
+                        placeholder=""
+                        maxlength="50"
+                        debounce="250"
+                    />
+                </div>
             </div>
 
             <div class="filter-section mb-3">
-                <strong>Type</strong>
+                <div class="mb-1"><strong>Type</strong></div>
                 <b-row
                     v-for="(filter, index) in enabledEntryTypes"
                     :key="index"
@@ -378,7 +380,7 @@ export default class FilterComponent extends Vue {
             </div>
 
             <div class="filter-section mb-3">
-                <strong>Dates</strong>
+                <div class="mb-1"><strong>Dates</strong></div>
                 <b-row class="mb-1">
                     <b-col>
                         <DatePickerComponent
@@ -398,21 +400,21 @@ export default class FilterComponent extends Vue {
                     </b-col>
                 </b-row>
             </div>
-            <b-row class="mt-1" align-h="end">
-                <b-col cols="auto" class="pr-0">
+            <b-row no-gutters align-h="end">
+                <b-col cols="auto">
                     <hg-button
                         data-testid="btnFilterCancel"
-                        class="px-2 m-0"
+                        class="px-2"
                         variant="secondary"
                         @click.stop="cancel"
                     >
                         Cancel
                     </hg-button>
                 </b-col>
-                <b-col cols="auto" class="pl-2">
+                <b-col cols="auto" class="ml-2">
                     <hg-button
                         data-testid="btnFilterApply"
-                        class="px-2 m-0"
+                        class="px-2"
                         variant="primary"
                         @click.stop="apply"
                     >
@@ -428,11 +430,9 @@ export default class FilterComponent extends Vue {
 .filters-wrapper {
     z-index: 3;
 }
-.filters-width {
-    width: 225px;
-}
 </style>
 <style lang="scss" scoped>
+@use "sass:math";
 @import "@/assets/scss/_variables.scss";
 
 .filter-section {
@@ -448,6 +448,7 @@ export default class FilterComponent extends Vue {
         margin: 0px;
     }
 }
+
 .filters-mobile-content {
     position: fixed;
     top: auto;
@@ -470,6 +471,26 @@ export default class FilterComponent extends Vue {
         border-color: $aquaBlue;
         background-color: $aquaBlue;
         color: white;
+    }
+}
+
+.has-filter {
+    $icon-size: 1rem;
+    $icon-size-padded: 2.375rem;
+    $icon-padding: math.div($icon-size-padded - $icon-size, 2);
+
+    .form-control {
+        padding-left: $icon-size-padded;
+    }
+
+    .form-control-feedback {
+        position: absolute;
+        z-index: 5;
+        display: block;
+        text-align: center;
+        pointer-events: none;
+        color: #aaa;
+        padding: $icon-padding;
     }
 }
 

@@ -207,6 +207,11 @@ export default class HgButtonComponent extends Vue {
             color: $hg-button-link-hover-text;
             text-decoration-color: $hg-button-link-hover-text;
         }
+
+        &:focus {
+            outline: revert;
+            box-shadow: revert;
+        }
     }
 
     &.hg-link-danger {
@@ -217,6 +222,11 @@ export default class HgButtonComponent extends Vue {
         &:active:not([disabled]) {
             color: $hg-button-link-danger-hover-text;
             text-decoration-color: $hg-button-link-danger-hover-text;
+        }
+
+        &:focus {
+            outline: revert;
+            box-shadow: revert;
         }
     }
 
