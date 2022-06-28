@@ -421,8 +421,7 @@ export function timelineRequests(user) {
             method: "GET",
             url: common.ServiceEndpoints.GatewayApi + "Note/" + user.hdid,
             params: params(user),
-        },
-
+        }
     };
     return timelineRequests;
 }
@@ -514,7 +513,7 @@ export function checkForRequestResult(response) {
     }
 }
 
-export function checkResponse(response) {
+export function checkResponse(response, topic) {
     if (isObject(response)) {
         var ok =
             check(response, {
@@ -541,40 +540,24 @@ export function checkResponse(response) {
                 "HttpStatusCode is NOT 5xx Server Error": (r) =>
                     !(r.status >= 500 && r.status <= 598),
                 "HttpStatusCode is NOT 0 (Timeout Error)": (r) => r.status != 0,
-            }) || ErrorRate.add(1);
+            },  { myTag : topic }) || ErrorRate.add(1);
         return;
     }
 }
 
-export function checkResponses(responses) {
-    if (responses["beta"]) {
-        var ok =
-            check(responses["beta"], {
-                "Beta HttpStatusCode is 200": (r) => r.status === 200,
-                "Beta HttpStatusCode is NOT 3xx Redirection": (r) =>
-                    !(r.status >= 300 && r.status <= 306),
-                "Beta HttpStatusCode is NOT 401 Unauthorized": (r) =>
-                    r.status != 401,
-                "Beta HttpStatusCode is NOT 4xx Client Error": (r) =>
-                    !(r.status >= 400 && r.status <= 499),
-                "Beta HttpStatusCode is NOT 5xx Server Error": (r) =>
-                    !(r.status >= 500 && r.status <= 598),
-                "Beta HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
-                    r.status != 0,
-            }) || ErrorRate.add(1);
-    }
+export function checkTimelineResponses(responses) {
     if (responses["comments"]) {
         check(responses["comments"], {
-            "Beta HttpStatusCode is 200": (r) => r.status === 200,
-            "Beta HttpStatusCode is NOT 3xx Redirection": (r) =>
+            "Comments HttpStatusCode is 200": (r) => r.status === 200,
+            "Comments HttpStatusCode is NOT 3xx Redirection": (r) =>
                 !(r.status >= 300 && r.status <= 306),
-            "Beta HttpStatusCode is NOT 401 Unauthorized": (r) =>
+            "Comments HttpStatusCode is NOT 401 Unauthorized": (r) =>
                 r.status != 401,
-            "Beta HttpStatusCode is NOT 4xx Client Error": (r) =>
+            "Comments HttpStatusCode is NOT 4xx Client Error": (r) =>
                 !(r.status >= 400 && r.status <= 499),
-            "Beta HttpStatusCode is NOT 5xx Server Error": (r) =>
+            "Comments HttpStatusCode is NOT 5xx Server Error": (r) =>
                 !(r.status >= 500 && r.status <= 598),
-            "Beta HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
+            "Comments HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
                 r.status != 0,
         }) || ErrorRate.add(1);
     }

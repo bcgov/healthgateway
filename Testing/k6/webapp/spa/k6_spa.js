@@ -29,19 +29,15 @@ export default function () {
 
     let user = common.users[__VU % common.users.length];
 
+    common.getConfigurations();
+    common.getOpenIdConfigurations();
     common.authorizeUser(user);
     
     common.groupWithDurationMetric("spaBatch", function () {
         let spaBatchResponses = http.batch(
             common.spaAssetRequests(),
         );
-        common.checkResponses(spaBatchResponses);
-    });
-    common.groupWithDurationMetric("webappBatch", function () {
-        let webClientBatchResponses = http.batch(
-            common.webClientRequests(user)
-        );
-        common.checkResponses(webClientBatchResponses);
+        common.checkResponse(spaBatchResponses);
     });
 
     sleep(1);

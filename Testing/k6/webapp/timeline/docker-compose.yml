@@ -2,9 +2,9 @@ version: '3.4'
 services:
   k6:
     image: grafana/k6:latest
-    command: run /webapp/webapp/k6_webapp.js
+    command: run /webapp/timeline/k6_timeline.js
     volumes:
-      - ../../webapp/webapp:/webapp/webapp
+      - ../../webapp/timeline:/webapp/timeline
       - ../../inc:/inc
     environment: 
       - "HG_ENV=${HG_ENV}"

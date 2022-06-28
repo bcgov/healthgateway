@@ -27,14 +27,21 @@ export default function () {
     common.getOpenIdConfigurations();
     common.authorizeUser(user);
 
-    common.groupWithDurationMetric("batch", function () {
+    common.groupWithDurationMetric("spaBatch", function () {
+        let spaBatchResponses = http.batch(
+            common.spaAssetRequests(),
+        );
+        common.checkResponse(spaBatchResponses);
+    });
+
+    common.groupWithDurationMetric("timelineBatch", function () {
         let webClientBatchResponses = http.batch(
             common.webClientRequests(user)
         );
         let timelineBatchResponses = http.batch(common.timelineRequests(user));
 
         common.checkResponses(webClientBatchResponses);
-        common.checkResponses(timelineBatchResponses);
+        common.checkTimelineResponses(timelineBatchResponses);
     });
 
     sleep(1);
