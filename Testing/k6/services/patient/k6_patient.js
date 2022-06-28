@@ -22,6 +22,7 @@ export let options = common.OptionConfig();
 
 export default function () {
     let user = common.users[__VU % common.users.length];
+    
     common.getConfigurations();
     common.getOpenIdConfigurations();
     common.authorizeUser(user);

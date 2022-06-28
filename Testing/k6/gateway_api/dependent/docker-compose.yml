@@ -4,7 +4,7 @@ services:
     image: grafana/k6:latest
     command: run /gateway_api/dependent/k6_dependent.js
     volumes:
-      - ../../gateway_api/comments:/gateway_api/dependent
+      - ../../gateway_api/dependent:/gateway_api/dependent
       - ../../inc:/inc
     environment: 
       - "HG_TYPE=${HG_TYPE}"

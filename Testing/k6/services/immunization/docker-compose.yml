@@ -2,9 +2,9 @@ version: '3.4'
 services:
   k6:
     image: grafana/k6:latest
-    command: run /services/medications/k6_meds.js
+    command: run /services/immunization/k6_immunization.js
     volumes:
-      - ../../services/medications:/services/medications
+      - ../../services/immunization:/services/immunization
       - ../../inc:/inc
     environment: 
       - "HG_TYPE=${HG_TYPE}"
