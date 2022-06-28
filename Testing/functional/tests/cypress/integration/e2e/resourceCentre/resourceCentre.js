@@ -11,8 +11,6 @@ describe("Resource Centre", () => {
     });
 
     it("Validate Visible", () => {
-        cy.visit("/healthInsights");
-        cy.get("[data-testid=hg-resource-centre]").should("be.visible");
         cy.visit("/dependents");
         cy.get("[data-testid=hg-resource-centre]").should("be.visible");
         cy.visit("/reports");

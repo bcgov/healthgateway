@@ -65,10 +65,6 @@ const TermsOfServiceView = () =>
     import(
         /* webpackChunkName: "termsOfService" */ "@/views/TermsOfServiceView.vue"
     );
-const HealthInsightsView = () =>
-    import(
-        /* webpackChunkName: "healthInsights" */ "@/views/HealthInsightsView.vue"
-    );
 const AcceptTermsOfServiceView = () =>
     import(
         /* webpackChunkName: "acceptTermsOfService" */ "@/views/AcceptTermsOfServiceView.vue"
@@ -223,11 +219,6 @@ const routes = [
             validStates: [UserState.registered],
             requiredModules: [ClientModule.VaccinationStatus],
         },
-    },
-    {
-        path: "/healthInsights",
-        component: HealthInsightsView,
-        meta: { validStates: [UserState.registered] },
     },
     {
         path: "/reports",
