@@ -49,6 +49,14 @@ public partial class DashboardPage : FluxorComponent
 
     private BaseRequestState<RecurringUser> RecurringUsersResult => this.DashboardState.Value.RecurringUsers ?? default!;
 
+    private bool RegisteredUsersLoading => this.DashboardState.Value.RegisteredUsers.IsLoading;
+
+    private bool LoggedInUsersLoading => this.DashboardState.Value.LoggedInUsers.IsLoading;
+
+    private bool DependentsLoading => this.DashboardState.Value.Dependents.IsLoading;
+
+    private bool RecurringUsersLoading => this.DashboardState.Value.RecurringUsers.IsLoading;
+
     private MudDateRangePicker SelectedDateRangePicker { get; set; } = default!;
 
     private DateTime MinimumDateTime { get; set; } = new DateTime(2019, 06, 1);
@@ -170,7 +178,7 @@ public partial class DashboardPage : FluxorComponent
 
             List<DailyDataRow> results = new();
 
-            if (this.RegisteredUsersResult?.Result != null)
+            if (this.RegisteredUsersResult?.Result != null && !this.RegisteredUsersLoading)
             {
                 var registeredUsers = from result in this.RegisteredUsersResult?.Result
                                         select result;
@@ -187,7 +195,7 @@ public partial class DashboardPage : FluxorComponent
                 }
             }
 
-            if (this.LoggedInUsersResult?.Result != null)
+            if (this.LoggedInUsersResult?.Result != null && !this.LoggedInUsersLoading)
             {
                 var loggedInUsers = from result in this.LoggedInUsersResult?.Result
                                  select result;
@@ -203,7 +211,7 @@ public partial class DashboardPage : FluxorComponent
                 }
             }
 
-            if (this.DependentsResult?.Result != null)
+            if (this.DependentsResult?.Result != null && !this.DependentsLoading)
             {
                 var dependents = from result in this.DependentsResult?.Result
                                 select result;
@@ -235,8 +243,6 @@ public partial class DashboardPage : FluxorComponent
 
     private int TotalUniqueUsers => this.RecurringUsersResult?.Result?.TotalRecurringUsers ?? 0;
 
-    private bool IsLoading { get; set; }
-
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
@@ -247,14 +253,12 @@ public partial class DashboardPage : FluxorComponent
 
     private void LoadDispatchActions(int days, string startPeriod, string endPeriod, int timeOffset, bool initialLoad)
     {
-        this.IsLoading = true;
         string endDate = initialLoad ? DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : endPeriod;
         this.Dispatcher.Dispatch(new DashboardActions.LoadRegisteredUsersAction(timeOffset));
         this.Dispatcher.Dispatch(new DashboardActions.LoadLoggedInUsersAction(timeOffset));
         this.Dispatcher.Dispatch(new DashboardActions.LoadDependentsAction(timeOffset));
         this.Dispatcher.Dispatch(new DashboardActions.LoadRecurringUsersAction(days, startPeriod, endPeriod, timeOffset));
         this.DispatchRatingSummaryAction(startPeriod, endDate, timeOffset);
-        this.IsLoading = false;
     }
 
     private void ReloadDispatchActions()

@@ -16,17 +16,17 @@
 <MudGrid>
     <MudItem xs="12" lg="12">
         <MudPaper Class="my-2 pa-4 d-flex justify-end" Elevation="0">
-            <HgButton Loading="@IsLoading" EndIcon="@Icons.Material.Filled.Refresh" @onclick="ReloadDispatchActions" data-testid="refresh-btn">Refresh</HgButton>
+            <HgButton Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading || RecurringUsersLoading)" EndIcon="@Icons.Material.Filled.Refresh" @onclick="ReloadDispatchActions" data-testid="refresh-btn">Refresh</HgButton>
         </MudPaper>
     </MudItem>
 </MudGrid>
 
-@if (IsLoading)
+@if (RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading || RecurringUsersLoading)
 {
     <MudGrid>
         <MudItem xs="6" lg="6">
             <MudPaper Class="my-2 pa-4" Outlined="true">
-                <MudSkeleton/>
+                <MudSkeleton data-testid="skeleton-registered-users"/>
                 <MudSkeleton/>
             </MudPaper>
         </MudItem>
@@ -109,7 +109,7 @@ else
 <MudGrid>
     <MudItem xs="12" lg="12">
         <MudText Class="mt-3" Typo="Typo.subtitle1"><strong>Daily Data</strong></MudText>
-        <MudTable Class="mt-3" Loading="@IsLoading" data-testid="daily-data-table" Items="@TableData" HorizontalScrollbar="true" Striped="true" Dense="true" RowsPerPage="25">
+        <MudTable Class="mt-3" Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading)" data-testid="daily-data-table" Items="@TableData" HorizontalScrollbar="true" Striped="true" Dense="true" RowsPerPage="25">
             <HeaderContent>
                 <MudTh>Date</MudTh>
                 <MudTh>Registered</MudTh>
