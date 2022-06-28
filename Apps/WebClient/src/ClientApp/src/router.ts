@@ -51,10 +51,6 @@ const RegistrationView = () =>
     import(
         /* webpackChunkName: "registration" */ "@/views/RegistrationView.vue"
     );
-const RegistrationInfoView = () =>
-    import(
-        /* webpackChunkName: "registrationInfo" */ "@/views/RegistrationInfoView.vue"
-    );
 const HomeView = () =>
     import(/* webpackChunkName: "home" */ "@/views/HomeView.vue");
 const TimelineView = () =>
@@ -155,7 +151,6 @@ const IDIR_LOGGED_IN_PATH = "/idirLoggedIn";
 const LOGIN_PATH = "/login";
 const PROFILE_PATH = "/profile";
 const REGISTRATION_PATH = "/registration";
-const REGISTRATION_INFO_PATH = "/registrationInfo";
 const ROOT_PATH = "/";
 const TIMELINE_PATH = "/timeline";
 const UNAUTHORIZED_PATH = "/unauthorized";
@@ -171,21 +166,6 @@ const routes = [
                 UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.offline,
-            ],
-        },
-    },
-    {
-        path: REGISTRATION_INFO_PATH,
-        component: RegistrationInfoView,
-        props: (route: Route) => ({
-            inviteKey: route.query.inviteKey,
-            email: route.query.email,
-        }),
-        meta: {
-            validStates: [
-                UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
-                UserState.notRegistered,
             ],
         },
     },
