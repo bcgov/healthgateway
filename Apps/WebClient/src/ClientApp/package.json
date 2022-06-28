@@ -10,7 +10,6 @@
         "vue-help": "vue-cli-service help"
     },
     "devDependencies": {
-        "@types/chart.js": "^2.9.37",
         "@types/luxon": "^1.27.0",
         "@types/qrcode": "^1.4.2",
         "@types/vuelidate": "^0.7.15",
@@ -57,7 +56,6 @@
         "axios": "^0.26.1",
         "bootstrap-vue": "^2.22.0",
         "browserify-zlib": "^0.2.0",
-        "chart.js": "^2.9.4",
         "cookie-storage": "^6.1.0",
         "core-js": "^3.23.2",
         "file-saver": "^2.0.5",
@@ -75,7 +73,6 @@
         "reflect-metadata": "^0.1.13",
         "stream-http": "^3.2.0",
         "vue": "^2.6.12",
-        "vue-chartjs": "^3.5.1",
         "vue-class-component": "^7.2.6",
         "vue-clickaway": "^2.2.2",
         "vue-clipboard2": "^0.3.3",
