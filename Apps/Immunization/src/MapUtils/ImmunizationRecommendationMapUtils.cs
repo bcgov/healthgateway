@@ -30,7 +30,7 @@ namespace HealthGateway.Immunization.MapUtils
     /// </summary>
     public static class ImmunizationRecommendationMapUtils
     {
-/// <summary>
+        /// <summary>
         /// Creates a list of ImmunizationRecommendation objects from a PHSA models.
         /// </summary>
         /// <param name="models">The list of PHSA models to convert.</param>
