@@ -13,28 +13,23 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Parser
+namespace HealthGateway.Immunization.MapProfiles
 {
-    using HealthGateway.Common.Models.Immunization;
-    using HealthGateway.Common.Models.PHSA.Recommendation;
+    using AutoMapper;
+    using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Immunization.Models;
 
     /// <summary>
-    /// Provides parsing methods for Immunization definitions.
+    /// An AutoMapper profile class which defines mapping between PHSA Immunization and Common Models.
     /// </summary>
-    public static class DefinitionParser
+    public class LoadStateProfile : Profile
     {
         /// <summary>
-        /// Creates an ImmunizationDefinition object from a PHSA model.
+        /// Initializes a new instance of the <see cref="LoadStateProfile"/> class.
         /// </summary>
-        /// <param name="model">The vaccine code object to convert.</param>
-        /// <returns>The newly created ImmunizationDefinition object.</returns>
-        public static ImmunizationDefinition FromPHSAModel(VaccineCode model)
+        public LoadStateProfile()
         {
-            return new ImmunizationDefinition()
-            {
-                Name = model.VaccineCodeText,
-                ImmunizationAgents = AgentParser.FromPHSACodesModel(model.VaccineCodes),
-            };
+            this.CreateMap<PhsaLoadState, LoadStateModel>();
         }
     }
 }

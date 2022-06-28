@@ -13,19 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models
+namespace HealthGateway.Immunization.MapProfiles
 {
-    using System.Text.Json.Serialization;
+    using AutoMapper;
+    using HealthGateway.Common.Models.Immunization;
+    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
-    /// The Load State record data model.
+    /// An AutoMapper profile class which defines mapping between PHSA Immunization and Common Models.
     /// </summary>
-    public class LoadStateModel
+    public class ForecastProfile : Profile
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the Load State is in the RefreshInProgress status.
+        /// Initializes a new instance of the <see cref="ForecastProfile"/> class.
         /// </summary>
-        [JsonPropertyName("refreshInProgress")]
-        public bool RefreshInProgress { get; set; }
+        public ForecastProfile()
+        {
+            this.CreateMap<ImmunizationForecastResponse, ImmunizationForecast>()
+                .ForMember(dest => dest.RecommendationId, opt => opt.MapFrom(src => src.ImmsId))
+                .ForMember(dest => dest.CreateDate, opt => opt.MapFrom(src => src.ForecastCreateDate))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.ForecastStatus));
+        }
     }
 }
