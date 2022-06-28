@@ -444,10 +444,10 @@ export default class TimelineView extends Vue {
                 >
                     <b-row
                         class="no-print justify-content-between"
-                        align-v="center"
+                        align-v="start"
                     >
                         <b-col class="col-auto">
-                            <Filters />
+                            <Filters class="my-1" />
                         </b-col>
                         <b-col class="mx-2">
                             <b-form-tag
