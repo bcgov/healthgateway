@@ -229,10 +229,8 @@ describe("Public COVID-19 Test Results", () => {
         const collectionDateMonth = "January";
         const collectionDateDay = "20";
 
-        cy.intercept("GET", "**/PublicLaboratory/CovidTests", (req) => {
-            req.reply({
-                fixture: "LaboratoryService/covidTest.json",
-            });
+        cy.intercept("GET", "**/PublicLaboratory/CovidTests", {
+            fixture: "LaboratoryService/covidTest.json",
         });
 
         enterCovidTestPHN(phn);
@@ -280,10 +278,8 @@ describe("Public COVID-19 Test Results", () => {
         const collectionDateMonth = "January";
         const collectionDateDay = "20";
 
-        cy.intercept("GET", "**/PublicLaboratory/CovidTests", (req) => {
-            req.reply({
-                fixture: "LaboratoryService/emptyCovidTest.json",
-            });
+        cy.intercept("GET", "**/PublicLaboratory/CovidTests", {
+            fixture: "LaboratoryService/emptyCovidTest.json",
         });
 
         enterCovidTestPHN(phn);
@@ -311,10 +307,8 @@ describe("Public COVID-19 Test Results", () => {
         const collectionDateMonth = "January";
         const collectionDateDay = "20";
 
-        cy.intercept("GET", "**/PublicLaboratory/CovidTests", (req) => {
-            req.reply({
-                fixture: "LaboratoryService/dataMismatchCovidTest.json",
-            });
+        cy.intercept("GET", "**/PublicLaboratory/CovidTests", {
+            fixture: "LaboratoryService/dataMismatchCovidTest.json",
         });
 
         enterCovidTestPHN(phn);
@@ -337,10 +331,8 @@ describe("Public COVID-19 Test Results", () => {
         const collectionDateMonth = "January";
         const collectionDateDay = "20";
 
-        cy.intercept("GET", "**/PublicLaboratory/CovidTests", (req) => {
-            req.reply({
-                fixture: "LaboratoryService/invalidCovidTest.json",
-            });
+        cy.intercept("GET", "**/PublicLaboratory/CovidTests", {
+            fixture: "LaboratoryService/invalidCovidTest.json",
         });
 
         enterCovidTestPHN(phn);
@@ -363,10 +355,8 @@ describe("Public COVID-19 Test Results", () => {
         const collectionDateMonth = "January";
         const collectionDateDay = "20";
 
-        cy.intercept("GET", "**/PublicLaboratory/CovidTests", (req) => {
-            req.reply({
-                fixture: "LaboratoryService/emptyCovidTest.json",
-            });
+        cy.intercept("GET", "**/PublicLaboratory/CovidTests", {
+            fixture: "LaboratoryService/emptyCovidTest.json",
         });
 
         enterCovidTestPHN(phn);
