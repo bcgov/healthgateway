@@ -26,24 +26,24 @@
     <MudGrid>
         <MudItem xs="6" lg="6">
             <MudPaper Class="my-2 pa-4" Outlined="true">
-                <MudSkeleton data-testid="skeleton-registered-users"/>
                 <MudSkeleton/>
+                <MudSkeleton data-testid="skeleton-registered-users"/>
             </MudPaper>
         </MudItem>
         <MudItem xs="6" lg="6">
             <MudPaper Class="my-2 pa-4" Outlined="true">
                 <MudSkeleton/>
-                <MudSkeleton/>
+                <MudSkeleton data-testid="skeleton-dependents"/>
             </MudPaper>
         </MudItem>
     </MudGrid>
 
     <MudGrid Class="my-3">
         <MudItem xs="6" lg="3">
-            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="48px"/>
+            <MudSkeleton data-testid="skeleton-selected-date-range" SkeletonType="SkeletonType.Rectangle" Height="48px"/>
         </MudItem>
         <MudItem xs="6" lg="3">
-            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="48px"/>
+            <MudSkeleton data-testid="skeleton-unique-days" SkeletonType="SkeletonType.Rectangle" Height="48px"/>
         </MudItem>
     </MudGrid>
 
@@ -52,13 +52,13 @@
         <MudItem xs="6" lg="6">
             <MudPaper Class="my-2 pa-4" Outlined="true">
                 <MudSkeleton/>
-                <MudSkeleton/>
+                <MudSkeleton data-testid="skeleton-user-count"/>
             </MudPaper>
         </MudItem>
     </MudGrid>
 
     <MudSkeleton Width="20%"/>
-    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="500px" Height="350px"/>
+    <MudSkeleton data-testid="skeleton-rating-summary" SkeletonType="SkeletonType.Rectangle" Width="500px" Height="350px"/>
 }
 else
 {

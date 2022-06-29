@@ -178,7 +178,7 @@ public partial class DashboardPage : FluxorComponent
 
             List<DailyDataRow> results = new();
 
-            if (this.RegisteredUsersResult?.Result != null && !this.RegisteredUsersLoading)
+            if (this.RegisteredUsersResult?.Result != null && this.DashboardState.Value.RegisteredUsers.Loaded)
             {
                 var registeredUsers = from result in this.RegisteredUsersResult?.Result
                                         select result;
@@ -195,7 +195,7 @@ public partial class DashboardPage : FluxorComponent
                 }
             }
 
-            if (this.LoggedInUsersResult?.Result != null && !this.LoggedInUsersLoading)
+            if (this.LoggedInUsersResult?.Result != null && this.DashboardState.Value.LoggedInUsers.Loaded)
             {
                 var loggedInUsers = from result in this.LoggedInUsersResult?.Result
                                  select result;
@@ -211,7 +211,7 @@ public partial class DashboardPage : FluxorComponent
                 }
             }
 
-            if (this.DependentsResult?.Result != null && !this.DependentsLoading)
+            if (this.DependentsResult?.Result != null && this.DashboardState.Value.Dependents.Loaded)
             {
                 var dependents = from result in this.DependentsResult?.Result
                                 select result;
