@@ -181,7 +181,7 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     private get showDisplayCount(): boolean {
-        return this.isFullyLoaded;
+        return this.visibleTimelineEntries.length > 0;
     }
 
     private get showEmptyState(): boolean {
