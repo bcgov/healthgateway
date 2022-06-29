@@ -290,53 +290,56 @@ export default class TimelineView extends Vue {
     private get isFilterLoading(): boolean {
         const filtersLoaded = [];
         filtersLoaded.push(
-            this.isFilterResultLoading(
+            this.isSelectedFilterModuleLoading(
                 EntryType.MedicationRequest,
                 this.isMedicationRequestLoading
             )
         );
 
         filtersLoaded.push(
-            this.isFilterResultLoading(
+            this.isSelectedFilterModuleLoading(
                 EntryType.Medication,
                 this.isMedicationStatementLoading
             )
         );
 
         filtersLoaded.push(
-            this.isFilterResultLoading(
+            this.isSelectedFilterModuleLoading(
                 EntryType.Immunization,
                 this.isImmunizationLoading
             )
         );
 
         filtersLoaded.push(
-            this.isFilterResultLoading(
+            this.isSelectedFilterModuleLoading(
                 EntryType.Covid19LaboratoryOrder,
                 this.isCovid19LaboratoryLoading
             )
         );
 
         filtersLoaded.push(
-            this.isFilterResultLoading(
+            this.isSelectedFilterModuleLoading(
                 EntryType.LaboratoryOrder,
                 this.isLaboratoryLoading
             )
         );
 
         filtersLoaded.push(
-            this.isFilterResultLoading(
+            this.isSelectedFilterModuleLoading(
                 EntryType.Encounter,
                 this.isEncounterLoading
             )
         );
 
         filtersLoaded.push(
-            this.isFilterResultLoading(EntryType.Note, this.isNoteLoading)
+            this.isSelectedFilterModuleLoading(
+                EntryType.Note,
+                this.isNoteLoading
+            )
         );
 
         const filterLoading = filtersLoaded.includes(true);
-        this.logger.debug(`Timeline is filter loading: ${filterLoading}`);
+        this.logger.debug(`Timeline filter loading: ${filterLoading}`);
 
         return filterLoading;
     }
@@ -389,7 +392,7 @@ export default class TimelineView extends Vue {
         return filterApplied;
     }
 
-    private isFilterResultLoading(
+    private isSelectedFilterModuleLoading(
         entryType: EntryType,
         loading: boolean
     ): boolean {
