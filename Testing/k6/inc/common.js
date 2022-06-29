@@ -21,7 +21,7 @@ import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
 export let passwd = __ENV.HG_PASSWORD;
 
-export let maxVus = __ENV.HG_VUS ? parseInt(__ENV.HG_VUS) : 500;
+export let maxVus = __ENV.HG_VUS ? parseInt(__ENV.HG_VUS) : 300;
 maxVus = (maxVus < 1) ? 1 : maxVus;
 export let rampVus = (maxVus / 4).toFixed(0);
 rampVus = (rampVus < 1) ? 1 : rampVus;
@@ -36,7 +36,7 @@ export let SpecialHeaderKey = __ENV.HG_KEY ? __ENV.HG_KEY : "nokey"; // special 
 export let Environment = __ENV.HG_ENV ? __ENV.HG_ENV : "test"; // default to test environment. choice of dev, test (never prod)
 export let OptionsType = __ENV.HG_TYPE ? __ENV.HG_TYPE : "smoke"; // choice of load, smoke, soak, spike, stress
 
-export let groupDuration = Trend("batch");
+export let GroupDuration = Trend("batch");
 
 export let BaseSiteUrl = "https://" + Environment + ".healthgateway.gov.bc.ca/";
 
@@ -64,7 +64,6 @@ export let ServiceEndpoints = {
 };
 //-------------------------------------------------------------------------
 export let loadOptions = {
-    vus: maxVus,
     stages: [
         { duration: "2m", target: rampVus }, // simulate ramp-up of traffic from 1 users over a few minutes.
         { duration: "3m", target: rampVus }, // stay at number of users for several minutes
@@ -74,12 +73,8 @@ export let loadOptions = {
         { duration: "3m", target: rampVus }, // continue for additional time
         { duration: "2m", target: 0 }, // ramp-down to 0 users
     ],
-    thresholds: {
-        errors: ["rate < 0.05"], // threshold on a custom metric
-        http_req_duration: ["p(90)< 9000"], // 90% of requests must complete this threshold
-        http_req_duration: ["avg < 5000"], // average of requests must complete within this time
-    },
 };
+
 export let smokeOptions = {
     vus: 1,
     iterations: 1,
@@ -109,11 +104,11 @@ let stressMaxVus = maxVus + 150;
 
 export let stressOptions = {
     stages: [
-        { duration: "2m", target: 10 }, // below normal load
-        { duration: "5m", target: 50 },
-        { duration: "5m", target: rampVus },
-        { duration: "5m", target: maxVus }, // around the breaking point
-        { duration: "2m", target: stressVus }, // beyond the breaking point
+        { duration: "10s", target: 10 }, // below normal load
+        { duration: "30s", target: 50 },
+        { duration: "1m", target: rampVus },
+        { duration: "2m", target: maxVus }, // around the breaking point
+        { duration: "1m", target: stressVus }, // beyond the breaking point
         { duration: "5m", target: stressMaxVus },
         { duration: "5m", target: 0 }, // scale down. Recovery stage.
     ],
@@ -206,7 +201,7 @@ export function groupWithDurationMetric(name, group_function) {
     let start = new Date();
     group(name, group_function);
     let end = new Date();
-    groupDuration.add(end - start, { groupName: name });
+    GroupDuration.add(end - start, { groupName: name });
 }
 
 export function OptionConfig() {
@@ -255,6 +250,12 @@ export function getConfigurations() {
             console.warn("Failed to get HG configuration");
         }
     }
+}
+
+function getBaseSiteUrl()
+{
+    console.log(BaseSiteUrl);
+    return BaseSiteUrl;
 }
 
 export function getOpenIdConfigurations() {
@@ -430,7 +431,7 @@ export function getBaseWebApp() {
     let baseWebAppRequest = {
         baseSite: {
             method: "GET",
-            url: BaseSiteUrl,
+            url: getBaseSiteUrl(),
             params: { headers: HttpHeaders }
         }
     };
@@ -439,30 +440,32 @@ export function getBaseWebApp() {
 
 export function spaAssetRequests() {
 
+    let baseSiteUrl = common.BaseSiteUrl;
+
     let spaAssetRequests = {
         baseSite: {
             method: "GET",
-            url: BaseSiteUrl,
+            url: baseSiteUrl,
             params: { headers: HttpHeaders }
         },
         vendorChunk: {
             method: "GET",
-            url: BaseSiteUrl + "/js/chunk-vendors.c61f122d.js",
+            url: baseSiteUrl + "js/chunk-vendors.c61f122d.js",
             params: { headers: HttpHeaders }
         },
         siteChunk: {
             method: "GET",
-            url: BaseSiteUrl + "/js/app.8136e1c8.js",
+            url: baseSiteUrl + "js/app.8136e1c8.js",
             params: { headers: HttpHeaders }
         },
         css: {
             method: "GET",
-            url: BaseSiteUrl + "/css/app.c90e9393.css",
+            url: baseSiteUrl + "css/app.c90e9393.css",
             params: { headers: HttpHeaders }
         },
         cssVendor: {
             method: "GET",
-            url: BaseSiteUrl + "/css/chunk-vendors.21f4bba7.css",
+            url: baseSiteUrl + "/css/chunk-vendors.21f4bba7.css",
             params: { headers: HttpHeaders }
         },
 
