@@ -106,10 +106,31 @@ export class LaboratoryTestViewModel {
     public testName: string;
     public result: string;
     public status: string;
+    public statusInfo: string[];
 
     constructor(model: LaboratoryTest) {
         this.testName = model.batteryType;
         this.result = model.result;
         this.status = model.filteredTestStatus;
+        this.statusInfo = LaboratoryTestViewModel.getStatusText(this.status);
+    }
+
+    private static getStatusText(status: string): string[] {
+        switch (status?.toUpperCase()) {
+            case "PENDING":
+                return [
+                    "Most results are ready about 3 days after your test.",
+                    "Pathology tests, like tissue biopsies, can take several weeks.",
+                ];
+            case "COMPLETED":
+            case "CORRECTED":
+                return ["Download the PDF to see your detailed results."];
+            case "CANCELLED":
+                return [
+                    "Contact your care provider if you have any questions.",
+                ];
+            default:
+                return [];
+        }
     }
 }
