@@ -2,12 +2,8 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Resource Centre", () => {
     it("Validate Disabled Covid Card", () => {
-        cy.intercept("GET", "**/Immunization", (req) => {
-            req.reply((res) => {
-                res.send({
-                    fixture: "ImmunizationService/immunizationNoRecords.json",
-                });
-            });
+        cy.intercept("GET", "**/Immunization", {
+            fixture: "ImmunizationService/immunizationNoRecords.json",
         });
         cy.enableModules("Immunization");
         cy.login(
@@ -24,12 +20,8 @@ describe("Resource Centre", () => {
     });
 
     it("Validate on Timeline", () => {
-        cy.intercept("GET", "**/Immunization", (req) => {
-            req.reply((res) => {
-                res.send({
-                    fixture: "ImmunizationService/immunization.json",
-                });
-            });
+        cy.intercept("GET", "**/Immunization", {
+            fixture: "ImmunizationService/immunization.json",
         });
         cy.enableModules(["Immunization", "VaccinationStatus"]);
         cy.login(

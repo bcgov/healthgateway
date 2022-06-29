@@ -51,10 +51,6 @@ const RegistrationView = () =>
     import(
         /* webpackChunkName: "registration" */ "@/views/RegistrationView.vue"
     );
-const RegistrationInfoView = () =>
-    import(
-        /* webpackChunkName: "registrationInfo" */ "@/views/RegistrationInfoView.vue"
-    );
 const HomeView = () =>
     import(/* webpackChunkName: "home" */ "@/views/HomeView.vue");
 const TimelineView = () =>
@@ -68,10 +64,6 @@ const ValidateEmailView = () =>
 const TermsOfServiceView = () =>
     import(
         /* webpackChunkName: "termsOfService" */ "@/views/TermsOfServiceView.vue"
-    );
-const HealthInsightsView = () =>
-    import(
-        /* webpackChunkName: "healthInsights" */ "@/views/HealthInsightsView.vue"
     );
 const AcceptTermsOfServiceView = () =>
     import(
@@ -155,7 +147,6 @@ const IDIR_LOGGED_IN_PATH = "/idirLoggedIn";
 const LOGIN_PATH = "/login";
 const PROFILE_PATH = "/profile";
 const REGISTRATION_PATH = "/registration";
-const REGISTRATION_INFO_PATH = "/registrationInfo";
 const ROOT_PATH = "/";
 const TIMELINE_PATH = "/timeline";
 const UNAUTHORIZED_PATH = "/unauthorized";
@@ -171,21 +162,6 @@ const routes = [
                 UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.offline,
-            ],
-        },
-    },
-    {
-        path: REGISTRATION_INFO_PATH,
-        component: RegistrationInfoView,
-        props: (route: Route) => ({
-            inviteKey: route.query.inviteKey,
-            email: route.query.email,
-        }),
-        meta: {
-            validStates: [
-                UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
-                UserState.notRegistered,
             ],
         },
     },
@@ -243,11 +219,6 @@ const routes = [
             validStates: [UserState.registered],
             requiredModules: [ClientModule.VaccinationStatus],
         },
-    },
-    {
-        path: "/healthInsights",
-        component: HealthInsightsView,
-        meta: { validStates: [UserState.registered] },
     },
     {
         path: "/reports",

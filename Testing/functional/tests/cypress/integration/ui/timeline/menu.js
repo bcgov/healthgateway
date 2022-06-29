@@ -88,11 +88,6 @@ describe("Menu System", () => {
             "href",
             "/timeline"
         );
-        cy.get("[data-testid=menu-btn-health-insights-link]").should(
-            "have.attr",
-            "href",
-            "/healthInsights"
-        );
         cy.get("[data-testid=menu-btn-reports-link]").should(
             "have.attr",
             "href",

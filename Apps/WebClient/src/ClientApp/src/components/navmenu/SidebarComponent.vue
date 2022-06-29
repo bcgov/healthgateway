@@ -2,7 +2,6 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faAngleDoubleLeft,
-    faChartLine,
     faCheckCircle,
     faClipboardList,
     faHome,
@@ -24,7 +23,6 @@ import { ILogger } from "@/services/interfaces";
 
 library.add(
     faAngleDoubleLeft,
-    faChartLine,
     faCheckCircle,
     faClipboardList,
     faHome,
@@ -192,10 +190,6 @@ export default class SidebarComponent extends Vue {
 
     private get isUnderProfile(): boolean {
         return this.$route.path.startsWith("/profile");
-    }
-
-    private get isHealthInsights(): boolean {
-        return this.$route.path == "/healthInsights";
     }
 
     private get isReports(): boolean {
@@ -373,28 +367,6 @@ export default class SidebarComponent extends Vue {
                                 test proof for employers.
                             </div>
                         </b-popover>
-                    </hg-button>
-                    <!-- Health Insights button -->
-                    <hg-button
-                        v-show="isActiveProfile"
-                        id="menuBtnHealthInsights"
-                        data-testid="menu-btn-health-insights-link"
-                        to="/healthInsights"
-                        variant="nav"
-                        class="my-3"
-                        :class="{ selected: isHealthInsights }"
-                    >
-                        <b-row class="align-items-center">
-                            <b-col
-                                title="Health Insights"
-                                :class="{ 'col-3': isOpen }"
-                            >
-                                <hg-icon icon="chart-line" size="large" />
-                            </b-col>
-                            <b-col v-show="isOpen" class="button-text">
-                                <span>Health Insights</span>
-                            </b-col>
-                        </b-row>
                     </hg-button>
                     <br />
                 </b-col>

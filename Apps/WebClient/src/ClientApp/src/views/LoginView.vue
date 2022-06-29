@@ -54,7 +54,7 @@ export default class LoginView extends Vue {
         if (this.oidcIsAuthenticated && this.userIsRegistered) {
             this.$router.push({ path: this.redirectPath });
         } else if (this.oidcIsAuthenticated) {
-            this.redirectPath = "/registrationInfo";
+            this.redirectPath = "/registration";
             this.$router.push({ path: this.redirectPath });
         } else if (
             !this.oidcIsAuthenticated &&
@@ -107,13 +107,6 @@ export default class LoginView extends Vue {
                     align="center"
                 >
                     <h3 slot="header">Log In</h3>
-                    <p v-if="hasMultipleProviders || isRetry" slot="footer">
-                        Not yet registered?
-
-                        <hg-button to="/registrationInfo" variant="link"
-                            >Sign Up</hg-button
-                        >
-                    </p>
                     <b-card-body v-if="hasMultipleProviders || isRetry">
                         <div
                             v-for="provider in identityProviders"

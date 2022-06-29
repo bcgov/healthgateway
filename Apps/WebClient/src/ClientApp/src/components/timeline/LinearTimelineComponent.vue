@@ -7,6 +7,9 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
+import container from "@/plugins/container";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 import Covid19LaboratoryOrderTimelineComponent from "./entryCard/Covid19LaboratoryOrderTimelineComponent.vue";
 import EncounterTimelineComponent from "./entryCard/EncounterTimelineComponent.vue";
@@ -50,12 +53,56 @@ export default class LinearTimelineComponent extends Vue {
     @Getter("hasActiveFilter", { namespace: "timeline" })
     hasActiveFilter!: boolean;
 
+    @Getter("isMedicationStatementLoading", { namespace: "medication" })
+    isMedicationStatementLoading!: boolean;
+
+    @Getter("isMedicationRequestLoading", { namespace: "medication" })
+    isMedicationRequestLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "comment" })
+    isCommentLoading!: boolean;
+
+    @Getter("covid19LaboratoryOrdersAreLoading", { namespace: "laboratory" })
+    isCovid19LaboratoryLoading!: boolean;
+
+    @Getter("laboratoryOrdersAreLoading", { namespace: "laboratory" })
+    isLaboratoryLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "encounter" })
+    isEncounterLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "immunization" })
+    isImmunizationLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "note" })
+    isNoteLoading!: boolean;
+
+    @Getter("isDeferredLoad", { namespace: "immunization" })
+    isImmunizationDeferred!: boolean;
+
     @Prop()
     private timelineEntries!: TimelineEntry[];
 
     private currentPage = 1;
 
     private readonly pageSize = 25;
+
+    private logger!: ILogger;
+
+    private get isFullyLoaded(): boolean {
+        const fullyLoaded =
+            !this.isMedicationRequestLoading &&
+            !this.isMedicationStatementLoading &&
+            !this.isImmunizationLoading &&
+            !this.isImmunizationDeferred &&
+            !this.isCovid19LaboratoryLoading &&
+            !this.isLaboratoryLoading &&
+            !this.isEncounterLoading &&
+            !this.isNoteLoading &&
+            !this.isCommentLoading;
+        this.logger.debug(`Linear Timeline is fully loaded: ${fullyLoaded}`);
+        return fullyLoaded;
+    }
 
     private get numberOfPages(): number {
         let pageCount = 1;
@@ -66,6 +113,9 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     private get timelineIsEmpty(): boolean {
+        this.logger.debug(
+            `Linear Timeline Entries length: ${this.timelineEntries.length}`
+        );
         return this.timelineEntries.length === 0;
     }
 
@@ -122,8 +172,20 @@ export default class LinearTimelineComponent extends Vue {
         return `?page=${pageNum}`;
     }
 
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
+
     private mounted() {
         this.setPageFromDate(this.linearDate);
+    }
+
+    private get showDisplayCount(): boolean {
+        return this.visibleTimelineEntries.length > 0;
+    }
+
+    private get showEmptyState(): boolean {
+        return this.timelineIsEmpty && this.isFullyLoaded;
     }
 
     private get timelineEntryCount(): number {
@@ -167,6 +229,7 @@ export default class LinearTimelineComponent extends Vue {
             :class="{ 'header-offset': isHeaderShown }"
         />
         <b-row
+            v-if="showDisplayCount"
             id="listControls"
             class="no-print"
             data-testid="displayCountText"
@@ -211,7 +274,7 @@ export default class LinearTimelineComponent extends Vue {
                 />
             </b-col>
         </b-row>
-        <div v-if="timelineIsEmpty" class="text-center pt-2">
+        <div v-if="showEmptyState" class="text-center pt-2">
             <b-row>
                 <b-col>
                     <img
