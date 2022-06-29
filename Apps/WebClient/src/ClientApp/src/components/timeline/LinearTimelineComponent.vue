@@ -104,6 +104,63 @@ export default class LinearTimelineComponent extends Vue {
         return fullyLoaded;
     }
 
+    private get isFilterLoading(): boolean {
+        const filtersLoaded = [];
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.MedicationRequest,
+                this.isMedicationRequestLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.Medication,
+                this.isMedicationStatementLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.Immunization,
+                this.isImmunizationLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.Covid19LaboratoryOrder,
+                this.isCovid19LaboratoryLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.LaboratoryOrder,
+                this.isLaboratoryLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.Encounter,
+                this.isEncounterLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.Note,
+                this.isNoteLoading
+            )
+        );
+
+        const filterLoading = filtersLoaded.includes(true);
+        this.logger.debug(`Timeline filter loading: ${filterLoading}`);
+
+        return filterLoading;
+    }
+
     private get numberOfPages(): number {
         let pageCount = 1;
         if (this.timelineEntries.length > this.pageSize) {
@@ -185,7 +242,7 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     private get showEmptyState(): boolean {
-        return this.timelineIsEmpty && this.isFullyLoaded;
+        return this.timelineIsEmpty && !this.isFilterLoading;
     }
 
     private get timelineEntryCount(): number {
@@ -217,6 +274,27 @@ export default class LinearTimelineComponent extends Vue {
 
     private getComponentForEntry(entryType: EntryType): string {
         return entryTypeMap.get(entryType)?.component ?? "";
+    }
+
+    private isFilterApplied(entryType: EntryType): boolean {
+        const entryTypes: EntryType[] = Array.from(this.filter.entryTypes);
+        const filterApplied = !!entryTypes.includes(entryType);
+        this.logger.debug(
+            `Timeline filter entry type: ${entryType} applied: ${filterApplied}`
+        );
+        return filterApplied;
+    }
+
+    private isSelectedFilterModuleLoading(
+        entryType: EntryType,
+        loading: boolean
+    ): boolean {
+        const filterApplied = this.isFilterApplied(entryType);
+        const isLoading = filterApplied && loading;
+        this.logger.debug(
+            `Timeline filter entry type: ${entryType} applied: ${filterApplied} - filter loading: ${loading} and filter isLoading: ${isLoading}`
+        );
+        return isLoading;
     }
 }
 </script>
