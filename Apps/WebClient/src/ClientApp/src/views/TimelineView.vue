@@ -26,6 +26,7 @@ import AddNoteButtonComponent from "@/components/timeline/AddNoteButtonComponent
 import EntryDetailsComponent from "@/components/timeline/entryCard/EntryDetailsComponent.vue";
 import FilterComponent from "@/components/timeline/FilterComponent.vue";
 import LinearTimelineComponent from "@/components/timeline/LinearTimelineComponent.vue";
+import { EntryType } from "@/constants/entryType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
@@ -286,6 +287,66 @@ export default class TimelineView extends Vue {
         );
     }
 
+    private get isFilterLoading(): boolean {
+        const filtersLoaded = [];
+        filtersLoaded.push(
+            this.isFilterResultLoading(
+                EntryType.MedicationRequest,
+                this.isMedicationRequestLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isFilterResultLoading(
+                EntryType.Medication,
+                this.isMedicationStatementLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isFilterResultLoading(
+                EntryType.Immunization,
+                this.isImmunizationLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isFilterResultLoading(
+                EntryType.Covid19LaboratoryOrder,
+                this.isCovid19LaboratoryLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isFilterResultLoading(
+                EntryType.LaboratoryOrder,
+                this.isLaboratoryLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isFilterResultLoading(
+                EntryType.Encounter,
+                this.isEncounterLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isFilterResultLoading(EntryType.Note, this.isNoteLoading)
+        );
+
+        const filterLoading = filtersLoaded.includes(true);
+        this.logger.debug(`Timeline is filter loading: ${filterLoading}`);
+
+        return filterLoading;
+    }
+
+    private get showContentPlaceholders(): boolean {
+        const showContent = this.isFilterLoading;
+        this.logger.debug(`Timeline show content placeholders: ${showContent}`);
+        return showContent;
+    }
+
     private get showTimelineEntries(): boolean {
         return this.timelineEntries.length > 0 || this.isFullyLoaded;
     }
@@ -317,6 +378,27 @@ export default class TimelineView extends Vue {
         ]).catch((err) => {
             this.logger.error(`Error loading timeline data: ${err}`);
         });
+    }
+
+    private isFilterApplied(entryType: EntryType): boolean {
+        const entryTypes: EntryType[] = Array.from(this.filter.entryTypes);
+        const filterApplied = !!entryTypes.includes(entryType);
+        this.logger.debug(
+            `Timeline filter entry type: ${entryType} applied: ${filterApplied}`
+        );
+        return filterApplied;
+    }
+
+    private isFilterResultLoading(
+        entryType: EntryType,
+        loading: boolean
+    ): boolean {
+        const filterApplied = this.isFilterApplied(entryType);
+        const isLoading = filterApplied && loading;
+        this.logger.debug(
+            `Timeline filter entry type: ${entryType} applied: ${filterApplied} - filter loading: ${loading} and filter isLoading: ${isLoading}`
+        );
+        return isLoading;
     }
 
     private sortEntries(timelineEntries: TimelineEntry[]): TimelineEntry[] {
@@ -424,9 +506,9 @@ export default class TimelineView extends Vue {
                     v-show="showTimelineEntries"
                     :timeline-entries="filteredTimelineEntries"
                 />
-                <b-row v-if="!showTimelineEntries">
+                <b-row v-if="showContentPlaceholders">
                     <b-col>
-                        <div class="px-2">
+                        <div class="px-2" data-testid="content-placeholders">
                             <content-placeholders>
                                 <content-placeholders-heading :img="true" />
                                 <content-placeholders-text :lines="3" />

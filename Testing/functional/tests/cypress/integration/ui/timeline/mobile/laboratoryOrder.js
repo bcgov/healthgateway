@@ -172,19 +172,16 @@ describe("Laboratory Orders Refresh", () => {
     beforeEach(() => {
         let isLoading = false;
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", (req) => {
-            req.reply((res) => {
-                if (!isLoading) {
-                    res.send({
-                        fixture:
-                            "LaboratoryService/laboratoryOrdersRefresh.json",
-                    });
-                } else {
-                    res.send({
-                        fixture: "LaboratoryService/laboratoryOrders.json",
-                    });
-                }
-                isLoading = !isLoading;
-            });
+            if (!isLoading) {
+                req.reply({
+                    fixture: "LaboratoryService/laboratoryOrdersRefresh.json",
+                });
+            } else {
+                req.reply({
+                    fixture: "LaboratoryService/laboratoryOrders.json",
+                });
+            }
+            isLoading = !isLoading;
         });
         cy.enableModules("AllLaboratory");
         cy.viewport("iphone-6");
