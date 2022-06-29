@@ -342,7 +342,7 @@ export default class TimelineView extends Vue {
     }
 
     private get showContentPlaceholders(): boolean {
-        const showContent = this.isFilterLoading || !this.isFullyLoaded;
+        const showContent = this.isFilterLoading;
         this.logger.debug(`Timeline show content placeholders: ${showContent}`);
         return showContent;
     }
