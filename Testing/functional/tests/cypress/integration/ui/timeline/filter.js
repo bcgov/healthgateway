@@ -45,8 +45,6 @@ describe("Filters", () => {
             .type("2022-JUN-09");
         cy.get("[data-testid=btnFilterApply]").click();
 
-        cy.get("[data-testid=timeline-record-count]").contains(
-            "Displaying 0 out of 0 records"
-        );
+        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
     });
 });

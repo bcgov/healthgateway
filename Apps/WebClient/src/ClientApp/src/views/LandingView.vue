@@ -82,7 +82,6 @@ export default class LandingView extends Vue {
     }
 
     private logger!: ILogger;
-    private isOpenRegistration = false;
     private selectedPreviewDevice = "laptop";
 
     private entryTypes: EntryType[] = [
@@ -108,14 +107,15 @@ export default class LandingView extends Vue {
         return this.tiles.filter((tile) => tile.active);
     }
 
+    private get isOpenRegistration(): boolean {
+        return this.config.registrationStatus === RegistrationStatus.Open;
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
     private mounted() {
-        this.isOpenRegistration =
-            this.config.registrationStatus == RegistrationStatus.Open;
-
         // Get core tiles from entry type constants
         this.loadCoreTiles();
 
@@ -309,16 +309,12 @@ export default class LandingView extends Vue {
                                 <span>Log in with BC Services Card</span>
                             </hg-button>
                         </router-link>
-                        <div class="mt-3">
+                        <div v-if="isOpenRegistration" class="mt-3">
                             <span class="mr-2">Need an account?</span>
                             <router-link
                                 id="btnStart"
                                 data-testid="btnStart"
-                                :to="
-                                    isOpenRegistration
-                                        ? 'registration'
-                                        : 'registrationInfo'
-                                "
+                                to="registration"
                                 >Register</router-link
                             >
                         </div>

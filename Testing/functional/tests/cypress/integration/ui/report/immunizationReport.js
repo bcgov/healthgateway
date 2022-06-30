@@ -9,18 +9,16 @@ describe("Immunization History Report", () => {
         let isLoading = false;
         cy.enableModules("Immunization");
         cy.intercept("GET", "**/Immunization?*", (req) => {
-            req.reply((res) => {
-                if (!isLoading) {
-                    res.send({
-                        fixture: "ImmunizationService/immunizationrefresh.json",
-                    });
-                } else {
-                    res.send({
-                        fixture: "ImmunizationService/immunization.json",
-                    });
-                }
-                isLoading = !isLoading;
-            });
+            if (!isLoading) {
+                req.reply({
+                    fixture: "ImmunizationService/immunizationrefresh.json",
+                });
+            } else {
+                req.reply({
+                    fixture: "ImmunizationService/immunization.json",
+                });
+            }
+            isLoading = !isLoading;
         });
         cy.login(
             Cypress.env("keycloak.username"),

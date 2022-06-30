@@ -1,5 +1,18 @@
 const { AuthMethod } = require("../../../../support/constants");
 
+function checkPopoverIsVisible() {
+    cy.get("[data-testid=laboratory-test-status-info-button]")
+        .click()
+        .invoke("attr", "id")
+        .then((id) => {
+            cy.root()
+                .closest("html")
+                .within(() => {
+                    cy.get(`[data-testid=${id}-popover]`).should("be.visible");
+                });
+        });
+}
+
 describe("Laboratory Orders", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
@@ -22,149 +35,186 @@ describe("Laboratory Orders", () => {
         );
         cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
 
-        cy.get("[data-testid=backBtn]").should("be.visible");
-        cy.get("[data-testid=entryCardDetailsTitle]").should("be.visible");
-        cy.get("[data-testid=laboratory-header-order-status").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=laboratory-collection-date]").should("be.visible");
-        cy.get("[data-testid=laboratory-ordering-provider]").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=laboratory-reporting-lab]").should("be.visible");
-        cy.get("[data-testid=reporting-lab-information-text]").should(
-            "be.visible"
-        );
+        cy.get("[data-testid=entryDetailsModal]")
+            .children()
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=backBtn]").should("be.visible");
+                cy.get("[data-testid=entryCardDetailsTitle]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=laboratory-header-order-status]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=laboratory-collection-date]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=laboratory-ordering-provider]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=laboratory-reporting-lab]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=reporting-lab-information-text]").should(
+                    "be.visible"
+                );
 
-        cy.log("Verifying partial status");
-        cy.get("[data-testid=laboratoryResultTable]").within(() => {
-            cy.contains("td", "Alanine Aminotransferase Test")
-                .parent("tr")
-                .within(() => {
-                    // Check the Name Column
-                    cy.get("td:nth-child(1)").then(($name) => {
-                        const name = $name.text().trim();
-                        cy.log(name);
-                        expect(name).equal("Alanine Aminotransferase Test");
-                    });
-                    // Check the Result Column
-                    cy.get("td:nth-child(2)").then(($result) => {
-                        const result = $result.text().trim();
-                        cy.log(result);
-                        expect(result).equal("Pending");
-                    });
-                    // Check the Status Column
-                    cy.get("td:nth-child(3)").then(($status) => {
-                        const status = $status.text().trim();
-                        cy.log(status);
-                        expect(status).equal("Pending");
-                    });
+                cy.log("Verifying partial status");
+                cy.get("[data-testid=laboratoryResultTable]").within(() => {
+                    cy.contains("td", "Alanine Aminotransferase Test")
+                        .parent("tr")
+                        .within(() => {
+                            // Check the Name Column
+                            cy.get("td:nth-child(1)").then(($name) => {
+                                const name = $name.text().trim();
+                                cy.log(name);
+                                expect(name).equal(
+                                    "Alanine Aminotransferase Test"
+                                );
+                            });
+                            // Check the Result Column
+                            cy.get("td:nth-child(2)").then(($result) => {
+                                const result = $result.text().trim();
+                                cy.log(result);
+                                expect(result).equal("Pending");
+                            });
+                            // Check the Status Column
+                            cy.get("td:nth-child(3)").then(($status) => {
+                                const status = $status.text().trim();
+                                cy.log(status);
+                                expect(status).equal("Pending");
+                            });
+                            // Check the Status Popover
+                            checkPopoverIsVisible();
+                        });
+
+                    cy.contains(
+                        "td",
+                        "Creatinine & Glomerular Filtration Rate Predicted Panel"
+                    )
+                        .parent("tr")
+                        .within(() => {
+                            // Check the Name Column
+                            cy.get("td:nth-child(1)").then(($name) => {
+                                const name = $name.text().trim();
+                                cy.log(name);
+                                expect(name).equal(
+                                    "Creatinine & Glomerular Filtration Rate Predicted Panel"
+                                );
+                            });
+                            // Check the Result Column
+                            cy.get("td:nth-child(2)").then(($result) => {
+                                const result = $result.text().trim();
+                                cy.log(result);
+                                expect(result).equal("Out of Range");
+                            });
+                            // Check the Status Column
+                            cy.get("td:nth-child(3)").then(($status) => {
+                                const status = $status.text().trim();
+                                cy.log(status);
+                                expect(status).equal("Completed");
+                            });
+                            // Check the Status Popover
+                            checkPopoverIsVisible();
+                        });
+
+                    cy.contains("td", "Glucose Random")
+                        .parent("tr")
+                        .within(() => {
+                            // Check the Name Column
+                            cy.get("td:nth-child(1)").then(($name) => {
+                                const name = $name.text().trim();
+                                cy.log(name);
+                                expect(name).equal("Glucose Random");
+                            });
+                            // Check the Result Column
+                            cy.get("td:nth-child(2)").then(($result) => {
+                                const result = $result.text().trim();
+                                cy.log(result);
+                                expect(result).equal("In Range");
+                            });
+                            // Check the Status Column
+                            cy.get("td:nth-child(3)").then(($status) => {
+                                const status = $status.text().trim();
+                                cy.log(status);
+                                expect(status).equal("Completed");
+                            });
+                            // Check the Status Popover
+                            checkPopoverIsVisible();
+                        });
+
+                    cy.contains("td", "CBC & Differential")
+                        .parent("tr")
+                        .within(() => {
+                            // Check the Name Column
+                            cy.get("td:nth-child(1)").then(($name) => {
+                                const name = $name.text().trim();
+                                cy.log(name);
+                                expect(name).equal("CBC & Differential");
+                            });
+                            // Check the Result Column
+                            cy.get("td:nth-child(2)").then(($result) => {
+                                const result = $result.text().trim();
+                                cy.log(result);
+                                expect(result).equal("Cancelled");
+                            });
+                            // Check the Status Column
+                            cy.get("td:nth-child(3)").then(($status) => {
+                                const status = $status.text().trim();
+                                cy.log(status);
+                                expect(status).equal("Cancelled");
+                            });
+                            // Check the Status Popover
+                            checkPopoverIsVisible();
+                        });
                 });
 
-            cy.contains(
-                "td",
-                "Creatinine & Glomerular Filtration Rate Predicted Panel"
-            )
-                .parent("tr")
-                .within(() => {
-                    // Check the Name Column
-                    cy.get("td:nth-child(1)").then(($name) => {
-                        const name = $name.text().trim();
-                        cy.log(name);
-                        expect(name).equal(
-                            "Creatinine & Glomerular Filtration Rate Predicted Panel"
-                        );
-                    });
-                    // Check the Result Column
-                    cy.get("td:nth-child(2)").then(($result) => {
-                        const result = $result.text().trim();
-                        cy.log(result);
-                        expect(result).equal("Out of Range");
-                    });
-                    // Check the Status Column
-                    cy.get("td:nth-child(3)").then(($status) => {
-                        const status = $status.text().trim();
-                        cy.log(status);
-                        expect(status).equal("Completed");
-                    });
-                });
+                cy.get("[data-testid=backBtn]").click({ force: true });
+            });
 
-            cy.contains("td", "Glucose Random")
-                .parent("tr")
-                .within(() => {
-                    // Check the Name Column
-                    cy.get("td:nth-child(1)").then(($name) => {
-                        const name = $name.text().trim();
-                        cy.log(name);
-                        expect(name).equal("Glucose Random");
-                    });
-                    // Check the Result Column
-                    cy.get("td:nth-child(2)").then(($result) => {
-                        const result = $result.text().trim();
-                        cy.log(result);
-                        expect(result).equal("In Range");
-                    });
-                    // Check the Status Column
-                    cy.get("td:nth-child(3)").then(($status) => {
-                        const status = $status.text().trim();
-                        cy.log(status);
-                        expect(status).equal("Completed");
-                    });
-                });
-
-            cy.contains("td", "CBC & Differential")
-                .parent("tr")
-                .within(() => {
-                    // Check the Name Column
-                    cy.get("td:nth-child(1)").then(($name) => {
-                        const name = $name.text().trim();
-                        cy.log(name);
-                        expect(name).equal("CBC & Differential");
-                    });
-                    // Check the Result Column
-                    cy.get("td:nth-child(2)").then(($result) => {
-                        const result = $result.text().trim();
-                        cy.log(result);
-                        expect(result).equal("Cancelled");
-                    });
-                    // Check the Status Column
-                    cy.get("td:nth-child(3)").then(($status) => {
-                        const status = $status.text().trim();
-                        cy.log(status);
-                        expect(status).equal("Cancelled");
-                    });
-                });
-        });
-
-        cy.get("[data-testid=backBtn]").click({ force: true });
         cy.get("[data-testid=filterTextInput]").should("be.visible");
 
         cy.log("Verifying collection date");
 
         // Validate collection date time when not null in json
         cy.get("[data-testid=timelineCard]").eq(6).scrollIntoView().click();
-        cy.get("[data-testid=laboratory-collection-date-value]").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=backBtn]").click({ force: true });
+        cy.get("[data-testid=entryDetailsModal]")
+            .children()
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=laboratory-collection-date-value]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=backBtn]").click({ force: true });
+            });
 
         // Validate collection date time when attribute is not passed in json
         cy.get("[data-testid=timelineCard]").eq(7).click();
-        cy.get("[data-testid=entryDetailsCard]").within(() => {
-            cy.get("[data-testid=laboratory-collection-date-value]").should(
-                "not.exist"
-            );
-        });
-        cy.get("[data-testid=backBtn]").click({ force: true });
+        cy.get("[data-testid=entryDetailsModal]")
+            .children()
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=entryDetailsCard]").within(() => {
+                    cy.get(
+                        "[data-testid=laboratory-collection-date-value]"
+                    ).should("not.exist");
+                });
+                cy.get("[data-testid=backBtn]").click({ force: true });
+            });
 
         // Validate collection date time when attribute value is null in json
         cy.get("[data-testid=timelineCard]").eq(8).click();
-        cy.get("[data-testid=entryDetailsCard]").within(() => {
-            cy.get("[data-testid=laboratory-collection-date-value]").should(
-                "not.exist"
-            );
-        });
-        cy.get("[data-testid=backBtn]").click({ force: true });
+        cy.get("[data-testid=entryDetailsModal]")
+            .children()
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=entryDetailsCard]").within(() => {
+                    cy.get(
+                        "[data-testid=laboratory-collection-date-value]"
+                    ).should("not.exist");
+                });
+                cy.get("[data-testid=backBtn]").click({ force: true });
+            });
     });
 });
 
@@ -172,19 +222,16 @@ describe("Laboratory Orders Refresh", () => {
     beforeEach(() => {
         let isLoading = false;
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", (req) => {
-            req.reply((res) => {
-                if (!isLoading) {
-                    res.send({
-                        fixture:
-                            "LaboratoryService/laboratoryOrdersRefresh.json",
-                    });
-                } else {
-                    res.send({
-                        fixture: "LaboratoryService/laboratoryOrders.json",
-                    });
-                }
-                isLoading = !isLoading;
-            });
+            if (!isLoading) {
+                req.reply({
+                    fixture: "LaboratoryService/laboratoryOrdersRefresh.json",
+                });
+            } else {
+                req.reply({
+                    fixture: "LaboratoryService/laboratoryOrders.json",
+                });
+            }
+            isLoading = !isLoading;
         });
         cy.enableModules("AllLaboratory");
         cy.viewport("iphone-6");

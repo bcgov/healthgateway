@@ -15,14 +15,16 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Delegates;
+    using HealthGateway.Immunization.MapUtils;
     using HealthGateway.Immunization.Models;
-    using HealthGateway.Immunization.Parser;
 
     /// <summary>
     /// The Immunization data service.
@@ -30,14 +32,17 @@ namespace HealthGateway.Immunization.Services
     public class ImmunizationService : IImmunizationService
     {
         private readonly IImmunizationDelegate immunizationDelegate;
+        private readonly IMapper autoMapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmunizationService"/> class.
         /// </summary>
         /// <param name="immunizationDelegate">The factory to create immunization delegates.</param>
-        public ImmunizationService(IImmunizationDelegate immunizationDelegate)
+        /// <param name="autoMapper">The inject automapper provider.</param>
+        public ImmunizationService(IImmunizationDelegate immunizationDelegate, IMapper autoMapper)
         {
             this.immunizationDelegate = immunizationDelegate;
+            this.autoMapper = autoMapper;
         }
 
         /// <inheritdoc/>
@@ -49,7 +54,7 @@ namespace HealthGateway.Immunization.Services
                 return new RequestResult<ImmunizationEvent>()
                 {
                     ResultStatus = delegateResult.ResultStatus,
-                    ResourcePayload = EventParser.FromPHSAModel(delegateResult.ResourcePayload!.Result),
+                    ResourcePayload = this.autoMapper.Map<ImmunizationEvent>(delegateResult.ResourcePayload!.Result),
                     PageIndex = delegateResult.PageIndex,
                     PageSize = delegateResult.PageSize,
                     TotalResultCount = delegateResult.TotalResultCount,
@@ -75,9 +80,9 @@ namespace HealthGateway.Immunization.Services
                 {
                     ResultStatus = delegateResult.ResultStatus,
                     ResourcePayload = new ImmunizationResult(
-                        LoadStateModel.FromPHSAModel(delegateResult.ResourcePayload!.LoadState),
-                        EventParser.FromPHSAModelList(delegateResult.ResourcePayload!.Result!.ImmunizationViews),
-                        ImmunizationRecommendation.FromPHSAModelList(delegateResult.ResourcePayload.Result.Recommendations)),
+                        this.autoMapper.Map<LoadStateModel>(delegateResult.ResourcePayload!.LoadState),
+                        this.autoMapper.Map<IList<ImmunizationEvent>>(delegateResult.ResourcePayload!.Result!.ImmunizationViews),
+                        ImmunizationRecommendationMapUtils.FromPHSAModelList(delegateResult.ResourcePayload.Result.Recommendations, this.autoMapper)),
                     PageIndex = delegateResult.PageIndex,
                     PageSize = delegateResult.PageSize,
                     TotalResultCount = delegateResult.TotalResultCount,

@@ -17,12 +17,8 @@ namespace HealthGateway.Immunization.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Models.Immunization;
-    using HealthGateway.Common.Models.PHSA.Recommendation;
-    using HealthGateway.Immunization.Parser;
 
     /// <summary>
     /// Represents an Immunization Recommendation.
@@ -46,10 +42,10 @@ namespace HealthGateway.Immunization.Models
         public string RecommendationSetId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Dissease Eligible Date.
+        /// Gets or sets the Disease Eligible Date.
         /// </summary>
-        [JsonPropertyName("disseaseEligibleDate")]
-        public DateTime? DisseaseEligibleDate { get; set; }
+        [JsonPropertyName("diseaseEligibleDate")]
+        public DateTime? DiseaseEligibleDate { get; set; }
 
         /// <summary>
         /// Gets or sets the Disease Due Date.
@@ -86,51 +82,5 @@ namespace HealthGateway.Immunization.Models
         /// </summary>
         [JsonPropertyName("immunization")]
         public ImmunizationDefinition Immunization { get; set; } = new ImmunizationDefinition();
-
-        /// <summary>
-        /// Creates a list of ImmunizationRecommendation objects from a PHSA models.
-        /// </summary>
-        /// <param name="models">The list of PHSA models to convert.</param>
-        /// <returns>A list of ImmunizationRecommendation objects.</returns>
-        public static IList<ImmunizationRecommendation> FromPHSAModelList(IEnumerable<ImmunizationRecommendationResponse> models)
-        {
-            List<ImmunizationRecommendation> recommendations = new List<ImmunizationRecommendation>();
-            ImmunizationRecommendationResponse? recomendationSet = models.FirstOrDefault();
-            if (recomendationSet != null)
-            {
-                string setId = recomendationSet.RecommendationId;
-                foreach (RecommendationResponse model in recomendationSet.Recommendations)
-                {
-                    recommendations.Add(ImmunizationRecommendation.FromPHSAModel(setId, model));
-                }
-            }
-
-            return recommendations;
-        }
-
-        /// <summary>
-        /// Creates a ImmunizationEvent object from a PHSA model.
-        /// </summary>
-        /// <param name="recomendationSetId">The recomendation set id of the source system.</param>
-        /// <param name="model">The recomendation object to convert.</param>
-        /// <returns>The newly created ImmunizationEvent object.</returns>
-        private static ImmunizationRecommendation FromPHSAModel(string recomendationSetId, RecommendationResponse model)
-        {
-            DateCriterion? disseaseEligible = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Disease Eligible Date");
-            DateCriterion? diseaseDue = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Disease Due Date");
-            DateCriterion? agentEligible = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Agent Eligible Date");
-            DateCriterion? agentDue = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Agent Due Date");
-
-            return new ImmunizationRecommendation(TargetDisease.FromPHSAModelList(model.TargetDisease))
-            {
-                RecommendationSetId = recomendationSetId,
-                DisseaseEligibleDate = disseaseEligible != null ? DateTime.Parse(disseaseEligible.Value, CultureInfo.CurrentCulture) : null,
-                DiseaseDueDate = diseaseDue != null ? DateTime.Parse(diseaseDue.Value, CultureInfo.CurrentCulture) : null,
-                AgentEligibleDate = agentEligible != null ? DateTime.Parse(agentEligible.Value, CultureInfo.CurrentCulture) : null,
-                AgentDueDate = agentDue != null ? DateTime.Parse(agentDue.Value, CultureInfo.CurrentCulture) : null,
-                Status = model.ForecastStatus.ForecastStatusText,
-                Immunization = DefinitionParser.FromPHSAModel(model.VaccineCode),
-            };
-        }
     }
 }

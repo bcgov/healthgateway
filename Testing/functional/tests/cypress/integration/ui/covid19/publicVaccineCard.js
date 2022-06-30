@@ -240,10 +240,8 @@ describe("Public Vaccine Card Downloads", () => {
     });
 
     it("Error Displayed When PDF Unavailable", () => {
-        cy.intercept("GET", "**/PublicVaccineStatus/pdf", (req) => {
-            req.reply({
-                fixture: "ImmunizationService/vaccineProofLoadedNoPdf.json",
-            });
+        cy.intercept("GET", "**/PublicVaccineStatus/pdf", {
+            fixture: "ImmunizationService/vaccineProofLoadedNoPdf.json",
         });
         cy.get("[data-testid=save-dropdown-btn]")
             .should("be.visible", "be.enabled")
