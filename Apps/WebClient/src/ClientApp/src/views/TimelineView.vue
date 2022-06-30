@@ -356,7 +356,7 @@ export default class TimelineView extends Vue {
         if (this.isFilterModuleSelected) {
             return this.isFilterLoading;
         }
-        return !this.isFullyLoaded;
+        return !this.isFullyLoaded && this.filteredTimelineEntries.length === 0;
     }
 
     private get showTimelineEntries(): boolean {
