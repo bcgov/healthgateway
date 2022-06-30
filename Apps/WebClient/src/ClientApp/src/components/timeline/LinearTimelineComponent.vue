@@ -38,9 +38,6 @@ export default class LinearTimelineComponent extends Vue {
     @Getter("linearDate", { namespace: "timeline" })
     linearDate!: DateWrapper;
 
-    @Getter("calendarDate", { namespace: "timeline" })
-    calendarDate!: DateWrapper;
-
     @Getter("selectedDate", { namespace: "timeline" })
     selectedDate!: DateWrapper | null;
 
@@ -312,7 +309,7 @@ export default class LinearTimelineComponent extends Vue {
             class="no-print"
             data-testid="displayCountText"
         >
-            <b-col class="p-2" data-testid="timeline-record-count">
+            <b-col class="py-2" data-testid="timeline-record-count">
                 Displaying {{ visibleTimelineEntryCount }} out of
                 {{ timelineEntryCount }} records
             </b-col>
@@ -364,7 +361,7 @@ export default class LinearTimelineComponent extends Vue {
                     />
                 </b-col>
             </b-row>
-            <b-row class="px-2">
+            <b-row>
                 <b-col>
                     <p
                         class="text-center pt-2 noTimelineEntriesText"

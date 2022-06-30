@@ -24,24 +24,29 @@ library.add(faEdit);
     },
 })
 export default class NoteEditComponent extends Vue {
-    @Action("createNote", { namespace: "note" }) createNote!: (params: {
+    @Action("createNote", { namespace: "note" })
+    createNote!: (params: {
         hdid: string;
         note: UserNote;
     }) => Promise<UserNote>;
-    @Action("updateNote", { namespace: "note" }) updateNote!: (params: {
+
+    @Action("updateNote", { namespace: "note" })
+    updateNote!: (params: {
         hdid: string;
         note: UserNote;
     }) => Promise<UserNote>;
 
-    @Action("setSelectedDate", { namespace: "timeline" }) setSelectedDate!: (
-        date: DateWrapper
-    ) => void;
+    @Action("setSelectedDate", { namespace: "timeline" })
+    setSelectedDate!: (date: DateWrapper) => void;
 
-    @Action("clearFilter", { namespace: "timeline" }) clearFilter!: () => void;
+    @Action("clearFilter", { namespace: "timeline" })
+    clearFilter!: () => void;
 
-    @Getter("user", { namespace: "user" }) user!: User;
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
-    @Getter("isVisible", { namespace: "idle" }) isIdleWarningVisible!: boolean;
+    @Getter("isVisible", { namespace: "idle" })
+    isIdleWarningVisible!: boolean;
 
     private entry?: NoteTimelineEntry;
     private text = "";
