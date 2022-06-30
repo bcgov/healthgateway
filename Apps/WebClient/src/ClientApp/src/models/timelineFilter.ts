@@ -27,14 +27,6 @@ export default class TimelineFilter {
             this.entryTypes.size > 0
         );
     }
-
-    public getActiveFilterCount(): number {
-        let count = 0;
-        count += this.keyword.length === 0 ? 0 : 1;
-        count += this.startDate === "" && this.endDate === "" ? 0 : 1;
-        count += this.entryTypes.size;
-        return count;
-    }
 }
 
 export class TimelineFilterBuilder {
