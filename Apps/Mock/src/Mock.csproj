@@ -5,7 +5,7 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CoreWCF.Http" Version="1.0.2" />
+    <PackageReference Include="CoreWCF.Http" Version="1.1.0" />
     <PackageReference Include="CoreWCF.NetTcp" Version="1.0.2" />
     <PackageReference Include="CoreWCF.Primitives" Version="1.0.2" />
   </ItemGroup>
