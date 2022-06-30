@@ -57,6 +57,8 @@ public partial class DashboardPage : FluxorComponent
 
     private bool RecurringUsersLoading => this.DashboardState.Value.RecurringUsers.IsLoading;
 
+    private bool RatingSummaryLoading => this.DashboardState.Value.RatingSummary.IsLoading;
+
     private MudDateRangePicker SelectedDateRangePicker { get; set; } = default!;
 
     private DateTime MinimumDateTime { get; set; } = new DateTime(2019, 06, 1);
@@ -178,7 +180,7 @@ public partial class DashboardPage : FluxorComponent
 
             List<DailyDataRow> results = new();
 
-            if (this.RegisteredUsersResult?.Result != null && this.DashboardState.Value.RegisteredUsers.Loaded)
+            if (this.RegisteredUsersResult?.Result != null)
             {
                 var registeredUsers = from result in this.RegisteredUsersResult?.Result
                                         select result;
@@ -195,7 +197,7 @@ public partial class DashboardPage : FluxorComponent
                 }
             }
 
-            if (this.LoggedInUsersResult?.Result != null && this.DashboardState.Value.LoggedInUsers.Loaded)
+            if (this.LoggedInUsersResult?.Result != null)
             {
                 var loggedInUsers = from result in this.LoggedInUsersResult?.Result
                                  select result;
@@ -211,7 +213,7 @@ public partial class DashboardPage : FluxorComponent
                 }
             }
 
-            if (this.DependentsResult?.Result != null && this.DashboardState.Value.Dependents.Loaded)
+            if (this.DependentsResult?.Result != null)
             {
                 var dependents = from result in this.DependentsResult?.Result
                                 select result;
