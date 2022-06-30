@@ -30,7 +30,7 @@ describe("Dashboard", () => {
         cy.login(Cypress.env("idir_username"), Cypress.env("idir_password"));
     });
 
-    it("Verify dashboards counts.", () => {
+    it("Verify dashboard counts and skeletons.", () => {
         cy.log("Dashboard test started.");
         cy.get("[data-testid=total-registered-users]").contains(6);
         cy.get("[data-testid=total-dependents]").contains(2);
@@ -105,22 +105,6 @@ describe("Dashboard", () => {
                 cy.get("[data-testid=daily-data-dependents]").contains("3");
             });
 
-        cy.logout();
-
-        cy.log("Dashboard test finished.");
-    });
-
-    it("Verify dashboard skeletons.", () => {
-        cy.log("Dashboard skeleton test started.");
-        cy.get("[data-testid=total-registered-users]").should("be.visible");
-        cy.get("[data-testid=total-dependents]").should("be.visible");
-        cy.get("[data-testid=minimum-maximum-date-time-picker]").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=unique-days-input]").should("be.visible");
-        cy.get("[data-testid=total-unique-users]").should("be.visible");
-        cy.get("[data-testid=daily-data-table]").should("be.visible");
-
         cy.get("[data-testid=refresh-btn]").click();
         cy.get("[data-testid=skeleton-registered-users]").should("be.visible");
         cy.get("[data-testid=skeleton-dependents]").should("be.visible");
@@ -131,6 +115,6 @@ describe("Dashboard", () => {
         cy.get("[data-testid=skeleton-user-count]").should("be.visible");
         cy.get("[data-testid=skeleton-rating-summary]").should("be.visible");
 
-        cy.log("Dashboard skeleton test finished.");
+        cy.log("Dashboard test finished.");
     });
 });
