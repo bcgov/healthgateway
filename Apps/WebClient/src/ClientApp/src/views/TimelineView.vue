@@ -344,10 +344,19 @@ export default class TimelineView extends Vue {
         return filterLoading;
     }
 
+    private get isFilterModuleSelected(): boolean {
+        const entryTypes: EntryType[] = Array.from(this.filter.entryTypes);
+        this.logger.debug(
+            `Number of imeline filter modules selected: ${entryTypes.length}`
+        );
+        return entryTypes.length > 0;
+    }
+
     private get showContentPlaceholders(): boolean {
-        const showContent = this.isFilterLoading;
-        this.logger.debug(`Timeline show content placeholders: ${showContent}`);
-        return showContent;
+        if (this.isFilterModuleSelected) {
+            return this.isFilterLoading;
+        }
+        return !this.isFullyLoaded && this.filteredTimelineEntries.length === 0;
     }
 
     private get showTimelineEntries(): boolean {
