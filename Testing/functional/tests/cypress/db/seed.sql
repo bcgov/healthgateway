@@ -579,6 +579,24 @@ VALUES (
 	'false'
 );
 
+INSERT INTO gateway."UserPreference"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Preference", 
+	"Value")
+VALUES (
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'quickLinks', 
+	'[{"name":"Medications","filter":{"modules":["Medication"]}},{"name":"My Notes","filter":{"modules":["Note"]}}]'
+);
+
 /* Add Resource Delegates */
 INSERT INTO gateway."ResourceDelegate"(
 	"ResourceOwnerHdid", 
@@ -657,6 +675,7 @@ VALUES (
 	0
 );
 
+/* User hthgtwy20 */
 INSERT INTO gateway."Note"(
 	"NoteId", 
 	"CreatedBy", 
@@ -679,7 +698,7 @@ VALUES (
 	now()
 );
 
-
+/* User hthgtwy20 */
 INSERT INTO gateway."Note"(
 	"NoteId", 
 	"CreatedBy", 
@@ -702,6 +721,7 @@ VALUES (
 	'2022-01-17'
 );
 
+/* User hthgtwy20 */
 INSERT INTO gateway."Note"(
 	"NoteId", 
 	"CreatedBy", 
