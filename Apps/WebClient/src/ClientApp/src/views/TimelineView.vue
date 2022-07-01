@@ -547,7 +547,7 @@ export default class TimelineView extends Vue {
                                 v-for="[label, value] in filterLabels"
                                 :key="`${label}-${value}`"
                                 variant="light"
-                                class="p-1 mr-2 my-1"
+                                class="filter-label p-1 mr-2 my-1"
                                 :title="`${label} Filter`"
                                 :data-testid="`filter-label-${label}`"
                                 @remove="clearFilter(label, value)"
@@ -555,7 +555,7 @@ export default class TimelineView extends Vue {
                             >
                             <hg-button
                                 v-if="filterLabels.length > 0"
-                                class="clear-filters-button p-1"
+                                class="p-1 mt-n1"
                                 variant="link"
                                 @click="clearFilters"
                             >
@@ -634,7 +634,7 @@ hr {
     z-index: 50;
 }
 
-.clear-filters-button {
-    font-size: 75%;
+.filter-label {
+    font-size: 1rem;
 }
 </style>
