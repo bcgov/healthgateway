@@ -71,7 +71,7 @@ describe("Quick Links", () => {
         cy.checkTimelineHasLoaded();
 
         cy.log("Verifying filter is active");
-        cy.get("[data-testid=filterDropdown] > span").contains(1);
+        cy.contains("[data-testid=filter-label]", laboratoryTitle);
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=filterContainer]").should("be.visible");

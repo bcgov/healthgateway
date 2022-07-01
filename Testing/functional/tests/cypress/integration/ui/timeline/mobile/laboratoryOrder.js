@@ -172,8 +172,6 @@ describe("Laboratory Orders", () => {
                 cy.get("[data-testid=backBtn]").click({ force: true });
             });
 
-        cy.get("[data-testid=filterTextInput]").should("be.visible");
-
         cy.log("Verifying collection date");
 
         // Validate collection date time when not null in json

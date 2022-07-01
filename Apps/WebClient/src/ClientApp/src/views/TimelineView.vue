@@ -549,13 +549,14 @@ export default class TimelineView extends Vue {
                                 variant="light"
                                 class="p-1 mr-2 my-1"
                                 :title="`${label} Filter`"
-                                :data-testid="`filter-label-${label}`"
+                                data-testid="filter-label"
                                 @remove="clearFilter(label, value)"
                                 >{{ value }}</b-form-tag
                             >
                             <hg-button
                                 v-if="filterLabels.length > 0"
                                 class="clear-filters-button p-1"
+                                data-testid="clear-filters-button"
                                 variant="link"
                                 @click="clearFilters"
                             >
