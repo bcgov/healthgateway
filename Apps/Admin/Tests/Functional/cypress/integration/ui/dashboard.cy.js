@@ -30,7 +30,7 @@ describe("Dashboard", () => {
         cy.login(Cypress.env("idir_username"), Cypress.env("idir_password"));
     });
 
-    it("Verify dashboards counts.", () => {
+    it("Verify dashboard counts and skeletons.", () => {
         cy.log("Dashboard test started.");
         cy.get("[data-testid=total-registered-users]").contains(6);
         cy.get("[data-testid=total-dependents]").contains(2);
@@ -55,14 +55,16 @@ describe("Dashboard", () => {
         });
         cy.log("Updating unique days input value.");
         cy.get("[data-testid=unique-days-input]").clear().type(5);
-        cy.get("[data-testid=total-unique-users]").click().contains(0);
+        cy.get("[data-testid=total-unique-users]").click();
+        cy.get("[data-testid=total-unique-users]").contains(0);
 
         cy.intercept("GET", "**/Dashboard/RecurringUsers?days=2*", {
             body: 3,
         });
         cy.log("Updating unique days input value.");
         cy.get("[data-testid=unique-days-input]").clear().type(2);
-        cy.get("[data-testid=total-unique-users]").click().contains(3);
+        cy.get("[data-testid=total-unique-users]").click();
+        cy.get("[data-testid=total-unique-users]").contains(3);
 
         cy.log("Clicking refresh button.");
         cy.intercept("GET", "**/Dashboard/RegisteredCount*", {
@@ -102,6 +104,16 @@ describe("Dashboard", () => {
                 ).contains("7");
                 cy.get("[data-testid=daily-data-dependents]").contains("3");
             });
+
+        cy.get("[data-testid=refresh-btn]").click();
+        cy.get("[data-testid=skeleton-registered-users]").should("be.visible");
+        cy.get("[data-testid=skeleton-dependents]").should("be.visible");
+        cy.get("[data-testid=skeleton-selected-date-range]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=skeleton-unique-days]").should("be.visible");
+        cy.get("[data-testid=skeleton-user-count]").should("be.visible");
+        cy.get("[data-testid=skeleton-rating-summary]").should("be.visible");
 
         cy.log("Dashboard test finished.");
     });
