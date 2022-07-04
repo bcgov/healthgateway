@@ -94,7 +94,7 @@ describe("Filters", () => {
         cy.get("[data-testid=btnFilterApply]").click();
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
         cy.contains("[data-testid=filter-label]", '"xxxx"')
-            .siblings("button")
+            .children("button")
             .click();
         cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
     });
