@@ -532,11 +532,11 @@ export default class TimelineView extends Vue {
                 </page-title>
                 <div
                     v-if="showTimelineEntries"
-                    class="sticky-top sticky-offset py-2"
+                    class="sticky-top sticky-offset"
                     :class="{ 'header-offset': isHeaderShown }"
                 >
                     <b-row
-                        class="no-print justify-content-between"
+                        class="no-print justify-content-between py-2"
                         align-v="start"
                     >
                         <b-col class="col-auto">
