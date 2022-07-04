@@ -299,11 +299,6 @@ export default class LinearTimelineComponent extends Vue {
 <template>
     <div>
         <b-row
-            v-if="!timelineIsEmpty"
-            class="sticky-top sticky-line"
-            :class="{ 'header-offset': isHeaderShown }"
-        />
-        <b-row
             v-if="showDisplayCount"
             id="listControls"
             class="no-print"
@@ -393,20 +388,6 @@ export default class LinearTimelineComponent extends Vue {
 
 .sticky-top {
     transition: all 0.3s;
-}
-
-.sticky-line {
-    top: $timeline-filter-height;
-    background-color: white;
-    border-bottom: solid $primary 2px;
-    margin-top: -2px;
-    z-index: 1;
-    @media (max-width: 575px) {
-        top: $timeline-filter-height - 1px;
-    }
-    &.header-offset {
-        top: $header-height + $timeline-filter-height;
-    }
 }
 
 .noTimelineEntriesText {
