@@ -36,26 +36,29 @@
         </MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Subject">@context.Subject</MudTd>
-        <MudTd DataLabel="Status">@context.Status</MudTd>
-        <MudTd DataLabel="Effective On">@context.EffectiveDate</MudTd>
-        <MudTd DataLabel="Expires On">@context.ExpiryDate</MudTd>
+        <MudTd data-testid="comm-table-subject" DataLabel="Subject">@context.Subject</MudTd>
+        <MudTd data-testid="comm-table-status" DataLabel="Status">@context.Status</MudTd>
+        <MudTd data-testid="comm-table-effective-date" DataLabel="Effective On">@context.EffectiveDate</MudTd>
+        <MudTd data-testid="comm-table-expiry-date" DataLabel="Expires On">@context.ExpiryDate</MudTd>
         <MudTd DataLabel="Actions" Style="text-align:right">
             <div>
                 <MudTooltip Text="@(context.IsExpanded ? "Collapse" : "Expand")">
                     <MudIconButton OnClick="@(() => ToggleExpandRow(context.Id))"
                                    Icon="@(context.IsExpanded ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
-                                   Color="@Color.Primary" />
+                                   Color="@Color.Primary"
+                                    data-testid="comm-table-expand-btn"/>
                 </MudTooltip>
                 <MudTooltip Text="Edit">
                     <MudIconButton OnClick="@(async () => await EditCommunicationAsync(context.Id))"
                                    Icon="@Icons.Material.Filled.Edit"
-                                   Color="@Color.Primary" />
+                                   Color="@Color.Primary"
+                                   data-testid="comm-table-edit-btn"/>
                 </MudTooltip>
                 <MudTooltip Text="Delete">
                     <MudIconButton OnClick="@(() => DeleteCommunication(context.Id))"
                                    Icon="@Icons.Material.Filled.Delete"
-                                   Color="@Color.Primary" />
+                                   Color="@Color.Primary"
+                                   data-testid="comm-table-delete-btn"/>
                 </MudTooltip>
             </div>
         </MudTd>
@@ -64,7 +67,7 @@
         @if (context.IsExpanded)
         {
             <MudTr>
-                <MudTd colspan="5" Style="text-align:center">
+                <MudTd data-testid="comm-table-expanded-text" colspan="5" Style="text-align:center">
                     <div class="ma-3">@context.Text</div>
                 </MudTd>
             </MudTr>

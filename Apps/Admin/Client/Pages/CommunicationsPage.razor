@@ -21,16 +21,17 @@
                   TopMargin="@Breakpoint.Always"
                   RightMargin="@Breakpoint.Always"
                   BottomMargin="@Breakpoint.Always"
-                  @onclick="@CreateBannerAsync">
+                  @onclick="@CreateBannerAsync"
+                  data-testid="create-banner-btn">
                     Create
                 </HgButton>
             }
         </Header>
         <ChildContent>
-            <MudTabPanel Text="Public Banners">
+            <MudTabPanel Text="Public Banners" data-testid="public-banner-tab">
                 <CommunicationsTable Data="@PublicCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditBannerAsync" />
             </MudTabPanel>
-            <MudTabPanel Text="In-App Banners">
+            <MudTabPanel Text="In-App Banners" data-testid="in-app-banner-tab">
                 <CommunicationsTable Data="@InAppCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditBannerAsync" />
             </MudTabPanel>
         </ChildContent>
