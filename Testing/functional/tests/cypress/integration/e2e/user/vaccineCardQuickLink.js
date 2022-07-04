@@ -70,7 +70,7 @@ describe("Vaccine Card Quick Link", () => {
     });
 
     it("Vaccine Card quick link not showing when module is disabled", () => {
-        cy.enableModules(["Note"]);
+        cy.enableModules(["Encounter"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
