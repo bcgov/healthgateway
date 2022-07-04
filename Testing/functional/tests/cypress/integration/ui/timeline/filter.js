@@ -23,7 +23,6 @@ describe("Filters", () => {
         );
 
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=filterContainer]").contains("Clear").click();
         cy.get("[data-testid=Immunization-filter]").click({ force: true });
         cy.get("[data-testid=btnFilterApply]").click();
 
@@ -33,8 +32,8 @@ describe("Filters", () => {
             "Displaying 9 out of 9 records"
         );
 
+        cy.get("[data-testid=clear-filters-button]").click();
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=filterContainer]").contains("Clear").click();
         cy.get("[data-testid=filterStartDateInput] input")
             .clear()
             .focus()
