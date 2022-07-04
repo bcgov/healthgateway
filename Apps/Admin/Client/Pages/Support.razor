@@ -14,7 +14,7 @@
 <MudForm @ref="Form">
     <MudGrid Spacing="0">
         <MudItem xs="12" sm="3">
-            <HgSelect T="UserQueryType" Label="Query Type" Required="@true" @bind-Value="SelectedQueryType">
+            <HgSelect T="UserQueryType" Label="Query Type" Required="@true" @bind-Value="SelectedQueryType" data-testid="query-type-select">
                 @foreach (UserQueryType queryType in QueryTypes)
                 {
                     <MudSelectItem Value="@queryType" />
@@ -22,17 +22,17 @@
             </HgSelect>
         </MudItem>
         <MudItem xs="12" sm="9">
-            <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@SelectedQueryType.ToString()" Required="@true" Validation="@ValidateQueryParameter" @bind-Value="QueryParameter" />
+            <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@SelectedQueryType.ToString()" Required="@true" Validation="@ValidateQueryParameter" @bind-Value="QueryParameter" data-testid="query-input" />
         </MudItem>
         <MudItem Class="d-flex justify-end" xs="12">
-            <HgButton TopMargin="Breakpoint.Always" EndIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="Color.Primary" @onclick="SearchAsync">Search</HgButton>
+            <HgButton TopMargin="Breakpoint.Always" EndIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="Color.Primary" @onclick="SearchAsync" data-testid="search-btn">Search</HgButton>
         </MudItem>
     </MudGrid>
 </MudForm>
 
 @if (MessagingVerificationsLoaded || MessagingVerificationsLoading)
 {
-    <MudTable Class="mt-3" Items="MessagingVerificationRows" Loading="MessagingVerificationsLoading" Breakpoint="Breakpoint.Md" HorizontalScrollbar="true" Striped="true" Dense="true">
+    <MudTable Class="mt-3" Items="MessagingVerificationRows" Loading="MessagingVerificationsLoading" Breakpoint="Breakpoint.Md" HorizontalScrollbar="true" Striped="true" Dense="true" data-testid="message-verification-table" >
         <HeaderContent>
             <MudTh><MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.Hdid)">HDID</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.PersonalHealthNumber)">PHN</MudTableSortLabel></MudTh>
@@ -42,12 +42,12 @@
             <MudTh><MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.VerificationCode)">Verification Code</MudTableSortLabel></MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="HDID">@context.Hdid</MudTd>
-            <MudTd DataLabel="PHN">@context.PersonalHealthNumber</MudTd>
-            <MudTd DataLabel="Email or SMS">@context.EmailOrSms</MudTd>
-            <MudTd DataLabel="Verified">@context.Verified</MudTd>
-            <MudTd DataLabel="Verification Date">@context.VerificationDate</MudTd>
-            <MudTd DataLabel="Verification Code">@context.VerificationCode</MudTd>
+            <MudTd DataLabel="HDID" data-testid=@($"message-verification-table-hdid-{@context.Hdid}")>@context.Hdid</MudTd>
+            <MudTd DataLabel="PHN" data-testid=@($"message-verification-table-phn-{@context.Hdid}")>@context.PersonalHealthNumber</MudTd>
+            <MudTd DataLabel="Email or SMS" data-testid=@($"message-verification-table-email-sms-{@context.Hdid}")>@context.EmailOrSms</MudTd>
+            <MudTd DataLabel="Verified" data-testid=@($"message-verification-table-verified-{@context.Hdid}")>@context.Verified</MudTd>
+            <MudTd DataLabel="Verification Date" data-testid=@($"message-verification-table-verification-date-{@context.Hdid}")>@context.VerificationDate</MudTd>
+            <MudTd DataLabel="Verification Code" data-testid=@($"message-verification-table-verification-code-{@context.Hdid}")>@context.VerificationCode</MudTd>
         </RowTemplate>
         <PagerContent>
             <MudTablePager />
