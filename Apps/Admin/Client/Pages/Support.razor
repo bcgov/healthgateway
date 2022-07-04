@@ -17,7 +17,7 @@
             <HgSelect T="UserQueryType" Label="Query Type" Required="@true" @bind-Value="SelectedQueryType" data-testid="query-type-select">
                 @foreach (UserQueryType queryType in QueryTypes)
                 {
-                    <MudSelectItem Value="@queryType" />
+                    <MudSelectItem Value="@queryType" data-testid="query-type"/>
                 }
             </HgSelect>
         </MudItem>
