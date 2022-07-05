@@ -1,0 +1,25 @@
+{
+    "resourcePayload": [
+        {
+            "id": "f7c23295-8306-40b9-ba94-d3491f9f7cdd",
+            "personalHealthNumber": null,
+            "userProfileId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            "validated": false,
+            "emailId": null,
+            "email": null,
+            "inviteKey": "00000000-0000-0000-0000-000000000000",
+            "verificationType": "SMS",
+            "smsNumber": "2501234567",
+            "smsValidationCode": "123456",
+            "expireDate": "0001-01-01T00:00:00",
+            "verificationAttempts": 0,
+            "deleted": false,
+            "updatedDateTime": "2022-06-22T05:02:07.288107Z"
+        }
+    ],
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 1,
+    "resultError": null
+}
