@@ -643,7 +643,7 @@ VALUES (
 );
 
 INSERT INTO gateway."Email"(
-	"EmailId", 
+    "EmailId", 
     "CreatedBy", 
     "CreatedDateTime", 
     "UpdatedBy", 
@@ -662,9 +662,9 @@ INSERT INTO gateway."Email"(
 VALUES (
     'a86b1a95-42c1-49e4-9d48-6080cf2a223d', 
     'System',
-	now(),
-	'System',
-	now(),
+    now(),
+    'System',
+    now(),
     'HG_Donotreply@gov.bc.ca', 
     'fakeemail@healthgateway.gov.bc.ca', 
     'Health Gateway Email Verification hgdev', 
