@@ -101,6 +101,8 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
 
+            services.AddAutoMapper(typeof(Program));
+
             WebApplication app = builder.Build();
             HttpWeb.UseForwardHeaders(app, logger, configuration);
             HttpWeb.UseHttp(app, logger, configuration, environment, true);

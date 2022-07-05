@@ -71,7 +71,7 @@ describe("Quick Links", () => {
         cy.checkTimelineHasLoaded();
 
         cy.log("Verifying filter is active");
-        cy.get("[data-testid=filterDropdown] > span").contains(1);
+        cy.contains("[data-testid=filter-label]", laboratoryTitle);
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=filterContainer]").should("be.visible");
@@ -238,15 +238,9 @@ describe("Add Quick Link Modal", () => {
             .should("exist")
             .check({ force: true });
 
-        getQuickLinkCheckbox(medicationModule)
-            .should("exist")
-            .check({ force: true });
-
         getQuickLinkCheckbox(medicationRequestModule)
             .should("exist")
             .check({ force: true });
-
-        getQuickLinkCheckbox(noteModule).should("exist").check({ force: true });
 
         // Cancel
         cy.get(addQuickLinkCancelButtonSelector).click();
@@ -266,13 +260,7 @@ describe("Add Quick Link Modal", () => {
         getQuickLinkCheckbox(allLaboratoryModule)
             .should("exist")
             .should("not.be.checked");
-        getQuickLinkCheckbox(medicationModule)
-            .should("exist")
-            .should("not.be.checked");
         getQuickLinkCheckbox(medicationRequestModule)
-            .should("exist")
-            .should("not.be.checked");
-        getQuickLinkCheckbox(noteModule)
             .should("exist")
             .should("not.be.checked");
     });
@@ -307,12 +295,8 @@ describe("Add Quick Link Modal", () => {
         getQuickLinkCheckbox(allLaboratoryModule)
             .should("exist")
             .and("not.be.checked");
-        getQuickLinkCheckbox(medicationModule)
-            .should("exist")
-            .and("not.be.checked");
         getQuickLinkCheckbox(medicationRequestModule)
             .should("exist")
             .and("not.be.checked");
-        getQuickLinkCheckbox(noteModule).should("exist").and("not.be.checked");
     });
 });

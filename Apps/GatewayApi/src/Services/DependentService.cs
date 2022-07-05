@@ -21,6 +21,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models.ErrorHandling;
@@ -47,6 +48,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IMapper autoMapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentService"/> class.
@@ -57,13 +59,15 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="notificationSettingsService">Notification settings service.</param>
         /// <param name="resourceDelegateDelegate">The ResourceDelegate delegate to interact with the DB.</param>
+        /// <param name="autoMapper">The inject automapper provider.</param>
         public DependentService(
             IConfiguration configuration,
             ILogger<DependentService> logger,
             IUserProfileDelegate userProfileDelegate,
             IPatientService patientService,
             INotificationSettingsService notificationSettingsService,
-            IResourceDelegateDelegate resourceDelegateDelegate)
+            IResourceDelegateDelegate resourceDelegateDelegate,
+            IMapper autoMapper)
         {
             this.logger = logger;
             this.patientService = patientService;
@@ -71,6 +75,7 @@ namespace HealthGateway.GatewayApi.Services
             this.notificationSettingsService = notificationSettingsService;
             this.userProfileDelegate = userProfileDelegate;
             this.maxDependentAge = configuration.GetSection(WebClientConfigSection).GetValue(MaxDependentAgeKey, 12);
+            this.autoMapper = autoMapper;
         }
 
         /// <inheritdoc />
@@ -152,7 +157,7 @@ namespace HealthGateway.GatewayApi.Services
 
                 return new RequestResult<DependentModel>()
                 {
-                    ResourcePayload = DependentModel.CreateFromModels(dbDependent.Payload, patientResult.ResourcePayload),
+                    ResourcePayload = this.FromModels(dbDependent.Payload, patientResult.ResourcePayload),
                     ResultStatus = ResultType.Success,
                 };
             }
@@ -189,7 +194,7 @@ namespace HealthGateway.GatewayApi.Services
 
                 if (patientResult.ResourcePayload != null)
                 {
-                    dependentModels.Add(DependentModel.CreateFromModels(resourceDelegate, patientResult.ResourcePayload));
+                    dependentModels.Add(this.FromModels(resourceDelegate, patientResult.ResourcePayload));
                 }
                 else
                 {
@@ -223,7 +228,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc />
         public RequestResult<DependentModel> Remove(DependentModel dependent)
         {
-            DBResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(dependent.ToDBModel(), true);
+            DBResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(this.autoMapper.Map<ResourceDelegate>(dependent), true);
 
             if (dbDependent.Status == DBStatusCode.Deleted)
             {
@@ -290,6 +295,14 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             this.notificationSettingsService.QueueNotificationSettings(request);
+        }
+
+        private DependentModel FromModels(ResourceDelegate resourceDelegate, PatientModel patientModel)
+        {
+            DependentModel dependent = this.autoMapper.Map<DependentModel>(resourceDelegate);
+            dependent.DependentInformation = this.autoMapper.Map<DependentInformation>(patientModel);
+
+            return dependent;
         }
     }
 }

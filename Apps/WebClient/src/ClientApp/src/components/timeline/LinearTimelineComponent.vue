@@ -7,6 +7,9 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
+import container from "@/plugins/container";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 import Covid19LaboratoryOrderTimelineComponent from "./entryCard/Covid19LaboratoryOrderTimelineComponent.vue";
 import EncounterTimelineComponent from "./entryCard/EncounterTimelineComponent.vue";
@@ -35,9 +38,6 @@ export default class LinearTimelineComponent extends Vue {
     @Getter("linearDate", { namespace: "timeline" })
     linearDate!: DateWrapper;
 
-    @Getter("calendarDate", { namespace: "timeline" })
-    calendarDate!: DateWrapper;
-
     @Getter("selectedDate", { namespace: "timeline" })
     selectedDate!: DateWrapper | null;
 
@@ -47,11 +47,35 @@ export default class LinearTimelineComponent extends Vue {
     @Getter("filter", { namespace: "timeline" })
     filter!: TimelineFilter;
 
-    @Getter("isLinearView", { namespace: "timeline" })
-    isLinearView!: TimelineFilter;
-
     @Getter("hasActiveFilter", { namespace: "timeline" })
     hasActiveFilter!: boolean;
+
+    @Getter("isMedicationStatementLoading", { namespace: "medication" })
+    isMedicationStatementLoading!: boolean;
+
+    @Getter("isMedicationRequestLoading", { namespace: "medication" })
+    isMedicationRequestLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "comment" })
+    isCommentLoading!: boolean;
+
+    @Getter("covid19LaboratoryOrdersAreLoading", { namespace: "laboratory" })
+    isCovid19LaboratoryLoading!: boolean;
+
+    @Getter("laboratoryOrdersAreLoading", { namespace: "laboratory" })
+    isLaboratoryLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "encounter" })
+    isEncounterLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "immunization" })
+    isImmunizationLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "note" })
+    isNoteLoading!: boolean;
+
+    @Getter("isDeferredLoad", { namespace: "immunization" })
+    isImmunizationDeferred!: boolean;
 
     @Prop()
     private timelineEntries!: TimelineEntry[];
@@ -59,6 +83,80 @@ export default class LinearTimelineComponent extends Vue {
     private currentPage = 1;
 
     private readonly pageSize = 25;
+
+    private logger!: ILogger;
+
+    private get isFullyLoaded(): boolean {
+        const fullyLoaded =
+            !this.isMedicationRequestLoading &&
+            !this.isMedicationStatementLoading &&
+            !this.isImmunizationLoading &&
+            !this.isImmunizationDeferred &&
+            !this.isCovid19LaboratoryLoading &&
+            !this.isLaboratoryLoading &&
+            !this.isEncounterLoading &&
+            !this.isNoteLoading &&
+            !this.isCommentLoading;
+        this.logger.debug(`Linear Timeline is fully loaded: ${fullyLoaded}`);
+        return fullyLoaded;
+    }
+
+    private get isFilterLoading(): boolean {
+        const filtersLoaded = [];
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.MedicationRequest,
+                this.isMedicationRequestLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.Medication,
+                this.isMedicationStatementLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.Immunization,
+                this.isImmunizationLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.Covid19LaboratoryOrder,
+                this.isCovid19LaboratoryLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.LaboratoryOrder,
+                this.isLaboratoryLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.Encounter,
+                this.isEncounterLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.Note,
+                this.isNoteLoading
+            )
+        );
+
+        const filterLoading = filtersLoaded.includes(true);
+        this.logger.debug(`Timeline filter loading: ${filterLoading}`);
+
+        return filterLoading;
+    }
 
     private get numberOfPages(): number {
         let pageCount = 1;
@@ -69,6 +167,9 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     private get timelineIsEmpty(): boolean {
+        this.logger.debug(
+            `Linear Timeline Entries length: ${this.timelineEntries.length}`
+        );
         return this.timelineEntries.length === 0;
     }
 
@@ -102,16 +203,9 @@ export default class LinearTimelineComponent extends Vue {
 
     @Watch("currentPage")
     private onCurrentPage() {
-        if (this.isLinearView && this.visibleTimelineEntries.length > 0) {
+        if (this.visibleTimelineEntries.length > 0) {
             // Update the store
             this.setLinearDate(this.visibleTimelineEntries[0].date);
-        }
-    }
-
-    @Watch("calendarDate")
-    private onCalendarDate() {
-        if (!this.isLinearView) {
-            this.setPageFromDate(this.calendarDate);
         }
     }
 
@@ -132,8 +226,20 @@ export default class LinearTimelineComponent extends Vue {
         return `?page=${pageNum}`;
     }
 
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
+
     private mounted() {
         this.setPageFromDate(this.linearDate);
+    }
+
+    private get showDisplayCount(): boolean {
+        return this.visibleTimelineEntries.length > 0;
+    }
+
+    private get showEmptyState(): boolean {
+        return this.timelineIsEmpty && !this.isFilterLoading;
     }
 
     private get timelineEntryCount(): number {
@@ -166,44 +272,39 @@ export default class LinearTimelineComponent extends Vue {
     private getComponentForEntry(entryType: EntryType): string {
         return entryTypeMap.get(entryType)?.component ?? "";
     }
+
+    private isFilterApplied(entryType: EntryType): boolean {
+        const entryTypes: EntryType[] = Array.from(this.filter.entryTypes);
+        const filterApplied = !!entryTypes.includes(entryType);
+        this.logger.debug(
+            `Timeline filter entry type: ${entryType} applied: ${filterApplied}`
+        );
+        return filterApplied;
+    }
+
+    private isSelectedFilterModuleLoading(
+        entryType: EntryType,
+        loading: boolean
+    ): boolean {
+        const filterApplied = this.isFilterApplied(entryType);
+        const isLoading = filterApplied && loading;
+        this.logger.debug(
+            `Timeline filter entry type: ${entryType} applied: ${filterApplied} - filter loading: ${loading} and filter isLoading: ${isLoading}`
+        );
+        return isLoading;
+    }
 }
 </script>
 
 <template>
     <div>
         <b-row
-            class="no-print sticky-top sticky-offset pt-2 px-2"
-            :class="{ 'header-offset': isHeaderShown }"
-        >
-            <b-col>
-                <b-pagination-nav
-                    v-if="!timelineIsEmpty"
-                    v-model="currentPage"
-                    :link-gen="linkGen"
-                    :number-of-pages="numberOfPages"
-                    data-testid="pagination"
-                    limit="4"
-                    first-number
-                    last-number
-                    next-text="Next"
-                    prev-text="Prev"
-                    use-router
-                    class="pb-0"
-                />
-            </b-col>
-            <slot name="add-note" />
-        </b-row>
-        <b-row
-            v-if="!timelineIsEmpty"
-            class="sticky-top sticky-line"
-            :class="{ 'header-offset': isHeaderShown }"
-        />
-        <b-row
+            v-if="showDisplayCount"
             id="listControls"
             class="no-print"
             data-testid="displayCountText"
         >
-            <b-col class="p-2" data-testid="timeline-record-count">
+            <b-col class="py-2" data-testid="timeline-record-count">
                 Displaying {{ visibleTimelineEntryCount }} out of
                 {{ timelineEntryCount }} records
             </b-col>
@@ -225,7 +326,25 @@ export default class LinearTimelineComponent extends Vue {
                 />
             </div>
         </div>
-        <div v-if="timelineIsEmpty" class="text-center pt-2">
+        <b-row align-h="center">
+            <b-col cols="auto">
+                <b-pagination-nav
+                    v-if="!timelineIsEmpty"
+                    v-model="currentPage"
+                    :link-gen="linkGen"
+                    :number-of-pages="numberOfPages"
+                    data-testid="pagination"
+                    limit="4"
+                    first-number
+                    last-number
+                    next-text="Next"
+                    prev-text="Prev"
+                    use-router
+                    class="mt-3"
+                />
+            </b-col>
+        </b-row>
+        <div v-if="showEmptyState" class="text-center pt-2">
             <b-row>
                 <b-col>
                     <img
@@ -237,7 +356,7 @@ export default class LinearTimelineComponent extends Vue {
                     />
                 </b-col>
             </b-row>
-            <b-row class="px-2">
+            <b-row>
                 <b-col>
                     <p
                         class="text-center pt-2 noTimelineEntriesText"
@@ -266,32 +385,9 @@ export default class LinearTimelineComponent extends Vue {
     margin: 0px;
     padding: 0px;
 }
+
 .sticky-top {
     transition: all 0.3s;
-}
-
-.sticky-offset {
-    top: $timeline-filter-height;
-    background-color: white;
-    z-index: 2;
-    &.header-offset {
-        top: $header-height + $timeline-filter-height;
-    }
-}
-
-.sticky-line {
-    top: $timeline-filter-height + $timeline-pagination-height;
-    background-color: white;
-    border-bottom: solid $primary 2px;
-    margin-top: -2px;
-    z-index: 1;
-    @media (max-width: 575px) {
-        top: 107px;
-    }
-    &.header-offset {
-        top: $header-height + $timeline-filter-height +
-            $timeline-pagination-height;
-    }
 }
 
 .noTimelineEntriesText {

@@ -25,8 +25,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
+    using HealthGateway.GatewayApi.Test.Services.Utils;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -69,7 +69,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new MessagingVerificationDelegateMock().Object,
                 new Mock<ICryptoDelegate>().Object,
                 new Mock<IHttpContextAccessor>().Object,
-                configuration);
+                configuration,
+                MapperUtil.InitializeAutoMapper());
         }
 
         /// <summary>
@@ -95,7 +96,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new MessagingVerificationDelegateMock().Object,
                 new CryptoDelegateMock(message).Object,
                 new Mock<IHttpContextAccessor>().Object,
-                configuration);
+                configuration,
+                MapperUtil.InitializeAutoMapper());
         }
 
         /// <summary>
@@ -119,7 +121,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new MessagingVerificationDelegateMock().Object,
                 new Mock<ICryptoDelegate>().Object,
                 new Mock<IHttpContextAccessor>().Object,
-                configuration);
+                configuration,
+                MapperUtil.InitializeAutoMapper());
         }
 
         /// <summary>
@@ -148,7 +151,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new MessagingVerificationDelegateMock(messagingVerification).Object,
                 new Mock<ICryptoDelegate>().Object,
                 new Mock<IHttpContextAccessor>().Object,
-                configuration);
+                configuration,
+                MapperUtil.InitializeAutoMapper());
         }
 
         /// <summary>
@@ -172,7 +176,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<IMessagingVerificationDelegate>().Object,
                 new Mock<ICryptoDelegate>().Object,
                 new Mock<IHttpContextAccessor>().Object,
-                configuration);
+                configuration,
+                MapperUtil.InitializeAutoMapper());
         }
 
         /// <summary>
@@ -200,7 +205,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<IMessagingVerificationDelegate>().Object,
                 new Mock<ICryptoDelegate>().Object,
                 new HttpContextAccessorMock(headerDictionary).Object,
-                configuration);
+                configuration,
+                MapperUtil.InitializeAutoMapper());
         }
 
         /// <summary>

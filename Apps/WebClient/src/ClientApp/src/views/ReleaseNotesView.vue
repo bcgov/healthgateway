@@ -29,6 +29,23 @@ export default class ReleaseNotesView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
         <release-note
+            date="July 5, 2022"
+            version="v2022.6.2"
+            title="Filter badges, Pagination buttons"
+        >
+            <ul>
+                <li>
+                    We added filter badges to show you what filters you have
+                    applied, including data set, date range, and keywords.
+                </li>
+                <li>
+                    We moved the pagination buttons to the bottom of the
+                    timeline page so you can navigate to the next page after
+                    scrolling down.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
             date="June 21, 2022"
             version="v2022.6.1"
             title="Lab report download, Record filter counts, BC Vaccine Card quick link"

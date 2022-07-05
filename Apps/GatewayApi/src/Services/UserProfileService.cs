@@ -20,6 +20,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
@@ -33,6 +34,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Constants;
+    using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
@@ -60,6 +62,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
         private readonly ICryptoDelegate cryptoDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IMapper autoMapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
@@ -77,6 +80,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
+        /// <param name="autoMapper">The inject automapper provider.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IPatientService patientService,
@@ -90,7 +94,8 @@ namespace HealthGateway.GatewayApi.Services
             IMessagingVerificationDelegate messageVerificationDelegate,
             ICryptoDelegate cryptoDelegate,
             IHttpContextAccessor httpContextAccessor,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IMapper autoMapper)
         {
             this.logger = logger;
             this.patientService = patientService;
@@ -104,9 +109,12 @@ namespace HealthGateway.GatewayApi.Services
             this.messageVerificationDelegate = messageVerificationDelegate;
             this.cryptoDelegate = cryptoDelegate;
             this.httpContextAccessor = httpContextAccessor;
-            this.userProfileHistoryRecordLimit = configuration.GetSection(WebClientConfigSection).GetValue(UserProfileHistoryRecordLimitKey, 4);
-            this.registrationStatus = configuration.GetSection(WebClientConfigSection).GetValue(RegistrationStatusKey, RegistrationStatus.Open);
+            this.userProfileHistoryRecordLimit = configuration.GetSection(WebClientConfigSection)
+                .GetValue(UserProfileHistoryRecordLimitKey, 4);
+            this.registrationStatus = configuration.GetSection(WebClientConfigSection)
+                .GetValue(RegistrationStatusKey, RegistrationStatus.Open);
             this.minPatientAge = configuration.GetSection(WebClientConfigSection).GetValue(MinPatientAgeKey, 12);
+            this.autoMapper = autoMapper;
         }
 
         /// <inheritdoc />
@@ -135,8 +143,10 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
-            UserProfileModel userProfile = UserProfileModel.CreateFromDbModel(retVal.Payload, termsOfServiceResult.ResourcePayload?.Id);
-            DBResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult = this.userProfileDelegate.GetUserProfileHistories(hdid, this.userProfileHistoryRecordLimit);
+            UserProfileModel userProfile =
+                UserProfileMapUtils.CreateFromDbModel(retVal.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper);
+            DBResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult =
+                this.userProfileDelegate.GetUserProfileHistories(hdid, this.userProfileHistoryRecordLimit);
 
             // Populate most recent login date time
             userProfile.LastLoginDateTimes.Add(retVal.Payload.LastLoginDateTime);
@@ -148,7 +158,8 @@ namespace HealthGateway.GatewayApi.Services
             if (!userProfile.IsEmailVerified)
             {
                 this.logger.LogTrace($"Retrieving last email invite... {hdid}");
-                MessagingVerification? emailInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
+                MessagingVerification? emailInvite =
+                    this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
                 this.logger.LogDebug($"Finished retrieving email: {JsonSerializer.Serialize(emailInvite)}");
                 userProfile.Email = emailInvite?.Email?.To;
             }
@@ -156,7 +167,8 @@ namespace HealthGateway.GatewayApi.Services
             if (!userProfile.IsSMSNumberVerified)
             {
                 this.logger.LogTrace($"Retrieving last email invite... {hdid}");
-                MessagingVerification? smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+                MessagingVerification? smsInvite =
+                    this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
                 this.logger.LogDebug($"Finished retrieving email: {JsonSerializer.Serialize(smsInvite)}");
                 userProfile.SMSNumber = smsInvite?.SMSNumber;
             }
@@ -164,7 +176,13 @@ namespace HealthGateway.GatewayApi.Services
             return new RequestResult<UserProfileModel>()
             {
                 ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
-                ResultError = retVal.Status != DBStatusCode.Error ? null : new RequestResultError() { ResultMessage = retVal.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                ResultError = retVal.Status != DBStatusCode.Error
+                    ? null
+                    : new RequestResultError()
+                    {
+                        ResultMessage = retVal.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    },
                 ResourcePayload = userProfile,
             };
         }
@@ -234,7 +252,8 @@ namespace HealthGateway.GatewayApi.Services
                 string? requestedSMSNumber = createProfileRequest.Profile.SMSNumber;
                 string? requestedEmail = createProfileRequest.Profile.Email;
 
-                NotificationSettingsRequest notificationRequest = new(createdProfile, requestedEmail, requestedSMSNumber);
+                NotificationSettingsRequest notificationRequest =
+                    new(createdProfile, requestedEmail, requestedSMSNumber);
 
                 // Add email verification
                 if (!string.IsNullOrWhiteSpace(requestedEmail))
@@ -256,7 +275,7 @@ namespace HealthGateway.GatewayApi.Services
                 this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
                 return new RequestResult<UserProfileModel>()
                 {
-                    ResourcePayload = UserProfileModel.CreateFromDbModel(insertResult.Payload, termsOfServiceResult.ResourcePayload?.Id),
+                    ResourcePayload = UserProfileMapUtils.CreateFromDbModel(insertResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
                     ResultStatus = ResultType.Success,
                 };
             }
@@ -293,7 +312,8 @@ namespace HealthGateway.GatewayApi.Services
                     this.logger.LogTrace("Finished. Profile already Closed");
                     return new RequestResult<UserProfileModel>()
                     {
-                        ResourcePayload = UserProfileModel.CreateFromDbModel(profile, termsOfServiceResult.ResourcePayload?.Id),
+                        ResourcePayload =
+                            UserProfileMapUtils.CreateFromDbModel(profile, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
                         ResultStatus = ResultType.Success,
                     };
                 }
@@ -309,7 +329,7 @@ namespace HealthGateway.GatewayApi.Services
                 this.logger.LogDebug($"Finished closing user profile. {JsonSerializer.Serialize(updateResult)}");
                 return new RequestResult<UserProfileModel>()
                 {
-                    ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id),
+                    ResourcePayload = UserProfileMapUtils.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
                     ResultStatus = ResultType.Success,
                 };
             }
@@ -318,7 +338,11 @@ namespace HealthGateway.GatewayApi.Services
                 return new RequestResult<UserProfileModel>()
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = retrieveResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = retrieveResult.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    },
                 };
             }
         }
@@ -340,7 +364,8 @@ namespace HealthGateway.GatewayApi.Services
                     this.logger.LogTrace("Finished. Profile already is active, recover not needed.");
                     return new RequestResult<UserProfileModel>()
                     {
-                        ResourcePayload = UserProfileModel.CreateFromDbModel(profile, termsOfServiceResult.ResourcePayload?.Id),
+                        ResourcePayload =
+                            UserProfileMapUtils.CreateFromDbModel(profile, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
                         ResultStatus = ResultType.Success,
                     };
                 }
@@ -357,7 +382,7 @@ namespace HealthGateway.GatewayApi.Services
                 this.logger.LogDebug($"Finished recovering user profile. {JsonSerializer.Serialize(updateResult)}");
                 return new RequestResult<UserProfileModel>()
                 {
-                    ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id),
+                    ResourcePayload = UserProfileMapUtils.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
                     ResultStatus = ResultType.Success,
                 };
             }
@@ -366,7 +391,11 @@ namespace HealthGateway.GatewayApi.Services
                 return new RequestResult<UserProfileModel>()
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = retrieveResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = retrieveResult.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    },
                 };
             }
         }
@@ -375,13 +404,20 @@ namespace HealthGateway.GatewayApi.Services
         public RequestResult<TermsOfServiceModel> GetActiveTermsOfService()
         {
             this.logger.LogDebug($"Getting active terms of service...");
-            DBResult<LegalAgreement> retVal = this.legalAgreementDelegate.GetActiveByAgreementType(LegalAgreementType.TermsofService);
+            DBResult<LegalAgreement> retVal =
+                this.legalAgreementDelegate.GetActiveByAgreementType(LegalAgreementType.TermsofService);
 
             return new RequestResult<TermsOfServiceModel>()
             {
                 ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
-                ResourcePayload = TermsOfServiceModel.CreateFromDbModel(retVal.Payload),
-                ResultError = retVal.Status != DBStatusCode.Error ? null : new RequestResultError() { ResultMessage = retVal.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                ResourcePayload = this.autoMapper.Map<TermsOfServiceModel>(retVal.Payload),
+                ResultError = retVal.Status != DBStatusCode.Error
+                    ? null
+                    : new RequestResultError()
+                    {
+                        ResultMessage = retVal.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    },
             };
         }
 
@@ -390,20 +426,22 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace($"Updating user preference... {userPreferenceModel.Preference}");
 
-            UserPreference userPreference = userPreferenceModel.ToDbModel();
+            UserPreference userPreference = this.autoMapper.Map<UserPreference>(userPreferenceModel);
 
             DBResult<UserPreference> dbResult = this.userPreferenceDelegate.UpdateUserPreference(userPreference);
             this.logger.LogDebug($"Finished updating user preference. {JsonSerializer.Serialize(dbResult)}");
 
             RequestResult<UserPreferenceModel> requestResult = new RequestResult<UserPreferenceModel>()
             {
-                ResourcePayload = UserPreferenceModel.CreateFromDbModel(dbResult.Payload),
+                ResourcePayload = this.autoMapper.Map<UserPreferenceModel>(dbResult.Payload),
                 ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DBStatusCode.Updated ? null : new RequestResultError()
-                {
-                    ResultMessage = dbResult.Message,
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                },
+                ResultError = dbResult.Status == DBStatusCode.Updated
+                    ? null
+                    : new RequestResultError()
+                    {
+                        ResultMessage = dbResult.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    },
             };
             return requestResult;
         }
@@ -412,21 +450,21 @@ namespace HealthGateway.GatewayApi.Services
         public RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel userPreferenceModel)
         {
             this.logger.LogTrace($"Creating user preference... {userPreferenceModel.Preference}");
-
-            UserPreference userPreference = userPreferenceModel.ToDbModel();
-
+            UserPreference userPreference = this.autoMapper.Map<UserPreference>(userPreferenceModel);
             DBResult<UserPreference> dbResult = this.userPreferenceDelegate.CreateUserPreference(userPreference);
             this.logger.LogDebug($"Finished creating user preference. {JsonSerializer.Serialize(dbResult)}");
 
             RequestResult<UserPreferenceModel> requestResult = new RequestResult<UserPreferenceModel>()
             {
-                ResourcePayload = UserPreferenceModel.CreateFromDbModel(dbResult.Payload),
+                ResourcePayload = this.autoMapper.Map<UserPreferenceModel>(dbResult.Payload),
                 ResultStatus = dbResult.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DBStatusCode.Created ? null : new RequestResultError()
-                {
-                    ResultMessage = dbResult.Message,
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                },
+                ResultError = dbResult.Status == DBStatusCode.Created
+                    ? null
+                    : new RequestResultError()
+                    {
+                        ResultMessage = dbResult.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    },
             };
             return requestResult;
         }
@@ -436,16 +474,20 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace($"Getting user preference... {hdid}");
             DBResult<IEnumerable<UserPreference>> dbResult = this.userPreferenceDelegate.GetUserPreferences(hdid);
-            RequestResult<Dictionary<string, UserPreferenceModel>> requestResult = new RequestResult<Dictionary<string, UserPreferenceModel>>()
-            {
-                ResourcePayload = UserPreferenceModel.CreateListFromDbModel(dbResult.Payload).ToDictionary(x => x.Preference, x => x),
-                ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DBStatusCode.Read ? null : new RequestResultError()
+            RequestResult<Dictionary<string, UserPreferenceModel>> requestResult =
+                new RequestResult<Dictionary<string, UserPreferenceModel>>()
                 {
-                    ResultMessage = dbResult.Message,
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                },
-            };
+                    ResourcePayload = this.autoMapper.Map<IEnumerable<UserPreferenceModel>>(dbResult.Payload)
+                        .ToDictionary(x => x.Preference, x => x),
+                    ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
+                    ResultError = dbResult.Status == DBStatusCode.Read
+                        ? null
+                        : new RequestResultError()
+                        {
+                            ResultMessage = dbResult.Message,
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                        },
+                };
 
             this.logger.LogTrace($"Finished getting user preference. {JsonSerializer.Serialize(dbResult)}");
             return requestResult;
@@ -500,7 +542,7 @@ namespace HealthGateway.GatewayApi.Services
                     RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
 
                     requestResult.ResultStatus = ResultType.Success;
-                    requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(profileResult.Payload, termsOfServiceResult.ResourcePayload?.Id);
+                    requestResult.ResourcePayload = UserProfileMapUtils.CreateFromDbModel(profileResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper);
                 }
                 else
                 {
@@ -526,10 +568,10 @@ namespace HealthGateway.GatewayApi.Services
         private void QueueEmail(string toEmail, string templateName)
         {
             string activationHost = this.httpContextAccessor.HttpContext!.Request
-                                             .GetTypedHeaders()
-                                             .Referer!
-                                             .GetLeftPart(UriPartial.Authority);
-            string hostUrl = activationHost.ToString();
+                .GetTypedHeaders()
+                .Referer!
+                .GetLeftPart(UriPartial.Authority);
+            string hostUrl = activationHost;
 
             Dictionary<string, string> keyValues = new() { [EmailTemplateVariable.Host] = hostUrl };
             this.emailQueueService.QueueNewEmail(toEmail, templateName, keyValues);

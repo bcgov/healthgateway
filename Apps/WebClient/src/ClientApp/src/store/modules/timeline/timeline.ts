@@ -9,9 +9,7 @@ import { TimelineModule, TimelineState } from "./types";
 const state: TimelineState = {
     filter: TimelineFilterBuilder.buildEmpty(),
     keyword: "",
-    isLinearView: true,
     linearDate: new DateWrapper(),
-    calendarDate: new DateWrapper(),
     selectedDate: null,
 };
 

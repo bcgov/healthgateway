@@ -20,7 +20,6 @@ describe("Breadcrumbs", () => {
         testPageBreadcrumb("/covid19", "breadcrumb-covid-19");
         testPageBreadcrumb("/dependents", "breadcrumb-dependents");
         testPageBreadcrumb("/reports", "breadcrumb-export-records");
-        testPageBreadcrumb("/healthInsights", "breadcrumb-health-insights");
         testPageBreadcrumb("/profile", "breadcrumb-profile");
         testPageBreadcrumb("/faq", "breadcrumb-faq");
         testPageBreadcrumb("/release-notes", "breadcrumb-release-notes");

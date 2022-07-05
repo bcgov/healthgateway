@@ -250,7 +250,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 mockUserProfileDelegate.Object,
                 new Mock<IPatientService>().Object,
                 mockNotificationSettingsService.Object,
-                mockDependentDelegate.Object);
+                mockDependentDelegate.Object,
+                Utils.MapperUtil.InitializeAutoMapper());
 
             RequestResult<DependentModel> actualResult = service.Remove(delegateModel);
 
@@ -280,7 +281,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 mockUserProfileDelegate.Object,
                 mockPatientService.Object,
                 mockNotificationSettingsService.Object,
-                mockDependentDelegate.Object);
+                mockDependentDelegate.Object,
+                Utils.MapperUtil.InitializeAutoMapper());
         }
 
         private IEnumerable<ResourceDelegate> GenerateMockResourceDelegatesList()
@@ -405,7 +407,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 mockUserProfileDelegate.Object,
                 mockPatientService.Object,
                 mockNotificationSettingsService.Object,
-                mockDependentDelegate.Object);
+                mockDependentDelegate.Object,
+                Utils.MapperUtil.InitializeAutoMapper());
         }
 
         private AddDependentRequest SetupMockInput()

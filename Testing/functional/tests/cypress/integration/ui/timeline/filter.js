@@ -18,12 +18,13 @@ describe("Filters", () => {
     });
 
     it("Verify filtered record count", () => {
+        const unfilteredRecordsMessage = "Displaying 25 out of 32 records";
+
         cy.get("[data-testid=timeline-record-count]").contains(
-            "Displaying 25 out of 32 records"
+            unfilteredRecordsMessage
         );
 
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=filterContainer]").contains("Clear").click();
         cy.get("[data-testid=Immunization-filter]").click({ force: true });
         cy.get("[data-testid=btnFilterApply]").click();
 
@@ -33,8 +34,15 @@ describe("Filters", () => {
             "Displaying 9 out of 9 records"
         );
 
+        cy.contains("[data-testid=filter-label]", "Immunizations")
+            .children("button")
+            .click();
+
+        cy.get("[data-testid=timeline-record-count]").contains(
+            unfilteredRecordsMessage
+        );
+
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=filterContainer]").contains("Clear").click();
         cy.get("[data-testid=filterStartDateInput] input")
             .clear()
             .focus()
@@ -43,10 +51,18 @@ describe("Filters", () => {
             .clear()
             .focus()
             .type("2022-JUN-09");
-        cy.get("[data-testid=btnFilterApply]").click();
+        cy.get("[data-testid=btnFilterApply]").focus().click();
 
+        cy.contains(
+            "[data-testid=filter-label]",
+            "From 2022-Jun-09 To 2022-Jun-09"
+        );
+
+        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
+
+        cy.get("[data-testid=clear-filters-button]").click();
         cy.get("[data-testid=timeline-record-count]").contains(
-            "Displaying 0 out of 0 records"
+            unfilteredRecordsMessage
         );
     });
 });

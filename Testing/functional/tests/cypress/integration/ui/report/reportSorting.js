@@ -19,10 +19,8 @@ describe("Reports - Medication", () => {
     });
 
     it("Validate Medication Statement Report with Unsorted Data", () => {
-        cy.intercept("GET", `**/MedicationStatement/${HDID}`, (req) => {
-            req.reply({
-                fixture: "Report/medicationStatementUnSorted.json",
-            });
+        cy.intercept("GET", `**/MedicationStatement/${HDID}`, {
+            fixture: "Report/medicationStatementUnSorted.json",
         });
         cy.get("[data-testid=reportType]").select("Medications");
         cy.get("[data-testid=reportSample]").should("be.visible");
@@ -54,10 +52,8 @@ describe("Reports - Medication", () => {
     });
 
     it("Validate Medication Request Report with Unsorted Data", () => {
-        cy.intercept("GET", `**/MedicationRequest/${HDID}`, (req) => {
-            req.reply({
-                fixture: "Report/medicationRequestUnSorted.json",
-            });
+        cy.intercept("GET", `**/MedicationRequest/${HDID}`, {
+            fixture: "Report/medicationRequestUnSorted.json",
         });
         cy.get("[data-testid=reportType]").select("Special Authority Requests");
 
@@ -109,15 +105,9 @@ describe("Reports - Covid19", () => {
     });
 
     it("Validate Covid19 Report with Unsorted Data", () => {
-        cy.intercept(
-            "GET",
-            `**/Laboratory/Covid19Orders?hdid=${HDID}`,
-            (req) => {
-                req.reply({
-                    fixture: "Report/covid19UnSorted.json",
-                });
-            }
-        );
+        cy.intercept("GET", `**/Laboratory/Covid19Orders?hdid=${HDID}`, {
+            fixture: "Report/covid19UnSorted.json",
+        });
         cy.get("[data-testid=reportType]").select("COVID-19 Test Results");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
@@ -167,10 +157,8 @@ describe("Reports - Immunization", () => {
     });
 
     it("Validate Immunization Report with Unsorted Data", () => {
-        cy.intercept("GET", `**/Immunization?hdid=${HDID}`, (req) => {
-            req.reply({
-                fixture: "Report/immunizationUnSorted.json",
-            });
+        cy.intercept("GET", `**/Immunization?hdid=${HDID}`, {
+            fixture: "Report/immunizationUnSorted.json",
         });
         cy.get("[data-testid=reportType]").select("Immunizations");
 
@@ -246,10 +234,8 @@ describe("Reports - MSP Visit", () => {
     });
 
     it("Validate MSP Visit Report with Unsorted Data", () => {
-        cy.intercept("GET", `**/Encounter/${HDID}`, (req) => {
-            req.reply({
-                fixture: "Report/mspVisitUnSorted.json",
-            });
+        cy.intercept("GET", `**/Encounter/${HDID}`, {
+            fixture: "Report/mspVisitUnSorted.json",
         });
         cy.get("[data-testid=reportType]").select("Health Visits");
 
@@ -301,10 +287,8 @@ describe("Reports - Notes (User-Entered)", () => {
     });
 
     it("Validate Note (User-Entered) Report with Unsorted Data", () => {
-        cy.intercept("GET", `**/Note/${HDID}`, (req) => {
-            req.reply({
-                fixture: "Report/noteUnSorted.json",
-            });
+        cy.intercept("GET", `**/Note/${HDID}`, {
+            fixture: "Report/noteUnSorted.json",
         });
         cy.get("[data-testid=reportType]").select("My Notes");
 
@@ -357,15 +341,9 @@ describe("Reports - Laboratory Tests", () => {
     });
 
     it("Validate Laboratory Report with Unsorted Data", () => {
-        cy.intercept(
-            "GET",
-            `**/Laboratory/LaboratoryOrders?hdid=${HDID}`,
-            (req) => {
-                req.reply({
-                    fixture: "Report/laboratoryUnSorted.json",
-                });
-            }
-        );
+        cy.intercept("GET", `**/Laboratory/LaboratoryOrders?hdid=${HDID}`, {
+            fixture: "Report/laboratoryUnSorted.json",
+        });
         cy.get("[data-testid=reportType]").select("Laboratory Tests");
 
         cy.get("[data-testid=reportSample]").should("be.visible");

@@ -14,7 +14,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { BToast } from "bootstrap-vue";
 import Vue from "vue";
-import { Component, Watch } from "vue-property-decorator";
+import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
@@ -23,13 +23,14 @@ import ProtectiveWordComponent from "@/components/modal/ProtectiveWordComponent.
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import AddNoteButtonComponent from "@/components/timeline/AddNoteButtonComponent.vue";
-import CalendarTimelineComponent from "@/components/timeline/CalendarTimelineComponent.vue";
 import EntryDetailsComponent from "@/components/timeline/entryCard/EntryDetailsComponent.vue";
 import FilterComponent from "@/components/timeline/FilterComponent.vue";
 import LinearTimelineComponent from "@/components/timeline/LinearTimelineComponent.vue";
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
+import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import { ImmunizationEvent } from "@/models/immunizationModel";
@@ -42,7 +43,7 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import TimelineEntry from "@/models/timelineEntry";
-import TimelineFilter from "@/models/timelineFilter";
+import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
 import UserNote from "@/models/userNote";
@@ -63,6 +64,12 @@ library.add(
     faVial
 );
 
+enum FilterLabelType {
+    Keyword = "Keyword",
+    Type = "Record Type",
+    Date = "Date",
+}
+
 @Component({
     components: {
         BToast,
@@ -71,7 +78,6 @@ library.add(
         NoteEditComponent,
         EntryDetailsComponent,
         LinearTimeline: LinearTimelineComponent,
-        CalendarTimeline: CalendarTimelineComponent,
         ErrorCard: ErrorCardComponent,
         Filters: FilterComponent,
         "resource-centre": ResourceCentreComponent,
@@ -81,9 +87,6 @@ library.add(
 export default class TimelineView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
-
-    @Action("setKeyword", { namespace: "timeline" })
-    setKeyword!: (keyword: string) => void;
 
     @Action("retrievePatientData", { namespace: "user" })
     retrievePatientData!: () => Promise<void>;
@@ -116,6 +119,9 @@ export default class TimelineView extends Vue {
 
     @Action("retrieve", { namespace: "comment" })
     retrieveComments!: (params: { hdid: string }) => Promise<void>;
+
+    @Action("setFilter", { namespace: "timeline" })
+    setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
 
     @Getter("isMedicationStatementLoading", { namespace: "medication" })
     isMedicationStatementLoading!: boolean;
@@ -177,17 +183,10 @@ export default class TimelineView extends Vue {
     @Getter("filter", { namespace: "timeline" })
     filter!: TimelineFilter;
 
-    @Getter("keyword", { namespace: "timeline" })
-    readonly keyword!: string;
-
-    @Getter("isLinearView", { namespace: "timeline" })
-    readonly isLinearView!: boolean;
-
     @Getter("user", { namespace: "user" }) user!: User;
 
     @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
 
-    private filterText = "";
     private logger!: ILogger;
 
     private breadcrumbItems: BreadcrumbItem[] = [
@@ -198,20 +197,6 @@ export default class TimelineView extends Vue {
             dataTestId: "breadcrumb-timeline",
         },
     ];
-
-    @Watch("filterText")
-    private onFilterTextChanged() {
-        this.setKeyword(this.filterText);
-    }
-
-    @Watch("isLinearView")
-    private onIsLinearView() {
-        if (this.isLinearView) {
-            window.location.hash = "linear";
-        } else {
-            window.location.hash = "calendar";
-        }
-    }
 
     private get timelineEntries(): TimelineEntry[] {
         this.logger.debug("Updating timeline Entries");
@@ -275,9 +260,9 @@ export default class TimelineView extends Vue {
     public get filteredTimelineEntries(): TimelineEntry[] {
         let filteredEntries = [];
 
-        if (this.keyword !== "" || this.filter.hasActiveFilter()) {
+        if (this.filter.hasActiveFilter()) {
             filteredEntries = this.timelineEntries.filter((entry) =>
-                entry.filterApplies(this.keyword, this.filter)
+                entry.filterApplies(this.filter)
             );
         } else {
             filteredEntries = this.timelineEntries;
@@ -300,6 +285,78 @@ export default class TimelineView extends Vue {
         );
     }
 
+    private get isFilterLoading(): boolean {
+        const filtersLoaded = [];
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.MedicationRequest,
+                this.isMedicationRequestLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.Medication,
+                this.isMedicationStatementLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.Immunization,
+                this.isImmunizationLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.Covid19LaboratoryOrder,
+                this.isCovid19LaboratoryLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.LaboratoryOrder,
+                this.isLaboratoryLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.Encounter,
+                this.isEncounterLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.Note,
+                this.isNoteLoading
+            )
+        );
+
+        const filterLoading = filtersLoaded.includes(true);
+        this.logger.debug(`Timeline filter loading: ${filterLoading}`);
+
+        return filterLoading;
+    }
+
+    private get isFilterModuleSelected(): boolean {
+        const entryTypes: EntryType[] = Array.from(this.filter.entryTypes);
+        this.logger.debug(
+            `Number of imeline filter modules selected: ${entryTypes.length}`
+        );
+        return entryTypes.length > 0;
+    }
+
+    private get showContentPlaceholders(): boolean {
+        if (this.isFilterModuleSelected) {
+            return this.isFilterLoading;
+        }
+        return !this.isFullyLoaded && this.filteredTimelineEntries.length === 0;
+    }
+
     private get showTimelineEntries(): boolean {
         return this.timelineEntries.length > 0 || this.isFullyLoaded;
     }
@@ -308,13 +365,40 @@ export default class TimelineView extends Vue {
         return this.config.modules["Note"];
     }
 
+    private get filterLabels(): [string, string][] {
+        const labels: [string, string][] = [];
+
+        if (this.filter.keyword) {
+            labels.push([FilterLabelType.Keyword, `"${this.filter.keyword}"`]);
+        }
+
+        this.filter.entryTypes.forEach((entryType) => {
+            const label = entryTypeMap.get(entryType)?.name;
+            if (label) {
+                labels.push([FilterLabelType.Type, label]);
+            }
+        });
+
+        const startDate = this.filter.startDate
+            ? `From ${new DateWrapper(this.filter.startDate).format()}`
+            : "";
+        const endDate = this.filter.endDate
+            ? `To ${new DateWrapper(this.filter.endDate).format()}`
+            : "";
+        if (startDate && endDate) {
+            labels.push([FilterLabelType.Date, `${startDate} ${endDate}`]);
+        } else if (startDate) {
+            labels.push([FilterLabelType.Date, startDate]);
+        } else if (endDate) {
+            labels.push([FilterLabelType.Date, endDate]);
+        }
+
+        return labels;
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.fetchTimelineData();
-    }
-
-    private mounted() {
-        this.filterText = this.keyword;
     }
 
     private fetchTimelineData() {
@@ -333,6 +417,27 @@ export default class TimelineView extends Vue {
         });
     }
 
+    private isFilterApplied(entryType: EntryType): boolean {
+        const entryTypes: EntryType[] = Array.from(this.filter.entryTypes);
+        const filterApplied = !!entryTypes.includes(entryType);
+        this.logger.debug(
+            `Timeline filter entry type: ${entryType} applied: ${filterApplied}`
+        );
+        return filterApplied;
+    }
+
+    private isSelectedFilterModuleLoading(
+        entryType: EntryType,
+        loading: boolean
+    ): boolean {
+        const filterApplied = this.isFilterApplied(entryType);
+        const isLoading = filterApplied && loading;
+        this.logger.debug(
+            `Timeline filter entry type: ${entryType} applied: ${filterApplied} - filter loading: ${loading} and filter isLoading: ${isLoading}`
+        );
+        return isLoading;
+    }
+
     private sortEntries(timelineEntries: TimelineEntry[]): TimelineEntry[] {
         return timelineEntries.sort((a, b) => {
             if (a.date.isBefore(b.date)) {
@@ -343,6 +448,41 @@ export default class TimelineView extends Vue {
             }
             return 0;
         });
+    }
+
+    private clearFilter(label: string, value: string | undefined): void {
+        let keyword = this.filter.keyword;
+        let startDate = this.filter.startDate;
+        let endDate = this.filter.endDate;
+        let entryTypes = [...this.filter.entryTypes];
+
+        switch (label) {
+            case FilterLabelType.Keyword:
+                keyword = "";
+                break;
+            case FilterLabelType.Date:
+                startDate = "";
+                endDate = "";
+                break;
+            case FilterLabelType.Type:
+                entryTypes = entryTypes.filter(
+                    (e) => entryTypeMap.get(e)?.name !== value
+                );
+                break;
+        }
+
+        const builder = TimelineFilterBuilder.create()
+            .withKeyword(keyword)
+            .withStartDate(startDate)
+            .withEndDate(endDate)
+            .withEntryTypes(entryTypes);
+
+        this.setFilter(builder);
+    }
+
+    private clearFilters(): void {
+        const builder = TimelineFilterBuilder.create();
+        this.setFilter(builder);
     }
 }
 </script>
@@ -384,106 +524,59 @@ export default class TimelineView extends Vue {
         <b-row>
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
                 <page-title title="Timeline">
-                    <router-link to="/covid19">
-                        <hg-button
-                            :disabled="covidImmunizations.length === 0"
-                            data-testid="covidcard-btn"
-                            class="float-right"
-                            variant="primary"
-                        >
-                            <hg-icon
-                                icon="check-circle"
-                                size="medium"
-                                class="mr-2"
-                            />
-                            <span>BC Vaccine Card</span>
-                        </hg-button>
-                    </router-link>
+                    <div class="float-right">
+                        <add-note-button
+                            v-if="isNoteEnabled && !isNoteLoading"
+                        />
+                    </div>
                 </page-title>
                 <div
                     v-if="showTimelineEntries"
-                    class="sticky-top sticky-offset px-2"
+                    class="sticky-top sticky-offset"
                     :class="{ 'header-offset': isHeaderShown }"
                 >
-                    <b-row class="no-print justify-content-between">
-                        <b-col>
-                            <div class="form-group has-filter">
-                                <hg-icon
-                                    icon="search"
-                                    size="medium"
-                                    class="form-control-feedback"
-                                />
-                                <b-input-group>
-                                    <b-form-input
-                                        v-model="filterText"
-                                        data-testid="filterTextInput"
-                                        type="text"
-                                        placeholder=""
-                                        maxlength="50"
-                                        debounce="250"
-                                    />
-                                    <b-input-group-append>
-                                        <hg-button
-                                            v-show="filterText"
-                                            data-testid="clearfilterTextBtn"
-                                            variant="icon-input-light"
-                                            @click="filterText = ''"
-                                        >
-                                            <hg-icon
-                                                icon="times"
-                                                size="medium"
-                                                fixed-width
-                                            />
-                                        </hg-button>
-                                    </b-input-group-append>
-                                </b-input-group>
-                            </div>
+                    <b-row
+                        class="no-print justify-content-between py-2"
+                        align-v="start"
+                    >
+                        <b-col class="col-auto">
+                            <Filters class="my-1" />
                         </b-col>
-                        <b-col class="col-auto pl-2">
-                            <Filters />
+                        <b-col class="mx-2">
+                            <b-form-tag
+                                v-for="[label, value] in filterLabels"
+                                :key="`${label}-${value}`"
+                                variant="light"
+                                class="filter-label p-1 mr-2 my-1"
+                                :title="`${label} Filter`"
+                                data-testid="filter-label"
+                                @remove="clearFilter(label, value)"
+                                >{{ value }}</b-form-tag
+                            >
+                            <hg-button
+                                v-if="filterLabels.length > 0"
+                                class="p-1 mt-n1"
+                                data-testid="clear-filters-button"
+                                variant="link"
+                                @click="clearFilters"
+                            >
+                                Clear All
+                            </hg-button>
                         </b-col>
                     </b-row>
                 </div>
                 <LinearTimeline
-                    v-show="isLinearView && showTimelineEntries"
+                    v-show="showTimelineEntries"
                     :timeline-entries="filteredTimelineEntries"
-                >
-                    <template #add-note>
-                        <b-col
-                            v-if="
-                                isNoteEnabled && isLinearView && !isNoteLoading
-                            "
-                            col
-                            cols="auto"
-                        >
-                            <add-note-button />
-                        </b-col>
-                    </template>
-                </LinearTimeline>
-                <CalendarTimeline
-                    v-show="!isLinearView && showTimelineEntries"
-                    :timeline-entries="filteredTimelineEntries"
-                >
-                    <template #add-note>
-                        <b-col
-                            v-if="
-                                isNoteEnabled && !isLinearView && !isNoteLoading
-                            "
-                            col
-                            cols="auto"
-                        >
-                            <add-note-button class="p-2" />
-                        </b-col>
-                    </template>
-                </CalendarTimeline>
-                <b-row v-if="!showTimelineEntries">
+                />
+                <b-row v-if="showContentPlaceholders">
                     <b-col>
-                        <div class="px-2">
-                            <content-placeholders>
-                                <content-placeholders-heading :img="true" />
-                                <content-placeholders-text :lines="3" />
-                            </content-placeholders>
-                        </div>
+                        <content-placeholders
+                            data-testid="content-placeholders"
+                        >
+                            <content-placeholders-heading :img="true" />
+                            <content-placeholders-text :lines="3" />
+                        </content-placeholders>
                     </b-col>
                 </b-row>
             </b-col>
@@ -496,8 +589,8 @@ export default class TimelineView extends Vue {
 </template>
 
 <style lang="scss" scoped>
-@use "sass:math";
 @import "@/assets/scss/_variables.scss";
+
 .row {
     margin: 0px;
     padding: 0px;
@@ -507,6 +600,7 @@ export default class TimelineView extends Vue {
     margin: 0px;
     padding: 0px;
 }
+
 .sticky-top {
     transition: all 0.3s;
     z-index: 49 !important;
@@ -525,31 +619,10 @@ hr {
 }
 
 .sticky-offset {
-    padding-top: 1rem;
     background-color: white;
     z-index: 2;
     &.header-offset {
         top: $header-height;
-    }
-}
-
-.has-filter {
-    $icon-size: 1rem;
-    $icon-size-padded: 2.375rem;
-    $icon-padding: math.div($icon-size-padded - $icon-size, 2);
-
-    .form-control {
-        padding-left: $icon-size-padded;
-    }
-
-    .form-control-feedback {
-        position: absolute;
-        z-index: 5;
-        display: block;
-        text-align: center;
-        pointer-events: none;
-        color: #aaa;
-        padding: $icon-padding;
     }
 }
 
@@ -560,5 +633,9 @@ hr {
 
 .z-index-large {
     z-index: 50;
+}
+
+.filter-label {
+    font-size: 1rem;
 }
 </style>

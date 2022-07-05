@@ -1,0 +1,13 @@
+{
+    "resourcePayload": [],
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 0,
+    "resultError": {
+        "resultMessage": "Client Registry did not return a person",
+        "errorCode": "Admin.ServerServer-CE-CR",
+        "traceId": "c713f8e1f8ad9a286ef5b65bec5a06c0",
+        "actionCode": null
+    }
+}

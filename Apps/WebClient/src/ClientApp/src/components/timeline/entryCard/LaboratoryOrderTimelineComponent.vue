@@ -68,6 +68,11 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
         }
     }
 
+    private getStatusInfoId(labPdfId: string, index: number): string {
+        const isModalIndicator: string = this.isMobileDetails ? "1" : "0";
+        return `laboratory-test-status-info-${labPdfId}-${index}-${isModalIndicator}`;
+    }
+
     private showConfirmationModal(): void {
         this.messageModal.showModal();
     }
@@ -183,6 +188,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
             </b-row>
             <b-table-lite
                 :items="entry.tests"
+                :fields="['testName', 'result', 'status']"
                 sticky-header
                 head-variant="light"
                 class="my-2"
@@ -192,6 +198,41 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                     <strong :class="getResultClasses(data.value)">
                         {{ data.value }}
                     </strong>
+                </template>
+                <template #cell(status)="data">
+                    <span class="mr-1">{{ data.value }}</span>
+                    <hg-button
+                        v-if="data.item.statusInfo.length > 0"
+                        :id="getStatusInfoId(entry.labPdfId, data.index)"
+                        aria-label="Status Information"
+                        href="#"
+                        variant="link"
+                        data-testid="laboratory-test-status-info-button"
+                        class="shadow-none p-0 mt-n1"
+                    >
+                        <hg-icon icon="info-circle" size="small" />
+                    </hg-button>
+                    <b-popover
+                        v-if="data.item.statusInfo.length > 0"
+                        :target="getStatusInfoId(entry.labPdfId, data.index)"
+                        triggers="hover focus"
+                        :placement="isMobileDetails ? 'bottom' : 'left'"
+                        :data-testid="`${getStatusInfoId(
+                            entry.labPdfId,
+                            data.index
+                        )}-popover`"
+                    >
+                        <p
+                            v-for="(paragraph, index) in data.item.statusInfo"
+                            :key="index"
+                            :class="{
+                                'mb-0':
+                                    index + 1 === data.item.statusInfo.length,
+                            }"
+                        >
+                            {{ paragraph }}
+                        </p>
+                    </b-popover>
                 </template>
             </b-table-lite>
             <MessageModalComponent

@@ -140,11 +140,7 @@ public static class DashboardReducers
     {
         return state with
         {
-            Dependents = state.Dependents with {
-                Result = null,
-                IsLoading = true,
-                Error = null,
-            },
+            Dependents = state.Dependents with { IsLoading = true },
         };
     }
 

@@ -18,14 +18,15 @@ namespace HealthGateway.Admin.Server.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using AutoMapper;
     using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Admin.Server.Converters;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HHealthGateway.Admin.Server.MapUtils;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
@@ -35,6 +36,7 @@ namespace HealthGateway.Admin.Server.Services
         private readonly IFeedbackDelegate feedbackDelegate;
         private readonly IAdminTagDelegate adminTagDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IMapper autoMapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserFeedbackService"/> class.
@@ -43,12 +45,14 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="feedbackDelegate">The feedback delegate to interact with the DB.</param>
         /// <param name="adminTagDelegate">The admin tag delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-        public UserFeedbackService(ILogger<UserFeedbackService> logger, IFeedbackDelegate feedbackDelegate, IAdminTagDelegate adminTagDelegate, IUserProfileDelegate userProfileDelegate)
+        /// <param name="autoMapper">The inject automapper provider.</param>
+        public UserFeedbackService(ILogger<UserFeedbackService> logger, IFeedbackDelegate feedbackDelegate, IAdminTagDelegate adminTagDelegate, IUserProfileDelegate userProfileDelegate, IMapper autoMapper)
         {
             this.logger = logger;
             this.feedbackDelegate = feedbackDelegate;
             this.adminTagDelegate = adminTagDelegate;
             this.userProfileDelegate = userProfileDelegate;
+            this.autoMapper = autoMapper;
         }
 
         /// <inheritdoc />
@@ -77,7 +81,7 @@ namespace HealthGateway.Admin.Server.Services
                         email = value ?? string.Empty;
                     }
 
-                    return p.ToUiModel(email);
+                    return UserFeedbackMapUtils.ToUiModel(p, email, this.autoMapper);
                 }).ToList(),
                 ResultStatus = ResultType.Success,
                 TotalResultCount = userFeedbackResult.Payload.Count,
@@ -96,13 +100,13 @@ namespace HealthGateway.Admin.Server.Services
                 ResultStatus = ResultType.Error,
             };
 
-            this.feedbackDelegate.UpdateUserFeedback(feedback.ToDbModel());
+            this.feedbackDelegate.UpdateUserFeedback(this.autoMapper.Map<UserFeedback>(feedback));
 
             DBResult<UserFeedback> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(feedback.Id);
             if (userFeedbackResult.Status == DBStatusCode.Read)
             {
                 string email = this.GetUserEmail(userFeedbackResult.Payload.UserProfileId);
-                result.ResourcePayload = userFeedbackResult.Payload.ToUiModel(email);
+                result.ResourcePayload = UserFeedbackMapUtils.ToUiModel(userFeedbackResult.Payload, email, this.autoMapper);
                 result.ResultStatus = ResultType.Success;
             }
 
@@ -116,7 +120,7 @@ namespace HealthGateway.Admin.Server.Services
             DBResult<IEnumerable<AdminTag>> adminTags = this.adminTagDelegate.GetAll();
 
             this.logger.LogDebug($"Finished retrieving admin tags");
-            IList<AdminTagView> adminTagViews = adminTags.Payload.ToUiModel();
+            IList<AdminTagView> adminTagViews = this.autoMapper.Map<IList<AdminTagView>>(adminTags.Payload);
             return new RequestResult<IList<AdminTagView>>()
             {
                 ResourcePayload = adminTagViews,
@@ -138,7 +142,7 @@ namespace HealthGateway.Admin.Server.Services
             if (tagResult.Status == DBStatusCode.Created)
             {
                 retVal.ResultStatus = ResultType.Success;
-                retVal.ResourcePayload = tagResult.Payload.ToUiModel();
+                retVal.ResourcePayload = this.autoMapper.Map<AdminTagView>(tagResult.Payload);
             }
             else
             {
@@ -157,11 +161,11 @@ namespace HealthGateway.Admin.Server.Services
             };
 
             this.logger.LogTrace($"Deleting admin tag... {tag.Name}");
-            DBResult<AdminTag> tagResult = this.adminTagDelegate.Delete(tag.ToDbModel());
+            DBResult<AdminTag> tagResult = this.adminTagDelegate.Delete(this.autoMapper.Map<AdminTag>(tag));
             if (tagResult.Status == DBStatusCode.Deleted)
             {
                 retVal.ResultStatus = ResultType.Success;
-                retVal.ResourcePayload = tagResult.Payload.ToUiModel();
+                retVal.ResourcePayload = this.autoMapper.Map<AdminTagView>(tagResult.Payload);
             }
             else
             {
@@ -202,7 +206,7 @@ namespace HealthGateway.Admin.Server.Services
                 if (savedUserFeedbackResult.Status == DBStatusCode.Updated)
                 {
                     string email = this.GetUserEmail(userFeedback.UserProfileId);
-                    result.ResourcePayload = userFeedback.ToUiModel(email);
+                    result.ResourcePayload = UserFeedbackMapUtils.ToUiModel(userFeedback, email, this.autoMapper);
                     result.ResultStatus = ResultType.Success;
                 }
                 else

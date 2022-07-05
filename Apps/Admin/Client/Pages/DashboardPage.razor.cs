@@ -49,6 +49,16 @@ public partial class DashboardPage : FluxorComponent
 
     private BaseRequestState<RecurringUser> RecurringUsersResult => this.DashboardState.Value.RecurringUsers ?? default!;
 
+    private bool RegisteredUsersLoading => this.DashboardState.Value.RegisteredUsers.IsLoading;
+
+    private bool LoggedInUsersLoading => this.DashboardState.Value.LoggedInUsers.IsLoading;
+
+    private bool DependentsLoading => this.DashboardState.Value.Dependents.IsLoading;
+
+    private bool RecurringUsersLoading => this.DashboardState.Value.RecurringUsers.IsLoading;
+
+    private bool RatingSummaryLoading => this.DashboardState.Value.RatingSummary.IsLoading;
+
     private MudDateRangePicker SelectedDateRangePicker { get; set; } = default!;
 
     private DateTime MinimumDateTime { get; set; } = new DateTime(2019, 06, 1);
