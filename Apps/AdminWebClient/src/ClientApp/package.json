@@ -41,7 +41,7 @@
         "@types/vue-the-mask": "^0.11.1",
         "@typescript-eslint/eslint-plugin": "^5.30.0",
         "@typescript-eslint/parser": "^5.30.0",
-        "@vue/cli-plugin-eslint": "^5.0.6",
+        "@vue/cli-plugin-eslint": "^5.0.7",
         "@vue/cli-plugin-typescript": "^5.0.4",
         "@vue/cli-service": "^5.0.6",
         "@vue/eslint-config-prettier": "^7.0.0",
