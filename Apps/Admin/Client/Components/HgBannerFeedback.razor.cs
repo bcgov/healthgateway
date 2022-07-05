@@ -45,6 +45,12 @@ namespace HealthGateway.Admin.Client.Components
         [Parameter]
         public bool IsEnabled { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets the data-testid associated with the alert.
+        /// </summary>
+        [Parameter]
+        public string? DataTestId { get; set; }
+
         [Inject]
         private IActionSubscriber ActionSubscriber { get; set; } = default!;
 

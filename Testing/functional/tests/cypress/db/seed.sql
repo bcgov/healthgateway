@@ -10,6 +10,7 @@ TRUNCATE gateway."MessagingVerification" CASCADE;
 TRUNCATE gateway."Note" CASCADE;
 TRUNCATE gateway."GenericCache" CASCADE;
 TRUNCATE gateway."Rating" CASCADE;
+TRUNCATE gateway."Email" CASCADE;
 
 /* Registered HealthGateway User - Keycloak User (healthgateway) */
 INSERT INTO gateway."UserProfile"(
@@ -641,6 +642,105 @@ VALUES (
 	'"2021-01-20T00:00:00"'
 );
 
+INSERT INTO gateway."Email"(
+    "EmailId", 
+    "CreatedBy", 
+    "CreatedDateTime", 
+    "UpdatedBy", 
+    "UpdatedDateTime", 
+    "From", 
+    "To", 
+    "Subject", 
+    "Body", 
+    "FormatCode", 
+    "Priority", 
+    "SentDateTime", 
+    "LastRetryDateTime", 
+    "Attempts", 
+    "SmtpStatusCode", 
+    "EmailStatusCode")
+VALUES (
+    'a86b1a95-42c1-49e4-9d48-6080cf2a223d', 
+    'System',
+    now(),
+    'System',
+    now(),
+    'HG_Donotreply@gov.bc.ca', 
+    'fakeemail@healthgateway.gov.bc.ca', 
+    'Health Gateway Email Verification hgdev', 
+    '<!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <title>Email Validation</title>
+        </head>
+        <body style="margin: 0">
+            <table
+                style="
+                    width: 100%;
+                    border-spacing: 0px;
+                    margin: 0;
+                    color: #707070;
+                    font-family: Helvetica, Arial, Verdana, Tahoma, sans-serif;
+                    font-size: 12px;
+                "
+                aria-describedby="Layout Table"
+            >
+                <tr style="background: #003366">
+                    <th scope="col" style="width:45px;"></th>
+                    <th
+                        scope="col"
+                        style="text-align: left; width:350px;"
+                    >
+                        <div role="img" aria - label="Health Gateway Logo">
+                            <img
+                                src="https://dev.healthgateway.gov.bc.ca/Logo.png"
+                                alt="Health Gateway Logo"
+                            />
+                        </div>
+                    </th>
+                    <th scope="col"></th>
+                </tr>
+                <tr>
+                    <td colspan="3" style="height:20px;"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <h1 style="font-size: 18px">Almost there!</h1>
+                        <p>
+                            We''ve received a request to register your email address
+                            for a Health Gateway account.
+                        </p>
+                        <p>
+                            To activate your account, please verify your email by
+                            clicking the link:
+                        </p>
+                        <a
+                            style="color: #1292c5; font-weight: 600"
+                            href="https://dev.healthgateway.gov.bc.ca/ValidateEmail/5f9ceabb-a6e2-4eb3-839c-b364f65c502d"
+                        >
+                            Health Gateway Account Verification
+                        </a>
+                        <p>
+                            This email verification link will expire in
+                            12 hours.
+                        </p>
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+        </body>
+    </html>', 
+    'HTML', 
+    10, 
+    '2022-07-05 00:47:05.828812+00', 
+    null, 
+    1,
+    250, 
+    'Processed'
+);
+
+/* Registered HealthGateway User - Keycloak User (healthgateway) */
 INSERT INTO gateway."MessagingVerification"(
 	"MessagingVerificationId", 
 	"CreatedBy", 
@@ -671,6 +771,41 @@ VALUES (
 	'2501234567',
 	'123456',
 	'SMS',
+	false,
+	0
+);
+
+/* Invaliddoses - Keycloak User (hthgtwy20) */
+INSERT INTO gateway."MessagingVerification"(
+	"MessagingVerificationId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"HdId", 
+	"Validated", 
+	"EmailId", 
+	"InviteKey", 
+	"ExpireDate", 
+	"SMSNumber", 
+	"SMSValidationCode", 
+	"VerificationType", 
+	"Deleted", 
+	"VerificationAttempts")
+VALUES (
+	uuid_generate_v4(),
+	'System',
+	now(),
+	'System',
+	now(),
+	'DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA',
+	false,
+	'a86b1a95-42c1-49e4-9d48-6080cf2a223d',
+	'00000000-0000-0000-0000-000000000000',
+	now()+INTERVAL '1 day',
+	null,
+	'123456',
+	'Email',
 	false,
 	0
 );
