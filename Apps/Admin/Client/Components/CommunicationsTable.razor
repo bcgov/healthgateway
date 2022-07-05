@@ -46,7 +46,7 @@
                     <MudIconButton OnClick="@(() => ToggleExpandRow(context.Id))"
                                    Icon="@(context.IsExpanded ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
                                    Color="@Color.Primary"
-                                    data-testid="comm-table-expand-btn"/>
+                                   data-testid="comm-table-expand-btn"/>
                 </MudTooltip>
                 <MudTooltip Text="Edit">
                     <MudIconButton OnClick="@(async () => await EditCommunicationAsync(context.Id))"

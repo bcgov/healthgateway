@@ -9,7 +9,7 @@
         <HgBannerFeedback Severity="@Severity.Error" IsEnabled="@(HasAddError || HasUpdateError)" TResetAction="@CommunicationsActions.ResetStateAction">
             @ErrorMessage
         </HgBannerFeedback>
-        <MudForm @ref="Form" data-testid=banner-dialog-modal-text>
+        <MudForm @ref="Form" data-testid="banner-dialog-modal-text">
             <MudGrid Spacing="0">
                 <MudItem xs="6">
                     <MudDatePicker @ref="@EffectiveDatePicker"
