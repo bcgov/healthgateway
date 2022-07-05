@@ -7,7 +7,7 @@
 <PageTitle>Support</PageTitle>
 <HgPageHeading>Support</HgPageHeading>
 
-<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasError" TResetAction="MessageVerificationActions.ResetStateAction">
+<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasError" TResetAction="MessageVerificationActions.ResetStateAction" DataTestId="banner-feedback">
     @MessageVerificationState.Value.Error?.Message
 </HgBannerFeedback>
 
@@ -22,7 +22,7 @@
             </HgSelect>
         </MudItem>
         <MudItem xs="12" sm="9">
-            <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@SelectedQueryType.ToString()" Required="@true" Validation="@ValidateQueryParameter" @bind-Value="QueryParameter" data-testid="query-input" />
+            <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@SelectedQueryType.ToString()" Required="@true" Validation="@ValidateQueryParameter" @bind-Value="QueryParameter" data-testid="query-input"/>
         </MudItem>
         <MudItem Class="d-flex justify-end" xs="12">
             <HgButton TopMargin="Breakpoint.Always" EndIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="Color.Primary" @onclick="SearchAsync" data-testid="search-btn">Search</HgButton>
@@ -32,7 +32,7 @@
 
 @if (MessagingVerificationsLoaded || MessagingVerificationsLoading)
 {
-    <MudTable Class="mt-3" Items="MessagingVerificationRows" Loading="MessagingVerificationsLoading" Breakpoint="Breakpoint.Md" HorizontalScrollbar="true" Striped="true" Dense="true" data-testid="message-verification-table" >
+    <MudTable Class="mt-3" Items="MessagingVerificationRows" Loading="MessagingVerificationsLoading" Breakpoint="Breakpoint.Md" HorizontalScrollbar="true" Striped="true" Dense="true" data-testid="message-verification-table">
         <HeaderContent>
             <MudTh><MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.Hdid)">HDID</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.PersonalHealthNumber)">PHN</MudTableSortLabel></MudTh>

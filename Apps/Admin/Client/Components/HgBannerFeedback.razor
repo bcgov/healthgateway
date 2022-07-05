@@ -4,9 +4,10 @@
 @if (IsEnabled && !IsHidden)
 {
     <MudAlert Variant="Variant.Text"
-          Severity="Severity"
+          Severity="@Severity"
           ShowCloseIcon="true"
-          CloseIconClicked="Close">
+          CloseIconClicked="@Close"
+          data-testid="@DataTestId">
         @ChildContent
     </MudAlert>
 }
