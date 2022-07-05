@@ -35,10 +35,13 @@ export default class ReleaseNotesView extends Vue {
         >
             <ul>
                 <li>
-                    We added filter badges to show you what filters you have applied, including data set, date range, and keywords. 
+                    We added filter badges to show you what filters you have
+                    applied, including data set, date range, and keywords.
                 </li>
                 <li>
-                    We moved the pagination buttons to the bottom of the timeline page so you can navigate to the next page after scrolling down.
+                    We moved the pagination buttons to the bottom of the
+                    timeline page so you can navigate to the next page after
+                    scrolling down.
                 </li>
             </ul>
         </release-note>
