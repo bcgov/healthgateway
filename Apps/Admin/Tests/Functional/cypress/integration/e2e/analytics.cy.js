@@ -32,6 +32,11 @@ describe("System Analytics", () => {
         cy.visit("/analytics");
     });
 
+    afterEach(() => {
+        cy.log("Logging out.");
+        cy.logout();
+    });
+
     it("Verify system analytics stats downloads.", () => {
         cy.log("System Analytics stats download test started.");
 

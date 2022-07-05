@@ -7,6 +7,11 @@ describe("Dashboard", () => {
         cy.login(Cypress.env("idir_username"), Cypress.env("idir_password"));
     });
 
+    afterEach(() => {
+        cy.log("Logging out.");
+        cy.logout();
+    });
+
     it("Verify dashboards counts.", () => {
         cy.log("Dashboard test started.");
         cy.get("[data-testid=total-registered-users]").contains(6);
