@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 
+import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
 import { IConfigService, IHttpDelegate } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 
@@ -26,7 +26,7 @@ export class RestConfigService implements IConfigService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });

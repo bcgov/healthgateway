@@ -1,9 +1,9 @@
 import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
+import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
 import type { UserPreference } from "@/models/userPreference";
@@ -57,7 +57,7 @@ export class RestUserProfileService implements IUserProfileService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -88,7 +88,7 @@ export class RestUserProfileService implements IUserProfileService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -116,7 +116,7 @@ export class RestUserProfileService implements IUserProfileService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -144,7 +144,7 @@ export class RestUserProfileService implements IUserProfileService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -172,7 +172,7 @@ export class RestUserProfileService implements IUserProfileService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -200,7 +200,7 @@ export class RestUserProfileService implements IUserProfileService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -224,7 +224,7 @@ export class RestUserProfileService implements IUserProfileService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -249,7 +249,7 @@ export class RestUserProfileService implements IUserProfileService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -277,7 +277,7 @@ export class RestUserProfileService implements IUserProfileService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -305,7 +305,7 @@ export class RestUserProfileService implements IUserProfileService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -339,7 +339,7 @@ export class RestUserProfileService implements IUserProfileService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -378,7 +378,7 @@ export class RestUserProfileService implements IUserProfileService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -414,7 +414,7 @@ export class RestUserProfileService implements IUserProfileService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });

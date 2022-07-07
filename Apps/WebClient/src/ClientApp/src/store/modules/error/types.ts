@@ -7,7 +7,7 @@ import {
 } from "vuex";
 
 import { ErrorType } from "@/constants/errorType";
-import BannerError from "@/models/bannerError";
+import { BannerError } from "@/models/errors";
 import { RootState } from "@/store/types";
 
 export interface ErrorBannerState {

@@ -1,9 +1,9 @@
 import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
+import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
 import {
     Covid19LaboratoryOrderResult,
     LaboratoryOrderResult,
@@ -48,7 +48,7 @@ export class RestLaboratoryService implements ILaboratoryService {
         return new Promise((resolve, reject) => {
             if (!this.isCovid19Enabled) {
                 reject(
-                    ErrorTranslator.moduleDisabledError(ServiceName.Laboratory)
+                    ErrorTranslator.moduleDisabledError(ServiceCode.Laboratory)
                 );
                 return;
             }
@@ -69,7 +69,7 @@ export class RestLaboratoryService implements ILaboratoryService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Laboratory
+                            ServiceCode.Laboratory
                         )
                     );
                 });
@@ -102,7 +102,7 @@ export class RestLaboratoryService implements ILaboratoryService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Laboratory
+                            ServiceCode.Laboratory
                         )
                     );
                 });
@@ -142,7 +142,7 @@ export class RestLaboratoryService implements ILaboratoryService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Laboratory
+                            ServiceCode.Laboratory
                         )
                     );
                 });
@@ -180,7 +180,7 @@ export class RestLaboratoryService implements ILaboratoryService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Laboratory
+                            ServiceCode.Laboratory
                         )
                     );
                 });

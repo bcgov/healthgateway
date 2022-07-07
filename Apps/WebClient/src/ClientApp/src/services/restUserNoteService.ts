@@ -1,9 +1,9 @@
 import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
+import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
 import UserNote from "@/models/userNote";
 import container from "@/plugins/container";
@@ -58,7 +58,7 @@ export class RestUserNoteService implements IUserNoteService {
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -96,7 +96,7 @@ export class RestUserNoteService implements IUserNoteService {
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -123,7 +123,7 @@ export class RestUserNoteService implements IUserNoteService {
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -154,7 +154,7 @@ export class RestUserNoteService implements IUserNoteService {
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });

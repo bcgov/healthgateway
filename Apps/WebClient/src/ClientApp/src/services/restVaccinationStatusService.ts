@@ -1,10 +1,10 @@
 import { injectable } from "inversify";
 
+import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
-import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import container from "@/plugins/container";
@@ -45,7 +45,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
             if (!this.isEnabled) {
                 reject(
                     ErrorTranslator.moduleDisabledError(
-                        ServiceName.Immunization
+                        ServiceCode.Immunization
                     )
                 );
                 return;
@@ -71,7 +71,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Immunization
+                            ServiceCode.Immunization
                         )
                     );
                 });
@@ -87,7 +87,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
             if (!this.isEnabled) {
                 reject(
                     ErrorTranslator.moduleDisabledError(
-                        ServiceName.Immunization
+                        ServiceCode.Immunization
                     )
                 );
                 return;
@@ -112,7 +112,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Immunization
+                            ServiceCode.Immunization
                         )
                     );
                 });
@@ -126,7 +126,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
             if (!this.isEnabled) {
                 reject(
                     ErrorTranslator.moduleDisabledError(
-                        ServiceName.Immunization
+                        ServiceCode.Immunization
                     )
                 );
                 return;
@@ -146,7 +146,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Immunization
+                            ServiceCode.Immunization
                         )
                     );
                 });
@@ -160,7 +160,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
             if (!this.isEnabled) {
                 reject(
                     ErrorTranslator.moduleDisabledError(
-                        ServiceName.Immunization
+                        ServiceCode.Immunization
                     )
                 );
                 return;
@@ -180,7 +180,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Immunization
+                            ServiceCode.Immunization
                         )
                     );
                 });

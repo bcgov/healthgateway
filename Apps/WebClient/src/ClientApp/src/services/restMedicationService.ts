@@ -1,9 +1,9 @@
 import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
+import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
 import MedicationRequest from "@/models/MedicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
@@ -73,7 +73,7 @@ export class RestMedicationService implements IMedicationService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Medication
+                            ServiceCode.Medication
                         )
                     );
                 });
@@ -108,7 +108,7 @@ export class RestMedicationService implements IMedicationService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Medication
+                            ServiceCode.Medication
                         )
                     );
                 });

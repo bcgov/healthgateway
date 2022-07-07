@@ -7,10 +7,9 @@ import {
 } from "vuex";
 
 import { ErrorType } from "@/constants/errorType";
-import { CustomBannerError } from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
-import { ResultError } from "@/models/requestResult";
+import { CustomBannerError, ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { RootState } from "@/store/types";

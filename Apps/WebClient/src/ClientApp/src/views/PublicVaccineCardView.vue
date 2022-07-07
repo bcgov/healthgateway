@@ -15,10 +15,10 @@ import MessageModalComponent from "@/components/modal/MessageModalComponent.vue"
 import HgDateDropdownComponent from "@/components/shared/HgDateDropdownComponent.vue";
 import VaccineCardComponent from "@/components/VaccineCardComponent.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
-import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import { BannerError } from "@/models/errors";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";

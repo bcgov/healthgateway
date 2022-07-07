@@ -1,4 +1,4 @@
-export const enum ServiceName {
+export const enum ServiceCode {
     DataBase = "DB",
     ClientRegistries = "CR",
     ODR = "ODR",

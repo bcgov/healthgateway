@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 
+import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
 import PatientData from "@/models/patientData";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
@@ -38,7 +38,7 @@ export class RestPatientService implements IPatientService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Patient
+                            ServiceCode.Patient
                         )
                     );
                 });

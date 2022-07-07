@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 
+import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
 import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
@@ -42,7 +42,7 @@ export class RestReportService implements IReportService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Report
+                            ServiceCode.Report
                         )
                     );
                 });

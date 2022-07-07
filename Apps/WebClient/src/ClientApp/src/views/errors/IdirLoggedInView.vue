@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 
 import PageErrorComponent from "@/components/PageErrorComponent.vue";
-import PageError from "@/models/pageError";
+import { PageError } from "@/models/errors";
 
 @Component({
     components: {

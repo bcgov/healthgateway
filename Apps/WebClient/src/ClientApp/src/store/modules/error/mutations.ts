@@ -1,4 +1,4 @@
-import BannerError from "@/models/bannerError";
+import { BannerError } from "@/models/errors";
 
 import { ErrorBannerMutations, ErrorBannerState } from "./types";
 

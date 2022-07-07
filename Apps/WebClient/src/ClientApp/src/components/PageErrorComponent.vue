@@ -2,7 +2,7 @@
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
-import PageError from "@/models/pageError";
+import { PageError } from "@/models/errors";
 
 @Component
 export default class PageErrorComponent extends Vue {

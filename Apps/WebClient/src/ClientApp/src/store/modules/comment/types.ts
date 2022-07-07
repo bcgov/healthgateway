@@ -8,7 +8,7 @@ import {
 
 import { ErrorType } from "@/constants/errorType";
 import { Dictionary } from "@/models/baseTypes";
-import { ResultError } from "@/models/requestResult";
+import { ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
 import { UserComment } from "@/models/userComment";
 import { RootState } from "@/store/types";

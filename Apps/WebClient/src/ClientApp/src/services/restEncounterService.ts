@@ -1,9 +1,9 @@
 import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
+import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
 import Encounter from "@/models/encounter";
-import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -57,7 +57,7 @@ export class RestEncounterService implements IEncounterService {
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Encounter
+                            ServiceCode.Encounter
                         )
                     );
                 });

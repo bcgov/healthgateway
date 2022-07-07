@@ -1,9 +1,9 @@
 import { injectable } from "inversify";
 
+import { ServiceCode } from "@/constants/serviceCodes";
 import AddDependentRequest from "@/models/addDependentRequest";
 import { ExternalConfiguration } from "@/models/configData";
 import type { Dependent } from "@/models/dependent";
-import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -64,7 +64,7 @@ export class RestDependentService implements IDependentService {
                         return reject(
                             ErrorTranslator.internalNetworkError(
                                 err,
-                                ServiceName.HealthGatewayUser
+                                ServiceCode.HealthGatewayUser
                             )
                         );
                     });
@@ -95,7 +95,7 @@ export class RestDependentService implements IDependentService {
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -126,7 +126,7 @@ export class RestDependentService implements IDependentService {
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });

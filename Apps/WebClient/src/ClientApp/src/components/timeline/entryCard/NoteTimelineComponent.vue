@@ -8,8 +8,8 @@ import { Action, Getter } from "vuex-class";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import EventBus, { EventMessageName } from "@/eventbus";
+import { ResultError } from "@/models/errors";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
-import { ResultError } from "@/models/requestResult";
 import User from "@/models/user";
 import UserNote from "@/models/userNote";
 

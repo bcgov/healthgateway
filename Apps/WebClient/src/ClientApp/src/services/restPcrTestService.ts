@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 
+import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
 import RegisterTestKitPublicRequest from "@/models/registerTestKitPublicRequest";
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import RequestResult from "@/models/requestResult";
@@ -63,7 +63,7 @@ export class RestPcrTestService implements IPcrTestService {
                         return reject(
                             ErrorTranslator.internalNetworkError(
                                 err,
-                                ServiceName.HealthGatewayUser
+                                ServiceCode.HealthGatewayUser
                             )
                         );
                     });
@@ -104,7 +104,7 @@ export class RestPcrTestService implements IPcrTestService {
                         return reject(
                             ErrorTranslator.internalNetworkError(
                                 err,
-                                ServiceName.HealthGatewayUser
+                                ServiceCode.HealthGatewayUser
                             )
                         );
                     });
