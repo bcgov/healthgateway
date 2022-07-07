@@ -126,6 +126,7 @@ describe("Landing Page - Too Many Requests", () => {
     it("Too Many Requests Banner Appears on 429 Response", () => {
         cy.intercept("GET", "**/Communication/*", { statusCode: 429 });
         cy.visit("/");
+
         cy.contains(
             "[data-testid=communicationBanner]",
             "higher than usual site traffic"
@@ -137,8 +138,11 @@ describe("Landing Page - Too Many Requests", () => {
             "getCommunication"
         );
         cy.visit("/");
+
+        // wait for both Communication calls to complete
         cy.wait("@getCommunication");
         cy.wait("@getCommunication");
+
         cy.contains(
             "[data-testid=communicationBanner]",
             "higher than usual site traffic"
