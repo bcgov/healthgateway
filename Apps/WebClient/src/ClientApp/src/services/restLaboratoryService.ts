@@ -4,6 +4,7 @@ import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
+import { HttpError } from "@/models/errors";
 import {
     Covid19LaboratoryOrderResult,
     LaboratoryOrderResult,
@@ -64,8 +65,10 @@ export class RestLaboratoryService implements ILaboratoryService {
                 .then((requestResult) => {
                     resolve(requestResult);
                 })
-                .catch((err) => {
-                    this.logger.error(`getCovidTests Fetch error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestLaboratoryService.getPublicCovid19Tests()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
@@ -97,8 +100,10 @@ export class RestLaboratoryService implements ILaboratoryService {
                 .then((requestResult) => {
                     resolve(requestResult);
                 })
-                .catch((err) => {
-                    this.logger.error(`getOrders Fetch error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestLaboratoryService.getCovid19LaboratoryOrders()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
@@ -135,9 +140,9 @@ export class RestLaboratoryService implements ILaboratoryService {
                 .then((requestResult) => {
                     resolve(requestResult);
                 })
-                .catch((err) => {
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        `getLaboratoryOrders Fetch error: ${err}`
+                        `Error in RestLaboratoryService.getLaboratoryOrders()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
@@ -175,8 +180,10 @@ export class RestLaboratoryService implements ILaboratoryService {
                 .then((requestResult) => {
                     resolve(requestResult);
                 })
-                .catch((err) => {
-                    this.logger.error(`getReportDocument Fetch error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestLaboratoryService.getReportDocument()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,

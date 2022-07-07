@@ -3,6 +3,7 @@ import { injectable } from "inversify";
 import { ServiceCode } from "@/constants/serviceCodes";
 import Communication, { CommunicationType } from "@/models/communication";
 import { ExternalConfiguration } from "@/models/configData";
+import { HttpError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -39,8 +40,10 @@ export class RestCommunicationService implements ICommunicationService {
                 .then((communication) => {
                     return resolve(communication);
                 })
-                .catch((err) => {
-                    this.logger.error(`getActive Communication error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestCommunicationService.getActive()`
+                    );
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,

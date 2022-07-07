@@ -2,6 +2,7 @@ import { injectable } from "inversify";
 
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
+import { HttpError } from "@/models/errors";
 import UserRating from "@/models/userRating";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -37,8 +38,10 @@ export class RestUserRatingService implements IUserRatingService {
                 .then(() => {
                     return resolve(true);
                 })
-                .catch((err) => {
-                    this.logger.error(`submitRating Fetch error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestUserRatingService.submitRating()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,

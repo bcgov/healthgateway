@@ -4,6 +4,7 @@ import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
 import Encounter from "@/models/encounter";
+import { HttpError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -52,8 +53,10 @@ export class RestEncounterService implements IEncounterService {
                 .then((requestResult) => {
                     resolve(requestResult);
                 })
-                .catch((err) => {
-                    this.logger.error(`Fetch error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestEncounterService.getPatientEncounters()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,

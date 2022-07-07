@@ -5,6 +5,7 @@ import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
+import { HttpError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import container from "@/plugins/container";
@@ -64,9 +65,9 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
                 .then((requestResult) => {
                     resolve(requestResult);
                 })
-                .catch((err) => {
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        `Fetch public vaccine status error: ${err}`
+                        `Error in RestVaccinationStatusService.getPublicVaccineStatus()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
@@ -105,9 +106,9 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
                 .then((requestResult) => {
                     resolve(requestResult);
                 })
-                .catch((err) => {
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        `Fetch public vaccine proof error: ${err}`
+                        `Error in RestVaccinationStatusService.getPublicVaccineStatusPdf()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
@@ -139,9 +140,9 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
                 .then((requestResult) => {
                     resolve(requestResult);
                 })
-                .catch((err) => {
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        `Fetch authenticated vaccine status error: ${err}`
+                        `Error in RestVaccinationStatusService.getAuthenticatedVaccineStatus()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
@@ -173,9 +174,9 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
                 .then((requestResult) => {
                     resolve(requestResult);
                 })
-                .catch((err) => {
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        `Fetch authenticated vaccine proof error: ${err}`
+                        `Error in RestVaccinationStatusService.getAuthenticatedVaccineRecord()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(

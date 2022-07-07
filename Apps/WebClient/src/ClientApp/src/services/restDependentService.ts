@@ -4,6 +4,7 @@ import { ServiceCode } from "@/constants/serviceCodes";
 import AddDependentRequest from "@/models/addDependentRequest";
 import { ExternalConfiguration } from "@/models/configData";
 import type { Dependent } from "@/models/dependent";
+import { HttpError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -59,8 +60,10 @@ export class RestDependentService implements IDependentService {
                             reject
                         );
                     })
-                    .catch((err) => {
-                        this.logger.error(err);
+                    .catch((err: HttpError) => {
+                        this.logger.error(
+                            `Error in RestDependentService.addDependent()`
+                        );
                         return reject(
                             ErrorTranslator.internalNetworkError(
                                 err,
@@ -90,8 +93,8 @@ export class RestDependentService implements IDependentService {
                         reject
                     );
                 })
-                .catch((err) => {
-                    this.logger.error(`getAll dependents error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(`Error in RestDependentService.getAll()`);
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
@@ -121,8 +124,10 @@ export class RestDependentService implements IDependentService {
                         reject
                     );
                 })
-                .catch((err) => {
-                    this.logger.error(`removeDependent error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestDependentService.removeDependent()`
+                    );
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,

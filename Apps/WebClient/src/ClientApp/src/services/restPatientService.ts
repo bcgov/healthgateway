@@ -2,6 +2,7 @@ import { injectable } from "inversify";
 
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
+import { HttpError } from "@/models/errors";
 import PatientData from "@/models/patientData";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
@@ -33,8 +34,10 @@ export class RestPatientService implements IPatientService {
                 .then((requestResult) => {
                     resolve(requestResult);
                 })
-                .catch((err) => {
-                    this.logger.error(`Fetch error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestPatientService.getPatientData()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
