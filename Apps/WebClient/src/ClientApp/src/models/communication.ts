@@ -8,8 +8,8 @@ export default interface Communication {
 
 export enum CommunicationType {
     // Banner communication.
-    Banner,
+    Banner = 0,
 
     // Communication inside the app.
-    InApp,
+    InApp = 2,
 }
