@@ -1,7 +1,8 @@
-import Axios, { AxiosRequestConfig } from "axios";
+import Axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { injectable } from "inversify";
 
 import { Dictionary } from "@/models/baseTypes";
+import { HttpError } from "@/models/errors";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IHttpDelegate, ILogger } from "@/services/interfaces";
@@ -38,16 +39,15 @@ export default class HttpDelegate implements IHttpDelegate {
                 headers,
             };
             Axios.get(url, config)
-                .then((response) => {
+                .then((response: AxiosResponse<T>) => {
                     return resolve(response.data);
                 })
-                .catch((err) => {
-                    const errorMessage = `GET error: ${err.toString()}`;
-                    this.logger.error(errorMessage);
-                    return reject(errorMessage);
-                });
+                .catch((error: Error | AxiosError) =>
+                    reject(this.toHttpError(error, "GET"))
+                );
         });
     }
+
     public post<T>(
         url: string,
         payload: unknown,
@@ -58,14 +58,12 @@ export default class HttpDelegate implements IHttpDelegate {
                 headers,
             };
             Axios.post(url, payload, config)
-                .then((response) => {
+                .then((response: AxiosResponse<T>) => {
                     return resolve(response.data);
                 })
-                .catch((err) => {
-                    const errorMessage = `POST error: ${err.toString()}`;
-                    this.logger.error(errorMessage);
-                    return reject(errorMessage);
-                });
+                .catch((error: Error | AxiosError) =>
+                    reject(this.toHttpError(error, "POST"))
+                );
         });
     }
 
@@ -80,14 +78,12 @@ export default class HttpDelegate implements IHttpDelegate {
             };
             this.logger.debug(`Config: ${JSON.stringify(config)}`);
             Axios.put(url, payload, config)
-                .then((response) => {
+                .then((response: AxiosResponse<T>) => {
                     return resolve(response.data);
                 })
-                .catch((err) => {
-                    const errorMessage = `PUT error: ${err.toString()}`;
-                    this.logger.error(errorMessage);
-                    return reject(errorMessage);
-                });
+                .catch((error: Error | AxiosError) =>
+                    reject(this.toHttpError(error, "PUT"))
+                );
         });
     }
 
@@ -102,16 +98,15 @@ export default class HttpDelegate implements IHttpDelegate {
             };
             this.logger.debug(`Config: ${JSON.stringify(config)}`);
             Axios.patch(url, payload, config)
-                .then((response) => {
+                .then((response: AxiosResponse<T>) => {
                     return resolve(response.data);
                 })
-                .catch((err) => {
-                    const errorMessage = `PATCH error: ${err.toString()}`;
-                    this.logger.error(errorMessage);
-                    return reject(errorMessage);
-                });
+                .catch((error: Error | AxiosError) =>
+                    reject(this.toHttpError(error, "PATCH"))
+                );
         });
     }
+
     public delete<T>(
         url: string,
         payload: unknown | undefined = undefined,
@@ -124,14 +119,27 @@ export default class HttpDelegate implements IHttpDelegate {
             this.logger.debug(`Config: ${JSON.stringify(config)}`);
 
             Axios.delete(url, { data: payload, headers })
-                .then((response) => {
+                .then((response: AxiosResponse<T>) => {
                     return resolve(response.data);
                 })
-                .catch((err) => {
-                    const errorMessage = `DELETE error: ${err.toString()}`;
-                    this.logger.error(errorMessage);
-                    return reject(errorMessage);
-                });
+                .catch((error: Error | AxiosError) =>
+                    reject(this.toHttpError(error, "DELETE"))
+                );
         });
+    }
+
+    private toHttpError(
+        error: Error | AxiosError,
+        requestType: string
+    ): HttpError {
+        const errorMessage = `${requestType} error: ${error.toString()}`;
+        this.logger.error(errorMessage);
+
+        const httpError: HttpError = { message: errorMessage };
+        if (Axios.isAxiosError(error) && error.response?.status) {
+            httpError.statusCode = error.response.status;
+        }
+
+        return httpError;
     }
 }

@@ -12,6 +12,11 @@ export interface CustomBannerError {
     detail?: string;
 }
 
+export interface HttpError {
+    message: string;
+    statusCode?: number;
+}
+
 export class PageError {
     public code: string;
     public name: string;
@@ -33,4 +38,6 @@ export interface ResultError {
     actionCode?: ActionType;
     // The message associated to the error request
     resultMessage: string;
+    // The HTTP status code returned by the request
+    statusCode?: number;
 }

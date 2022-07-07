@@ -1,6 +1,6 @@
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ServiceCode } from "@/constants/serviceCodes";
-import { BannerError, ResultError } from "@/models/errors";
+import { BannerError, HttpError, ResultError } from "@/models/errors";
 
 export default class ErrorTranslator {
     public static toBannerError(
@@ -33,13 +33,14 @@ export default class ErrorTranslator {
     }
 
     public static internalNetworkError(
-        resultMessage: string,
+        error: HttpError,
         service: ServiceCode
     ): ResultError {
         return {
             errorCode: "ClientApp-CI-" + service,
-            resultMessage: resultMessage,
+            resultMessage: error.message,
             traceId: "",
+            statusCode: error.statusCode,
         };
     }
 
