@@ -1,6 +1,7 @@
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
-import RequestResult, { ResultError } from "@/models/requestResult";
+import { ResultError } from "@/models/errors";
+import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import UserNote from "@/models/userNote";
 import container from "@/plugins/container";

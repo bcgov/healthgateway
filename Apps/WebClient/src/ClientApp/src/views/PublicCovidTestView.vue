@@ -10,13 +10,13 @@ import { Action, Getter } from "vuex-class";
 import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import HgDateDropdownComponent from "@/components/shared/HgDateDropdownComponent.vue";
-import { CustomBannerError } from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import {
     DateWrapper,
     StringISODate,
     StringISODateTime,
 } from "@/models/dateWrapper";
+import { CustomBannerError } from "@/models/errors";
 import {
     PublicCovidTestRecord,
     PublicCovidTestResponseResult,

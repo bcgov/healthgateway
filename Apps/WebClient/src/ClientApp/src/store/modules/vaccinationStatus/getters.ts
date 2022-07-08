@@ -1,9 +1,8 @@
-import { CustomBannerError } from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
+import { CustomBannerError, ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
 
-import { ResultError } from "./../../../models/requestResult";
 import { VaccinationStatusGetters, VaccinationStatusState } from "./types";
 
 export const getters: VaccinationStatusGetters = {

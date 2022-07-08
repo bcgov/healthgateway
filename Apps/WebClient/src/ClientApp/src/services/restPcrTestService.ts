@@ -1,7 +1,8 @@
 import { injectable } from "inversify";
 
+import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
+import { HttpError } from "@/models/errors";
 import RegisterTestKitPublicRequest from "@/models/registerTestKitPublicRequest";
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import RequestResult from "@/models/requestResult";
@@ -58,12 +59,14 @@ export class RestPcrTestService implements IPcrTestService {
                             reject
                         );
                     })
-                    .catch((err) => {
-                        this.logger.error("registerTestKit Error: " + err);
+                    .catch((err: HttpError) => {
+                        this.logger.error(
+                            `Error in RestPcrTestService.registerTestKit()`
+                        );
                         return reject(
                             ErrorTranslator.internalNetworkError(
                                 err,
-                                ServiceName.HealthGatewayUser
+                                ServiceCode.HealthGatewayUser
                             )
                         );
                     });
@@ -97,14 +100,14 @@ export class RestPcrTestService implements IPcrTestService {
                             reject
                         );
                     })
-                    .catch((err) => {
+                    .catch((err: HttpError) => {
                         this.logger.error(
-                            "registerTestKitPublic error: " + err
+                            `Error in RestPcrTestService.registerTestKitPublic()`
                         );
                         return reject(
                             ErrorTranslator.internalNetworkError(
                                 err,
-                                ServiceName.HealthGatewayUser
+                                ServiceCode.HealthGatewayUser
                             )
                         );
                     });

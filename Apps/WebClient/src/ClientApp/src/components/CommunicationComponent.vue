@@ -4,6 +4,7 @@ import { Component, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 import Communication, { CommunicationType } from "@/models/communication";
+import { ResultError } from "@/models/errors";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ICommunicationService, ILogger } from "@/services/interfaces";
@@ -82,7 +83,19 @@ export default class CommunicationComponent extends Vue {
                     this.inAppCommunication = requestResult.resourcePayload;
                 }
             })
-            .catch((err) => {
+            .catch((err: ResultError) => {
+                if (err.statusCode === 429) {
+                    const communication: Communication = {
+                        text: "We are experiencing higher than usual site traffic, which may cause delays in accessing your health records. Please try again later.",
+                        communicationTypeCode: type,
+                    };
+
+                    if (type === CommunicationType.Banner) {
+                        this.bannerCommunication = communication;
+                    } else {
+                        this.inAppCommunication = communication;
+                    }
+                }
                 this.logger.error(JSON.stringify(err));
             });
     }

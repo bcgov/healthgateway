@@ -1,8 +1,9 @@
 import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
+import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
+import { HttpError } from "@/models/errors";
 import ImmunizationResult from "@/models/immunizationResult";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
@@ -57,12 +58,14 @@ export class RestImmunizationService implements IImmunizationService {
                 .then((requestResult) => {
                     resolve(requestResult);
                 })
-                .catch((err) => {
-                    this.logger.error(`Fetch error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestImmunizationService.getPatientImmunizations()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Immunization
+                            ServiceCode.Immunization
                         )
                     );
                 });

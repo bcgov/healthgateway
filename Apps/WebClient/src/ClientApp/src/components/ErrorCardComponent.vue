@@ -8,8 +8,8 @@ import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
-import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
+import { BannerError } from "@/models/errors";
 import User from "@/models/user";
 
 library.add(faChevronDown, faChevronUp, farCopy);

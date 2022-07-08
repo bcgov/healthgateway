@@ -15,7 +15,7 @@ import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
-import { ResultError } from "@/models/requestResult";
+import { ResultError } from "@/models/errors";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
