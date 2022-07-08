@@ -3,6 +3,7 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @using HealthGateway.Admin.Client.Store.MessageVerification
+@using HealthGateway.Common.Data.Utils
 
 <PageTitle>Support</PageTitle>
 <HgPageHeading>Support</HgPageHeading>
@@ -46,7 +47,7 @@
             <MudTd DataLabel="PHN" data-testid=@($"message-verification-table-phn-{@context.Hdid}")>@context.PersonalHealthNumber</MudTd>
             <MudTd DataLabel="Email or SMS" data-testid=@($"message-verification-table-email-sms-{@context.Hdid}")>@context.EmailOrSms</MudTd>
             <MudTd DataLabel="Verified" data-testid=@($"message-verification-table-verified-{@context.Hdid}")>@context.Verified</MudTd>
-            <MudTd DataLabel="Verification Date" data-testid=@($"message-verification-table-verification-date-{@context.Hdid}")>@context.VerificationDate</MudTd>
+            <MudTd DataLabel="Verification Date" data-testid=@($"message-verification-table-verification-date-{@context.Hdid}")>@DateFormatter.ToShortDateAndTime(context.VerificationDate.ToLocalTime())</MudTd>
             <MudTd DataLabel="Verification Code" data-testid=@($"message-verification-table-verification-code-{@context.Hdid}")>@context.VerificationCode</MudTd>
         </RowTemplate>
         <PagerContent>
