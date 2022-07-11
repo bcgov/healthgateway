@@ -1,0 +1,11 @@
+      - name: medication-$KONG_NAMESPACE-public
+        methods:
+          - GET
+        hosts:
+          - $KONG_NAMESPACE.api.gov.bc.ca
+        paths:
+          - /api/medicationservice/Medication/
+        strip_path: false
+        tags:
+          - OAS3_import
+          - ns.$KONG_NAMESPACE
