@@ -126,7 +126,7 @@ namespace HealthGateway.Admin.Client.Pages
 
                 };
                 this.Verified = model.Validated ? "true" : "false";
-                this.VerificationDate = DateFormatter.ToShortDateAndTime(model.UpdatedDateTime);
+                this.VerificationDate = DateFormatter.ToShortDateAndTime(model.UpdatedDateTime.ToLocalTime());
                 this.VerificationCode = model.VerificationType switch
                 {
                     MessagingVerificationType.Email => "-",
