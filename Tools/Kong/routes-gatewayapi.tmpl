@@ -1,0 +1,12 @@
+      - name: gatewayapi-$KONG_NAMESPACE-public
+        methods:
+          - GET
+        hosts:
+          - $KONG_NAMESPACE.api.gov.bc.ca
+        paths:
+          - /api/gatewayapiservice/Communication
+          - /api/gatewayapiservice/UserProfile/termsofservice
+        strip_path: false
+        tags:
+          - OAS3_import
+          - ns.$KONG_NAMESPACE
