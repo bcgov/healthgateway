@@ -11,14 +11,20 @@ import { BannerError } from "@/models/errors";
 import { RootState } from "@/store/types";
 
 export interface ErrorBannerState {
-    isShowing: boolean;
-    errors: BannerError[];
+    genericErrorBanner: {
+        isShowing: boolean;
+        errors: BannerError[];
+    };
+    tooManyRequestsWarning: boolean;
+    tooManyRequestsError?: string;
 }
 
 export interface ErrorBannerGetters
     extends GetterTree<ErrorBannerState, RootState> {
     isShowing(state: ErrorBannerState): boolean;
     errors(state: ErrorBannerState): BannerError[];
+    tooManyRequestsWarning(state: ErrorBannerState): boolean;
+    tooManyRequestsError(state: ErrorBannerState): string | undefined;
 }
 
 type StoreContext = ActionContext<ErrorBannerState, RootState>;
@@ -43,6 +49,14 @@ export interface ErrorBannerActions
         }
     ): void;
     clearError(context: StoreContext): void;
+    setTooManyRequestsWarning(context: StoreContext): void;
+    setTooManyRequestsError(
+        context: StoreContext,
+        params: {
+            key: string;
+        }
+    ): void;
+    clearTooManyRequests(context: StoreContext): void;
 }
 
 export interface ErrorBannerMutations extends MutationTree<ErrorBannerState> {
@@ -50,6 +64,9 @@ export interface ErrorBannerMutations extends MutationTree<ErrorBannerState> {
     show(state: ErrorBannerState): void;
     addError(state: ErrorBannerState, bannerError: BannerError): void;
     clearError(state: ErrorBannerState): void;
+    setTooManyRequestsWarning(state: ErrorBannerState): void;
+    setTooManyRequestsError(state: ErrorBannerState, key: string): void;
+    clearTooManyRequests(state: ErrorBannerState): void;
 }
 
 export interface ErrorBannerModule extends Module<ErrorBannerState, RootState> {
