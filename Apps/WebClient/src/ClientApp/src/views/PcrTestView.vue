@@ -13,7 +13,6 @@ import {
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
-import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import HgDateDropdownComponent from "@/components/shared/HgDateDropdownComponent.vue";
 import HgTimeDropdownComponent from "@/components/shared/HgTimeDropdownComponent.vue";
@@ -43,7 +42,6 @@ interface ISelectOption {
 @Component({
     components: {
         LoadingComponent,
-        ErrorCard: ErrorCardComponent,
         "hg-date-dropdown": HgDateDropdownComponent,
         "hg-time-dropdown": HgTimeDropdownComponent,
     },

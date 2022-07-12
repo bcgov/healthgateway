@@ -17,7 +17,6 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
 import NoteEditComponent from "@/components/modal/NoteEditComponent.vue";
 import ProtectiveWordComponent from "@/components/modal/ProtectiveWordComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
@@ -78,7 +77,6 @@ enum FilterLabelType {
         NoteEditComponent,
         EntryDetailsComponent,
         LinearTimeline: LinearTimelineComponent,
-        ErrorCard: ErrorCardComponent,
         Filters: FilterComponent,
         "resource-centre": ResourceCentreComponent,
         "add-note-button": AddNoteButtonComponent,

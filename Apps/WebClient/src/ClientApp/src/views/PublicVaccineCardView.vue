@@ -9,7 +9,6 @@ import { required } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
-import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import HgDateDropdownComponent from "@/components/shared/HgDateDropdownComponent.vue";
@@ -37,7 +36,6 @@ const validPersonalHealthNumber = (value: string): boolean => {
 @Component({
     components: {
         "vaccine-card": VaccineCardComponent,
-        "error-card": ErrorCardComponent,
         loading: LoadingComponent,
         "message-modal": MessageModalComponent,
         "hg-date-dropdown": HgDateDropdownComponent,
@@ -136,8 +134,6 @@ export default class PublicVaccineCardView extends Vue {
     private dateOfBirth = "";
     private dateOfVaccine = "";
 
-    private downloadError: BannerError | null = null;
-
     private get loadingStatusMessage(): string {
         if (this.isDownloading) {
             return "Downloading....";
@@ -222,7 +218,6 @@ export default class PublicVaccineCardView extends Vue {
             document.querySelector(".vaccine-card");
 
         if (printingArea !== null) {
-            this.downloadError = null;
             this.isDownloading = true;
 
             SnowPlow.trackEvent({
@@ -318,20 +313,6 @@ export default class PublicVaccineCardView extends Vue {
                     alt="BC Mark"
                 />
             </router-link>
-        </div>
-        <div v-if="downloadError !== null" class="container d-print-none">
-            <b-alert
-                variant="danger"
-                class="no-print my-3 p-3"
-                :show="downloadError !== null"
-                dismissible
-            >
-                <h4>Our Apologies</h4>
-                <div data-testid="errorTextDescription" class="pl-4">
-                    We've found an issue and the Health Gateway team is working
-                    hard to fix it.
-                </div>
-            </b-alert>
         </div>
         <div
             v-if="displayResult"
