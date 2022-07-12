@@ -14,7 +14,7 @@
         "@types/qrcode": "^1.4.2",
         "@types/vuelidate": "^0.7.15",
         "@types/webpack-env": "^1.17.0",
-        "@typescript-eslint/eslint-plugin": "^5.30.5",
+        "@typescript-eslint/eslint-plugin": "^5.30.6",
         "@typescript-eslint/parser": "^5.30.5",
         "@vue/cli-plugin-eslint": "^5.0.7",
         "@vue/cli-plugin-typescript": "^5.0.4",
