@@ -126,6 +126,7 @@ export default class App extends Vue {
     private dependentsPath = "/dependents";
     private reportsPath = "/reports";
     private timelinePath = "/timeline";
+    private landingPath = "/";
 
     constructor() {
         super();
@@ -183,7 +184,8 @@ export default class App extends Vue {
     private get pageHasCustomLayout(): boolean {
         return this.currentPathMatches(
             this.vaccineCardPath,
-            this.covidTestPath
+            this.covidTestPath,
+            this.landingPath
         );
     }
 
@@ -257,8 +259,13 @@ export default class App extends Vue {
             />
             <main class="col fill-height d-flex flex-column">
                 <CommunicationComponent v-if="isCommunicationVisible" />
-                <ErrorCardComponent v-if="!pageHasCustomLayout" />
-                <router-view />
+
+                <router-view v-if="pageHasCustomLayout" />
+                <div v-else class="m-3 m-md-4">
+                    <ErrorCardComponent />
+                    <router-view />
+                </div>
+
                 <ResourceCentreComponent v-if="isResourceCentreVisible" />
                 <IdleComponent ref="idleModal" />
             </main>

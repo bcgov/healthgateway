@@ -335,7 +335,7 @@ export default class ReportsView extends Vue {
 </script>
 
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <b-alert
             v-if="showLaboratoryOrderQueuedMessage"
@@ -519,7 +519,7 @@ export default class ReportsView extends Vue {
             :is-loading="isLoading || isGeneratingReport"
             :is-custom="!isGeneratingReport"
             :full-screen="false"
-        ></LoadingComponent>
+        />
         <div
             v-if="reportComponentName"
             data-testid="reportSample"

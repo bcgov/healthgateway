@@ -303,7 +303,7 @@ export default class VerifySMSComponent extends Vue {
                 </b-col>
             </b-row>
         </template>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <LoadingComponent :is-loading="isLoading" />
     </b-modal>
 </template>
 

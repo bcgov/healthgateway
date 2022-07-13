@@ -484,7 +484,7 @@ export default class TimelineView extends Vue {
 </script>
 
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <b-toast
             id="loading-toast"
             :visible="!isFullyLoaded"
