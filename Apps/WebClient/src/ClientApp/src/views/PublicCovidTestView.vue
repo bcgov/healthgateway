@@ -7,7 +7,6 @@ import { required } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
-import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import HgDateDropdownComponent from "@/components/shared/HgDateDropdownComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -38,7 +37,6 @@ const validPersonalHealthNumber = (value: string): boolean => {
 
 @Component({
     components: {
-        "error-card": ErrorCardComponent,
         loading: LoadingComponent,
         "hg-date-dropdown": HgDateDropdownComponent,
     },
