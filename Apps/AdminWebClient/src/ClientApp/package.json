@@ -17,12 +17,12 @@
         "core-js": "^3.23.4",
         "file-saver": "^2.0.5",
         "inversify": "^6.0.1",
-        "luxon": "^2.5.0",
+        "luxon": "^3.0.1",
         "reflect-metadata": "^0.1.13",
         "register-service-worker": "^1.7.2",
         "tiptap-vuetify": "^2.24.0",
         "vee-validate": "^3.4.14",
-        "vue": "^2.7.4",
+        "vue": "^2.7.5",
         "vue-class-component": "^7.2.6",
         "vue-meta": "^2.4.0",
         "vue-property-decorator": "^9.1.2",
@@ -42,7 +42,7 @@
         "@typescript-eslint/eslint-plugin": "^5.30.6",
         "@typescript-eslint/parser": "^5.30.6",
         "@vue/cli-plugin-eslint": "^5.0.8",
-        "@vue/cli-plugin-typescript": "^5.0.4",
+        "@vue/cli-plugin-typescript": "^5.0.8",
         "@vue/cli-service": "^5.0.8",
         "@vue/eslint-config-prettier": "^7.0.0",
         "@vue/eslint-config-typescript": "^10.0.0",
@@ -62,7 +62,7 @@
         "typescript": "^4.7.4",
         "vue-cli-plugin-vuetify": "^2.5.1",
         "vue-eslint-parser": "^8.3.0",
-        "vue-template-compiler": "^2.7.4",
+        "vue-template-compiler": "^2.7.5",
         "vuetify-loader": "^1.9.1"
     }
 }

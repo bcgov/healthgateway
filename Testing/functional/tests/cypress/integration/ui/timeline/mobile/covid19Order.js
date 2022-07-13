@@ -45,7 +45,9 @@ describe("COVID-19 Orders", () => {
                         expect($div.text().trim()).equal(negativeSummary);
                     }
                 );
-                cy.get("[data-testid=entryCardDetailsTitle]").click();
+                cy.get("[data-testid=entryCardDetailsTitle]").click({
+                    force: true,
+                });
             });
 
         cy.get("[data-testid=entryDetailsModal]")
@@ -82,7 +84,9 @@ describe("COVID-19 Orders", () => {
                 cy.get("[data-testid=laboratoryHeaderDescription]").should(
                     "not.exist"
                 );
-                cy.get("[data-testid=entryCardDetailsTitle]").click();
+                cy.get("[data-testid=entryCardDetailsTitle]").click({
+                    force: true,
+                });
             });
 
         cy.get("[data-testid=entryDetailsModal]")
@@ -116,7 +120,9 @@ describe("COVID-19 Orders", () => {
                 }).should(($div) => {
                     expect($div.text().trim()).equal(positiveSummary);
                 });
-                cy.get("[data-testid=entryCardDetailsTitle]").click();
+                cy.get("[data-testid=entryCardDetailsTitle]").click({
+                    force: true,
+                });
             });
 
         const correctedStatus = "Test Status: Corrected";
@@ -157,7 +163,9 @@ describe("COVID-19 Orders", () => {
                         expect($div.text().trim()).equal(positiveSummary);
                     }
                 );
-                cy.get("[data-testid=entryCardDetailsTitle]").click();
+                cy.get("[data-testid=entryCardDetailsTitle]").click({
+                    force: true,
+                });
             });
 
         const amendedStatus = "Test Status: Amended";
