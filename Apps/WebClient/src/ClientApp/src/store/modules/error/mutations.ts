@@ -18,14 +18,14 @@ export const mutations: ErrorBannerMutations = {
     clearError(state: ErrorBannerState) {
         state.genericErrorBanner.errors = [];
     },
-    setTooManyRequestsWarning(state: ErrorBannerState) {
-        state.tooManyRequestsWarning = true;
+    setTooManyRequestsWarning(state: ErrorBannerState, key: string) {
+        state.tooManyRequestsWarning = key;
     },
     setTooManyRequestsError(state: ErrorBannerState, key: string) {
         state.tooManyRequestsError = key;
     },
     clearTooManyRequests(state: ErrorBannerState) {
-        state.tooManyRequestsWarning = false;
+        state.tooManyRequestsWarning = undefined;
         state.tooManyRequestsError = undefined;
     },
 };

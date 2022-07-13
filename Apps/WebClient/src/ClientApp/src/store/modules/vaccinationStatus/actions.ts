@@ -241,15 +241,30 @@ export const actions: VaccinationStatusActions = {
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("authenticatedVaccinationStatusError", params.error);
 
-        context.dispatch(
-            "errorBanner/addError",
-            {
-                errorType: params.errorType,
-                source: ErrorSourceType.VaccineCard,
-                traceId: params.error.traceId,
-            },
-            { root: true }
-        );
+        if (
+            params.errorType === ErrorType.Retrieve &&
+            params.error.statusCode === 429
+        ) {
+            context.dispatch(
+                "errorBanner/setTooManyRequestsWarning",
+                {
+                    key: "page",
+                },
+                {
+                    root: true,
+                }
+            );
+        } else {
+            context.dispatch(
+                "errorBanner/addError",
+                {
+                    errorType: params.errorType,
+                    source: ErrorSourceType.VaccineCard,
+                    traceId: params.error.traceId,
+                },
+                { root: true }
+            );
+        }
     },
     retrieveAuthenticatedVaccineRecord(
         context,

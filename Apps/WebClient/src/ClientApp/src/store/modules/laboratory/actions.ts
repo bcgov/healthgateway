@@ -221,15 +221,30 @@ export const actions: LaboratoryActions = {
                 break;
         }
 
-        context.dispatch(
-            "errorBanner/addError",
-            {
-                errorType: params.errorType,
-                source: params.errorSourceType,
-                traceId: params.error.traceId,
-            },
-            { root: true }
-        );
+        if (
+            params.errorType === ErrorType.Retrieve &&
+            params.error.statusCode === 429
+        ) {
+            context.dispatch(
+                "errorBanner/setTooManyRequestsWarning",
+                {
+                    key: "page",
+                },
+                {
+                    root: true,
+                }
+            );
+        } else {
+            context.dispatch(
+                "errorBanner/addError",
+                {
+                    errorType: params.errorType,
+                    source: params.errorSourceType,
+                    traceId: params.error.traceId,
+                },
+                { root: true }
+            );
+        }
     },
     retrievePublicCovidTests(
         context,

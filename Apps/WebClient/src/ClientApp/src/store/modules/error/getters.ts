@@ -9,7 +9,7 @@ export const getters: ErrorBannerGetters = {
     errors(state: ErrorBannerState): BannerError[] {
         return state.genericErrorBanner.errors;
     },
-    tooManyRequestsWarning(state: ErrorBannerState): boolean {
+    tooManyRequestsWarning(state: ErrorBannerState): string | undefined {
         return state.tooManyRequestsWarning;
     },
     tooManyRequestsError(state: ErrorBannerState): string | undefined {
