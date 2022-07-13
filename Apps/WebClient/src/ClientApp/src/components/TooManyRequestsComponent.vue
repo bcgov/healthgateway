@@ -27,16 +27,6 @@ export default class TooManyRequestsComponent extends Vue {
 <template>
     <div>
         <b-alert
-            data-testid="too-many-requests-error"
-            variant="danger"
-            dismissible
-            class="no-print"
-            :show="showError"
-        >
-            Unable to complete action as the site is too busy. Please try again
-            later.
-        </b-alert>
-        <b-alert
             data-testid="too-many-requests-warning"
             variant="warning"
             dismissible
@@ -45,6 +35,16 @@ export default class TooManyRequestsComponent extends Vue {
         >
             We are unable to get your health records because the site is too
             busy. Please try again later.
+        </b-alert>
+        <b-alert
+            data-testid="too-many-requests-error"
+            variant="danger"
+            dismissible
+            class="no-print"
+            :show="showError"
+        >
+            Unable to complete action as the site is too busy. Please try again
+            later.
         </b-alert>
     </div>
 </template>
