@@ -89,7 +89,7 @@ export default class ErrorCardComponent extends Vue {
 </script>
 
 <template>
-    <div class="mx-3 mx-md-4 mt-3 mt-md-4">
+    <div>
         <TooManyRequestsComponent />
         <b-alert
             data-testid="errorBanner"

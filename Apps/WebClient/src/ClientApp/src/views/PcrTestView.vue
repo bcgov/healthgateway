@@ -469,7 +469,7 @@ export default class PcrTestView extends Vue {
                 !registrationComplete && pcrDataSource === DSNONE && !isLoading
             "
         >
-            <b-row class="pt-4">
+            <b-row class="pt-3">
                 <b-col>
                     <strong>
                         Register your COVID-19 test kit using one of the
@@ -526,7 +526,7 @@ export default class PcrTestView extends Vue {
             v-if="!registrationComplete && pcrDataSource !== DSNONE"
             v-show="!isLoading"
         >
-            <b-row id="title" class="mt-4">
+            <b-row id="title" class="mt-3">
                 <b-col>
                     <h1 class="h4 mb-2 font-weight-normal">
                         <strong>Register a Test Kit</strong>

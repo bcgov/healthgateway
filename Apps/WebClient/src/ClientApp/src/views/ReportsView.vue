@@ -18,7 +18,6 @@ import MedicationHistoryReportComponent from "@/components/report/MedicationHist
 import MedicationRequestReportComponent from "@/components/report/MedicationRequestReportComponent.vue";
 import MSPVisitsReportComponent from "@/components/report/MSPVisitsReportComponent.vue";
 import NotesReportComponent from "@/components/report/NotesReportComponent.vue";
-import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
@@ -55,7 +54,6 @@ const laboratoryReport = "laboratory-report";
         medicationRequestReport: MedicationRequestReportComponent,
         "hg-date-picker": DatePickerComponent,
         MultiSelectComponent,
-        "resource-centre": ResourceCentreComponent,
         noteReport: NotesReportComponent,
         laboratoryReport: LaboratoryReportComponent,
     },
@@ -337,7 +335,7 @@ export default class ReportsView extends Vue {
 </script>
 
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <b-alert
             v-if="showLaboratoryOrderQueuedMessage"
@@ -521,7 +519,7 @@ export default class ReportsView extends Vue {
             :is-loading="isLoading || isGeneratingReport"
             :is-custom="!isGeneratingReport"
             :full-screen="false"
-        ></LoadingComponent>
+        />
         <div
             v-if="reportComponentName"
             data-testid="reportSample"
@@ -557,7 +555,6 @@ export default class ReportsView extends Vue {
             </b-row>
         </div>
 
-        <resource-centre />
         <message-modal
             ref="messageModal"
             data-testid="messageModal"
