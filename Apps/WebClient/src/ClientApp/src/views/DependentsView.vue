@@ -9,7 +9,6 @@ import DependentCardComponent from "@/components/DependentCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import NewDependentComponent from "@/components/modal/NewDependentComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
-import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -29,7 +28,6 @@ library.add(faUserPlus);
         LoadingComponent,
         DependentCardComponent,
         NewDependentComponent,
-        "resource-centre": ResourceCentreComponent,
     },
 })
 export default class DependentsView extends Vue {
@@ -173,7 +171,6 @@ export default class DependentsView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
-        <resource-centre />
         <NewDependentComponent
             ref="newDependentModal"
             @show="showModal"

@@ -18,7 +18,6 @@ import MedicationHistoryReportComponent from "@/components/report/MedicationHist
 import MedicationRequestReportComponent from "@/components/report/MedicationRequestReportComponent.vue";
 import MSPVisitsReportComponent from "@/components/report/MSPVisitsReportComponent.vue";
 import NotesReportComponent from "@/components/report/NotesReportComponent.vue";
-import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
@@ -55,7 +54,6 @@ const laboratoryReport = "laboratory-report";
         medicationRequestReport: MedicationRequestReportComponent,
         "hg-date-picker": DatePickerComponent,
         MultiSelectComponent,
-        "resource-centre": ResourceCentreComponent,
         noteReport: NotesReportComponent,
         laboratoryReport: LaboratoryReportComponent,
     },
@@ -557,7 +555,6 @@ export default class ReportsView extends Vue {
             </b-row>
         </div>
 
-        <resource-centre />
         <message-modal
             ref="messageModal"
             data-testid="messageModal"

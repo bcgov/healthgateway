@@ -20,7 +20,6 @@ import { Action, Getter } from "vuex-class";
 import NoteEditComponent from "@/components/modal/NoteEditComponent.vue";
 import ProtectiveWordComponent from "@/components/modal/ProtectiveWordComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
-import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import AddNoteButtonComponent from "@/components/timeline/AddNoteButtonComponent.vue";
 import EntryDetailsComponent from "@/components/timeline/entryCard/EntryDetailsComponent.vue";
 import FilterComponent from "@/components/timeline/FilterComponent.vue";
@@ -78,7 +77,6 @@ enum FilterLabelType {
         EntryDetailsComponent,
         LinearTimeline: LinearTimelineComponent,
         Filters: FilterComponent,
-        "resource-centre": ResourceCentreComponent,
         "add-note-button": AddNoteButtonComponent,
     },
 })
@@ -579,7 +577,6 @@ export default class TimelineView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
-        <resource-centre />
         <ProtectiveWordComponent :is-loading="isMedicationStatementLoading" />
         <NoteEditComponent :is-loading="isNoteLoading" />
         <EntryDetailsComponent />
