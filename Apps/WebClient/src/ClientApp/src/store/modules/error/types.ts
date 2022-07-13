@@ -15,7 +15,7 @@ export interface ErrorBannerState {
         isShowing: boolean;
         errors: BannerError[];
     };
-    tooManyRequestsWarning: boolean;
+    tooManyRequestsWarning?: string;
     tooManyRequestsError?: string;
 }
 
@@ -23,7 +23,7 @@ export interface ErrorBannerGetters
     extends GetterTree<ErrorBannerState, RootState> {
     isShowing(state: ErrorBannerState): boolean;
     errors(state: ErrorBannerState): BannerError[];
-    tooManyRequestsWarning(state: ErrorBannerState): boolean;
+    tooManyRequestsWarning(state: ErrorBannerState): string | undefined;
     tooManyRequestsError(state: ErrorBannerState): string | undefined;
 }
 
@@ -49,7 +49,12 @@ export interface ErrorBannerActions
         }
     ): void;
     clearError(context: StoreContext): void;
-    setTooManyRequestsWarning(context: StoreContext): void;
+    setTooManyRequestsWarning(
+        context: StoreContext,
+        params: {
+            key: string;
+        }
+    ): void;
     setTooManyRequestsError(
         context: StoreContext,
         params: {
@@ -64,7 +69,7 @@ export interface ErrorBannerMutations extends MutationTree<ErrorBannerState> {
     show(state: ErrorBannerState): void;
     addError(state: ErrorBannerState, bannerError: BannerError): void;
     clearError(state: ErrorBannerState): void;
-    setTooManyRequestsWarning(state: ErrorBannerState): void;
+    setTooManyRequestsWarning(state: ErrorBannerState, key: string): void;
     setTooManyRequestsError(state: ErrorBannerState, key: string): void;
     clearTooManyRequests(state: ErrorBannerState): void;
 }

@@ -88,14 +88,29 @@ export const actions: MedicationStatementActions = {
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("medicationStatementError", params.error);
 
-        context.dispatch(
-            "errorBanner/addError",
-            {
-                errorType: params.errorType,
-                source: ErrorSourceType.MedicationStatements,
-                traceId: params.error.traceId,
-            },
-            { root: true }
-        );
+        if (
+            params.errorType === ErrorType.Retrieve &&
+            params.error.statusCode === 429
+        ) {
+            context.dispatch(
+                "errorBanner/setTooManyRequestsWarning",
+                {
+                    key: "page",
+                },
+                {
+                    root: true,
+                }
+            );
+        } else {
+            context.dispatch(
+                "errorBanner/addError",
+                {
+                    errorType: params.errorType,
+                    source: ErrorSourceType.MedicationStatements,
+                    traceId: params.error.traceId,
+                },
+                { root: true }
+            );
+        }
     },
 };
