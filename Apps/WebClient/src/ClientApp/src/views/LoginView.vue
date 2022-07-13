@@ -84,79 +84,70 @@ export default class LoginView extends Vue {
 
 <template>
     <div class="container my-5">
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <b-row>
-            <b-col>
-                <b-alert
-                    style="max-width: 25rem"
-                    :show="isRetry"
-                    dismissible
-                    variant="danger"
+        <LoadingComponent :is-loading="isLoading" />
+        <b-alert
+            style="max-width: 25rem"
+            :show="isRetry"
+            dismissible
+            variant="danger"
+        >
+            <h4>Error</h4>
+            <span
+                >An unexpected error occured while processing the request,
+                please try again.</span
+            >
+        </b-alert>
+        <b-card
+            v-if="identityProviders && identityProviders.length > 0"
+            id="loginPicker"
+            class="shadow-lg bg-white mx-auto"
+            style="max-width: 25rem"
+            align="center"
+        >
+            <h3 slot="header">Log In</h3>
+            <b-card-body v-if="hasMultipleProviders || isRetry">
+                <div v-for="provider in identityProviders" :key="provider.id">
+                    <b-row>
+                        <b-col>
+                            <hg-button
+                                :id="`${provider.id}Btn`"
+                                :data-testid="`${provider.id}Btn`"
+                                :disabled="provider.disabled"
+                                variant="primary"
+                                block
+                                @click="signInAndRedirect(provider.hint)"
+                            >
+                                <b-row>
+                                    <b-col class="col-2">
+                                        <hg-icon
+                                            :icon="`${provider.icon}`"
+                                            size="medium"
+                                        />
+                                    </b-col>
+                                    <b-col class="text-left">
+                                        <span>{{ provider.name }}</span>
+                                    </b-col>
+                                </b-row>
+                            </hg-button>
+                        </b-col>
+                    </b-row>
+                    <b-row
+                        v-if="
+                            identityProviders.indexOf(provider) <
+                            identityProviders.length - 1
+                        "
+                        ><b-col>or</b-col>
+                    </b-row>
+                </div>
+            </b-card-body>
+            <b-card-body v-else>
+                <span
+                    >Redirecting to
+                    <strong>{{ identityProviders[0].name }}</strong
+                    >...</span
                 >
-                    <h4>Error</h4>
-                    <span
-                        >An unexpected error occured while processing the
-                        request, please try again.</span
-                    >
-                </b-alert>
-                <b-card
-                    v-if="identityProviders && identityProviders.length > 0"
-                    id="loginPicker"
-                    class="shadow-lg bg-white mx-auto"
-                    style="max-width: 25rem"
-                    align="center"
-                >
-                    <h3 slot="header">Log In</h3>
-                    <b-card-body v-if="hasMultipleProviders || isRetry">
-                        <div
-                            v-for="provider in identityProviders"
-                            :key="provider.id"
-                        >
-                            <b-row>
-                                <b-col>
-                                    <hg-button
-                                        :id="`${provider.id}Btn`"
-                                        :data-testid="`${provider.id}Btn`"
-                                        :disabled="provider.disabled"
-                                        variant="primary"
-                                        block
-                                        @click="
-                                            signInAndRedirect(provider.hint)
-                                        "
-                                    >
-                                        <b-row>
-                                            <b-col class="col-2">
-                                                <hg-icon
-                                                    :icon="`${provider.icon}`"
-                                                    size="medium"
-                                                />
-                                            </b-col>
-                                            <b-col class="text-left">
-                                                <span>{{ provider.name }}</span>
-                                            </b-col>
-                                        </b-row>
-                                    </hg-button>
-                                </b-col>
-                            </b-row>
-                            <b-row
-                                v-if="
-                                    identityProviders.indexOf(provider) <
-                                    identityProviders.length - 1
-                                "
-                                ><b-col>or</b-col>
-                            </b-row>
-                        </div>
-                    </b-card-body>
-                    <b-card-body v-else>
-                        <span
-                            >Redirecting to
-                            <strong>{{ identityProviders[0].name }}</strong
-                            >...</span
-                        >
-                    </b-card-body>
-                </b-card>
-                <div v-else>No login providers configured</div>
-            </b-col>
-        </b-row>
+            </b-card-body>
+        </b-card>
+        <div v-else>No login providers configured</div>
     </div>
 </template>

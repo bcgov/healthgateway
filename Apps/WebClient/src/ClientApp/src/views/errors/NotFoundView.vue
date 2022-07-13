@@ -7,7 +7,7 @@ import { PageError } from "@/models/errors";
 
 @Component({
     components: {
-        ErrorComponent: PageErrorComponent,
+        PageErrorComponent,
     },
 })
 export default class NotFoundView extends Vue {
@@ -20,7 +20,5 @@ export default class NotFoundView extends Vue {
 </script>
 
 <template>
-    <div>
-        <ErrorComponent :error="errorDescription" />
-    </div>
+    <PageErrorComponent :error="errorDescription" />
 </template>
