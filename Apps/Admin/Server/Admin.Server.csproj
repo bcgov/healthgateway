@@ -9,8 +9,8 @@
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Admin' " />
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.6" />
-    <PackageReference Include="CsvHelper" Version="27.2.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.7" />
+    <PackageReference Include="CsvHelper" Version="28.0.0" />
   </ItemGroup>
 
   <ItemGroup>
