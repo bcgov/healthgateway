@@ -27,13 +27,19 @@ export default function () {
     const url = common.BaseSiteUrl;
     const params = {
         headers: {
-            'User-Agent': 'k6',
+            'User-Agent': 'Grafana/k6',
             'X-API-KEY': common.SpecialHeaderKey,
-            'Access-Control-Request-Headers': 'origin, x-requested-with',
+            'Access-Control-Request-Headers': 'Content-Type',
+            'Access-Control-Request-Method' : 'POST',
+            'Connection' : 'Keep-Alive',
+            'Accept': 'text/html, application/json',
+            'Origin': 'http://localhost',
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'en-US, en;q=0.5'
         }
     }
     let res = http.options(url, null, params);
-    common.checkResponse(res);
+    common.checkResponse(res, 204);
     sleep(1);
 }
 

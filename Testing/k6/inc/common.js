@@ -512,10 +512,11 @@ export function checkForRequestResult(response) {
     }
 }
 
-export function checkResponse(response) {
+export function checkResponse(response, successCode) {
     if (isObject(response)) {
+        var okCode = (successCode != null) ? successCode : 200;
         check(response, {
-            "Status is 200": (r) => r.status === 200,
+            "Status is 2xx success": (r) => (r.status === okCode),
             "Status is NOT 301 Moved Permanently": (r) => r.status != 301,
             "Status is NOT 307 Temporary Redirect": (r) => r.status != 307,
             "Status is NOT 308 Permanent Redirect": (r) => r.status != 308,
@@ -542,9 +543,9 @@ export function checkResponse(response) {
     return;
 }
 
-export function checkBatchResponses(responses) {
+export function checkBatchResponses(responses, expectedStatus) {
     for (let key in responses) {
-        checkResponse(responses[key]);
+        checkResponse(responses[key], expectedStatus);
     }
     return;
 }
