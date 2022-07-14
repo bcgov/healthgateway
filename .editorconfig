@@ -14,7 +14,7 @@ resharper_html_space_before_self_closing = true
 [*.{yml,yaml}]
 indent_size = 2
 
-[*.cs]
+[*.{cs,razor,cshtml}]
 
 # All Rules are enabled with default severity.
 # Rules with IsEnabledByDefault = false are force-enabled with default severity.
@@ -741,7 +741,7 @@ resharper_indent_pars = outside
 resharper_instance_members_qualify_members = none, field, property, event, method
 resharper_keep_existing_attribute_arrangement = true
 resharper_keep_existing_declaration_block_arrangement = true
-resharper_max_attribute_length_for_same_line = 120
+resharper_max_attribute_length_for_same_line = 200
 resharper_max_initializer_elements_on_line = 1
 resharper_namespace_body = block_scoped
 resharper_new_line_before_while = true
