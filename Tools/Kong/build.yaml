@@ -1,0 +1,36 @@
+name: $(date:yyyy).$(date:MM).$(date:dd).$(rev:r)
+
+pr: none
+
+trigger:
+  batch: "true"
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - Tools/Kong
+
+variables:
+  - name: App.Name
+    value: Kong
+  - name: App.Home
+    value: $(Build.SourcesDirectory)/Tools/$(App.Name)
+
+jobs:
+  - job: "PackageKong"
+    pool:
+      vmImage: "ubuntu-latest"
+    displayName: "Packaging Kong files"
+    steps:
+      - task: CopyFiles@2
+        displayName: "Copying Kong Files to Staging"
+        inputs:
+          SourceFolder: "$(App.Home)"
+          Contents: "**"
+          TargetFolder: "$(Build.ArtifactStagingDirectory)"
+
+      - task: PublishPipelineArtifact@0
+        displayName: "Publishing Kong Files"
+        inputs:
+          targetPath: "$(Build.ArtifactStagingDirectory)"
