@@ -18,27 +18,16 @@ import http from "k6/http";
 import { sleep } from "k6";
 import * as common from "../../inc/common.js";
 
-export let vendorChunkJsUrl = common.baseSiteUrl + "/js/chunk-vendors.c61f122d.js";
-export let siteChunkJsUrl = common.baseSiteUrl  + "/js/app.8136e1c8.js";
-export let cssUrl = common.baseSiteUrl  + "/css/app.c90e9393.css";
-export let cssVendorsUrl = common.baseSiteUrl  + "/css/chunk-vendors.21f4bba7.css";
-
 export let options = common.OptionConfig();
 
 export default function () {
 
-    let user = common.users[__VU % common.users.length];
-
     common.getConfigurations();
-    common.getOpenIdConfigurations();
-    common.authorizeUser(user);
     
     common.groupWithDurationMetric("spaBatch", function () {
-        let spaBatchResponses = http.batch(
-            common.spaAssetRequests(),
-        );
-        common.checkResponse(spaBatchResponses);
+        let spaBatchResponses = http.batch(common.spaAssetRequests());
+        common.checkBatchResponses(spaBatchResponses);
     });
 
-    sleep(1);
+    sleep(0.6);
 }

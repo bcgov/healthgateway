@@ -31,7 +31,7 @@ export default function () {
         let spaBatchResponses = http.batch(
             common.spaAssetRequests(),
         );
-        common.checkResponse(spaBatchResponses);
+        common.checkBatchResponses(spaBatchResponses);
     });
 
     common.groupWithDurationMetric("timelineBatch", function () {
@@ -40,7 +40,7 @@ export default function () {
         );
         let timelineBatchResponses = http.batch(common.timelineRequests(user));
 
-        common.checkResponses(webClientBatchResponses);
+        common.checkBatchResponses(webClientBatchResponses);
         common.checkTimelineResponses(timelineBatchResponses);
     });
 

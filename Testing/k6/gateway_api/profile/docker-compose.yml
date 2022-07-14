@@ -6,7 +6,8 @@ services:
     volumes:
       - ../../gateway_api/profile:/gateway_api/profile
       - ../../inc:/inc
-    environment: 
+    environment:
+      - "HG_URL=${HG_URL}"
       - "HG_TYPE=${HG_TYPE}"
       - "HG_ENV=${HG_ENV}"
       - "HG_VUS=${HG_VUS}"

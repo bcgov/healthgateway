@@ -7,6 +7,7 @@ services:
       - ../../covid/federalpvc:/covid/federalpvc
       - ../../inc:/inc
     environment: 
+      - "HG_URL=${HG_URL}"
       - "HG_TYPE=${HG_TYPE}"
       - "HG_ENV=${HG_ENV}"
       - "HG_KEY=${HG_KEY}"

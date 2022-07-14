@@ -38,7 +38,8 @@ export let OptionsType = __ENV.HG_TYPE ? __ENV.HG_TYPE : "smoke"; // choice of l
 
 export let GroupDuration = Trend("batch");
 
-export let BaseSiteUrl = "https://" + Environment + ".healthgateway.gov.bc.ca/";
+// Determine the web site base URL.
+export let BaseSiteUrl = __ENV.HG_URL ? __ENV.HG_URL : "https://" + Environment + ".healthgateway.gov.bc.ca/";
 
 // Service Endpoints Configuration
 export let ConfigurationUrl = BaseSiteUrl + "configuration";
@@ -252,8 +253,7 @@ export function getConfigurations() {
     }
 }
 
-function getBaseSiteUrl()
-{
+function getBaseSiteUrl() {
     console.log(BaseSiteUrl);
     return BaseSiteUrl;
 }
@@ -397,28 +397,27 @@ export function params(user) {
 
 export function timelineRequests(user) {
     let timelineRequests = {
-        comments: {
+        "comments": {
             method: "GET",
             url: common.ServiceEndpoints.GatewayApi + "UserProfile/" + user.hdid + "/Comment",
             params: params(user),
         },
-        immz: {
+        "immz": {
             method: "GET",
             url: common.ServiceEndpoints.Immunization + "Immunization?hdid=" + user.hdid,
             params: params(user),
         },
-        labs: {
+        "labs": {
             method: "GET",
             url: common.ServiceEndpoints.Laboratory + "Laboratory/LaboratoryOrders?hdid=" + user.hdid,
             params: params(user),
         },
-
-        meds: {
+        "meds": {
             method: "GET",
             url: common.ServiceEndpoints.Medication + "MedicationStatement/" + user.hdid,
             params: params(user),
         },
-        notes: {
+        "notes": {
             method: "GET",
             url: common.ServiceEndpoints.GatewayApi + "Note/" + user.hdid,
             params: params(user),
@@ -442,45 +441,42 @@ export function spaAssetRequests() {
 
     let baseSiteUrl = common.BaseSiteUrl;
 
-    let spaAssetRequests = {
-        baseSite: {
-            method: "GET",
-            url: baseSiteUrl,
-            params: { headers: HttpHeaders }
-        },
-        vendorChunk: {
-            method: "GET",
-            url: baseSiteUrl + "js/chunk-vendors.c61f122d.js",
-            params: { headers: HttpHeaders }
-        },
-        siteChunk: {
-            method: "GET",
-            url: baseSiteUrl + "js/app.8136e1c8.js",
-            params: { headers: HttpHeaders }
-        },
-        css: {
-            method: "GET",
-            url: baseSiteUrl + "css/app.c90e9393.css",
-            params: { headers: HttpHeaders }
-        },
-        cssVendor: {
-            method: "GET",
-            url: baseSiteUrl + "/css/chunk-vendors.21f4bba7.css",
-            params: { headers: HttpHeaders }
-        },
-
-    }
-    return spaAssetRequests;
+    const baseSite = {
+        method: "GET",
+        url: baseSiteUrl,
+        params: { headers: HttpHeaders }
+    };
+    const vendorChunk = {
+        method: "GET",
+        url: baseSiteUrl + "js/chunk-vendors.c61f122d.js",
+        params: { headers: HttpHeaders }
+    };
+    const siteChunk = {
+        method: "GET",
+        url: baseSiteUrl + "js/app.8136e1c8.js",
+        params: { headers: HttpHeaders }
+    };
+    const css = {
+        method: "GET",
+        url: baseSiteUrl + "css/app.c90e9393.css",
+        params: { headers: HttpHeaders }
+    };
+    const cssVendor = {
+        method: "GET",
+        url: baseSiteUrl + "/css/chunk-vendors.21f4bba7.css",
+        params: { headers: HttpHeaders }
+    };
+    return [baseSite, vendorChunk, siteChunk, css, cssVendor];
 }
 
 export function webClientRequests(user) {
     let webClientRequests = {
-        patient: {
+        "patient": {
             method: "GET",
             url: common.ServiceEndpoints.Patient + "Patient/" + user.hdid,
             params: params(user),
         },
-        profile: {
+        "profile": {
             method: "GET",
             url: common.GatewayApi + "UserProfile/" + user.hdid,
             params: params(user),
@@ -516,157 +512,39 @@ export function checkForRequestResult(response) {
     }
 }
 
-export function checkResponse(response, topic) {
+export function checkResponse(response) {
     if (isObject(response)) {
-        var ok =
-            check(response, {
-                "HttpStatusCode is 200": (r) => r.status === 200,
-                "HttpStatusCode is NOT 3xx Redirection": (r) =>
-                    !(r.status >= 300 && r.status <= 306),
-                "HttpStatusCode is NOT 401 Unauthorized": (r) =>
-                    r.status != 401,
-                "HttpStatusCode is NOT 402 Payment Required": (r) =>
-                    r.status != 402,
-                "HttpStatusCode is NOT 403 Forbidden": (r) => r.status != 403,
-                "HttpStatusCode is NOT 404 Not Found": (r) => r.status != 404,
-                "HttpStatusCode is NOT 405 Method Not Allowed": (r) =>
-                    r.status != 405,
-                "HttpStatusCode is NOT 406 Not Acceptable": (r) =>
-                    r.status != 406,
-                "HttpStatusCode is NOT 407 Proxy Authentication Required": (
-                    r
-                ) => r.status != 407,
-                "HttpStatusCode is NOT 408 Request Timeout": (r) =>
-                    r.status != 408,
-                "HttpStatusCode is NOT 4xx Client Error": (r) =>
-                    !(r.status >= 409 && r.status <= 499),
-                "HttpStatusCode is NOT 5xx Server Error": (r) =>
-                    !(r.status >= 500 && r.status <= 598),
-                "HttpStatusCode is NOT 0 (Timeout Error)": (r) => r.status != 0,
-            },  { myTag : topic }) || ErrorRate.add(1);
-        return;
+        check(response, {
+            "Status is 200": (r) => r.status === 200,
+            "Status is NOT 301 Moved Permanently": (r) => r.status != 301,
+            "Status is NOT 307 Temporary Redirect": (r) => r.status != 307,
+            "Status is NOT 308 Permanent Redirect": (r) => r.status != 308,
+            "Status is NOT 3xx": (r) => !(r.status >= 300 && r.status <= 399),
+            "Status is NOT 400 Bad Request": (r) => r.status != 400,
+            "Status is NOT 401 Unauthorized": (r) => r.status != 401,
+            "Status is NOT 402 Payment Required": (r) => r.status != 402,
+            "Status is NOT 403 Forbidden": (r) => r.status != 403,
+            "Status is NOT 404 Not Found": (r) => r.status != 404,
+            "Status is NOT 405 Method Not Allowed": (r) => r.status != 405,
+            "Status is NOT 406 Not Acceptable": (r) => r.status != 406,
+            "Status is NOT 407 Proxy Authentication Required": (r) => r.status != 407,
+            "Status is NOT 408 Request Timeout": (r) => r.status != 408,
+            "Status is NOT 409 Conflict": (r) => r.status != 409,
+            "Status is NOT 440 Login Time-out": (r) => r.status != 440,
+            "Status is NOT 4xx Client Error": (r) => !(r.status >= 400 && r.status <= 499),
+            "Status is NOT 500 Method Not Allowed": (r) => r.status != 500,
+            "Status is NOT 5xx Server Error": (r) => !(r.status >= 500 && r.status <= 599),
+            "Status is NOT 0 (Timeout Error)": (r) => r.status != 0,
+        }) || ErrorRate.add(1);
+    } else {
+        console.error("response variable is not an Object!");
     }
+    return;
 }
 
-export function checkTimelineResponses(responses) {
-    if (responses["comments"]) {
-        check(responses["comments"], {
-            "Comments HttpStatusCode is 200": (r) => r.status === 200,
-            "Comments HttpStatusCode is NOT 3xx Redirection": (r) =>
-                !(r.status >= 300 && r.status <= 306),
-            "Comments HttpStatusCode is NOT 401 Unauthorized": (r) =>
-                r.status != 401,
-            "Comments HttpStatusCode is NOT 4xx Client Error": (r) =>
-                !(r.status >= 400 && r.status <= 499),
-            "Comments HttpStatusCode is NOT 5xx Server Error": (r) =>
-                !(r.status >= 500 && r.status <= 598),
-            "Comments HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
-                r.status != 0,
-        }) || ErrorRate.add(1);
+export function checkBatchResponses(responses) {
+    for (let key in responses) {
+        checkResponse(responses[key]);
     }
-    if (responses["communication"]) {
-        check(responses["communication"], {
-            "Communication HttpStatusCode is 200": (r) => r.status === 200,
-            "Communication HttpStatusCode is NOT 3xx Redirection": (r) =>
-                !(r.status >= 300 && r.status <= 306),
-            "Communication HttpStatusCode is NOT 401 Unauthorized": (r) =>
-                r.status != 401,
-            "Communication HttpStatusCode is NOT 4xx Client Error": (r) =>
-                !(r.status >= 400 && r.status <= 499),
-            "Communication HttpStatusCode is NOT 5xx Server Error": (r) =>
-                !(r.status >= 500 && r.status <= 598),
-            "Communication HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
-                r.status != 0,
-        }) || ErrorRate.add(1);
-    }
-    if (responses["configuration"]) {
-        check(responses["configuration"], {
-            "Configuration HttpStatusCode is 200": (r) => r.status === 200,
-            "Configuration HttpStatusCode is NOT 3xx Redirection": (r) =>
-                !(r.status >= 300 && r.status <= 306),
-            "Configuration HttpStatusCode is NOT 401 Unauthorized": (r) =>
-                r.status != 401,
-            "Configuration HttpStatusCode is NOT 4xx Client Error": (r) =>
-                !(r.status >= 400 && r.status <= 499),
-            "Configuration HttpStatusCode is NOT 5xx Server Error": (r) =>
-                !(r.status >= 500 && r.status <= 598),
-            "Configuration HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
-                r.status != 0,
-        }) || ErrorRate.add(1);
-    }
-    if (responses["labs"]) {
-        check(responses["labs"], {
-            "LaboratoryService HttpStatusCode is 200": (r) => r.status === 200,
-            "LaboratoryService HttpStatusCode is NOT 3xx Redirection": (r) =>
-                !(r.status >= 300 && r.status <= 306),
-            "LaboratoryService HttpStatusCode is NOT 401 Unauthorized": (r) =>
-                r.status != 401,
-            "LaboratoryService HttpStatusCode is NOT 4xx Client Error": (r) =>
-                !(r.status >= 400 && r.status <= 499),
-            "LaboratoryService HttpStatusCode is NOT 5xx Server Error": (r) =>
-                !(r.status >= 500 && r.status <= 598),
-            "LaboratoryService HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
-                r.status != 0,
-        }) || ErrorRate.add(1);
-    }
-    if (responses["meds"]) {
-        check(responses["meds"], {
-            "MedicationService HttpStatusCode is 200": (r) => r.status === 200,
-            "MedicationService HttpStatusCode is NOT 3xx Redirection": (r) =>
-                !(r.status >= 300 && r.status <= 306),
-            "MedicationService HttpStatusCode is NOT 401 Unauthorized": (r) =>
-                r.status != 401,
-            "MedicationService HttpStatusCode is NOT 4xx Client Error": (r) =>
-                !(r.status >= 400 && r.status <= 499),
-            "MedicationService HttpStatusCode is NOT 5xx Server Error": (r) =>
-                !(r.status >= 500 && r.status <= 598),
-            "MedicationService HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
-                r.status != 0,
-        }) || ErrorRate.add(1);
-    }
-    if (responses["notes"]) {
-        check(responses["notes"], {
-            "Note HttpStatusCode is 200": (r) => r.status === 200,
-            "Note HttpStatusCode is NOT 3xx Redirection": (r) =>
-                !(r.status >= 300 && r.status <= 306),
-            "Note HttpStatusCode is NOT 401 Unauthorized": (r) =>
-                r.status != 401,
-            "Note HttpStatusCode is NOT 4xx Client Error": (r) =>
-                !(r.status >= 400 && r.status <= 499),
-            "Note HttpStatusCode is NOT 5xx Server Error": (r) =>
-                !(r.status >= 500 && r.status <= 598),
-            "Note HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
-                r.status != 0,
-        }) || ErrorRate.add(1);
-    }
-    if (responses["patient"]) {
-        check(responses["patient"], {
-            "PatientService HttpStatusCode is 200": (r) => r.status === 200,
-            "PatientService HttpStatusCode is NOT 3xx Redirection": (r) =>
-                !(r.status >= 300 && r.status <= 306),
-            "PatientService HttpStatusCode is NOT 401 Unauthorized": (r) =>
-                r.status != 401,
-            "PatientService HttpStatusCode is NOT 4xx Client Error": (r) =>
-                !(r.status >= 400 && r.status <= 499),
-            "PatientService HttpStatusCode is NOT 5xx Server Error": (r) =>
-                !(r.status >= 500 && r.status <= 598),
-            "PatientService HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
-                r.status != 0,
-        }) || ErrorRate.add(1);
-    }
-    if (responses["profile"]) {
-        check(responses["profile"], {
-            "UserProfile HttpStatusCode is 200": (r) => r.status === 200,
-            "UserProfile HttpStatusCode is NOT 3xx Redirection": (r) =>
-                !(r.status >= 300 && r.status <= 306),
-            "UserProfile HttpStatusCode is NOT 401 Unauthorized": (r) =>
-                r.status != 401,
-            "UserProfile HttpStatusCode is NOT 4xx Client Error": (r) =>
-                !(r.status >= 400 && r.status <= 499),
-            "UserProfile HttpStatusCode is NOT 5xx Server Error": (r) =>
-                !(r.status >= 500 && r.status <= 598),
-            "UserProfile HttpStatusCode is NOT 0 (Timeout Error)": (r) =>
-                r.status != 0,
-        }) || ErrorRate.add(1);
-    }
+    return;
 }

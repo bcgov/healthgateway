@@ -7,6 +7,7 @@ services:
       - ../../keycloak/kc_authenticate:/keycloak/kc_authenticate
       - ../../inc:/inc
     environment: 
+      - "HG_URL=${HG_URL}"
       - "HG_ENV=${HG_ENV}"
       - "HG_VUS=${HG_VUS}"
       - "HG_KEY=${HG_KEY}"

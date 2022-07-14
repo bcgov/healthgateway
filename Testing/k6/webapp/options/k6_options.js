@@ -22,16 +22,18 @@ export let options = common.OptionConfig();
 
 export default function () {
 
-    common.BaseSiteUrl = "https://healthgateway.app.nomostech.co/";
-
     common.getConfigurations();
-   
-    common.groupWithDurationMetric("spaBatch", function () {
-        let spaBatchResponses = http.batch(
-            common.spaAssetRequests(),
-        );
-       // common.checkResponses(spaBatchResponses);
-    });
 
-    sleep(0.5);
+    const url = common.BaseSiteUrl;
+    const params = {
+        headers: {
+            'User-Agent': 'k6',
+            'X-API-KEY': common.SpecialHeaderKey,
+            'Access-Control-Request-Headers': 'origin, x-requested-with',
+        }
+    }
+    let res = http.options(url, null, params);
+    common.checkResponse(res);
+    sleep(1);
 }
+

@@ -7,7 +7,8 @@ services:
       - ./k6_card.js:/k6_card.js
       - ../../covid/vaccinecard:/covid/vaccinecard
       - ../../inc:/inc
-    environment: 
+    environment:       
+      - "HG_URL=${HG_URL}"
       - "HG_TYPE=${HG_TYPE}"
       - "HG_ENV=${HG_ENV}"
       - "HG_KEY=${HG_KEY}"
