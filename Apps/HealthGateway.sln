@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29806.167
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\src\Common.csproj", "{8660083F-F582-47C6-BC98-6DCF0F4AC851}"
 EndProject
@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DBMaintainer", "DBMaintaine
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Immunization", "Immunization\src\Immunization.csproj", "{1842E377-23AD-4A52-881E-F0B82E7893A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonTests", "Common\test\unit\CommonTests.csproj", "{D55428F4-B07E-46AF-AB09-0F526701173F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonTests", "Common\test\unit\CommonTests.csproj", "{D55428F4-B07E-46AF-AB09-0F526701173F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImmunizationTests", "Immunization\test\unit\ImmunizationTests.csproj", "{30741500-8F59-45CF-B753-14EBE6EE275E}"
 EndProject
@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseTests", "Database\t
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebClientTests", "WebClient\test\unit\WebClientTests.csproj", "{622DA0CD-5DF2-4FF1-9BE6-524CA0549976}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medication", "Medication\src\Medication.csproj", "{24607238-4330-4732-8988-9D8E496A0C59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Medication", "Medication\src\Medication.csproj", "{24607238-4330-4732-8988-9D8E496A0C59}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedicationTests", "Medication\test\unit\MedicationTests.csproj", "{99BD4ECB-32B2-4429-95E3-3AFFAF89BD02}"
 EndProject
@@ -30,9 +30,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C8C17BF5-0961-4BEC-BC89-73D79D6B1C96}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = ../.editorconfig
-		stylecop.json = stylecop.json
-		sonar-config.xml = sonar-config.xml
 		Directory.Build.props = Directory.Build.props
+		sonar-config.xml = sonar-config.xml
+		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Laboratory", "Laboratory\src\Laboratory.csproj", "{A23D2835-87F7-4521-B10F-8E78DAD02929}"
@@ -49,29 +49,29 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Encounter", "Encounter\src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EncounterTests", "Encounter\test\unit\EncounterTests.csproj", "{AE9BCF9A-C2F8-4122-8C46-4FEF1EC4D676}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebClient", "WebClient\src\WebClient.csproj", "{71D7A3C7-E2BF-4B74-A032-2841B8736F26}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebClient", "WebClient\src\WebClient.csproj", "{71D7A3C7-E2BF-4B74-A032-2841B8736F26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mock", "Mock\src\Mock.csproj", "{7267BD8D-B2B0-4C12-A938-CE5C40467732}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mock", "Mock\src\Mock.csproj", "{7267BD8D-B2B0-4C12-A938-CE5C40467732}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Data", "CommonData\src\Common.Data.csproj", "{17E4F0B0-6E54-4E5B-8FDF-53150A185CFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Data", "CommonData\src\Common.Data.csproj", "{17E4F0B0-6E54-4E5B-8FDF-53150A185CFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonDataTests", "CommonData\test\unit\CommonDataTests.csproj", "{B197DE3E-9C29-4CA0-85D6-225D9D22E5A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonDataTests", "CommonData\test\unit\CommonDataTests.csproj", "{B197DE3E-9C29-4CA0-85D6-225D9D22E5A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Ui", "CommonUi\src\Common.Ui.csproj", "{6A5DB383-5971-4AFE-9B34-14610D5558CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Ui", "CommonUi\src\Common.Ui.csproj", "{6A5DB383-5971-4AFE-9B34-14610D5558CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonUiTests", "CommonUi\test\unit\CommonUiTests.csproj", "{A339FDC0-7796-4F7C-A3A9-34261E83655B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonUiTests", "CommonUi\test\unit\CommonUiTests.csproj", "{A339FDC0-7796-4F7C-A3A9-34261E83655B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Admin.Server", "Admin\Server\Admin.Server.csproj", "{76F24907-B4C1-4370-97A3-F38F28292A6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Admin.Server", "Admin\Server\Admin.Server.csproj", "{76F24907-B4C1-4370-97A3-F38F28292A6F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Admin.Tests", "Admin\Tests\Admin.Tests.csproj", "{33F20A22-6911-4BFF-99D8-F166C7D018BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Admin.Tests", "Admin\Tests\Admin.Tests.csproj", "{33F20A22-6911-4BFF-99D8-F166C7D018BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Admin.Common", "Admin\Common\Admin.Common.csproj", "{60053FA0-4716-4427-BFA9-4E5734697224}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Admin.Common", "Admin\Common\Admin.Common.csproj", "{60053FA0-4716-4427-BFA9-4E5734697224}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Admin.Client", "Admin\Client\Admin.Client.csproj", "{EC80FE0A-DF60-4497-93AE-4506C6F3E747}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Admin.Client", "Admin\Client\Admin.Client.csproj", "{EC80FE0A-DF60-4497-93AE-4506C6F3E747}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GatewayApi", "GatewayApi\src\GatewayApi.csproj", "{79313AFE-0E91-4098-AFF7-558918855874}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GatewayApi", "GatewayApi\src\GatewayApi.csproj", "{79313AFE-0E91-4098-AFF7-558918855874}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GatewayApiTests", "GatewayApi\test\unit\GatewayApiTests.csproj", "{4C1B9864-FE24-4E58-B8A9-5554BF08AF0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GatewayApiTests", "GatewayApi\test\unit\GatewayApiTests.csproj", "{4C1B9864-FE24-4E58-B8A9-5554BF08AF0B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{11B7A6AA-39F8-407D-8817-2BF5A175F56A}"
 EndProject
@@ -461,6 +461,21 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D55428F4-B07E-46AF-AB09-0F526701173F} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{30741500-8F59-45CF-B753-14EBE6EE275E} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{622DA0CD-5DF2-4FF1-9BE6-524CA0549976} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{99BD4ECB-32B2-4429-95E3-3AFFAF89BD02} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{66487699-BD22-4707-99F8-CBDE347ECE94} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{01C73638-BCE4-4336-9849-54D7CB6E7DF2} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{62D7B7CE-05C2-4997-A346-6088DD33A5E2} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{AE9BCF9A-C2F8-4122-8C46-4FEF1EC4D676} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{B197DE3E-9C29-4CA0-85D6-225D9D22E5A2} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{A339FDC0-7796-4F7C-A3A9-34261E83655B} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{33F20A22-6911-4BFF-99D8-F166C7D018BA} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+		{4C1B9864-FE24-4E58-B8A9-5554BF08AF0B} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {80946C82-3F9C-4F96-B46F-59A297C44E36}
 	EndGlobalSection
@@ -468,20 +483,5 @@ Global
 		Policies = $0
 		$0.StandardHeader = $1
 		$1.Text = @-------------------------------------------------------------------------\r\n Copyright © 2019 Province of British Columbia\r\n\r\n Licensed under the Apache License, Version 2.0 (the "License");\r\n you may not use this file except in compliance with the License.\r\n You may obtain a copy of the License at\r\n\r\n http://www.apache.org/licenses/LICENSE-2.0\r\n\r\n Unless required by applicable law or agreed to in writing, software\r\n distributed under the License is distributed on an "AS IS" BASIS,\r\n WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\r\n See the License for the specific language governing permissions and\r\n limitations under the License.\r\n-------------------------------------------------------------------------
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{33F20A22-6911-4BFF-99D8-F166C7D018BA} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
-		{62D7B7CE-05C2-4997-A346-6088DD33A5E2} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
-		{B197DE3E-9C29-4CA0-85D6-225D9D22E5A2} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
-		{A339FDC0-7796-4F7C-A3A9-34261E83655B} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
-		{A57A0B42-FF66-4989-96B9-FE9DB4B03FC0} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
-		{AE9BCF9A-C2F8-4122-8C46-4FEF1EC4D676} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
-		{4C1B9864-FE24-4E58-B8A9-5554BF08AF0B} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
-		{30741500-8F59-45CF-B753-14EBE6EE275E} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
-		{01C73638-BCE4-4336-9849-54D7CB6E7DF2} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
-		{99BD4ECB-32B2-4429-95E3-3AFFAF89BD02} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
-		{66487699-BD22-4707-99F8-CBDE347ECE94} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
-		{622DA0CD-5DF2-4FF1-9BE6-524CA0549976} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
-		{D55428F4-B07E-46AF-AB09-0F526701173F} = {11B7A6AA-39F8-407D-8817-2BF5A175F56A}
 	EndGlobalSection
 EndGlobal
