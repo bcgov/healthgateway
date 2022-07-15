@@ -12,6 +12,7 @@ import { Action, Getter } from "vuex-class";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import HgDateDropdownComponent from "@/components/shared/HgDateDropdownComponent.vue";
+import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import VaccineCardComponent from "@/components/VaccineCardComponent.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -39,6 +40,7 @@ const validPersonalHealthNumber = (value: string): boolean => {
         loading: LoadingComponent,
         "message-modal": MessageModalComponent,
         "hg-date-dropdown": HgDateDropdownComponent,
+        TooManyRequestsComponent,
     },
 })
 export default class PublicVaccineCardView extends Vue {
@@ -420,6 +422,7 @@ export default class PublicVaccineCardView extends Vue {
                 @submit.prevent="handleSubmit"
             >
                 <div class="my-2 my-sm-5 px-0 px-sm-5">
+                    <TooManyRequestsComponent location="publicVaccineCard" />
                     <div v-if="bannerError !== undefined">
                         <b-alert
                             variant="danger"

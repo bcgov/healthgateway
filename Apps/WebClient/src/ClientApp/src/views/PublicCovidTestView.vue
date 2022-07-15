@@ -443,6 +443,7 @@ export default class PublicCovidTestView extends Vue {
                 @submit.prevent="handleSubmit"
             >
                 <div class="my-2 my-sm-5 px-0 px-sm-5">
+                    <TooManyRequestsComponent location="publicCovidTest" />
                     <div
                         v-if="publicCovidTestResponseResultError !== undefined"
                     >

@@ -9,13 +9,13 @@ export default class TooManyRequestsComponent extends Vue {
     location?: string;
 
     @Getter("tooManyRequestsWarning", { namespace: "errorBanner" })
-    warning!: boolean;
+    warning!: string | undefined;
 
     @Getter("tooManyRequestsError", { namespace: "errorBanner" })
     error!: string | undefined;
 
     private get showWarning(): boolean {
-        return this.warning === true;
+        return this.warning === this.location;
     }
 
     private get showError(): boolean {

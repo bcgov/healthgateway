@@ -299,41 +299,68 @@ export const actions: LaboratoryActions = {
                         }, payload.retryin);
                         resolve(payload);
                     } else {
-                        context.dispatch(
-                            "handlePublicCovidTestsError",
-                            result.resultError
-                        );
+                        context.dispatch("handlePublicCovidTestsError", {
+                            error: result.resultError,
+                            errorType: ErrorType.Retrieve,
+                        });
                         reject(result.resultError);
                     }
                 })
                 .catch((error: ResultError) => {
-                    context.dispatch("handlePublicCovidTestsError", error);
+                    context.dispatch("handlePublicCovidTestsError", {
+                        error,
+                        errorType: ErrorType.Retrieve,
+                    });
                     reject(error);
                 });
         });
     },
-    handlePublicCovidTestsError(context, error: ResultError) {
+    handlePublicCovidTestsError(
+        context,
+        params: {
+            error: ResultError;
+            errorType: ErrorType;
+        }
+    ) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-        logger.error(`ERROR: ${JSON.stringify(error)}`);
-        const customBannerError: CustomBannerError = {
-            title: "Our Apologies",
-            description:
-                "We've found an issue and the Health Gateway team is working hard to fix it.",
-        };
+        logger.error(`ERROR: ${JSON.stringify(params.error)}`);
 
-        if (error.actionCode === ActionType.DataMismatch) {
-            customBannerError.title = "Data Mismatch";
-            customBannerError.description =
-                "The information you entered does not match our records. Please try again.";
-            customBannerError.detail =
-                "Please note that it can take up to 48 hours from the time of test before a result is available. If it has been at least 48 hours since you tested, please contact the COVID-19 Results Line (1‐833‐707‐2792) to investigate the issue.";
+        if (
+            params.errorType === ErrorType.Retrieve &&
+            params.error.statusCode === 429
+        ) {
+            context.dispatch(
+                "errorBanner/setTooManyRequestsWarning",
+                {
+                    key: "publicCovidTest",
+                },
+                {
+                    root: true,
+                }
+            );
+
+            context.commit("setPublicCovidTestResponseResultError", undefined);
+        } else {
+            const customBannerError: CustomBannerError = {
+                title: "Our Apologies",
+                description:
+                    "We've found an issue and the Health Gateway team is working hard to fix it.",
+            };
+
+            if (params.error.actionCode === ActionType.DataMismatch) {
+                customBannerError.title = "Data Mismatch";
+                customBannerError.description =
+                    "The information you entered does not match our records. Please try again.";
+                customBannerError.detail =
+                    "Please note that it can take up to 48 hours from the time of test before a result is available. If it has been at least 48 hours since you tested, please contact the COVID-19 Results Line (1‐833‐707‐2792) to investigate the issue.";
+            }
+
+            context.commit(
+                "setPublicCovidTestResponseResultError",
+                customBannerError
+            );
         }
-
-        context.commit(
-            "setPublicCovidTestResponseResultError",
-            customBannerError
-        );
     },
     resetPublicCovidTestResponseResult(context) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
