@@ -2,7 +2,7 @@ version: '3.4'
 services:
   k6:
     image: grafana/k6:latest
-    command: run /k6_pvcpdf.js --insecure-skip-tls-verify
+    command: run /covid/federalpvc/k6_pvcpdf.js --insecure-skip-tls-verify
     volumes:
       - ../../covid/federalpvc:/covid/federalpvc
       - ../../inc:/inc

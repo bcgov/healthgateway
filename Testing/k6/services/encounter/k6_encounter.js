@@ -22,25 +22,14 @@ export let options = common.OptionConfig();
 
 export default function () {
     let user = common.users[__VU % common.users.length];
-
+    
     common.getConfigurations();
     common.getOpenIdConfigurations();
     common.authorizeUser(user);
-
-    common.groupWithDurationMetric("spaBatch", function () {
-        let spaBatchResponses = http.batch(
-            common.spaAssetRequests(),
-        );
-        common.checkBatchResponses(spaBatchResponses);
-    });
-
-    common.groupWithDurationMetric("timelineBatch", function () {
-        let webClientBatchResponses = http.batch(common.webClientRequests(user));
-        let timelineBatchResponses = http.batch(common.timelineRequests(user));
-
-        common.checkBatchResponses(webClientBatchResponses);
-        common.checkBatchResponses(timelineBatchResponses);
-    });
-
+    let response = http.get(
+        common.ServiceEndpoints.Encounter + "Encounter/" + user.hdid,
+        common.params(user)
+    );
+    common.checkResponse(response);
     sleep(1);
 }

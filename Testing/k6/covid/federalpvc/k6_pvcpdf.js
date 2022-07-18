@@ -25,8 +25,6 @@ export let cardUrl = common.ServiceEndpoints.Immunization + "PublicVaccineStatus
 export let pdfUrl = cardUrl + "/pdf";
 export let entryPageUrl = common.BaseSiteUrl + "/vaccinecard";
 
-console.log("Test: " + testType);
-
 // not using SharedArray here will mean that the code in the function call (that is what loads and
 // parses the csv) will be executed per each VU which also means that there will be a complete copy
 // per each VU
@@ -47,11 +45,11 @@ export default function () {
         let spaBatchResponses = http.batch(
             common.spaAssetRequests(),
         );
-        common.checkResponses(spaBatchResponses);
+        common.checkBatchResponses(spaBatchResponses);
 
         let response = http.get(entryPageUrl, { headers: common.HttpHeaders });
 
-        success = check(response[0], {
+        success = check(response, {
             'VaccineCard Page Title Correct': (r) => (r.status === 200)
                 && r.html
                 && r.html('title').text().includes('Health Gateway')

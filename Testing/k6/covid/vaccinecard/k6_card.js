@@ -40,11 +40,11 @@ export default function () {
     let spaBatchResponses = http.batch(
         common.spaAssetRequests(),
     );
-    common.checkResponses(spaBatchResponses);
+    common.checkBatchResponses(spaBatchResponses);
 
     let response = http.get(entryPageUrl, { headers: common.HttpHeaders });
 
-    success = check(response[0], {
+    success = check(response, {
         'VaccineCard Page Title Correct': (r) => (r.status === 200)
             && r.html
             && r.html('title').text().includes('Health Gateway'),

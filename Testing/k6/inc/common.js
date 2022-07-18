@@ -399,27 +399,32 @@ export function timelineRequests(user) {
     let timelineRequests = {
         "comments": {
             method: "GET",
-            url: common.ServiceEndpoints.GatewayApi + "UserProfile/" + user.hdid + "/Comment",
+            url: ServiceEndpoints.GatewayApi + "UserProfile/" + user.hdid + "/Comment",
+            params: params(user),
+        },
+        "encounter": {
+            method: "GET",
+            url: ServiceEndpoints.Encounter + "Encounter/" + user.hdid,
             params: params(user),
         },
         "immz": {
             method: "GET",
-            url: common.ServiceEndpoints.Immunization + "Immunization?hdid=" + user.hdid,
+            url: ServiceEndpoints.Immunization + "Immunization?hdid=" + user.hdid,
             params: params(user),
         },
         "labs": {
             method: "GET",
-            url: common.ServiceEndpoints.Laboratory + "Laboratory/LaboratoryOrders?hdid=" + user.hdid,
+            url: ServiceEndpoints.Laboratory + "Laboratory/LaboratoryOrders?hdid=" + user.hdid,
             params: params(user),
         },
         "meds": {
             method: "GET",
-            url: common.ServiceEndpoints.Medication + "MedicationStatement/" + user.hdid,
+            url: ServiceEndpoints.Medication + "MedicationStatement/" + user.hdid,
             params: params(user),
         },
         "notes": {
             method: "GET",
-            url: common.ServiceEndpoints.GatewayApi + "Note/" + user.hdid,
+            url: ServiceEndpoints.GatewayApi + "Note/" + user.hdid,
             params: params(user),
         }
     };
@@ -439,31 +444,29 @@ export function getBaseWebApp() {
 
 export function spaAssetRequests() {
 
-    let baseSiteUrl = common.BaseSiteUrl;
-
     const baseSite = {
         method: "GET",
-        url: baseSiteUrl,
+        url: BaseSiteUrl,
         params: { headers: HttpHeaders }
     };
     const vendorChunk = {
         method: "GET",
-        url: baseSiteUrl + "js/chunk-vendors.c61f122d.js",
+        url: BaseSiteUrl + "js/chunk-vendors.c61f122d.js",
         params: { headers: HttpHeaders }
     };
     const siteChunk = {
         method: "GET",
-        url: baseSiteUrl + "js/app.8136e1c8.js",
+        url: BaseSiteUrl + "js/app.8136e1c8.js",
         params: { headers: HttpHeaders }
     };
     const css = {
         method: "GET",
-        url: baseSiteUrl + "css/app.c90e9393.css",
+        url: BaseSiteUrl + "css/app.c90e9393.css",
         params: { headers: HttpHeaders }
     };
     const cssVendor = {
         method: "GET",
-        url: baseSiteUrl + "/css/chunk-vendors.21f4bba7.css",
+        url: BaseSiteUrl + "/css/chunk-vendors.21f4bba7.css",
         params: { headers: HttpHeaders }
     };
     return [baseSite, vendorChunk, siteChunk, css, cssVendor];
@@ -473,12 +476,12 @@ export function webClientRequests(user) {
     let webClientRequests = {
         "patient": {
             method: "GET",
-            url: common.ServiceEndpoints.Patient + "Patient/" + user.hdid,
+            url: ServiceEndpoints.Patient + "Patient/" + user.hdid,
             params: params(user),
         },
         "profile": {
             method: "GET",
-            url: common.GatewayApi + "UserProfile/" + user.hdid,
+            url: ServiceEndpoints.GatewayApi + "UserProfile/" + user.hdid,
             params: params(user),
         },
     };

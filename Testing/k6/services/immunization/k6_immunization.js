@@ -27,7 +27,7 @@ export default function () {
     common.getOpenIdConfigurations();
     common.authorizeUser(user);
     let response = http.get(
-        common.ServiceEndpoints.Immunization + user.hdid,
+        common.ServiceEndpoints.Immunization + "Immunization/?hdid=" + user.hdid,
         common.params(user)
     );
     common.checkResponse(response);

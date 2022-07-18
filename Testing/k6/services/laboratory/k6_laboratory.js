@@ -27,7 +27,7 @@ export default function () {
     common.getOpenIdConfigurations();
     common.authorizeUser(user);
     let response = http.get(
-        common.ServiceEndpoints.Laboratory + "?hdid=" + user.hdid,
+        common.ServiceEndpoints.Laboratory + "Laboratory/LaboratoryOrders/?hdid=" + user.hdid,
         common.params(user)
     );
     common.checkResponse(response);
