@@ -26,11 +26,11 @@ namespace HealthGateway.Database.Delegates
     public interface ICommunicationDelegate
     {
         /// <summary>
-        /// Gets the active communication banner from the DB by type.
+        /// Gets the next oldest by effective date, non-expired communication banner by type.
         /// </summary>
-        /// <param name="communicationType">The active communiction type to retrieve.</param>
+        /// <param name="communicationType">The active communication type to retrieve.</param>
         /// <returns>The Communication wrapped in a DBResult.</returns>
-        DBResult<Communication> GetActiveBanner(CommunicationType communicationType);
+        DBResult<Communication?> GetNext(CommunicationType communicationType);
 
         /// <summary>
         /// Add the given communication.
