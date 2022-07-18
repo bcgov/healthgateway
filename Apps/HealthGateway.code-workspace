@@ -71,6 +71,19 @@
             "path": "../Tools"
         }
     ],
+    "extensions": {
+        "recommendations": [
+            "DavidAnson.vscode-markdownlint",
+            "dbaeumer.vscode-eslint",
+            "eamodio.gitlens",
+            "esbenp.prettier-vscode",
+            "formulahendry.auto-close-tag",
+            "formulahendry.auto-rename-tag",
+            "octref.vetur",
+            "shd101wyy.markdown-preview-enhanced",
+            "steoates.autoimport"
+        ]
+    },
     "settings": {
         "eslint.workingDirectories": [{ "mode": "auto" }],
         "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj",
