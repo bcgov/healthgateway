@@ -25,7 +25,7 @@ namespace HealthGateway.Database.Migrations
         {
             string schema = "gateway";
             string constraint = @$"
-                ALTER TABLE {schema}.""Communication"" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange(""EffectiveDateTime"", ""ExpiryDateTime"") WITH &&)";
+                ALTER TABLE {schema}.""Communication"" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange(""EffectiveDateTime"", ""ExpiryDateTime"") WITH &&);";
 
             migrationBuilder.Sql(constraint);
         }
@@ -34,7 +34,7 @@ namespace HealthGateway.Database.Migrations
         {
             string schema = "gateway";
             string constraint = @$"
-                ALTER TABLE {schema}.""Communication"" DROP CONSTRAINT unique_date_range";
+                ALTER TABLE {schema}.""Communication"" DROP CONSTRAINT unique_date_range;";
 
             migrationBuilder.Sql(constraint);
         }

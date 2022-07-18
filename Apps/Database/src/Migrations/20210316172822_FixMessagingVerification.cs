@@ -27,16 +27,14 @@ namespace HealthGateway.Database.Migrations
             string updateSQL = @$"
 UPDATE gateway.""MessagingVerification""
 SET ""SMSNumber"" = regexp_replace(""SMSNumber"", '[^0-9]', '', 'g')
-WHERE ""SMSNumber"" IS NOT null
-";
+WHERE ""SMSNumber"" IS NOT null;";
             migrationBuilder.Sql(updateSQL);
 
 
             updateSQL = $@"
 UPDATE gateway.""MessagingVerification""
 SET ""ExpireDate"" = ""CreatedDateTime"" + interval '5' hour
-WHERE ""VerificationType"" = 'SMS' AND extract(year from ""ExpireDate"") = 9999
-";
+WHERE ""VerificationType"" = 'SMS' AND extract(year from ""ExpireDate"") = 9999;";
             migrationBuilder.Sql(updateSQL);
 
             migrationBuilder.AlterColumn<string>(
