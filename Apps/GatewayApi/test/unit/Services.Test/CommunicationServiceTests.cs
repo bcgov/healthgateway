@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApi.Test.Services
 {
     using System;
+    using System.Text.Json;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -23,9 +24,9 @@ namespace HealthGateway.GatewayApi.Test.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.Extensions.Caching.Memory;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -35,61 +36,270 @@ namespace HealthGateway.GatewayApi.Test.Services
     /// </summary>
     public class CommunicationServiceTests
     {
-        /// <summary>
-        /// GetActiveCommunication - Happy path scenario.
-        /// </summary>
-        [Fact]
-        public void ShouldGetActiveCommunication()
-        {
-            (RequestResult<Communication> actualResult, Communication communication) = ExecuteGetActiveCommunication(DBStatusCode.Read);
-
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            communication.ShouldDeepEqual(actualResult.ResourcePayload);
-        }
+        private const string BannerCacheKey = "BannerCacheKey";
+        private const string InAppCacheKey = "InAppCacheKey";
+        private const string Delete = "DELETE";
+        private const string Update = "UPDATE";
+        private const string Insert = "INSERT";
 
         /// <summary>
-        /// GetActiveCommunication - Database Error.
+        /// Validates the Communication is pulled from the MemoryCache.
         /// </summary>
-        [Fact]
-        public void ShouldGetActiveCommunicationWithDBError()
+        /// <param name="scenario">The scenario the test is executing.</param>
+        [Theory]
+        [InlineData(Scenario.Active)]
+        [InlineData(Scenario.Future)]
+        public void ShouldGetActiveCommunicationFromCache(Scenario scenario)
         {
-            (RequestResult<Communication> actualResult, _) = ExecuteGetActiveCommunication(DBStatusCode.Error);
+            MemoryCacheEntryOptions options = new()
+            {
+                AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddDays(1)),
+            };
 
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
-        }
-
-        private static (RequestResult<Communication> ActualResult, Communication Communication) ExecuteGetActiveCommunication(DBStatusCode dbResultStatus = DBStatusCode.Read)
-        {
             Communication communication = new()
             {
                 Id = Guid.NewGuid(),
-                EffectiveDateTime = DateTime.UtcNow.AddDays(-1),
-                ExpiryDateTime = DateTime.UtcNow.AddDays(2),
+                ExpiryDateTime = DateTime.UtcNow.AddDays(10),
             };
 
-            DBResult<Communication> dbResult = new()
+            switch (scenario)
             {
-                Payload = communication,
-                Status = dbResultStatus,
-            };
+                case Scenario.Future:
+                    communication.EffectiveDateTime = DateTime.UtcNow.AddDays(3);
+                    break;
+                default:
+                    communication.EffectiveDateTime = DateTime.UtcNow;
+                    break;
+            }
 
-            ServiceCollection services = new();
-            services.AddMemoryCache();
-            ServiceProvider serviceProvider = services.BuildServiceProvider();
-
-            IMemoryCache? memoryCache = serviceProvider.GetService<IMemoryCache>();
+            RequestResult<Communication?> commResult = GetCommResult(communication, ResultType.Success);
+            IMemoryCache memoryCache = CreateCache(commResult, BannerCacheKey, options);
 
             Mock<ICommunicationDelegate> communicationDelegateMock = new();
-            communicationDelegateMock.Setup(s => s.GetActiveBanner(CommunicationType.Banner)).Returns(dbResult);
+            ICommunicationService service = new CommunicationService(
+                new Mock<ILogger<CommunicationService>>().Object,
+                communicationDelegateMock.Object,
+                memoryCache);
+
+            RequestResult<Communication?> actualResult = service.GetActiveBanner(CommunicationType.Banner);
+
+            switch (scenario)
+            {
+                case Scenario.Future:
+                    Assert.NotSame(commResult, actualResult);
+                    Assert.True(actualResult.ResultStatus == ResultType.Success);
+                    break;
+                default:
+                    Assert.Same(commResult, actualResult);
+                    break;
+            }
+
+            memoryCache.Dispose();
+        }
+
+        /// <summary>
+        /// Get the communication data directly from the DB.
+        /// </summary>
+        /// <param name="dbStatusCode">The status returned from the DB Delegate.</param>
+        [Theory]
+        [InlineData(DBStatusCode.Read)]
+        [InlineData(DBStatusCode.NotFound)]
+        [InlineData(DBStatusCode.Error)]
+        public void ShouldGetActiveCommunicationFromDb(DBStatusCode dbStatusCode)
+        {
+            Communication? communication = null;
+            if (dbStatusCode == DBStatusCode.Read)
+            {
+                communication = new()
+                {
+                    Id = Guid.NewGuid(),
+                    EffectiveDateTime = DateTime.Now,
+                    ExpiryDateTime = DateTime.Now.AddDays(1),
+                };
+            }
+
+            DBResult<Communication?> dbResult = new()
+            {
+                Status = dbStatusCode,
+                Payload = communication,
+            };
+
+            IMemoryCache memoryCache = CreateCache();
+            Mock<ICommunicationDelegate> communicationDelegateMock = new();
+            communicationDelegateMock.Setup(s => s.Find(It.IsAny<CommunicationType>())).Returns(dbResult);
 
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,
                 communicationDelegateMock.Object,
                 memoryCache);
-            RequestResult<Communication> actualResult = service.GetActiveBanner(CommunicationType.Banner);
 
-            return (actualResult, communication);
+            RequestResult<Communication?> actualResult = service.GetActiveBanner(CommunicationType.Banner);
+
+            if (dbStatusCode == DBStatusCode.Read || dbStatusCode == DBStatusCode.NotFound)
+            {
+                Assert.True(actualResult != null);
+                Assert.True(actualResult?.ResultStatus == ResultType.Success);
+                if (dbStatusCode == DBStatusCode.Read)
+                {
+                    Assert.True(dbResult.Payload.IsDeepEqual(actualResult?.ResourcePayload));
+                    Assert.True(actualResult?.TotalResultCount == 1);
+                }
+                else
+                {
+                    Assert.True(actualResult?.TotalResultCount == 0);
+                }
+            }
+            else
+            {
+                Assert.True(actualResult.ResultStatus == ResultType.Error);
+                Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
+            }
+
+            memoryCache.Dispose();
+        }
+
+        /// <summary>
+        /// Validates Insert and Update operations when cache is empty.
+        /// </summary>
+        /// <param name="action">The action to perform for the test.</param>
+        /// <param name="scenario">The scenario to to initialize data.</param>
+        /// <param name="cached">Put the initial communication into the cache.</param>
+        /// <param name="commType">The optional communication type to use.</param>
+        /// <param name="cacheMiss">If true, the cached item will be an empty communication with a unique guid.</param>
+        [Theory]
+        [InlineData(Insert, Scenario.Active, false)]
+        [InlineData(Insert, Scenario.Active, false, CommunicationType.InApp)]
+        [InlineData(Insert, Scenario.Expired, false)]
+        [InlineData(Update, Scenario.Active, false)]
+        [InlineData(Update, Scenario.Expired, false)]
+        [InlineData(Insert, Scenario.Active, true)]
+        [InlineData(Insert, Scenario.Expired, true)]
+        [InlineData(Update, Scenario.Active, true)]
+        [InlineData(Update, Scenario.Expired, true)]
+        [InlineData(Delete, Scenario.Deleted, true)]
+        [InlineData(Insert, Scenario.Active, true, CommunicationType.Banner, true)]
+        [InlineData(Insert, Scenario.Future, false)]
+        public void ShouldProcessChangeEvent(string action, Scenario scenario, bool cached, CommunicationType commType = CommunicationType.Banner, bool cacheMiss = false)
+        {
+            Communication communication = new Communication()
+            {
+                Id = Guid.NewGuid(),
+                CommunicationTypeCode = commType,
+            };
+            switch (scenario)
+            {
+                case Scenario.Expired:
+                    communication.EffectiveDateTime = DateTime.Now.AddDays(-10);
+                    communication.ExpiryDateTime = DateTime.Now.AddDays(-5);
+                    break;
+                case Scenario.Future:
+                    communication.EffectiveDateTime = DateTime.Now.AddDays(1);
+                    communication.ExpiryDateTime = DateTime.Now.AddDays(5);
+                    break;
+                default:
+                    communication.EffectiveDateTime = DateTime.Now;
+                    communication.ExpiryDateTime = DateTime.Now.AddDays(1);
+                    break;
+            }
+
+            BannerChangeEvent changeEvent = new()
+            {
+                Action = action,
+                Data = communication,
+            };
+
+            IMemoryCache memoryCache;
+            if (cached)
+            {
+                RequestResult<Communication?> cacheEntry = new()
+                {
+                    ResultStatus = ResultType.Success,
+                    ResourcePayload = !cacheMiss ? communication : new()
+                    {
+                        Id = Guid.NewGuid(),
+                    },
+                    TotalResultCount = 1,
+                };
+
+                memoryCache = CreateCache(cacheEntry, BannerCacheKey);
+            }
+            else
+            {
+                memoryCache = CreateCache();
+            }
+
+            Mock<ICommunicationDelegate> communicationDelegateMock = new();
+
+            ICommunicationService service = new CommunicationService(
+                new Mock<ILogger<CommunicationService>>().Object,
+                communicationDelegateMock.Object,
+                memoryCache);
+
+            service.ProcessChange(changeEvent);
+            string cacheKey = commType == CommunicationType.Banner ? BannerCacheKey : InAppCacheKey;
+            RequestResult<Communication> cacheResult = memoryCache.Get<RequestResult<Communication>>(cacheKey);
+            switch (scenario)
+            {
+                case Scenario.Active:
+                    if (!cached || (cached && !cacheMiss))
+                    {
+                        Assert.Same(communication, cacheResult.ResourcePayload);
+                    }
+                    else
+                    {
+                        Assert.True(communication.Id != cacheResult.ResourcePayload?.Id);
+                    }
+
+                    break;
+                case Scenario.Expired:
+                    Assert.True(cacheResult.ResultStatus == ResultType.Success);
+                    Assert.True(cacheResult.TotalResultCount == 0);
+                    break;
+                case Scenario.Deleted:
+                    Assert.True(cacheResult is null);
+                    break;
+                case Scenario.Future:
+                    Assert.Same(communication, cacheResult.ResourcePayload);
+                    break;
+            }
+
+            memoryCache.Dispose();
+        }
+
+        /// <summary>
+        /// Validates that GetActiveBanner throws an exception when the wrong Communication types are passed in.
+        /// </summary>
+        [Fact]
+        public void ShouldThrowException()
+        {
+            ICommunicationService service = new CommunicationService(
+                new Mock<ILogger<CommunicationService>>().Object,
+                new Mock<ICommunicationDelegate>().Object,
+                new Mock<IMemoryCache>().Object);
+            Assert.Throws<ArgumentOutOfRangeException>(() => service.GetActiveBanner(CommunicationType.Email));
+        }
+
+        private static IMemoryCache CreateCache(RequestResult<Communication?>? cacheEntry = null, string? cacheKey = null, MemoryCacheEntryOptions? options = null)
+        {
+            IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
+            if (cacheEntry != null && cacheKey != null)
+            {
+                memoryCache.Set(cacheKey, cacheEntry, options ?? new MemoryCacheEntryOptions());
+            }
+
+            return memoryCache;
+        }
+
+        private static RequestResult<Communication?> GetCommResult(Communication? communication, ResultType resultStatus)
+        {
+            RequestResult<Communication?> commResult = new()
+            {
+                ResultStatus = resultStatus,
+                TotalResultCount = communication is null ? 0 : 1,
+                ResourcePayload = communication,
+            };
+
+            return commResult;
         }
     }
 }

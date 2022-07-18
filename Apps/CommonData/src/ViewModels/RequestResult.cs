@@ -25,7 +25,7 @@ namespace HealthGateway.Common.Data.ViewModels
     /// <typeparam name="T">The payload type.</typeparam>
     [ExcludeFromCodeCoverage]
     public class RequestResult<T>
-        where T : class
+        where T : class?
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RequestResult{T}"/> class.

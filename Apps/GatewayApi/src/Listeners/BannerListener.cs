@@ -22,9 +22,8 @@ namespace HealthGateway.GatewayApi.Listeners
     using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Context;
-    using HealthGateway.Database.Models;
+    using HealthGateway.GatewayApi.Converters;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.EntityFrameworkCore;
@@ -59,14 +58,12 @@ namespace HealthGateway.GatewayApi.Listeners
             this.services = services;
         }
 
-        private ICommunicationService? CommunicationService { get; set; }
-
         /// <summary>
         /// Creates a new DB Connection for push notifications from the DB for a specific channel.
         /// </summary>
         /// <param name="stoppingToken">The cancellation token to use.</param>
         /// <returns>The task.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "Abstract class property")]
+        [SuppressMessage("Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "Abstract class property")]
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             this.logger.LogInformation("DBChangeListener is starting");
@@ -79,13 +76,12 @@ namespace HealthGateway.GatewayApi.Listeners
                 this.logger.LogInformation($"Registering Channel Notification on channel {Channel}, attempts = {attempts}");
                 try
                 {
-                    using var scope = this.services.CreateScope();
+                    using IServiceScope scope = this.services.CreateScope();
                     using GatewayDbContext dbContext = scope.ServiceProvider.GetRequiredService<GatewayDbContext>();
-                    this.CommunicationService = scope.ServiceProvider.GetRequiredService<ICommunicationService>();
                     using NpgsqlConnection con = (NpgsqlConnection)dbContext.Database.GetDbConnection();
                     await con.OpenAsync(stoppingToken).ConfigureAwait(true);
                     con.Notification += this.ReceiveEvent;
-                    using NpgsqlCommand cmd = new NpgsqlCommand();
+                    using NpgsqlCommand cmd = new();
                     cmd.CommandText = @$"LISTEN ""{Channel}"";";
                     cmd.CommandType = CommandType.Text;
                     cmd.Connection = con;
@@ -101,7 +97,7 @@ namespace HealthGateway.GatewayApi.Listeners
                 }
                 catch (NpgsqlException e)
                 {
-                    this.logger.LogError($"DB Error encountered in WaitChannelNotification: {Channel}\n{e.ToString()}");
+                    this.logger.LogError($"DB Error encountered in WaitChannelNotification: {Channel}\n{e}");
                     if (!stoppingToken.IsCancellationRequested)
                     {
                         await Task.Delay(SleepDuration, stoppingToken).ConfigureAwait(true);
@@ -114,32 +110,18 @@ namespace HealthGateway.GatewayApi.Listeners
 
         private void ReceiveEvent(object sender, NpgsqlNotificationEventArgs e)
         {
-            this.logger.LogInformation($"Event received on channel {Channel}");
+            this.logger.LogDebug($"Banner Event received on channel {Channel}");
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
             };
+            options.Converters.Add(new DateTimeConverter());
             options.Converters.Add(new JsonStringEnumConverter());
             BannerChangeEvent? changeEvent = JsonSerializer.Deserialize<BannerChangeEvent>(e.Payload, options);
-            if (this.CommunicationService != null && changeEvent != null && changeEvent.Data != null)
-            {
-                Communication comm = changeEvent.Data;
-                DateTime utcnow = DateTime.UtcNow;
-                if (utcnow >= comm.EffectiveDateTime && utcnow <= comm.ExpiryDateTime)
-                {
-                    // shortcut - Active comm, remove from cache
-                    this.CommunicationService.RemoveBannerCache(comm.CommunicationTypeCode);
-                }
-                else
-                {
-                    // Change to the current comm, remove from cache
-                    RequestResult<Communication>? cacheComm = this.CommunicationService.GetBannerCache(comm.CommunicationTypeCode);
-                    if (cacheComm != null && cacheComm.ResourcePayload != null && cacheComm.ResourcePayload.Id == comm.Id)
-                    {
-                        this.CommunicationService.RemoveBannerCache(comm.CommunicationTypeCode);
-                    }
-                }
-            }
+            using IServiceScope scope = this.services.CreateScope();
+            ICommunicationService cs = scope.ServiceProvider.GetRequiredService<ICommunicationService>();
+            this.logger.LogInformation($"Banner Event received and being processed");
+            cs.ProcessChange(changeEvent);
         }
     }
 }
